@@ -18,6 +18,7 @@
 		04769C152B1A680C0051581C /* Promises+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04769C142B1A680C0051581C /* Promises+Helper.swift */; };
 		0479FB192AF2599A00D0AFC9 /* StringTyper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0479FB172AF2599200D0AFC9 /* StringTyper.swift */; };
 		047D8E892ADEA4C700A5E7BD /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047D8E882ADEA4C700A5E7BD /* NetworkService.swift */; };
+		0489E2BB2B68F71300FA0682 /* TapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0489E2BA2B68F71300FA0682 /* TapGestureRecognizer.swift */; };
 		049298012B1DD466002E04B8 /* AnalyticsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049298002B1DD466002E04B8 /* AnalyticsServiceTests.swift */; };
 		049298072B1E1F4D002E04B8 /* AnalyticsStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */; };
 		049A055E2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
@@ -177,6 +178,7 @@
 		04769C142B1A680C0051581C /* Promises+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Promises+Helper.swift"; sourceTree = "<group>"; };
 		0479FB172AF2599200D0AFC9 /* StringTyper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTyper.swift; sourceTree = "<group>"; };
 		047D8E882ADEA4C700A5E7BD /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		0489E2BA2B68F71300FA0682 /* TapGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapGestureRecognizer.swift; sourceTree = "<group>"; };
 		049298002B1DD466002E04B8 /* AnalyticsServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsServiceTests.swift; sourceTree = "<group>"; };
 		049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsStorageTests.swift; sourceTree = "<group>"; };
 		049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessVaultManagerViewController.swift; sourceTree = "<group>"; };
@@ -359,6 +361,14 @@
 			path = "Test Utilities";
 			sourceTree = "<group>";
 		};
+		0489E2B92B68F70400FA0682 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				0489E2BA2B68F71300FA0682 /* TapGestureRecognizer.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		04DAAED22B03EEBE002E2614 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
@@ -476,6 +486,7 @@
 				553A7EDE72B8249F55A0E6B9 /* Extension */,
 				D9AC6F54A87D432982864A63 /* Model */,
 				64FB843527A1671D550B536F /* Network */,
+				0489E2B92B68F70400FA0682 /* Utilities */,
 				F214F09DF97D2A83FC7D0BE0 /* View */,
 				0E5CB4D963647832FF985B29 /* View Controllers */,
 				A9ACBE5F8E70CF200C80001F /* View Model */,
@@ -1086,6 +1097,7 @@
 				72F8D6065334FCD5B726A52C /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift in Sources */,
 				14EE32F4821BD1F19F75227F /* MerchantHeadlessCheckoutRawRetailDataViewController.swift in Sources */,
 				F02F496FD20B5291C044F62C /* MerchantResultViewController.swift in Sources */,
+				0489E2BB2B68F71300FA0682 /* TapGestureRecognizer.swift in Sources */,
 				E11F47562B06C5030091C31F /* ImageViewWithUrl.swift in Sources */,
 				34CDCA7B403C001E4C55D26D /* MerchantSessionAndSettingsViewController.swift in Sources */,
 				E11F474A2B06C4E30091C31F /* BanksListModel.swift in Sources */,

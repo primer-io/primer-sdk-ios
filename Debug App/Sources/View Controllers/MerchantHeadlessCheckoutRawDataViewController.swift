@@ -18,6 +18,8 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
     }
     
     var primerRawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
+        
+    var selectedCardIndex: Int = 0
     
     var stackView: UIStackView!
     var paymentMethodType: String!
@@ -34,7 +36,7 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
     var cardholderNameTextField: UITextField?
     var payButton: UIButton!
     
-    var cardsLabel: UILabel!
+    var cardsStackView: UIStackView!
     
     var logs: [String] = []
     
@@ -94,16 +96,16 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
             for inputElementType in inputElementTypes {
                 switch inputElementType {
                 case .cardNumber:
-                    self.cardnumberTextField = styledTextField(forAccessibilityId: "card_txt_fld",
+                    self.cardnumberTextField = styledTextField(forAccessibilityId: "cardNumberTextField",
                                                                withPlaceholderText: "4242 4242 4242 4242")
                 case .expiryDate:
-                    self.expiryDateTextField = styledTextField(forAccessibilityId: "expiry_txt_fld",
+                    self.expiryDateTextField = styledTextField(forAccessibilityId: "expiryDateTextField",
                                                                withPlaceholderText: "03/2030")
                 case .cvv:
-                    self.cvvTextField = styledTextField(forAccessibilityId: "cvc_txt_fld",
+                    self.cvvTextField = styledTextField(forAccessibilityId: "cvvTextField",
                                                         withPlaceholderText: "123")
                 case .cardholderName:
-                    self.cardholderNameTextField = styledTextField(forAccessibilityId: "card_holder_txt_fld",
+                    self.cardholderNameTextField = styledTextField(forAccessibilityId: "cardholderNameTextField",
                                                                    withPlaceholderText: "John Smith")
                 case .otp:
                     break
@@ -135,15 +137,15 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
             self.payButton.isEnabled = false
             self.payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
             
-            self.cardsLabel = UILabel(frame: .zero)
-            self.cardsLabel.font = .systemFont(ofSize: 24)
-            self.cardsLabel.textAlignment = .center
-            self.cardsLabel.numberOfLines = 0
-            self.cardsLabel.lineBreakMode = .byWordWrapping
-            self.stackView.addArrangedSubview(cardsLabel)
-            self.cardsLabel.translatesAutoresizingMaskIntoConstraints = false
-            self.cardsLabel.heightAnchor.constraint(equalToConstant: 120).isActive = true
-            
+            self.cardsStackView = UIStackView()
+            self.cardsStackView.axis = .horizontal
+            self.stackView.addArrangedSubview(cardsStackView)
+            self.cardsStackView.translatesAutoresizingMaskIntoConstraints = false
+            self.cardsStackView.spacing = 10
+            self.cardsStackView.alignment = .center
+            self.cardsStackView.distribution = .fillProportionally
+            self.cardsStackView.accessibilityIdentifier = "cardNetworksSelectionView"
+
         } catch {
             print("[MerchantHeadlessCheckoutRawDataViewController] ERROR: Failed to set up card entry fields")
         }
@@ -279,7 +281,9 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
         // TODO
         print("[MerchantHeadlessCheckoutRawDataViewController] willFetchCardMetadataForState")
         DispatchQueue.main.async {
-            self.cardsLabel.text = "🌏"
+            self.cardsStackView.removeAllArrangedSubviews()
+            let progressView = UIProgressView(progressViewStyle: .default)
+            self.cardsStackView.addArrangedSubview(progressView)
         }
     }
     
@@ -296,8 +300,51 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
         print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveCardMetadata: \(printableNetworks) forCardValidationState: \(cardState.cardNumber)")
         
         DispatchQueue.main.async {
-            self.cardsLabel.text = printableNetworks
+            self.cardsStackView.removeAllArrangedSubviews()
+            
+            metadata.selectableCardNetworks?.items.enumerated().forEach { (index, detectedNetwork) in
+                let image = PrimerHeadlessUniversalCheckout.AssetsManager.getCardNetworkAsset(for: detectedNetwork.network)
+                let imageView = UIImageView(image: image?.cardImage)
+                imageView.isUserInteractionEnabled = true
+                imageView.translatesAutoresizingMaskIntoConstraints = false
+
+                let width: CGFloat = 112
+                let height: CGFloat = 80
+
+                imageView.heightAnchor.constraint(equalToConstant: width).isActive = true
+                imageView.widthAnchor.constraint(equalToConstant: height).isActive = true
+                imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor,
+                                                 multiplier: width / height).isActive = true
+                imageView.setContentHuggingPriority(.required, for: .horizontal)
+                imageView.accessibilityIdentifier = detectedNetwork.displayName
+
+                self.cardsStackView.addArrangedSubview(imageView)
+
+                let tapGestureRecognizer = TapGestureRecognizer {
+                    self.selectedCardIndex = index
+                    self.updateCardImages()
+                }
+                imageView.addGestureRecognizer(tapGestureRecognizer)
+            }
+            
+            let emptyView = UIView()
+            emptyView.translatesAutoresizingMaskIntoConstraints = false
+            emptyView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+            emptyView.widthAnchor.constraint(greaterThanOrEqualToConstant: 1).isActive = true
+            self.cardsStackView.addArrangedSubview(emptyView)
+            
+            self.updateCardImages()
+
+            self.view.layoutIfNeeded()
+
             self.rawCardData.cardNetwork = metadata.detectedCardNetworks.preferred?.network
+        }
+    }
+    
+    private func updateCardImages() {
+        cardsStackView.arrangedSubviews.filter { $0 is UIImageView }.enumerated().forEach { (index, imageView) in
+            imageView.layer.opacity = (index == self.selectedCardIndex) ? 1 : 0.5
+            imageView.isUserInteractionEnabled = true
         }
     }
 }

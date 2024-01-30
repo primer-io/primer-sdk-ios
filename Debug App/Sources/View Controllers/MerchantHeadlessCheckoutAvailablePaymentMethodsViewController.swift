@@ -177,7 +177,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
                 let vc = MerchantHeadlessCheckoutRawDataViewController.instantiate(paymentMethodType: paymentMethodType)
                 self.navigationController?.pushViewController(vc, animated: true)
             })
-            rawDataAlertAction.accessibilityIdentifier = "raw_data_huc_alert_action"
+            rawDataAlertAction.accessibilityIdentifier = "raw_data_huc_alert_action_\(paymentMethodType)"
             
             let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
             cancelAction.accessibilityIdentifier = "cancel_huc_alert_action"
