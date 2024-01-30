@@ -299,6 +299,44 @@ networks: \(networks.detectedCardNetworks.items.count)
         waitForExpectations(timeout: 5)
     }
     
+    // MARK: Validation creation tests
+    
+    func testCreateValidationMetadata_allAllowed_differentOrder() {
+        let binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
+                                                          allowedCardNetworks: [.visa, .masterCard],
+                                                          apiClient: apiClient)
+        
+        let metadata = binDataService.createValidationMetadata(networks: [.masterCard, .visa], source: .remote)
+        
+        XCTAssertEqual(metadata.source, .remote)
+        XCTAssertEqual(metadata.selectableCardNetworks?.items.map { $0.network }, [.visa, .masterCard])
+        XCTAssertEqual(metadata.detectedCardNetworks.items.map { $0.network }, [.visa, .masterCard])
+    }
+    
+    func testCreateValidationMetadata_noneAllowed_differentOrder() {
+        let binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
+                                                          allowedCardNetworks: [.amex],
+                                                          apiClient: apiClient)
+        
+        let metadata = binDataService.createValidationMetadata(networks: [.masterCard, .visa], source: .remote)
+        
+        XCTAssertEqual(metadata.source, .remote)
+        XCTAssertNil(metadata.selectableCardNetworks)
+        XCTAssertEqual(metadata.detectedCardNetworks.items.map { $0.network }, [.masterCard, .visa])
+    }
+    
+    func testCreateValidationMetadata_someAllowed_someOrdered() {
+        let binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
+                                                          allowedCardNetworks: [.masterCard, .visa, .jcb, .amex],
+                                                          apiClient: apiClient)
+        
+        let metadata = binDataService.createValidationMetadata(networks: [.masterCard, .visa, .amex, .elo, .jcb], source: .remote)
+        
+        XCTAssertEqual(metadata.source, .remote)
+        XCTAssertEqual(metadata.selectableCardNetworks?.items.map { $0.network }, [.masterCard, .visa, .jcb, .amex])
+        XCTAssertEqual(metadata.detectedCardNetworks.items.map { $0.network }, [.masterCard, .visa, .jcb, .amex, .elo])
+    }
+    
     // MARK: Helpers
     
     private func enterCardNumber(_ cardFragment: String, _ altCardFragment: String? = nil) {

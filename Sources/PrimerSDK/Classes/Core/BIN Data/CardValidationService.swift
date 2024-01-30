@@ -154,13 +154,14 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
     
     // MARK: Model generation
     
-    private func createValidationMetadata(networks: [CardNetwork], 
-                                          source: PrimerCardValidationSource) -> PrimerCardNumberEntryMetadata {
+    func createValidationMetadata(networks: [CardNetwork],
+                                  source: PrimerCardValidationSource) -> PrimerCardNumberEntryMetadata {
         let selectableNetworks: [PrimerCardNetwork] = allowedCardNetworks
             .filter { networks.contains($0) }
             .map { PrimerCardNetwork(network: $0) }
 
-        let detectedNetworks = networks.map { PrimerCardNetwork(network: $0) }
+        let detectedNetworks = selectableNetworks + networks.filter { !allowedCardNetworks.contains($0) }
+            .map { PrimerCardNetwork(network: $0) }
         
         return .init(
             source: source,
