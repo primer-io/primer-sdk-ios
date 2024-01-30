@@ -19,7 +19,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 #if DEBUG
     private var demoThirdPartySDKViewController: PrimerThirdPartySDKViewController?
 #endif
-    private var klarnaPaymentSession: Response.Body.Klarna.CreatePaymentSession?
+    private var klarnaPaymentSession: Response.Body.Klarna.PaymentSession?
     private var klarnaCustomerTokenAPIResponse: Response.Body.Klarna.CustomerToken?
     private var klarnaPaymentSessionCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var authorizationToken: String?
@@ -52,7 +52,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             throw err
         }
 
-        let klarnaSessionType: KlarnaSessionType = PrimerInternal.shared.intent == .vault ? .recurringPayment : .hostedPaymentPage
+        let klarnaSessionType: KlarnaSessionType = PrimerInternal.shared.intent == .vault ? .recurringPayment : .oneOffPayment
 
         if PrimerInternal.shared.intent == .checkout && AppState.current.amount == nil {
             let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file,
@@ -63,7 +63,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             throw err
         }
 
-        if case .hostedPaymentPage = klarnaSessionType {
+        if case .oneOffPayment = klarnaSessionType {
             if AppState.current.amount == nil {
                 let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file,
                                                                                             "class": "\(Self.self)",
@@ -131,7 +131,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
-            .then { () -> Promise<Response.Body.Klarna.CreatePaymentSession> in
+            .then { () -> Promise<Response.Body.Klarna.PaymentSession> in
                 return self.createPaymentSession()
             }
             .then { session -> Promise<Void> in
@@ -331,7 +331,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
-    private func createPaymentSession() -> Promise<Response.Body.Klarna.CreatePaymentSession> {
+    private func createPaymentSession() -> Promise<Response.Body.Klarna.PaymentSession> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
@@ -353,7 +353,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return
             }
 
-            let klarnaSessionType: KlarnaSessionType = PrimerInternal.shared.intent == .vault ? .recurringPayment : .hostedPaymentPage
+            let klarnaSessionType: KlarnaSessionType = PrimerInternal.shared.intent == .vault ? .recurringPayment : .oneOffPayment
 
             var amount = AppState.current.amount
             if amount == nil && PrimerInternal.shared.intent == .checkout {
@@ -369,7 +369,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             //                This is not being used?
             //            var orderItems: [OrderItem]? = nil
 
-            if case .hostedPaymentPage = klarnaSessionType {
+            if case .oneOffPayment = klarnaSessionType {
                 if amount == nil {
                     let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file,
                                                                                                 "class": "\(Self.self)",

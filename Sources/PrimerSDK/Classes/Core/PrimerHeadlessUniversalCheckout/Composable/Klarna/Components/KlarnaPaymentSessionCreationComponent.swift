@@ -123,7 +123,7 @@ public extension KlarnaPaymentSessionCreationComponent {
 
 // MARK: - Private
 private extension KlarnaPaymentSessionCreationComponent {
-    func handleSuccess(success: Response.Body.Klarna.CreatePaymentSession) {
+    func handleSuccess(success: Response.Body.Klarna.PaymentSession) {
         let step = KlarnaPaymentSessionCreation.paymentSessionCreated(
             clientToken: success.clientToken,
             paymentCategories: success.categories.map { KlarnaPaymentCategory(response: $0) }

@@ -33,11 +33,7 @@ final class KlarnaPaymentSessionCreationComponentTests: XCTestCase {
     }
     
     func testUpdateCollectedData_CustomerAccountInfo_Success() {
-        let accountInfo = KlarnaCustomerAccountInfo(
-            accountUniqueId: "test@gmail.com",
-            accountRegistrationDate: "2022-04-25T14:05:15.953Z".toDate(),
-            accountLastModified: "2023-04-25T14:05:15.953Z".toDate()
-        )
+        let accountInfo = KlarnaTestsMocks.klarnaAccountInfo
         
         sut.updateCollectedData(collectableData: .customerAccountInfo(
             accountUniqueId: accountInfo!.accountUniqueId,

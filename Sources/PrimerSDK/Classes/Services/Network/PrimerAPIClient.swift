@@ -49,7 +49,7 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol {
     func createKlarnaPaymentSession(
         clientToken: DecodedJWTToken,
         klarnaCreatePaymentSessionAPIRequest: Request.Body.Klarna.CreatePaymentSession,
-        completion: @escaping (_ result: Result<Response.Body.Klarna.CreatePaymentSession, Error>) -> Void)
+        completion: @escaping (_ result: Result<Response.Body.Klarna.PaymentSession, Error>) -> Void)
     func createKlarnaCustomerToken(
         clientToken: DecodedJWTToken,
         klarnaCreateCustomerTokenAPIRequest: Request.Body.Klarna.CreateCustomerToken,
@@ -385,9 +385,9 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
     func createKlarnaPaymentSession(
         clientToken: DecodedJWTToken,
         klarnaCreatePaymentSessionAPIRequest: Request.Body.Klarna.CreatePaymentSession,
-        completion: @escaping (_ result: Result<Response.Body.Klarna.CreatePaymentSession, Error>) -> Void) {
+        completion: @escaping (_ result: Result<Response.Body.Klarna.PaymentSession, Error>) -> Void) {
             let endpoint = PrimerAPI.createKlarnaPaymentSession(clientToken: clientToken, klarnaCreatePaymentSessionAPIRequest: klarnaCreatePaymentSessionAPIRequest)
-            networkService.request(endpoint) { (result: Result<Response.Body.Klarna.CreatePaymentSession, Error>) in
+            networkService.request(endpoint) { (result: Result<Response.Body.Klarna.PaymentSession, Error>) in
                 switch result {
                 case .success(let klarnaCreatePaymentSessionAPIResponse):
                     completion(.success(klarnaCreatePaymentSessionAPIResponse))

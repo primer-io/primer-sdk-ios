@@ -11,7 +11,7 @@ protocol KlarnaTokenizationComponentProtocol: KlarnaTokenizationManagerProtocol 
     func validate() throws
     func createPaymentSession(
         attachment: Request.Body.Klarna.CreatePaymentSession.Attachment?,
-        completion: @escaping (Result<Response.Body.Klarna.CreatePaymentSession, Error>) -> Void
+        completion: @escaping (Result<Response.Body.Klarna.PaymentSession, Error>) -> Void
     )
     func authorizePaymentSession(
         authorizationToken: String,
@@ -61,7 +61,7 @@ extension KlarnaTokenizationComponent {
         }
         
         switch self.getSessionType() {
-        case .hostedPaymentPage:
+        case .oneOffPayment:
             if AppState.current.amount == nil {
                 throw self.getInvalidSettingError(name: "amount")
             }
@@ -90,7 +90,7 @@ extension KlarnaTokenizationComponent {
 extension KlarnaTokenizationComponent {
     func createPaymentSession(
         attachment: Request.Body.Klarna.CreatePaymentSession.Attachment?,
-        completion: @escaping (Result<Response.Body.Klarna.CreatePaymentSession, Error>) -> Void
+        completion: @escaping (Result<Response.Body.Klarna.PaymentSession, Error>) -> Void
     ) {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let error = self.getInvalidTokenError()
@@ -182,7 +182,7 @@ private extension KlarnaTokenizationComponent {
         if PrimerInternal.shared.intent == .vault {
             return .recurringPayment
         } else {
-            return .hostedPaymentPage
+            return .oneOffPayment
         }
     }
     
