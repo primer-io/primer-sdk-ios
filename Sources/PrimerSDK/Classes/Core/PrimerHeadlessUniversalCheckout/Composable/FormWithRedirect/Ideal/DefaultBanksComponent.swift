@@ -10,7 +10,7 @@ import Foundation
 final class DefaultBanksComponent: BanksComponent {
 
     let paymentMethodType: PrimerPaymentMethodType
-    
+
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
@@ -26,7 +26,7 @@ final class DefaultBanksComponent: BanksComponent {
         self.tokenizationProvingModel = tokenizationProvingModel
         self.onFinished = onFinished
     }
-    
+
     public func updateCollectedData(collectableData: BanksCollectableData) {
         trackCollectableData()
         switch collectableData {
@@ -44,7 +44,7 @@ final class DefaultBanksComponent: BanksComponent {
     func isBankIdValid(bankId: String) -> Bool {
         banks.compactMap({ $0.id }).contains(bankId)
     }
-    
+
     func validateData(for data: BanksCollectableData) {
         validationDelegate?.didUpdate(validationStatus: .validating, for: data)
         switch data {
@@ -59,7 +59,7 @@ final class DefaultBanksComponent: BanksComponent {
                 let error = banks.isEmpty ? PrimerValidationError.banksNotLoaded(
                     userInfo: userInfo,
                     diagnosticsId: UUID().uuidString) :
-                    PrimerValidationError.invalidBankId(
+                PrimerValidationError.invalidBankId(
                     bankId: bankId,
                     userInfo: userInfo,
                     diagnosticsId: UUID().uuidString)
@@ -100,7 +100,7 @@ final class DefaultBanksComponent: BanksComponent {
                 ErrorHandler.handle(error: error)
             }
     }
-    
+
     public func submit() {
         trackSubmit()
         switch nextDataStep {
@@ -112,9 +112,9 @@ final class DefaultBanksComponent: BanksComponent {
             tokenizationProvingModel.tokenize(bankId: bankId)
                 .done { _ in
                     redirectComponent.didReceiveStep(step: WebStep.loaded)
-            }.catch { error in
-                ErrorHandler.handle(error: error)
-            }
+                }.catch { error in
+                    ErrorHandler.handle(error: error)
+                }
         }
     }
 }
@@ -135,7 +135,7 @@ private extension DefaultBanksComponent {
         if let additionalParams {
             params.merge(additionalParams) { (_, new) in new }
         }
-        
+
         let sdkEvent = Analytics.Event.sdk(name: event.rawValue, params: params)
         Analytics.Service.record(events: [sdkEvent])
     }

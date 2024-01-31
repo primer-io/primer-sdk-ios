@@ -57,9 +57,9 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             guard let self = self else { return }
             self.cleanup()
         }
-        
+
         setup()
-        
+
         super.start()
     }
 

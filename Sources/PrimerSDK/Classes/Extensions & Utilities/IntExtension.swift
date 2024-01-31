@@ -33,7 +33,7 @@ internal extension Int {
         if let symbol = currency.symbol {
             return "\(symbol)\(formattedValue)"
         } else {
-            return "\(currency.rawValue) \(formattedValue)"
+            return "\(currency.code) \(formattedValue)"
         }
     }
 }

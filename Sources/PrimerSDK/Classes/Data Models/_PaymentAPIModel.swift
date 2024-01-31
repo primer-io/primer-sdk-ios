@@ -47,7 +47,7 @@ extension PrimerClientSession {
 
         self.init(customerId: apiConfiguration.clientSession?.customer?.id,
                   orderId: apiConfiguration.clientSession?.order?.id,
-                  currencyCode: apiConfiguration.clientSession?.order?.currencyCode?.rawValue,
+                  currencyCode: apiConfiguration.clientSession?.order?.currencyCode?.code,
                   totalAmount: apiConfiguration.clientSession?.order?.totalOrderAmount,
                   lineItems: lineItems,
                   orderDetails: orderDetails,
