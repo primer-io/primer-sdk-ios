@@ -62,6 +62,8 @@ extension Request.Body.Klarna {
         let totalAmount: Int?
         let orderItems: [OrderItem]?
         let attachment: Attachment?
+        let billingAddress: Response.Body.Klarna.BillingAddress?
+        let shippingAddress: Response.Body.Klarna.BillingAddress?
     }
     
     struct FinalizePaymentSession: Codable {

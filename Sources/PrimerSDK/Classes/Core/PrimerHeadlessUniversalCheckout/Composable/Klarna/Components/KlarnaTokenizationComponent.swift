@@ -115,8 +115,9 @@ extension KlarnaTokenizationComponent {
             redirectUrl: settings.paymentMethodOptions.urlScheme,
             totalAmount: nil,
             orderItems: nil,
-            attachment: attachment
-        )
+            attachment: attachment,
+            billingAddress: nil,
+            shippingAddress: nil)
         
         self.apiClient.createKlarnaPaymentSession(
             clientToken: decodedJWTToken,

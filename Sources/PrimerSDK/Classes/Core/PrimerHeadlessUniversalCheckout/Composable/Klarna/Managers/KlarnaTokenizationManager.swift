@@ -51,7 +51,7 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
             klarnaCustomerToken: klarnaCustomerToken,
             sessionData: sessionData
         )
-
+        
         let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
 
         self.tokenizationService.tokenize(requestBody: requestBody) { (result) in
