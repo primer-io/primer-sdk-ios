@@ -320,7 +320,7 @@ public class ThreeDS {
             case token
             case resumeToken
         }
-        
+
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             if let declinedResponse = try? container.decode(ThreeDS.DeclinedAPIResponse.self,
@@ -354,7 +354,7 @@ public class ThreeDS {
                 ErrorHandler.handle(error: err)
                 throw err
             }
-            
+
             resumeToken = try container.decode(String.self, forKey: .resumeToken)
             token = try container.decode(PrimerPaymentMethodTokenData.self, forKey: .token)
         }

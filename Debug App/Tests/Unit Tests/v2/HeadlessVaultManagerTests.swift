@@ -27,7 +27,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
                 totalOrderAmount: 100,
                 totalTaxAmount: nil,
                 countryCode: .gb,
-                currencyCode: .GBP,
+                currencyCode: CurrencyLoader().getCurrency("GBP"),
                 fees: nil,
                 lineItems: [
                     ClientSession.Order.LineItem(
@@ -43,11 +43,12 @@ final class HeadlessVaultManagerTests: XCTestCase {
                 shippingAmount: nil),
             customer: ClientSession.Customer(id: "testid"),
             testId: nil)
-                
+        
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
             binDataUrl: "https://primer.io/bindata",
+            assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: clientSession,
             paymentMethods: [
                 PrimerPaymentMethod(
@@ -128,7 +129,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
                 
                 exp.fulfill()
             }
-
+            
         }
         
         wait(for: [exp], timeout: 30)
@@ -140,7 +141,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
         XCTAssert(availableVaultedPaymentMethods.first(where: { $0.paymentMethodType == "PAYPAL" }) != nil, "Primer Headless Universal Checkout should not include ADYEN_DOTPAY in its available payment methods")
         XCTAssert(apiConfiguration?.clientSession?.clientSessionId == clientSession.clientSessionId, "Primer configuration's client session's id should be \(clientSession.clientSessionId ?? "nil")")
         XCTAssert(apiConfiguration?.clientSession?.order != nil, "Primer configuration's client session's order should not be null")
-        XCTAssert(apiConfiguration?.clientSession?.order?.currencyCode == clientSession.order?.currencyCode, "Primer configuration's client session's order currency should be \(clientSession.order?.currencyCode?.rawValue ?? "nil")")
+        XCTAssert(apiConfiguration?.clientSession?.order?.currencyCode == clientSession.order?.currencyCode, "Primer configuration's client session's order currency should be \(clientSession.order?.currencyCode?.code ?? "nil")")
         XCTAssert(apiConfiguration?.clientSession?.order?.lineItems?.count == clientSession.order?.lineItems?.count, "Primer configuration's client session's order's line items should include \(clientSession.order?.lineItems?.count ?? 0) item(s)")
         XCTAssert(apiConfiguration?.clientSession?.customer != nil, "Primer configuration's client session's customer should not be be nil")
     }
@@ -161,7 +162,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
                 totalOrderAmount: 100,
                 totalTaxAmount: nil,
                 countryCode: .gb,
-                currencyCode: .GBP,
+                currencyCode: CurrencyLoader().getCurrency("GBP"),
                 fees: nil,
                 lineItems: [
                     ClientSession.Order.LineItem(
@@ -177,11 +178,12 @@ final class HeadlessVaultManagerTests: XCTestCase {
                 shippingAmount: nil),
             customer: nil,
             testId: nil)
-                
+        
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
             binDataUrl: "https://primer.io/bindata",
+            assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: clientSession,
             paymentMethods: [],
             primerAccountId: "mock-primer-account-id",
@@ -206,7 +208,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
         }
         
         wait(for: [exp], timeout: 30)
-
+        
         let apiConfiguration = AppState.current.apiConfiguration
         XCTAssert(apiConfiguration?.clientSession?.customer?.id == nil, "Primer configuration's client session's customer should be be nil")
     }
@@ -227,7 +229,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
                 totalOrderAmount: 100,
                 totalTaxAmount: nil,
                 countryCode: .gb,
-                currencyCode: .GBP,
+                currencyCode: CurrencyLoader().getCurrency("GBP"),
                 fees: nil,
                 lineItems: [
                     ClientSession.Order.LineItem(
@@ -243,11 +245,12 @@ final class HeadlessVaultManagerTests: XCTestCase {
                 shippingAmount: nil),
             customer: ClientSession.Customer(id: "testid"),
             testId: nil)
-                
+        
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
             binDataUrl: "https://primer.io/bindata",
+            assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: clientSession,
             paymentMethods: [
                 PrimerPaymentMethod(

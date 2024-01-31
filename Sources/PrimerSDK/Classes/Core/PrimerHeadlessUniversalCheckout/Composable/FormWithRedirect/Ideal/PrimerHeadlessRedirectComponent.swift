@@ -9,7 +9,7 @@ import Foundation
 protocol PrimerHeadlessRedirectComponent: PrimerHeadlessStartable {}
 final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
     let paymentMethodType: PrimerPaymentMethodType
-    
+
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
     private var tokenizationModelDelegate: WebRedirectTokenizationDelegate
     private(set) var step: WebStep = .loading

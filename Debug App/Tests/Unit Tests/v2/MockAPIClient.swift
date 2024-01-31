@@ -80,7 +80,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-
+    
     func fetchVaultedPaymentMethods(
         clientToken: DecodedJWTToken,
         completion: @escaping (_ result: Result<Response.Body.VaultedPaymentMethods, Error>) -> Void
@@ -387,7 +387,8 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func listRetailOutlets(
         clientToken: PrimerSDK.DecodedJWTToken,
         paymentMethodId: String,
-        completion: @escaping (Result<PrimerSDK.RetailOutletsList, Error>) -> Void) {
+        completion: @escaping (Result<PrimerSDK.RetailOutletsList, Error>) -> Void
+    ) {
         guard let result = listRetailOutletsResult,
               result.0 != nil || result.1 != nil
         else {
@@ -407,7 +408,8 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func poll(
         clientToken: DecodedJWTToken?,
         url: String,
-        completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void) {
+        completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void
+    ) {
         guard let pollingResults = pollingResults,
               !pollingResults.isEmpty
         else {
@@ -442,7 +444,8 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func requestPrimerConfigurationWithActions(
         clientToken: DecodedJWTToken,
         request: ClientSessionUpdateRequest,
-        completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void) {
+        completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void
+    ) {
         guard let result = fetchConfigurationWithActionsResult,
               result.0 != nil || result.1 != nil
         else {
@@ -459,7 +462,12 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
     
-    func sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: [Analytics.Event]?, completion: @escaping (Result<Analytics.Service.Response, Error>) -> Void) {
+    func sendAnalyticsEvents(
+        clientToken: DecodedJWTToken?,
+        url: URL,
+        body: [Analytics.Event]?,
+        completion: @escaping (Result<Analytics.Service.Response, Error>) -> Void
+    ) {
         guard let result = sendAnalyticsEventsResult,
               result.0 != nil || result.1 != nil
         else {
@@ -479,7 +487,8 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func fetchPayPalExternalPayerInfo(
         clientToken: DecodedJWTToken,
         payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo,
-        completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void) {
+        completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void
+    ) {
         guard let result = fetchPayPalExternalPayerInfoResult,
               result.0 != nil || result.1 != nil
         else {
@@ -534,7 +543,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-        
+    
     func testFinalizePolling(clientToken: PrimerSDK.DecodedJWTToken, testId: String, completion: @escaping (Result<Void, Error>) -> Void) {
         guard let result = testFinalizePollingResult,
               result.0 != nil || result.1 != nil
@@ -586,7 +595,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-
+    
     func genericAPICall(clientToken: PrimerSDK.DecodedJWTToken, url: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
         Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
             DispatchQueue.main.async {
@@ -598,7 +607,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func getPhoneMetadata(clientToken: PrimerSDK.DecodedJWTToken, paymentRequestBody: PrimerSDK.Request.Body.PhoneMetadata.PhoneMetadataDataRequest, completion: @escaping (Result<PrimerSDK.Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>) -> Void) {
         completion(.success(phoneMetadataResult))
     }
-
+    
     func mockSuccessfulResponses() {
         self.validateClientTokenResult                  = (MockPrimerAPIClient.Samples.mockValidateClientToken, nil)
         self.fetchConfigurationResult                   = (MockPrimerAPIClient.Samples.mockPrimerAPIConfiguration, nil)
@@ -634,6 +643,7 @@ extension MockPrimerAPIClient {
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
             binDataUrl: "https://primer.io/bindata",
+            assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: ClientSession.APIResponse(
                 clientSessionId: "mock-client-session-id-1",
                 paymentMethod: ClientSession.PaymentMethod(
@@ -647,7 +657,7 @@ extension MockPrimerAPIClient {
                     totalOrderAmount: 100,
                     totalTaxAmount: nil,
                     countryCode: .gb,
-                    currencyCode: .GBP,
+                    currencyCode: CurrencyLoader().getCurrency("GBP"),
                     fees: nil,
                     lineItems: [
                         ClientSession.Order.LineItem(
@@ -899,6 +909,6 @@ extension MockPrimerAPIClient {
             paymentFailureReason: nil)
         
         static let mockFetchNolSdkSecret = Response.Body.NolPay.NolPaySecretDataResponse(sdkSecret: "")
-
+        
     }
 }

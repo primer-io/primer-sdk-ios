@@ -63,6 +63,7 @@ class IPay88Tests: XCTestCase {
             coreUrl: decodedClientToken.coreUrl,
             pciUrl: decodedClientToken.pciUrl,
             binDataUrl: "https://primer.io/bindata",
+            assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: ClientSession.APIResponse(
                 clientSessionId: "client-session-id",
                 paymentMethod: nil,
@@ -72,7 +73,7 @@ class IPay88Tests: XCTestCase {
                     totalOrderAmount: 100,
                     totalTaxAmount: nil,
                     countryCode: .my,
-                    currencyCode: .MYR,
+                    currencyCode: CurrencyLoader().getCurrency("MYR"),
                     fees: nil,
                     lineItems: [
                         ClientSession.Order.LineItem(
@@ -98,7 +99,7 @@ class IPay88Tests: XCTestCase {
                 ),
                 testId: nil),
             paymentMethods: [
-
+                
             ],
             primerAccountId: "primer-account-id",
             keys: nil,
@@ -117,6 +118,7 @@ class IPay88Tests: XCTestCase {
             coreUrl: decodedClientToken.coreUrl,
             pciUrl: decodedClientToken.pciUrl,
             binDataUrl: "https://primer.io/bindata",
+            assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: ClientSession.APIResponse(
                 clientSessionId: "client-session-id",
                 paymentMethod: nil,
@@ -124,18 +126,18 @@ class IPay88Tests: XCTestCase {
                 customer: nil,
                 testId: nil),
             paymentMethods: [
-
+                
             ],
             primerAccountId: "primer-account-id",
             keys: nil,
             checkoutModules: nil)
-                
+        
         do {
             try iPay88TokenizationViewModel.validate()
             XCTAssert(false, "[Customer data missing] Should have failed the validation")
         } catch {
             if let primerErr = error as? PrimerError,
-                case .underlyingErrors(let errors, _, _) = primerErr {
+               case .underlyingErrors(let errors, _, _) = primerErr {
                 let primerErrors = errors.compactMap({ $0 as? PrimerError })
                 let amountError = primerErrors.first(where: { $0.localizedDescription.contains("Invalid client session value") && $0.localizedDescription.contains("amount") })
                 let lineItemsError = primerErrors.first(where: { $0.localizedDescription.contains("Invalid client session value") && $0.localizedDescription.contains("order.lineItems") })
@@ -149,7 +151,7 @@ class IPay88Tests: XCTestCase {
                 XCTAssert(firstNameError != nil, "Should have received a firstName error")
                 XCTAssert(lastNameError != nil, "Should have received a lastName error")
                 XCTAssert(emailError != nil, "Should have received an email error")
-
+                
             } else {
                 XCTAssert(false, "[Customer data missing] Should have thrown .underlying errors")
             }

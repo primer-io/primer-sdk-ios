@@ -51,7 +51,7 @@ class RawDataManagerTests: XCTestCase {
                 totalOrderAmount: 100,
                 totalTaxAmount: nil,
                 countryCode: .gb,
-                currencyCode: .GBP,
+                currencyCode: CurrencyLoader().getCurrency("GBP"),
                 fees: nil,
                 lineItems: [
                     ClientSession.Order.LineItem(
@@ -72,6 +72,7 @@ class RawDataManagerTests: XCTestCase {
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
             binDataUrl: "https://primer.io/bindata",
+            assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: clientSession,
             paymentMethods: [
                 PrimerPaymentMethod(
