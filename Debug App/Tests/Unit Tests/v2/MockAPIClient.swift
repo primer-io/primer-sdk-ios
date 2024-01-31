@@ -387,7 +387,8 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func listRetailOutlets(
         clientToken: PrimerSDK.DecodedJWTToken,
         paymentMethodId: String,
-        completion: @escaping (Result<PrimerSDK.RetailOutletsList, Error>) -> Void) {
+        completion: @escaping (Result<PrimerSDK.RetailOutletsList, Error>) -> Void
+    ) {
         guard let result = listRetailOutletsResult,
               result.0 != nil || result.1 != nil
         else {
@@ -402,11 +403,13 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
                 completion(.success(successResult))
             }
         }
+    }
     
     func poll(
         clientToken: DecodedJWTToken?,
         url: String,
-        completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void) {
+        completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void
+    ) {
         guard let pollingResults = pollingResults,
               !pollingResults.isEmpty
         else {
@@ -436,11 +439,13 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
                 }
             }
         }
+    }
     
     func requestPrimerConfigurationWithActions(
         clientToken: DecodedJWTToken,
         request: ClientSessionUpdateRequest,
-        completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void) {
+        completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void
+    ) {
         guard let result = fetchConfigurationWithActionsResult,
               result.0 != nil || result.1 != nil
         else {
@@ -455,8 +460,14 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
                 completion(.success(successResult))
             }
         }
+    }
     
-    func sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: [Analytics.Event]?, completion: @escaping (Result<Analytics.Service.Response, Error>) -> Void) {
+    func sendAnalyticsEvents(
+        clientToken: DecodedJWTToken?,
+        url: URL,
+        body: [Analytics.Event]?,
+        completion: @escaping (Result<Analytics.Service.Response, Error>) -> Void
+    ) {
         guard let result = sendAnalyticsEventsResult,
               result.0 != nil || result.1 != nil
         else {
@@ -476,7 +487,8 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func fetchPayPalExternalPayerInfo(
         clientToken: DecodedJWTToken,
         payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo,
-        completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void) {
+        completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void
+    ) {
         guard let result = fetchPayPalExternalPayerInfoResult,
               result.0 != nil || result.1 != nil
         else {
@@ -491,6 +503,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
                 completion(.success(successResult))
             }
         }
+    }
     
     // Payment
     func createPayment(
