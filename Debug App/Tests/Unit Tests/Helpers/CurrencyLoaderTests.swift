@@ -41,6 +41,7 @@ class CurrencyLoaderTests: XCTestCase {
                                                 testId: nil)
         let apiConfig = PrimerAPIConfiguration(coreUrl: "core_url",
                                                pciUrl: "pci_url",
+                                               binDataUrl: "bin_data_url",
                                                assetsUrl: "https://assets.staging.core.primer.io",
                                                clientSession: session,
                                                paymentMethods: paymentMethods,
