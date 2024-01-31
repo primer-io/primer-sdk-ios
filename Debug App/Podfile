@@ -8,7 +8,7 @@ target 'Debug App' do
   
   # Pods for Debug App
   pod 'PrimerSDK', :path => '../'
-  pod 'Primer3DS'
+  pod 'Primer3DS', :git => 'https://github.com/primer-io/primer-sdk-3ds-ios', :branch => 'nq/update_3ds_2_4_1'
   pod 'PrimerKlarnaSDK'
   pod 'PrimerIPay88MYSDK'
   pod 'PrimerNolPaySDK'
