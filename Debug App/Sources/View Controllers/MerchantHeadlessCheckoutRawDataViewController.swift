@@ -302,7 +302,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
         DispatchQueue.main.async {
             self.cardsStackView.removeAllArrangedSubviews()
             
-            metadata.selectableCardNetworks?.items.enumerated().forEach { (index, detectedNetwork) in
+            (metadata.selectableCardNetworks ?? metadata.detectedCardNetworks).items.enumerated().forEach { (index, detectedNetwork) in
                 let image = PrimerHeadlessUniversalCheckout.AssetsManager.getCardNetworkAsset(for: detectedNetwork.network)
                 let imageView = UIImageView(image: image?.cardImage)
                 imageView.isUserInteractionEnabled = true
@@ -334,8 +334,6 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
             self.cardsStackView.addArrangedSubview(emptyView)
             
             self.updateCardImages()
-
-            self.view.layoutIfNeeded()
 
             self.rawCardData.cardNetwork = metadata.detectedCardNetworks.preferred?.network
         }
