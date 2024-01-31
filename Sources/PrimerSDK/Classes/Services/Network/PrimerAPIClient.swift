@@ -128,12 +128,6 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPICli
         testId: String,
         completion: @escaping (_ result: Result<Void, Error>) -> Void)
     
-    // BIN Data
-    func listCardNetworks(
-        clientToken: DecodedJWTToken,
-        bin: String,
-        completion: @escaping (_ result: Result<Response.Body.Bin.Networks, Error>) -> Void) -> PrimerCancellable?
-        
     // NolPay
     func fetchNolSdkSecret(clientToken: DecodedJWTToken,
                            paymentRequestBody: Request.Body.NolPay.NolPaySecretDataRequest,
@@ -635,11 +629,5 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
                 completion(.failure(err))
             }
         }
-    }
-}
-
-extension URLSessionDataTask: Cancellable {
-    var isCancelled: Bool {
-        return [.canceling, .completed].contains(state)
     }
 }
