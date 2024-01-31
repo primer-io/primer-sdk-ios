@@ -11,6 +11,8 @@ typealias AdyenBank = Response.Body.Adyen.Bank
 
 extension Request.Body {
     class Adyen {}
+    
+    
 }
 
 extension Response.Body {
@@ -29,6 +31,10 @@ extension Request.Body.Adyen {
 
 internal struct BankTokenizationSessionRequestParameters: Encodable {
     let paymentMethod: String
+    
+    
+    let a = ""
+
 }
 
 extension Response.Body.Adyen {
