@@ -436,7 +436,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
               let primerTransactionId = decodedJWTToken.primerTransactionId,
               let iPay88PaymentMethodId = decodedJWTToken.iPay88PaymentMethodId,
               let supportedCurrency = decodedJWTToken.supportedCurrencyCode,
-              supportedCurrency.uppercased() == PrimerAPIConfiguration.current?.clientSession?.order?.currencyCode?.rawValue.uppercased(),
+              supportedCurrency.uppercased() == PrimerAPIConfiguration.current?.clientSession?.order?.currencyCode?.code.uppercased(),
               let supportedCountry = decodedJWTToken.supportedCountry,
               supportedCountry.uppercased() == PrimerAPIConfiguration.current?.clientSession?.order?.countryCode?.rawValue.uppercased()
         else {

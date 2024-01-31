@@ -92,11 +92,11 @@ extension Analytics {
             Promise { seal in
                 let events = storage.loadEvents()
                 sync(events: events, isFlush: true)
-                .done {
-                    seal.fulfill()
-                }.catch { error in
-                    seal.reject(error)
-                }
+                    .done {
+                        seal.fulfill()
+                    }.catch { error in
+                        seal.reject(error)
+                    }
             }
         }
 
@@ -134,9 +134,9 @@ extension Analytics {
                             let remainingEvents = self.storage.loadEvents()
                             self.logger.debug(message: "📚 Analytics: \(syncType.capitalized) completed. \(remainingEvents.count) events remain")
                             self.isSyncing = false
-                            
+
                             seal.fulfill()
-                            
+
                             if remainingEvents.count >= self.batchSize {
                                 self.sync(events: remainingEvents)
                             }
@@ -213,7 +213,7 @@ extension Analytics {
             }
 
             if url.absoluteString != self.sdkLogsUrl.absoluteString,
-                PrimerAPIConfigurationModule.clientToken?.decodedJWTToken == nil {
+               PrimerAPIConfigurationModule.clientToken?.decodedJWTToken == nil {
                 // Sync another time
                 completion(nil)
                 return

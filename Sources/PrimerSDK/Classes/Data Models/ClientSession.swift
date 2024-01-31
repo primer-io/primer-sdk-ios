@@ -181,15 +181,20 @@ internal class ClientSession {
         internal init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             id = (try? container.decode(String?.self, forKey: .id)) ?? nil
-            merchantAmount = (try? container.decode(Int?.self, forKey: .merchantAmount)) ?? nil
-            totalOrderAmount = (try? container.decode(Int?.self, forKey: .totalOrderAmount)) ?? nil
-            totalTaxAmount = (try? container.decode(Int?.self, forKey: .totalTaxAmount)) ?? nil
-            countryCode = (try? container.decode(CountryCode?.self, forKey: .countryCode)) ?? nil
-            currencyCode = (try? container.decode(Currency?.self, forKey: .currencyCode)) ?? nil
-            fees = (try? container.decode([ClientSession.Order.Fee]?.self, forKey: .fees)) ?? nil
-            lineItems = (try? container.decode([ClientSession.Order.LineItem]?.self, forKey: .lineItems)) ?? nil
-            shippingAmount = (try? container.decode(Int?.self, forKey: .shippingAmount)) ?? nil
-        }
+			merchantAmount = (try? container.decode(Int?.self, forKey: .merchantAmount)) ?? nil
+			totalOrderAmount = (try? container.decode(Int?.self, forKey: .totalOrderAmount)) ?? nil
+			totalTaxAmount = (try? container.decode(Int?.self, forKey: .totalTaxAmount)) ?? nil
+			countryCode = (try? container.decode(CountryCode?.self, forKey: .countryCode)) ?? nil
+			if let cCode = try? container.decode(String.self, forKey: .currencyCode) {
+                let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(), networkService: CurrencyNetworkService())
+                currencyCode = currencyLoader.getCurrency(cCode)
+			} else {
+				currencyCode = nil
+			}
+			fees = (try? container.decode([ClientSession.Order.Fee]?.self, forKey: .fees)) ?? nil
+			lineItems = (try? container.decode([ClientSession.Order.LineItem]?.self, forKey: .lineItems)) ?? nil
+			shippingAmount = (try? container.decode(Int?.self, forKey: .shippingAmount)) ?? nil
+		}
 
         internal func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)

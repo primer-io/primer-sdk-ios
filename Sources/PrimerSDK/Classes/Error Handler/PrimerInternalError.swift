@@ -190,7 +190,7 @@ internal enum InternalError: PrimerErrorProtocol {
     }
 
     var analyticsContext: [String: Any] {
-        var context: [String: Any] = [:]
+        var context: [String: Any] = [: ]
         context[AnalyticsContextKeys.errorId] = errorId
         return context
     }

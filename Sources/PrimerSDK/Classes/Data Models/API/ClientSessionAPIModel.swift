@@ -32,7 +32,7 @@ extension Request.Body {
             }
 
             if let currencyCode = currencyCode {
-                dic["currencyCode"] = currencyCode.rawValue
+                dic["currencyCode"] = currencyCode.code
             }
 
             if let amount = amount {

@@ -410,10 +410,10 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     return
                 }
 
-                //                This is not being used?
-                //                orderItems = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.lineItems?.compactMap({ try? $0.toOrderItem() })
-                //
-                self.logger.info(message: "Klarna amount: \(amount!) \(AppState.current.currency!.rawValue)")
+//                This is not being used?
+//                orderItems = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.lineItems?.compactMap({ try? $0.toOrderItem() })
+//
+                self.logger.info(message: "Klarna amount: \(amount!) \(AppState.current.currency!.code)")
 
             } else if case .recurringPayment = klarnaSessionType {
                 // Do not send amount for recurring payments, even if it's set

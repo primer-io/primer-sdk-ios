@@ -9,11 +9,12 @@ import XCTest
 @testable import PrimerSDK
 
 class PaymentMethodConfigServiceTests: XCTestCase {
-
+    
     func test_fetchConfig_updates_paymentMethodConfig_and_viewModels() throws {
         let config = PrimerAPIConfiguration(
             coreUrl: "coreUrl",
             pciUrl: "pciUrl",
+            assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: nil,
             paymentMethods: [
                 PrimerPaymentMethod(
@@ -30,13 +31,13 @@ class PaymentMethodConfigServiceTests: XCTestCase {
             keys: nil,
             checkoutModules: nil
         )
-
+        
         let state = MockAppState(apiConfiguration: config)
-
+        
         MockLocator.registerDependencies()
         DependencyContainer.register(state as AppStateProtocol)
         Primer.shared.showUniversalCheckout(clientToken: "")
-
+        
         XCTAssertEqual(state.apiConfiguration?.coreUrl, "coreUrl")
     }
 }

@@ -79,7 +79,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-
+    
     func fetchVaultedPaymentMethods(
         clientToken: DecodedJWTToken,
         completion: @escaping (_ result: Result<Response.Body.VaultedPaymentMethods, Error>) -> Void
@@ -393,82 +393,82 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: PrimerSDK.DecodedJWTToken,
         paymentMethodId: String,
         completion: @escaping (Result<PrimerSDK.RetailOutletsList, Error>) -> Void) {
-        guard let result = listRetailOutletsResult,
-              result.0 != nil || result.1 != nil
-        else {
-            XCTAssert(false, "Set 'listRetailOutletsResult' on your MockPrimerAPIClient")
-            return
-        }
-        
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
-            DispatchQueue.main.async {
-                if let err = result.1 {
-                    completion(.failure(err))
-                } else if let successResult = result.0 {
-                    completion(.success(successResult))
+            guard let result = listRetailOutletsResult,
+                  result.0 != nil || result.1 != nil
+            else {
+                XCTAssert(false, "Set 'listRetailOutletsResult' on your MockPrimerAPIClient")
+                return
+            }
+            
+            Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+                DispatchQueue.main.async {
+                    if let err = result.1 {
+                        completion(.failure(err))
+                    } else if let successResult = result.0 {
+                        completion(.success(successResult))
+                    }
                 }
             }
         }
-    }
     
     func poll(
         clientToken: DecodedJWTToken?,
         url: String,
         completion: @escaping (_ result: Result<PollingResponse, Error>) -> Void) {
-        guard let pollingResults = pollingResults,
-              !pollingResults.isEmpty
-        else {
-            XCTAssert(false, "Set 'pollingResults' on your MockPrimerAPIClient")
-            return
-        }
-        
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
-            DispatchQueue.main.async {
-                let pollingResult = pollingResults[self.currentPollingIteration]
-                self.currentPollingIteration += 1
-                
-                if pollingResult.0 == nil && pollingResult.1 == nil {
-                    XCTAssert(false, "Each 'pollingResult' must have a response or an error.")
-                }
-                
-                if let err = pollingResult.1 {
-                    if self.currentPollingIteration == pollingResults.count {
-                        XCTAssert(false, "Polling finished with error")
-                    } else {
-                        self.poll(clientToken: clientToken, url: url, completion: completion)
+            guard let pollingResults = pollingResults,
+                  !pollingResults.isEmpty
+            else {
+                XCTAssert(false, "Set 'pollingResults' on your MockPrimerAPIClient")
+                return
+            }
+            
+            Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+                DispatchQueue.main.async {
+                    let pollingResult = pollingResults[self.currentPollingIteration]
+                    self.currentPollingIteration += 1
+                    
+                    if pollingResult.0 == nil && pollingResult.1 == nil {
+                        XCTAssert(false, "Each 'pollingResult' must have a response or an error.")
                     }
-                } else if let res = pollingResult.0 {
-                    if res.status == .complete {
-                        completion(.success(res))
-                    } else {
-                        self.poll(clientToken: clientToken, url: url, completion: completion)
+                    
+                    if let err = pollingResult.1 {
+                        if self.currentPollingIteration == pollingResults.count {
+                            XCTAssert(false, "Polling finished with error")
+                        } else {
+                            self.poll(clientToken: clientToken, url: url, completion: completion)
+                        }
+                    } else if let res = pollingResult.0 {
+                        if res.status == .complete {
+                            completion(.success(res))
+                        } else {
+                            self.poll(clientToken: clientToken, url: url, completion: completion)
+                        }
                     }
                 }
             }
         }
-    }
     
     func requestPrimerConfigurationWithActions(
         clientToken: DecodedJWTToken,
         request: ClientSessionUpdateRequest,
         completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void) {
-        guard let result = fetchConfigurationWithActionsResult,
-              result.0 != nil || result.1 != nil
-        else {
-            XCTAssert(false, "Set 'fetchConfigurationWithActionsResult' on your MockPrimerAPIClient")
-            return
-        }
-        
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
-            DispatchQueue.main.async {
-                if let err = result.1 {
-                    completion(.failure(err))
-                } else if let successResult = result.0 {
-                    completion(.success(successResult))
+            guard let result = fetchConfigurationWithActionsResult,
+                  result.0 != nil || result.1 != nil
+            else {
+                XCTAssert(false, "Set 'fetchConfigurationWithActionsResult' on your MockPrimerAPIClient")
+                return
+            }
+            
+            Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+                DispatchQueue.main.async {
+                    if let err = result.1 {
+                        completion(.failure(err))
+                    } else if let successResult = result.0 {
+                        completion(.success(successResult))
+                    }
                 }
             }
         }
-    }
     
     func sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: [Analytics.Event]?, completion: @escaping (Result<Analytics.Service.Response, Error>) -> Void) {
         guard let result = sendAnalyticsEventsResult,
@@ -491,23 +491,23 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo,
         completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void) {
-        guard let result = fetchPayPalExternalPayerInfoResult,
-              result.0 != nil || result.1 != nil
-        else {
-            XCTAssert(false, "Set 'fetchPayPalExternalPayerInfoResult' on your MockPrimerAPIClient")
-            return
-        }
-        
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
-            DispatchQueue.main.async {
-                if let err = result.1 {
-                    completion(.failure(err))
-                } else if let successResult = result.0 {
-                    completion(.success(successResult))
+            guard let result = fetchPayPalExternalPayerInfoResult,
+                  result.0 != nil || result.1 != nil
+            else {
+                XCTAssert(false, "Set 'fetchPayPalExternalPayerInfoResult' on your MockPrimerAPIClient")
+                return
+            }
+            
+            Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+                DispatchQueue.main.async {
+                    if let err = result.1 {
+                        completion(.failure(err))
+                    } else if let successResult = result.0 {
+                        completion(.success(successResult))
+                    }
                 }
             }
         }
-    }
     
     // Payment
     func createPayment(
@@ -551,7 +551,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-        
+    
     func testFinalizePolling(clientToken: PrimerSDK.DecodedJWTToken, testId: String, completion: @escaping (Result<Void, Error>) -> Void) {
         guard let result = testFinalizePollingResult,
               result.0 != nil || result.1 != nil
@@ -588,7 +588,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-
+    
     func genericAPICall(clientToken: PrimerSDK.DecodedJWTToken, url: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
         Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
             DispatchQueue.main.async {
@@ -600,7 +600,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func getPhoneMetadata(clientToken: PrimerSDK.DecodedJWTToken, paymentRequestBody: PrimerSDK.Request.Body.PhoneMetadata.PhoneMetadataDataRequest, completion: @escaping (Result<PrimerSDK.Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>) -> Void) {
         completion(.success(phoneMetadataResult))
     }
-
+    
     func mockSuccessfulResponses() {
         self.validateClientTokenResult                  = (MockPrimerAPIClient.Samples.mockValidateClientToken, nil)
         self.fetchConfigurationResult                   = (MockPrimerAPIClient.Samples.mockPrimerAPIConfiguration, nil)
@@ -634,7 +634,8 @@ extension MockPrimerAPIClient {
         static let mockValidateClientToken: SuccessResponse = SuccessResponse(success: true)
         static let mockPrimerAPIConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
-            pciUrl: "https://primer.io/pci",
+            pciUrl: "https://primer.io/pci", 
+            assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: ClientSession.APIResponse(
                 clientSessionId: "mock-client-session-id-1",
                 paymentMethod: ClientSession.PaymentMethod(
@@ -646,7 +647,7 @@ extension MockPrimerAPIClient {
                     totalOrderAmount: 100,
                     totalTaxAmount: nil,
                     countryCode: .gb,
-                    currencyCode: .GBP,
+                    currencyCode: CurrencyLoader().getCurrency("GBP"),
                     fees: nil,
                     lineItems: [
                         ClientSession.Order.LineItem(
@@ -898,6 +899,6 @@ extension MockPrimerAPIClient {
             paymentFailureReason: nil)
         
         static let mockFetchNolSdkSecret = Response.Body.NolPay.NolPaySecretDataResponse(sdkSecret: "")
-
+        
     }
 }
