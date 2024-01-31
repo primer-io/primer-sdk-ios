@@ -100,6 +100,13 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
         customerAccountLastModifiedTextField.inputAccessoryView = toolBar
     }
     
+    func setupCustomerDetails(visible: Bool) {
+        customerInfoContainerView.isHidden = !visible
+        finalizationLabel.isHidden = !visible
+        finalizationSwitch.isHidden = !visible
+        finalizeManually = !visible
+    }
+    
     func setupLayout() {
         view.addSubview(activityIndicator)
         NSLayoutConstraint.activate([

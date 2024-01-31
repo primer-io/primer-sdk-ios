@@ -67,6 +67,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
         
         setupUI()
         setupLayout()
+        setupCustomerDetails(visible: false)
         
         klarnaManager = PrimerHeadlessUniversalCheckout.KlarnaHeadlessManager()
         klarnaManager.setDelegate(self)

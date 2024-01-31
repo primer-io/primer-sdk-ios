@@ -23,7 +23,6 @@ class KlarnaTokenizationComponent: KlarnaTokenizationManager, KlarnaTokenization
     // MARK: - Properties
     private let paymentMethod: PrimerPaymentMethod
     private let apiClient: PrimerAPIClientProtocol
-    private let tokenizationService: TokenizationServiceProtocol
     private let clientSession: ClientSession.APIResponse?
     
     private var paymentSessionId: String?
@@ -36,7 +35,6 @@ class KlarnaTokenizationComponent: KlarnaTokenizationManager, KlarnaTokenization
         self.paymentMethod = paymentMethod
         self.apiClient = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
         self.clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
-        self.tokenizationService = TokenizationService()
         
         super.init()
     }
