@@ -280,6 +280,7 @@ struct ClientSessionRequestBody {
             var quantity: Int?
             var discountAmount: Int?
             var taxAmount: Int?
+            var productType: String?
             
             var dictionaryValue: [String: Any]? {
                 var dic: [String: Any] = [:]
@@ -306,6 +307,10 @@ struct ClientSessionRequestBody {
                 
                 if let discountAmount = discountAmount {
                     dic["discountAmount"] = discountAmount
+                }
+                
+                if let productType = productType {
+                    dic["productType"] = productType
                 }
                 
                 return dic.keys.count == 0 ? nil : dic

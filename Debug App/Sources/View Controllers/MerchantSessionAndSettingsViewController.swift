@@ -131,66 +131,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     
     var selectedPaymentHandling: PrimerPaymentHandling = .auto
     
-    static let customerIdStorageKey = "io.primer.debug.customer-id"
-    
-    static var customerId: String {
-        
-        if let customerId = UserDefaults.standard.string(forKey: customerIdStorageKey) {
-            return customerId
-        }
-
-        let customerId = "ios-customer-\(String.randomString(length: 8))"
-        UserDefaults.standard.set(customerId, forKey: customerIdStorageKey)
-        return customerId
-    }
-    
-    var clientSession = ClientSessionRequestBody(
-        customerId: customerId,
-        orderId: "ios-order-\(String.randomString(length: 8))",
-        currencyCode: .EUR,
-        amount: nil,
-        metadata: nil,
-        customer: ClientSessionRequestBody.Customer(
-            firstName: "John",
-            lastName: "Smith",
-            emailAddress: "john@primer.io",
-            mobileNumber: "+4478888888888",
-            billingAddress: Address(
-                firstName: "John",
-                lastName: "Smith",
-                addressLine1: "65 York Road",
-                addressLine2: nil,
-                city: "London",
-                state: "Greater London",
-                countryCode: "GB",
-                postalCode: "NW06 4OM"),
-            shippingAddress: Address(
-                firstName: "John",
-                lastName: "Smith",
-                addressLine1: "9446 Richmond Road",
-                addressLine2: nil,
-                city: "London",
-                state: "Greater London",
-                countryCode: "GB",
-                postalCode: "EC53 8BT")
-        ),
-        order: ClientSessionRequestBody.Order(
-            countryCode: .de,
-            lineItems: [
-                ClientSessionRequestBody.Order.LineItem(
-                    itemId: "fancy-shoes-\(String.randomString(length: 4))",
-                    description: "Fancy Shoes",
-                    amount: 600,
-                    quantity: 1,
-                    discountAmount: nil,
-                    taxAmount: nil)
-            ]),
-        paymentMethod: ClientSessionRequestBody.PaymentMethod(
-            vaultOnSuccess: false,
-            options: nil,
-            paymentType: nil
-        ),
-        testParams: nil)
+    var clientSession = MerchantMockDataManager.getClientSession(sessionType: .klarna)
     
     var selectedTestScenario: Test.Scenario?
     var selectedTestFlow: Test.Flow?
@@ -609,7 +550,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     
     @objc func customerIdChanged(_ textField: UITextField!) {
         guard let text = customerIdTextField.text else { return }
-        UserDefaults.standard.set(text, forKey: Self.customerIdStorageKey)
+        UserDefaults.standard.set(text, forKey: MerchantMockDataManager.customerIdStorageKey)
     }
 }
 
