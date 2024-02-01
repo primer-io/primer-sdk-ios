@@ -123,7 +123,7 @@ jobs:
         - name: Clone and launch Browserstack tests via Appium 🧪
           run: |
              git clone -b ${{ inputs.appiumTestsBranch }} https://project_41483872_bot:$GITLAB_TEMP_PATH@gitlab.com/primer-io/dx/mobile-appium-tests.git .
-             git show-ref | grep ${{ inputs.appiumTestsBranch }}
+             git show --summary
           env:
             GITLAB_TEMP_PATH: ${{ secrets.GITLAB_APPIUM_PULL_KEY }}
 
