@@ -127,6 +127,8 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
             // Default to Checkout
             sessionIntent = .checkout
         }
+        
+        PrimerHeadlessUniversalCheckout.current.setupPaymentIntent(sessionIntent)
     }
     
     // MARK: - HELPERS
