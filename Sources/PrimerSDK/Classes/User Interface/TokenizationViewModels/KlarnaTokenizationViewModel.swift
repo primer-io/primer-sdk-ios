@@ -420,12 +420,21 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 amount = nil
             }
 
+            let clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+            
+            let countryCode = clientSession?.order?.countryCode?.rawValue ?? ""
+            let currencyCode = clientSession?.order?.currencyCode?.rawValue ?? ""
+            let localeCode = PrimerSettings.current.localeData.localeCode
+            let localeData = Request.Body.Klarna.KlarnaLocaleData(
+                countryCode: countryCode,
+                currencyCode: currencyCode,
+                localeCode: localeCode)
 
             let body = Request.Body.Klarna.CreatePaymentSession(
                 paymentMethodConfigId: configId,
                 sessionType: .recurringPayment,
-                localeData: PrimerSettings.current.localeData,
+                localeData: localeData,
                 description: PrimerSettings.current.paymentMethodOptions.klarnaOptions?.recurringPaymentDescription,
                 redirectUrl: settings.paymentMethodOptions.urlScheme,
                 totalAmount: nil,

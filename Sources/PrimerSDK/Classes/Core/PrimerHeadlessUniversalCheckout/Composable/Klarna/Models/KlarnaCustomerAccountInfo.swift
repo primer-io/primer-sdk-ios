@@ -7,6 +7,11 @@
 
 import Foundation
 
+enum AddressType {
+    case shipping
+    case billing
+}
+
 struct KlarnaCustomerAccountInfo {
     let accountUniqueId: String
     let accountRegistrationDate: Date
