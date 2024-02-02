@@ -198,7 +198,7 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertThrowsError(try "".validateExpiryDateString())
         XCTAssertThrowsError(try "01/2022".validateExpiryDateString())
         XCTAssertThrowsError(try "08/2022".validateExpiryDateString())
-        XCTAssertNoThrow(try "01/2023".validateExpiryDateString())
+        XCTAssertNoThrow(try almostOneYearAgoDateString().validateExpiryDateString())
         XCTAssertNoThrow(try "01/2028".validateExpiryDateString())
         XCTAssertNoThrow(try "02/2028".validateExpiryDateString())
         XCTAssertNoThrow(try "12/2028".validateExpiryDateString())
@@ -250,5 +250,12 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertFalse("12345".isValidOTP)
         XCTAssertFalse("1234567".isValidOTP)
         XCTAssertFalse("".isValidOTP)
+    }
+
+    private func almostOneYearAgoDateString(format: String = "MM/YY") -> String {
+        let date = Date() - 364
+        let df = DateFormatter()
+        df.dateFormat = "MM/YYYY"
+        return df.string(from: date)
     }
 }
