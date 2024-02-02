@@ -19,19 +19,45 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
     var countryCode: String?
     var phoneMetadataService: NolPayPhoneMetadataProviding?
 
-    public init() {
+    public func getLinkedCardsFor(mobileNumber: String,
+                                  completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
+
+        let dispatchGroup = DispatchGroup()
+        dispatchGroup.enter()  // Enter the dispatch group
+
+        // Start the initial setup
+        start { [weak self] result in
+            defer {
+                dispatchGroup.leave() // Leave the dispatch group when done
+            }
+
+            switch result {
+            case .success:
+                break
+            case .failure(let error):
+                self?.errorDelegate?.didReceiveError(error: error)
+                completion(.failure(error))
+                return
+            }
+        }
+
+        dispatchGroup.notify(queue: .main) { [weak self] in
+            // This block is executed once the start function is complete
+            self?.continueWithLinkedCardsFetch(mobileNumber: mobileNumber, completion: completion)
+        }
+    }
+
+    private func start(completion: @escaping (Result<Void, PrimerError>) -> Void) {
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,
               let appId = nolPaymentMethodOption.appId
         else {
             let error = PrimerError.invalidValue(key: "Nol AppID",
                                                  value: nil,
-                                                 userInfo: [
-                                                "file": #file,
-                                                "class": "\(Self.self)",
-                                                "function": #function,
-                                                "line": "\(#line)"
-                                            ],
-                                            diagnosticsId: UUID().uuidString)
+                                                 userInfo: ["file": #file,
+                                                            "class": "\(Self.self)",
+                                                            "function": #function,
+                                                            "line": "\(#line)"],
+                                                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: error)
             self.errorDelegate?.didReceiveError(error: error)
             return
@@ -67,8 +93,16 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
                         switch result {
                         case .success(let appSecret):
                             continuation.resume(returning: appSecret.sdkSecret)
+                            completion(.success(()))
                         case .failure(let error):
                             continuation.resume(throwing: error)
+                            let primerError = PrimerError.underlyingErrors(errors: [error],
+                                                                           userInfo: ["file": #file,
+                                                                                      "class": "\(Self.self)",
+                                                                                      "function": #function,
+                                                                                      "line": "\(#line)"],
+                                                                           diagnosticsId: UUID().uuidString)
+                            completion(.failure(primerError))
                         }
                     }
                 }
@@ -78,11 +112,10 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
             }
         }
         phoneMetadataService = NolPayPhoneMetadataService()
-
     }
 
-    public func getLinkedCardsFor(mobileNumber: String,
-                                  completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
+    private func continueWithLinkedCardsFetch(mobileNumber: String,
+                                              completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
 
         let sdkEvent = Analytics.Event.sdk(
             name: NolPayAnalyticsConstants.linkedCardsGetCardsMethod,
@@ -105,7 +138,7 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
             return
         }
 
-            phoneMetadataService?.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
+        phoneMetadataService?.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
             switch result {
 
             case let .success((validationStatus, countryCode, mobileNumber)):
@@ -114,26 +147,30 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
                 case .valid:
 
                     guard let parsedMobileNumber = mobileNumber else {
-                        let error = PrimerError.invalidValue(key: "mobileNumber", value: nil, userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
-                        diagnosticsId: UUID().uuidString)
+                        let error = PrimerError.invalidValue(key: "mobileNumber",
+                                                             value: nil,
+                                                             userInfo: [
+                                                                "file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)"
+                                                             ],
+                                                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: error)
                         self?.errorDelegate?.didReceiveError(error: error)
                         return
                     }
 
                     guard let countryCode = countryCode else {
-                        let error = PrimerError.invalidValue(key: "countryCode", value: nil, userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
-                        diagnosticsId: UUID().uuidString)
+                        let error = PrimerError.invalidValue(key: "countryCode",
+                                                             value: nil,
+                                                             userInfo: [
+                                                                "file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)"
+                                                             ],
+                                                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: error)
                         self?.errorDelegate?.didReceiveError(error: error)
                         return
