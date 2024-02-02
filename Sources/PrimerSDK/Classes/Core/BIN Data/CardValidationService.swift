@@ -83,8 +83,6 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         delegate?.primerRawDataManager?(rawDataManager,
                                         willFetchMetadataForState: cardState)
         
-        let rawDataManager = rawDataManager
-        
         if let cachedMetadata = metadataCache[cardState.cardNumber] {
             handle(cardMetadata: cachedMetadata, forCardState: cardState)
             return
