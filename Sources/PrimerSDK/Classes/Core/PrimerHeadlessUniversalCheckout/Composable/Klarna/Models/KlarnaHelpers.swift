@@ -7,7 +7,10 @@
 
 import Foundation
 
+// KlarnaHelpers: A utility structure to facilitate various operations related to Klarna payment sessions.
 struct KlarnaHelpers {
+    
+    /// - Returns the session type based on the current payment intent (vault or checkout).
     static func getSessionType() -> KlarnaSessionType {
         if PrimerInternal.shared.intent == .vault {
             return .recurringPayment
@@ -16,12 +19,15 @@ struct KlarnaHelpers {
         }
     }
     
+    /// - Constructs the request body for creating a Klarna customer token.
+    /// - Returns: An instance of Request.Body.Klarna.CreateCustomerToken
     static func getKlarnaCustomerTokenBody(
         with paymentMethodConfigId: String,
         sessionId: String,
         authorizationToken: String,
         recurringPaymentDescription: String?
     ) -> Request.Body.Klarna.CreateCustomerToken {
+        // Determine the session type to decide if authorizationToken, localeData and description should be included.
         let sessionType = getSessionType()
         return Request.Body.Klarna.CreateCustomerToken(
             paymentMethodConfigId: paymentMethodConfigId,
@@ -31,6 +37,8 @@ struct KlarnaHelpers {
             localeData: sessionType == .oneOffPayment ? nil : PrimerSettings.current.localeData)
     }
     
+    /// - Prepares the request body for creating a Klarna payment session.
+    /// - Returns: An instance of Request.Body.Klarna.CreatePaymentSession
     static func getKlarnaPaymentSessionBody(
         with attachment: Request.Body.Klarna.CreatePaymentSession.Attachment?,
         paymentMethodConfigId: String,
@@ -39,15 +47,17 @@ struct KlarnaHelpers {
         redirectUrl: String?) -> Request.Body.Klarna.CreatePaymentSession {
             
             let sessionType = getSessionType()
-            var description: String?
-            var totalAmount: Int?
-            var redUrl: String?
-            var orderItems: [Request.Body.Klarna.OrderItem]?
-            var billingAddress: Response.Body.Klarna.BillingAddress?
-            var shippingAddress: Response.Body.Klarna.BillingAddress?
+            let localeData = constructLocaleData(using: clientSession)
+            var orderItems: [Request.Body.Klarna.OrderItem]? = nil
+            var totalAmount: Int? = nil
+            var billingAddress: Response.Body.Klarna.BillingAddress? = nil
+            var shippingAddress: Response.Body.Klarna.BillingAddress? = nil
+            var description: String? = nil
+            var redUrl: String? = nil
             
             switch sessionType {
             case .oneOffPayment:
+                // Configure fields specific to one-off payments.
                 orderItems = clientSession?.order?.lineItems?.compactMap({ getOrderItem(from: $0) })
                 let surcharge = getSurcharge(fees: clientSession?.order?.fees)
                 orderItems = addedSurchargeItem(to: orderItems ?? [], surcharge: surcharge)
@@ -55,17 +65,10 @@ struct KlarnaHelpers {
                 billingAddress = getCustomerAddress(of: .billing, clientSession: clientSession)
                 shippingAddress = getCustomerAddress(of: .shipping, clientSession: clientSession)
             case .recurringPayment:
+                // Configure fields specific to recurring payments.
                 description = recurringPaymentDescription
                 redUrl = redirectUrl
             }
-            
-            let countryCode = clientSession?.order?.countryCode?.rawValue ?? ""
-            let currencyCode = clientSession?.order?.currencyCode?.rawValue ?? ""
-            let localeCode = PrimerSettings.current.localeData.localeCode
-            let localeData = Request.Body.Klarna.KlarnaLocaleData(
-                countryCode: countryCode,
-                currencyCode: currencyCode,
-                localeCode: localeCode)
             
             return Request.Body.Klarna.CreatePaymentSession(
                 paymentMethodConfigId: paymentMethodConfigId,
@@ -80,6 +83,7 @@ struct KlarnaHelpers {
                 shippingAddress: shippingAddress)
         }
     
+    /// - Returns a customer's address, either billing or shipping, based on the specified type.
     static func getCustomerAddress(of type: AddressType, clientSession: ClientSession.APIResponse?) -> Response.Body.Klarna.BillingAddress {
         let billingAddress = clientSession?.customer?.billingAddress
         let shippingAddress = clientSession?.customer?.shippingAddress
@@ -101,6 +105,8 @@ struct KlarnaHelpers {
             title: nil)
     }
     
+    /// - Converts a 'ClientSession.Order.LineItem' from the client session into a 'Request.Body.Klarna.OrderItem'.
+    /// - Returns: An instance of Request.Body.Klarna.OrderItem
     static func getOrderItem(from item: ClientSession.Order.LineItem) -> Request.Body.Klarna.OrderItem {
         Request.Body.Klarna.OrderItem(
             name: item.description ?? "",
@@ -112,6 +118,8 @@ struct KlarnaHelpers {
             taxAmount: item.taxAmount ?? 0)
     }
     
+    /// - Adds a surcharge item to the list of order items if applicable.
+    /// - Returns an array of Request.Body.Klarna.OrderItem
     static func addedSurchargeItem(to list: [Request.Body.Klarna.OrderItem], surcharge: Int?) -> [Request.Body.Klarna.OrderItem] {
         var orderList = list
         guard let surcharge else { return orderList }
@@ -129,9 +137,22 @@ struct KlarnaHelpers {
         return orderList
     }
     
+    /// - Returns the surcharge value from the order fees if any
     static func getSurcharge(fees: [ClientSession.Order.Fee]?) -> Int? {
         if let fees { return fees.first(where:{ $0.type == .surcharge })?.amount }
         return nil
+    }
+    
+    /// - Helper function to construct locale data.
+    private static func constructLocaleData(using clientSession: ClientSession.APIResponse?) -> Request.Body.Klarna.KlarnaLocaleData {
+        let countryCode = clientSession?.order?.countryCode?.rawValue ?? ""
+        let currencyCode = clientSession?.order?.currencyCode?.rawValue ?? ""
+        let localeCode = PrimerSettings.current.localeData.localeCode
+        
+        return Request.Body.Klarna.KlarnaLocaleData(
+            countryCode: countryCode,
+            currencyCode: currencyCode,
+            localeCode: localeCode)
     }
     
 }
