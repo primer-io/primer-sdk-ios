@@ -40,7 +40,6 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
 
     weak var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
 
-
     var cardValidationService: CardValidationService?
 
     var isDataValid: Bool = false

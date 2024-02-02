@@ -49,9 +49,7 @@ extension PrimerHeadlessUniversalCheckout {
 
     public class RawDataManager: NSObject, LogReporter {
         
-        public typealias Delegate = PrimerHeadlessUniversalCheckoutRawDataManagerDelegate
-        
-        public var delegate: Delegate?
+        public var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
         public private(set) var paymentMethodType: String
         public var rawData: PrimerRawData? {
             didSet {
@@ -82,7 +80,7 @@ extension PrimerHeadlessUniversalCheckout {
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
         var initializationData: PrimerInitializationData?
         
-        required public init(paymentMethodType: String, delegate: Delegate? = nil) throws {
+        required public init(paymentMethodType: String, delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? = nil) throws {
             PrimerInternal.shared.sdkIntegrationType = .headless
 
             let sdkEvent = Analytics.Event.sdk(
