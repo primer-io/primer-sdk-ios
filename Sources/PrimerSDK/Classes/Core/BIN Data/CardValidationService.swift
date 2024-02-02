@@ -18,19 +18,19 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
     
     static var apiClient: PrimerAPIClientProtocol?
 
-    var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? {
+    private var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? {
         return self.rawDataManager.delegate
     }
         
-    let apiClient: PrimerAPIClientBINDataProtocol
+    private let apiClient: PrimerAPIClientBINDataProtocol
     
-    let debouncer: Debouncer
+    private let debouncer: Debouncer
     
-    let rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager
+    private let rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager
     
-    let allowedCardNetworks: [CardNetwork]
+    private let allowedCardNetworks: [CardNetwork]
 
-    var mostRecentCardNumber: String?
+    private var mostRecentCardNumber: String?
 
     init(rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
          allowedCardNetworks: [CardNetwork] = [CardNetwork].allowedCardNetworks,
@@ -45,7 +45,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
     // MARK: Core Validation
         
     func validateCardNetworks(withCardNumber cardNumber: String) {
-        let sanitizedCardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
+        let sanitizedCardNumber = cardNumber.withoutWhiteSpace
         let cardState = PrimerCardNumberEntryState(cardNumber: sanitizedCardNumber)
                 
         // Don't validate if the BIN (first eight digits) hasn't changed
@@ -77,7 +77,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         }
     }
     
-    var metadataCache: [String: PrimerCardNumberEntryMetadata] = [:]
+    private var metadataCache: [String: PrimerCardNumberEntryMetadata] = [:]
     
     private func useRemoteValidation(withCardState cardState: PrimerCardNumberEntryState) {
         delegate?.primerRawDataManager?(rawDataManager,
@@ -109,7 +109,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         }
     }
     
-    func useLocalValidation(withCardState cardState: PrimerCardNumberEntryState, isFallback: Bool) {
+    private func useLocalValidation(withCardState cardState: PrimerCardNumberEntryState, isFallback: Bool) {
         let localValidationNetwork = CardNetwork(cardNumber: cardState.cardNumber)
         let metadata = createValidationMetadata(networks: cardState.cardNumber.isEmpty ? [] : [localValidationNetwork],
                                                 source: isFallback ? .localFallback : .local)
@@ -136,7 +136,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         }
     }
     
-    func handle(cardMetadata: PrimerCardNumberEntryMetadata, forCardState cardState: PrimerCardNumberEntryState) {
+    private func handle(cardMetadata: PrimerCardNumberEntryMetadata, forCardState cardState: PrimerCardNumberEntryState) {
         self.metadataCache[cardState.cardNumber] = cardMetadata
 
         let trackableNetworks = cardMetadata.selectableCardNetworks ?? cardMetadata.detectedCardNetworks
@@ -196,7 +196,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
     
     // MARK: API Logic
     
-    var validateCardNetworksCancellable: PrimerCancellable?
+    private var validateCardNetworksCancellable: PrimerCancellable?
     
     private func listCardNetworks(_ cardNumber: String) -> Promise<Response.Body.Bin.Networks> {
         
