@@ -318,10 +318,11 @@ struct ClientSessionRequestBody {
         }
     }
     
-    struct PaymentMethod {
+    struct PaymentMethod: Codable {
         
         let vaultOnSuccess: Bool?
-        let options: [String: Any]?
+        let options: PaymentMethodOptionGroup?
+        let descriptor: String?
         let paymentType: String?
         
         var dictionaryValue: [String: Any]? {
@@ -332,7 +333,11 @@ struct ClientSessionRequestBody {
             }
             
             if let options = options {
-                dic["options"] = options
+                dic["options"] = options.dictionaryValue
+            }
+            
+            if let descriptor = descriptor {
+                dic["descriptor"] = descriptor
             }
             
             if let paymentType = paymentType {
@@ -340,6 +345,48 @@ struct ClientSessionRequestBody {
             }
             
             return dic.keys.count == 0 ? nil : dic
+        }
+        
+        struct PaymentMethodOptionGroup: Codable {
+            var KLARNA: PaymentMethodOption?
+            
+            var dictionaryValue: [String: Any]? {
+                var dic: [String: Any] = [:]
+                
+                if let KLARNA = KLARNA {
+                    dic["KLARNA"] = KLARNA.dictionaryValue
+                }
+                
+                return dic.keys.count == 0 ? nil : dic
+            }
+        }
+        
+        struct PaymentMethodOption: Codable {
+            var surcharge: SurchargeOption?
+            
+            var dictionaryValue: [String: Any]? {
+                var dic: [String: Any] = [:]
+                
+                if let surcharge = surcharge {
+                    dic["surcharge"] = surcharge.dictionaryValue
+                }
+                
+                return dic.keys.count == 0 ? nil : dic
+            }
+        }
+        
+        struct  SurchargeOption: Codable {
+            var amount: Int?
+            
+            var dictionaryValue: [String: Any]? {
+                var dic: [String: Any] = [:]
+                
+                if let amount = amount {
+                    dic["amount"] = amount
+                }
+                
+                return dic.keys.count == 0 ? nil : dic
+            }
         }
     }
 

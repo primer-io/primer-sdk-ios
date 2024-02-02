@@ -65,18 +65,15 @@ struct MerchantMockDataManager {
             countryCode: .de,
             lineItems: [
                 ClientSessionRequestBody.Order.LineItem(
-                    itemId: "this item",
-                    description: "item-123",
+                    itemId: "item-123",
+                    description: "this item",
                     amount: 1000,
                     quantity: 1,
                     discountAmount: nil,
-                    taxAmount: nil)
+                    taxAmount: nil,
+                    productType: "DIGITAL")
             ]),
-        paymentMethod: ClientSessionRequestBody.PaymentMethod(
-            vaultOnSuccess: false,
-            options: nil,
-            paymentType: nil
-        ),
+        paymentMethod: klarnaPaymentMethod,
         testParams: nil)
     
     static var normalClientSession = ClientSessionRequestBody(
@@ -120,12 +117,26 @@ struct MerchantMockDataManager {
                     discountAmount: nil,
                     taxAmount: nil)
             ]),
-        paymentMethod: ClientSessionRequestBody.PaymentMethod(
-            vaultOnSuccess: false,
-            options: nil,
-            paymentType: nil
-        ),
+        paymentMethod: normalPaymentMethod,
         testParams: nil)
+    
+    static var normalPaymentMethod = ClientSessionRequestBody.PaymentMethod(
+        vaultOnSuccess: false,
+        options: nil,
+        descriptor: nil,
+        paymentType: nil
+    )
+    
+    static var klarnaPaymentMethod = ClientSessionRequestBody.PaymentMethod(
+        vaultOnSuccess: nil,
+        options: paymentOptions,
+        descriptor: "test-descriptor",
+        paymentType: nil
+    )
+    
+    static var paymentOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOptionGroup(
+        KLARNA: ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(
+            surcharge: ClientSessionRequestBody.PaymentMethod.SurchargeOption(amount: 140)))
     
 }
 

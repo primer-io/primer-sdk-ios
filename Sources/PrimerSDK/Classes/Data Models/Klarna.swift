@@ -83,7 +83,7 @@ extension Request.Body.Klarna {
         let reference: String?
         let quantity: Int
         let discountAmount: Int?
-        let productType: String
+        let productType: String?
         let taxAmount: Int?
     }
 }

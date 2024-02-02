@@ -215,6 +215,7 @@ internal class ClientSession {
             let description: String?
             let taxAmount: Int?
             let taxCode: String?
+            let productType: String?
 
             func toOrderItem() throws -> OrderItem {
                 return try OrderItem(

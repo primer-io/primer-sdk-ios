@@ -428,7 +428,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             clientSession.customer?.shippingAddress = nil
         }
         
-        clientSession.paymentMethod = .init(vaultOnSuccess: vaultPaymentsSwitch.isOn, options: nil, paymentType: nil)
+        //.init(vaultOnSuccess: vaultPaymentsSwitch.isOn, options: nil, descriptor: nil, paymentType: nil)
+        clientSession.paymentMethod = MerchantMockDataManager.klarnaPaymentMethod
     }
     
     func configureTestScenario() {
