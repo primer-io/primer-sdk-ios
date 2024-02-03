@@ -60,7 +60,7 @@ private extension KlarnaPaymentSessionFinalizationComponent {
             case .success(let success):
                 self?.tokenizationComponent?.tokenize(customerToken: success) { (result) in
                     switch result {
-                    case .success(let success):
+                    case .success:
                         let step = KlarnaPaymentSessionFinalization.paymentSessionFinalized(authToken: token)
                         self?.stepDelegate?.didReceiveStep(step: step)
                         

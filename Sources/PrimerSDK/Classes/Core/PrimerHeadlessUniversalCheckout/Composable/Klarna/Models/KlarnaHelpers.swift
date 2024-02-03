@@ -10,6 +10,12 @@ import Foundation
 // KlarnaHelpers: A utility structure to facilitate various operations related to Klarna payment sessions.
 struct KlarnaHelpers {
     
+    struct KlarnaPaymentSessionParams {
+        var paymentMethodConfigId: String
+        var sessionId: String
+        var decodedJWTToken: DecodedJWTToken
+    }
+    
     /// - Returns the session type based on the current payment intent (vault or checkout).
     static func getSessionType() -> KlarnaSessionType {
         if PrimerInternal.shared.intent == .vault {
@@ -17,6 +23,18 @@ struct KlarnaHelpers {
         } else {
             return .oneOffPayment
         }
+    }
+    
+    /// - Constructs the request body for finalize a Klarna payment session
+    /// - Returns: An instance of Request.Body.Klarna.FinalizePaymentSession
+    static func getKlarnaFinalizePaymentBody(
+        with paymentMethodConfigId: String,
+        sessionId: String
+    ) -> Request.Body.Klarna.FinalizePaymentSession {
+        let sessionType = getSessionType()
+        return Request.Body.Klarna.FinalizePaymentSession(
+            paymentMethodConfigId: paymentMethodConfigId,
+            sessionId: sessionId)
     }
     
     /// - Constructs the request body for creating a Klarna customer token.
@@ -27,14 +45,13 @@ struct KlarnaHelpers {
         authorizationToken: String,
         recurringPaymentDescription: String?
     ) -> Request.Body.Klarna.CreateCustomerToken {
-        // Determine the session type to decide if authorizationToken, localeData and description should be included.
         let sessionType = getSessionType()
         return Request.Body.Klarna.CreateCustomerToken(
             paymentMethodConfigId: paymentMethodConfigId,
             sessionId: sessionId,
-            authorizationToken: sessionType == .oneOffPayment ? nil : authorizationToken,
-            description: sessionType == .oneOffPayment ? nil : recurringPaymentDescription,
-            localeData: sessionType == .oneOffPayment ? nil : PrimerSettings.current.localeData)
+            authorizationToken: authorizationToken,
+            description: recurringPaymentDescription,
+            localeData: PrimerSettings.current.localeData)
     }
     
     /// - Prepares the request body for creating a Klarna payment session.
