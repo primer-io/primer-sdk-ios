@@ -657,7 +657,8 @@ extension MockPrimerAPIClient {
                             name: "mock-name-1",
                             description: "mock-description-1",
                             taxAmount: nil,
-                            taxCode: nil)
+                            taxCode: nil,
+                            productType: nil)
                     ],
                     shippingAmount: nil),
                 customer: nil,
@@ -729,6 +730,7 @@ extension MockPrimerAPIClient {
                 purchaseCurrency: "SEK",
                 locale: "en-US",
                 orderAmount: 100,
+                orderTaxAmount: nil,
                 orderLines: [
                     Response.Body.Klarna.SessionOrderLines(
                         type: "mock-type",
@@ -751,6 +753,7 @@ extension MockPrimerAPIClient {
                     postalCode: "PC123456",
                     state: "Greater London",
                     title: "Mock title"),
+                shippingAddress: nil,
                 tokenDetails: Response.Body.Klarna.TokenDetails(
                     brand: "Visa",
                     maskedNumber: "**** **** **** 1234",
@@ -764,6 +767,7 @@ extension MockPrimerAPIClient {
                 purchaseCurrency: "SEK",
                 locale: "en-US",
                 orderAmount: 100,
+                orderTaxAmount: nil,
                 orderLines: [
                     Response.Body.Klarna.SessionOrderLines(
                         type: "mock-type",
@@ -786,6 +790,7 @@ extension MockPrimerAPIClient {
                     postalCode: "PC123456",
                     state: "Greater London",
                     title: "Mock title"),
+                shippingAddress: nil,
                 tokenDetails: Response.Body.Klarna.TokenDetails(
                     brand: "Visa",
                     maskedNumber: "**** **** **** 1234",
