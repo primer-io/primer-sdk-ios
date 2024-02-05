@@ -248,8 +248,8 @@ private class MockBankSelectorTokenizationModel: BankSelectorTokenizationProvidi
             .then {
                 self.fetchBanks()
             }
-            .done { _ in
-                seal.fulfill(self.mockBanks)
+            .done { banks in
+                seal.fulfill(banks)
             }
             .catch { err in
                 seal.reject(err)

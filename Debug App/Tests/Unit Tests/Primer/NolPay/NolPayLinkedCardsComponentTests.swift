@@ -72,10 +72,6 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.testFetchNolSdkSecretResult = (nil, PrimerError.nolError(code: "", message: "", userInfo: nil, diagnosticsId: ""))
         component.apiClient = mockApiClient
-
-        
-        // Mocking the NolPay to simulate the start completion with failure
-        // Assuming you have a way to mock the failure of start operation
         
         let expectation = self.expectation(description: "Get Linked Cards For SDK Not Available")
 

@@ -9,7 +9,6 @@ import Foundation
 
 extension Request.Body {
     class Apaya {}
-
 }
 
 extension Response.Body {
