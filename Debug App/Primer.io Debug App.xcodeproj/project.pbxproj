@@ -528,7 +528,7 @@
 		876140D62B66F75D0058CA8C /* Klarna */ = {
 			isa = PBXGroup;
 			children = (
-				876140F02B70E20D0058CA8C /* Mocks */,
+				876140D72B66F8070058CA8C /* KlarnaTestsMocks.swift */,
 				876140D92B66F8200058CA8C /* KlarnaPaymentSessionCreationComponentTests.swift */,
 				876140DB2B66F8430058CA8C /* KlarnaPaymentViewHandlingComponentTests.swift */,
 				876140DD2B66F86A0058CA8C /* KlarnaPaymentSessionAuthorizationComponentTests.swift */,
@@ -545,14 +545,6 @@
 				876140EE2B6BE8C20058CA8C /* MerchantHelpers.swift */,
 			);
 			path = "Merchant Helpers";
-			sourceTree = "<group>";
-		};
-		876140F02B70E20D0058CA8C /* Mocks */ = {
-			isa = PBXGroup;
-			children = (
-				876140D72B66F8070058CA8C /* KlarnaTestsMocks.swift */,
-			);
-			path = Mocks;
 			sourceTree = "<group>";
 		};
 		9EE81958BB2BB34183F6C0AB /* Modules */ = {
