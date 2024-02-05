@@ -13,14 +13,15 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
 
     var nolPay: PrimerNolPayProtocol?
 
-    public var errorDelegate: PrimerHeadlessErrorableDelegate?
+    public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     var mobileNumber: String?
     var countryCode: String?
     var phoneMetadataService: NolPayPhoneMetadataProviding?
 
-    public func getLinkedCardsFor(mobileNumber: String,
-                                  completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
+    public init() {}
+
+    public func getLinkedCardsFor(mobileNumber: String, completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
 
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()  // Enter the dispatch group
