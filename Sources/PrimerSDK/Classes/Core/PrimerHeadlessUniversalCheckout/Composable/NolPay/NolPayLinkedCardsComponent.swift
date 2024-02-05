@@ -18,6 +18,7 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
     var mobileNumber: String?
     var countryCode: String?
     var phoneMetadataService: NolPayPhoneMetadataProviding?
+    var apiClient: PrimerAPIClientProtocol?
 
     public init() {}
 
@@ -80,17 +81,22 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
         isDebug =  PrimerLogging.shared.logger.logLevel == .debug
 #endif
 
+        guard nolPay == nil
+        else {
+            completion(.success(()))
+            return
+        }
+        
         nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
 
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
                                                                                 nolAppId: sdkId,
                                                                                 phoneVendor: "Apple",
                                                                                 phoneModel: UIDevice.modelIdentifier!)
-            let client = PrimerAPIClient()
 
             if #available(iOS 13, *) {
                 return try await withCheckedThrowingContinuation { continuation in
-                    client.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
+                    self.apiClient?.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
                         switch result {
                         case .success(let appSecret):
                             continuation.resume(returning: appSecret.sdkSecret)
@@ -112,7 +118,7 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
                 return ""
             }
         }
-        phoneMetadataService = NolPayPhoneMetadataService()
+        phoneMetadataService = phoneMetadataService ?? NolPayPhoneMetadataService()
     }
 
     private func continueWithLinkedCardsFetch(mobileNumber: String,
