@@ -36,7 +36,8 @@ final class HeadlessVaultManagerTests: XCTestCase {
                         name: "mock-name-1",
                         description: "mock-description-1",
                         taxAmount: nil,
-                        taxCode: nil)
+                        taxCode: nil,
+                        productType: nil)
                 ],
                 shippingAmount: nil),
             customer: ClientSession.Customer(id: "testid"),
@@ -167,7 +168,8 @@ final class HeadlessVaultManagerTests: XCTestCase {
                         name: "mock-name-1",
                         description: "mock-description-1",
                         taxAmount: nil,
-                        taxCode: nil)
+                        taxCode: nil,
+                        productType: nil)
                 ],
                 shippingAmount: nil),
             customer: nil,
@@ -230,7 +232,8 @@ final class HeadlessVaultManagerTests: XCTestCase {
                         name: "mock-name-1",
                         description: "mock-description-1",
                         taxAmount: nil,
-                        taxCode: nil)
+                        taxCode: nil,
+                        productType: nil)
                 ],
                 shippingAmount: nil),
             customer: ClientSession.Customer(id: "testid"),

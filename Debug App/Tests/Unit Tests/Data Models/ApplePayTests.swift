@@ -52,7 +52,8 @@ class ApplePayTests: XCTestCase {
                             name: "name 1",
                             description: "description 1",
                             taxAmount: nil,
-                            taxCode: nil)
+                            taxCode: nil,
+                            productType: nil)
                     ],
                     shippingAmount: nil),
                 customer: nil,
@@ -89,7 +90,8 @@ class ApplePayTests: XCTestCase {
                             name: "name 1",
                             description: "description 1",
                             taxAmount: nil,
-                            taxCode: nil),
+                            taxCode: nil,
+                            productType: nil),
                         ClientSession.Order.LineItem(
                             itemId: "item-id-2",
                             quantity: 2,
@@ -98,7 +100,8 @@ class ApplePayTests: XCTestCase {
                             name: "name 2",
                             description: "description 2",
                             taxAmount: nil,
-                            taxCode: nil)
+                            taxCode: nil,
+                            productType: nil)
                     ],
                     shippingAmount: nil),
                 customer: nil,
@@ -247,7 +250,8 @@ class ApplePayTests: XCTestCase {
                             name: "name 1",
                             description: "description 1",
                             taxAmount: nil,
-                            taxCode: nil),
+                            taxCode: nil,
+                            productType: nil),
                         ClientSession.Order.LineItem(
                             itemId: "item-id-2",
                             quantity: 2,
@@ -256,7 +260,8 @@ class ApplePayTests: XCTestCase {
                             name: "name 2",
                             description: "description 2",
                             taxAmount: 202,
-                            taxCode: nil),
+                            taxCode: nil,
+                            productType: nil),
                         ClientSession.Order.LineItem(
                             itemId: "item-id-3",
                             quantity: 3,
@@ -265,7 +270,8 @@ class ApplePayTests: XCTestCase {
                             name: "name 3",
                             description: "description 3",
                             taxAmount: 202,
-                            taxCode: nil),
+                            taxCode: nil,
+                            productType: nil),
                         ClientSession.Order.LineItem(
                             itemId: "item-id-4",
                             quantity: 4,
@@ -274,7 +280,8 @@ class ApplePayTests: XCTestCase {
                             name: "name 4",
                             description: "description 4",
                             taxAmount: nil,
-                            taxCode: nil)
+                            taxCode: nil,
+                            productType: nil)
                     ],
                     shippingAmount: nil),
                 customer: nil,
