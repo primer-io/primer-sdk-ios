@@ -254,3 +254,10 @@ extension KlarnaTokenizationComponent {
         }
     }
 }
+
+// MARK: - Klarna Testing helpers
+extension KlarnaTokenizationComponent {
+    func setSessionId(paymentSessionId: String) {
+        self.paymentSessionId = paymentSessionId
+    }
+}

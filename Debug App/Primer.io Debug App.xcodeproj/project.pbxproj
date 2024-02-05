@@ -70,6 +70,7 @@
 		876140E82B67F5690058CA8C /* MerchantHeadlessCheckoutKlarnaViewController+UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876140E72B67F5690058CA8C /* MerchantHeadlessCheckoutKlarnaViewController+UI.swift */; };
 		876140EA2B67F6860058CA8C /* MerchantHeadlessCheckoutKlarnaViewController+TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876140E92B67F6860058CA8C /* MerchantHeadlessCheckoutKlarnaViewController+TableView.swift */; };
 		876140EF2B6BE8C20058CA8C /* MerchantHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876140EE2B6BE8C20058CA8C /* MerchantHelpers.swift */; };
+		876140F42B70FBFE0058CA8C /* KlarnaTokenizationComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876140F32B70FBFE0058CA8C /* KlarnaTokenizationComponentTests.swift */; };
 		8B5CB0C992DBAB293D378FAD /* MockModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EA7D2BB0AC0A1877DB2E6CE /* MockModule.swift */; };
 		91FAC91E687B6981268E677E /* DateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0B2BEE5C389FD13E210847 /* DateTests.swift */; };
 		9263BD762EC26F6AA986F0C9 /* MockAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17476BFBED51F389FCE82F16 /* MockAPIClient.swift */; };
@@ -244,6 +245,7 @@
 		876140E72B67F5690058CA8C /* MerchantHeadlessCheckoutKlarnaViewController+UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MerchantHeadlessCheckoutKlarnaViewController+UI.swift"; sourceTree = "<group>"; };
 		876140E92B67F6860058CA8C /* MerchantHeadlessCheckoutKlarnaViewController+TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MerchantHeadlessCheckoutKlarnaViewController+TableView.swift"; sourceTree = "<group>"; };
 		876140EE2B6BE8C20058CA8C /* MerchantHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHelpers.swift; sourceTree = "<group>"; };
+		876140F32B70FBFE0058CA8C /* KlarnaTokenizationComponentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KlarnaTokenizationComponentTests.swift; sourceTree = "<group>"; };
 		8A23886804B13FA754E775D0 /* MockPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
 		8A3FDC6FE0EB5AB5828D4D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		8C7C082270CF1C6B7810F9B3 /* RawDataManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawDataManagerTests.swift; sourceTree = "<group>"; };
@@ -526,12 +528,13 @@
 		876140D62B66F75D0058CA8C /* Klarna */ = {
 			isa = PBXGroup;
 			children = (
-				876140D72B66F8070058CA8C /* KlarnaTestsMocks.swift */,
+				876140F02B70E20D0058CA8C /* Mocks */,
 				876140D92B66F8200058CA8C /* KlarnaPaymentSessionCreationComponentTests.swift */,
 				876140DB2B66F8430058CA8C /* KlarnaPaymentViewHandlingComponentTests.swift */,
 				876140DD2B66F86A0058CA8C /* KlarnaPaymentSessionAuthorizationComponentTests.swift */,
 				876140DF2B66F8870058CA8C /* KlarnaPaymentSessionFinalizationComponentTests.swift */,
 				876140E12B66F89D0058CA8C /* KlarnaHeadlessManagerTests.swift */,
+				876140F32B70FBFE0058CA8C /* KlarnaTokenizationComponentTests.swift */,
 			);
 			path = Klarna;
 			sourceTree = "<group>";
@@ -542,6 +545,14 @@
 				876140EE2B6BE8C20058CA8C /* MerchantHelpers.swift */,
 			);
 			path = "Merchant Helpers";
+			sourceTree = "<group>";
+		};
+		876140F02B70E20D0058CA8C /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				876140D72B66F8070058CA8C /* KlarnaTestsMocks.swift */,
+			);
+			path = Mocks;
 			sourceTree = "<group>";
 		};
 		9EE81958BB2BB34183F6C0AB /* Modules */ = {
@@ -1056,6 +1067,7 @@
 				6B2212601374387CB004DA86 /* MaskTests.swift in Sources */,
 				C8A64A69AD55D9BF82F0D876 /* StringTests.swift in Sources */,
 				77A8EFBA78D6C6B95A400C74 /* WebViewUtilTests.swift in Sources */,
+				876140F42B70FBFE0058CA8C /* KlarnaTokenizationComponentTests.swift in Sources */,
 				242EF5037D6FB396B7AE1CB5 /* HeadlessUniversalCheckoutTests.swift in Sources */,
 				04F6EF722AE69FC500115D05 /* AnalyticsTests+Helpers.swift in Sources */,
 				2662EB3445AE8C7188953EFD /* HeadlessVaultManagerTests.swift in Sources */,
