@@ -24,7 +24,7 @@ final class KlarnaTokenizationComponentTests: XCTestCase {
     }
     
     override func tearDown() {
-        tokenizationComponent = nil
+        restartPrimerConfiguration()
         paymentMethod = nil
         super.tearDown()
     }
@@ -120,7 +120,7 @@ final class KlarnaTokenizationComponentTests: XCTestCase {
         
         tokenizationComponent.setSessionId(paymentSessionId: "mock-session-id")
         
-        let expectation = XCTestExpectation(description: "Successful Create Klarna Payment Session")
+        let expectation = XCTestExpectation(description: "Successful Authorize Klarna Payment Session")
         
         tokenizationComponent.authorizePaymentSession(authorizationToken: "") { response in
             switch response {
@@ -155,6 +155,7 @@ extension KlarnaTokenizationComponentTests {
     }
     
     private func restartPrimerConfiguration() {
+        AppState.current.clientToken = nil
         PrimerAPIConfigurationModule.clientToken = nil
         PrimerAPIConfigurationModule.apiConfiguration = nil
         PrimerAPIConfigurationModule.apiClient = nil

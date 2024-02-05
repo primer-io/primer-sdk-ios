@@ -82,6 +82,42 @@ class KlarnaTestsMocks {
             taxCode: nil,
             productType: nil)
     }
+    
+    static func getMockFinalizeKlarnaPaymentSession(isValid: Bool) -> Response.Body.Klarna.CustomerToken {
+        return Response.Body.Klarna.CustomerToken(
+            customerTokenId: isValid ? "mock-customer-token-id" : nil,
+            sessionData: Response.Body.Klarna.SessionData(
+                recurringDescription: "Mock recurring description",
+                purchaseCountry: "SE",
+                purchaseCurrency: "SEK",
+                locale: "en-US",
+                orderAmount: 100,
+                orderTaxAmount: nil,
+                orderLines: [
+                    Response.Body.Klarna.SessionOrderLines(
+                        type: "mock-type",
+                        name: "mock-name",
+                        quantity: 1,
+                        unitPrice: 100,
+                        totalAmount: 100,
+                        totalDiscountAmount: 0)
+                ],
+                billingAddress: Response.Body.Klarna.BillingAddress(
+                    addressLine1: "Mock address line 1",
+                    addressLine2: "Mock address line 2",
+                    addressLine3: "Mock address line 3",
+                    city: "London",
+                    countryCode: "GB",
+                    email: "john@primer.io",
+                    firstName: "John",
+                    lastName: "Smith",
+                    phoneNumber: "+447812345678",
+                    postalCode: "PC123456",
+                    state: "Greater London",
+                    title: "Mock title"),
+                shippingAddress: nil,
+                tokenDetails: nil))
+    }
 }
 
 #endif

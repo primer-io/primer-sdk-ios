@@ -31,7 +31,7 @@ final class KlarnaHeadlessManagerTests: XCTestCase {
     }
     
     override func tearDown() {
-        manager = nil
+        restartPrimerConfiguration()
         super.tearDown()
     }
     
@@ -191,6 +191,14 @@ extension KlarnaHeadlessManagerTests {
         let successApiConfiguration = KlarnaTestsMocks.getMockPrimerApiConfiguration(clientSession: clientSession)
         successApiConfiguration.paymentMethods?[0].baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
         setupPrimerConfiguration(paymentMethod: Mocks.PaymentMethods.klarnaPaymentMethod, apiConfiguration: successApiConfiguration)
+    }
+    
+    private func restartPrimerConfiguration() {
+        manager = nil
+        AppState.current.clientToken = nil
+        PrimerAPIConfigurationModule.clientToken = nil
+        PrimerAPIConfigurationModule.apiConfiguration = nil
+        PrimerAPIConfigurationModule.apiClient = nil
     }
     
     private func getInvalidTokenError() -> PrimerError {
