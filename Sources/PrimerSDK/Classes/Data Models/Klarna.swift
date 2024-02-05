@@ -28,7 +28,7 @@ extension Request.Body.Klarna {
         let paymentMethodConfigId: String
         let sessionId: String
         let authorizationToken: String?
-        let description: String??
+        let description: String?
         let localeData: PrimerLocaleData?
     }
     
@@ -134,8 +134,10 @@ extension Response.Body.Klarna {
         public let purchaseCurrency: String?
         public let locale: String?
         public let orderAmount: Int?
+        public let orderTaxAmount: Int?
         public let orderLines: [SessionOrderLines]
         public let billingAddress: BillingAddress?
+        public let shippingAddress: BillingAddress?
         public let tokenDetails: TokenDetails?
     }
     

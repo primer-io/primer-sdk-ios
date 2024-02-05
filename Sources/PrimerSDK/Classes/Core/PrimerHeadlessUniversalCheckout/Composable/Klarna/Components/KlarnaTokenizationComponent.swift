@@ -225,7 +225,7 @@ extension KlarnaTokenizationComponent {
             sessionId: sessionId)
     }
     
-    /// - Request to create  Klarna Customer Token
+    /// - Request to finalize  Klarna Payment Session
     private func finalizeKlarnaPaymentSession(with clientToken: DecodedJWTToken, body: Request.Body.Klarna.FinalizePaymentSession, completion: @escaping (Result<Response.Body.Klarna.CustomerToken, Error>) -> Void) {
         apiClient.finalizeKlarnaPaymentSession(clientToken: clientToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
             switch result {

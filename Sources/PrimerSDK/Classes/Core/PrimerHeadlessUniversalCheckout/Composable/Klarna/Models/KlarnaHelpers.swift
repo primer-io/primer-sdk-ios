@@ -31,7 +31,6 @@ struct KlarnaHelpers {
         with paymentMethodConfigId: String,
         sessionId: String
     ) -> Request.Body.Klarna.FinalizePaymentSession {
-        let sessionType = getSessionType()
         return Request.Body.Klarna.FinalizePaymentSession(
             paymentMethodConfigId: paymentMethodConfigId,
             sessionId: sessionId)
@@ -45,7 +44,6 @@ struct KlarnaHelpers {
         authorizationToken: String,
         recurringPaymentDescription: String?
     ) -> Request.Body.Klarna.CreateCustomerToken {
-        let sessionType = getSessionType()
         return Request.Body.Klarna.CreateCustomerToken(
             paymentMethodConfigId: paymentMethodConfigId,
             sessionId: sessionId,

@@ -58,7 +58,7 @@ private extension KlarnaPaymentSessionFinalizationComponent {
         self.tokenizationComponent?.authorizePaymentSession(authorizationToken: token) { [weak self] (result) in
             switch result {
             case .success(let success):
-                self?.tokenizationComponent?.tokenize(customerToken: success) { (result) in
+                self?.tokenizationComponent?.tokenize(customerToken: success, offSessionAuthorizationId: token) { (result) in
                     switch result {
                     case .success:
                         let step = KlarnaPaymentSessionFinalization.paymentSessionFinalized(authToken: token)
