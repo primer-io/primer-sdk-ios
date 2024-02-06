@@ -45,17 +45,17 @@ final class KlarnaHeadlessManagerTests: XCTestCase {
     
     func test_klarnaPaymentViewHandlingComponent_initialized() {
         XCTAssertNotNil(manager.viewHandlingComponent)
-        XCTAssertNotNil(manager.viewHandlingComponent.klarnaProvider)
+        XCTAssertNotNil(manager.viewHandlingComponent?.klarnaProvider)
     }
     
     func test_paymentSessionAuthorizationComponent_initialized() {
         XCTAssertNotNil(manager.sessionAuthorizationComponent)
-        XCTAssertNotNil(manager.sessionAuthorizationComponent.klarnaProvider)
+        XCTAssertNotNil(manager.sessionAuthorizationComponent?.klarnaProvider)
     }
     
     func test_paymentSessionFinalizationComponent_initialized() {
         XCTAssertNotNil(manager.sessionFinalizationComponent)
-        XCTAssertNotNil(manager.sessionFinalizationComponent.klarnaProvider)
+        XCTAssertNotNil(manager.sessionFinalizationComponent?.klarnaProvider)
     }
     
     func test_sessionCreation_updateCollectedData() {
@@ -68,7 +68,7 @@ final class KlarnaHeadlessManagerTests: XCTestCase {
         
         manager.updateSessionCollectedData(collectableData: collectedData)
         
-        XCTAssertEqual(manager.sessionCreationComponent.customerAccountInfo, accountInfo)
+        XCTAssertEqual(manager.sessionCreationComponent?.customerAccountInfo, accountInfo)
     }
     
     func test_manager_error() {
@@ -85,13 +85,13 @@ final class KlarnaHeadlessManagerTests: XCTestCase {
             diagnosticsId: UUID().uuidString
         )
         let expectedErrorType: ErrorDelegationType = .creationError
-        manager.sessionCreationComponent.errorDelegate?.didReceiveError(error: error)
+        manager.sessionCreationComponent?.errorDelegate?.didReceiveError(error: error)
         XCTAssertEqual(expectedErrorType, errorType)
     }
     
     func test_sessionCreation_validation() {
         let expectedValidationType: ValidateDelegationType = .creationValidate
-        manager.sessionCreationComponent.validationDelegate?.didUpdate(validationStatus: .validating, for: nil)
+        manager.sessionCreationComponent?.validationDelegate?.didUpdate(validationStatus: .validating, for: nil)
         XCTAssertEqual(expectedValidationType, validateType)
     }
     
@@ -99,7 +99,7 @@ final class KlarnaHeadlessManagerTests: XCTestCase {
         let expectedStepType: StepDelegationType = .creationStep
         
         let step = KlarnaPaymentSessionCreation.paymentSessionCreated(clientToken: "", paymentCategories: [])
-        manager.sessionCreationComponent.stepDelegate?.didReceiveStep(step: step)
+        manager.sessionCreationComponent?.stepDelegate?.didReceiveStep(step: step)
         
         XCTAssertEqual(expectedStepType, .creationStep)
     }
@@ -108,7 +108,7 @@ final class KlarnaHeadlessManagerTests: XCTestCase {
         let expectedStepType: StepDelegationType = .viewHandlingStep
         
         let step = KlarnaPaymentViewHandling.viewInitialized
-        manager.viewHandlingComponent.stepDelegate?.didReceiveStep(step: step)
+        manager.viewHandlingComponent?.stepDelegate?.didReceiveStep(step: step)
         
         XCTAssertEqual(expectedStepType, .viewHandlingStep)
     }
@@ -117,7 +117,7 @@ final class KlarnaHeadlessManagerTests: XCTestCase {
         let expectedStepType: StepDelegationType = .authorizationStep
         
         let step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorizationFailed
-        manager.sessionAuthorizationComponent.stepDelegate?.didReceiveStep(step: step)
+        manager.sessionAuthorizationComponent?.stepDelegate?.didReceiveStep(step: step)
         
         XCTAssertEqual(expectedStepType, .authorizationStep)
     }
@@ -126,7 +126,7 @@ final class KlarnaHeadlessManagerTests: XCTestCase {
         let expectedStepType: StepDelegationType = .finalizationStep
         
         let step = KlarnaPaymentSessionFinalization.paymentSessionFinalizationFailed
-        manager.sessionFinalizationComponent.stepDelegate?.didReceiveStep(step: step)
+        manager.sessionFinalizationComponent?.stepDelegate?.didReceiveStep(step: step)
         
         XCTAssertEqual(expectedStepType, .finalizationStep)
     }
@@ -181,7 +181,6 @@ extension KlarnaHeadlessManagerTests {
         
         AppState.current.clientToken = KlarnaTestsMocks.clientToken
         PrimerAPIConfigurationModule.apiClient = mockApiClient
-        PrimerAPIConfigurationModule.clientToken = KlarnaTestsMocks.clientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
     }
     

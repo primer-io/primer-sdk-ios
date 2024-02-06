@@ -19,7 +19,7 @@ final class KlarnaPaymentSessionAuthorizationComponentTests: XCTestCase {
         super.setUp()
         let paymentMethod = Mocks.PaymentMethods.klarnaPaymentMethod
         tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: paymentMethod)
-        sut = KlarnaPaymentSessionAuthorizationComponent(tokenizationManager: tokenizationComponent)
+        sut = KlarnaPaymentSessionAuthorizationComponent(tokenizationComponent: tokenizationComponent)
     }
     
     override func tearDown() {

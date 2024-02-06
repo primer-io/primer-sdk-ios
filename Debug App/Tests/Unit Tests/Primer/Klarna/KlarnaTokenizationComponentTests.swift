@@ -100,13 +100,15 @@ final class KlarnaTokenizationComponentTests: XCTestCase {
         
         let expectation = XCTestExpectation(description: "Successful Create Klarna Payment Session")
         
-        tokenizationComponent.createPaymentSession(attachment: nil) { response in
-            switch response {
-            case .success(let result):
-                XCTAssertNotNil(result, "Result should not be nil")
-            case .failure(let error):
-                XCTFail("Request failed with: \(error)")
-            }
+        firstly {
+            tokenizationComponent.createPaymentSession(attachment: nil)
+        }
+        .done { paymentSession in
+            XCTAssertNotNil(paymentSession, "Result should not be nil")
+            expectation.fulfill()
+        }
+        .catch { error in
+            XCTFail("Request failed with: \(error)")
             expectation.fulfill()
         }
         
@@ -122,13 +124,15 @@ final class KlarnaTokenizationComponentTests: XCTestCase {
         
         let expectation = XCTestExpectation(description: "Successful Authorize Klarna Payment Session")
         
-        tokenizationComponent.authorizePaymentSession(authorizationToken: "") { response in
-            switch response {
-            case .success(let result):
-                XCTAssertNotNil(result, "Result should not be nil")
-            case .failure(let error):
-                XCTFail("Request failed with: \(error)")
-            }
+        firstly {
+            tokenizationComponent.authorizePaymentSession(authorizationToken: "")
+        }
+        .done { paymentSession in
+            XCTAssertNotNil(paymentSession, "Result should not be nil")
+            expectation.fulfill()
+        }
+        .catch { error in
+            XCTFail("Request failed with: \(error)")
             expectation.fulfill()
         }
         

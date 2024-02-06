@@ -28,13 +28,15 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: true)
         let expectation = XCTestExpectation(description: "Successful Tokenize Klarna Payment Session")
         
-        tokenizationComponent.tokenize(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId) { response in
-            switch response {
-            case .success(let result):
-                XCTAssertNotNil(result, "Result should not be nil")
-            case .failure(let error):
-                XCTFail("Request failed with: \(error)")
-            }
+        firstly {
+            tokenizationComponent.tokenize(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId)
+        }
+        .done { tokenData in
+            XCTAssertNotNil(tokenData, "Result should not be nil")
+            expectation.fulfill()
+        }
+        .catch { error in
+            XCTFail("Request failed with: \(error)")
             expectation.fulfill()
         }
         
@@ -42,16 +44,18 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
     }
     
     func test_tokenize_failure() {
-        var finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: false)
-        let expectation = XCTestExpectation(description: "Successful Tokenize Klarna Payment Session")
+        let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: false)
+        let expectation = XCTestExpectation(description: "Failure Tokenize Klarna Payment Session")
         
-        tokenizationComponent.tokenize(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId) { response in
-            switch response {
-            case .success(let result):
-                XCTFail("Result should be nil")
-            case .failure(let error):
-                XCTAssertNotNil(error, "Error should not be nil")
-            }
+        firstly {
+            tokenizationComponent.tokenize(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId)
+        }
+        .done { tokenData in
+            XCTFail("Result should be nil")
+            expectation.fulfill()
+        }
+        .catch { error in
+            XCTAssertNotNil(error, "Error should not be nil")
             expectation.fulfill()
         }
         
