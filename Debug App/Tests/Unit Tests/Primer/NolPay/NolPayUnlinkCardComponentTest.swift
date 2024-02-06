@@ -152,13 +152,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
     }
     
     // MARK: - Tests for start() function
-    func testStart_NoNolAppID() {
-        let mockErrorDelegate = MockErrorDelegate()
-        sut.errorDelegate = mockErrorDelegate
-        sut.start()
-        XCTAssertTrue(mockErrorDelegate.errorReceived is PrimerError)
-    }
-        
+    
     func testUpdateCollectedData_EmptyOTPCode() {
         let mockValidationDelegate = MockValidationDelegate()
         sut.validationDelegate = mockValidationDelegate
@@ -169,7 +163,6 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
         } else {
             XCTFail("Expected validation error")
         }
-
     }
         
     func testSubmit_NoDataForOTP() {

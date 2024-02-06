@@ -26,7 +26,8 @@ class PrimerFormViewController: PrimerViewController {
         verticalStackView.pin(view: view, leading: 20, top: 20, trailing: -20, bottom: -20)
     }
 
-    static func renderPaymentMethods(_ paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol], on stackView: UIStackView) {
+    static func renderPaymentMethods(_ paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol],
+                                     on stackView: UIStackView) {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
         let availablePaymentMethodsContainerStackView = UIStackView()
@@ -112,5 +113,4 @@ class PrimerFormViewController: PrimerViewController {
             stackView.addArrangedSubview(availablePaymentMethodsContainerStackView)
         }
     }
-
 }

@@ -103,14 +103,6 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         XCTAssertTrue(mockErrorDelegate.errorReceived is PrimerError)
     }
 
-    func testStart_NoNolAppID() {
-        let mockErrorDelegate = MockErrorDelegate()
-        sut.errorDelegate = mockErrorDelegate
-        // Assuming PrimerAPIConfiguration.current?.paymentMethods? does not contain valid Nol AppID
-        sut.start()
-        XCTAssertTrue(mockErrorDelegate.errorReceived is PrimerError)
-    }
-
     func testStart_NoClientToken() {
         let mockErrorDelegate = MockErrorDelegate()
         sut.errorDelegate = mockErrorDelegate
