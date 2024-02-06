@@ -11,8 +11,11 @@ import UIKit
 
 class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
     
-    class func instantiate(settings: PrimerSettings, clientSession: ClientSessionRequestBody?, clientToken: String?) -> MerchantDropInUIViewController {
-        let mcvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantDropInUIViewController
+    class func instantiate(settings: PrimerSettings, 
+                           clientSession: ClientSessionRequestBody?,
+                           clientToken: String?) -> MerchantDropInUIViewController {
+        let mcvc = UIStoryboard(name: "Main", 
+                                bundle: nil).instantiateViewController(withIdentifier: "MerchantCheckoutViewController") as! MerchantDropInUIViewController
         mcvc.settings = settings
         mcvc.clientSession = clientSession
         mcvc.clientToken = clientToken

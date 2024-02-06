@@ -52,7 +52,11 @@ class MockPrimerNolPay: PrimerNolPayProtocol {
     }
     
     func getAvailableCards(for mobileNumber: String, with countryCode: String, completion: @escaping (Result<[PrimerNolPayCard], PrimerNolPayError>) -> Void) {
-        completion(.success(mockCards))
+        if mockCards.count > 0 {
+            completion(.success(mockCards))
+        } else {
+            completion(.failure(PrimerNolPayError.nolPaySdkError(message: "Failed")))
+        }
     }
 }
 
