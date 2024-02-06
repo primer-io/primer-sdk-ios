@@ -10,12 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
+          fetch-depth: 0
       - name: Install cz
         run: pip install --user -U Commitizen
+      - name: Record previous version
+        run: |
+          echo "FROM_VERSION=$(git describe --tags $(git rev-list --tags --max-count=1))" >> $GITHUB_ENV
       - name: Record release version
         run: |
           echo "RELEASE_VERSION=$(cz version --project)" >> $GITHUB_ENV
@@ -24,7 +28,7 @@ jobs:
           git tag $RELEASE_VERSION
           git push origin $RELEASE_VERSION
       - name: Record changelog for current release
-        run: cz changelog $RELEASE_VERSION --file-name="release.md"
+        run: cz changelog $FROM_VERSION..$RELEASE_VERSION --file-name="release.md"
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
