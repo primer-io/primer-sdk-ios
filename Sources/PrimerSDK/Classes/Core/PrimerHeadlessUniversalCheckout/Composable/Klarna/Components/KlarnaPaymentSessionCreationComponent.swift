@@ -26,7 +26,7 @@ enum KlarnaPaymentSessionCreationComponentError {
 public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessCollectDataComponent, PrimerHeadlessAnalyticsRecordable {
     
     // MARK: - Tokenization
-    private var tokenizationComponent: KlarnaTokenizationComponentProtocol?
+    private var tokenizationComponent: KlarnaTokenizationComponentProtocol
     
     // MARK: - Properties
     private(set) var customerAccountInfo: KlarnaCustomerAccountInfo?
@@ -44,8 +44,8 @@ public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessCollectDataCom
     public func submit() {}
     
     // MARK: - Init
-    init(tokenizationManager: KlarnaTokenizationComponentProtocol?) {
-        self.tokenizationComponent = tokenizationManager
+    init(tokenizationComponent: KlarnaTokenizationComponentProtocol) {
+        self.tokenizationComponent = tokenizationComponent
     }
 }
 
@@ -60,11 +60,7 @@ public extension KlarnaPaymentSessionCreationComponent {
             ]
         )
         
-        guard
-            let paymentMethod = PrimerAPIConfiguration.current?.paymentMethods?.first(where: {
-                $0.name == "Klarna"
-            })
-        else {
+        guard let paymentMethod = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.name == "Klarna" }) else {
             self.handleError(error: .missingConfiguration)
             return
         }
@@ -85,14 +81,14 @@ public extension KlarnaPaymentSessionCreationComponent {
             )
         }
         
-        tokenizationComponent?.createPaymentSession(attachment: attachment) { [weak self] (result) in
-            switch result {
-            case .success(let success):
-                self?.handleSuccess(success: success)
-                
-            case .failure(let error):
-                self?.handleError(error: .createPaymentSessionFailed(error: error))
-            }
+        firstly {
+            tokenizationComponent.createPaymentSession(attachment: attachment)
+        }
+        .done { paymentSession in
+            self.handleSuccess(success: paymentSession)
+        }
+        .catch { error in
+            self.handleError(error: .createPaymentSessionFailed(error: error))
         }
     }
 }

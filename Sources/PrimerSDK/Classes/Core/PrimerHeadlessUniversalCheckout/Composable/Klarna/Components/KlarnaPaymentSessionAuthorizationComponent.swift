@@ -20,7 +20,7 @@ public enum KlarnaPaymentSessionAuthorization: PrimerHeadlessStep {
 
 public class KlarnaPaymentSessionAuthorizationComponent: PrimerHeadlessAnalyticsRecordable {
     // MARK: - Tokenization
-    private var tokenizationComponent: KlarnaTokenizationComponentProtocol?
+    private var tokenizationComponent: KlarnaTokenizationComponentProtocol
     
     // MARK: - Provider
     private(set) weak var klarnaProvider: PrimerKlarnaProviding?
@@ -29,8 +29,8 @@ public class KlarnaPaymentSessionAuthorizationComponent: PrimerHeadlessAnalytics
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
     
     // MARK: - Init
-    init(tokenizationManager: KlarnaTokenizationComponentProtocol?) {
-        self.tokenizationComponent = tokenizationManager
+    init(tokenizationComponent: KlarnaTokenizationComponentProtocol) {
+        self.tokenizationComponent = tokenizationComponent
     }
     
     // MARK: - Set
@@ -76,28 +76,22 @@ public extension KlarnaPaymentSessionAuthorizationComponent {
 // MARK: - Private
 private extension KlarnaPaymentSessionAuthorizationComponent {
     func finalizeSession(token: String, reauthorization: Bool) {
-        self.tokenizationComponent?.authorizePaymentSession(authorizationToken: token) { [weak self] (result) in
-            switch result {
-            case .success(let success):
-                self?.tokenizationComponent?.tokenize(customerToken: success, offSessionAuthorizationId: token) { (result) in
-                    switch result {
-                    case .success( _):
-                        var step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorized(authToken: token)
-                        if reauthorization {
-                            step = KlarnaPaymentSessionAuthorization.paymentSessionReauthorized(authToken: token)
-                        }
-                        self?.stepDelegate?.didReceiveStep(step: step)
-                        
-                    case .failure:
-                        let step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorizationFailed
-                        self?.stepDelegate?.didReceiveStep(step: step)
-                    }
-                }
-                
-            case .failure:
-                let step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorizationFailed
-                self?.stepDelegate?.didReceiveStep(step: step)
+        firstly {
+            tokenizationComponent.authorizePaymentSession(authorizationToken: token)
+        }
+        .then { customerToken in
+            self.tokenizationComponent.tokenize(customerToken: customerToken, offSessionAuthorizationId: token)
+        }
+        .done { _ in
+            var step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorized(authToken: token)
+            if reauthorization {
+                step = KlarnaPaymentSessionAuthorization.paymentSessionReauthorized(authToken: token)
             }
+            self.stepDelegate?.didReceiveStep(step: step)
+        }
+        .catch { _ in
+            let step = KlarnaPaymentSessionAuthorization.paymentSessionAuthorizationFailed
+            self.stepDelegate?.didReceiveStep(step: step)
         }
     }
 }

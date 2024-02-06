@@ -25,29 +25,41 @@ extension PrimerHeadlessUniversalCheckout {
         public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
         
         // MARK: - Components
-        let sessionCreationComponent: KlarnaPaymentSessionCreationComponent
-        let sessionAuthorizationComponent: KlarnaPaymentSessionAuthorizationComponent
-        let sessionFinalizationComponent: KlarnaPaymentSessionFinalizationComponent
-        let viewHandlingComponent: KlarnaPaymentViewHandlingComponent
+        var sessionCreationComponent: KlarnaPaymentSessionCreationComponent?
+        var sessionAuthorizationComponent: KlarnaPaymentSessionAuthorizationComponent?
+        var sessionFinalizationComponent: KlarnaPaymentSessionFinalizationComponent?
+        var viewHandlingComponent: KlarnaPaymentViewHandlingComponent?
         
         // MARK: - Init
         public override init() {
-            self.tokenizationComponent = PrimerAPIConfiguration.paymentMethodConfigTokenizationComponent.first
+            super.init()
+            
+            guard let tokenizationComponentProtocol = PrimerAPIConfiguration.paymentMethodConfigTokenizationComponent.first else {
+                let error = PrimerError.unknown(
+                    userInfo: [
+                        "file": #file,
+                        "class": "\(Self.self)",
+                        "function": #function,
+                        "line": "\(#line)"
+                    ],
+                    diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: error)
+                return
+            }
+            self.tokenizationComponent = tokenizationComponentProtocol
             
             self.sessionCreationComponent = KlarnaPaymentSessionCreationComponent(
-                tokenizationManager: self.tokenizationComponent
+                tokenizationComponent: tokenizationComponentProtocol
             )
             
             self.sessionAuthorizationComponent = KlarnaPaymentSessionAuthorizationComponent(
-                tokenizationManager: self.tokenizationComponent
+                tokenizationComponent: tokenizationComponentProtocol
             )
             
             self.sessionFinalizationComponent = KlarnaPaymentSessionFinalizationComponent(
-                tokenizationManager: self.tokenizationComponent
+                tokenizationComponent: tokenizationComponentProtocol
             )
             self.viewHandlingComponent = KlarnaPaymentViewHandlingComponent()
-            
-            super.init()
         }
         
         public func setDelegate(_ delegate: PrimerHeadlessKlarnaComponent) {
@@ -57,61 +69,61 @@ extension PrimerHeadlessUniversalCheckout {
         
         // MARK: - Session creation public methods
         public func setSessionCreationDelegates(_ delegate: PrimerHeadlessKlarnaComponent) {
-            sessionCreationComponent.validationDelegate = delegate
-            sessionCreationComponent.errorDelegate = delegate
-            sessionCreationComponent.stepDelegate = delegate
+            sessionCreationComponent?.validationDelegate = delegate
+            sessionCreationComponent?.errorDelegate = delegate
+            sessionCreationComponent?.stepDelegate = delegate
         }
         
         public func startSession() {
-            sessionCreationComponent.start()
+            sessionCreationComponent?.start()
             validate()
         }
         
         public func updateSessionCollectedData(collectableData: KlarnaPaymentSessionCollectableData) {
-            sessionCreationComponent.updateCollectedData(collectableData: collectableData)
+            sessionCreationComponent?.updateCollectedData(collectableData: collectableData)
         }
         
         // MARK: - Session authorization public methods
         public func setSessionAuthorizationDelegate(_ delegate: PrimerHeadlessKlarnaComponent) {
-            sessionAuthorizationComponent.setProvider(provider: klarnaProvider)
-            sessionAuthorizationComponent.stepDelegate = delegate
+            sessionAuthorizationComponent?.setProvider(provider: klarnaProvider)
+            sessionAuthorizationComponent?.stepDelegate = delegate
         }
         
         public func authorizeSession(autoFinalize: Bool, jsonData: String? = nil) {
-            sessionAuthorizationComponent.authorizeSession(autoFinalize: autoFinalize)
+            sessionAuthorizationComponent?.authorizeSession(autoFinalize: autoFinalize)
         }
         
         // MARK: - Session finalization public methods
         public func setSessionFinalizationDelegate(_ delegate: PrimerHeadlessKlarnaComponent) {
-            sessionFinalizationComponent.setProvider(provider: klarnaProvider)
-            sessionFinalizationComponent.stepDelegate = delegate
+            sessionFinalizationComponent?.setProvider(provider: klarnaProvider)
+            sessionFinalizationComponent?.stepDelegate = delegate
         }
         
         public func finalizeSession() {
-            sessionFinalizationComponent.finalise()
+            sessionFinalizationComponent?.finalise()
         }
         
         // MARK: - Klarna PaymentView handling methods
         public func setProvider(with clientToken: String, paymentCategory: String) {
             klarnaProvider = PrimerKlarnaProvider(clientToken: clientToken, paymentCategory: paymentCategory, urlScheme: settings.paymentMethodOptions.urlScheme)
             
-            viewHandlingComponent.setProvider(provider: klarnaProvider)
+            viewHandlingComponent?.setProvider(provider: klarnaProvider)
         }
         
         public func setViewHandlingDelegate(_ delegate: PrimerHeadlessKlarnaComponent) {
-            viewHandlingComponent.stepDelegate = delegate
+            viewHandlingComponent?.stepDelegate = delegate
         }
         
         public func createPaymentView() -> UIView? {
-            viewHandlingComponent.createPaymentView()
+            viewHandlingComponent?.createPaymentView()
         }
         
         public func initPaymentView() {
-            viewHandlingComponent.initPaymentView()
+            viewHandlingComponent?.initPaymentView()
         }
         
         public func loadPaymentView(jsonData: String? = nil) {
-            viewHandlingComponent.loadPaymentView(jsonData: jsonData)
+            viewHandlingComponent?.loadPaymentView(jsonData: jsonData)
         }
         
         public func validate() {
