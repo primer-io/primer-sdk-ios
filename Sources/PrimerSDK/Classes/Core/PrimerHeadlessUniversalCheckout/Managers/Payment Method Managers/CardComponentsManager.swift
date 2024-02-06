@@ -9,10 +9,10 @@ import Foundation
 import SafariServices
 
 public protocol PrimerHeadlessUniversalCheckoutInputData {}
-
+// swiftlint:disable type_name
 @available(*, deprecated, message: "CardComponentsManager is no longer supported, please use PrimerHeadlessUniversalCheckout instead")
 public protocol PrimerHeadlessUniversalCheckoutCardComponentsManagerDelegate: AnyObject {
-// swiftlint:disable:previous type_name
+// swiftlint:enable type_name
 
     func cardComponentsManager(_ cardComponentsManager: PrimerHeadlessUniversalCheckout.CardComponentsManager,
                                isCardFormValid: Bool)

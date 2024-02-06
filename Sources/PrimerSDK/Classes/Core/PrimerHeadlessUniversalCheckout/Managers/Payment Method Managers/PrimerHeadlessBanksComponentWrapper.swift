@@ -26,8 +26,9 @@ import Foundation
     @objc func didReceiveValidationStatus(_ status: ValidStatus)
 }
 
-// swiftlint:disable:next type_name
+// swiftlint:disable type_name
 @objc public protocol PrimerHeadlessBanksComponentWrapperDelegate: AnyObject, PrimerHeadlessSubmitable, PrimerHeadlessStartable {
+    // swiftlint:enable type_name
     @objc var stepDelegate: BanksComponentSteppable? { get set }
     @objc var errorDelegate: BanksComponentErrorable? { get set }
     @objc var validationDelegate: BanksComponentValidatable? { get set }

@@ -8,9 +8,10 @@
 import Foundation
 import SafariServices
 
+// swiftlint:disable type_name
 @objc
 public protocol PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
-	// swiftlint:disable:previous type_name
+    // swiftlint:enable type_name
     @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                                              metadataDidChange metadata: [String: Any]?)
     @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,

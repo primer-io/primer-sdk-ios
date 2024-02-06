@@ -29,10 +29,6 @@ extension Request.Body.Adyen {
 
 internal struct BankTokenizationSessionRequestParameters: Encodable {
     let paymentMethod: String
-    
-    
-    
-    let a = ""
 }
 
 extension Response.Body.Adyen {

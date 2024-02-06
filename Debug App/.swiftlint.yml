@@ -1,5 +1,4 @@
 disabled_rules:
- # errors
     - line_length
     - type_body_length
     - function_body_length

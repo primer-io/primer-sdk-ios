@@ -45,10 +45,11 @@ protocol InternalCardComponentsManagerProtocol {
     func tokenize()
 }
 
-// swiftlint:disable:next large_tuple
+// swiftlint:disable large_tuple
 typealias BillingAddressField = (fieldView: PrimerTextFieldView,
                                  containerFieldView: PrimerCustomFieldView,
                                  isFieldHidden: Bool)
+// swiftlint:enable large_tuple
 
 @objc
 internal class InternalCardComponentsManager: NSObject, InternalCardComponentsManagerProtocol, LogReporter {
