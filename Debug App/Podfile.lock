@@ -1,6 +1,6 @@
 PODS:
   - IQKeyboardManagerSwift (6.5.16)
-  - Primer3DS (2.1.0)
+  - Primer3DS (2.2.0)
   - PrimerIPay88MYSDK (0.1.7)
   - PrimerKlarnaSDK (1.1.0)
   - PrimerNolPaySDK (1.0.1)
@@ -10,7 +10,7 @@ PODS:
 
 DEPENDENCIES:
   - IQKeyboardManagerSwift
-  - Primer3DS (from `https://github.com/primer-io/primer-sdk-3ds-ios`, branch `nq/update_3ds_2_4_1`)
+  - Primer3DS (~> 2.2.0)
   - PrimerIPay88MYSDK
   - PrimerKlarnaSDK
   - PrimerNolPaySDK
@@ -19,30 +19,23 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - IQKeyboardManagerSwift
+    - Primer3DS
     - PrimerIPay88MYSDK
     - PrimerKlarnaSDK
     - PrimerNolPaySDK
 
 EXTERNAL SOURCES:
-  Primer3DS:
-    :branch: nq/update_3ds_2_4_1
-    :git: https://github.com/primer-io/primer-sdk-3ds-ios
   PrimerSDK:
     :path: "../"
 
-CHECKOUT OPTIONS:
-  Primer3DS:
-    :commit: 0a69e46473cf5606b21789e51b3f69ff67d18c54
-    :git: https://github.com/primer-io/primer-sdk-3ds-ios
-
 SPEC CHECKSUMS:
   IQKeyboardManagerSwift: 12d89768845bb77b55cc092ecc2b1f9370f06b76
-  Primer3DS: c02e0863590e71fc0cdb6548289741689a925296
+  Primer3DS: affa70b17e4b7f8f3bd6110fa88dce24cb5ac4c0
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: 83e9a1357a7247bf8fa2836fc945cf97644d601d
   PrimerNolPaySDK: 08b140ed39b378a0b33b4f8746544a402175c0cc
   PrimerSDK: 97b668199bbe7678edc17cb748ad233249fed2c3
 
-PODFILE CHECKSUM: 86118ba5723968efb6cac33b50473fad3f34513d
+PODFILE CHECKSUM: 2165f25bdca4c31e764947a29b616b0ebe1a5034
 
 COCOAPODS: 1.14.3
