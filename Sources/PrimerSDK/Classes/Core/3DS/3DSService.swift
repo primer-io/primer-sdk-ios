@@ -54,7 +54,6 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
         .then { () -> Promise<SDKAuthResult> in
             self.create3DsAuthData(paymentMethodTokenData: paymentMethodTokenData)
         }
-		// swiftlint:disable:next large_tuple
         .then { sdkAuthResult -> Promise<(serverAuthData: ThreeDS.ServerAuthData,
                                           resumeToken: String,
                                           threeDsAppRequestorUrl: URL?)> in

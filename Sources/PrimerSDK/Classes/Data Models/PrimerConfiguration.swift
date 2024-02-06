@@ -279,7 +279,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
         init(
             coreUrl: String?,
             pciUrl: String?,
-            assetsUrl: String?, /// poghledaj u responsu kako se zove
+            assetsUrl: String?,
             clientSession: ClientSession.APIResponse?,
             paymentMethods: [PrimerPaymentMethod]?,
             primerAccountId: String?,
