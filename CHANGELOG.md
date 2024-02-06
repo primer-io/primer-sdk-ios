@@ -1,3 +1,13 @@
+## 2.21.0 (2024-02-06)
+
+### Feat
+
+- Implement new currencies logic (#776)
+
+### Fix
+
+- Fix NOL pay bug - fetching of the cards (#793)
+
 ## 2.20.1 (2024-01-26)
 
 ### Fix
