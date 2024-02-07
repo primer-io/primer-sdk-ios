@@ -42,7 +42,7 @@ class KlarnaTestsMocks {
                 totalOrderAmount: hasAmount ? 100: nil,
                 totalTaxAmount: nil,
                 countryCode: .de,
-                currencyCode: hasCurrency ? .EUR : nil,
+                currencyCode: hasCurrency ? CurrencyLoader().getCurrency("EUR") : nil,
                 fees: nil,
                 lineItems: hasItems ? [getLineItem(hasAmount: hasLineItemAmout)] : nil,
                 shippingAmount: nil),
@@ -54,6 +54,7 @@ class KlarnaTestsMocks {
         return Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
+            assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: clientSession,
             paymentMethods: [
                 PrimerPaymentMethod(
