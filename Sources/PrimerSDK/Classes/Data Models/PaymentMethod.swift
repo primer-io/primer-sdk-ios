@@ -163,7 +163,8 @@ class PrimerPaymentMethod: Codable, LogReporter {
         switch internalPaymentMethodType {
         case PrimerPaymentMethodType.apaya,
             PrimerPaymentMethodType.goCardless,
-            PrimerPaymentMethodType.googlePay:
+            PrimerPaymentMethodType.googlePay,
+            PrimerPaymentMethodType.nolPay:
             return false
         default:
             return true

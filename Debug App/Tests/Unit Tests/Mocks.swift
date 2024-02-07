@@ -103,7 +103,8 @@ class Mocks {
             static var adyenGiroPayRedirectPaymentMethodId = "mock_adyen_giropay_payment_method_id"
             static var klarnaPaymentMethodId = "mock_klarna_payment_method_id"
             static var paymentCardPaymentMethodId = "mock_payment_card_payment_method_id"
-            
+            static var nolPaymentMethodId = "mock_nol_payment_method_id"
+
             static var webRedirectPaymentMethodType = "MOCK_WEB_REDIRECT_PAYMENT_METHOD_TYPE"
             static var adyenGiroPayRedirectPaymentMethodType = "MOCK_ADYEN_GIROPAY_PAYMENT_METHOD_TYPE"
             static var klarnaPaymentMethodType = "MOCK_KLARNA_PAYMENT_METHOD_TYPE"
@@ -113,7 +114,8 @@ class Mocks {
             static var adyenGiroPayRedirectPaymentMethodName = "Mock Adyen GiroPay Payment Method"
             static var klarnaPaymentMethodName = "Mock Klarna Payment Method"
             static var paymentCardPaymentMethodName = "Mock Payment Card Payment Method"
-            
+            static var nolPaymentMethodName = "Mock NOL Payment Method"
+
             static var processorConfigId = "mock_processor_config_id"
             static var idealPaymentMethodId = "ADYEN_IDEAL"
             static var idealPaymentMethodName = "Mock Ideal Payment Method"
@@ -140,6 +142,16 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 0,
             options: nil,
+            displayMetadata: nil)
+        
+        static var nolPaymentMethod = PrimerPaymentMethod(
+            id: Mocks.Static.Strings.nolPaymentMethodId,
+            implementationType: .nativeSdk,
+            type: "NOL_PAY", // Mocks.Static.Strings.paymentCardPaymentMethodType,
+            name: Mocks.Static.Strings.nolPaymentMethodName,
+            processorConfigId: Mocks.Static.Strings.processorConfigId,
+            surcharge: 0,
+            options: MerchantOptions(merchantId: "user8", merchantAccountId: "123", appId: "test"),
             displayMetadata: nil)
         
         static var adyenGiroPayRedirectPaymentMethod = PrimerPaymentMethod(
