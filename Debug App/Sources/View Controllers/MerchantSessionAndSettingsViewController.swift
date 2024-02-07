@@ -13,6 +13,7 @@ var environment: Environment = .sandbox
 var customDefinedApiKey: String?
 var performPaymentAfterVaulting: Bool = false
 var useNewWorkflows = true
+var klarnaSession = false
 
 class MerchantSessionAndSettingsViewController: UIViewController {
     
@@ -28,6 +29,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var testParamsGroupStackView: UIStackView!
     @IBOutlet weak var apiKeyStackView: UIStackView!
     @IBOutlet weak var useNewWorkflowsStackView: UIStackView!
+    @IBOutlet weak var klarnaSessionStackView: UIStackView!
     @IBOutlet weak var clientTokenStackView: UIStackView!
     @IBOutlet weak var sdkSettingsStackView: UIStackView!
     @IBOutlet weak var orderStackView: UIStackView!
@@ -131,7 +133,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     
     var selectedPaymentHandling: PrimerPaymentHandling = .auto
     
-    var clientSession = MerchantMockDataManager.getClientSession(sessionType: .klarna)
+    var clientSession = MerchantMockDataManager.getClientSession(sessionType: .generic)
     
     var selectedTestScenario: Test.Scenario?
     var selectedTestFlow: Test.Flow?
@@ -235,6 +237,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             customerStackView.isHidden = false
             surchargeGroupStackView.isHidden = false
             useNewWorkflowsStackView.isHidden = false
+            klarnaSessionStackView.isHidden = false
             
         case .clientToken:
             environmentStackView.isHidden = false
@@ -246,6 +249,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             customerStackView.isHidden = true
             surchargeGroupStackView.isHidden = true
             useNewWorkflowsStackView.isHidden = true
+            klarnaSessionStackView.isHidden = true
             
         case .testScenario:
             environmentStackView.isHidden = true
@@ -257,6 +261,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             customerStackView.isHidden = false
             surchargeGroupStackView.isHidden = false
             useNewWorkflowsStackView.isHidden = true
+            klarnaSessionStackView.isHidden = true
             
             testParamsStackView.isHidden = (selectedTestScenario == nil)
             
@@ -392,6 +397,10 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         useNewWorkflows = sender.isOn
     }
     
+    @IBAction func klarnaSessionValueChanged(_ sender: UISwitch) {
+        klarnaSession = sender.isOn
+    }
+    
     func configureClientSession() {
         clientSession.currencyCode = Currency(rawValue: currencyTextField.text ?? "")
         clientSession.order?.countryCode = CountryCode(rawValue: countryCodeTextField.text ?? "")
@@ -428,8 +437,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             clientSession.customer?.shippingAddress = nil
         }
         
-        //.init(vaultOnSuccess: vaultPaymentsSwitch.isOn, options: nil, descriptor: nil, paymentType: nil)
-        clientSession.paymentMethod = MerchantMockDataManager.klarnaPaymentMethod
+        clientSession.paymentMethod = .init(vaultOnSuccess: vaultPaymentsSwitch.isOn, options: nil, descriptor: nil, paymentType: nil)
     }
     
     func configureTestScenario() {

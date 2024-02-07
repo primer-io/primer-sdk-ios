@@ -11,7 +11,7 @@ import UIKit
 struct MerchantMockDataManager {
     
     enum SessionType {
-        case normal
+        case generic
         case klarna
     }
     
@@ -28,7 +28,7 @@ struct MerchantMockDataManager {
     }
     
     static func getClientSession(sessionType: SessionType) -> ClientSessionRequestBody {
-        return sessionType == .normal ? normalClientSession : klarnaClientSession
+        return sessionType == .generic ? normalClientSession : klarnaClientSession
     }
     
     static var klarnaClientSession = ClientSessionRequestBody(
