@@ -726,9 +726,8 @@ struct SDKProperties: Codable {
     }
 }
 
-
 extension Analytics.Event {
-    
+
     static func sdk(name: String, params: [String: String]?) -> Self {
         return .init(
             eventType: .sdkEvent,
@@ -738,12 +737,12 @@ extension Analytics.Event {
             )
         )
     }
-    
+
     static func message(message: String?,
                         messageType: Property.MessageType,
                         severity: Property.Severity,
                         diagnosticsId: String? = nil,
-                        context: [String : Any]? = nil) -> Self {
+                        context: [String: Any]? = nil) -> Self {
         return .init(
             eventType: .message,
             properties: MessageEventProperties(
@@ -755,7 +754,7 @@ extension Analytics.Event {
             )
         )
     }
-    
+
     static func ui(action: Property.Action,
                    context: Property.Context?,
                    extra: String?,
@@ -775,7 +774,7 @@ extension Analytics.Event {
                 place: place)
         )
     }
-    
+
     static func networkCall(callType: Property.NetworkCallType,
                             id: String,
                             url: String,
@@ -794,14 +793,14 @@ extension Analytics.Event {
             )
         )
     }
-    
+
     static func networkConnectivity(networkType: Connectivity.NetworkType) -> Self {
         return .init(
             eventType: .networkConnectivity,
             properties: NetworkConnectivityEventProperties(networkType: networkType)
         )
     }
-    
+
     static func timer(momentType: Property.TimerType,
                       id: String?) -> Self {
         return .init(
@@ -812,7 +811,7 @@ extension Analytics.Event {
             )
         )
     }
-    
+
     static func allImagesLoading(momentType: Property.TimerType,
                                  id: String?) -> Self {
         return .init(
@@ -823,7 +822,7 @@ extension Analytics.Event {
             )
         )
     }
-    
+
     static func imageLoading(momentType: Property.TimerType,
                              id: String?) -> Self {
         return .init(

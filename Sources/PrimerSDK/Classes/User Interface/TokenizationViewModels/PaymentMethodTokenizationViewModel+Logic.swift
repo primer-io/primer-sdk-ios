@@ -64,79 +64,77 @@ extension PaymentMethodTokenizationViewModel {
     }
 
     func processPaymentMethodTokenData() {
-            if PrimerInternal.shared.intent == .vault {
-                PrimerDelegateProxy.primerDidTokenizePaymentMethod(self.paymentMethodTokenData!) { _ in }
+        if PrimerInternal.shared.intent == .vault {
+            PrimerDelegateProxy.primerDidTokenizePaymentMethod(self.paymentMethodTokenData!) { _ in }
+            self.handleSuccessfulFlow()
+
+        } else {
+            self.didStartPayment?()
+            self.didStartPayment = nil
+
+            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+
+            firstly {
+                self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+            }
+            .done { checkoutData in
+                self.didFinishPayment?(nil)
+                self.nullifyEventCallbacks()
+
+                if PrimerSettings.current.paymentHandling == .auto, let checkoutData = checkoutData {
+                    PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+                }
+
                 self.handleSuccessfulFlow()
+            }
+            .ensure {
+                PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+            }
+            .catch { err in
+                self.didFinishPayment?(err)
+                self.nullifyEventCallbacks()
 
-            } else {
-                self.didStartPayment?()
-                self.didStartPayment = nil
+                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
 
-                PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
-
-                firstly {
-                    self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
-                }
-                .done { checkoutData in
-                    self.didFinishPayment?(nil)
-                    self.nullifyEventCallbacks()
-
-                    if PrimerSettings.current.paymentHandling == .auto, let checkoutData = checkoutData {
-                        PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+                if let primerErr = err as? PrimerError,
+                   case .cancelled = primerErr,
+                   PrimerInternal.shared.sdkIntegrationType == .dropIn,
+                   PrimerInternal.shared.selectedPaymentMethodType == nil,
+                   self.config.implementationType == .webRedirect ||
+                    self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
+                    self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
+                    self.config.type == PrimerPaymentMethodType.payPal.rawValue {
+                    firstly {
+                        clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                     }
-
-                    self.handleSuccessfulFlow()
-                }
-                .ensure {
-                    PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
-                }
-                .catch { err in
-                    self.didFinishPayment?(err)
-                    self.nullifyEventCallbacks()
-
-                    let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-
-                    if let primerErr = err as? PrimerError,
-                       case .cancelled = primerErr,
-                       PrimerInternal.shared.sdkIntegrationType == .dropIn,
-                       PrimerInternal.shared.selectedPaymentMethodType == nil,
-                       (
-                        self.config.implementationType == .webRedirect ||
-                        self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
-                        self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-                        self.config.type == PrimerPaymentMethodType.payPal.rawValue
-                       ) {
-                        firstly {
-                            clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                        }
-                        .done { _ in
-                            PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
-                        }
-                        // The above promises will never end up on error.
-                        .catch { _ in }
-
-                    } else {
-                        firstly {
-                            clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                        }
-                        .then { () -> Promise<String?> in
-                            var primerErr: PrimerError!
-                            if let error = err as? PrimerError {
-                                primerErr = error
-                            } else {
-                                primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: UUID().uuidString)
-                            }
-
-                            return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
-                        }
-                        .done { merchantErrorMessage in
-                            self.handleFailureFlow(errorMessage: merchantErrorMessage)
-                        }
-                        // The above promises will never end up on error.
-                        .catch { _ in }
+                    .done { _ in
+                        PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
                     }
+                    // The above promises will never end up on error.
+                    .catch { _ in }
+
+                } else {
+                    firstly {
+                        clientSessionActionsModule.unselectPaymentMethodIfNeeded()
+                    }
+                    .then { () -> Promise<String?> in
+                        var primerErr: PrimerError!
+                        if let error = err as? PrimerError {
+                            primerErr = error
+                        } else {
+                            primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: UUID().uuidString)
+                        }
+
+                        return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
+                    }
+                    .done { merchantErrorMessage in
+                        self.handleFailureFlow(errorMessage: merchantErrorMessage)
+                    }
+                    // The above promises will never end up on error.
+                    .catch { _ in }
                 }
             }
+        }
     }
 
     func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
@@ -248,9 +246,9 @@ extension PaymentMethodTokenizationViewModel {
                             .done {
                                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                                     let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                               "class": "\(Self.self)",
-                               "function": #function,
-                               "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                        "class": "\(Self.self)",
+                                                                                        "function": #function,
+                                                                                        "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }
@@ -265,9 +263,9 @@ extension PaymentMethodTokenizationViewModel {
                             var merchantErr: Error!
                             if let message = message {
                                 let err = PrimerError.merchantError(message: message, userInfo: ["file": #file,
-                               "class": "\(Self.self)",
-                               "function": #function,
-                               "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                                 "class": "\(Self.self)",
+                                                                                                 "function": #function,
+                                                                                                 "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                                 merchantErr = err
                             } else {
                                 merchantErr = NSError.emptyDescriptionError
@@ -286,9 +284,9 @@ extension PaymentMethodTokenizationViewModel {
                             .done {
                                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                                     let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                               "class": "\(Self.self)",
-                               "function": #function,
-                               "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                        "class": "\(Self.self)",
+                                                                                        "function": #function,
+                                                                                        "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }
@@ -312,9 +310,9 @@ extension PaymentMethodTokenizationViewModel {
                 guard let token = paymentMethodTokenData.token else {
                     let err = PrimerError.invalidClientToken(
                         userInfo: ["file": #file,
-                               "class": "\(Self.self)",
-                               "function": #function,
-                               "line": "\(#line)"],
+                                   "class": "\(Self.self)",
+                                   "function": #function,
+                                   "line": "\(#line)"],
                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -327,9 +325,9 @@ extension PaymentMethodTokenizationViewModel {
                 .done { paymentResponse -> Void in
                     guard paymentResponse != nil else {
                         let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file,
-                               "class": "\(Self.self)",
-                               "function": #function,
-                               "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                                          "class": "\(Self.self)",
+                                                                                                          "function": #function,
+                                                                                                          "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         throw err
                     }
 
@@ -345,9 +343,9 @@ extension PaymentMethodTokenizationViewModel {
                         .done {
                             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                               "class": "\(Self.self)",
-                               "function": #function,
-                               "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                    "class": "\(Self.self)",
+                                                                                    "function": #function,
+                                                                                    "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                                 ErrorHandler.handle(error: err)
                                 throw err
                             }
@@ -379,9 +377,9 @@ extension PaymentMethodTokenizationViewModel {
                             var merchantErr: Error!
                             if let message = message {
                                 let err = PrimerError.merchantError(message: message, userInfo: ["file": #file,
-                               "class": "\(Self.self)",
-                               "function": #function,
-                               "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                                 "class": "\(Self.self)",
+                                                                                                 "function": #function,
+                                                                                                 "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                                 merchantErr = err
                             } else {
                                 merchantErr = NSError.emptyDescriptionError
@@ -411,9 +409,9 @@ extension PaymentMethodTokenizationViewModel {
             } else {
                 guard let resumePaymentId = self.resumePaymentId else {
                     let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid", userInfo: ["file": #file,
-                               "class": "\(Self.self)",
-                               "function": #function,
-                               "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                                                                                 "class": "\(Self.self)",
+                                                                                                                                                 "function": #function,
+                                                                                                                                                 "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: resumePaymentIdError)
                     seal.reject(resumePaymentIdError)
                     return
@@ -425,9 +423,9 @@ extension PaymentMethodTokenizationViewModel {
                 .done { paymentResponse -> Void in
                     guard let paymentResponse = paymentResponse else {
                         let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file,
-                               "class": "\(Self.self)",
-                               "function": #function,
-                               "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                                          "class": "\(Self.self)",
+                                                                                                          "function": #function,
+                                                                                                          "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         throw err
                     }

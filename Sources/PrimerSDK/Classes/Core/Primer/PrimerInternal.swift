@@ -40,7 +40,7 @@ internal class PrimerInternal: LogReporter {
     static var isInHeadlessMode: Bool {
         PrimerInternal.shared.sdkIntegrationType == .headless
     }
-    
+
     fileprivate init() {
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willTerminateNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willResignActiveNotification, object: nil)
@@ -142,6 +142,8 @@ internal class PrimerInternal: LogReporter {
         }
         .done {
             PrimerUIManager.presentPaymentUI()
+            let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(), networkService: CurrencyNetworkService())
+            currencyLoader.updateCurrenciesFromAPI()
             completion?(nil)
         }
         .catch { err in
@@ -210,14 +212,13 @@ internal class PrimerInternal: LogReporter {
 
         let sdkEvent = Analytics.Event.sdk(name: #function, params: nil)
 
-
         let connectivityEvent = Analytics.Event.networkConnectivity(networkType: Connectivity.networkType)
 
         let timingStartEvent = Analytics.Event.timer(
             momentType: .start,
             id: PrimerInternal.shared.timingEventId ?? "Unknown"
         )
-        
+
         events = [sdkEvent, connectivityEvent, timingStartEvent]
         Analytics.Service.record(events: events)
 

@@ -110,7 +110,7 @@ internal class PayPalService: PayPalServiceProtocol {
         let body = Request.Body.PayPal.CreateOrder(
             paymentMethodConfigId: configId,
             amount: amount,
-            currencyCode: currency,
+			currencyCode: currency.code,
             returnUrl: "\(urlScheme)://paypal-success",
             cancelUrl: "\(urlScheme)://paypal-cancel"
         )

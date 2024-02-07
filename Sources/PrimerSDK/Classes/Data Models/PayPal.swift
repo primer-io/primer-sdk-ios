@@ -23,7 +23,7 @@ extension Request.Body.PayPal {
 
         let paymentMethodConfigId: String
         let amount: Int
-        let currencyCode: Currency
+        let currencyCode: String
         var locale: CountryCode?
         let returnUrl: String
         let cancelUrl: String

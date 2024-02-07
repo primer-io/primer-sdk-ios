@@ -23,7 +23,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
 
     public typealias T = NolPayLinkCollectableData
     public typealias P = NolPayLinkCardStep
-    
+
 #if canImport(PrimerNolPaySDK)
     private var nolPay: PrimerNolPayProtocol!
 #endif
@@ -169,7 +169,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
 
                 }
             }
-            #endif
+#endif
         case .collectOtpData:
             guard let otpCode = otpCode
             else {
@@ -234,14 +234,14 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                             self.stepDelegate?.didReceiveStep(step: self.nextDataStep)
                         case .failure(let error):
                             let primerError = PrimerError.nolError(code: error.errorCode,
-                                                             message: error.description,
-                                                             userInfo: [
-                                                                "file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"
-                                                             ],
-                                                             diagnosticsId: UUID().uuidString)
+                                                                   message: error.description,
+                                                                   userInfo: [
+                                                                    "file": #file,
+                                                                    "class": "\(Self.self)",
+                                                                    "function": #function,
+                                                                    "line": "\(#line)"
+                                                                   ],
+                                                                   diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: primerError)
                             self.errorDelegate?.didReceiveError(error: primerError)
                         }

@@ -72,7 +72,8 @@ class Mocks {
     ) -> PrimerAPIConfiguration {
         return PrimerAPIConfiguration(
             coreUrl: "https://core.primer.io",
-            pciUrl: "https://pci.primer.io",
+            pciUrl: "https://pci.primer.io", 
+            assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: clientSession,
             paymentMethods: paymentMethods,
             primerAccountId: nil,
@@ -82,7 +83,8 @@ class Mocks {
     
     static var apiConfiguration = PrimerAPIConfiguration(
         coreUrl: "https://core.primer.io",
-        pciUrl: "https://pci.primer.io",
+        pciUrl: "https://pci.primer.io", 
+        assetsUrl: "https://assets.staging.core.primer.io",
         clientSession: nil,
         paymentMethods: [],
         primerAccountId: nil,
@@ -97,7 +99,8 @@ class Mocks {
             static var adyenGiroPayRedirectPaymentMethodId = "mock_adyen_giropay_payment_method_id"
             static var klarnaPaymentMethodId = "mock_klarna_payment_method_id"
             static var paymentCardPaymentMethodId = "mock_payment_card_payment_method_id"
-            
+            static var nolPaymentMethodId = "mock_nol_payment_method_id"
+
             static var webRedirectPaymentMethodType = "MOCK_WEB_REDIRECT_PAYMENT_METHOD_TYPE"
             static var adyenGiroPayRedirectPaymentMethodType = "MOCK_ADYEN_GIROPAY_PAYMENT_METHOD_TYPE"
             static var klarnaPaymentMethodType = "MOCK_KLARNA_PAYMENT_METHOD_TYPE"
@@ -107,7 +110,8 @@ class Mocks {
             static var adyenGiroPayRedirectPaymentMethodName = "Mock Adyen GiroPay Payment Method"
             static var klarnaPaymentMethodName = "Mock Klarna Payment Method"
             static var paymentCardPaymentMethodName = "Mock Payment Card Payment Method"
-            
+            static var nolPaymentMethodName = "Mock NOL Payment Method"
+
             static var processorConfigId = "mock_processor_config_id"
             static var idealPaymentMethodId = "ADYEN_IDEAL"
             static var idealPaymentMethodName = "Mock Ideal Payment Method"
@@ -134,6 +138,16 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 0,
             options: nil,
+            displayMetadata: nil)
+        
+        static var nolPaymentMethod = PrimerPaymentMethod(
+            id: Mocks.Static.Strings.nolPaymentMethodId,
+            implementationType: .nativeSdk,
+            type: "NOL_PAY", // Mocks.Static.Strings.paymentCardPaymentMethodType,
+            name: Mocks.Static.Strings.nolPaymentMethodName,
+            processorConfigId: Mocks.Static.Strings.processorConfigId,
+            surcharge: 0,
+            options: MerchantOptions(merchantId: "user8", merchantAccountId: "123", appId: "test"),
             displayMetadata: nil)
         
         static var adyenGiroPayRedirectPaymentMethod = PrimerPaymentMethod(
@@ -249,6 +263,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
 let mockPaymentMethodConfig = PrimerAPIConfiguration(
     coreUrl: "url",
     pciUrl: "url",
+    assetsUrl: "https://assets.staging.core.primer.io",
     clientSession: nil,
     paymentMethods: [
         PrimerPaymentMethod(id: "klarna-test", implementationType: .nativeSdk, type: "KLARNA", name: "Klarna", processorConfigId: "klarna-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
@@ -290,6 +305,7 @@ class MockAppState: AppStateProtocol {
         apiConfiguration: PrimerAPIConfiguration? = PrimerAPIConfiguration(
             coreUrl: "url",
             pciUrl: "url",
+            assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: nil,
             paymentMethods: [
                 PrimerPaymentMethod(id: "klarna-test", implementationType: .nativeSdk, type: "KLARNA", name: "Klarna", processorConfigId: "klarna-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
@@ -318,183 +334,183 @@ extension MockAppState {
     
     static var mockPrimerAPIConfigurationJsonString: String {
         return """
-            {
-              "pciUrl" : "https://sdk.api.sandbox.primer.io",
-              "paymentMethods" : [
-                {
-                  "id" : "id-1",
-                  "options" : {
-                    "merchantId" : "merchant-id-1"
-                    "clientId" : "client-id-1",
-                    "merchantAccountId" : "merchant-account-id-1"
-                  },
-                  "type" : "KLARNA",
-                  "processorConfigId" : "processor-config-id-1"
-                },
-                {
-                  "id" : "id-2",
-                  "options" : {
-                    "merchantId" : "merchant-id-2"
-                    "merchantAccountId" : "merchant-account-id-2"
-                  },
-                  "type" : "APAYA",
-                  "processorConfigId" : "processor-config-id-2"
-                },
-                {
-                  "id" : "id-3",
-                  "options" : {
-                    "merchantId" : "merchant-id-3"
-                    "clientId" : "client-id-3",
-                    "merchantAccountId" : "merchant-account-id-3"
-                  },
-                  "type" : "PAYPAL",
-                  "processorConfigId" : "processor-config-id-3"
-                },
-                {
-                  "id" : "id-4",
-                  "type" : "APPLE_PAY",
-                  "options" : {
-                    "certificates" : [
-                      {
-                        "certificateId" : "certificate-id-4",
-                        "status" : "ACTIVE",
-                        "validFromTimestamp" : "2021-12-06T10:14:14",
-                        "expirationTimestamp" : "2024-01-05T10:14:13",
-                        "merchantId" : "merchant.checkout.team",
-                        "createdAt" : "2021-12-06T10:24:34.659452"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "id" : "id-5",
-                  "options" : {
-                    "merchantId" : "merchant-id-5"
-                    "clientId" : "client-id-5",
-                    "merchantAccountId" : "merchant-account-id-5"
-                  },
-                  "type" : "GOCARDLESS",
-                  "processorConfigId" : "processor-config-id-5"
-                },
-                {
-                  "type" : "PAYMENT_CARD",
-                  "options" : {
-                    "threeDSecureEnabled" : true,
-                    "threeDSecureProvider" : "3DS-PROVIDER"
-                  }
-                }
-              ],
-              "clientSession" : {
-                "order" : {
-                  "countryCode" : "GB",
-                  "orderId" : "ios_order_id_LklKo2zK",
-                  "currencyCode" : "GBP",
-                  "totalOrderAmount" : 1010,
-                  "lineItems" : [
-                    {
-                      "amount" : 1010,
-                      "quantity" : 1,
-                      "itemId" : "shoes-382190",
-                      "description" : "Fancy Shoes"
-                    }
-                  ]
-                },
-                "clientSessionId" : "09841e8a-b1fa-4528-aed1-173808a4f44d",
-                "customer" : {
-                  "firstName" : "John",
-                  "shippingAddress" : {
-                    "firstName" : "John",
-                    "lastName" : "Smith",
-                    "addressLine1" : "9446 Richmond Road",
-                    "countryCode" : "GB",
-                    "city" : "London",
-                    "postalCode" : "EC53 8BT"
-                  },
-                  "emailAddress" : "john@primer.io",
-                  "customerId" : "ios-customer-G90G37kH",
-                  "mobileNumber" : "+4478888888888",
-                  "billingAddress" : {
-                    "firstName" : "John",
-                    "lastName" : "Smith",
-                    "addressLine1" : "65 York Road",
-                    "countryCode" : "GB",
-                    "city" : "London",
-                    "postalCode" : "NW06 4OM"
-                  },
-                  "lastName" : "Smith"
-                },
-                "paymentMethod" : {
-                  "options" : [
-                    {
-                      "type" : "PAYMENT_CARD",
-                      "networks" : [
-                        {
-                          "type" : "VISA",
-                          "surcharge" : 109
-                        },
-                        {
-                          "type" : "MASTERCARD",
-                          "surcharge" : 129
-                        }
-                      ]
-                    },
-                    {
-                      "type" : "PAYPAL",
-                      "surcharge" : 49
-                    },
-                    {
-                      "type" : "PAY_NL_IDEAL",
-                      "surcharge" : 39
-                    },
-                    {
-                      "type" : "ADYEN_IDEAL",
-                      "surcharge" : 69
-                    },
-                    {
-                      "type" : "ADYEN_TWINT",
-                      "surcharge" : 59
-                    },
-                    {
-                      "type" : "BUCKAROO_BANCONTACT",
-                      "surcharge" : 89
-                    },
-                    {
-                      "type" : "ADYEN_GIROPAY",
-                      "surcharge" : 79
-                    },
-                    {
-                      "type" : "APPLE_PAY",
-                      "surcharge" : 19
-                    }
-                  ],
-                  "vaultOnSuccess" : false
-                }
-              },
-              "primerAccountId" : "PRIMER-ACCOUNT-ID",
-              "env" : "SANDBOX",
-              "checkoutModules" : [
-                {
-                  "type" : "TAX_CALCULATION",
-                  "requestUrl" : "/sales-tax/calculate"
-                },
-                {
-                  "type" : "BILLING_ADDRESS",
-                  "options" : {
-                    "lastName" : true,
-                    "city" : true,
-                    "firstName" : true,
-                    "postalCode" : true,
-                    "addressLine1" : true,
-                    "countryCode" : true,
-                    "addressLine2" : true,
-                    "state" : true,
-                    "phoneNumber" : false
-                  }
-                }
-              ],
-              "coreUrl" : "https://api.sandbox.primer.io"
-            }
-        """
+   {
+     "pciUrl" : "https://sdk.api.sandbox.primer.io",
+     "paymentMethods" : [
+    {
+      "id" : "id-1",
+      "options" : {
+     "merchantId" : "merchant-id-1"
+     "clientId" : "client-id-1",
+     "merchantAccountId" : "merchant-account-id-1"
+      },
+      "type" : "KLARNA",
+      "processorConfigId" : "processor-config-id-1"
+    },
+    {
+      "id" : "id-2",
+      "options" : {
+     "merchantId" : "merchant-id-2"
+     "merchantAccountId" : "merchant-account-id-2"
+      },
+      "type" : "APAYA",
+      "processorConfigId" : "processor-config-id-2"
+    },
+    {
+      "id" : "id-3",
+      "options" : {
+     "merchantId" : "merchant-id-3"
+     "clientId" : "client-id-3",
+     "merchantAccountId" : "merchant-account-id-3"
+      },
+      "type" : "PAYPAL",
+      "processorConfigId" : "processor-config-id-3"
+    },
+    {
+      "id" : "id-4",
+      "type" : "APPLE_PAY",
+      "options" : {
+     "certificates" : [
+       {
+      "certificateId" : "certificate-id-4",
+      "status" : "ACTIVE",
+      "validFromTimestamp" : "2021-12-06T10:14:14",
+      "expirationTimestamp" : "2024-01-05T10:14:13",
+      "merchantId" : "merchant.checkout.team",
+      "createdAt" : "2021-12-06T10:24:34.659452"
+       }
+     ]
+      }
+    },
+    {
+      "id" : "id-5",
+      "options" : {
+     "merchantId" : "merchant-id-5"
+     "clientId" : "client-id-5",
+     "merchantAccountId" : "merchant-account-id-5"
+      },
+      "type" : "GOCARDLESS",
+      "processorConfigId" : "processor-config-id-5"
+    },
+    {
+      "type" : "PAYMENT_CARD",
+      "options" : {
+     "threeDSecureEnabled" : true,
+     "threeDSecureProvider" : "3DS-PROVIDER"
+      }
+    }
+     ],
+     "clientSession" : {
+    "order" : {
+      "countryCode" : "GB",
+      "orderId" : "ios_order_id_LklKo2zK",
+      "currencyCode" : "GBP",
+      "totalOrderAmount" : 1010,
+      "lineItems" : [
+     {
+       "amount" : 1010,
+       "quantity" : 1,
+       "itemId" : "shoes-382190",
+       "description" : "Fancy Shoes"
+     }
+      ]
+    },
+    "clientSessionId" : "09841e8a-b1fa-4528-aed1-173808a4f44d",
+    "customer" : {
+      "firstName" : "John",
+      "shippingAddress" : {
+     "firstName" : "John",
+     "lastName" : "Smith",
+     "addressLine1" : "9446 Richmond Road",
+     "countryCode" : "GB",
+     "city" : "London",
+     "postalCode" : "EC53 8BT"
+      },
+      "emailAddress" : "john@primer.io",
+      "customerId" : "ios-customer-G90G37kH",
+      "mobileNumber" : "+4478888888888",
+      "billingAddress" : {
+     "firstName" : "John",
+     "lastName" : "Smith",
+     "addressLine1" : "65 York Road",
+     "countryCode" : "GB",
+     "city" : "London",
+     "postalCode" : "NW06 4OM"
+      },
+      "lastName" : "Smith"
+    },
+    "paymentMethod" : {
+      "options" : [
+     {
+       "type" : "PAYMENT_CARD",
+       "networks" : [
+      {
+        "type" : "VISA",
+        "surcharge" : 109
+      },
+      {
+        "type" : "MASTERCARD",
+        "surcharge" : 129
+      }
+       ]
+     },
+     {
+       "type" : "PAYPAL",
+       "surcharge" : 49
+     },
+     {
+       "type" : "PAY_NL_IDEAL",
+       "surcharge" : 39
+     },
+     {
+       "type" : "ADYEN_IDEAL",
+       "surcharge" : 69
+     },
+     {
+       "type" : "ADYEN_TWINT",
+       "surcharge" : 59
+     },
+     {
+       "type" : "BUCKAROO_BANCONTACT",
+       "surcharge" : 89
+     },
+     {
+       "type" : "ADYEN_GIROPAY",
+       "surcharge" : 79
+     },
+     {
+       "type" : "APPLE_PAY",
+       "surcharge" : 19
+     }
+      ],
+      "vaultOnSuccess" : false
+    }
+     },
+     "primerAccountId" : "PRIMER-ACCOUNT-ID",
+     "env" : "SANDBOX",
+     "checkoutModules" : [
+    {
+      "type" : "TAX_CALCULATION",
+      "requestUrl" : "/sales-tax/calculate"
+    },
+    {
+      "type" : "BILLING_ADDRESS",
+      "options" : {
+     "lastName" : true,
+     "city" : true,
+     "firstName" : true,
+     "postalCode" : true,
+     "addressLine1" : true,
+     "countryCode" : true,
+     "addressLine2" : true,
+     "state" : true,
+     "phoneNumber" : false
+      }
+    }
+     ],
+     "coreUrl" : "https://api.sandbox.primer.io"
+   }
+  """
     }
 }
 
