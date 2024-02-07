@@ -424,7 +424,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             
             let countryCode = clientSession?.order?.countryCode?.rawValue ?? ""
-            let currencyCode = clientSession?.order?.currencyCode?.rawValue ?? ""
+            let currencyCode = clientSession?.order?.currencyCode?.code ?? ""
             let localeCode = PrimerSettings.current.localeData.localeCode
             let localeData = Request.Body.Klarna.KlarnaLocaleData(
                 countryCode: countryCode,

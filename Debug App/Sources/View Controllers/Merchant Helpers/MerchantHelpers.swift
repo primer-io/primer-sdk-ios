@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import PrimerSDK
 
 struct MerchantMockDataManager {
     
@@ -34,7 +35,7 @@ struct MerchantMockDataManager {
     static var klarnaClientSession = ClientSessionRequestBody(
         customerId: customerId,
         orderId: "ios-order-\(String.randomString(length: 8))",
-        currencyCode: .EUR,
+        currencyCode: CurrencyLoader().getCurrency("EUR"),
         amount: nil,
         metadata: nil,
         customer: ClientSessionRequestBody.Customer(
@@ -79,7 +80,7 @@ struct MerchantMockDataManager {
     static var normalClientSession = ClientSessionRequestBody(
         customerId: customerId,
         orderId: "ios-order-\(String.randomString(length: 8))",
-        currencyCode: .EUR,
+        currencyCode: CurrencyLoader().getCurrency("EUR"),
         amount: nil,
         metadata: nil,
         customer: ClientSessionRequestBody.Customer(

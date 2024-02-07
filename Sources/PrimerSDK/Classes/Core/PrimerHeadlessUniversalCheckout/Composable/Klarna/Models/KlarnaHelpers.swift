@@ -161,7 +161,7 @@ struct KlarnaHelpers {
     /// - Helper function to construct locale data.
     private static func constructLocaleData(using clientSession: ClientSession.APIResponse?) -> Request.Body.Klarna.KlarnaLocaleData {
         let countryCode = clientSession?.order?.countryCode?.rawValue ?? ""
-        let currencyCode = clientSession?.order?.currencyCode?.rawValue ?? ""
+        let currencyCode = clientSession?.order?.currencyCode?.code ?? ""
         let localeCode = PrimerSettings.current.localeData.localeCode
         
         return Request.Body.Klarna.KlarnaLocaleData(
