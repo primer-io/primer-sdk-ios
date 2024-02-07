@@ -3,6 +3,7 @@
 ### Feat
 
 - Implement new currencies logic (#776)
+- Primer3DS SDK has been updated to version 2.2.0
 
 ### Fix
 
