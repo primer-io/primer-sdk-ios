@@ -251,8 +251,7 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertFalse("1234567".isValidOTP)
         XCTAssertFalse("".isValidOTP)
     }
-    
-    
+
     private func almostOneYearAgoDateString(format: String = "MM/YY") -> String {
         let date = Date() - 364
         let df = DateFormatter()
