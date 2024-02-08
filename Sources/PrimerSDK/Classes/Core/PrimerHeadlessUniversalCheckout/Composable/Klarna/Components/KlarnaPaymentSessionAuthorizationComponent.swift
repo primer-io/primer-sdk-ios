@@ -56,7 +56,15 @@ public extension KlarnaPaymentSessionAuthorizationComponent {
             ]
         )
         
-        self.klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: jsonData)
+        var extraMerchantDataString: String?
+        
+        if let paymentMethod = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.name == "Klarna" }) {
+            if let extraMerchantData = paymentMethod.options as? ExtraMerchantData {
+                extraMerchantDataString = extraMerchantData.extraMerchantData
+            }
+        }
+        
+        self.klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: extraMerchantDataString)
     }
     
     func reauthorizeSession(jsonData: String? = nil) {

@@ -363,12 +363,52 @@ struct ClientSessionRequestBody {
         
         struct PaymentMethodOption: Codable {
             var surcharge: SurchargeOption?
+            var extraMerchantData: [String: Any]?
+
+            enum CodingKeys: CodingKey {
+                case surcharge, extraMerchantData
+            }
+            
+            init(surcharge: SurchargeOption?, extraMerchantData: [String: Any]?) {
+                self.surcharge = surcharge
+                self.extraMerchantData = extraMerchantData
+            }
+
+            func encode(to encoder: Encoder) throws {
+                var container = encoder.container(keyedBy: CodingKeys.self)
+                
+                if let surcharge = surcharge {
+                    try container.encode(surcharge, forKey: .surcharge)
+                }
+                
+                if let extraMerchantData = extraMerchantData {
+                    let jsonData = try JSONSerialization.data(withJSONObject: extraMerchantData, options: [])
+                    let jsonString = String(data: jsonData, encoding: .utf8)
+                    try container.encode(jsonString, forKey: .extraMerchantData)
+                }
+            }
+            
+            init(from decoder: Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                surcharge = try container.decodeIfPresent(SurchargeOption.self, forKey: .surcharge)
+                
+                let jsonString = try container.decodeIfPresent(String.self, forKey: .extraMerchantData)
+                if let jsonData = jsonString?.data(using: .utf8) {
+                    extraMerchantData = try JSONSerialization.jsonObject(with: jsonData) as? [String: Any]
+                } else {
+                    extraMerchantData = nil
+                }
+            }
             
             var dictionaryValue: [String: Any]? {
                 var dic: [String: Any] = [:]
                 
                 if let surcharge = surcharge {
                     dic["surcharge"] = surcharge.dictionaryValue
+                }
+                
+                if let extraMerchantData = extraMerchantData {
+                    dic["extraMerchantData"] = extraMerchantData
                 }
                 
                 return dic.keys.count == 0 ? nil : dic
