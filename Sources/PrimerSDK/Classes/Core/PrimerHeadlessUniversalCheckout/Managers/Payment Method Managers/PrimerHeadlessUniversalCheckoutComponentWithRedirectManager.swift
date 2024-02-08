@@ -51,6 +51,16 @@ extension PrimerHeadlessUniversalCheckout {
                 ErrorHandler.handle(error: err)
                 throw err
             }
+            
+            do {
+                try tokenizationModel.validate()
+            } catch {
+                let err = PrimerError.generic(message: "Unable to locate a valid payment method view model",
+                                              userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                              diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
             return tokenizationModel
         }
     }
