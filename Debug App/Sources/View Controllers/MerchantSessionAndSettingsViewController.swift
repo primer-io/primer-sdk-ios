@@ -13,7 +13,7 @@ var environment: Environment = .sandbox
 var customDefinedApiKey: String?
 var performPaymentAfterVaulting: Bool = false
 var useNewWorkflows = true
-var klarnaSession = false
+var paymentSessionType: MerchantMockDataManager.SessionType = .generic
 
 class MerchantSessionAndSettingsViewController: UIViewController {
     
@@ -185,36 +185,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         view.addGestureRecognizer(viewTap)
         
         merchantNameTextField.text = "Primer Merchant"
-        
-        currencyTextField.text = clientSession.currencyCode?.code
-        countryCodeTextField.text = clientSession.order?.countryCode?.rawValue
-        orderIdTextField.text = clientSession.orderId
-        
-        customerIdTextField.text = clientSession.customerId
-        customerFirstNameTextField.text = clientSession.customer?.firstName
-        customerLastNameTextField.text = clientSession.customer?.lastName
-        customerEmailTextField.text = clientSession.customer?.emailAddress
-        customerMobileNumberTextField.text = clientSession.customer?.mobileNumber
-        
-        billingAddressSwitch.isOn = true
-        billingAddressFirstNameTextField.text = clientSession.customer?.billingAddress?.firstName
-        billingAddressLastNameTextField.text = clientSession.customer?.billingAddress?.lastName
-        billingAddressLine1TextField.text = clientSession.customer?.billingAddress?.addressLine1
-        billingAddressLine2TextField.text = clientSession.customer?.billingAddress?.addressLine2
-        billingAddressCityTextField.text = clientSession.customer?.billingAddress?.city
-        billingAddressStateTextField.text = clientSession.customer?.billingAddress?.state
-        billingAddressPostalCodeTextField.text = clientSession.customer?.billingAddress?.postalCode
-        billingAddressCountryTextField.text = clientSession.customer?.billingAddress?.countryCode
-        
-        shippingAddressSwitch.isOn = true
-        shippinAddressFirstNameTextField.text = clientSession.customer?.shippingAddress?.firstName
-        shippinAddressLastNameTextField.text = clientSession.customer?.shippingAddress?.lastName
-        shippinAddressLine1TextField.text = clientSession.customer?.shippingAddress?.addressLine1
-        shippinAddressLine2TextField.text = clientSession.customer?.shippingAddress?.addressLine2
-        shippinAddressCityTextField.text = clientSession.customer?.shippingAddress?.city
-        shippinAddressStateTextField.text = clientSession.customer?.shippingAddress?.state
-        shippinAddressPostalCodeTextField.text = clientSession.customer?.shippingAddress?.postalCode
-        shippinAddressCountryTextField.text = clientSession.customer?.shippingAddress?.countryCode
+        populateSessionSettingsFields()
         
         customerIdTextField.addTarget(self, action: #selector(customerIdChanged(_:)), for: .editingDidEnd)
         
@@ -398,7 +369,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     }
     
     @IBAction func klarnaSessionValueChanged(_ sender: UISwitch) {
-        klarnaSession = sender.isOn
+        paymentSessionType = sender.isOn ? .oneTimePayment : .generic
+        populateSessionSettingsFields()
     }
     
     func configureClientSession() {
@@ -437,7 +409,41 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             clientSession.customer?.shippingAddress = nil
         }
         
-        clientSession.paymentMethod = .init(vaultOnSuccess: vaultPaymentsSwitch.isOn, options: nil, descriptor: nil, paymentType: nil)
+        clientSession.paymentMethod = MerchantMockDataManager.getPaymentMethod(sessionType: paymentSessionType)
+    }
+    
+    func populateSessionSettingsFields() {
+        clientSession = MerchantMockDataManager.getClientSession(sessionType: paymentSessionType)
+        
+        currencyTextField.text = clientSession.currencyCode?.code
+        countryCodeTextField.text = clientSession.order?.countryCode?.rawValue
+        orderIdTextField.text = clientSession.orderId
+        
+        customerIdTextField.text = clientSession.customerId
+        customerFirstNameTextField.text = clientSession.customer?.firstName
+        customerLastNameTextField.text = clientSession.customer?.lastName
+        customerEmailTextField.text = clientSession.customer?.emailAddress
+        customerMobileNumberTextField.text = clientSession.customer?.mobileNumber
+        
+        billingAddressSwitch.isOn = true
+        billingAddressFirstNameTextField.text = clientSession.customer?.billingAddress?.firstName
+        billingAddressLastNameTextField.text = clientSession.customer?.billingAddress?.lastName
+        billingAddressLine1TextField.text = clientSession.customer?.billingAddress?.addressLine1
+        billingAddressLine2TextField.text = clientSession.customer?.billingAddress?.addressLine2
+        billingAddressCityTextField.text = clientSession.customer?.billingAddress?.city
+        billingAddressStateTextField.text = clientSession.customer?.billingAddress?.state
+        billingAddressPostalCodeTextField.text = clientSession.customer?.billingAddress?.postalCode
+        billingAddressCountryTextField.text = clientSession.customer?.billingAddress?.countryCode
+        
+        shippingAddressSwitch.isOn = true
+        shippinAddressFirstNameTextField.text = clientSession.customer?.shippingAddress?.firstName
+        shippinAddressLastNameTextField.text = clientSession.customer?.shippingAddress?.lastName
+        shippinAddressLine1TextField.text = clientSession.customer?.shippingAddress?.addressLine1
+        shippinAddressLine2TextField.text = clientSession.customer?.shippingAddress?.addressLine2
+        shippinAddressCityTextField.text = clientSession.customer?.shippingAddress?.city
+        shippinAddressStateTextField.text = clientSession.customer?.shippingAddress?.state
+        shippinAddressPostalCodeTextField.text = clientSession.customer?.shippingAddress?.postalCode
+        shippinAddressCountryTextField.text = clientSession.customer?.shippingAddress?.countryCode
     }
     
     func configureTestScenario() {

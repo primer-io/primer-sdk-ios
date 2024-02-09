@@ -318,9 +318,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: PrimerH
 
 extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
     
-    private func setupSessionLogic() {
-        clientSession = MerchantMockDataManager.getClientSession(sessionType: klarnaSession ? .klarna : .generic)
-        
+    private func setupSessionLogic() {        
         if let clientToken = clientToken {
             PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: self.settings, completion: { (pms, _) in
                 self.hideLoadingOverlay()
