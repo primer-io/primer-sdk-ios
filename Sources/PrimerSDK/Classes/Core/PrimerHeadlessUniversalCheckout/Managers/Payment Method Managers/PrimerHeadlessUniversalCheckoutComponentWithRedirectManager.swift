@@ -9,6 +9,8 @@ import Foundation
 extension PrimerHeadlessUniversalCheckout {
     @objc public class ComponentWithRedirectManager: NSObject {
 
+        typealias BankSelectorWebRedirectTokenization = BankSelectorTokenizationProviding & WebRedirectTokenizationDelegate
+
         @objc public func provideComponent(paymentMethodType: String) -> PrimerHeadlessBanksComponentWrapper {
             PrimerHeadlessBanksComponentWrapper(manager: self, paymentMethodType: paymentMethodType)
         }
@@ -21,23 +23,15 @@ extension PrimerHeadlessUniversalCheckout {
         public func provideBanksComponent(paymentMethodType: String) throws -> any PrimerHeadlessMainComponent {
             guard let paymentMethodTypeEnum = PrimerPaymentMethodType(rawValue: paymentMethodType),
                   paymentMethodTypeEnum == .adyenIDeal else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, 
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType,
                                                                userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                                                                diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
 
-            guard let tokenizationModel = try getPaymentMethodTokenizationModel(paymentMethodType) as? BankSelectorTokenizationProviding else {
-                let err = PrimerError.generic(message: "Unable to locate a correct payment method view model", 
-                                              userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
-                                              diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
-
-            guard let webDelegate = try getPaymentMethodTokenizationModel(paymentMethodType) as? WebRedirectTokenizationDelegate else {
-                let err = PrimerError.generic(message: "Unable to locate a correct payment method view model", 
+            guard let tokenizationModel = try getPaymentMethodTokenizationModel(paymentMethodType) as? BankSelectorWebRedirectTokenization else {
+                let err = PrimerError.generic(message: "Unable to locate a correct payment method view model",
                                               userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                                               diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
@@ -45,13 +39,13 @@ extension PrimerHeadlessUniversalCheckout {
             }
 
             return DefaultBanksComponent(paymentMethodType: paymentMethodTypeEnum, tokenizationProvingModel: tokenizationModel) {
-                webDelegate.setup()
-                return WebRedirectComponent(paymentMethodType: paymentMethodTypeEnum, tokenizationModelDelegate: webDelegate)
+                tokenizationModel.setup()
+                return WebRedirectComponent(paymentMethodType: paymentMethodTypeEnum, tokenizationModelDelegate: tokenizationModel)
             }
         }
 
         private func getPaymentMethodTokenizationModel(_ paymentMethodType: String) throws -> PaymentMethodTokenizationModelProtocol? {
-            
+
             guard let paymentMethodConfig = PrimerAPIConfiguration.paymentMethodConfigs?.first(where: { $0.type == paymentMethodType }),
                   let tokenizationModel = paymentMethodConfig.banksTokenizationModel else {
                 let err = PrimerError.generic(message: "Unable to locate a valid payment method view model",
