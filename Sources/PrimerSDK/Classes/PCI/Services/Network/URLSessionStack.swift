@@ -26,7 +26,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
         let urlStr: String = (endpoint.baseURL ?? "") + endpoint.path
         let id = String.randomString(length: 32)
 
-        if let primerAPI = endpoint as? PrimerAPI, shouldReportNetworkEvents(for: primerAPI) {
+        if shouldReportNetworkEvents(for: endpoint) {
             let reqEvent = Analytics.Event.networkCall(
                 callType: .requestStart,
                 id: id,
@@ -102,7 +102,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
 #endif
 
             if let error = error {
-                if let primerAPI = endpoint as? PrimerAPI, self.shouldReportNetworkEvents(for: primerAPI) {
+                if self.shouldReportNetworkEvents(for: endpoint) {
                     resEventProperties!.errorBody = "\(error)"
                     resEvent.properties = resEventProperties
                     Analytics.Service.record(event: resEvent)
@@ -122,7 +122,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
             }
 
             guard let data = data else {
-                if let primerAPI = endpoint as? PrimerAPI, self.shouldReportNetworkEvents(for: primerAPI) {
+                if self.shouldReportNetworkEvents(for: endpoint) {
                     resEventProperties?.errorBody = "No data received"
                     resEvent.properties = resEventProperties
                     Analytics.Service.record(event: resEvent)
@@ -143,7 +143,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
             }
 
             do {
-                if let primerAPI = endpoint as? PrimerAPI, self.shouldReportNetworkEvents(for: primerAPI) {
+                if self.shouldReportNetworkEvents(for: endpoint) {
                     resEvent.properties = resEventProperties
                     Analytics.Service.record(event: resEvent)
                 }
@@ -193,7 +193,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
 
                     let primerErrorResponse = try? self.parser.parse(PrimerServerErrorResponse.self, from: primerErrorObject)
 
-                    if let primerAPI = endpoint as? PrimerAPI, self.shouldReportNetworkEvents(for: primerAPI) {
+                    if self.shouldReportNetworkEvents(for: endpoint) {
                         resEventProperties?.errorBody = "\(primerErrorJSON)"
                         Analytics.Service.record(event: resEvent)
                     }
@@ -325,7 +325,10 @@ internal extension URLSessionStack {
         return url
     }
 
-    func shouldReportNetworkEvents(for primerAPI: PrimerAPI) -> Bool {
+    func shouldReportNetworkEvents(for endpoint: Endpoint) -> Bool {
+        guard let primerAPI = endpoint as? PrimerAPI else {
+            return false
+        }
         // Don't report events for polling requests
         guard primerAPI != PrimerAPI.poll(clientToken: nil, url: "") else {
             return false
