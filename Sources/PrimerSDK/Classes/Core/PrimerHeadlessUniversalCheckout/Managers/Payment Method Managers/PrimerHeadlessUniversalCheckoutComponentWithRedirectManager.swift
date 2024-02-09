@@ -8,7 +8,6 @@
 import Foundation
 extension PrimerHeadlessUniversalCheckout {
     @objc public class ComponentWithRedirectManager: NSObject {
-        private static let supportedPaymentMethods: [PrimerPaymentMethodType] = [.adyenIDeal]
 
         @objc public func provideComponent(paymentMethodType: String) -> PrimerHeadlessBanksComponentWrapper {
             PrimerHeadlessBanksComponentWrapper(manager: self, paymentMethodType: paymentMethodType)
