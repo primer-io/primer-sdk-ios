@@ -77,9 +77,9 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
 
         let isSandbox = clientToken.env != "PRODUCTION"
         var isDebug = false
-#if DEBUG
+        #if DEBUG
         isDebug =  PrimerLogging.shared.logger.logLevel == .debug
-#endif
+        #endif
 
         guard nolPay == nil
         else {

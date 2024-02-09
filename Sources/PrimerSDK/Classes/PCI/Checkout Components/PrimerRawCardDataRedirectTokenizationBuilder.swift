@@ -199,25 +199,25 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
                 if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
                     if rawData.cardholderName.isEmpty {
                         errors.append(PrimerValidationError.invalidCardholderName(
-                            message: "Cardholder name cannot be blank.",
-                            userInfo: [
-                                "file": #file,
-                                "class": "\(Self.self)",
-                                "function": #function,
-                                "line": "\(#line)"
-                            ],
-                            diagnosticsId: UUID().uuidString))
+                                        message: "Cardholder name cannot be blank.",
+                                        userInfo: [
+                                            "file": #file,
+                                            "class": "\(Self.self)",
+                                            "function": #function,
+                                            "line": "\(#line)"
+                                        ],
+                                        diagnosticsId: UUID().uuidString))
 
                     } else if !(rawData.cardholderName).isValidNonDecimalString {
                         errors.append(PrimerValidationError.invalidCardholderName(
-                            message: "Cardholder name is not valid.",
-                            userInfo: [
-                                "file": #file,
-                                "class": "\(Self.self)",
-                                "function": #function,
-                                "line": "\(#line)"
-                            ],
-                            diagnosticsId: UUID().uuidString))
+                                        message: "Cardholder name is not valid.",
+                                        userInfo: [
+                                            "file": #file,
+                                            "class": "\(Self.self)",
+                                            "function": #function,
+                                            "line": "\(#line)"
+                                        ],
+                                        diagnosticsId: UUID().uuidString))
                     }
                 }
 

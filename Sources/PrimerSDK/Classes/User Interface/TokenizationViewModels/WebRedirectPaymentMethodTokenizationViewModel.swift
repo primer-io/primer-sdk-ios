@@ -48,7 +48,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
                                                                 "line": "\(#line)"],
-													 diagnosticsId: UUID().uuidString)
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }

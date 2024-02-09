@@ -161,7 +161,7 @@ class InternalCardComponentManagerTests: XCTestCase {
             case .amex:
                 directoryServerId = "A000000025"
             case .diners,
-                    .discover:
+                 .discover:
                 directoryServerId = "A000000152"
             case .jcb:
                 directoryServerId = "A000000065"

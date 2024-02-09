@@ -58,7 +58,7 @@ extension Request.Body {
             return dic.keys.count == 0 ? nil : dic
         }
 
-		// swiftlint:disable:next nesting
+        // swiftlint:disable:next nesting
         public struct Customer: Codable {
             public let firstName: String?
             public let lastName: String?
@@ -101,7 +101,7 @@ extension Request.Body {
                 return dic.keys.count == 0 ? nil : dic
             }
         }
-		// swiftlint:disable:next nesting
+        // swiftlint:disable:next nesting
         public struct Order: Codable {
             public let countryCode: CountryCode?
             public let lineItems: [LineItem]?
@@ -119,7 +119,7 @@ extension Request.Body {
 
                 return dic.keys.count == 0 ? nil : dic
             }
-			// swiftlint:disable:next nesting
+            // swiftlint:disable:next nesting
             public struct LineItem: Codable {
                 public let itemId: String?
                 public let description: String?
@@ -149,7 +149,7 @@ extension Request.Body {
                 }
             }
         }
-		// swiftlint:disable:next nesting
+        // swiftlint:disable:next nesting
         public struct PaymentMethod {
             public let vaultOnSuccess: Bool?
             public let options: [String: Any]?

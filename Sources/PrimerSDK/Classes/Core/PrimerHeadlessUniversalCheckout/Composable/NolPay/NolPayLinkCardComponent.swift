@@ -24,9 +24,9 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
     public typealias T = NolPayLinkCollectableData
     public typealias P = NolPayLinkCardStep
 
-#if canImport(PrimerNolPaySDK)
+    #if canImport(PrimerNolPaySDK)
     private var nolPay: PrimerNolPayProtocol!
-#endif
+    #endif
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
@@ -87,14 +87,14 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         case .otpData(otpCode: let otpCode):
             if !otpCode.isValidOTP {
                 errors.append(PrimerValidationError.invalidOTPCode(
-                    message: "OTP is not valid.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString))
+                                message: "OTP is not valid.",
+                                userInfo: [
+                                    "file": #file,
+                                    "class": "\(Self.self)",
+                                    "function": #function,
+                                    "line": "\(#line)"
+                                ],
+                                diagnosticsId: UUID().uuidString))
                 ErrorHandler.handle(error: errors.last!)
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
             } else {
@@ -132,7 +132,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                 return
             }
 
-#if canImport(PrimerNolPaySDK)
+            #if canImport(PrimerNolPaySDK)
             nolPay.sendLinkOTP(to: mobileNumber,
                                with: countryCode,
                                and: linkToken) { result in
@@ -169,7 +169,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
 
                 }
             }
-#endif
+            #endif
         case .collectOtpData:
             guard let otpCode = otpCode
             else {
@@ -183,7 +183,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                 return
             }
 
-#if canImport(PrimerNolPaySDK)
+            #if canImport(PrimerNolPaySDK)
             nolPay.linkCard(for: otpCode, and: linkToken) { result in
                 switch result {
                 case .success(let success):
@@ -217,9 +217,9 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                     self.errorDelegate?.didReceiveError(error: error)
                 }
             }
-#endif
+            #endif
         case .collectTagData:
-#if canImport(PrimerNolPaySDK)
+            #if canImport(PrimerNolPaySDK)
             nolPay.scanNFCCard { result in
                 switch result {
 
@@ -261,7 +261,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                     self.errorDelegate?.didReceiveError(error: error)
                 }
             }
-#endif
+            #endif
 
         default: break
         }
@@ -293,11 +293,11 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
 
         let isSandbox = clientToken.env != "PRODUCTION"
         var isDebug = false
-#if DEBUG
+        #if DEBUG
         isDebug =  PrimerLogging.shared.logger.logLevel == .debug
-#endif
+        #endif
 
-#if canImport(PrimerNolPaySDK)
+        #if canImport(PrimerNolPaySDK)
         nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
 
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
@@ -321,7 +321,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                 return ""
             }
         }
-#else
+        #else
         let error = PrimerError.missingSDK(
             paymentMethodType: PrimerPaymentMethodType.nolPay.rawValue,
             sdkName: "PrimerNolPaySDK",
@@ -332,6 +332,6 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
             diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: error)
         errorDelegate?.didReceiveError(error: error)
-#endif
+        #endif
     }
 }

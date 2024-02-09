@@ -119,10 +119,10 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
             firstly {
                 self.validateReturningPromise()
             }
-//            .then { () -> Promise<Void> in
-//                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-//                return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
-//            }
+            //            .then { () -> Promise<Void> in
+            //                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+            //                return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
+            //            }
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }

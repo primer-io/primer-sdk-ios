@@ -160,9 +160,9 @@ class ThreeDSErrorTests: XCTestCase {
     func test_error_includes_errorId_paymentMethodType() throws {
         let primer3DSError = Primer3DSError.initializationError(error: nil, warnings: "I am a warning")
         let primer3DSContainerError = self.createPrimer3DSContainerError(from: primer3DSError,
-                                                                     paymentMethodType: "TEST_PAYMENT_METHOD",
-                                                                     diagnosticsId: "diagnosticsId",
-                                                                     initProtocolVersion: "initProtocolVersion")
+                                                                         paymentMethodType: "TEST_PAYMENT_METHOD",
+                                                                         diagnosticsId: "diagnosticsId",
+                                                                         initProtocolVersion: "initProtocolVersion")
 
         XCTAssert(primer3DSContainerError.analyticsContext[AnalyticsContextKeys.errorId] as? String == primer3DSContainerError.errorId)
         XCTAssert(primer3DSContainerError.analyticsContext[AnalyticsContextKeys.paymentMethodType] as? String == "TEST_PAYMENT_METHOD")

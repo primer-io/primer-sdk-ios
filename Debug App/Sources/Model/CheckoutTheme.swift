@@ -21,7 +21,7 @@ private let tropical9 = UIColor(red: 31/255, green: 130/255, blue: 118/255, alph
 private let tropical10 = UIColor(red: 230/255, green: 244/255, blue: 190/255, alpha: 1)
 
 struct CheckoutTheme {
-    
+
     static var tropical: PrimerTheme {
         let data = PrimerThemeData()
         data.colors.primary = tropical7
@@ -43,7 +43,7 @@ struct CheckoutTheme {
         data.input.text = PrimerThemeData.Text(defaultColor: tropical4)
         return PrimerTheme.init(with: data)
     }
-    
+
     static var primer: PrimerTheme {
         if #available(iOS 13.0, *) {
             let themeData = PrimerThemeData()
@@ -57,7 +57,7 @@ struct CheckoutTheme {
             themeData.buttons.main.defaultColor = .systemBlue
             themeData.buttons.main.disabledColor = .systemGray4
             themeData.buttons.paymentMethod.border.width = 1.0
-            
+
             if UITraitCollection.current.userInterfaceStyle == .dark {
                 themeData.view.backgroundColor = .systemGray6
                 themeData.text.title = PrimerThemeData.Text(defaultColor: .systemGray)
@@ -70,7 +70,7 @@ struct CheckoutTheme {
                 themeData.input.border = PrimerThemeData.Border(defaultColor: .systemGray, selectedColor: .systemBlue)
                 themeData.input.text = PrimerThemeData.Text(defaultColor: .systemGray)
                 themeData.input.backgroundColor = .systemGray3
-                
+
             } else {
                 themeData.view.backgroundColor = .white
                 themeData.text.title = PrimerThemeData.Text(defaultColor: .black)
@@ -85,7 +85,7 @@ struct CheckoutTheme {
                 themeData.input.text = PrimerThemeData.Text(defaultColor: .black)
                 themeData.input.backgroundColor = .systemGray5
             }
-            
+
             return PrimerTheme.init(with: themeData)
         } else {
             let lightThemeData = PrimerThemeData()

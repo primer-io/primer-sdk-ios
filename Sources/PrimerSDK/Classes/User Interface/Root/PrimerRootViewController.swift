@@ -218,7 +218,7 @@ internal class PrimerRootViewController: PrimerViewController {
 
     internal func layoutIfNeeded() {
         for viewController in nController.viewControllers {
-			viewController.view.layoutIfNeeded()
+            viewController.view.layoutIfNeeded()
         }
 
         childView.layoutIfNeeded()
@@ -248,7 +248,7 @@ internal class PrimerRootViewController: PrimerViewController {
         } else if viewController is PrimerVoucherInfoPaymentViewController {
             cvc.mockedNavigationBar.hidesBackButton = true
         } else if let lastViewController = self.nController.viewControllers.last as? PrimerContainerViewController,
-                    lastViewController.children.first is PrimerLoadingViewController {
+                  lastViewController.children.first is PrimerLoadingViewController {
             cvc.mockedNavigationBar.hidesBackButton = true
         } else if viewController is PrimerLoadingViewController {
             cvc.mockedNavigationBar.hidesBackButton = true

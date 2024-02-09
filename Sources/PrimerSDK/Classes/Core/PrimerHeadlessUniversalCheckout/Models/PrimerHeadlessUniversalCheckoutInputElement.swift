@@ -100,7 +100,7 @@ public enum PrimerInputElementType: Int {
     internal func clearFormatting(value: Any) -> Any? {
         switch self {
         case .cardNumber,
-                .expiryDate:
+             .expiryDate:
             guard let text = value as? String else { return nil }
             let textWithoutWhiteSpace = text.withoutWhiteSpace
             return textWithoutWhiteSpace.replacingOccurrences(of: self.delimiter!, with: "")
@@ -150,10 +150,10 @@ public enum PrimerInputElementType: Int {
     internal var allowedCharacterSet: CharacterSet? {
         switch self {
         case .cardNumber,
-                .expiryDate,
-                .cvv,
-                .otp,
-                .phoneNumber:
+             .expiryDate,
+             .cvv,
+             .otp,
+             .phoneNumber:
             return CharacterSet(charactersIn: "0123456789")
 
         case .cardholderName:
@@ -167,14 +167,14 @@ public enum PrimerInputElementType: Int {
     internal var keyboardType: UIKeyboardType {
         switch self {
         case .cardNumber,
-                .expiryDate,
-                .cvv,
-                .otp,
-                .phoneNumber:
+             .expiryDate,
+             .cvv,
+             .otp,
+             .phoneNumber:
             return UIKeyboardType.numberPad
 
         case .cardholderName,
-                .postalCode:
+             .postalCode:
             return UIKeyboardType.alphabet
 
         default:

@@ -152,7 +152,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
     }
 
     // MARK: - Tests for start() function
-    
+
     func testUpdateCollectedData_EmptyOTPCode() {
         let mockValidationDelegate = MockValidationDelegate()
         sut.validationDelegate = mockValidationDelegate

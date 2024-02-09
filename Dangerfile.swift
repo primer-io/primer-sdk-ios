@@ -22,7 +22,7 @@ let sdkEditedFiles = allCreatedAndModifiedFiles
 
 let swiftFilesWithCopyright = sdkEditedFiles.filter {
     $0.fileType == .swift &&
-    danger.utils.readFile($0).contains("//  Created by")
+        danger.utils.readFile($0).contains("//  Created by")
 }
 
 // if swiftFilesWithCopyright.count > 0 {
@@ -36,7 +36,7 @@ let swiftFilesWithCopyright = sdkEditedFiles.filter {
 
 let swiftTestFilesContainChanges = allCreatedAndModifiedFiles.filter {
     $0.fileType == .swift &&
-    danger.utils.readFile($0).contains("import XCTest")
+        danger.utils.readFile($0).contains("import XCTest")
 }
 
 if swiftTestFilesContainChanges.isEmpty {
@@ -73,15 +73,14 @@ if pr.assignees?.count == 0 {
 let filesToLint = sdkEditedFiles.filter { $0.fileType == .swift }
 SwiftLint.lint(.files(filesToLint), inline: true, configFile: "Debug App/.swiftlint.yml")
 
-
 // MARK: Check Coverage
 
 // Coverage.xcodeBuildCoverage(.derivedDataFolder("Build"),
 //                            minimumCoverage: 30)
 
 // MARK: - Conventional Commit Title
-let validPrefixes = ["fix", "feat", "chore", "ci", "refactor", "docs", 
-                    "perf", "test", "build", "revert", "style", "BREAKING CHANGE"]
+let validPrefixes = ["fix", "feat", "chore", "ci", "refactor", "docs",
+                     "perf", "test", "build", "revert", "style", "BREAKING CHANGE"]
 let isConventionalCommitTitle = validPrefixes.contains { pr.title.hasPrefix($0) }
 
 if !pr.head.ref.hasPrefix("release") && !isConventionalCommitTitle {

@@ -31,7 +31,7 @@ protocol ThreeDSSDKAuthDataProtocol: Codable {
 
 public class ThreeDS {
 
-#if canImport(Primer3DS)
+    #if canImport(Primer3DS)
     class Cer: Primer3DSCertificate {
 
         var cardScheme: String
@@ -66,7 +66,7 @@ public class ThreeDS {
             self.transactionId = transactionId
         }
     }
-#endif
+    #endif
 
     internal struct Keys: Codable {
 
@@ -197,12 +197,12 @@ public class ThreeDS {
             } else {
                 if (rawValue.compareWithVersion("2.1") == .orderedSame) ||
                     (rawValue.compareWithVersion("2.1") == .orderedDescending
-                     && rawValue.compareWithVersion("2.2") == .orderedAscending) {
+                        && rawValue.compareWithVersion("2.2") == .orderedAscending) {
                     self = ProtocolVersion.v_2_1_0
 
                 } else if (rawValue.compareWithVersion("2.2") == .orderedSame) ||
                             (rawValue.compareWithVersion("2.2") == .orderedDescending
-                             && rawValue.compareWithVersion("2.3") == .orderedAscending) {
+                                && rawValue.compareWithVersion("2.3") == .orderedAscending) {
                     self = ProtocolVersion.v_2_2_0
                 } else {
                     return nil
@@ -314,7 +314,7 @@ public class ThreeDS {
         let authentication: ThreeDSAuthenticationProtocol
         let token: PrimerPaymentMethodTokenData
         let resumeToken: String
-		// swiftlint:disable:next nesting
+        // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case authentication
             case token
@@ -564,7 +564,7 @@ public class ThreeDS {
         case decoupledRequiredByACS = "DECOUPLED_REQUIRED_BY_ACS"
         case decoupledMaxExpiryExceeded = "DECOUPLED_MAX_EXPIRY_EXCEEDED"
         case decoupledAuthenticationInsufficientTime = "DECOUPLED_AUTHENTICATION_INSUFFICIENT_TIME"
-		// swiftlint:disable:next identifier_name
+        // swiftlint:disable:next identifier_name
         case authenticationAttemptedButNotPerformedByCardholder =
                 "AUTHENTICATION_ATTEMPTED_BUT_NOT_PERFORMED_BY_CARDHOLDER"
         case acsTimedOut = "ACS_TIMED_OUT"
@@ -572,7 +572,7 @@ public class ThreeDS {
         case acsSystemErrorResponse = "ACS_SYSTEM_ERROR_RESPONSE"
         case errorGeneratingCAVV = "ERROR_GENERATING_CAVV"
         case protocolVersionNotSupported = "PROTOCOL_VERSION_NOT_SUPPORTED"
-		// swiftlint:disable:next identifier_name
+        // swiftlint:disable:next identifier_name
         case transactionExcludedFromAttemptsProcessing = "TRANSACTION_EXCLUDED_FROM_ATTEMPTS_PROCESSING"
         case requestedProgramNotSupported = "REQUESTED_PROGRAM_NOT_SUPPORTED"
     }
@@ -594,11 +594,11 @@ public class ThreeDS {
             self.platform = Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS"
             self.initProtocolVersion = initProtocolVersion
 
-#if canImport(Primer3DS)
+            #if canImport(Primer3DS)
             self.threeDsWrapperSdkVersion = Primer3DS.version
             self.threeDsSdkProvider = Primer3DS.threeDsSdkProvider
             self.threeDsSdkVersion = Primer3DS.threeDsSdkVersion
-#endif
+            #endif
 
             if let primer3DSErr = error {
                 self.status = .failure
@@ -608,7 +608,7 @@ public class ThreeDS {
             }
         }
 
-		// swiftlint:disable:next nesting
+        // swiftlint:disable:next nesting
         class Error: Encodable {
 
             var reasonCode: String

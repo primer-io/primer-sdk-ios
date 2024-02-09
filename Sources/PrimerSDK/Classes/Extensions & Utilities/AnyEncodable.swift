@@ -19,21 +19,21 @@ import Foundation
  You can encode mixed-type values in dictionaries
  and other collections that require `Encodable` conformance
  by declaring their contained type to be `AnyEncodable`:
-     let dictionary: [String: AnyEncodable] = [
-         "boolean": true,
-         "integer": 42,
-         "double": 3.141592653589793,
-         "string": "string",
-         "array": [1, 2, 3],
-         "nested": [
-             "a": "alpha",
-             "b": "bravo",
-             "c": "charlie"
-         ],
-         "null": nil
-     ]
-     let encoder = JSONEncoder()
-     let json = try! encoder.encode(dictionary)
+ let dictionary: [String: AnyEncodable] = [
+ "boolean": true,
+ "integer": 42,
+ "double": 3.141592653589793,
+ "string": "string",
+ "array": [1, 2, 3],
+ "nested": [
+ "a": "alpha",
+ "b": "bravo",
+ "c": "charlie"
+ ],
+ "null": nil
+ ]
+ let encoder = JSONEncoder()
+ let json = try! encoder.encode(dictionary)
  */
 internal struct AnyEncodable: Encodable {
     public let value: Any

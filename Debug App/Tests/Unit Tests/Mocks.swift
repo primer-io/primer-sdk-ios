@@ -139,7 +139,7 @@ class Mocks {
             surcharge: 0,
             options: nil,
             displayMetadata: nil)
-        
+
         static var nolPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.nolPaymentMethodId,
             implementationType: .nativeSdk,
@@ -149,7 +149,7 @@ class Mocks {
             surcharge: 0,
             options: MerchantOptions(merchantId: "user8", merchantAccountId: "123", appId: "test"),
             displayMetadata: nil)
-        
+
         static var adyenGiroPayRedirectPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.adyenGiroPayRedirectPaymentMethodId,
             implementationType: .webRedirect,

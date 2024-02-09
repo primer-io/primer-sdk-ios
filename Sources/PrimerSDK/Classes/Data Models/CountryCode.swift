@@ -254,7 +254,7 @@ public enum CountryCode: String, Codable, CaseIterable {
     case ye = "YE"
     case zm = "ZM"
     case zw = "ZW"
-// swiftlint:enable identifier_name
+    // swiftlint:enable identifier_name
     init?(optionalRawValue: String?) {
         guard let rawValue = optionalRawValue else {
             return nil
@@ -298,7 +298,7 @@ extension CountryCode {
         let locale: String
         var countries: [CountryCode.RawValue: String]
 
-		// swiftlint:disable:next nesting
+        // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case locale
             case countries

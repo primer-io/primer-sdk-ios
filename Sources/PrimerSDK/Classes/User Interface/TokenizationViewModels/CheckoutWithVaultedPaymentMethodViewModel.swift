@@ -206,7 +206,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                 Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
                     if !decisionHandlerHasBeenCalled {
                         let message =
-"""
+                            """
 The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. \
 Make sure you call the decision handler otherwise the SDK will hang.
 """
@@ -559,16 +559,16 @@ Make sure you call the decision handler otherwise the SDK will hang.
                 threeDSService.perform3DS(
                     paymentMethodTokenData: paymentMethodTokenData,
                     sdkDismissed: nil) { result in
-                        DispatchQueue.main.async {
-                            switch result {
-                            case .success(let resumeToken):
-                                seal.fulfill(resumeToken)
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .success(let resumeToken):
+                            seal.fulfill(resumeToken)
 
-                            case .failure(let err):
-                                seal.reject(err)
-                            }
+                        case .failure(let err):
+                            seal.reject(err)
                         }
                     }
+                }
 
             } else {
                 let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file,

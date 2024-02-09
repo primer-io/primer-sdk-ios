@@ -12,7 +12,7 @@ public protocol PrimerHeadlessUniversalCheckoutInputData {}
 // swiftlint:disable type_name
 @available(*, deprecated, message: "CardComponentsManager is no longer supported, please use PrimerHeadlessUniversalCheckout instead")
 public protocol PrimerHeadlessUniversalCheckoutCardComponentsManagerDelegate: AnyObject {
-// swiftlint:enable type_name
+    // swiftlint:enable type_name
 
     func cardComponentsManager(_ cardComponentsManager: PrimerHeadlessUniversalCheckout.CardComponentsManager,
                                isCardFormValid: Bool)
@@ -43,7 +43,7 @@ extension PrimerHeadlessUniversalCheckout {
                 .filter({ $0.type == "CARD_INFORMATION" })
                 .first?.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions
 
-			// swiftlint:disable:next identifier_name
+            // swiftlint:disable:next identifier_name
             if let isCardHolderNameCheckoutModuleOptionEnabled = cardInfoOptions?.cardHolderName {
                 if isCardHolderNameCheckoutModuleOptionEnabled {
                     mutableRequiredInputElementTypes.append(.cardholderName)
@@ -75,7 +75,7 @@ extension PrimerHeadlessUniversalCheckout {
                     }
                 }
                 inputElements.forEach { element in
-					element.inputElementDelegate = self
+                    element.inputElementDelegate = self
                 }
                 originalInputElementsContainers = tmpInputElementsContainers
             }
@@ -109,7 +109,7 @@ extension PrimerHeadlessUniversalCheckout {
             Analytics.Service.record(events: [sdkEvent])
 
             guard let availablePaymentMethodTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes()
-			else {
+            else {
                 let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file,
                                                                              "class": "\(Self.self)",
                                                                              "function": #function,
@@ -198,28 +198,28 @@ extension PrimerHeadlessUniversalCheckout {
             }
             .catch { error in
                 ErrorHandler.handle(error: error)
-				let delegate = PrimerHeadlessUniversalCheckout.current.delegate
+                let delegate = PrimerHeadlessUniversalCheckout.current.delegate
                 delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: error,
-																  checkoutData: self.paymentCheckoutData)
+                                                                  checkoutData: self.paymentCheckoutData)
             }
         }
 
         private func validateInputData() -> Promise<Void> {
             return Promise { seal in
                 var errors: [PrimerError] = []
-				for inputElementType in self.requiredInputElementTypes {
-					let missingElements = self.inputElements.filter { $0.type == inputElementType }
-					if missingElements.isEmpty {
-						let userInfo = ["file": #file,
-										"class": "\(Self.self)",
-										"function": #function,
-										"line": "\(#line)"]
-						let err = PrimerError.missingPrimerInputElement(inputElementType: inputElementType,
-																		userInfo: userInfo,
-																		diagnosticsId: UUID().uuidString)
-						errors.append(err)
-					}
-				}
+                for inputElementType in self.requiredInputElementTypes {
+                    let missingElements = self.inputElements.filter { $0.type == inputElementType }
+                    if missingElements.isEmpty {
+                        let userInfo = ["file": #file,
+                                        "class": "\(Self.self)",
+                                        "function": #function,
+                                        "line": "\(#line)"]
+                        let err = PrimerError.missingPrimerInputElement(inputElementType: inputElementType,
+                                                                        userInfo: userInfo,
+                                                                        diagnosticsId: UUID().uuidString)
+                        errors.append(err)
+                    }
+                }
 
                 if !errors.isEmpty {
                     let err = PrimerError.underlyingErrors(errors: errors,
@@ -489,7 +489,7 @@ extension PrimerHeadlessUniversalCheckout {
                     Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
                         if !decisionHandlerHasBeenCalled {
                             let message =
-"""
+                                """
 The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. \
 Make sure you call the decision handler otherwise the SDK will hang.
 """
@@ -682,16 +682,16 @@ Make sure you call the decision handler otherwise the SDK will hang.
                     threeDSService.perform3DS(
                         paymentMethodTokenData: paymentMethodTokenData,
                         sdkDismissed: nil) { result in
-                            DispatchQueue.main.async {
-                                switch result {
-                                case .success(let resumeToken):
-                                    seal.fulfill(resumeToken)
+                        DispatchQueue.main.async {
+                            switch result {
+                            case .success(let resumeToken):
+                                seal.fulfill(resumeToken)
 
-                                case .failure(let err):
-                                    seal.reject(err)
-                                }
+                            case .failure(let err):
+                                seal.reject(err)
                             }
                         }
+                    }
 
                 } else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
                     if let redirectUrlStr = decodedJWTToken.redirectUrl,
@@ -822,20 +822,20 @@ Make sure you call the decision handler otherwise the SDK will hang.
                             PrimerUIManager.primerRootViewController?.present(self.webViewController!,
                                                                               animated: true,
                                                                               completion: {
-                                DispatchQueue.main.async {
-                                    seal.fulfill()
-                                }
-                            })
+                                                                                DispatchQueue.main.async {
+                                                                                    seal.fulfill()
+                                                                                }
+                                                                              })
                         }
                         .catch { _ in }
                     } else {
                         PrimerUIManager.primerRootViewController?.present(self.webViewController!,
                                                                           animated: true,
                                                                           completion: {
-                            DispatchQueue.main.async {
-                                seal.fulfill()
-                            }
-                        })
+                                                                            DispatchQueue.main.async {
+                                                                                seal.fulfill()
+                                                                            }
+                                                                          })
                     }
 
                 }
@@ -1168,7 +1168,7 @@ extension PrimerHeadlessUniversalCheckout.CardComponentsManager {
                 ErrorHandler.handle(error: primerErr)
                 PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { _ in
 
-				}
+                }
             }
         } else {
             self.continueHandleNewClientToken(clientToken)
@@ -1182,12 +1182,12 @@ extension PrimerHeadlessUniversalCheckout.CardComponentsManager {
 
             guard let paymentMethodTokenData = paymentMethodTokenData else {
                 DispatchQueue.main.async {
-					let err = InternalError.failedToDecode(message: "Failed to find paymentMethod",
-														   userInfo: ["file": #file,
-																	  "class": "\(Self.self)",
-																	  "function": #function,
-																	  "line": "\(#line)"],
-														   diagnosticsId: UUID().uuidString)
+                    let err = InternalError.failedToDecode(message: "Failed to find paymentMethod",
+                                                           userInfo: ["file": #file,
+                                                                      "class": "\(Self.self)",
+                                                                      "function": #function,
+                                                                      "line": "\(#line)"],
+                                                           diagnosticsId: UUID().uuidString)
                     let containerErr = PrimerError.failedToPerform3DS(paymentMethodType: self.paymentMethodType,
                                                                       error: err,
                                                                       userInfo: ["file": #file,
@@ -1205,34 +1205,34 @@ extension PrimerHeadlessUniversalCheckout.CardComponentsManager {
             threeDSService.perform3DS(
                 paymentMethodTokenData: paymentMethodTokenData,
                 sdkDismissed: nil) { result in
-                    DispatchQueue.main.async {
-                        switch result {
-                        case .success(let resumeToken):
-                            PrimerDelegateProxy.primerDidResumeWith(resumeToken) { _ in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let resumeToken):
+                        PrimerDelegateProxy.primerDidResumeWith(resumeToken) { _ in
 
-                            }
+                        }
 
-                        case .failure(let err):
-                            var primerError: PrimerError
+                    case .failure(let err):
+                        var primerError: PrimerError
 
-                            if let primerErr = err as? PrimerError {
-                                primerError = primerErr
-                            } else {
-                                primerError = PrimerError.underlyingErrors(
-                                    errors: [err],
-                                    userInfo: ["file": #file,
-                                               "class": "\(Self.self)",
-                                               "function": #function,
-                                               "line": "\(#line)"],
-                                    diagnosticsId: UUID().uuidString)
-                            }
+                        if let primerErr = err as? PrimerError {
+                            primerError = primerErr
+                        } else {
+                            primerError = PrimerError.underlyingErrors(
+                                errors: [err],
+                                userInfo: ["file": #file,
+                                           "class": "\(Self.self)",
+                                           "function": #function,
+                                           "line": "\(#line)"],
+                                diagnosticsId: UUID().uuidString)
+                        }
 
-                            PrimerDelegateProxy.primerDidFailWithError(primerError, data: nil) { _ in
+                        PrimerDelegateProxy.primerDidFailWithError(primerError, data: nil) { _ in
 
-                            }
                         }
                     }
                 }
+            }
 
         } else {
             let err = PrimerError.invalidValue(key: "resumeToken",

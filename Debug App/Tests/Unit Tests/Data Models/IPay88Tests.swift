@@ -53,7 +53,7 @@ class IPay88Tests: XCTestCase {
     }
 
     func test_iPay88_validations() throws {
-#if canImport(PrimerIPay88MYSDK)
+        #if canImport(PrimerIPay88MYSDK)
         let decodedClientToken = try DecodedJWTToken.createMock(supportedCurrencyCode: "MYR", supportedCountry: "MY")
         let clientToken = try decodedClientToken.toString()
 
@@ -168,13 +168,13 @@ class IPay88Tests: XCTestCase {
                 }
             }
         }
-#else
+        #else
         XCTAssert(false, "PrimerIPay88MYSDK hasn't been imported.")
-#endif
+        #endif
     }
 
     // MARK: Helpers
-#if canImport(PrimerIPay88MYSDK)
+    #if canImport(PrimerIPay88MYSDK)
     func createIPay88PaymentObjects(
         merchantCode: String = "merchant-code",
         paymentId: String = "payment-id",
@@ -241,7 +241,7 @@ class IPay88Tests: XCTestCase {
         XCTAssert(primerIPay88Payment.promoCode == iPay88Payment.promoCode, "[Scenario: \(scenario)] promoCode mismatch")
         XCTAssert(primerIPay88Payment.fixPaymentId == iPay88Payment.fixPaymentId, "[Scenario: \(scenario)] fixPaymentId mismatch")
     }
-#endif
+    #endif
 }
 
 #endif

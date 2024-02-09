@@ -181,12 +181,12 @@ class AnalyticsTests: XCTestCase {
         let newEvents = self.createEvents(10, withMessage: "A message")
 
         Analytics.Service.record(events: newEvents)
-        .ensure {
-            writeEventExpectation.fulfill()
-        }
-        .catch { err in
-            XCTAssert(false, err.localizedDescription)
-        }
+            .ensure {
+                writeEventExpectation.fulfill()
+            }
+            .catch { err in
+                XCTAssert(false, err.localizedDescription)
+            }
 
         wait(for: expectationsToBeFulfilled, timeout: 30)
 

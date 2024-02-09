@@ -111,18 +111,18 @@ private extension CardNetwork {
         case .amex:
             return ["1234", "4567", "8901"]
         case .bancontact,
-                .diners,
-                .discover,
-                .elo,
-                .hiper,
-                .hipercard,
-                .jcb,
-                .maestro,
-                .masterCard,
-                .mir,
-                .visa,
-                .unionpay,
-                .unknown:
+             .diners,
+             .discover,
+             .elo,
+             .hiper,
+             .hipercard,
+             .jcb,
+             .maestro,
+             .masterCard,
+             .mir,
+             .visa,
+             .unionpay,
+             .unknown:
             return ["123", "345", "456"]
         }
     }

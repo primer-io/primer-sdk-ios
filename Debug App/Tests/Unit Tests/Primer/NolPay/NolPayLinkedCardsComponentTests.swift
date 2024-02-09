@@ -19,12 +19,12 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
     }
 
     func testGetLinkedCardsWithValidMobileNumber() {
-        
+
         let paymentMethod = Mocks.PaymentMethods.nolPaymentMethod
         SDKSessionHelper.setUp(withPaymentMethods: [paymentMethod])
-        
+
         let component = NolPayLinkedCardsComponent()
-        
+
         let mockNolPay = MockPrimerNolPay(appId: "123", isDebug: true, isSandbox: true, appSecretHandler: { _, _ in
             return "appSecret"
         })
@@ -50,21 +50,21 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
             }
             expectation.fulfill()
         }
-        
+
         waitForExpectations(timeout: 5, handler: nil) // Increased timeout due to potential async start operation
     }
 
     func testGetLinkedCardsFor_WhenSDKNotAvailable() {
         let paymentMethod = Mocks.PaymentMethods.nolPaymentMethod
         SDKSessionHelper.setUp(withPaymentMethods: [paymentMethod])
-        
+
         let component = NolPayLinkedCardsComponent()
-        
+
         let mockNolPay = MockPrimerNolPay(appId: "123", isDebug: true, isSandbox: true, appSecretHandler: { _, _ in
             return "appSecret"
         })
         mockNolPay.mockCards = []
-        
+
         let mockPhoneMetadataService = MockPhoneMetadataService()
         mockPhoneMetadataService.resultToReturn = .success((.valid, "+123", "1234567890"))
         component.phoneMetadataService = mockPhoneMetadataService
@@ -72,7 +72,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.testFetchNolSdkSecretResult = (nil, PrimerError.nolError(code: "", message: "", userInfo: nil, diagnosticsId: ""))
         component.apiClient = mockApiClient
-        
+
         let expectation = self.expectation(description: "Get Linked Cards For SDK Not Available")
 
         component.getLinkedCardsFor(mobileNumber: "+1234567890") { result in

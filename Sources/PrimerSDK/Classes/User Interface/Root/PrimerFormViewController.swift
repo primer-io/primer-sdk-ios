@@ -64,8 +64,8 @@ class PrimerFormViewController: PrimerViewController {
             let unknownFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels.filter({ $0.config.hasUnknownSurcharge == true })
 
             if !noAdditionalFeePaymentMethodsViewModels.isEmpty,
-                additionalFeePaymentMethodsViewModels.isEmpty,
-                unknownFeePaymentMethodsViewModels.isEmpty {
+               additionalFeePaymentMethodsViewModels.isEmpty,
+               unknownFeePaymentMethodsViewModels.isEmpty {
                 for viewModel in noAdditionalFeePaymentMethodsViewModels {
                     availablePMethodsContainerStackView.addArrangedSubview(viewModel.uiModule.paymentMethodButton)
                 }

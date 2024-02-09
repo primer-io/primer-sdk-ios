@@ -99,7 +99,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             self.didStartPayment?()
             self.didStartPayment = nil
 
-//            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+            //            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
 
             firstly {
                 self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
@@ -127,7 +127,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                    case .cancelled = primerErr,
                    PrimerInternal.shared.sdkIntegrationType == .dropIn,
                    PrimerInternal.shared.selectedPaymentMethodType == nil,
-                    self.config.implementationType == .webRedirect ||
+                   self.config.implementationType == .webRedirect ||
                     self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
                     self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
                     self.config.type == PrimerPaymentMethodType.payPal.rawValue {
@@ -267,18 +267,18 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                         case .continueWithNewClientToken(let newClientToken):
                             let apiConfigurationModule = PrimerAPIConfigurationModule()
 
-                        firstly {
-                            apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
-                        }
-                        .done {
-                            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                                ErrorHandler.handle(error: err)
-                                throw err
+                            firstly {
+                                apiConfigurationModule.storeRequiredActionClientToken(newClientToken)
                             }
+                            .done {
+                                guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                    ErrorHandler.handle(error: err)
+                                    throw err
+                                }
 
-                            seal.fulfill(decodedJWTToken)
-                        }
+                                seal.fulfill(decodedJWTToken)
+                            }
                             .catch { err in
                                 seal.reject(err)
                             }
@@ -592,7 +592,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                         }
 
                     } else {
-                      precondition(false)
+                        precondition(false)
                     }
                 }
 
@@ -873,12 +873,12 @@ extension BanksTokenizationComponent: SFSafariViewControllerDelegate {
         if let redirectUrlRequestId = self.redirectUrlRequestId,
            let redirectUrlComponents = self.redirectUrlComponents {
             let networkEvent = Analytics.Event.networkCall(
-                    callType: .requestEnd,
-                    id: redirectUrlRequestId,
-                    url: redirectUrlComponents.url?.absoluteString ?? "",
-                    method: .get,
-                    errorBody: "didLoadSuccessfully: \(didLoadSuccessfully)",
-                    responseCode: nil
+                callType: .requestEnd,
+                id: redirectUrlRequestId,
+                url: redirectUrlComponents.url?.absoluteString ?? "",
+                method: .get,
+                errorBody: "didLoadSuccessfully: \(didLoadSuccessfully)",
+                responseCode: nil
             )
             Analytics.Service.record(events: [networkEvent])
         }

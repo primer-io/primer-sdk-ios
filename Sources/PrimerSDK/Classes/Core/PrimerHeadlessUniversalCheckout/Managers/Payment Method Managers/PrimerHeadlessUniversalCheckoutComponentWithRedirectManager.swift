@@ -13,7 +13,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
         @available(iOS 13, *)
         public func provide<PrimerHeadlessMainComponent>(paymentMethodType: String) throws -> PrimerHeadlessMainComponent? where PrimerCollectableData: Any, PrimerHeadlessStep: Any {
-			// swiftlint:disable:previous generic_type_name
+            // swiftlint:disable:previous generic_type_name
             try provideBanksComponent(paymentMethodType: paymentMethodType) as? PrimerHeadlessMainComponent
         }
 

@@ -43,7 +43,7 @@ extension Response.Body.Adyen {
             return URL(string: iconUrlStr)
         }()
         let disabled: Bool
-	// swiftlint:disable:next nesting
+        // swiftlint:disable:next nesting
         private enum CodingKeys: String, CodingKey {
             case id
             case name

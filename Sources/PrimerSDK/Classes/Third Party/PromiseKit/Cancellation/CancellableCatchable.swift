@@ -12,12 +12,12 @@ internal protocol CancellableCatchMixin: CancellableThenable {
 internal extension CancellableCatchMixin {
     /**
      The provided closure executes when this cancellable promise rejects.
-     
+
      Rejecting a promise cascades: rejecting all subsequent promises (unless
      recover is invoked) thus you will typically place your catch at the end
      of a chain. Often utility promises will not have a catch, instead
      delegating the error handling to the caller.
-     
+
      - Parameter on: The dispatcher that executes the provided closure.
      - Parameter policy: The default policy does not execute your handler for cancellation errors.
      - Parameter execute: The handler to execute if this promise is rejected.
@@ -202,21 +202,21 @@ internal class CancellableCascadingFinalizer: CancelContextFinalizer {
 internal extension CancellableCatchMixin {
     /**
      The provided closure executes when this cancellable promise rejects.
-     
+
      Unlike `catch`, `recover` continues the chain. It can return a replacement promise or rethrow.
      Use `recover` in circumstances where recovering the chain from certain errors is a possibility. For example:
 
-         let context = firstly {
-             CLLocationManager.requestLocation()
-         }.recover { error in
-             guard error == CLError.unknownLocation else { throw error }
-             return .value(CLLocation.chicago)
-         }.cancelContext
-     
-         //…
-     
-         context.cancel()
-     
+     let context = firstly {
+     CLLocationManager.requestLocation()
+     }.recover { error in
+     guard error == CLError.unknownLocation else { throw error }
+     return .value(CLLocation.chicago)
+     }.cancelContext
+
+     //…
+
+     context.cancel()
+
      - Parameter on: The dispatcher that executes the provided closure.
      - Parameter body: The handler to execute if this promise is rejected.
      - SeeAlso: [Cancellation](https://github.com/mxcl/PromiseKit/blob/master/Documentation/CommonPatterns.md#cancellation)
@@ -243,21 +243,21 @@ internal extension CancellableCatchMixin {
 
     /**
      The provided closure executes when this cancellable promise rejects.
-     
+
      Unlike `catch`, `recover` continues the chain. It can return a replacement promise or rethrow.
      Use `recover` in circumstances where recovering the chain from certain errors is a possibility. For example:
 
-         let context = firstly {
-             CLLocationManager.requestLocation()
-         }.cancellize().recover { error in
-             guard error == CLError.unknownLocation else { throw error }
-             return Promise.value(CLLocation.chicago)
-         }.cancelContext
-     
-         //…
-     
-         context.cancel()
-     
+     let context = firstly {
+     CLLocationManager.requestLocation()
+     }.cancellize().recover { error in
+     guard error == CLError.unknownLocation else { throw error }
+     return Promise.value(CLLocation.chicago)
+     }.cancelContext
+
+     //…
+
+     context.cancel()
+
      - Parameter on: The dispatcher that executes the provided closure.
      - Parameter policy: The default policy does not execute your handler for cancellation errors.
      - Parameter body: The handler to execute if this promise is rejected.
@@ -290,11 +290,11 @@ internal extension CancellableCatchMixin {
      Unlike `catch`, `recover` continues the chain. It can return a replacement promise or rethrow.
      Use `recover` in circumstances where recovering the chain from certain errors is a possibility. For example:
 
-         firstly {
-             CLLocationManager.requestLocation()
-         }.recover(CLError.unknownLocation) {
-             return .value(CLLocation.chicago)
-         }
+     firstly {
+     CLLocationManager.requestLocation()
+     }.recover(CLError.unknownLocation) {
+     return .value(CLLocation.chicago)
+     }
 
      - Parameter only: The specific error to be recovered (e.g., `PMKError.emptySequence`)
      - Parameter on: The dispatcher that executes the provided closure.
@@ -328,11 +328,11 @@ internal extension CancellableCatchMixin {
      Unlike `catch`, `recover` continues the chain. It can return a replacement promise or rethrow.
      Use `recover` in circumstances where recovering the chain from certain errors is a possibility. For example:
 
-         firstly {
-             CLLocationManager.requestLocation()
-         }.recover(CLError.unknownLocation) {
-             return Promise.value(CLLocation.chicago)
-         }
+     firstly {
+     CLLocationManager.requestLocation()
+     }.recover(CLError.unknownLocation) {
+     return Promise.value(CLLocation.chicago)
+     }
 
      - Parameter only: The specific error to be recovered.
      - Parameter on: The queue to which the provided closure dispatches.
@@ -364,13 +364,13 @@ internal extension CancellableCatchMixin {
      Unlike `catch`, `recover` continues the chain. It can return a replacement promise or rethrow.
      Use `recover` in circumstances where recovering the chain from certain errors is a possibility. For example:
 
-         firstly {
-             API.fetchData()
-         }.recover(FetchError.self) { error in
-             guard case .missingImage(let partialData) = error else { throw error }
-             //…
-             return .value(dataWithDefaultImage)
-         }
+     firstly {
+     API.fetchData()
+     }.recover(FetchError.self) { error in
+     guard case .missingImage(let partialData) = error else { throw error }
+     //…
+     return .value(dataWithDefaultImage)
+     }
 
      - Parameter only: The error type to be recovered.
      - Parameter on: The dispatcher that executes the provided closure.
@@ -409,13 +409,13 @@ internal extension CancellableCatchMixin {
      Unlike `catch`, `recover` continues the chain. It can return a replacement promise or rethrow.
      Use `recover` in circumstances where recovering the chain from certain errors is a possibility. For example:
 
-         firstly {
-             API.fetchData()
-         }.recover(FetchError.self) { error in
-             guard case .missingImage(let partialData) = error else { throw error }
-             //…
-             return Promise.value(dataWithDefaultImage)
-         }
+     firstly {
+     API.fetchData()
+     }.recover(FetchError.self) { error in
+     guard case .missingImage(let partialData) = error else { throw error }
+     //…
+     return Promise.value(dataWithDefaultImage)
+     }
 
      - Parameter only: The error type to be recovered.
      - Parameter on: The queue to which the provided closure dispatches.
@@ -450,21 +450,21 @@ internal extension CancellableCatchMixin {
 
     /**
      The provided closure executes when this cancellable promise resolves, whether it rejects or not.
-     
-         let context = firstly {
-             UIApplication.shared.networkActivityIndicatorVisible = true
-             //…  returns a cancellable promise
-         }.done {
-             //…
-         }.ensure {
-             UIApplication.shared.networkActivityIndicatorVisible = false
-         }.catch {
-             //…
-         }.cancelContext
-     
-         //…
-     
-         context.cancel()
+
+     let context = firstly {
+     UIApplication.shared.networkActivityIndicatorVisible = true
+     //…  returns a cancellable promise
+     }.done {
+     //…
+     }.ensure {
+     UIApplication.shared.networkActivityIndicatorVisible = false
+     }.catch {
+     //…
+     }.cancelContext
+
+     //…
+
+     context.cancel()
 
      - Parameter on: The dispatcher that executes the provided closure.
      - Parameter body: The closure that executes when this promise resolves.
@@ -495,19 +495,19 @@ internal extension CancellableCatchMixin {
      The provided closure executes when this cancellable promise resolves, whether it rejects or not.
      The chain waits on the returned `CancellablePromise<Void>`.
 
-         let context = firstly {
-             setup() // returns a cancellable promise
-         }.done {
-             //…
-         }.ensureThen {
-             teardown()  // -> CancellablePromise<Void>
-         }.catch {
-             //…
-         }.cancelContext
-     
-         //…
-     
-         context.cancel()
+     let context = firstly {
+     setup() // returns a cancellable promise
+     }.done {
+     //…
+     }.ensureThen {
+     teardown()  // -> CancellablePromise<Void>
+     }.catch {
+     //…
+     }.cancelContext
+
+     //…
+
+     context.cancel()
 
      - Parameter on: The dispatcher that executes the provided closure.
      - Parameter body: The closure that executes when this promise resolves.
@@ -555,9 +555,9 @@ internal extension CancellableCatchMixin {
 internal extension CancellableCatchMixin where C.T == Void {
     /**
      The provided closure executes when this cancellable promise rejects.
-     
+
      This variant of `recover` ensures that no error is thrown from the handler and allows specifying a catch policy.
-     
+
      - Parameter on: The dispatcher that executes the provided closure.
      - Parameter body: The handler to execute if this promise is rejected.
      - SeeAlso: [Cancellation](https://github.com/mxcl/PromiseKit/blob/master/Documentation/CommonPatterns.md#cancellation)
@@ -591,7 +591,7 @@ internal extension CancellableCatchMixin where C.T == Void {
      - SeeAlso: [Cancellation](https://github.com/mxcl/PromiseKit/blob/master/Documentation/CommonPatterns.md#cancellation)
      */
     func recover<E: Swift.Error>(only: E, on: Dispatcher = conf.D.map, _ body: @escaping(E) throws -> Void)
-        -> CancellablePromise<Void> where E: Equatable {
+    -> CancellablePromise<Void> where E: Equatable {
         let cancelBody = { (error: E) throws -> Void in
             _ = self.cancelContext.removeItems(self.cancelItemList, clearList: true)
             try body(error)

@@ -5,21 +5,21 @@ import Dispatch
 
  Compare:
 
-     URLSession.shared.dataTask(url: url1).then {
-         URLSession.shared.dataTask(url: url2)
-     }.then {
-         URLSession.shared.dataTask(url: url3)
-     }
+ URLSession.shared.dataTask(url: url1).then {
+ URLSession.shared.dataTask(url: url2)
+ }.then {
+ URLSession.shared.dataTask(url: url3)
+ }
 
  With:
 
-     firstly {
-         URLSession.shared.dataTask(url: url1)
-     }.then {
-         URLSession.shared.dataTask(url: url2)
-     }.then {
-         URLSession.shared.dataTask(url: url3)
-     }
+ firstly {
+ URLSession.shared.dataTask(url: url1)
+ }.then {
+ URLSession.shared.dataTask(url: url2)
+ }.then {
+ URLSession.shared.dataTask(url: url3)
+ }
 
  - Note: the block you pass executes immediately on the current thread/queue.
  */
@@ -45,33 +45,33 @@ internal func firstly<T>(execute body: () -> Guarantee<T>) -> Guarantee<T> {
 
  Compare:
 
-     let context = URLSession.shared.dataTask(url: url1).cancellize().then {
-         URLSession.shared.dataTask(url: url2)
-     }.then {
-         URLSession.shared.dataTask(url: url3)
-     }.cancelContext
- 
-     // …
- 
-     context.cancel()
+ let context = URLSession.shared.dataTask(url: url1).cancellize().then {
+ URLSession.shared.dataTask(url: url2)
+ }.then {
+ URLSession.shared.dataTask(url: url3)
+ }.cancelContext
+
+ // …
+
+ context.cancel()
 
  With:
 
-     let context = firstly {
-         URLSession.shared.dataTask(url: url1)
-     }.cancellize().then {
-         URLSession.shared.dataTask(url: url2)
-     }.then {
-         URLSession.shared.dataTask(url: url3)
-     }.cancelContext
- 
-     // …
- 
-     context.cancel()
+ let context = firstly {
+ URLSession.shared.dataTask(url: url1)
+ }.cancellize().then {
+ URLSession.shared.dataTask(url: url2)
+ }.then {
+ URLSession.shared.dataTask(url: url3)
+ }.cancelContext
+
+ // …
+
+ context.cancel()
 
  - Note: the block you pass excecutes immediately on the current thread/queue.
  - See: firstly(execute: () -> Thenable)
-*/
+ */
 internal func firstly<V: CancellableThenable>(execute body: () throws -> V) -> CancellablePromise<V.U.T> {
     do {
         let rv = try body()

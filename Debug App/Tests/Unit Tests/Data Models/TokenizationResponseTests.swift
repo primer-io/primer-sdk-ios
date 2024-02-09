@@ -45,17 +45,17 @@ class TokenizationResponseTests: XCTestCase {
                 ]
             ] as [String: Any],
             "sessionInfo": [
-              "locale": "en-US",
-              "platform": "IOS",
-              "redirectionUrl": "primer://some-url.io"
+                "locale": "en-US",
+                "platform": "IOS",
+                "redirectionUrl": "primer://some-url.io"
             ]
         ] as [String: Any],
         "paymentInstrumentType": "OFF_SESSION_PAYMENT",
         "threeDSecureAuthentication": [
-          "responseCode": "NOT_PERFORMED",
-          "reasonCode": "some-reason-code",
-          "reasonText": "some-reason-text",
-          "protocolVersion": "2.1"
+            "responseCode": "NOT_PERFORMED",
+            "reasonCode": "some-reason-code",
+            "reasonText": "some-reason-text",
+            "protocolVersion": "2.1"
         ],
         "token": "some-token",
         "tokenType": "SINGLE_USE"

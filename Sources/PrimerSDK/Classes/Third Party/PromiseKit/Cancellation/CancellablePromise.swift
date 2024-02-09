@@ -3,9 +3,9 @@ import Dispatch
 
 /**
  A `CancellablePromise` is a functional abstraction around a failable and cancellable asynchronous operation.
- 
+
  At runtime the promise can become a member of a chain of promises, where the `cancelContext` is used to track and cancel (if desired) all promises in this chain.
- 
+
  - See: `CancellableThenable`
  */
 // swiftlint:disable identifier_name

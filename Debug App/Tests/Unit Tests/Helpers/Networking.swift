@@ -171,23 +171,23 @@ class Networking {
             queryParameters: nil,
             body: bodyData
         ) { result in
-                switch result {
-                case .success(let data):
-                    do {
-                        if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
-                            completion(token, nil)
-                        } else {
-                            let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
-                            completion(nil, err)
-                        }
-
-                    } catch {
-                        completion(nil, error)
+            switch result {
+            case .success(let data):
+                do {
+                    if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
+                        completion(token, nil)
+                    } else {
+                        let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
+                        completion(nil, err)
                     }
-                case .failure(let err):
-                    completion(nil, err)
+
+                } catch {
+                    completion(nil, error)
                 }
+            case .failure(let err):
+                completion(nil, err)
             }
+        }
     }
 }
 
@@ -217,14 +217,14 @@ struct ClientSessionRequestBody: Codable {
             billingAddress: nil,
             shippingAddress: nil),
         order: Order(
-        countryCode: "DE",
-        lineItems: [
-            Order.LineItem(
-                itemId: "item-id",
-                description: "description",
-                amount: 100,
-                quantity: 1)
-        ]))
+            countryCode: "DE",
+            lineItems: [
+                Order.LineItem(
+                    itemId: "item-id",
+                    description: "description",
+                    amount: 100,
+                    quantity: 1)
+            ]))
 
     var customerId: String?
     var orderId: String?

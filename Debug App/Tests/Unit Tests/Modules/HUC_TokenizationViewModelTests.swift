@@ -132,14 +132,14 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
             abortPayment: false)
     }
 
-//    func test_raw_data_manager_with_auto_payment_handling_and_surcharge() throws {
-//        try self.assess_huc_payment_method(
-//            Mocks.PaymentMethods.paymentCardPaymentMethod,
-//            paymentHandling: .auto,
-//            isSurchargeIncluded: true,
-//            isImplementingPaymentMethodWithRequiredAction: false,
-//            abortPayment: false)
-//    }
+    //    func test_raw_data_manager_with_auto_payment_handling_and_surcharge() throws {
+    //        try self.assess_huc_payment_method(
+    //            Mocks.PaymentMethods.paymentCardPaymentMethod,
+    //            paymentHandling: .auto,
+    //            isSurchargeIncluded: true,
+    //            isImplementingPaymentMethodWithRequiredAction: false,
+    //            abortPayment: false)
+    //    }
 
     // MARK: PAYMENT HANDLING: MANUAL
 
@@ -174,14 +174,14 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
             abortPayment: false)
     }
 
-//    func test_raw_data_manager_with_manual_payment_handling_and_surcharge() throws {
-//        try self.assess_huc_payment_method(
-//            Mocks.PaymentMethods.paymentCardPaymentMethod,
-//            paymentHandling: .manual,
-//            isSurchargeIncluded: true,
-//            isImplementingPaymentMethodWithRequiredAction: true,
-//            abortPayment: false)
-//    }
+    //    func test_raw_data_manager_with_manual_payment_handling_and_surcharge() throws {
+    //        try self.assess_huc_payment_method(
+    //            Mocks.PaymentMethods.paymentCardPaymentMethod,
+    //            paymentHandling: .manual,
+    //            isSurchargeIncluded: true,
+    //            isImplementingPaymentMethodWithRequiredAction: true,
+    //            abortPayment: false)
+    //    }
 
     // MARK: - ABORT PAYMENT
 
@@ -318,11 +318,11 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
                 if let err = err {
                     XCTAssert(false, "SDK failed with error \(err.localizedDescription) while it should have succeeded.")
                 } else if paymentMethodTokenData != nil, !isImplementingPaymentMethodWithRequiredAction, !isSurchargeIncluded {
-                        XCTAssert(self.eventsCalled.count == 4, "4 events should have been called.")
-                        XCTAssert(self.eventsCalled[0] == "primerHeadlessUniversalCheckoutPreparationDidStart", "'\(self.eventsCalled[0])' called instead if 'primerHeadlessUniversalCheckoutPreparationDidStart'.")
-                        XCTAssert(self.eventsCalled[1] == "primerHeadlessUniversalCheckoutWillCreatePaymentWithData", "'\(self.eventsCalled[1])' called instead if 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData'.")
-                        XCTAssert(self.eventsCalled[2] == "primerHeadlessUniversalCheckoutTokenizationDidStart", "'\(self.eventsCalled[2])' called instead if 'primerHeadlessUniversalCheckoutTokenizationDidStart'.")
-                        XCTAssert(self.eventsCalled[3] == "primerHeadlessUniversalCheckoutDidTokenizePaymentMethod", "'\(self.eventsCalled[3])' called instead if 'primerHeadlessUniversalCheckoutDidTokenizePaymentMethod'.")
+                    XCTAssert(self.eventsCalled.count == 4, "4 events should have been called.")
+                    XCTAssert(self.eventsCalled[0] == "primerHeadlessUniversalCheckoutPreparationDidStart", "'\(self.eventsCalled[0])' called instead if 'primerHeadlessUniversalCheckoutPreparationDidStart'.")
+                    XCTAssert(self.eventsCalled[1] == "primerHeadlessUniversalCheckoutWillCreatePaymentWithData", "'\(self.eventsCalled[1])' called instead if 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData'.")
+                    XCTAssert(self.eventsCalled[2] == "primerHeadlessUniversalCheckoutTokenizationDidStart", "'\(self.eventsCalled[2])' called instead if 'primerHeadlessUniversalCheckoutTokenizationDidStart'.")
+                    XCTAssert(self.eventsCalled[3] == "primerHeadlessUniversalCheckoutDidTokenizePaymentMethod", "'\(self.eventsCalled[3])' called instead if 'primerHeadlessUniversalCheckoutDidTokenizePaymentMethod'.")
                 } else if paymentMethodTokenData == nil {
                     XCTAssert(false, "SDK should have returned an error or payment methods.")
                 }

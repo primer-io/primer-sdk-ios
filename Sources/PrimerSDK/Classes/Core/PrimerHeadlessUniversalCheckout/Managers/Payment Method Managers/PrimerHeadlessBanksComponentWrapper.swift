@@ -66,8 +66,8 @@ import Foundation
 }
 
 extension PrimerHeadlessBanksComponentWrapper: PrimerHeadlessErrorableDelegate,
-                                                PrimerHeadlessValidatableDelegate,
-                                                PrimerHeadlessSteppableDelegate {
+                                               PrimerHeadlessValidatableDelegate,
+                                               PrimerHeadlessSteppableDelegate {
     public func didReceiveError(error: PrimerError) {
         errorDelegate?.didReceiveError(NSError(domain: error.errorId, code: -1, userInfo: error.errorUserInfo))
     }
