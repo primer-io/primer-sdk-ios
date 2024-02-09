@@ -142,19 +142,11 @@ class PrimerPaymentMethod: Codable, LogReporter {
 
         return nil
     }()
-
+    
     lazy var tokenizationModel: PaymentMethodTokenizationModelProtocol? = {
         switch internalPaymentMethodType {
         case .adyenIDeal:
             return BanksTokenizationComponent(config: self)
-        default: return nil
-        }
-    }()
-    
-    lazy var tokenizationComponent: KlarnaTokenizationComponentProtocol? = {
-        switch internalPaymentMethodType {
-        case .klarna:
-            return KlarnaTokenizationComponent(paymentMethod: self)
         default: return nil
         }
     }()
