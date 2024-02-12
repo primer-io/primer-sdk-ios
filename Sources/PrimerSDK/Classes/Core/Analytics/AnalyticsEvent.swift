@@ -7,6 +7,7 @@
 
 import Foundation
 
+// swiftlint:disable all
 extension Analytics {
     struct Event: Codable, Equatable {
 
@@ -834,3 +835,4 @@ extension Analytics.Event {
         )
     }
 }
+// swiftlint:enable all
