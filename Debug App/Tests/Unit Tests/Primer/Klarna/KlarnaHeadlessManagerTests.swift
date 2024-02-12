@@ -21,7 +21,7 @@ final class KlarnaHeadlessManagerTests: XCTestCase {
     override func setUp() {
         super.setUp()
         prepareConfigurations()
-        manager = PrimerHeadlessUniversalCheckout.KlarnaHeadlessManager()
+        manager = PrimerHeadlessUniversalCheckout.KlarnaHeadlessManager(paymentMethodType: "KLARNA")
         manager.setProvider(with: KlarnaTestsMocks.clientToken, paymentCategory: KlarnaTestsMocks.paymentMethod)
         manager.setDelegate(self)
         manager.setSessionCreationDelegates(self)
