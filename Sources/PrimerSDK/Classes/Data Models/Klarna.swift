@@ -33,27 +33,6 @@ extension Request.Body.Klarna {
     }
     
     struct CreatePaymentSession: Codable {
-        struct Attachment: Codable {
-            let body: AttachmentBody
-            let contentType: String
-            
-            init(body: AttachmentBody) {
-                self.body = body
-                self.contentType = "application/vnd.klarna.internal.emd-v2+json"
-            }
-        }
-        
-        struct AttachmentBody: Codable {
-            let customerAccountInfo: [CustomerAccountInfo]
-        }
-        
-        struct CustomerAccountInfo: Codable {
-            let uniqueAccountIdenitfier: String
-            let acountRegistrationDate: String
-            let accountLastModified: String
-            let appId: String?
-        }
-        
         let paymentMethodConfigId: String
         let sessionType: KlarnaSessionType
         var localeData: KlarnaLocaleData?
@@ -61,7 +40,6 @@ extension Request.Body.Klarna {
         let redirectUrl: String?
         let totalAmount: Int?
         let orderItems: [OrderItem]?
-        let attachment: Attachment?
         let billingAddress: Response.Body.Klarna.BillingAddress?
         let shippingAddress: Response.Body.Klarna.BillingAddress?
     }

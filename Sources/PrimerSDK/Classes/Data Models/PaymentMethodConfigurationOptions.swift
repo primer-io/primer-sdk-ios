@@ -29,27 +29,6 @@ struct MerchantOptions: PaymentMethodOptions {
     let appId: String? // Nol pay, Klarna
 }
 
-struct ExtraMerchantData: PaymentMethodOptions {
-    var extraMerchantData: String?
-
-    enum CodingKeys: String, CodingKey {
-        case extraMerchantData
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        if let extraMerchantData = try container.decodeIfPresent([String: Any].self, forKey: .extraMerchantData) {
-            let jsonData = try JSONSerialization.data(withJSONObject: extraMerchantData, options: [])
-            self.extraMerchantData = String(data: jsonData, encoding: .utf8)
-        } else {
-            self.extraMerchantData = nil
-        }
-    }
-}
-
-
-
-
 extension PrimerTestPaymentMethodSessionInfo.FlowDecision {
 
     var displayFlowTitle: String {

@@ -42,27 +42,18 @@ public class KlarnaPaymentSessionAuthorizationComponent: PrimerHeadlessAnalytics
 
 // MARK: - Authorization
 public extension KlarnaPaymentSessionAuthorizationComponent {
-    func authorizeSession(
-        autoFinalize: Bool = true,
-        jsonData: String? = nil
-    ) {
-        self.recordEvent(
-            type: .sdkEvent,
-            name: KlarnaAnalyticsEvents.AUTHORIZE_SESSION_METHOD,
-            params: [
-                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
-                KlarnaAnalyticsEvents.AUTO_FINALIZE_KEY: "\(autoFinalize)",
-                KlarnaAnalyticsEvents.JSON_DATA_KEY: jsonData ?? KlarnaAnalyticsEvents.JSON_DATA_DEFAULT_VALUE
-            ]
-        )
-        
+    func authorizeSession(autoFinalize: Bool = true) {
         var extraMerchantDataString: String?
         
-        if let paymentMethod = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.name == "Klarna" }) {
-            if let extraMerchantData = paymentMethod.options as? ExtraMerchantData {
-                extraMerchantDataString = extraMerchantData.extraMerchantData
+        if let paymentMethod = PrimerAPIConfiguration.current?.clientSession?.paymentMethod {
+            if let klarnaOptions = paymentMethod.options?.first(where: { $0["type"] as? String == PrimerPaymentMethodType.klarna.rawValue }) {
+                if let extraMerchantData = klarnaOptions["extraMerchantData"] {
+                    // Here we will serialize the the attachment into a String and send it to klarnaProvider for authorize call.
+                }
             }
         }
+        
+        recordAuthorizeEvent(autoFinalize, jsonData: extraMerchantDataString)
         
         self.klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: extraMerchantDataString)
     }
@@ -142,4 +133,20 @@ extension KlarnaPaymentSessionAuthorizationComponent: PrimerKlarnaProviderAuthor
         }
     }
 }
+
+// MARK: Helpers
+extension KlarnaPaymentSessionAuthorizationComponent {
+    private func recordAuthorizeEvent(_ autoFinalize: Bool, jsonData: String?) {
+        self.recordEvent(
+            type: .sdkEvent,
+            name: KlarnaAnalyticsEvents.AUTHORIZE_SESSION_METHOD,
+            params: [
+                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
+                KlarnaAnalyticsEvents.AUTO_FINALIZE_KEY: "\(autoFinalize)",
+                KlarnaAnalyticsEvents.JSON_DATA_KEY: jsonData ?? KlarnaAnalyticsEvents.JSON_DATA_DEFAULT_VALUE
+            ]
+        )
+    }
+}
+
 #endif

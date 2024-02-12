@@ -138,6 +138,7 @@ struct MerchantMockDataManager {
     static var paymentOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOptionGroup(
         KLARNA: ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(
             surcharge: ClientSessionRequestBody.PaymentMethod.SurchargeOption(amount: 140),
+            instalmentDuration: "test",
             extraMerchantData: extraMerchantData))
     
     static var extraMerchantData: [String: Any] = [

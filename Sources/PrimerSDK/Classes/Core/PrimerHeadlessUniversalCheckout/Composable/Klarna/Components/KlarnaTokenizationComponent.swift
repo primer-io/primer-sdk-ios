@@ -12,7 +12,7 @@ protocol KlarnaTokenizationComponentProtocol: KlarnaTokenizationManagerProtocol 
     func validate() throws
     
     /// - Initiates the creation for Klarna Payment Session
-    func createPaymentSession(attachment: Request.Body.Klarna.CreatePaymentSession.Attachment?) -> Promise<Response.Body.Klarna.PaymentSession>
+    func createPaymentSession() -> Promise<Response.Body.Klarna.PaymentSession>
     
     /// - Initiates the authorization for Klarna Payment Session
     func authorizePaymentSession(authorizationToken: String) -> Promise<Response.Body.Klarna.CustomerToken>
@@ -93,7 +93,7 @@ extension KlarnaTokenizationComponent {
 // MARK: - Create payment session
 extension KlarnaTokenizationComponent {
     
-    func createPaymentSession(attachment: Request.Body.Klarna.CreatePaymentSession.Attachment?) -> Promise<Response.Body.Klarna.PaymentSession> {
+    func createPaymentSession() -> Promise<Response.Body.Klarna.PaymentSession> {
         return Promise { seal in
             
             // Verify if we have a valid decoded JWT token
@@ -116,7 +116,7 @@ extension KlarnaTokenizationComponent {
             }
             .then({ () -> Promise<Response.Body.Klarna.PaymentSession> in
                 // Prepare the body for the payment session creation request
-                let body = self.prepareKlarnaPaymentSessionRequestBody(attachment: attachment, paymentMethodConfigId: paymentMethodConfigId)
+                let body = self.prepareKlarnaPaymentSessionRequestBody(paymentMethodConfigId: paymentMethodConfigId)
                 
                 // Create the Klarna payment session
                 return self.createKlarnaSession(with: body, decodedJWTToken: decodedJWTToken)
@@ -189,10 +189,9 @@ extension KlarnaTokenizationComponent {
 private extension KlarnaTokenizationComponent {
     
     /// - Helper method to prepare Klarna Payment Session request body
-    private func prepareKlarnaPaymentSessionRequestBody(attachment: Request.Body.Klarna.CreatePaymentSession.Attachment?, paymentMethodConfigId: String) -> Request.Body.Klarna.CreatePaymentSession {
+    private func prepareKlarnaPaymentSessionRequestBody(paymentMethodConfigId: String) -> Request.Body.Klarna.CreatePaymentSession {
         return KlarnaHelpers.getKlarnaPaymentSessionBody(
-            with: attachment,
-            paymentMethodConfigId: paymentMethodConfigId,
+            with: paymentMethodConfigId,
             clientSession: clientSession,
             recurringPaymentDescription: recurringPaymentDescription,
             redirectUrl: settings.paymentMethodOptions.urlScheme)

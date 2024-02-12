@@ -103,7 +103,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
         
         /// Authorizes the payment session, optionally finalizing it automatically.
-        public func authorizeSession(autoFinalize: Bool, jsonData: String? = nil) {
+        public func authorizeSession(autoFinalize: Bool) {
             sessionAuthorizationComponent?.authorizeSession(autoFinalize: autoFinalize)
         }
         

@@ -363,14 +363,16 @@ struct ClientSessionRequestBody {
         
         struct PaymentMethodOption: Codable {
             var surcharge: SurchargeOption?
+            var instalmentDuration: String?
             var extraMerchantData: [String: Any]?
 
             enum CodingKeys: CodingKey {
-                case surcharge, extraMerchantData
+                case surcharge, instalmentDuration, extraMerchantData
             }
             
-            init(surcharge: SurchargeOption?, extraMerchantData: [String: Any]?) {
+            init(surcharge: SurchargeOption?, instalmentDuration: String?, extraMerchantData: [String: Any]?) {
                 self.surcharge = surcharge
+                self.instalmentDuration = instalmentDuration
                 self.extraMerchantData = extraMerchantData
             }
 
@@ -379,6 +381,10 @@ struct ClientSessionRequestBody {
                 
                 if let surcharge = surcharge {
                     try container.encode(surcharge, forKey: .surcharge)
+                }
+                
+                if let instalmentDuration = instalmentDuration {
+                    try container.encode(instalmentDuration, forKey: .instalmentDuration)
                 }
                 
                 if let extraMerchantData = extraMerchantData {
@@ -391,6 +397,7 @@ struct ClientSessionRequestBody {
             init(from decoder: Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
                 surcharge = try container.decodeIfPresent(SurchargeOption.self, forKey: .surcharge)
+                instalmentDuration = try container.decodeIfPresent(String.self, forKey: .instalmentDuration)
                 
                 let jsonString = try container.decodeIfPresent(String.self, forKey: .extraMerchantData)
                 if let jsonData = jsonString?.data(using: .utf8) {
@@ -405,6 +412,10 @@ struct ClientSessionRequestBody {
                 
                 if let surcharge = surcharge {
                     dic["surcharge"] = surcharge.dictionaryValue
+                }
+                
+                if let instalmentDuration = instalmentDuration {
+                    dic["instalmentDuration"] = instalmentDuration
                 }
                 
                 if let extraMerchantData = extraMerchantData {
