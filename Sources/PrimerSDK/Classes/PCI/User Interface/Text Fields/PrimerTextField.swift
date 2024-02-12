@@ -13,17 +13,17 @@ internal class PrimerTextField: UITextField {
         case valid, invalid(_ error: Error?), notAvailable
 
         static func == (lhs: Validation, rhs: Validation) -> Bool {
-                switch (lhs, rhs) {
-                case (.valid, .valid):
-                    return lhs == rhs
-                case (.invalid, .invalid):
-                    return lhs == rhs
-                case (.notAvailable, .notAvailable):
-                    return lhs == rhs
-                default:
-                    return false
-                }
+            switch (lhs, rhs) {
+            case (.valid, .valid):
+                return lhs == rhs
+            case (.invalid, .invalid):
+                return lhs == rhs
+            case (.notAvailable, .notAvailable):
+                return lhs == rhs
+            default:
+                return false
             }
+        }
     }
 
     override var delegate: UITextFieldDelegate? {

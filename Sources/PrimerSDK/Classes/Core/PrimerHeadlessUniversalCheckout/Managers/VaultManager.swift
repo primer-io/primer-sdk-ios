@@ -557,16 +557,16 @@ extension PrimerHeadlessUniversalCheckout {
                     threeDSService.perform3DS(
                         paymentMethodTokenData: paymentMethodTokenData,
                         sdkDismissed: nil) { result in
-                            DispatchQueue.main.async {
-                                switch result {
-                                case .success(let resumeToken):
-                                    seal.fulfill(resumeToken)
+                        DispatchQueue.main.async {
+                            switch result {
+                            case .success(let resumeToken):
+                                seal.fulfill(resumeToken)
 
-                                case .failure(let err):
-                                    seal.reject(err)
-                                }
+                            case .failure(let err):
+                                seal.reject(err)
                             }
                         }
+                    }
 
                 } else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
                     if let redirectUrlStr = decodedJWTToken.redirectUrl,

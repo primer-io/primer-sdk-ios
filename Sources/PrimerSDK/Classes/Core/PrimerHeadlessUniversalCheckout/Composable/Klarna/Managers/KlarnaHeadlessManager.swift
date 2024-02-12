@@ -37,33 +37,30 @@ extension PrimerHeadlessUniversalCheckout {
         var viewHandlingComponent: KlarnaPaymentViewHandlingComponent?
         
         // MARK: - Init
-        public override init() {
+        public init(paymentMethodType: String) {
             super.init()
             
-            guard let tokenizationComponentProtocol = PrimerAPIConfiguration.paymentMethodConfigTokenizationComponent.first else {
-                let error = PrimerError.unknown(
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: error)
+            guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?.first(where: { $0.type == paymentMethodType }) else {
+                let err = PrimerError.generic(message: "Unable to locate a valid payment method component",
+                                              userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                                              diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
                 return
             }
-            self.tokenizationComponent = tokenizationComponentProtocol
+            
+            let tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: paymentMethod)
+            self.tokenizationComponent = tokenizationComponent
             
             self.sessionCreationComponent = KlarnaPaymentSessionCreationComponent(
-                tokenizationComponent: tokenizationComponentProtocol
+                tokenizationComponent: tokenizationComponent
             )
             
             self.sessionAuthorizationComponent = KlarnaPaymentSessionAuthorizationComponent(
-                tokenizationComponent: tokenizationComponentProtocol
+                tokenizationComponent: tokenizationComponent
             )
             
             self.sessionFinalizationComponent = KlarnaPaymentSessionFinalizationComponent(
-                tokenizationComponent: tokenizationComponentProtocol
+                tokenizationComponent: tokenizationComponent
             )
             self.viewHandlingComponent = KlarnaPaymentViewHandlingComponent()
         }

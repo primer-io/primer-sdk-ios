@@ -167,7 +167,6 @@ struct BanksListView_Previews: PreviewProvider {
     }
 }
 
-
 extension View {
     @ViewBuilder func addAccessibilityIdentifier(identifier: String) -> some View {
         if #available(iOS 14.0, *) {

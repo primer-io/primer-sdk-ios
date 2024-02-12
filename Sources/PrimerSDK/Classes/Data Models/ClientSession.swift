@@ -29,6 +29,7 @@ internal class ClientSession {
             ClientSession.Action(type: .setBillingAddress, params: makeBillingAddressDictionaryRequestFromParameters(parameters))
         }
 
+        // swiftlint:disable:next nesting
         internal enum ActionType: String {
             case selectPaymentMethod = "SELECT_PAYMENT_METHOD"
             case unselectPaymentMethod = "UNSELECT_PAYMENT_METHOD"
@@ -39,6 +40,7 @@ internal class ClientSession {
         internal var type: ActionType
         internal var params: [String: Any]?
 
+        // swiftlint:disable:next nesting
         private enum CodingKeys: String, CodingKey {
             case type, params
         }
@@ -101,6 +103,7 @@ internal class ClientSession {
         let shippingAddress: ClientSession.Address?
         let taxId: String?
 
+        // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case id = "customerId", firstName, lastName, emailAddress, mobileNumber, billingAddress, shippingAddress, taxId
         }
@@ -152,6 +155,7 @@ internal class ClientSession {
         let lineItems: [ClientSession.Order.LineItem]?
         let shippingAmount: Int?
 
+        // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case id = "orderId", merchantAmount, totalOrderAmount, totalTaxAmount, countryCode, currencyCode, fees, lineItems, shippingAmount
         }
@@ -181,20 +185,20 @@ internal class ClientSession {
         internal init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             id = (try? container.decode(String?.self, forKey: .id)) ?? nil
-			merchantAmount = (try? container.decode(Int?.self, forKey: .merchantAmount)) ?? nil
-			totalOrderAmount = (try? container.decode(Int?.self, forKey: .totalOrderAmount)) ?? nil
-			totalTaxAmount = (try? container.decode(Int?.self, forKey: .totalTaxAmount)) ?? nil
-			countryCode = (try? container.decode(CountryCode?.self, forKey: .countryCode)) ?? nil
-			if let cCode = try? container.decode(String.self, forKey: .currencyCode) {
+            merchantAmount = (try? container.decode(Int?.self, forKey: .merchantAmount)) ?? nil
+            totalOrderAmount = (try? container.decode(Int?.self, forKey: .totalOrderAmount)) ?? nil
+            totalTaxAmount = (try? container.decode(Int?.self, forKey: .totalTaxAmount)) ?? nil
+            countryCode = (try? container.decode(CountryCode?.self, forKey: .countryCode)) ?? nil
+            if let cCode = try? container.decode(String.self, forKey: .currencyCode) {
                 let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(), networkService: CurrencyNetworkService())
                 currencyCode = currencyLoader.getCurrency(cCode)
-			} else {
-				currencyCode = nil
-			}
-			fees = (try? container.decode([ClientSession.Order.Fee]?.self, forKey: .fees)) ?? nil
-			lineItems = (try? container.decode([ClientSession.Order.LineItem]?.self, forKey: .lineItems)) ?? nil
-			shippingAmount = (try? container.decode(Int?.self, forKey: .shippingAmount)) ?? nil
-		}
+            } else {
+                currencyCode = nil
+            }
+            fees = (try? container.decode([ClientSession.Order.Fee]?.self, forKey: .fees)) ?? nil
+            lineItems = (try? container.decode([ClientSession.Order.LineItem]?.self, forKey: .lineItems)) ?? nil
+            shippingAmount = (try? container.decode(Int?.self, forKey: .shippingAmount)) ?? nil
+        }
 
         internal func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
@@ -210,6 +214,7 @@ internal class ClientSession {
 
         // MARK: ClientSession.Order.LineItem
 
+        // swiftlint:disable:next nesting
         internal struct LineItem: Codable {
 
             let itemId: String?
@@ -235,15 +240,16 @@ internal class ClientSession {
 
         // MARK: ClientSession.Order.Fee
 
+        // swiftlint:disable:next nesting
         internal struct Fee: Codable {
 
             let type: FeeType
             let amount: Int
-
+            // swiftlint:disable:next nesting
             enum CodingKeys: String, CodingKey {
                 case type, amount
             }
-
+            // swiftlint:disable:next nesting
             enum FeeType: String, Codable {
                 case surcharge = "SURCHARGE"
             }
@@ -257,6 +263,7 @@ internal class ClientSession {
         let vaultOnSuccess: Bool
         let options: [[String: Any]]?
 
+        // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case vaultOnSuccess, options
         }
@@ -299,6 +306,7 @@ internal class ClientSession {
         let customer: ClientSession.Customer?
         let testId: String?
 
+        // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case clientSessionId, paymentMethod, order, customer, testId // metadata
         }

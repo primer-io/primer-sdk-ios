@@ -9,7 +9,7 @@
 import XCTest
 
 class MockVaultCheckoutViewModel: UniversalCheckoutViewModelProtocol {
-    
+
     var paymentMethods: [PrimerPaymentMethodTokenData] = []
     var selectedPaymentMethod: PrimerPaymentMethodTokenData?
     var amountStr: String? {

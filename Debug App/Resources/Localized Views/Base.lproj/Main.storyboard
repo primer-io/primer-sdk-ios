@@ -248,10 +248,10 @@
                                                             </switch>
                                                         </subviews>
                                                     </stackView>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="t9m-wr-w9Y" userLabel="Klarna Session">
+                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="t9m-wr-w9Y" userLabel="One time payment">
                                                         <rect key="frame" x="0.0" y="311.5" width="374" height="31"/>
                                                         <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Klarna Session" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eSy-Oz-Hfs" userLabel="Apply theming">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="One time payment" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eSy-Oz-Hfs" userLabel="Apply theming">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
                                                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                                                 <nil key="textColor"/>
@@ -260,7 +260,7 @@
                                                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="wXY-Ga-dcF">
                                                                 <rect key="frame" x="325" y="0.0" width="51" height="31"/>
                                                                 <connections>
-                                                                    <action selector="klarnaSessionValueChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="bBw-Ey-x2y"/>
+                                                                    <action selector="oneTimePaymentValueChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="576-Aq-wld"/>
                                                                 </connections>
                                                             </switch>
                                                         </subviews>
@@ -1139,9 +1139,9 @@
                         <outlet property="disableSuccessScreenSwitch" destination="h2a-FU-Cbb" id="dYl-8C-tNa"/>
                         <outlet property="environmentSegmentedControl" destination="ekZ-3s-TxK" id="SsX-7s-JaH"/>
                         <outlet property="environmentStackView" destination="oCT-9e-d89" id="JnB-93-2Gv"/>
-                        <outlet property="klarnaSessionStackView" destination="t9m-wr-w9Y" id="JuS-0a-xsg"/>
                         <outlet property="lineItemsStackView" destination="KMj-Qp-rNj" id="gVb-8g-WNx"/>
                         <outlet property="merchantNameTextField" destination="PHb-NY-wz8" id="59v-8M-bqS"/>
+                        <outlet property="oneTimePaymentStackView" destination="t9m-wr-w9Y" id="42W-PH-dBF"/>
                         <outlet property="orderIdTextField" destination="1XS-HX-uUR" id="H3x-3f-S4P"/>
                         <outlet property="orderStackView" destination="Wmb-0A-wCB" id="Pbr-Sp-L9J"/>
                         <outlet property="primerHeadlessSDKButton" destination="0FS-cB-H3t" id="j9d-hB-VMw"/>

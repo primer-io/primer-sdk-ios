@@ -12,7 +12,7 @@ import XCTest
 @testable import PrimerSDK
 
 class IPay88Tests: XCTestCase {
-    
+
     var iPay88Config = PrimerPaymentMethod(
         id: "iPay88-config-id",
         implementationType: .iPay88Sdk,
@@ -25,40 +25,40 @@ class IPay88Tests: XCTestCase {
             merchantAccountId: "merchant-account-id",
             appId: "app-id"),
         displayMetadata: nil)
-    
+
     func test_iPay88_payment_object_mapping() throws {
         var paymentObjects = try self.createIPay88PaymentObjects()
         try self.testMapping(primerIPay88Payment: paymentObjects.0, iPay88Payment: paymentObjects.1, scenario: "All params are valid")
-        
+
         paymentObjects = try self.createIPay88PaymentObjects(userContact: nil)
         try self.testMapping(primerIPay88Payment: paymentObjects.0, iPay88Payment: paymentObjects.1, scenario: "userContact: null")
-        
+
         paymentObjects = try self.createIPay88PaymentObjects(remark: nil)
         try self.testMapping(primerIPay88Payment: paymentObjects.0, iPay88Payment: paymentObjects.1, scenario: "remark: null")
-        
+
         paymentObjects = try self.createIPay88PaymentObjects(lang: nil)
         try self.testMapping(primerIPay88Payment: paymentObjects.0, iPay88Payment: paymentObjects.1, scenario: "lang: null")
-        
+
         paymentObjects = try self.createIPay88PaymentObjects(appdeeplink: nil)
         try self.testMapping(primerIPay88Payment: paymentObjects.0, iPay88Payment: paymentObjects.1, scenario: "appdeeplink: null")
-        
+
         paymentObjects = try self.createIPay88PaymentObjects(tokenId: nil)
         try self.testMapping(primerIPay88Payment: paymentObjects.0, iPay88Payment: paymentObjects.1, scenario: "tokenId: null")
-        
+
         paymentObjects = try self.createIPay88PaymentObjects(promoCode: nil)
         try self.testMapping(primerIPay88Payment: paymentObjects.0, iPay88Payment: paymentObjects.1, scenario: "promoCode: null")
-        
+
         paymentObjects = try self.createIPay88PaymentObjects(fixPaymentId: nil)
         try self.testMapping(primerIPay88Payment: paymentObjects.0, iPay88Payment: paymentObjects.1, scenario: "fixPaymentId: null")
     }
-    
+
     func test_iPay88_validations() throws {
-#if canImport(PrimerIPay88MYSDK)
+        #if canImport(PrimerIPay88MYSDK)
         let decodedClientToken = try DecodedJWTToken.createMock(supportedCurrencyCode: "MYR", supportedCountry: "MY")
         let clientToken = try decodedClientToken.toString()
-        
+
         AppState.current.clientToken = clientToken
-        
+
         AppState.current.apiConfiguration = PrimerAPIConfiguration(
             coreUrl: decodedClientToken.coreUrl,
             pciUrl: decodedClientToken.pciUrl,
@@ -99,24 +99,24 @@ class IPay88Tests: XCTestCase {
                 ),
                 testId: nil),
             paymentMethods: [
-                
+
             ],
             primerAccountId: "primer-account-id",
             keys: nil,
             checkoutModules: nil)
-        
+
         let iPay88TokenizationViewModel = IPay88TokenizationViewModel(config: iPay88Config)
-        
+
         do {
             try iPay88TokenizationViewModel.validate()
             let payment = try iPay88TokenizationViewModel.createPrimerIPay88Payment()
         } catch {
             XCTAssert(false, "[All required data present] Failed with error \(error.localizedDescription)")
         }
-        
+
         AppState.current.apiConfiguration = PrimerAPIConfiguration(
             coreUrl: decodedClientToken.coreUrl,
-            pciUrl: decodedClientToken.pciUrl, 
+            pciUrl: decodedClientToken.pciUrl,
             assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: ClientSession.APIResponse(
                 clientSessionId: "client-session-id",
@@ -125,12 +125,12 @@ class IPay88Tests: XCTestCase {
                 customer: nil,
                 testId: nil),
             paymentMethods: [
-                
+
             ],
             primerAccountId: "primer-account-id",
             keys: nil,
             checkoutModules: nil)
-        
+
         do {
             try iPay88TokenizationViewModel.validate()
             XCTAssert(false, "[Customer data missing] Should have failed the validation")
@@ -143,19 +143,19 @@ class IPay88Tests: XCTestCase {
                 let firstNameError = primerErrors.first(where: { $0.localizedDescription.contains("Invalid client session value") && $0.localizedDescription.contains("customer.firstName") })
                 let lastNameError = primerErrors.first(where: { $0.localizedDescription.contains("Invalid client session value") && $0.localizedDescription.contains("customer.lastName") })
                 let emailError = primerErrors.first(where: { $0.localizedDescription.contains("Invalid client session value") && $0.localizedDescription.contains("customer.emailAddress") })
-                
+
                 XCTAssert(primerErrors.count == 5, "Should have received 3 underlying errors")
                 XCTAssert(amountError != nil, "Should have received a amount error")
                 XCTAssert(lineItemsError != nil, "Should have received a lineItems error")
                 XCTAssert(firstNameError != nil, "Should have received a firstName error")
                 XCTAssert(lastNameError != nil, "Should have received a lastName error")
                 XCTAssert(emailError != nil, "Should have received an email error")
-                
+
             } else {
                 XCTAssert(false, "[Customer data missing] Should have thrown .underlying errors")
             }
         }
-        
+
         do {
             let payment = try iPay88TokenizationViewModel.createPrimerIPay88Payment()
             XCTAssert(false, "Shoudln't succeed to create payment")
@@ -169,13 +169,13 @@ class IPay88Tests: XCTestCase {
                 }
             }
         }
-#else
+        #else
         XCTAssert(false, "PrimerIPay88MYSDK hasn't been imported.")
-#endif
+        #endif
     }
-    
+
     // MARK: Helpers
-#if canImport(PrimerIPay88MYSDK)
+    #if canImport(PrimerIPay88MYSDK)
     func createIPay88PaymentObjects(
         merchantCode: String = "merchant-code",
         paymentId: String = "payment-id",
@@ -219,10 +219,10 @@ class IPay88Tests: XCTestCase {
             fixPaymentId: fixPaymentId,
             transId: transId,
             authCode: authCode)
-        
+
         return (primerIPay88Payment, primerIPay88Payment.iPay88Payment)
     }
-    
+
     func testMapping(primerIPay88Payment: PrimerIPay88Payment, iPay88Payment: IpayPayment, scenario: String) throws {
         XCTAssert(primerIPay88Payment.merchantCode == iPay88Payment.merchantCode, "[Scenario: \(scenario)] merchantCode mismatch")
         XCTAssert(primerIPay88Payment.paymentId == iPay88Payment.paymentId, "[Scenario: \(scenario)] paymentId mismatch")
@@ -242,7 +242,7 @@ class IPay88Tests: XCTestCase {
         XCTAssert(primerIPay88Payment.promoCode == iPay88Payment.promoCode, "[Scenario: \(scenario)] promoCode mismatch")
         XCTAssert(primerIPay88Payment.fixPaymentId == iPay88Payment.fixPaymentId, "[Scenario: \(scenario)] fixPaymentId mismatch")
     }
-#endif
+    #endif
 }
 
 #endif

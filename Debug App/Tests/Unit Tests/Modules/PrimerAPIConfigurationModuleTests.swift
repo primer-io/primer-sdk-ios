@@ -10,10 +10,10 @@ import XCTest
 @testable import PrimerSDK
 
 class PrimerAPIConfigurationModuleTests: XCTestCase {
-    
+
     func test_successful_api_configuration_setup() throws {
         let expectation = XCTestExpectation(description: "Poll URL | Success")
-        
+
         let mockPrimerAPIConfiguration = PrimerAPIConfiguration(
             coreUrl: "https://core.primer.io",
             pciUrl: "https://pci.primer.io",
@@ -23,15 +23,15 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
             primerAccountId: nil,
             keys: nil,
             checkoutModules: nil)
-        
+
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.validateClientTokenResult = (SuccessResponse(success: true), nil)
         mockApiClient.fetchConfigurationResult = (mockPrimerAPIConfiguration, nil)
-        
+
         PrimerAPIConfigurationModule.apiClient = mockApiClient
-        
+
         let apiConfigurationModule = PrimerAPIConfigurationModule()
-        
+
         firstly {
             apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
         }
@@ -45,7 +45,7 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
             XCTAssert(false, err.localizedDescription)
             expectation.fulfill()
         }
-        
+
         wait(for: [expectation], timeout: 30.0)
     }
 }

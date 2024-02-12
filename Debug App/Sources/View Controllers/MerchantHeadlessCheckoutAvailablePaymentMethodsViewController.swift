@@ -10,7 +10,7 @@ import PrimerSDK
 import UIKit
 
 class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewController, PrimerHeadlessUniversalCheckoutDelegate {
-    
+
     class func instantiate(settings: PrimerSettings, clientSession: ClientSessionRequestBody?, clientToken: String?) -> MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
         let mpmvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantHUCPaymentMethodsViewController") as! MerchantHeadlessCheckoutAvailablePaymentMethodsViewController
         mpmvc.settings = settings
@@ -18,11 +18,11 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
         mpmvc.clientToken = clientToken
         return mpmvc
     }
-    
+
     var settings: PrimerSettings!
     var clientSession: ClientSessionRequestBody?
     var clientToken: String?
-    
+
     var amount: Int!
     var currency: Currency!
     var countryCode: CountryCode!
@@ -32,33 +32,33 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
     private var paymentId: String?
     var checkoutData: PrimerCheckoutData?
     var primerError: Error?
-    
+
     var redirectManager: PrimerHeadlessUniversalCheckout.NativeUIManager?
     var logs: [String] = []
-    
+
     private var sessionIntent: PrimerSessionIntent = .checkout
-    
+
     @IBOutlet weak var sessionIntentControl: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
     var activityIndicator: UIActivityIndicatorView?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         PrimerHeadlessUniversalCheckout.current.delegate = self
         PrimerHeadlessUniversalCheckout.current.uiDelegate = self
-        
+
         self.showLoadingOverlay()
         setupSessionLogic()
     }
-    
+
     @IBAction func onVaultManagerButtonTap(_ sender: Any) {
         let vc = MerchantHeadlessVaultManagerViewController.instantiate(settings: settings,
-                                                                  clientSession: clientSession,
-                                                                  clientToken: clientToken)
+                                                                        clientSession: clientSession,
+                                                                        clientToken: clientToken)
         self.navigationController?.pushViewController(vc, animated: true)
     }
-    
+
     @IBAction func onSessionIntentChange(_ sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
@@ -74,13 +74,13 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
         
         PrimerHeadlessUniversalCheckout.current.setupPaymentIntent(sessionIntent)
     }
-    
+
     // MARK: - HELPERS
-    
+
     private func showLoadingOverlay() {
         DispatchQueue.main.async {
             if self.activityIndicator != nil { return }
-            
+
             self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
             self.view.addSubview(self.activityIndicator!)
             self.activityIndicator?.backgroundColor = .black.withAlphaComponent(0.2)
@@ -88,7 +88,7 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
             self.activityIndicator?.startAnimating()
         }
     }
-    
+
     private func hideLoadingOverlay() {
         DispatchQueue.main.async {
             self.activityIndicator?.stopAnimating()
@@ -99,11 +99,11 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
 }
 
 extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITableViewDataSource, UITableViewDelegate {
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.availablePaymentMethods.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let paymentMethod = self.availablePaymentMethods[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "MerchantPaymentMethodCell", for: indexPath) as! MerchantPaymentMethodCell
@@ -111,23 +111,23 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
         cell.accessibilityIdentifier = paymentMethod.paymentMethodType
         return cell
     }
-    
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let paymentMethod = self.availablePaymentMethods[indexPath.row]
         let paymentMethodType = paymentMethod.paymentMethodType
         switch paymentMethodType {
         case "PAYMENT_CARD", "ADYEN_BANCONTACT_CARD":
             let alert = UIAlertController(title: "", message: "Select Implementation", preferredStyle: .actionSheet)
-            
+
             let rawDataAlertAction = UIAlertAction(title: "Raw Data", style: .default, handler: { (_)in
                 let vc = MerchantHeadlessCheckoutRawDataViewController.instantiate(paymentMethodType: paymentMethodType)
                 self.navigationController?.pushViewController(vc, animated: true)
             })
             rawDataAlertAction.accessibilityIdentifier = "raw_data_huc_alert_action"
-            
+
             let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
             cancelAction.accessibilityIdentifier = "cancel_huc_alert_action"
-            
+
             alert.addAction(rawDataAlertAction)
             alert.addAction(cancelAction)
             self.present(alert, animated: true, completion: nil)
@@ -138,10 +138,10 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
             let vc = MerchantHeadlessCheckoutRawPhoneNumberDataViewController.instantiate(paymentMethodType: paymentMethodType)
             self.navigationController?.pushViewController(vc, animated: true)
         case "NOL_PAY":
-#if canImport(PrimerNolPaySDK)
+            #if canImport(PrimerNolPaySDK)
             let vc = MerchantHeadlessCheckoutNolPayViewController()
             self.navigationController?.pushViewController(vc, animated: true)
-#else
+            #else
             break
 #endif
         case "KLARNA":
@@ -164,34 +164,34 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
 // MARK: Manual Payment Handling
 
 extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
-    
+
     func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         print("\n\nMERCHANT APP\n\(#function)\ndata: \(data)")
         self.logs.append(#function)
         self.checkoutData = data
         self.hideLoadingOverlay()
-        
+
         let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
         self.navigationController?.pushViewController(rvc, animated: true)
     }
-    
+
     func primerHeadlessUniversalCheckoutDidStartTokenization(for paymentMethodType: String) {
         print("\n\nMERCHANT APP\n\(#function)\npaymentMethodType: \(paymentMethodType)")
         self.logs.append(#function)
     }
-    
+
     func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void) {
         print("\n\nMERCHANT APP\n\(#function)\npaymentMethodTokenData: \(paymentMethodTokenData)")
         self.logs.append(#function)
-        
+
         Networking.createPayment(with: paymentMethodTokenData) { (res, err) in
             if let err = err {
                 self.showErrorMessage(err.localizedDescription)
                 self.hideLoadingOverlay()
-                
+
             } else if let res = res {
                 self.paymentId = res.id
-                
+
                 if res.requiredAction?.clientToken != nil {
                     decisionHandler(.continueWithNewClientToken(res.requiredAction!.clientToken))
                 } else {
@@ -199,33 +199,33 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
                         self.hideLoadingOverlay()
                     }
                     decisionHandler(.complete())
-                    
+
                     let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
                     self.navigationController?.pushViewController(rvc, animated: true)
                 }
-                
+
             } else {
                 assert(true)
             }
         }
     }
-    
+
     func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void) {
         print("\n\nMERCHANT APP\n\(#function)\nresumeToken: \(resumeToken)")
         self.logs.append(#function)
-        
+
         Networking.resumePayment(self.paymentId!, withToken: resumeToken) { (res, _) in
             DispatchQueue.main.async {
                 self.hideLoadingOverlay()
             }
-            
+
             if let clientToken = res?.requiredAction?.clientToken {
                 decisionHandler(.continueWithNewClientToken(clientToken))
             } else {
                 print("Payment has been resumed")
                 decisionHandler(.complete())
             }
-            
+
             let rvc = MerchantResultViewController.instantiate(checkoutData: nil, error: self.primerError, logs: self.logs)
             self.navigationController?.pushViewController(rvc, animated: true)
         }
@@ -235,28 +235,28 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
 // MARK: Common
 
 extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
-    
+
     func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
         print("\n\nMERCHANT APP\n\(#function)")
         self.logs.append(#function)
     }
-    
+
     func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
         print("\n\nMERCHANT APP\n\(#function)")
         self.logs.append(#function)
         self.showLoadingOverlay()
     }
-    
+
     func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String) {
         print("\n\nMERCHANT APP\n\(#function)\npaymentMethodType: \(paymentMethodType)")
         self.logs.append(#function)
     }
-    
+
     func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String) {
         print("\n\nMERCHANT APP\n\(#function)\npaymentMethodType: \(paymentMethodType)")
         self.logs.append(#function)
     }
-    
+
     func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
         print("\n\nMERCHANT APP\n\(#function)\nadditionalInfo: \(String(describing: additionalInfo))")
         self.logs.append(#function)
@@ -264,13 +264,13 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
             self.hideLoadingOverlay()
         }
     }
-    
+
     func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
         print("\n\nMERCHANT APP\n\(#function)\nadditionalInfo: \(String(describing: additionalInfo))")
         self.logs.append(#function)
         self.hideLoadingOverlay()
     }
-    
+
     func primerHeadlessUniversalCheckoutDidFail(withError err: Error, checkoutData: PrimerCheckoutData?) {
         print("\n\nMERCHANT APP\n\(#function)\nerror: \(err)\ncheckoutData: \(String(describing: checkoutData))")
         self.logs.append(#function)
@@ -284,17 +284,17 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
             self.navigationController?.pushViewController(rvc, animated: true)
         }
     }
-    
+
     func primerHeadlessUniversalCheckoutWillUpdateClientSession() {
         print("\n\nMERCHANT APP\n\(#function)")
         self.logs.append(#function)
     }
-    
+
     func primerHeadlessUniversalCheckoutDidUpdateClientSession(_ clientSession: PrimerClientSession) {
         print("\n\nERCHANT APP\n\(#function)\nclientSession: \(clientSession)")
         self.logs.append(#function)
     }
-    
+
     func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
         print("\n\nMERCHANT APP\n\(#function)\ndata: \(data)")
         self.logs.append(#function)
@@ -303,13 +303,13 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
 }
 
 extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: PrimerHeadlessUniversalCheckoutUIDelegate {
-    
+
     func primerHeadlessUniversalCheckoutUIDidStartPreparation(for paymentMethodType: String) {
         print("\n\nMERCHANT APP\n\(#function)")
         self.logs.append(#function)
         self.showLoadingOverlay()
     }
-    
+
     func primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for paymentMethodType: String) {
         print("\n\nMERCHANT APP\n\(#function)\npaymentMethodType: \(paymentMethodType)")
         self.logs.append(#function)
@@ -318,9 +318,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: PrimerH
 
 extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
     
-    private func setupSessionLogic() {
-        clientSession = MerchantMockDataManager.getClientSession(sessionType: klarnaSession ? .klarna : .generic)
-        
+    private func setupSessionLogic() {        
         if let clientToken = clientToken {
             PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: self.settings, completion: { (pms, _) in
                 self.hideLoadingOverlay()
@@ -383,30 +381,30 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
 
 
 class MerchantPaymentMethodCell: UITableViewCell {
-    
+
     @IBOutlet weak var stackView: UIStackView!
     @IBOutlet weak var paymentMethodLabel: UILabel!
     @IBOutlet weak var paymentMethodLogoView: UIImageView!
-    
+
     var paymentMethod: PrimerHeadlessUniversalCheckout.PaymentMethod!
-    
+
     func configure(paymentMethod: PrimerHeadlessUniversalCheckout.PaymentMethod) {
         self.paymentMethod = paymentMethod
         if let paymentMethodAsset = try? PrimerHeadlessUniversalCheckout.AssetsManager.getPaymentMethodAsset(for: paymentMethod.paymentMethodType) {
-            
+
             self.stackView.backgroundColor = (paymentMethodAsset.paymentMethodBackgroundColor.colored ?? paymentMethodAsset.paymentMethodBackgroundColor.light) ?? paymentMethodAsset.paymentMethodBackgroundColor.dark
-            
+
             if let logoImage = (paymentMethodAsset.paymentMethodLogo.colored ?? paymentMethodAsset.paymentMethodLogo.light) ?? paymentMethodAsset.paymentMethodLogo.dark {
                 self.paymentMethodLogoView.isHidden = false
                 self.paymentMethodLogoView.image = logoImage
-                
+
             } else {
                 self.paymentMethodLogoView.isHidden = true
                 self.paymentMethodLabel.text = "Failed to find logo for \(paymentMethod.paymentMethodType)"
             }
-            
+
             paymentMethodLabel.text = "Pay with \(paymentMethodAsset.paymentMethodName) "
-            
+
         } else {
             self.paymentMethodLogoView.isHidden = true
             self.paymentMethodLabel.isHidden = false

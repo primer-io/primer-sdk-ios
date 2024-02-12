@@ -9,6 +9,7 @@ import Foundation
 
 protocol Module {
 
+    // swiftlint:disable:next type_name
     associatedtype T
 
     static var apiClient: PrimerAPIClientProtocol? { get set }

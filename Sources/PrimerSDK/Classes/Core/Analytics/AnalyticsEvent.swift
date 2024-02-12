@@ -7,6 +7,7 @@
 
 import Foundation
 
+// swiftlint:disable all
 extension Analytics {
     struct Event: Codable, Equatable {
 
@@ -55,11 +56,11 @@ extension Analytics {
             self.sdkPaymentHandling = PrimerSettings.current.paymentHandling
             self.minDeploymentTarget = Bundle.main.minimumOSVersion ?? "Unknown"
 
-#if COCOAPODS
+            #if COCOAPODS
             self.integrationType = "COCOAPODS"
-#else
+            #else
             self.integrationType = "SPM"
-#endif
+            #endif
         }
 
         private enum CodingKeys: String, CodingKey {
@@ -504,7 +505,7 @@ struct SDKEventProperties: AnalyticsEventProperties {
         }
 
         if !parameters.isEmpty,
-            let parametersData = try? JSONSerialization.data(withJSONObject: parameters, options: .fragmentsAllowed) {
+           let parametersData = try? JSONSerialization.data(withJSONObject: parameters, options: .fragmentsAllowed) {
             let decoder = JSONDecoder()
             if let anyDecodableDictionary = try? decoder.decode([String: AnyCodable].self, from: parametersData) {
                 self.params = anyDecodableDictionary
@@ -673,11 +674,11 @@ struct SDKProperties: Codable {
     fileprivate init() {
         self.clientToken = AppState.current.clientToken
         self.sdkIntegrationType = PrimerInternal.shared.sdkIntegrationType
-#if COCOAPODS
+        #if COCOAPODS
         self.integrationType = "COCOAPODS"
-#else
+        #else
         self.integrationType = "SPM"
-#endif
+        #endif
         self.paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType
         self.sdkIntent = PrimerInternal.shared.intent
         self.sdkPaymentHandling = PrimerSettings.current.paymentHandling
@@ -834,3 +835,4 @@ extension Analytics.Event {
         )
     }
 }
+// swiftlint:enable all

@@ -9,7 +9,7 @@
 @testable import PrimerSDK
 
 class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
-    
+
     static var apiClient: PrimerAPIClientProtocol?
     private let rawPaymentResponse = """
         {
@@ -22,7 +22,7 @@ class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
           "customerId": "ios_customer_id"
         }
         """
-    
+
     private let rawPaymentCreateRequest = """
 {"paymentMethodToken":"S5oJoPWgTraPoTPWF72wZXwxNj0000000xMDY0ODMx"}
 """
@@ -34,22 +34,22 @@ class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
         guard let data = rawPaymentResponse.data(using: .utf8) else {
             return
         }
-        
+
         do {
             let response = try JSONParser().parse(Response.Body.Payment.self, from: data)
             completion(response, nil)
         } catch {
             completion(nil, error)
         }
-        
+
     }
-    
+
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (Response.Body.Payment?, Error?) -> Void) {
-                
+
         guard let data = rawPaymentResponse.data(using: .utf8) else {
             return
         }
-        
+
         do {
             let response = try JSONParser().parse(Response.Body.Payment.self, from: data)
             completion(response, nil)

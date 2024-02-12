@@ -39,6 +39,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     var finalizeManually: Bool = false
     var finalizePayment: Bool = false
     var registrationFieldActive: Bool = false
+    let paymentMethodType: String = "KLARNA"
     
     var accountRegistrationDate: Date = Date() {
         didSet {
@@ -69,7 +70,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
         setupLayout()
         setupCustomerDetails(visible: false)
         
-        klarnaManager = PrimerHeadlessUniversalCheckout.KlarnaHeadlessManager()
+        klarnaManager = PrimerHeadlessUniversalCheckout.KlarnaHeadlessManager(paymentMethodType: paymentMethodType)
         klarnaManager.setDelegate(self)
         
         setupKlarnaSessionCreationDelegates()

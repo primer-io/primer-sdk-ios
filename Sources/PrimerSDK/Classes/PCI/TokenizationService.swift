@@ -108,15 +108,15 @@ internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
                 clientToken: decodedJWTToken,
                 vaultedPaymentMethodId: vaultedPaymentMethodId,
                 vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData) { result in
-                    DispatchQueue.main.async {
-                        switch result {
-                        case .success(let singleUsePaymentMethod):
-                            seal.fulfill(singleUsePaymentMethod)
-                        case .failure(let error):
-                            seal.reject(error)
-                        }
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let singleUsePaymentMethod):
+                        seal.fulfill(singleUsePaymentMethod)
+                    case .failure(let error):
+                        seal.reject(error)
                     }
                 }
+            }
         }
     }
 }

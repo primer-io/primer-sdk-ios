@@ -126,7 +126,8 @@ extension Response.Body.Klarna {
         public let unitPrice: Int?
         public let totalAmount: Int?
         public let totalDiscountAmount: Int?
-        
+
+        // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case type = "type"
             case name = "name"
@@ -142,7 +143,8 @@ extension Response.Body.Klarna {
         public let maskedNumber: String?
         public let type: String
         public let expiryDate: String?
-        
+
+        // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case brand = "brand"
             case maskedNumber = "masked_number"

@@ -11,24 +11,24 @@ import CoreFoundation
  - Returns: The value of the resolved promise
  - Throws: An error, should the promise be rejected
  - See: `wait()`
-*/
+ */
 internal func hang<T>(_ promise: Promise<T>) throws -> T {
-#if os(Linux) || os(Android)
-#if compiler(>=5)
+    #if os(Linux) || os(Android)
+    #if compiler(>=5)
     let runLoopMode: CFRunLoopMode = kCFRunLoopDefaultMode
-#else
+    #else
     // isMainThread is not yet implemented on Linux.
     let runLoopModeRaw = RunLoopMode.defaultRunLoopMode.rawValue._bridgeToObjectiveC()
     let runLoopMode: CFString = unsafeBitCast(runLoopModeRaw, to: CFString.self)
-#endif
-#else
+    #endif
+    #else
     guard Thread.isMainThread else {
         // hang doesn't make sense on threads that aren't the main thread.
         // use `.wait()` on those threads.
         fatalError("Only call hang() on the main thread.")
     }
     let runLoopMode: CFRunLoopMode = CFRunLoopMode.defaultMode
-#endif
+    #endif
 
     if promise.isPending {
         var context = CFRunLoopSourceContext()

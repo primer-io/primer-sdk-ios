@@ -10,15 +10,15 @@ import XCTest
 @testable import PrimerSDK
 
 class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
-    
+
     private static let validationTimeout = 1.0
-    
+
     var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager!
-    
+
     func test_validation_callback() throws {
         let startHeadlessExpectation = expectation(description: "Start Headless Universal Checkout")
         let expectationsToBeFulfilled = [startHeadlessExpectation]
-        
+
         let clientSession = ClientSession.APIResponse(
             clientSessionId: "mock-client-session-id-1",
             paymentMethod: ClientSession.PaymentMethod(
@@ -47,7 +47,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
                 shippingAmount: nil),
             customer: nil,
             testId: nil)
-        
+
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
@@ -67,15 +67,15 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             primerAccountId: "mock-primer-account-id",
             keys: nil,
             checkoutModules: nil)
-        
+
         let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(data: [])
-        
+
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.fetchVaultedPaymentMethodsResult = (vaultedPaymentMethods, nil)
         mockApiClient.fetchConfigurationResult = (mockPrimerApiConfiguration, nil)
         VaultService.apiClient = mockApiClient
         PrimerAPIConfigurationModule.apiClient = mockApiClient
-        
+
         firstly {
             self.startHeadlessUniversalCheckout(clientToken: MockAppState.mockClientToken)
         }
@@ -86,20 +86,20 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true, "Raw Data Manager should had been initialized")
             startHeadlessExpectation.fulfill()
         }
-        
+
         wait(for: expectationsToBeFulfilled, timeout: 30)
-        
+
         do {
             self.rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: "PAYMENT_CARD")
             self.rawDataManager.delegate = self
         } catch {
             XCTAssert(false, "Raw Data Manager should had been initialized")
         }
-        
+
         // -------------------
-        
+
         var validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -112,16 +112,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid data
         var cardData = PrimerCardData(cardNumber: "", expiryDate: "", cvv: "", cardholderName: nil)
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -134,16 +134,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Valid data
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "03/2030", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -156,16 +156,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid cardnumber
         cardData = PrimerCardData(cardNumber: "424242424242424", expiryDate: "03/2030", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -178,16 +178,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid cardnumber
         cardData = PrimerCardData(cardNumber: "42424242424242424242", expiryDate: "03/2030", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -200,16 +200,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid cardnumber
         cardData = PrimerCardData(cardNumber: "", expiryDate: "03/2030", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -222,16 +222,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid cardnumber
         cardData = PrimerCardData(cardNumber: "4242424242424243", expiryDate: "03/2030", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -244,16 +244,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "0/2030", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -266,16 +266,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "/2030", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -288,16 +288,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "2030", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -310,16 +310,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "/", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -332,16 +332,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "01/2022", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -354,16 +354,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "05/2022", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -376,16 +376,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "02", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -398,16 +398,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "aa", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -420,16 +420,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "2030/03", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -442,16 +442,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "03/30", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -464,16 +464,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid expiry date
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "03/203030", cvv: "123", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -486,16 +486,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid CVV
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "03/2030", cvv: "12", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -508,16 +508,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid CVV
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "03/2030", cvv: "12345", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -530,16 +530,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid CVV
         cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "03/2030", cvv: "abc", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -552,16 +552,16 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid CVV
         cardData = PrimerCardData(cardNumber: "9120000000000006", expiryDate: "03/2030", cvv: "12345", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
-        
+
         // -------------------
-        
+
         validation = self.expectation(description: "Await validation")
-        
+
         firstly {
             self.validateWithRawDataManager()
         }
@@ -574,24 +574,24 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
             XCTAssert(true)
             validation.fulfill()
         }
-        
+
         // Invalid CVV
         cardData = PrimerCardData(cardNumber: "9120000000000006", expiryDate: "03/2030", cvv: "1", cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
     }
-    
+
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?) {
         self.onRawDataManagerValidation?(isValid, errors)
     }
-    
+
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String: Any]?) {
         self.onRawDataManagerMetadataChange?(metadata)
     }
-    
+
     var onRawDataManagerValidation: ((_ isValid: Bool, _ errors: [Error]?) -> Void)?
     var onRawDataManagerMetadataChange: ((_ metadata: [String: Any]?) -> Void)?
-    
+
     func validateWithRawDataManager() -> Promise<(isValid: Bool, errors: [Error]?)> {
         return Promise { seal in
             self.onRawDataManagerValidation = { (isValid, errors) in
@@ -602,7 +602,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
 }
 
 extension RawDataManagerTests {
-    
+
     func startHeadlessUniversalCheckout(clientToken: String) -> Promise<[PrimerHeadlessUniversalCheckout.PaymentMethod]> {
         return Promise { seal in
             PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken) { paymentMethods, err in

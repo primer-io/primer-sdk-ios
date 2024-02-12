@@ -39,16 +39,16 @@ extension PrimerHeadlessUniversalCheckout {
             }
 
             guard let paymentMethodLogo = PrimerPaymentMethodLogo(
-                colored: baseLogoImage.colored,
-                light: baseLogoImage.light,
-                dark: baseLogoImage.dark) else {
+                    colored: baseLogoImage.colored,
+                    light: baseLogoImage.light,
+                    dark: baseLogoImage.dark) else {
                 return nil
             }
 
             guard let paymentMethodBackgroundColor = PrimerPaymentMethodBackgroundColor(
-                coloredStr: baseBackgroundColor.coloredHex,
-                lightStr: baseBackgroundColor.lightHex,
-                darkStr: baseBackgroundColor.darkHex) else {
+                    coloredStr: baseBackgroundColor.coloredHex,
+                    lightStr: baseBackgroundColor.lightHex,
+                    darkStr: baseBackgroundColor.darkHex) else {
                 return nil
             }
 
@@ -80,17 +80,17 @@ extension PrimerHeadlessUniversalCheckout {
                 }
 
                 guard let paymentMethodLogo = PrimerPaymentMethodLogo(
-                    colored: baseLogoImage.colored,
-                    light: baseLogoImage.light,
-                    dark: baseLogoImage.dark)
+                        colored: baseLogoImage.colored,
+                        light: baseLogoImage.light,
+                        dark: baseLogoImage.dark)
                 else {
                     continue
                 }
 
                 guard let paymentMethodBackgroundColor = PrimerPaymentMethodBackgroundColor(
-                    coloredStr: baseBackgroundColor.coloredHex,
-                    lightStr: baseBackgroundColor.lightHex,
-                    darkStr: baseBackgroundColor.darkHex)
+                        coloredStr: baseBackgroundColor.coloredHex,
+                        lightStr: baseBackgroundColor.lightHex,
+                        darkStr: baseBackgroundColor.darkHex)
                 else {
                     continue
                 }

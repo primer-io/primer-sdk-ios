@@ -10,26 +10,26 @@ import Foundation
 import PrimerSDK
 
 class ApayaViewModel {
-    
+
     var carrier: ApayaCarrier
     var hashedIdentifier: String?
-    
+
     init?(paymentMethod: PrimerPaymentMethodTokenData) {
         guard paymentMethod.paymentInstrumentType == .apayaToken else { return nil }
         guard let mcc = paymentMethod.paymentInstrumentData?.mcc,
               let mnc = paymentMethod.paymentInstrumentData?.mnc,
               let carrier = ApayaCarrier(mcc: mcc, mnc: mnc)
         else { return nil }
-        
+
         self.carrier = carrier
         self.hashedIdentifier = paymentMethod.paymentInstrumentData?.hashedIdentifier
     }
-    
+
 }
 
 enum ApayaCarrier: String, Codable {
     case EE_UK, O2_UK, Vodafone_UK, Three_UK, Strex_Norway
-    
+
     var name: String {
         switch self {
         case .EE_UK:
@@ -44,7 +44,7 @@ enum ApayaCarrier: String, Codable {
             return "Strex Norway"
         }
     }
-    
+
     var mcc: Int {
         switch self {
         case .EE_UK:
@@ -59,7 +59,7 @@ enum ApayaCarrier: String, Codable {
             return 242
         }
     }
-    
+
     var mnc: Int {
         switch self {
         case .EE_UK:
@@ -74,7 +74,7 @@ enum ApayaCarrier: String, Codable {
             return 99
         }
     }
-    
+
     init?(mcc: Int, mnc: Int) {
         switch (mcc, mnc) {
         case (234, 99):
@@ -91,5 +91,5 @@ enum ApayaCarrier: String, Codable {
             return nil
         }
     }
-    
+
 }
