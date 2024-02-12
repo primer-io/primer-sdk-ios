@@ -538,13 +538,13 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                                         didAuthorizePayment payment: PKPayment,
                                         handler completion: @escaping (PKPaymentAuthorizationResult) -> Void) {
         var isMockedBE: Bool = false
-#if DEBUG
+        #if DEBUG
         if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
             isMockedBE = true
         }
-#endif
+        #endif
 
-#if targetEnvironment(simulator)
+        #if targetEnvironment(simulator)
         if payment.token.paymentData.count == 0 && !isMockedBE {
             let err = PrimerError.invalidArchitecture(
                 description: "Apple Pay does not work with Primer when used in the simulator due to a limitation from Apple Pay.",
@@ -563,7 +563,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
             applePayReceiveDataCompletion = nil
             return
         }
-#endif
+        #endif
 
         self.isCancelled = false
         self.didTimeout = true

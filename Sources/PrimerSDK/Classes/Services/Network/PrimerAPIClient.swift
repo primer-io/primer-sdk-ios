@@ -215,129 +215,129 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         requestParameters: Request.URLParameters.Configuration?,
         completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void) {
-            let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters)
-            networkService.request(endpoint) { (result: Result<PrimerAPIConfiguration, Error>) in
-                switch result {
-                case .success(let apiConfiguration):
-                    var imageFiles: [ImageFile] = []
+        let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters)
+        networkService.request(endpoint) { (result: Result<PrimerAPIConfiguration, Error>) in
+            switch result {
+            case .success(let apiConfiguration):
+                var imageFiles: [ImageFile] = []
 
-                    for pm in (apiConfiguration.paymentMethods ?? []) {
+                for paymentMethod in (apiConfiguration.paymentMethods ?? []) {
 
-                        var coloredImageFile: ImageFile
-                        if let coloredVal = pm.displayMetadata?.button.iconUrl?.coloredUrlStr {
-                            var remoteUrl: URL?
-                            var base64Data: Data?
+                    var coloredImageFile: ImageFile
+                    if let coloredVal = paymentMethod.displayMetadata?.button.iconUrl?.coloredUrlStr {
+                        var remoteUrl: URL?
+                        var base64Data: Data?
 
-                            if let data = Data(base64Encoded: coloredVal) {
-                                base64Data = data
-                            } else if let url = URL(string: coloredVal) {
-                                remoteUrl = url
-                            }
-
-                            coloredImageFile = ImageFile(
-                                fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-colored",
-                                fileExtension: "png",
-                                remoteUrl: remoteUrl,
-                                base64Data: base64Data)
-
-                        } else {
-                            coloredImageFile = ImageFile(
-                                fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-colored",
-                                fileExtension: "png",
-                                remoteUrl: nil,
-                                base64Data: nil)
-                        }
-                        imageFiles.append(coloredImageFile)
-
-                        var lightImageFile: ImageFile
-                        if let lightVal = pm.displayMetadata?.button.iconUrl?.lightUrlStr {
-                            var remoteUrl: URL?
-                            var base64Data: Data?
-
-                            if let data = Data(base64Encoded: lightVal) {
-                                base64Data = data
-                            } else if let url = URL(string: lightVal) {
-                                remoteUrl = url
-                            }
-
-                            lightImageFile = ImageFile(
-                                fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-light",
-                                fileExtension: "png",
-                                remoteUrl: remoteUrl,
-                                base64Data: base64Data)
-
-                        } else {
-                            lightImageFile = ImageFile(
-                                fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-light",
-                                fileExtension: "png",
-                                remoteUrl: nil,
-                                base64Data: nil)
-                        }
-                        imageFiles.append(lightImageFile)
-
-                        var darkImageFile: ImageFile
-                        if let darkVal = pm.displayMetadata?.button.iconUrl?.darkUrlStr {
-                            var remoteUrl: URL?
-                            var base64Data: Data?
-
-                            if let data = Data(base64Encoded: darkVal) {
-                                base64Data = data
-                            } else if let url = URL(string: darkVal) {
-                                remoteUrl = url
-                            }
-
-                            darkImageFile = ImageFile(
-                                fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-dark",
-                                fileExtension: "png",
-                                remoteUrl: remoteUrl,
-                                base64Data: base64Data)
-
-                        } else {
-                            darkImageFile = ImageFile(
-                                fileName: "\(pm.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-dark",
-                                fileExtension: "png",
-                                remoteUrl: nil,
-                                base64Data: nil)
-                        }
-                        imageFiles.append(darkImageFile)
-                    }
-
-                    let imageManager = ImageManager()
-
-                    firstly {
-                        imageManager.getImages(for: imageFiles)
-                    }
-                    .done { imageFiles in
-                        for (index, paymentMethod) in (apiConfiguration.paymentMethods ?? []).enumerated() {
-                            let paymentMethodImageFiles = imageFiles.filter { $0.fileName.contains(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-")) }
-                            if paymentMethodImageFiles.isEmpty {
-                                continue
-                            }
-
-                            let coloredImageFile = paymentMethodImageFiles
-                                .filter({ $0.fileName.contains("dark") == false && $0.fileName.contains("light") == false }).first
-                            let darkImageFile = paymentMethodImageFiles
-                                .filter({ $0.fileName.contains("dark") == true }).first
-                            let lightImageFile = paymentMethodImageFiles
-                                .filter({ $0.fileName.contains("light") == true }).first
-
-                            let baseImage = PrimerTheme.BaseImage(
-                                colored: coloredImageFile?.image,
-                                light: lightImageFile?.image,
-                                dark: darkImageFile?.image)
-                            apiConfiguration.paymentMethods?[index].baseLogoImage = baseImage
+                        if let data = Data(base64Encoded: coloredVal) {
+                            base64Data = data
+                        } else if let url = URL(string: coloredVal) {
+                            remoteUrl = url
                         }
 
-                        completion(.success(apiConfiguration))
+                        coloredImageFile = ImageFile(
+                            fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-colored",
+                            fileExtension: "png",
+                            remoteUrl: remoteUrl,
+                            base64Data: base64Data)
+
+                    } else {
+                        coloredImageFile = ImageFile(
+                            fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-colored",
+                            fileExtension: "png",
+                            remoteUrl: nil,
+                            base64Data: nil)
                     }
-                    .catch { _ in
-                        completion(.success(apiConfiguration))
+                    imageFiles.append(coloredImageFile)
+
+                    var lightImageFile: ImageFile
+                    if let lightVal = paymentMethod.displayMetadata?.button.iconUrl?.lightUrlStr {
+                        var remoteUrl: URL?
+                        var base64Data: Data?
+
+                        if let data = Data(base64Encoded: lightVal) {
+                            base64Data = data
+                        } else if let url = URL(string: lightVal) {
+                            remoteUrl = url
+                        }
+
+                        lightImageFile = ImageFile(
+                            fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-light",
+                            fileExtension: "png",
+                            remoteUrl: remoteUrl,
+                            base64Data: base64Data)
+
+                    } else {
+                        lightImageFile = ImageFile(
+                            fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-light",
+                            fileExtension: "png",
+                            remoteUrl: nil,
+                            base64Data: nil)
                     }
-                case .failure(let err):
-                    completion(.failure(err))
+                    imageFiles.append(lightImageFile)
+
+                    var darkImageFile: ImageFile
+                    if let darkVal = paymentMethod.displayMetadata?.button.iconUrl?.darkUrlStr {
+                        var remoteUrl: URL?
+                        var base64Data: Data?
+
+                        if let data = Data(base64Encoded: darkVal) {
+                            base64Data = data
+                        } else if let url = URL(string: darkVal) {
+                            remoteUrl = url
+                        }
+
+                        darkImageFile = ImageFile(
+                            fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-dark",
+                            fileExtension: "png",
+                            remoteUrl: remoteUrl,
+                            base64Data: base64Data)
+
+                    } else {
+                        darkImageFile = ImageFile(
+                            fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-dark",
+                            fileExtension: "png",
+                            remoteUrl: nil,
+                            base64Data: nil)
+                    }
+                    imageFiles.append(darkImageFile)
                 }
+
+                let imageManager = ImageManager()
+
+                firstly {
+                    imageManager.getImages(for: imageFiles)
+                }
+                .done { imageFiles in
+                    for (index, paymentMethod) in (apiConfiguration.paymentMethods ?? []).enumerated() {
+                        let paymentMethodImageFiles = imageFiles.filter { $0.fileName.contains(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-")) }
+                        if paymentMethodImageFiles.isEmpty {
+                            continue
+                        }
+
+                        let coloredImageFile = paymentMethodImageFiles
+                            .filter({ $0.fileName.contains("dark") == false && $0.fileName.contains("light") == false }).first
+                        let darkImageFile = paymentMethodImageFiles
+                            .filter({ $0.fileName.contains("dark") == true }).first
+                        let lightImageFile = paymentMethodImageFiles
+                            .filter({ $0.fileName.contains("light") == true }).first
+
+                        let baseImage = PrimerTheme.BaseImage(
+                            colored: coloredImageFile?.image,
+                            light: lightImageFile?.image,
+                            dark: darkImageFile?.image)
+                        apiConfiguration.paymentMethods?[index].baseLogoImage = baseImage
+                    }
+
+                    completion(.success(apiConfiguration))
+                }
+                .catch { _ in
+                    completion(.success(apiConfiguration))
+                }
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
+    }
 
     func createPayPalOrderSession(clientToken: DecodedJWTToken,
                                   payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder,
@@ -387,16 +387,16 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         klarnaCreatePaymentSessionAPIRequest: Request.Body.Klarna.CreatePaymentSession,
         completion: @escaping (_ result: Result<Response.Body.Klarna.CreatePaymentSession, Error>) -> Void) {
-            let endpoint = PrimerAPI.createKlarnaPaymentSession(clientToken: clientToken, klarnaCreatePaymentSessionAPIRequest: klarnaCreatePaymentSessionAPIRequest)
-            networkService.request(endpoint) { (result: Result<Response.Body.Klarna.CreatePaymentSession, Error>) in
-                switch result {
-                case .success(let klarnaCreatePaymentSessionAPIResponse):
-                    completion(.success(klarnaCreatePaymentSessionAPIResponse))
-                case .failure(let err):
-                    completion(.failure(err))
-                }
+        let endpoint = PrimerAPI.createKlarnaPaymentSession(clientToken: clientToken, klarnaCreatePaymentSessionAPIRequest: klarnaCreatePaymentSessionAPIRequest)
+        networkService.request(endpoint) { (result: Result<Response.Body.Klarna.CreatePaymentSession, Error>) in
+            switch result {
+            case .success(let klarnaCreatePaymentSessionAPIResponse):
+                completion(.success(klarnaCreatePaymentSessionAPIResponse))
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
+    }
 
     func createKlarnaCustomerToken(clientToken: DecodedJWTToken,
                                    klarnaCreateCustomerTokenAPIRequest: Request.Body.Klarna.CreateCustomerToken,
@@ -448,17 +448,17 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         request: Request.Body.Adyen.BanksList,
         completion: @escaping (Result<[Response.Body.Adyen.Bank], Error>) -> Void) {
-            let endpoint = PrimerAPI.listAdyenBanks(clientToken: clientToken, request: request)
-            networkService.request(endpoint) { (result: Result<BanksListSessionResponse, Error>) in
-                switch result {
-                case .success(let res):
-                    let banks = res.result
-                    completion(.success(banks))
-                case .failure(let err):
-                    completion(.failure(err))
-                }
+        let endpoint = PrimerAPI.listAdyenBanks(clientToken: clientToken, request: request)
+        networkService.request(endpoint) { (result: Result<BanksListSessionResponse, Error>) in
+            switch result {
+            case .success(let res):
+                let banks = res.result
+                completion(.success(banks))
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
+    }
 
     func listRetailOutlets(clientToken: DecodedJWTToken,
                            paymentMethodId: String,

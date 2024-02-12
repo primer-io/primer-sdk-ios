@@ -19,25 +19,25 @@ protocol PrimerThemeProtocol {
 
 /**
  Struct that customizes Primer's drop-in User Interface
- 
+
  *Values*
- 
+
  `cornerRadiusTheme` Modifies the corner radius on elements such as button, textfield, etc.
- 
+
  `colorTheme` Modifies the color on elements such as labels (headings, titles, body, etc), textfields, etc.
- 
+
  `textFieldTheme` Enum that modifies textfields' outline, possible values are **outlined**, **underlined**, **doublelined**.
- 
+
  `fontTheme` Modifies the font of the dop-in UI. Pre-requisites: Include the font in your app.
- 
+
  `textFieldTheme` Enum that modifies textfields' outline, possible values are **outlined**, **underlined**, **doublelined**.
- 
+
  `content` Modifies the form's format.
- 
+
  `layout` Defines the layout of the form.
- 
+
  `shadowTheme` Modifies the drop shadow of elements.
- 
+
  - Author:
  Primer
  - Version:

@@ -10,37 +10,37 @@ import UIKit
 
 internal class PrimerView: UIView {
 
-//    @IBInspectable var cornerRadius: CGFloat {
-//        get {
-//            return layer.cornerRadius
-//        }
-//        set {
-//            layer.cornerRadius = newValue
-//        }
-//    }
-//
-//    @IBInspectable var borderWidth: CGFloat {
-//        get {
-//            return layer.borderWidth
-//        }
-//        set {
-//            layer.borderWidth = newValue
-//        }
-//    }
-//
-//    @IBInspectable var borderColor: UIColor? {
-//        get {
-//            if let cgColor = layer.borderColor {
-//                return UIColor(cgColor: cgColor)
-//            } else {
-//                return nil
-//            }
-//
-//        }
-//        set {
-//            layer.borderColor = newValue?.cgColor
-//        }
-//    }
+    //    @IBInspectable var cornerRadius: CGFloat {
+    //        get {
+    //            return layer.cornerRadius
+    //        }
+    //        set {
+    //            layer.cornerRadius = newValue
+    //        }
+    //    }
+    //
+    //    @IBInspectable var borderWidth: CGFloat {
+    //        get {
+    //            return layer.borderWidth
+    //        }
+    //        set {
+    //            layer.borderWidth = newValue
+    //        }
+    //    }
+    //
+    //    @IBInspectable var borderColor: UIColor? {
+    //        get {
+    //            if let cgColor = layer.borderColor {
+    //                return UIColor(cgColor: cgColor)
+    //            } else {
+    //                return nil
+    //            }
+    //
+    //        }
+    //        set {
+    //            layer.borderColor = newValue?.cgColor
+    //        }
+    //    }
 
     var shadowColor: UIColor? {
         get {
@@ -99,9 +99,9 @@ internal class PrimerView: UIView {
         shadowLayer.shadowColor = UIColor.gray.cgColor
         shadowLayer.shadowOffset = CGSize(width: 1, height: 1)
         shadowLayer.shadowPath = UIBezierPath(rect: CGRect(x: 0,
-                                                     y: bounds.maxY,
-                                                     width: bounds.width,
-                                                     height: shadowLayer.shadowRadius)).cgPath
+                                                           y: bounds.maxY,
+                                                           width: bounds.width,
+                                                           height: shadowLayer.shadowRadius)).cgPath
         shadowLayer.cornerRadius = 8
         self.layer.addSublayer(shadowLayer)
     }

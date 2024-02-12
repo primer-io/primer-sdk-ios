@@ -300,38 +300,38 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
             )
 
             alert.addAction(UIAlertAction(
-                title: Strings.Generic.cancel,
-                style: .cancel,
-                handler: { _ in
-                    let uiEvent = Analytics.Event.ui(
-                        action: .click,
-                        context: nil,
-                        extra: "alert_button",
-                        objectType: .button,
-                        objectId: .cancel,
-                        objectClass: "\(UIButton.self)",
-                        place: .paymentMethodsList
-                    )
-                    Analytics.Service.record(event: uiEvent)
-                }))
+                                title: Strings.Generic.cancel,
+                                style: .cancel,
+                                handler: { _ in
+                                    let uiEvent = Analytics.Event.ui(
+                                        action: .click,
+                                        context: nil,
+                                        extra: "alert_button",
+                                        objectType: .button,
+                                        objectId: .cancel,
+                                        objectClass: "\(UIButton.self)",
+                                        place: .paymentMethodsList
+                                    )
+                                    Analytics.Service.record(event: uiEvent)
+                                }))
 
             alert.addAction(UIAlertAction(
-                title: Strings.Generic.delete,
-                style: .destructive,
-                handler: { [weak self] _ in
-                    guard let id = paymentMethod.id else { return }
-                    self?.deletePaymentMethod(id)
-                    let uiEvent = Analytics.Event.ui(
-                        action: .click,
-                        context: nil,
-                        extra: "alert_button",
-                        objectType: .button,
-                        objectId: .done,
-                        objectClass: "\(UIButton.self)",
-                        place: .paymentMethodsList
-                    )
-                    Analytics.Service.record(event: uiEvent)
-                }))
+                                title: Strings.Generic.delete,
+                                style: .destructive,
+                                handler: { [weak self] _ in
+                                    guard let id = paymentMethod.id else { return }
+                                    self?.deletePaymentMethod(id)
+                                    let uiEvent = Analytics.Event.ui(
+                                        action: .click,
+                                        context: nil,
+                                        extra: "alert_button",
+                                        objectType: .button,
+                                        objectId: .done,
+                                        objectClass: "\(UIButton.self)",
+                                        place: .paymentMethodsList
+                                    )
+                                    Analytics.Service.record(event: uiEvent)
+                                }))
 
             alert.show()
         }

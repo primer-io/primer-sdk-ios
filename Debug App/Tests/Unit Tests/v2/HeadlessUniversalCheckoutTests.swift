@@ -10,10 +10,10 @@ import XCTest
 @testable import PrimerSDK
 
 class HeadlessUniversalCheckoutTests: XCTestCase {
-    
+
     func test_start_headless() throws {
         let exp = expectation(description: "Start Headless Universal Checkout")
-        
+
         let clientSession = ClientSession.APIResponse(
             clientSessionId: "mock-client-session-id-1",
             paymentMethod: ClientSession.PaymentMethod(
@@ -43,7 +43,7 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
                 shippingAmount: nil),
             customer: nil,
             testId: nil)
-        
+
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
@@ -74,24 +74,24 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
             keys: nil,
             checkoutModules: nil)
         let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(data: [])
-        
+
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.fetchVaultedPaymentMethodsResult = (vaultedPaymentMethods, nil)
         mockApiClient.fetchConfigurationResult = (mockPrimerApiConfiguration, nil)
         VaultService.apiClient = mockApiClient
         PrimerAPIConfigurationModule.apiClient = mockApiClient
-        
+
         var availablePaymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]?
-        
+
         PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { paymentMethods, _ in
             availablePaymentMethods = paymentMethods
             exp.fulfill()
         }
-        
+
         wait(for: [exp], timeout: 30)
-        
+
         let apiConfiguration = AppState.current.apiConfiguration
-        
+
         XCTAssert((availablePaymentMethods?.count ?? 0) != 1, "Primer Headless Universal Checkout should return 1 available payment method")
         XCTAssert(availablePaymentMethods?.first?.paymentMethodType == "ADYEN_GIROPAY", "Primer Headless Universal Checkout should include Adyen Giropay in its available payment methods")
         XCTAssert(availablePaymentMethods?.first(where: { $0.paymentMethodType == "ADYEN_DOTPAY" }) != nil, "Primer Headless Universal Checkout should not include ADYEN_DOTPAY in its available payment methods")
@@ -101,12 +101,12 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
         XCTAssert(apiConfiguration?.clientSession?.order?.lineItems?.count == clientSession.order?.lineItems?.count, "Primer configuration's client session's order's line items should include \(clientSession.order?.lineItems?.count ?? 0) item(s)")
         XCTAssert(apiConfiguration?.clientSession?.customer == nil, "Primer configuration's client session's customer should be nil")
     }
-    
+
     func test_patch_client_session_and_restart_headless_universal_checkout() throws {
         let exp = expectation(description: "Patch client session and  restart Headless Universal Checkout")
-        
+
         try test_start_headless()
-        
+
         let clientSession = ClientSession.APIResponse(
             clientSessionId: "mock-client-session-id-2",
             paymentMethod: ClientSession.PaymentMethod(
@@ -142,7 +142,7 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
                 mobileNumber: "12345678"
             ),
             testId: nil)
-        
+
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
@@ -182,24 +182,24 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
             keys: nil,
             checkoutModules: nil)
         let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(data: [])
-        
+
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.fetchVaultedPaymentMethodsResult = (vaultedPaymentMethods, nil)
         mockApiClient.fetchConfigurationResult = (mockPrimerApiConfiguration, nil)
         VaultService.apiClient = mockApiClient
         PrimerAPIConfigurationModule.apiClient = mockApiClient
-        
+
         var availablePaymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]?
-        
+
         PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { paymentMethods, _ in
             availablePaymentMethods = paymentMethods
             exp.fulfill()
         }
-        
+
         wait(for: [exp], timeout: 30)
-        
+
         let apiConfiguration = AppState.current.apiConfiguration
-        
+
         XCTAssert((apiConfiguration?.paymentMethods?.count ?? 0) == mockPrimerApiConfiguration.paymentMethods?.count, "Primer configuration should include \(mockPrimerApiConfiguration.paymentMethods?.count ?? 0) payment methods")
         XCTAssert((availablePaymentMethods?.count ?? 0) == 2, "Primer Headless Universal Checkout should return 2 available payment method")
         XCTAssert(availablePaymentMethods?.first(where: { $0.paymentMethodType == "ADYEN_GIROPAY" }) != nil, "Primer Headless Universal Checkout should include Adyen Giropay in its available payment methods")

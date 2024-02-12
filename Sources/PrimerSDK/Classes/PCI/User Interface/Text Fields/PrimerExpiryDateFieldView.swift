@@ -58,7 +58,7 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
 
         } else {            // Deleting
             if newText.count == 2 {
-    //            newText += "/"
+                //            newText += "/"
             } else {
                 newText = newText.separate(every: 2, with: "/")
             }

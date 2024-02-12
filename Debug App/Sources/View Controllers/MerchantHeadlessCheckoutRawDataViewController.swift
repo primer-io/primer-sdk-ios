@@ -10,15 +10,15 @@ import PrimerSDK
 import UIKit
 
 class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
-    
+
     static func instantiate(paymentMethodType: String) -> MerchantHeadlessCheckoutRawDataViewController {
         let mpmvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantHUCRawDataViewController") as! MerchantHeadlessCheckoutRawDataViewController
         mpmvc.paymentMethodType = paymentMethodType
         return mpmvc
     }
-    
+
     var primerRawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
-    
+
     var stackView: UIStackView!
     var paymentMethodType: String!
     var paymentId: String?
@@ -33,12 +33,12 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
     var cvvTextField: UITextField?
     var cardholderNameTextField: UITextField?
     var payButton: UIButton!
-    
+
     var logs: [String] = []
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         self.stackView = UIStackView()
         self.stackView.axis = .vertical
         self.stackView.spacing = 6
@@ -50,12 +50,12 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
 
         self.renderInputs()
     }
-    
+
     func renderInputs() {
         do {
             self.primerRawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: self.paymentMethodType, delegate: self)
             let inputElementTypes = self.primerRawDataManager!.listRequiredInputElementTypes(for: self.paymentMethodType)
-            
+
             for inputElementType in inputElementTypes {
                 switch inputElementType {
                 case .cardNumber:
@@ -68,7 +68,7 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
                     self.cardnumberTextField!.heightAnchor.constraint(equalToConstant: 50).isActive = true
                     self.cardnumberTextField!.delegate = self
                     self.cardnumberTextField!.placeholder = "4242 4242 4242 4242"
-                    
+
                 case .expiryDate:
                     self.expiryDateTextField = UITextField(frame: .zero)
                     self.expiryDateTextField!.accessibilityIdentifier = "expiry_txt_fld"
@@ -79,7 +79,7 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
                     self.expiryDateTextField!.heightAnchor.constraint(equalToConstant: 50).isActive = true
                     self.expiryDateTextField!.delegate = self
                     self.expiryDateTextField!.placeholder = "03/2030"
-                    
+
                 case .cvv:
                     self.cvvTextField = UITextField(frame: .zero)
                     self.cvvTextField!.accessibilityIdentifier = "cvc_txt_fld"
@@ -90,7 +90,7 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
                     self.cvvTextField!.heightAnchor.constraint(equalToConstant: 50).isActive = true
                     self.cvvTextField!.delegate = self
                     self.cvvTextField!.placeholder = "123"
-                    
+
                 case .cardholderName:
                     self.cardholderNameTextField = UITextField(frame: .zero)
                     self.cardholderNameTextField!.accessibilityIdentifier = "card_holder_txt_fld"
@@ -101,24 +101,24 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
                     self.cardholderNameTextField!.heightAnchor.constraint(equalToConstant: 50).isActive = true
                     self.cardholderNameTextField!.delegate = self
                     self.cardholderNameTextField!.placeholder = "John Smith"
-                    
+
                 case .otp:
                     break
-                    
+
                 case .postalCode:
                     break
-                    
+
                 case .phoneNumber:
                     break
-                    
+
                 case .retailer:
                     break
-                    
+
                 case .unknown:
                     break
                 }
             }
-            
+
             self.payButton = UIButton(frame: .zero)
             self.stackView.addArrangedSubview(self.payButton)
             self.payButton.accessibilityIdentifier = "submit_btn"
@@ -131,32 +131,32 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
             self.payButton.setTitleColor(.white, for: .normal)
             self.payButton.isEnabled = false
             self.payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
-            
+
         } catch {
-            
+
         }
     }
-    
+
     @IBAction func payButtonTapped(_ sender: UIButton) {
         guard expiryDateTextField?.text?.count == 7,
               let expiryComponents = expiryDateTextField?.text?.split(separator: "/") else {
             self.showErrorMessage("Please write expiry date in format MM/YYYY")
             return
         }
-        
+
         if expiryComponents.count != 2 {
             self.showErrorMessage("Please write expiry date in format MM/YY")
             return
         }
-        
+
         if paymentMethodType == "PAYMENT_CARD" {
             self.primerRawDataManager!.submit()
             self.showLoadingOverlay()
         }
     }
-    
+
     // MARK: - HELPERS
-    
+
     private func showLoadingOverlay() {
         DispatchQueue.main.async {
             self.activityIndicator = UIActivityIndicatorView(frame: self.view.bounds)
@@ -166,7 +166,7 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
             self.activityIndicator?.startAnimating()
         }
     }
-    
+
     private func hideLoadingOverlay() {
         DispatchQueue.main.async {
             self.activityIndicator?.stopAnimating()
@@ -177,18 +177,18 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
 }
 
 extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
-    
+
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         print("TextField called")
         let text = textField.text
-        
+
         var newText: String = ""
-        
+
         if text != nil,
            let textRange = Range(range, in: text!) {
             newText = text!.replacingCharacters(in: textRange, with: string)
         }
-        
+
         if textField == self.cardnumberTextField {
             self.rawCardData = PrimerCardData(
                 cardNumber: newText.replacingOccurrences(of: " ", with: ""),
@@ -221,23 +221,23 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 cardholderName: newText.count == 0 ? nil : newText,
                 cardNetwork: self.rawCardData.cardNetwork)
         }
-        
+
         print("self.rawCardData\ncardNumber: \(self.rawCardData.cardNumber)\nexpiryDate: \(self.rawCardData.expiryDate)\ncvv: \(self.rawCardData.cvv)\ncardholderName: \(self.rawCardData.cardholderName ?? "nil")")
         self.primerRawDataManager?.rawData = self.rawCardData
-        
+
         return true
     }
 }
 
 extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
-    
+
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?) {
         print("\n\nMERCHANT APP\n\(#function)\ndataIsValid: \(isValid)")
         self.logs.append(#function)
         self.payButton.backgroundColor = isValid ? .black : .lightGray
         self.payButton.isEnabled = isValid
     }
-    
+
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String: Any]?) {
         print("\n\nMERCHANT APP\n\(#function)\nmetadataDidChange: \(String(describing: metadata))")
         self.logs.append(#function)

@@ -69,6 +69,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
         let cardInfoOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
             .first { $0.type == "CARD_INFORMATION" }?.options as? PrimerAPIConfiguration.CheckoutModule.CardInformationOptions
 
+        // swiftlint:disable:next identifier_name
         if let isCardHolderNameCheckoutModuleOptionEnabled = cardInfoOptions?.cardHolderName {
             if isCardHolderNameCheckoutModuleOptionEnabled {
                 mutableRequiredInputElementTypes.append(.cardholderName)

@@ -1,7 +1,7 @@
 import Dispatch
 
 /**
- CancellableThenable represents an asynchronous operation that can be both chained and cancelled.  
+ CancellableThenable represents an asynchronous operation that can be both chained and cancelled.
  When chained, all CancellableThenable members of the chain are cancelled when `cancel` is called on the associated CancelContext.
  */
 // swiftlint:disable identifier_name
@@ -15,7 +15,7 @@ internal protocol CancellableThenable: AnyObject {
     /// The `CancelContext` associated with this `CancellableThenable`
     var cancelContext: CancelContext { get }
 
-    /// Tracks the cancel items for this `CancellableThenable`.  
+    /// Tracks the cancel items for this `CancellableThenable`.
     /// These items are removed from the associated `CancelContext` when the thenable resolves.
     var cancelItemList: CancelItemList { get }
 }
@@ -33,7 +33,7 @@ internal extension CancellableThenable {
 
     /**
      Cancel all members of the promise chain and their associated asynchronous operations.
-     
+
      - Parameter error: Specifies the cancellation error to use for the cancel operation, defaults to `PMKError.cancelled`
      */
     func cancel(with error: Error = PMKError.cancelled) {
@@ -63,13 +63,13 @@ internal extension CancellableThenable {
 
     /**
      The provided closure executes when this cancellable promise resolves.
-     
+
      This allows chaining promises. The cancellable promise returned by the provided closure is resolved before the cancellable promise returned by this closure resolves.
-     
+
      - Parameter on: The dispatcher that executes the provided closure.
      - Parameter body: The closure that executes when this cancellable promise fulfills. It must return a cancellable promise.
      - Returns: A new cancellable promise that resolves when the cancellable promise returned from the provided closure resolves. For example:
-     
+
      let context = firstly {
      URLSession.shared.dataTask(.promise, with: url1)
      }.cancellize().then { response in
@@ -77,9 +77,9 @@ internal extension CancellableThenable {
      }.done { transformation in
      //…
      }.cancelContext
-     
+
      //…
-     
+
      context.cancel()
      */
     func then<V: CancellableThenable>(on: Dispatcher = conf.D.map, _ body: @escaping (U.T) throws -> V) -> CancellablePromise<V.U.T> {
@@ -102,13 +102,13 @@ internal extension CancellableThenable {
 
     /**
      The provided closure executes when this cancellable promise resolves.
-     
+
      This allows chaining promises. The promise returned by the provided closure is resolved before the cancellable promise returned by this closure resolves.
-     
+
      - Parameter on: The dispatcher that executes the provided closure.
      - Parameter body: The closure that executes when this promise fulfills. It must return a promise (not a cancellable promise).
      - Returns: A new cancellable promise that resolves when the promise returned from the provided closure resolves. For example:
-     
+
      let context = firstly {
      URLSession.shared.dataTask(.promise, with: url1)
      }.cancellize().then { response in
@@ -116,9 +116,9 @@ internal extension CancellableThenable {
      }.done { transformation in
      //…
      }.cancelContext
-     
+
      //…
-     
+
      context.cancel()
      */
     func then<V: Thenable>(on: Dispatcher = conf.D.map, _ body: @escaping (U.T) throws -> V) -> CancellablePromise<V.T> {
@@ -136,13 +136,13 @@ internal extension CancellableThenable {
 
     /**
      The provided closure is executed when this cancellable promise is resolved.
-     
+
      This is like `then` but it requires the closure to return a non-promise and non-cancellable-promise.
-     
+
      - Parameter on: The queue to which the provided closure dispatches.
      - Parameter transform: The closure that is executed when this CancellablePromise is fulfilled. It must return a non-promise and non-cancellable-promise.
      - Returns: A new cancellable promise that is resolved with the value returned from the provided closure. For example:
-     
+
      let context = firstly {
      URLSession.shared.dataTask(.promise, with: url1)
      }.cancellize().map { response in
@@ -150,9 +150,9 @@ internal extension CancellableThenable {
      }.done { length in
      //…
      }.cancelContext
-     
+
      //…
-     
+
      context.cancel()
      */
     func map<V>(on: Dispatcher = conf.D.map, _ transform: @escaping (U.T) throws -> V) -> CancellablePromise<V> {
@@ -170,10 +170,10 @@ internal extension CancellableThenable {
 
     /**
      The provided closure is executed when this cancellable promise is resolved.
-     
+
      In your closure return an `Optional`, if you return `nil` the resulting cancellable promise is rejected with `PMKError.compactMap`,
      otherwise the cancellable promise is fulfilled with the unwrapped value.
-     
+
      let context = firstly {
      URLSession.shared.dataTask(.promise, with: url)
      }.cancellize().compactMap {
@@ -183,9 +183,9 @@ internal extension CancellableThenable {
      }.catch {
      // either `PMKError.compactMap` or a `JSONError`
      }.cancelContext
-     
+
      //…
-     
+
      context.cancel()
      */
     func compactMap<V>(on: Dispatcher = conf.D.map, _ transform: @escaping (U.T) throws -> V?) -> CancellablePromise<V> {
@@ -203,22 +203,22 @@ internal extension CancellableThenable {
 
     /**
      The provided closure is executed when this cancellable promise is resolved.
-     
+
      Equivalent to `map { x -> Void in`, but since we force the `Void` return Swift
      is happier and gives you less hassle about your closure’s qualification.
-     
+
      - Parameter on: The dispatcher that executes the provided closure.
      - Parameter body: The closure that is executed when this promise is fulfilled.
      - Returns: A new cancellable promise fulfilled as `Void`.
-     
+
      let context = firstly {
      URLSession.shared.dataTask(.promise, with: url)
      }.cancellize().done { response in
      print(response.data)
      }.cancelContext
-     
+
      //…
-     
+
      context.cancel()
      */
     func done(on: Dispatcher = conf.D.return, _ body: @escaping (U.T) throws -> Void) -> CancellablePromise<Void> {
@@ -236,14 +236,14 @@ internal extension CancellableThenable {
 
     /**
      The provided closure is executed when this cancellable promise is resolved.
-     
+
      This is like `done` but it returns the same value that the handler is fed.
      `get` immutably accesses the fulfilled value; the returned CancellablePromise maintains that value.
-     
+
      - Parameter on: The dispatcher that executes the provided closure.
      - Parameter body: The closure that is executed when this promise is fulfilled.
      - Returns: A new cancellable promise that is resolved with the value that the handler is fed. For example:
-     
+
      let context = firstly {
      cancellize(Promise.value(1))
      }.get { foo in
@@ -253,9 +253,9 @@ internal extension CancellableThenable {
      }.done { foo in
      print(foo, " is Void")
      }.cancelContext
-     
+
      //…
-     
+
      context.cancel()
      */
     func get(on: Dispatcher = conf.D.return, _ body: @escaping (U.T) throws -> Void) -> CancellablePromise<U.T> {
@@ -267,13 +267,13 @@ internal extension CancellableThenable {
 
     /**
      The provided closure is executed with cancellable promise result.
-     
+
      This is like `get` but provides the Result<U.T> of the CancellablePromise so you can inspect the value of the chain at this point without causing any side effects.
-     
+
      - Parameter on: The dispatcher that executes the provided closure.
      - Parameter body: The closure that is executed with Result of CancellablePromise.
      - Returns: A new cancellable promise that is resolved with the result that the handler is fed. For example:
-     
+
      promise.tap{ print($0) }.then{ /*…*/ }
      */
     func tap(on: Dispatcher = conf.D.map, _ body: @escaping(Result<U.T, Error>) -> Void) -> CancellablePromise<U.T> {
@@ -345,7 +345,7 @@ internal extension CancellableThenable {
 internal extension CancellableThenable where U.T: Sequence {
     /**
      `CancellablePromise<[U.T]>` => `U.T` -> `V` => `CancellablePromise<[V]>`
-     
+
      firstly {
      cancellize(Promise.value([1,2,3]))
      }.mapValues { integer in
@@ -360,7 +360,7 @@ internal extension CancellableThenable where U.T: Sequence {
 
     /**
      `CancellablePromise<[U.T]>` => `U.T` -> `[V]` => `CancellablePromise<[V]>`
-     
+
      firstly {
      cancellize(Promise.value([1,2,3]))
      }.flatMapValues { integer in
@@ -377,7 +377,7 @@ internal extension CancellableThenable where U.T: Sequence {
 
     /**
      `CancellablePromise<[U.T]>` => `U.T` -> `V?` => `CancellablePromise<[V]>`
-     
+
      firstly {
      cancellize(Promise.value(["1","2","a","3"]))
      }.compactMapValues {
@@ -394,7 +394,7 @@ internal extension CancellableThenable where U.T: Sequence {
 
     /**
      `CancellablePromise<[U.T]>` => `U.T` -> `CancellablePromise<V>` => `CancellablePromise<[V]>`
-     
+
      firstly {
      cancellize(Promise.value([1,2,3]))
      }.thenMap { integer in
@@ -411,7 +411,7 @@ internal extension CancellableThenable where U.T: Sequence {
 
     /**
      `CancellablePromise<[U.T]>` => `U.T` -> `Promise<V>` => `CancellablePromise<[V]>`
-     
+
      firstly {
      Promise.value([1,2,3])
      }.cancellize().thenMap { integer in
@@ -428,7 +428,7 @@ internal extension CancellableThenable where U.T: Sequence {
 
     /**
      `CancellablePromise<[T]>` => `T` -> `CancellablePromise<[U]>` => `CancellablePromise<[U]>`
-     
+
      firstly {
      cancellize(Promise.value([1,2,3]))
      }.thenFlatMap { integer in
@@ -449,7 +449,7 @@ internal extension CancellableThenable where U.T: Sequence {
 
     /**
      `CancellablePromise<[T]>` => `T` -> `Promise<[U]>` => `CancellablePromise<[U]>`
-     
+
      firstly {
      Promise.value([1,2,3])
      }.cancellize().thenFlatMap { integer in
@@ -470,7 +470,7 @@ internal extension CancellableThenable where U.T: Sequence {
 
     /**
      `CancellablePromise<[T]>` => `T` -> Bool => `CancellablePromise<[U]>`
-     
+
      firstly {
      cancellize(Promise.value([1,2,3]))
      }.filterValues {
@@ -512,7 +512,7 @@ internal extension CancellableThenable where U.T: Collection {
         }
     }
 
-    /// - Returns: a cancellable promise fulfilled with the last value of this `Collection` or, 
+    /// - Returns: a cancellable promise fulfilled with the last value of this `Collection` or,
     /// if empty, a promise rejected with PMKError.emptySequence.
     var lastValue: CancellablePromise<U.T.Iterator.Element> {
         return map(on: nil) { aa in

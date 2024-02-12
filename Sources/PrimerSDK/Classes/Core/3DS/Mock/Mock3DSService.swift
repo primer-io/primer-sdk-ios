@@ -16,30 +16,30 @@ class Mock3DSService: ThreeDSServiceProtocol {
         paymentMethodTokenData: PrimerPaymentMethodTokenData,
         sdkDismissed: (() -> Void)?,
         completion: @escaping (_ result: Result<String, Error>) -> Void) {
-            if #available(iOS 13.0, *) {
-                if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
-                    demo3DSWindow = UIWindow(windowScene: windowScene)
-                } else {
-                    // Not opted-in in UISceneDelegate
-                    demo3DSWindow = UIWindow(frame: UIScreen.main.bounds)
-                }
+        if #available(iOS 13.0, *) {
+            if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
+                demo3DSWindow = UIWindow(windowScene: windowScene)
             } else {
-                // Fallback on earlier versions
+                // Not opted-in in UISceneDelegate
                 demo3DSWindow = UIWindow(frame: UIScreen.main.bounds)
             }
-
-            demo3DSWindow!.rootViewController = ClearViewController()
-            demo3DSWindow!.backgroundColor = UIColor.clear
-            demo3DSWindow!.windowLevel = UIWindow.Level.alert
-            demo3DSWindow!.makeKeyAndVisible()
-
-            let vc = PrimerDemo3DSViewController()
-            demo3DSWindow!.rootViewController?.present(vc, animated: true)
-
-            vc.onSendCredentialsButtonTapped = {
-                self.demo3DSWindow?.rootViewController = nil
-                self.demo3DSWindow = nil
-                completion(.success(paymentMethodTokenData.token ?? "no-token"))
-            }
+        } else {
+            // Fallback on earlier versions
+            demo3DSWindow = UIWindow(frame: UIScreen.main.bounds)
         }
+
+        demo3DSWindow!.rootViewController = ClearViewController()
+        demo3DSWindow!.backgroundColor = UIColor.clear
+        demo3DSWindow!.windowLevel = UIWindow.Level.alert
+        demo3DSWindow!.makeKeyAndVisible()
+
+        let viewController = PrimerDemo3DSViewController()
+        demo3DSWindow!.rootViewController?.present(viewController, animated: true)
+
+        viewController.onSendCredentialsButtonTapped = {
+            self.demo3DSWindow?.rootViewController = nil
+            self.demo3DSWindow = nil
+            completion(.success(paymentMethodTokenData.token ?? "no-token"))
+        }
+    }
 }

@@ -22,7 +22,7 @@ private let tropical9 = UIColor(red: 31/255, green: 130/255, blue: 118/255, alph
 private let tropical10 = UIColor(red: 230/255, green: 244/255, blue: 190/255, alpha: 1)
 
 class PrimerCheckoutThemeTests: XCTestCase {
-    
+
     static var tropical: PrimerTheme {
         let data = PrimerThemeData()
         data.colors.primary = tropical7
@@ -48,11 +48,11 @@ class PrimerCheckoutThemeTests: XCTestCase {
         data.input.text = PrimerThemeData.Text(defaultColor: tropical4)
         return PrimerTheme.init(with: data)
     }
-    
+
     func test_custom_theme_exists() throws {
         let settings = PrimerSettings(uiOptions: PrimerUIOptions(theme: PrimerCheckoutThemeTests.tropical))
         Primer.shared.configure(settings: settings)
-        
+
         let storedSettings: PrimerSettingsProtocol = DependencyContainer.resolve()
         XCTAssert(storedSettings.uiOptions.theme.colors.primary             == tropical7, "Primary color should be 'tropical7'")
         XCTAssert(storedSettings.uiOptions.theme.colors.error               == tropical3, "Error color should be 'tropical3'")
@@ -64,7 +64,7 @@ class PrimerCheckoutThemeTests: XCTestCase {
         XCTAssert(storedSettings.uiOptions.theme.text.subtitle.color        == tropical3, "Subtitle color should be 'tropical3'")
         XCTAssert(storedSettings.uiOptions.theme.text.body.color            == UIColor.white, "Body color should be 'white'")
         XCTAssert(storedSettings.uiOptions.theme.text.system.color          == tropical4, "System color should be 'tropical4'")
-        
+
         XCTAssert(storedSettings.uiOptions.theme.mainButton.colorStates.color(for: .enabled) == tropical8, "Main button's enabled color should be 'tropical8'")
         XCTAssert(storedSettings.uiOptions.theme.mainButton.colorStates.color(for: .selected) == tropical8, "Main button's selected color should be 'tropical8'")
         XCTAssert(storedSettings.uiOptions.theme.mainButton.text.color == tropical4, "Main button's enabled color should be 'tropical8'")
