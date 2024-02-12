@@ -62,7 +62,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
             request.httpBody = data
         }
 
-#if DEBUG
+        #if DEBUG
         if let queryParams = endpoint.queryParameters {
             var urlQueryItems: [URLQueryItem] = []
 
@@ -82,7 +82,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
             return " - \(key) = \(value)"
         } ?? []
         logger.debug(message: "📃 Request Headers:\n\(headerDescriptions.joined(separator: "\n"))")
-#endif
+        #endif
 
         let dataTask = session.dataTask(with: request) { [logger] data, response, error in
             let httpResponse = response as? HTTPURLResponse
@@ -102,9 +102,9 @@ internal class URLSessionStack: NetworkService, LogReporter {
                 resEvent!.properties = resEventProperties
             }
 
-#if DEBUG
+            #if DEBUG
 
-#endif
+            #endif
 
             if let error = error {
                 if resEvent != nil {
@@ -113,9 +113,9 @@ internal class URLSessionStack: NetworkService, LogReporter {
                     Analytics.Service.record(event: resEvent!)
                 }
 
-#if DEBUG
+                #if DEBUG
                 logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)", userInfo: ["ErrorMessage": error.localizedDescription])
-#endif
+                #endif
 
                 let err = InternalError.underlyingErrors(errors: [error], userInfo: ["file": #file,
                                                                                      "class": "\(Self.self)",
@@ -133,10 +133,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
                     Analytics.Service.record(event: resEvent!)
                 }
 
-#if DEBUG
+                #if DEBUG
                 self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                 self.logger.error(message: "No data received.")
-#endif
+                #endif
 
                 let err = InternalError.noData(userInfo: ["file": #file,
                                                           "class": "\(Self.self)",
@@ -153,7 +153,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
                     Analytics.Service.record(event: resEvent!)
                 }
 
-#if DEBUG
+                #if DEBUG
                 if endpoint.shouldParseResponseBody {
                     if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
                         logger.debug(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
@@ -178,7 +178,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
                         logger.debug(message: "Body:\n\(bodyDescription)")
                     }
                 }
-#endif
+                #endif
 
                 if endpoint.shouldParseResponseBody == false, httpResponse?.statusCode == 200 {
                     guard let dummyRes: T = DummySuccess(success: true) as? T
@@ -211,10 +211,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
                                                                                                               "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
 
-#if DEBUG
+                        #if DEBUG
                         logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                         logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
-#endif
+                        #endif
 
                         DispatchQueue.main.async { completion(.failure(err)) }
 
@@ -225,10 +225,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
                                                                                                                           "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
 
-#if DEBUG
+                        #if DEBUG
                         self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                         logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
-#endif
+                        #endif
 
                         DispatchQueue.main.async { completion(.failure(err)) }
 
@@ -239,10 +239,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
                                                                                                                           "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
 
-#if DEBUG
+                        #if DEBUG
                         self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                         logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
-#endif
+                        #endif
 
                         DispatchQueue.main.async { completion(.failure(err)) }
 
@@ -259,10 +259,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
                             Analytics.Service.record(event: resEvent!)
                         }
 
-#if DEBUG
+                        #if DEBUG
                         self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                         logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
-#endif
+                        #endif
 
                         DispatchQueue.main.async { completion(.failure(err)) }
                     }
@@ -280,10 +280,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
                         Analytics.Service.record(event: resEvent!)
                     }
 
-#if DEBUG
+                    #if DEBUG
                     self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                     self.logger.error(message: "Error: Failed to parse")
-#endif
+                    #endif
 
                     DispatchQueue.main.async { completion(.failure(InternalError.underlyingErrors(errors: [err], userInfo: ["file": #file,
                                                                                                                             "class": "\(Self.self)",

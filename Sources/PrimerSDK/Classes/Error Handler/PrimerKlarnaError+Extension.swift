@@ -20,7 +20,7 @@ extension PrimerKlarnaError: PrimerErrorProtocol {
 
         switch self {
         case .userNotApproved(let userInfo),
-                .klarnaSdkError(_, let userInfo):
+             .klarnaSdkError(_, let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
             tmpUserInfo["diagnosticsId"] = self.diagnosticsId
         }

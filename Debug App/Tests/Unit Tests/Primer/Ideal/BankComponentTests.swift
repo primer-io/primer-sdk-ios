@@ -249,7 +249,7 @@ private class MockBankSelectorTokenizationModel: BankSelectorTokenizationProvidi
                 self.fetchBanks()
             }
             .done { banks in
-                seal.fulfill(self.mockBanks)
+                seal.fulfill(banks)
             }
             .catch { err in
                 seal.reject(err)

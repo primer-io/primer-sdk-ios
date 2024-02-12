@@ -84,8 +84,8 @@ extension PrimerFormView {
 
                 verticalStackView.addArrangedSubview(view)
 
-            // 2+ elements = views added as part of a new horizontal stackview
-            // the horizonal stack view is added to the main vertical one
+                // 2+ elements = views added as part of a new horizontal stackview
+                // the horizonal stack view is added to the main vertical one
             } else if $0.count > 1 {
 
                 verticalStackView.addArrangedSubview(makeHorizontalStackViewWithViews($0.compactMap { $0 }))

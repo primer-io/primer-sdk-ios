@@ -4,7 +4,7 @@ import Dispatch
 /**
  A `Guarantee` is a functional abstraction around an asynchronous operation that cannot error.
  - See: `Thenable`
-*/
+ */
 internal final class Guarantee<T>: Thenable {
     let box: Box<T>
 
@@ -27,7 +27,7 @@ internal final class Guarantee<T>: Thenable {
     /// Returns a pending `Guarantee` that can be resolved with the provided closure’s parameter.
     internal convenience init(cancellable: Cancellable, resolver body: (@escaping(T) -> Void) -> Void) {
         self.init(resolver: body)
-       setCancellable(cancellable)
+        setCancellable(cancellable)
     }
 
     /// - See: `Thenable.pipe`
@@ -144,7 +144,7 @@ internal extension Guarantee {
         return rg
     }
 
-	@discardableResult
+    @discardableResult
     func then<U>(on: Dispatcher = conf.D.map, _ body: @escaping(T) -> Guarantee<U>) -> Guarantee<U> {
         let rg = Guarantee<U>(.pending)
         pipe { value in
@@ -186,11 +186,11 @@ internal extension Guarantee where T: Sequence {
     /**
      `Guarantee<[T]>` => `T` -> `U` => `Guarantee<[U]>`
 
-         Guarantee.value([1,2,3])
-            .mapValues { integer in integer * 2 }
-            .done {
-                // $0 => [2,4,6]
-            }
+     Guarantee.value([1,2,3])
+     .mapValues { integer in integer * 2 }
+     .done {
+     // $0 => [2,4,6]
+     }
      */
     func mapValues<U>(on: DispatchQueue? = conf.Q.map, flags: DispatchWorkItemFlags? = nil, _ transform: @escaping(T.Iterator.Element) -> U) -> Guarantee<[U]> {
         return map(on: on, flags: flags) { $0.map(transform) }
@@ -199,11 +199,11 @@ internal extension Guarantee where T: Sequence {
     /**
      `Guarantee<[T]>` => `T` -> `[U]` => `Guarantee<[U]>`
 
-         Guarantee.value([1,2,3])
-            .flatMapValues { integer in [integer, integer] }
-            .done {
-                // $0 => [1,1,2,2,3,3]
-            }
+     Guarantee.value([1,2,3])
+     .flatMapValues { integer in [integer, integer] }
+     .done {
+     // $0 => [1,1,2,2,3,3]
+     }
      */
     func flatMapValues<U: Sequence>(on: DispatchQueue? = conf.Q.map, flags: DispatchWorkItemFlags? = nil, _ transform: @escaping(T.Iterator.Element) -> U) -> Guarantee<[U.Iterator.Element]> {
         return map(on: on, flags: flags) { (foo: T) in
@@ -214,11 +214,11 @@ internal extension Guarantee where T: Sequence {
     /**
      `Guarantee<[T]>` => `T` -> `U?` => `Guarantee<[U]>`
 
-         Guarantee.value(["1","2","a","3"])
-            .compactMapValues { Int($0) }
-            .done {
-                // $0 => [1,2,3]
-            }
+     Guarantee.value(["1","2","a","3"])
+     .compactMapValues { Int($0) }
+     .done {
+     // $0 => [1,2,3]
+     }
      */
     func compactMapValues<U>(on: DispatchQueue? = conf.Q.map, flags: DispatchWorkItemFlags? = nil, _ transform: @escaping(T.Iterator.Element) -> U?) -> Guarantee<[U]> {
         return map(on: on, flags: flags) { foo -> [U] in
@@ -233,11 +233,11 @@ internal extension Guarantee where T: Sequence {
     /**
      `Guarantee<[T]>` => `T` -> `Guarantee<U>` => `Guarantee<[U]>`
 
-         Guarantee.value([1,2,3])
-            .thenMap { .value($0 * 2) }
-            .done {
-                // $0 => [2,4,6]
-            }
+     Guarantee.value([1,2,3])
+     .thenMap { .value($0 * 2) }
+     .done {
+     // $0 => [2,4,6]
+     }
      */
     func thenMap<U>(on: Dispatcher = conf.D.map, _ transform: @escaping(T.Iterator.Element) -> Guarantee<U>) -> Guarantee<[U]> {
         return then(on: on) {
@@ -251,11 +251,11 @@ internal extension Guarantee where T: Sequence {
     /**
      `Guarantee<[T]>` => `T` -> `Guarantee<[U]>` => `Guarantee<[U]>`
 
-         Guarantee.value([1,2,3])
-            .thenFlatMap { integer in .value([integer, integer]) }
-            .done {
-                // $0 => [1,1,2,2,3,3]
-            }
+     Guarantee.value([1,2,3])
+     .thenFlatMap { integer in .value([integer, integer]) }
+     .done {
+     // $0 => [1,1,2,2,3,3]
+     }
      */
     func thenFlatMap<U: Thenable>(on: DispatchQueue? = conf.Q.map,
                                   flags: DispatchWorkItemFlags? = nil,
@@ -275,11 +275,11 @@ internal extension Guarantee where T: Sequence {
     /**
      `Guarantee<[T]>` => `T` -> Bool => `Guarantee<[T]>`
 
-         Guarantee.value([1,2,3])
-            .filterValues { $0 > 1 }
-            .done {
-                // $0 => [2,3]
-            }
+     Guarantee.value([1,2,3])
+     .filterValues { $0 > 1 }
+     .done {
+     // $0 => [2,3]
+     }
      */
     func filterValues(on: DispatchQueue? = conf.Q.map, flags: DispatchWorkItemFlags? = nil, _ isIncluded: @escaping(T.Iterator.Element) -> Bool) -> Guarantee<[T.Iterator.Element]> {
         return map(on: on, flags: flags) {
@@ -291,10 +291,10 @@ internal extension Guarantee where T: Sequence {
      `Guarantee<[T]>` => (`T`, `T`) -> Bool => `Guarantee<[T]>`
 
      Guarantee.value([5,2,3,4,1])
-        .sortedValues { $0 > $1 }
-        .done {
-            // $0 => [5,4,3,2,1]
-        }
+     .sortedValues { $0 > $1 }
+     .done {
+     // $0 => [5,4,3,2,1]
+     }
      */
     func sortedValues(on: DispatchQueue? = conf.Q.map,
                       flags: DispatchWorkItemFlags? = nil,
@@ -312,10 +312,10 @@ internal extension Guarantee where T: Sequence, T.Iterator.Element: Comparable {
      `Guarantee<[T]>` => `Guarantee<[T]>`
 
      Guarantee.value([5,2,3,4,1])
-        .sortedValues()
-        .done {
-            // $0 => [1,2,3,4,5]
-        }
+     .sortedValues()
+     .done {
+     // $0 => [1,2,3,4,5]
+     }
      */
     func sortedValues(on: DispatchQueue? = conf.Q.map, flags: DispatchWorkItemFlags? = nil) -> Guarantee<[T.Iterator.Element]> {
         return map(on: on, flags: flags) { $0.sorted() }
@@ -344,11 +344,11 @@ internal extension DispatchQueue {
     /**
      Asynchronously executes the provided closure on a dispatch queue, yielding a `Guarantee`.
 
-         DispatchQueue.global().async(.promise) {
-             md5(input)
-         }.done { md5 in
-             //…
-         }
+     DispatchQueue.global().async(.promise) {
+     md5(input)
+     }.done { md5 in
+     //…
+     }
 
      - _: Must be `.promise` to distinguish from standard `DispatchQueue.async`
      - group: A `DispatchGroup`, as for standard `DispatchQueue.async`
@@ -372,11 +372,11 @@ internal extension Dispatcher {
      Executes the provided closure on a `Dispatcher`, yielding a `Guarantee`
      that represents the value ultimately returned by the closure.
 
-         dispatcher.dispatch {
-            md5(input)
-         }.done { md5 in
-            //…
-         }
+     dispatcher.dispatch {
+     md5(input)
+     }.done { md5 in
+     //…
+     }
 
      - Parameter body: The closure that yields the value of the Guarantee.
      - Returns: A new `Guarantee` resolved by the result of the provided closure.

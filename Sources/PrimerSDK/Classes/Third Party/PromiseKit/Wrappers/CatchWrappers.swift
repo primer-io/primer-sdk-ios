@@ -4,12 +4,12 @@ internal extension _PMKCatchWrappers {
 
     /**
      The provided closure executes when this promise rejects.
-     
+
      Rejecting a promise cascades: rejecting all subsequent promises (unless
      recover is invoked) thus you will typically place your catch at the end
      of a chain. Often utility promises will not have a catch, instead
      delegating the error handling to the caller.
-     
+
      - Parameter on: The queue to which the provided closure dispatches.
      - Parameter flags: `DispatchWorkItemFlags` to be applied when dispatching.
      - Parameter policy: The default policy does not execute your handler for cancellation errors.
@@ -25,12 +25,12 @@ internal extension _PMKCatchWrappers {
 
     /**
      The provided closure executes when this promise rejects with the specific error passed in. A final `catch` is still required at the end of the chain.
-     
+
      Rejecting a promise cascades: rejecting all subsequent promises (unless
      recover is invoked) thus you will typically place your catch at the end
      of a chain. Often utility promises will not have a catch, instead
      delegating the error handling to the caller.
-     
+
      - Parameter only: The specific error to be caught and handled (e.g., `PMKError.emptySequence`).
      - Parameter on: The queue to which the provided closure dispatches.
      - Parameter flags: `DispatchWorkItemFlags` to be applied when dispatching.
@@ -46,12 +46,12 @@ internal extension _PMKCatchWrappers {
 
     /**
      The provided closure executes when this promise rejects with an error of the type passed in. A final `catch` is still required at the end of the chain.
-     
+
      Rejecting a promise cascades: rejecting all subsequent promises (unless
      recover is invoked) thus you will typically place your catch at the end
      of a chain. Often utility promises will not have a catch, instead
      delegating the error handling to the caller.
-     
+
      - Parameter only: The error type to be caught and handled (e.g., `PMKError`).
      - Parameter on: The queue to which the provided closure dispatches.
      - Parameter flags: `DispatchWorkItemFlags` to be applied when dispatching.

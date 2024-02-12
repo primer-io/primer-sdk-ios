@@ -11,9 +11,9 @@ internal extension DateFormatter {
 
     /**
      The provided function sets the `dateFormat` property of DateFormatter.
-     
+
      Format: `yyyy-MM-dd'T'HH:mm:ss`
-     
+
      - Returns: The DateFormatter instance.
      */
     func withVoucherExpirationDateFormat() -> DateFormatter {
@@ -26,9 +26,9 @@ internal extension DateFormatter {
 
     /**
      The provided function sets the `style` of `date` and `time` property of DateFormatter.
-     
+
      Format: `Sep 16, 2022 at 11:46 AM`
-     
+
      - Returns: The DateFormatter instance.
      */
     func withExpirationDisplayDateFormat() -> DateFormatter {

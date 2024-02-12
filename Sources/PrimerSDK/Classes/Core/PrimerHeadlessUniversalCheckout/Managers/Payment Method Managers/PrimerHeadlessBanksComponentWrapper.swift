@@ -26,7 +26,9 @@ import Foundation
     @objc func didReceiveValidationStatus(_ status: ValidStatus)
 }
 
+// swiftlint:disable type_name
 @objc public protocol PrimerHeadlessBanksComponentWrapperDelegate: AnyObject, PrimerHeadlessSubmitable, PrimerHeadlessStartable {
+    // swiftlint:enable type_name
     @objc var stepDelegate: BanksComponentSteppable? { get set }
     @objc var errorDelegate: BanksComponentErrorable? { get set }
     @objc var validationDelegate: BanksComponentValidatable? { get set }
@@ -64,8 +66,8 @@ import Foundation
 }
 
 extension PrimerHeadlessBanksComponentWrapper: PrimerHeadlessErrorableDelegate,
-                                                PrimerHeadlessValidatableDelegate,
-                                                PrimerHeadlessSteppableDelegate {
+                                               PrimerHeadlessValidatableDelegate,
+                                               PrimerHeadlessSteppableDelegate {
     public func didReceiveError(error: PrimerError) {
         errorDelegate?.didReceiveError(NSError(domain: error.errorId, code: -1, userInfo: error.errorUserInfo))
     }

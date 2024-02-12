@@ -25,6 +25,7 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
     case invalidPhoneNumberCountryCode(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidRetailer(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidRawData(userInfo: [String: String]?, diagnosticsId: String)
+    // swiftlint:disable:next identifier_name
     case vaultedPaymentMethodAdditionalDataMismatch(paymentMethodType: String, validVaultedPaymentMethodAdditionalDataType: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidOTPCode(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidAccountUniqueId(message: String, userInfo: [String: String]?, diagnosticsId: String)
@@ -167,6 +168,7 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "[\(errorId)] Raw data is not valid."
         case .invalidRetailer(let message, _, _):
             return "[\(errorId)] \(message)"
+        // swiftlint:disable:next identifier_name
         case .vaultedPaymentMethodAdditionalDataMismatch(let paymentMethodType, let validVaultedPaymentMethodAdditionalDataType, _, _):
             return "[\(errorId)] Vaulted payment method \(paymentMethodType) needs additional data of type \(validVaultedPaymentMethodAdditionalDataType)"
         case .invalidPhoneNumberCountryCode(message: let message, _, _):
@@ -191,28 +193,25 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
 
         switch self {
         case .invalidCardholderName(_, let userInfo, _),
-                .invalidCardnumber(_, let userInfo, _),
-                .invalidCvv(_, let userInfo, _),
-                .invalidExpiryMonth(_, let userInfo, _),
-                .invalidExpiryYear(_, let userInfo, _),
-                .invalidExpiryDate(_, let userInfo, _),
-                .invalidPostalCode(_, let userInfo, _),
-                .invalidFirstName(_, let userInfo, _),
-                .invalidLastName(_, let userInfo, _),
-                .invalidAddress(_, let userInfo, _),
-                .invalidState(_, let userInfo, _),
-                .invalidCountry(_, let userInfo, _),
-                .invalidPhoneNumber(_, let userInfo, _),
-                .invalidRawData(let userInfo, _),
-                .invalidRetailer(_, let userInfo, _),
-                .vaultedPaymentMethodAdditionalDataMismatch(_, _, let userInfo, _),
-                .invalidPhoneNumberCountryCode(_, let userInfo, _),
-                .invalidOTPCode(_, let userInfo, _),
-                .invalidAccountUniqueId(_, let userInfo, _),
-                .invalidAccountRegistrationDate(message: _, let userInfo, _),
-                .invalidAccountLastModified(message: _, let userInfo, _),
-                .invalidBankId(_, let userInfo, _),
-                .banksNotLoaded(let userInfo, _):
+             .invalidCardnumber(_, let userInfo, _),
+             .invalidCvv(_, let userInfo, _),
+             .invalidExpiryMonth(_, let userInfo, _),
+             .invalidExpiryYear(_, let userInfo, _),
+             .invalidExpiryDate(_, let userInfo, _),
+             .invalidPostalCode(_, let userInfo, _),
+             .invalidFirstName(_, let userInfo, _),
+             .invalidLastName(_, let userInfo, _),
+             .invalidAddress(_, let userInfo, _),
+             .invalidState(_, let userInfo, _),
+             .invalidCountry(_, let userInfo, _),
+             .invalidPhoneNumber(_, let userInfo, _),
+             .invalidRawData(let userInfo, _),
+             .invalidRetailer(_, let userInfo, _),
+             .vaultedPaymentMethodAdditionalDataMismatch(_, _, let userInfo, _),
+             .invalidPhoneNumberCountryCode(_, let userInfo, _),
+             .invalidOTPCode(_, let userInfo, _),
+             .invalidBankId(_, let userInfo, _),
+             .banksNotLoaded(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
 
@@ -333,7 +332,7 @@ extension PrimerValidationError: Equatable {
             (.invalidAccountLastModified(let message1, let userInfo1, let id1), .invalidAccountLastModified(let message2, let userInfo2, let id2)):
             return message1 == message2 && userInfo1 == userInfo2 && id1 == id2
         case (.invalidRawData(let userInfo1, let id1), .invalidRawData(let userInfo2, let id2)),
-            (.banksNotLoaded(let userInfo1, let id1), .banksNotLoaded(let userInfo2, let id2)):
+             (.banksNotLoaded(let userInfo1, let id1), .banksNotLoaded(let userInfo2, let id2)):
             return userInfo1 == userInfo2 && id1 == id2
         case (.vaultedPaymentMethodAdditionalDataMismatch(let type1, let validType1, let userInfo1, let id1),
               .vaultedPaymentMethodAdditionalDataMismatch(let type2, let validType2, let userInfo2, let id2)):

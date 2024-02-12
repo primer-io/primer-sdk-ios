@@ -20,6 +20,7 @@ public struct Primer3DSErrorInfo {
 }
 
 public enum Primer3DSErrorContainer: PrimerErrorProtocol {
+    // swiftlint:disable:next type_name
     typealias K = AnalyticsContextKeys
 
     case missingSdkDependency(userInfo: [String: String]?, diagnosticsId: String)
@@ -136,10 +137,10 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
     internal var diagnosticsId: String {
         switch self {
         case .missingSdkDependency(_, let diagnosticsId),
-                .invalid3DSSdkVersion(_, let diagnosticsId, _, _),
-                .missing3DSConfiguration(_, let diagnosticsId, _),
-                .primer3DSSdkError(_, _, let diagnosticsId, _, _),
-                .underlyingError(_, let diagnosticsId, _):
+             .invalid3DSSdkVersion(_, let diagnosticsId, _, _),
+             .missing3DSConfiguration(_, let diagnosticsId, _),
+             .primer3DSSdkError(_, _, let diagnosticsId, _, _),
+             .underlyingError(_, let diagnosticsId, _):
             return diagnosticsId
         }
     }
@@ -147,9 +148,9 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
     internal var initProtocolVersion: String? {
         switch self {
         case .missingSdkDependency,
-                .invalid3DSSdkVersion,
-                .missing3DSConfiguration,
-                .underlyingError:
+             .invalid3DSSdkVersion,
+             .missing3DSConfiguration,
+             .underlyingError:
             return nil
         case .primer3DSSdkError(_, _, _, let initProtocolVersion, _):
             return initProtocolVersion

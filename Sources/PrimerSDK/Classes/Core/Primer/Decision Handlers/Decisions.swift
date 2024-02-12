@@ -68,7 +68,7 @@ public extension PrimerResumeDecision {
 }
 
 // MARK: - HUC RESUME DECISION
-
+// swiftlint:disable:next type_name
 @objc public class PrimerHeadlessUniversalCheckoutResumeDecision: NSObject, PrimerResumeDecisionProtocol {
 
     public enum DecisionType: PrimerResumeDecisionTypeProtocol {

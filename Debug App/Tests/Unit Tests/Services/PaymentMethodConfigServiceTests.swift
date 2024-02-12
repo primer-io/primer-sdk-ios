@@ -9,7 +9,7 @@ import XCTest
 @testable import PrimerSDK
 
 class PaymentMethodConfigServiceTests: XCTestCase {
-    
+
     func test_fetchConfig_updates_paymentMethodConfig_and_viewModels() throws {
         let config = PrimerAPIConfiguration(
             coreUrl: "coreUrl",
@@ -31,13 +31,13 @@ class PaymentMethodConfigServiceTests: XCTestCase {
             keys: nil,
             checkoutModules: nil
         )
-        
+
         let state = MockAppState(apiConfiguration: config)
-        
+
         MockLocator.registerDependencies()
         DependencyContainer.register(state as AppStateProtocol)
         Primer.shared.showUniversalCheckout(clientToken: "")
-        
+
         XCTAssertEqual(state.apiConfiguration?.coreUrl, "coreUrl")
     }
 }

@@ -9,7 +9,6 @@
 import XCTest
 @testable import PrimerSDK
 
-
 final class NativeUIManagerTests: XCTestCase {
 
     func testNativeUIManagerWithUninitializedSDK() throws {
@@ -21,7 +20,7 @@ final class NativeUIManagerTests: XCTestCase {
             XCTFail("Unexpected error type. Should be `uninitializedSDKSession`")
         }
     }
-    
+
     func testNativeUIManagerWithNonNativeMethod() throws {
         SDKSessionHelper.setUp()
         do {
@@ -34,12 +33,12 @@ final class NativeUIManagerTests: XCTestCase {
         }
         SDKSessionHelper.tearDown()
     }
-    
+
     func testNativeUIManagerWithNativeMethod() throws {
         let paymentMethod = Mocks.PaymentMethods.klarnaPaymentMethod
-        
+
         SDKSessionHelper.setUp(withPaymentMethods: [paymentMethod])
-        
+
         do {
             let manager = try PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethod.type)
             XCTAssertEqual(manager.paymentMethodType, paymentMethod.type)

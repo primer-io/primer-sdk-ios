@@ -13,11 +13,11 @@ extension Promise {
     static func fulfilled(_ value: T) -> Promise<T> {
         return Promise<T> { $0.fulfill(value) }
     }
-    
+
     static func rejected(_ error: Error) -> Promise<T> {
         return Promise<T> { $0.reject(error) }
     }
-    
+
     func erase() -> Promise<Void> {
         then { _ in
             Promise<Void>.fulfilled(())
