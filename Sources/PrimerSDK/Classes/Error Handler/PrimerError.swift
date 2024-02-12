@@ -369,6 +369,7 @@ public enum PrimerError: PrimerErrorProtocol {
              .failedToProcessPayment(_, _, _, let userInfo, _),
              .invalidVaultedPaymentMethodId(_, let userInfo, _),
              .nolError(_, _, let userInfo, _),
+             .klarnaWrapperError(_, let userInfo, _),
              .unableToPresentApplePay(let userInfo, _),
              .unknown(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }

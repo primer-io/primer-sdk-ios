@@ -210,6 +210,9 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
              .vaultedPaymentMethodAdditionalDataMismatch(_, _, let userInfo, _),
              .invalidPhoneNumberCountryCode(_, let userInfo, _),
              .invalidOTPCode(_, let userInfo, _),
+             .invalidAccountUniqueId(_, let userInfo, _),
+             .invalidAccountRegistrationDate(message: _, let userInfo, _),
+             .invalidAccountLastModified(message: _, let userInfo, _),
              .invalidBankId(_, let userInfo, _),
              .banksNotLoaded(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
