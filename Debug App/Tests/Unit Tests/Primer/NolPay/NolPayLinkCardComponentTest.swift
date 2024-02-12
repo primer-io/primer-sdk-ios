@@ -12,29 +12,29 @@ import XCTest
 import PrimerNolPaySDK
 
 final class NolPayLinkCardComponentTest: XCTestCase {
-    
+
     var sut: NolPayLinkCardComponent!
-    
+
     override func setUp() {
         super.setUp()
         sut = NolPayLinkCardComponent()
     }
-    
+
     override func tearDown() {
         sut = nil
         super.tearDown()
     }
-    
+
     func testUpdateCollectedData_PhoneData_Success() {
         sut.updateCollectedData(collectableData: .phoneData(mobileNumber: "+111123123123123"))
         XCTAssertEqual(sut.mobileNumber, "+111123123123123")
     }
-    
+
     func testUpdateCollectedData_OTPData_Success() {
         sut.updateCollectedData(collectableData: .otpData(otpCode: "123456"))
         XCTAssertEqual(sut.otpCode, "123456")
     }
-    
+
     func testSubmit_CollectPhoneData_MobileNumberNil() {
         sut.nextDataStep = .collectPhoneData(cardNumber: "1234")
         let mockErrorDelegate = MockErrorDelegate()
@@ -66,7 +66,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         sut.start()
         XCTAssertNotNil(mockErrorDelegate.errorReceived)
     }
-        
+
     func testSubmit_CollectPhoneData_NoMobileNumber() {
         let mockErrorDelegate = MockErrorDelegate()
         sut.errorDelegate = mockErrorDelegate
@@ -110,14 +110,14 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         sut.start()
         XCTAssertTrue(mockErrorDelegate.errorReceived is PrimerError)
     }
-    
+
     func testUpdateCollectedDataWithPhoneData() {
         // Given
         let phoneData = NolPayLinkCollectableData.phoneData(mobileNumber: "1234567890")
-        
+
         // When
         sut.updateCollectedData(collectableData: phoneData)
-        
+
         // Then
         let expectedStep = String(describing: NolPayLinkCardStep.collectPhoneData(cardNumber: ""))
         let actualStep = String(describing: sut.nextDataStep)
@@ -127,10 +127,10 @@ final class NolPayLinkCardComponentTest: XCTestCase {
     func testUpdateCollectedDataWithOtpData() {
         // Given
         let otpData = NolPayLinkCollectableData.otpData(otpCode: "123456")
-        
+
         // When
         sut.updateCollectedData(collectableData: otpData)
-        
+
         // Then
         let expectedStep = String(describing: NolPayLinkCardStep.collectOtpData(phoneNumber: ""))
         let actualStep = String(describing: sut.nextDataStep)

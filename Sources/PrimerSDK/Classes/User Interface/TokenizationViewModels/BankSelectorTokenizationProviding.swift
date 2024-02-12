@@ -22,7 +22,7 @@ protocol BankSelectorTokenizationProviding: TokenizationSetupAndCleaning {
     func handlePaymentMethodTokenData() -> Promise<Void>
 }
 
-protocol WebRedirectTokenizationDelegate: TokenizationSetupAndCleaning {
+protocol WebRedirectTokenizationDelegate: TokenizationSetupAndCleaning, AnyObject {
     var didFinishPayment: ((Error?) -> Void)? { get set }
     var didPresentPaymentMethodUI: (() -> Void)? { get set }
     var didDismissPaymentMethodUI: (() -> Void)? { get set }

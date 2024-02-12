@@ -10,11 +10,11 @@ import XCTest
 @testable import PrimerSDK
 
 final class VersionUtilsTests: XCTestCase {
-    
+
     override func tearDown() {
         Primer.shared.integrationOptions = nil
     }
-    
+
     func test_releaseVersionNumber() throws {
         XCTAssertEqual(VersionUtils.releaseVersionNumber, PrimerSDKVersion)
     }

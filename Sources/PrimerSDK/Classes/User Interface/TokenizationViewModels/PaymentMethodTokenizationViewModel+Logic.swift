@@ -475,7 +475,7 @@ extension PaymentMethodTokenizationViewModel {
                 Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
                     if !decisionHandlerHasBeenCalled {
                         let message =
-"""
+                            """
 The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. \
 Make sure you call the decision handler otherwise the SDK will hang.
 """

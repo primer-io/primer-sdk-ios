@@ -19,7 +19,7 @@ class WebViewUtilTests: XCTestCase {
         ]
         XCTAssertTrue(allowedPatterns.allSatisfy { $0 == true })
     }
-    
+
     func test_disallowed_patterns_return_false() throws {
         let allowedPatterns = [
             WebViewUtil.allowedHostsContain("rimer.io"),

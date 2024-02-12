@@ -256,12 +256,12 @@ class ApayaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
         guard let currencyStr = AppState.current.currency?.code else {
             let err = PrimerError.invalidSetting(name: "currency",
-												 value: nil,
-												 userInfo: ["file": #file,
-															"class": "\(Self.self)",
-															"function": #function,
-															"line": "\(#line)"],
-												 diagnosticsId: UUID().uuidString)
+                                                 value: nil,
+                                                 userInfo: ["file": #file,
+                                                            "class": "\(Self.self)",
+                                                            "function": #function,
+                                                            "line": "\(#line)"],
+                                                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(nil, err)
             return

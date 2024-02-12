@@ -162,7 +162,7 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
                     [63],
                     [67],
                     [6]
-                  ],
+                ],
                 gaps: [4, 8, 12],
                 lengths: [16, 17, 18, 19],
                 code: CardNetworkCode(
@@ -193,32 +193,32 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
             return CardNetworkValidation(
                 niceType: "UnionPay",
                 patterns: [
-              [620],
-              [624, 626],
-              [62100, 62182],
-              [62184, 62187],
-              [62185, 62197],
-              [62200, 62205],
-              [622010, 622999],
-              [622018],
-              [622019, 622999],
-              [62207, 62209],
-              [622126, 622925],
-              [623, 626],
-              [6270],
-              [6272],
-              [6276],
-              [627700, 627779],
-              [627781, 627799],
-              [6282, 6289],
-              [6291],
-              [6292],
-              [810],
-              [8110, 8131],
-              [8132, 8151],
-              [8152, 8163],
-              [8164, 8171]
-            ],
+                    [620],
+                    [624, 626],
+                    [62100, 62182],
+                    [62184, 62187],
+                    [62185, 62197],
+                    [62200, 62205],
+                    [622010, 622999],
+                    [622018],
+                    [622019, 622999],
+                    [62207, 62209],
+                    [622126, 622925],
+                    [623, 626],
+                    [6270],
+                    [6272],
+                    [6276],
+                    [627700, 627779],
+                    [627781, 627799],
+                    [6282, 6289],
+                    [6291],
+                    [6292],
+                    [810],
+                    [8110, 8131],
+                    [8132, 8151],
+                    [8152, 8163],
+                    [8164, 8171]
+                ],
                 gaps: [4, 8, 12],
                 lengths: [14, 15, 16, 17, 18, 19],
                 code: CardNetworkCode(
@@ -273,7 +273,7 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
         case .jcb:
             return "A000000065"
         case .diners,
-                .discover:
+             .discover:
             return "A000000152"
         case .unionpay:
             return "A000000333"
@@ -470,18 +470,18 @@ public enum PaymentNetwork: String {
         ]
 
         if #available(iOS 11.2, *) {
-//            @available(iOS 11.2, *)
+            //            @available(iOS 11.2, *)
             supportedNetworks.append(.cartesBancaires)
         } else if #available(iOS 11.0, *) {
-//            @available(iOS, introduced: 11.0, deprecated: 11.2, message: "Use PKPaymentNetworkCartesBancaires instead.")
+            //            @available(iOS, introduced: 11.0, deprecated: 11.2, message: "Use PKPaymentNetworkCartesBancaires instead.")
             supportedNetworks.append(.carteBancaires)
         } else if #available(iOS 10.3, *) {
-//            @available(iOS, introduced: 10.3, deprecated: 11.0, message: "Use PKPaymentNetworkCartesBancaires instead.")
+            //            @available(iOS, introduced: 10.3, deprecated: 11.0, message: "Use PKPaymentNetworkCartesBancaires instead.")
             supportedNetworks.append(.carteBancaire)
         }
 
         if #available(iOS 12.0, *) {
-//            @available(iOS 12.0, *)
+            //            @available(iOS 12.0, *)
             supportedNetworks.append(.eftpos)
             supportedNetworks.append(.electron)
             supportedNetworks.append(.maestro)
@@ -489,30 +489,30 @@ public enum PaymentNetwork: String {
         }
 
         if #available(iOS 12.1.1, *) {
-//            @available(iOS 12.1.1, *)
+            //            @available(iOS 12.1.1, *)
             supportedNetworks.append(.elo)
             supportedNetworks.append(.mada)
         }
 
         if #available(iOS 10.3.1, *) {
-//            @available(iOS 10.3, *)
+            //            @available(iOS 10.3, *)
             supportedNetworks.append(.idCredit)
         }
 
         if #available(iOS 10.1, *) {
-//            @available(iOS 10.1, *)
+            //            @available(iOS 10.1, *)
             supportedNetworks.append(.JCB)
             supportedNetworks.append(.suica)
         }
 
         if #available(iOS 10.3, *) {
-//            @available(iOS 10.3, *)
+            //            @available(iOS 10.3, *)
             supportedNetworks.append(.quicPay)
         }
 
         if #available(iOS 14.0, *) {
-//            @available(iOS 14.0, *)
-//            supportedNetworks.append(.barcode)
+            //            @available(iOS 14.0, *)
+            //            supportedNetworks.append(.barcode)
             supportedNetworks.append(.girocard)
         }
 

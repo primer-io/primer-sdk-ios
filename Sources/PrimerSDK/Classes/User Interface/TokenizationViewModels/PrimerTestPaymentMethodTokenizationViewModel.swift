@@ -7,6 +7,7 @@
 
 import UIKit
 
+// swiftlint:disable:next type_name
 class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     // MARK: - Properties

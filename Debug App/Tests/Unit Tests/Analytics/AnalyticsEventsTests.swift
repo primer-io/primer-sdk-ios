@@ -10,7 +10,7 @@ import XCTest
 @testable import PrimerSDK
 
 final class AnalyticsEventsTests: XCTestCase {
-    
+
     func testUDIDPersistsAcrossEvents() throws {
         let event1 = Analytics.Event.message(
             message: "",
@@ -30,7 +30,7 @@ final class AnalyticsEventsTests: XCTestCase {
             objectClass: nil,
             place: .cardForm
         )
-        
+
         XCTAssertEqual(event1.device.uniqueDeviceIdentifier, event2.device.uniqueDeviceIdentifier)
         XCTAssertEqual(event2.device.uniqueDeviceIdentifier, event3.device.uniqueDeviceIdentifier)
     }

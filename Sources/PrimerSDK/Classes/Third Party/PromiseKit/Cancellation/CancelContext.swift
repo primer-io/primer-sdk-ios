@@ -23,7 +23,7 @@ internal class CancelContext: Hashable {
 
     /**
      Cancel all members of the promise chain and their associated asynchronous operations.
-     
+
      - Parameter error: Specifies the cancellation error to use for the cancel operation, defaults to `PMKError.cancelled`
      */
     internal func cancel(with error: Error = PMKError.cancelled) {
@@ -243,7 +243,7 @@ private class CancelItem: Hashable {
         cancellable?.cancel()
         reject?(error)
 
-       if var visited = visited, let context = context {
+        if var visited = visited, let context = context {
             if !visited.contains(context) {
                 visited.insert(context)
                 context.cancel(with: error, visited: visited)

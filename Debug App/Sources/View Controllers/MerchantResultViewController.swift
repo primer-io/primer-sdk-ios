@@ -10,7 +10,7 @@ import UIKit
 import PrimerSDK
 
 final class MerchantResultViewController: UIViewController {
-    
+
     static func instantiate(
         checkoutData: PrimerCheckoutData?,
         error: Error?,
@@ -22,23 +22,23 @@ final class MerchantResultViewController: UIViewController {
         rvc.logs = logs
         return rvc
     }
-    
+
     var checkoutData: PrimerCheckoutData?
     var error: Error?
     var logs: [String] = []
-    
+
     @IBOutlet weak var responseStatus: UILabel!
-    
+
     @IBOutlet weak var responseStackView: UIStackView!
     @IBOutlet weak var logsTextView: UITextView!
     @IBOutlet weak var responseTextView: UITextView!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         responseStatus.font = .systemFont(ofSize: 17, weight: .medium)
         responseStatus.textColor = .green
-        
+
         if logs.count > 0 {
             if let data = try? JSONSerialization.data(withJSONObject: logs) {
                 if let prettyNSStr = data.prettyPrintedJSONString {

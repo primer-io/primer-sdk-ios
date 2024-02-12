@@ -12,23 +12,23 @@ import XCTest
 import PrimerNolPaySDK
 
 class NolPayLinkedCardsComponentTests: XCTestCase {
-    
+
     func testInitialization() {
         let component = NolPayLinkedCardsComponent()
         XCTAssertNotNil(component)
     }
 
     func testGetLinkedCardsWithValidMobileNumber() {
-        
+
         let paymentMethod = Mocks.PaymentMethods.nolPaymentMethod
         SDKSessionHelper.setUp(withPaymentMethods: [paymentMethod])
-        
+
         let component = NolPayLinkedCardsComponent()
-        
+
         let mockNolPay = MockPrimerNolPay(appId: "123", isDebug: true, isSandbox: true, appSecretHandler: { _, _ in
             return "appSecret"
         })
-        
+
         let mockPhoneMetadataService = MockPhoneMetadataService()
         mockPhoneMetadataService.resultToReturn = .success((.valid, "+123", "1234567890"))
         component.phoneMetadataService = mockPhoneMetadataService
@@ -38,7 +38,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         component.apiClient = mockApiClient
 
         let expectation = self.expectation(description: "Wait for getLinkedCards to return")
-        
+
         component.getLinkedCardsFor(mobileNumber: "1234567890") { result in
             switch result {
             case .success(let cards):
@@ -50,21 +50,21 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
             }
             expectation.fulfill()
         }
-        
+
         waitForExpectations(timeout: 5, handler: nil) // Increased timeout due to potential async start operation
     }
 
     func testGetLinkedCardsFor_WhenSDKNotAvailable() {
         let paymentMethod = Mocks.PaymentMethods.nolPaymentMethod
         SDKSessionHelper.setUp(withPaymentMethods: [paymentMethod])
-        
+
         let component = NolPayLinkedCardsComponent()
-        
+
         let mockNolPay = MockPrimerNolPay(appId: "123", isDebug: true, isSandbox: true, appSecretHandler: { _, _ in
             return "appSecret"
         })
         mockNolPay.mockCards = []
-        
+
         let mockPhoneMetadataService = MockPhoneMetadataService()
         mockPhoneMetadataService.resultToReturn = .success((.valid, "+123", "1234567890"))
         component.phoneMetadataService = mockPhoneMetadataService
@@ -73,12 +73,8 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         mockApiClient.testFetchNolSdkSecretResult = (nil, PrimerError.nolError(code: "", message: "", userInfo: nil, diagnosticsId: ""))
         component.apiClient = mockApiClient
 
-        
-        // Mocking the NolPay to simulate the start completion with failure
-        // Assuming you have a way to mock the failure of start operation
-        
         let expectation = self.expectation(description: "Get Linked Cards For SDK Not Available")
-        
+
         component.getLinkedCardsFor(mobileNumber: "+1234567890") { result in
             switch result {
             case .success:
@@ -92,7 +88,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
             }
             expectation.fulfill()
         }
-        
+
         waitForExpectations(timeout: 5, handler: nil)
     }
 }

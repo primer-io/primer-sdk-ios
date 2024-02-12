@@ -10,7 +10,7 @@ import XCTest
 @testable import PrimerSDK
 
 internal extension DecodedJWTToken {
-    
+
     static func createMock(
         accessToken: String? = "access-token",
         env: String? = "sandbox",
@@ -59,7 +59,7 @@ internal extension DecodedJWTToken {
             nolPayTransactionNo: nolPayTransactionNo)
         return decodedClientToken
     }
-    
+
     func toString() throws -> String {
         let clientTokenSegment0 = "some-data".data(using: .utf8)!.base64EncodedString()
         let encodedClientToken = try JSONEncoder().encode(self)
