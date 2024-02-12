@@ -210,8 +210,7 @@ class MockAnalyticsStorage: Analytics.Storage {
         self.events = events
     }
     
-    func delete(_ eventsToDelete: [Analytics.Event]?) {
-        guard let eventsToDelete = eventsToDelete else { return }
+    func delete(_ eventsToDelete: [Analytics.Event]) {
         let idsToDelete = eventsToDelete.map { $0.localId }
         print(">>>> Delete events (before): \(self.events.count)")
         self.events = self.events.filter { event in
@@ -220,7 +219,11 @@ class MockAnalyticsStorage: Analytics.Storage {
         
         print(">>>> Delete events (after): \(self.events.count)")
     }
-    
+
+    func delete(eventsWithUrl url: URL) {
+        delete(loadEvents().filter { $0.analyticsUrl == url.absoluteString })
+    }
+
     func deleteAnalyticsFile() {
         events = []
     }

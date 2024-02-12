@@ -7,6 +7,15 @@
 
 import Foundation
 
+class AnalyticsScheduler {
+
+    let queue = OperationQueue()
+
+    init() {
+        queue.maxConcurrentOperationCount = 1
+    }
+}
+
 extension Analytics {
 
     internal class Service: LogReporter {
@@ -29,6 +38,8 @@ extension Analytics {
         let storage: Storage
 
         let apiClient: PrimerAPIClientAnalyticsProtocol
+
+        var eventSendFailureCount: UInt = 0
 
         private var isSyncing: Bool = false
 
@@ -53,7 +64,6 @@ extension Analytics {
                 Analytics.queue.async(flags: .barrier) { [weak self] in
                     guard let self = self else { return }
 
-                    self.logger.debug(message: "📚 Analytics: Recording \(events.count) events")
                     let storedEvents: [Analytics.Event] = self.storage.loadEvents()
 
                     let storedEventsIds = storedEvents.compactMap({ $0.localId })
@@ -66,6 +76,8 @@ extension Analytics {
 
                     var combinedEvents: [Analytics.Event] = eventsToAppend.sorted(by: { $0.createdAt > $1.createdAt })
                     combinedEvents.append(contentsOf: storedEvents)
+
+                    self.logger.debug(message: "📚 Analytics: Recording \(events.count) events (new total: \(combinedEvents.count)")
 
                     do {
                         try self.storage.save(combinedEvents)
@@ -115,6 +127,7 @@ extension Analytics {
                 }
                 isSyncing = true
             }
+
             return Promise<Void> { seal in
                 Analytics.queue.async(flags: .barrier) { [weak self] in
                     guard let self = self else { return }
@@ -237,7 +250,7 @@ extension Analytics {
             ) { result in
                 switch result {
                 case .success:
-                    queue.async {
+                    Analytics.queue.async {
                         let urlString = url.absoluteString
                         self.storage.delete(events)
                         let message = "📚 Analytics: Finished sending \(events.count) events on URL: \(urlString). Deleted \(events.count) sent events from store"
@@ -245,15 +258,35 @@ extension Analytics {
                         completion(nil)
                     }
                 case .failure(let err):
-                    queue.async {
+                    Analytics.queue.async {
+                        // Log failure
                         let urlString = url.absoluteString
                         let count = events.count
                         let message = "📚 Analytics: Failed to send \(count) events on URL \(urlString) with error \(err)"
                         self.logger.error(message: message)
+
+                        // Handle error
                         ErrorHandler.handle(error: err)
-                        completion(err)
+                        self.handleFailedEvents(forUrl: url) {
+                            completion(err)
+                        }
                     }
                 }
+            }
+        }
+
+        private func handleFailedEvents(forUrl url: URL, completion: @escaping () -> Void) {
+            Analytics.queue.async { [weak self] in
+                guard let self = self else { return }
+                self.eventSendFailureCount += 1
+                if eventSendFailureCount >= 3 {
+                    logger.error(message: "Failed to send events three or more times. Deleting analytics file ...")
+                    storage.deleteAnalyticsFile()
+                    eventSendFailureCount = 0
+                } else {
+                    self.storage.delete(eventsWithUrl: url)
+                }
+                completion()
             }
         }
 
