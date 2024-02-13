@@ -88,6 +88,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             .done { apiConfiguration in
                 PrimerAPIConfigurationModule.clientToken = clientToken
                 PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
+                self.reportAllowedCardNetworks()
                 seal.fulfill()
             }
             .catch { err in
@@ -294,5 +295,15 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             return self.fetchConfiguration(requestDisplayMetadata: requestDisplayMetadata)
         }
 
+    }
+    
+    private func reportAllowedCardNetworks() {
+        let networksDescription = [CardNetwork].allowedCardNetworks.map { $0.rawValue }.joined(separator: ", ")
+        let event = Analytics.Event.message(
+            message: "Merchant supported networks: \(networksDescription)",
+            messageType: .other,
+            severity: .info
+        )
+        Analytics.Service.record(event: event)
     }
 }

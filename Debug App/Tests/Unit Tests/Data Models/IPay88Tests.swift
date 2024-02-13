@@ -62,6 +62,7 @@ class IPay88Tests: XCTestCase {
         AppState.current.apiConfiguration = PrimerAPIConfiguration(
             coreUrl: decodedClientToken.coreUrl,
             pciUrl: decodedClientToken.pciUrl,
+            binDataUrl: "https://primer.io/bindata",
             assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: ClientSession.APIResponse(
                 clientSessionId: "client-session-id",
@@ -117,6 +118,7 @@ class IPay88Tests: XCTestCase {
         AppState.current.apiConfiguration = PrimerAPIConfiguration(
             coreUrl: decodedClientToken.coreUrl,
             pciUrl: decodedClientToken.pciUrl,
+            binDataUrl: "https://primer.io/bindata",
             assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: ClientSession.APIResponse(
                 clientSessionId: "client-session-id",
