@@ -42,33 +42,13 @@ public class KlarnaPaymentSessionAuthorizationComponent: PrimerHeadlessAnalytics
 
 // MARK: - Authorization
 public extension KlarnaPaymentSessionAuthorizationComponent {
-    func authorizeSession(
-        autoFinalize: Bool = true,
-        jsonData: String? = nil
-    ) {
-        self.recordEvent(
-            type: .sdkEvent,
-            name: KlarnaAnalyticsEvents.AUTHORIZE_SESSION_METHOD,
-            params: [
-                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
-                KlarnaAnalyticsEvents.AUTO_FINALIZE_KEY: "\(autoFinalize)",
-                KlarnaAnalyticsEvents.JSON_DATA_KEY: jsonData ?? KlarnaAnalyticsEvents.JSON_DATA_DEFAULT_VALUE
-            ]
-        )
-        
+    func authorizeSession(autoFinalize: Bool = true, jsonData: String? = nil) {
+        recordAuthorizeEvent(name: KlarnaAnalyticsEvents.AUTHORIZE_SESSION_METHOD, autoFinalize: autoFinalize, jsonData: jsonData)
         self.klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: jsonData)
     }
     
     func reauthorizeSession(jsonData: String? = nil) {
-        self.recordEvent(
-            type: .sdkEvent,
-            name: KlarnaAnalyticsEvents.REAUTHORIZE_SESSION_METHOD,
-            params: [
-                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
-                KlarnaAnalyticsEvents.JSON_DATA_KEY: jsonData ?? KlarnaAnalyticsEvents.JSON_DATA_DEFAULT_VALUE
-            ]
-        )
-        
+        recordAuthorizeEvent(name: KlarnaAnalyticsEvents.REAUTHORIZE_SESSION_METHOD, jsonData: jsonData)
         self.klarnaProvider?.reauthorize(jsonData: jsonData)
     }
 }
@@ -135,3 +115,23 @@ extension KlarnaPaymentSessionAuthorizationComponent: PrimerKlarnaProviderAuthor
     }
 }
 #endif
+
+// MARK: - Helpers
+private extension KlarnaPaymentSessionAuthorizationComponent {
+    private func recordAuthorizeEvent(name: String, autoFinalize: Bool? = nil, jsonData: String?) {
+        var params = [
+            KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
+            KlarnaAnalyticsEvents.JSON_DATA_KEY: jsonData ?? KlarnaAnalyticsEvents.JSON_DATA_DEFAULT_VALUE
+        ]
+        
+        if let autoFinalize {
+            params[KlarnaAnalyticsEvents.AUTO_FINALIZE_KEY] = "\(autoFinalize)"
+        }
+        
+        recordEvent(
+            type: .sdkEvent,
+            name: name,
+            params: params
+        )
+    }
+}

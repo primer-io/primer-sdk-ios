@@ -39,13 +39,7 @@ public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessAnalyticsRecor
 // MARK: - Start
 public extension KlarnaPaymentSessionCreationComponent {
     func start() {
-        self.recordEvent(
-            type: .sdkEvent,
-            name: KlarnaAnalyticsEvents.CREATE_SESSION_START_METHOD,
-            params: [
-                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
-            ]
-        )
+        recordCreationEvent()
         
         firstly {
             tokenizationComponent.createPaymentSession()
@@ -106,12 +100,13 @@ private extension KlarnaPaymentSessionCreationComponent {
 
 // MARK: - Helpers
 private extension KlarnaPaymentSessionCreationComponent {
-    func getValidationErrorUserInfo(line: String) -> [String: String] {
-        return [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": line
-        ]
+    private func recordCreationEvent() {
+        recordEvent(
+            type: .sdkEvent,
+            name: KlarnaAnalyticsEvents.CREATE_SESSION_START_METHOD,
+            params: [
+                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
+            ]
+        )
     }
 }
