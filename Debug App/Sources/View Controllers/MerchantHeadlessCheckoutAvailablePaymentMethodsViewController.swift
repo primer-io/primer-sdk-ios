@@ -71,8 +71,6 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
             // Default to Checkout
             sessionIntent = .checkout
         }
-        
-        PrimerHeadlessUniversalCheckout.current.setupPaymentIntent(sessionIntent)
     }
 
     // MARK: - HELPERS
@@ -146,7 +144,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
 #endif
         case "KLARNA":
 #if canImport(PrimerKlarnaSDK)
-            let vc = MerchantHeadlessCheckoutKlarnaViewController()
+            let vc = MerchantHeadlessCheckoutKlarnaViewController(sessionIntent: sessionIntent)
             self.navigationController?.pushViewController(vc, animated: true)
 #else
             break

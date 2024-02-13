@@ -41,6 +41,8 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     var registrationFieldActive: Bool = false
     let paymentMethodType: String = "KLARNA"
     
+    private var sessionIntent: PrimerSessionIntent = .checkout
+    
     var accountRegistrationDate: Date = Date() {
         didSet {
             customerAccountRegistrationTextField.text = getDateString(date: accountRegistrationDate)
@@ -62,6 +64,15 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     // MARK: - Klarna Manager
     private(set) var klarnaManager: PrimerHeadlessUniversalCheckout.KlarnaHeadlessManager!
     
+    init(sessionIntent: PrimerSessionIntent) {
+        self.sessionIntent = sessionIntent
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -70,7 +81,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
         setupLayout()
         setupCustomerDetails(visible: false)
         
-        klarnaManager = PrimerHeadlessUniversalCheckout.KlarnaHeadlessManager(paymentMethodType: paymentMethodType)
+        klarnaManager = PrimerHeadlessUniversalCheckout.KlarnaHeadlessManager(paymentMethodType: paymentMethodType, intent: sessionIntent)
         klarnaManager.setDelegate(self)
         
         setupKlarnaSessionCreationDelegates()

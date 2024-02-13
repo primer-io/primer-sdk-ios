@@ -37,7 +37,7 @@ extension PrimerHeadlessUniversalCheckout {
         var viewHandlingComponent: KlarnaPaymentViewHandlingComponent?
         
         // MARK: - Init
-        public init(paymentMethodType: String) {
+        public init(paymentMethodType: String, intent: PrimerSessionIntent) {
             super.init()
             
             guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?.first(where: { $0.type == paymentMethodType }) else {
@@ -47,6 +47,20 @@ extension PrimerHeadlessUniversalCheckout {
                 ErrorHandler.handle(error: err)
                 return
             }
+            
+            if (intent == .vault && !paymentMethod.isVaultingEnabled) ||
+                (intent == .checkout && !paymentMethod.isCheckoutEnabled) {
+                let err = PrimerError.unsupportedIntent(intent: intent,
+                                                        userInfo: ["file": #file,
+                                                                   "class": "\(Self.self)",
+                                                                   "function": #function,
+                                                                   "line": "\(#line)"],
+                                                        diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                return
+            }
+            
+            PrimerInternal.shared.intent = intent
             
             let tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: paymentMethod)
             self.tokenizationComponent = tokenizationComponent
