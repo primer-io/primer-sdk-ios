@@ -12,17 +12,8 @@ import PrimerKlarnaSDK
 extension PrimerHeadlessUniversalCheckout {
     
     public class KlarnaHeadlessManager: NSObject, PrimerKlarnaProviderErrorDelegate {
-        /// Responsible for performing operations related to Klarna's payment process.
-        private var klarnaProvider: PrimerKlarnaProviding?
         
-        /// A component that handles the tokenization process required for Klarna payments.
-        private var tokenizationComponent: KlarnaTokenizationComponentProtocol?
-        
-        /// Global settings for the payment process, injected as a dependency.
-        private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        /// A delegate to handle errors that may occur during the payment process, involving KlarnaHeadlessManager logic.
-        public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
+        // MARK: - Session components
         
         /// Component responsible for managing session creation stages of the Klarna payment session.
         var sessionCreationComponent: KlarnaPaymentSessionCreationComponent?
@@ -35,6 +26,22 @@ extension PrimerHeadlessUniversalCheckout {
         
         /// Component responsible for managing klarna view stages of the Klarna payment session.
         var viewHandlingComponent: KlarnaPaymentViewHandlingComponent?
+        
+        // MARK: - Manager properties
+        
+        /// A component that handles the tokenization process required for Klarna payments.
+        private var tokenizationComponent: KlarnaTokenizationComponentProtocol?
+        
+        /// Global settings for the payment process, injected as a dependency.
+        private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        /// A delegate to handle errors that may occur during the payment process, involving KlarnaHeadlessManager logic.
+        public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
+        
+        // MARK: - Klarna properties
+        
+        /// Responsible for performing operations related to Klarna's payment process.
+        private var klarnaProvider: PrimerKlarnaProviding?
         
         // MARK: - Init
         public init(paymentMethodType: String, intent: PrimerSessionIntent) {
