@@ -63,7 +63,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     var isEnabled: Bool {
         switch self {
         case .goCardless,
-                .googlePay:
+             .googlePay:
             return false
         default:
             return true
@@ -73,74 +73,74 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     var provider: String {
         switch self {
         case .adyenAlipay,
-                .adyenBlik,
-                .adyenBancontactCard,
-                .adyenDotPay,
-                .adyenGiropay,
-                .adyenIDeal,
-                .adyenInterac,
-                .adyenMobilePay,
-                .adyenMBWay,
-                .adyenMultibanco,
-                .adyenPayTrail,
-                .adyenSofort,
-                .adyenPayshop,
-                .adyenTrustly,
-                .adyenTwint,
-                .adyenVipps:
+             .adyenBlik,
+             .adyenBancontactCard,
+             .adyenDotPay,
+             .adyenGiropay,
+             .adyenIDeal,
+             .adyenInterac,
+             .adyenMobilePay,
+             .adyenMBWay,
+             .adyenMultibanco,
+             .adyenPayTrail,
+             .adyenSofort,
+             .adyenPayshop,
+             .adyenTrustly,
+             .adyenTwint,
+             .adyenVipps:
             return "ADYEN"
 
         case .apaya,
-                .applePay,
-                .atome,
-                .coinbase,
-                .goCardless,
-                .googlePay,
-                .hoolah,
-                .klarna,
-                .opennode,
-                .paymentCard,
-                .payPal,
-                .twoCtwoP:
+             .applePay,
+             .atome,
+             .coinbase,
+             .goCardless,
+             .googlePay,
+             .hoolah,
+             .klarna,
+             .opennode,
+             .paymentCard,
+             .payPal,
+             .twoCtwoP:
             return rawValue
 
         case .buckarooBancontact,
-                .buckarooEps,
-                .buckarooGiropay,
-                .buckarooIdeal,
-                .buckarooSofort:
+             .buckarooEps,
+             .buckarooGiropay,
+             .buckarooIdeal,
+             .buckarooSofort:
             return "BUCKAROO"
 
         case .iPay88Card:
             return "IPAY88"
 
         case .mollieBankcontact,
-                .mollieIdeal:
+             .mollieIdeal:
             return "MOLLIE"
 
         case .payNLBancontact,
-                .payNLGiropay,
-                .payNLIdeal,
-                .payNLPayconiq:
+             .payNLGiropay,
+             .payNLIdeal,
+             .payNLPayconiq:
             return "PAY_NL"
 
         case .primerTestKlarna,
-                .primerTestPayPal,
-                .primerTestSofort:
+             .primerTestPayPal,
+             .primerTestSofort:
             return "PRIMER_TEST"
 
         case .rapydFast,
-                .rapydGCash,
-                .rapydGrabPay,
-                .rapydPoli,
-                .rapydPromptPay:
+             .rapydGCash,
+             .rapydGrabPay,
+             .rapydPoli,
+             .rapydPromptPay:
             return "RAPYD"
 
         case .omisePromptPay:
             return "OMISE"
 
         case .xenditOvo,
-                .xenditRetailOutlets:
+             .xenditRetailOutlets:
             return "XENDIT"
 
         case .xfersPayNow:

@@ -8,9 +8,9 @@
 @testable import PrimerSDK
 
 class MockPayPalService: PayPalServiceProtocol {
-    
+
     static var apiClient: PrimerAPIClientProtocol?
-    
+
     var confirmBillingAgreementCalled = false
 
     func confirmBillingAgreement(_ completion: @escaping (Result<Response.Body.PayPal.ConfirmBillingAgreement, Error>) -> Void) {
@@ -31,8 +31,8 @@ class MockPayPalService: PayPalServiceProtocol {
         let res = Response.Body.PayPal.CreateOrder(orderId: "oid", approvalUrl: "https://primer.io")
         completion(.success(res))
     }
-    
+
     func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void) {
-        
+
     }
 }

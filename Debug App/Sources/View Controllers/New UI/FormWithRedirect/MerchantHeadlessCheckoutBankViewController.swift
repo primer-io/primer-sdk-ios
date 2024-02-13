@@ -65,7 +65,7 @@ final class MerchantHeadlessCheckoutBankViewController: UIViewController {
 }
 
 // MARK: - PrimerHeadlessErrorableDelegate, PrimerHeadlessValidatableDelegate, PrimerHeadlessStepableDelegate
-extension MerchantHeadlessCheckoutBankViewController:   PrimerHeadlessErrorableDelegate,
+extension MerchantHeadlessCheckoutBankViewController: PrimerHeadlessErrorableDelegate,
                                                         PrimerHeadlessValidatableDelegate,
                                                         PrimerHeadlessSteppableDelegate {
 
@@ -76,7 +76,7 @@ extension MerchantHeadlessCheckoutBankViewController:   PrimerHeadlessErrorableD
         case .valid:
             if let data = data as? BanksCollectableData {
                 switch data {
-                case .bankId(bankId: _):
+                case .bankId:
                     bankComponent?.submit()
                 default:
                     break
@@ -110,7 +110,6 @@ extension MerchantHeadlessCheckoutBankViewController:   PrimerHeadlessErrorableD
         }
     }
 }
-
 
 private extension MerchantHeadlessCheckoutBankViewController {
     private func showLoadingOverlay() {

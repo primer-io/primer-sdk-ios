@@ -10,11 +10,11 @@ import XCTest
 @testable import PrimerSDK
 
 extension AnalyticsTests {
-    
+
     func corruptAnalyticsFileData() -> Promise<Void> {
         return Promise { seal in
             let randomStr = "random-string"
-            
+
             do {
                 let eventsData = randomStr.data(using: .utf8)!
                 try eventsData.write(to: storage.fileURL)
@@ -25,7 +25,7 @@ extension AnalyticsTests {
             }
         }
     }
-    
+
     func createEvents() -> Promise<[Analytics.Event]> {
         return Promise { seal in
             let events = [
@@ -82,17 +82,17 @@ extension AnalyticsTests {
                     ]
                 )
             ]
-            
+
             seal.fulfill(events)
         }
     }
-    
+
     func createAnalyticsEvents(deletePreviousEvents: Bool) -> Promise<[Analytics.Event]> {
         return Promise { seal in
             if deletePreviousEvents {
                 self.deleteAnalyticsFileSynchonously()
             }
-            
+
             firstly {
                 return Analytics.Service.record(events: self.newEvents)
             }
@@ -104,7 +104,7 @@ extension AnalyticsTests {
             }
         }
     }
-    
+
     func createDemoClientSessionAndSetAppState() -> Promise<String> {
         return Promise { seal in
             Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
@@ -117,10 +117,10 @@ extension AnalyticsTests {
             }
         }
     }
-    
+
     func createEvents(_ numberOfEvents: UInt, withMessage message: String?) -> [Analytics.Event] {
         var events: [Analytics.Event] =  []
-        
+
         for i in 0..<numberOfEvents {
             let e = Analytics.Event.message(
                 message: "\(message ?? "A message") [\(i)]",
@@ -129,10 +129,10 @@ extension AnalyticsTests {
             )
             events.append(e)
         }
-        
+
         return events
     }
-    
+
     func writeEvents(_ events: [Analytics.Event], fromQueue queue: DispatchQueue, completion: @escaping (() -> Void)) {
         queue.async {
             _ = firstly {
@@ -143,24 +143,24 @@ extension AnalyticsTests {
             }
         }
     }
-    
+
     func createMockAnalyticsFile() {
         do {
             let eventsData = AnalyticsTestsConstants.analyticsEvents.data(using: .utf8)!
             try eventsData.write(to: storage.fileURL)
-            
+
         } catch {
             XCTFail("Failed to create analytics file for RC3 - error message: \(error.localizedDescription)")
         }
     }
-    
+
     func deleteAnalyticsFile(fromQueue queue: DispatchQueue, completion: @escaping (() -> Void)) {
         queue.async {
             self.deleteAnalyticsFileSynchonously()
             completion()
         }
     }
-    
+
     func syncAnalyticsFile(fromQueue queue: DispatchQueue, completion: @escaping (() -> Void)) {
         queue.async {
             firstly {
@@ -174,21 +174,21 @@ extension AnalyticsTests {
             }
         }
     }
-    
+
     func cleanUpAnalytics() {
         self.deleteAnalyticsFileSynchonously()
         let storedEvents = storage.loadEvents()
         XCTAssert(storedEvents.count == 0, "Analytics events should be empty")
     }
-    
+
     func deleteAnalyticsFileSynchonously() {
         Analytics.Service.clear()
     }
-    
+
     var storage: Analytics.DefaultStorage {
         return _storage
     }
-    
+
     func recreateService() {
         Analytics.Service.shared = {
             Analytics.Service(sdkLogsUrl: Analytics.Service.defaultSdkLogsUrl,
@@ -199,4 +199,4 @@ extension AnalyticsTests {
     }
 }
 
-fileprivate let _storage = Analytics.DefaultStorage()
+private let _storage = Analytics.DefaultStorage()

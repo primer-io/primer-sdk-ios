@@ -22,6 +22,7 @@ extension Request.Body.Xendit {
     }
 }
 
+// swiftlint:disable:next type_name
 internal struct RetailOutletTokenizationSessionRequestParameters: OffSessionPaymentSessionInfo {
     let locale: String = PrimerSettings.current.localeData.localeCode
     let platform: String = "IOS"

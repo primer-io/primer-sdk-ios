@@ -244,7 +244,7 @@ extension QRCodeTokenizationViewModel {
     private func evaluateFireDidReceiveAdditionalInfoEvent() -> Promise<Void> {
         return Promise { seal in
 
-            /// There is no need to check whether the Headless is implemented as the unsupported payment methods 
+            /// There is no need to check whether the Headless is implemented as the unsupported payment methods
             /// will be listed into PrimerHeadlessUniversalCheckout's private constant `unsupportedPaymentMethodTypes`
             /// Xfers is among them so it won't be loaded
             ///
@@ -258,11 +258,12 @@ extension QRCodeTokenizationViewModel {
                 return
             }
 
+            // swiftlint:disable:next identifier_name
             let isHeadlessDidReceiveAdditionalInfoImplemented = PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo != nil
 
             guard isHeadlessDidReceiveAdditionalInfoImplemented else {
                 let message =
-"""
+                    """
 Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)' hasn't been implemented. \
 No events will be sent to your delegate instance.
 """
@@ -278,7 +279,7 @@ No events will be sent to your delegate instance.
             }
 
             /// We don't want to put a lot of conditions for already unhandled payment methods
-            /// So we'll fulFill the promise directly, leaving the rest of the logic as clean as possible 
+            /// So we'll fulFill the promise directly, leaving the rest of the logic as clean as possible
             /// to proceed with almost only happy path
 
             guard self.config.type != PrimerPaymentMethodType.xfersPayNow.rawValue else {
@@ -290,7 +291,7 @@ No events will be sent to your delegate instance.
 
             switch self.config.type {
             case PrimerPaymentMethodType.rapydPromptPay.rawValue,
-                PrimerPaymentMethodType.omisePromptPay.rawValue:
+                 PrimerPaymentMethodType.omisePromptPay.rawValue:
 
                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                     let err = PrimerError.invalidClientToken(userInfo: ["file": #file,

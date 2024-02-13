@@ -12,7 +12,7 @@ import UIKit
 // MARK: - HELPERS
 
 extension UIViewController {
-    
+
     func keyboardWillShow(notification: NSNotification) {
         let height = UIScreen.main.bounds.height - view.frame.height
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {

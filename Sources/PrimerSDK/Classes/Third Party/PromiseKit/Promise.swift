@@ -13,30 +13,30 @@ internal final class Promise<T>: Thenable, CatchMixin {
     }
 
     /**
-      Initialize a new fulfilled promise.
+     Initialize a new fulfilled promise.
 
-      We do not provide `init(value:)` because Swift is “greedy”
-      and would pick that initializer in cases where it should pick
-      one of the other more specific options leading to Promises with
-      `T` that is eg: `Error` or worse `(T->Void,Error->Void)` for
-      uses of our PMK < 4 pending initializer due to Swift trailing
-      closure syntax (nothing good comes without pain!).
+     We do not provide `init(value:)` because Swift is “greedy”
+     and would pick that initializer in cases where it should pick
+     one of the other more specific options leading to Promises with
+     `T` that is eg: `Error` or worse `(T->Void,Error->Void)` for
+     uses of our PMK < 4 pending initializer due to Swift trailing
+     closure syntax (nothing good comes without pain!).
 
-      Though often easy to detect, sometimes these issues would be
-      hidden by other type inference leading to some nasty bugs in
-      production.
+     Though often easy to detect, sometimes these issues would be
+     hidden by other type inference leading to some nasty bugs in
+     production.
 
-      In PMK5 we tried to work around this by making the pending
-      initializer take the form `Promise(.pending)` but this led to
-      bad migration errors for PMK4 users. Hence instead we quickly
-      released PMK6 and now only provide this initializer for making
-      sealed & fulfilled promises.
+     In PMK5 we tried to work around this by making the pending
+     initializer take the form `Promise(.pending)` but this led to
+     bad migration errors for PMK4 users. Hence instead we quickly
+     released PMK6 and now only provide this initializer for making
+     sealed & fulfilled promises.
 
-      Usage is still (usually) good:
+     Usage is still (usually) good:
 
-          guard foo else {
-              return .value(bar)
-          }
+     guard foo else {
+     return .value(bar)
+     }
      */
     internal class func value(_ value: T) -> Promise<T> {
         return Promise(box: SealedBox(value: .success(value)))
@@ -162,18 +162,18 @@ internal extension DispatchQueue {
     /**
      Asynchronously executes the provided closure on a dispatch queue, yielding a `Promise`.
 
-         DispatchQueue.global().async(.promise) {
-             try md5(input)
-         }.done { md5 in
-             //…
-         }
+     DispatchQueue.global().async(.promise) {
+     try md5(input)
+     }.done { md5 in
+     //…
+     }
 
      - Parameters:
-       - _: Must be `.promise` to distinguish from standard `DispatchQueue.async`
-       - group: A `DispatchGroup`, as for standard `DispatchQueue.async`
-       - qos: A quality-of-service grade, as for standard `DispatchQueue.async`
-       - flags: Work item flags, as for standard `DispatchQueue.async`
-       - body: A closure that yields a value to resolve the promise.
+     - _: Must be `.promise` to distinguish from standard `DispatchQueue.async`
+     - group: A `DispatchGroup`, as for standard `DispatchQueue.async`
+     - qos: A quality-of-service grade, as for standard `DispatchQueue.async`
+     - flags: Work item flags, as for standard `DispatchQueue.async`
+     - body: A closure that yields a value to resolve the promise.
      - Returns: A new `Promise` resolved by the result of the provided closure.
      */
     @available(macOS 10.10, iOS 8.0, tvOS 9.0, watchOS 2.0, *)
@@ -195,11 +195,11 @@ internal extension Dispatcher {
      Executes the provided closure on a `Dispatcher`, yielding a `Promise`
      that represents the value ultimately returned by the closure.
 
-         dispatcher.dispatch {
-            try md5(input)
-         }.done { md5 in
-            //…
-         }
+     dispatcher.dispatch {
+     try md5(input)
+     }.done { md5 in
+     //…
+     }
 
      - Parameter body: A closure that yields a value to resolve the promise.
      - Returns: A new `Promise` resolved by the result of the provided closure.

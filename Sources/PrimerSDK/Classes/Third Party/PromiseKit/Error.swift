@@ -8,7 +8,7 @@ internal enum PMKError: Error {
     case invalidCallingConvention
 
     /**
-     A handler returned its own promise. 99% of the time, this is likely a 
+     A handler returned its own promise. 99% of the time, this is likely a
      programming error. It is also invalid per Promises/A+.
      */
     case returnedSelf
@@ -95,11 +95,11 @@ extension Error {
             return true
         } catch let error as NSError {
             #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-                let domain = error.domain
-                let code = error.code
-                return ("SKErrorDomain", 2) == (domain, code)
+            let domain = error.domain
+            let code = error.code
+            return ("SKErrorDomain", 2) == (domain, code)
             #else
-                return false
+            return false
             #endif
         } catch {
             return false

@@ -63,10 +63,10 @@ struct BanksListView: View {
             } label: {
                 HStack(spacing: metrics.hStackSpacing) {
                     HStack {
-                            if let imageUrlString = bank.iconUrl,
-                               let imageUrl = URL(string: imageUrlString) {
-                                image(url: imageUrl)
-                            }
+                        if let imageUrlString = bank.iconUrl,
+                           let imageUrl = URL(string: imageUrlString) {
+                            image(url: imageUrl)
+                        }
                         Text(bank.name)
                     }
                     Spacer()
@@ -95,7 +95,7 @@ struct BanksListView: View {
                     .aspectRatio(contentMode: .fill)
                     .frame(width: metrics.imageSize.width, height: metrics.imageSize.height)
             }
-          )
+        )
     }
 }
 
@@ -167,9 +167,8 @@ struct BanksListView_Previews: PreviewProvider {
     }
 }
 
-
 extension View {
-   @ViewBuilder func addAccessibilityIdentifier(identifier: String) -> some View {
+    @ViewBuilder func addAccessibilityIdentifier(identifier: String) -> some View {
         if #available(iOS 14.0, *) {
             accessibilityIdentifier(identifier)
         } else {

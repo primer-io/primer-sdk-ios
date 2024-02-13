@@ -247,6 +247,7 @@ extension Analytics {
             }
         }
 
+        // swiftlint:disable:next nesting
         struct Response: Decodable {
             let id: String?
             let result: String?
