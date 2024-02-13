@@ -26,96 +26,77 @@ public class KlarnaPaymentViewHandlingComponent: PrimerHeadlessAnalyticsRecordab
     
     // MARK: - Set
     func setProvider(provider: PrimerKlarnaProviding?) {
-        self.klarnaProvider = provider
-        self.klarnaProvider?.paymentViewDelegate = self
+        klarnaProvider = provider
+        klarnaProvider?.paymentViewDelegate = self
     }
 }
 
 // MARK: - Payment view
 public extension KlarnaPaymentViewHandlingComponent {
     func createPaymentView() -> UIView? {
-        self.recordEvent(
-            type: .sdkEvent,
-            name: KlarnaAnalyticsEvents.CREATE_PAYMENT_VIEW_METHOD,
-            params: [
-                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE
-            ]
-        )
+        recordPaymentViewEvent(name: KlarnaAnalyticsEvents.CREATE_PAYMENT_VIEW_METHOD)
+        klarnaProvider?.createPaymentView()
         
-        self.klarnaProvider?.createPaymentView()
-        
-        return self.klarnaProvider?.paymentView
+        return klarnaProvider?.paymentView
     }
     
     func removePaymentView() {
-        self.recordEvent(
-            type: .sdkEvent,
-            name: KlarnaAnalyticsEvents.REMOVE_PAYMENT_VIEW_METHOD,
-            params: [
-                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE
-            ]
-        )
-        
-        self.klarnaProvider?.removePaymentView()
+        recordPaymentViewEvent(name: KlarnaAnalyticsEvents.REMOVE_PAYMENT_VIEW_METHOD)
+        klarnaProvider?.removePaymentView()
     }
     
     func initPaymentView() {
-        self.recordEvent(
-            type: .sdkEvent,
-            name: KlarnaAnalyticsEvents.INIT_PAYMENT_VIEW_METHOD,
-            params: [
-                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE
-            ]
-        )
-        
-        self.klarnaProvider?.initializePaymentView()
+        recordPaymentViewEvent(name: KlarnaAnalyticsEvents.INIT_PAYMENT_VIEW_METHOD)
+        klarnaProvider?.initializePaymentView()
     }
     
     func loadPaymentView(jsonData: String? = nil) {
-        self.recordEvent(
-            type: .sdkEvent,
-            name: KlarnaAnalyticsEvents.LOAD_PAYMENT_VIEW_METHOD,
-            params: [
-                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
-                KlarnaAnalyticsEvents.JSON_DATA_KEY: jsonData ?? KlarnaAnalyticsEvents.JSON_DATA_DEFAULT_VALUE
-            ]
-        )
-        
-        self.klarnaProvider?.loadPaymentView(jsonData: jsonData)
+        recordPaymentViewEvent(name: KlarnaAnalyticsEvents.LOAD_PAYMENT_VIEW_METHOD, jsonData: jsonData ?? KlarnaAnalyticsEvents.JSON_DATA_DEFAULT_VALUE)
+        klarnaProvider?.loadPaymentView(jsonData: jsonData)
     }
 }
 
 // MARK: - Payment review
 public extension KlarnaPaymentViewHandlingComponent {
     func loadPaymentReview() {
-        self.recordEvent(
-            type: .sdkEvent,
-            name: KlarnaAnalyticsEvents.LOAD_PAYMENT_VIEW_METHOD,
-            params: [
-                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE
-            ]
-        )
-        
-        self.klarnaProvider?.loadPaymentReview()
+        recordPaymentViewEvent(name: KlarnaAnalyticsEvents.LOAD_PAYMENT_REVIEW_METHOD)
+        klarnaProvider?.loadPaymentReview()
     }
 }
 
 // MARK: - PrimerKlarnaProviderPaymentViewDelegate
 extension KlarnaPaymentViewHandlingComponent: PrimerKlarnaProviderPaymentViewDelegate {
     public func primerKlarnaWrapperInitialized() {
-        self.stepDelegate?.didReceiveStep(step: KlarnaPaymentViewHandling.viewInitialized)
+        stepDelegate?.didReceiveStep(step: KlarnaPaymentViewHandling.viewInitialized)
     }
     
     public func primerKlarnaWrapperResized(to newHeight: CGFloat) {
-        self.stepDelegate?.didReceiveStep(step: KlarnaPaymentViewHandling.viewResized(height: newHeight))
+        stepDelegate?.didReceiveStep(step: KlarnaPaymentViewHandling.viewResized(height: newHeight))
     }
     
     public func primerKlarnaWrapperLoaded() {
-        self.stepDelegate?.didReceiveStep(step: KlarnaPaymentViewHandling.viewLoaded)
+        stepDelegate?.didReceiveStep(step: KlarnaPaymentViewHandling.viewLoaded)
     }
     
     public func primerKlarnaWrapperReviewLoaded() {
-        self.stepDelegate?.didReceiveStep(step: KlarnaPaymentViewHandling.reviewLoaded)
+        stepDelegate?.didReceiveStep(step: KlarnaPaymentViewHandling.reviewLoaded)
+    }
+}
+
+// MARK: - Helpers
+extension KlarnaPaymentViewHandlingComponent {
+    private func recordPaymentViewEvent(name: String, jsonData: String? = nil) {
+        var params = [KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE]
+        
+        if let jsonData {
+            params[KlarnaAnalyticsEvents.JSON_DATA_KEY] = jsonData
+        }
+        
+        recordEvent(
+            type: .sdkEvent,
+            name: name,
+            params: params
+        )
     }
 }
 #endif

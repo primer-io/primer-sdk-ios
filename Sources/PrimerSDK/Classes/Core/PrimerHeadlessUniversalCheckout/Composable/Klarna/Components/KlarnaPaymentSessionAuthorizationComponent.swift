@@ -42,7 +42,7 @@ public class KlarnaPaymentSessionAuthorizationComponent: PrimerHeadlessAnalytics
 
 // MARK: - Authorization
 public extension KlarnaPaymentSessionAuthorizationComponent {
-    func authorizeSession(autoFinalize: Bool = true, jsonData: String? = nil) {
+    func authorizeSession(autoFinalize: Bool, jsonData: String? = nil) {
         recordAuthorizeEvent(name: KlarnaAnalyticsEvents.AUTHORIZE_SESSION_METHOD, autoFinalize: autoFinalize, jsonData: jsonData)
         self.klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: jsonData)
     }
