@@ -104,17 +104,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
     }
     
     @objc func customerCheckoutButtonTapped(_ sender: UIButton) {
-        let accountId = customerAccountIdTextField.text ?? ""
-        let registrationDate = customerAccountRegistrationTextField.text ?? ""
-        let lastModifiedDate = customerAccountLastModifiedTextField.text ?? ""
         
-        let collectedData = KlarnaPaymentSessionCollectableData.customerAccountInfo(
-            accountUniqueId: accountId,
-            accountRegistrationDate: registrationDate,
-            accountLastModified: lastModifiedDate
-        )
-        
-        klarnaManager.updateSessionCollectedData(collectableData: collectedData)
     }
     
     @objc func continueButtonTapped(_ sender: UIButton) {

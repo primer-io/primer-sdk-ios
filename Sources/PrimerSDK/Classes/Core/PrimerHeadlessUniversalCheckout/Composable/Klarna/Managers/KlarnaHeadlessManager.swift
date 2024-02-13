@@ -107,11 +107,6 @@ extension PrimerHeadlessUniversalCheckout {
             validate()
         }
         
-        /// Updates the payment session with data collected from the user.
-        public func updateSessionCollectedData(collectableData: KlarnaPaymentSessionCollectableData) {
-            sessionCreationComponent?.updateCollectedData(collectableData: collectableData)
-        }
-        
         // MARK: - Session authorization public methods
         
         /// Sets a delegate to handle steps during the session authorization process.
