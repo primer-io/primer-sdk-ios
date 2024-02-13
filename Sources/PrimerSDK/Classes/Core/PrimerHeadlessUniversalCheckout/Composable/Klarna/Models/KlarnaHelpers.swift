@@ -55,8 +55,7 @@ struct KlarnaHelpers {
     /// - Prepares the request body for creating a Klarna payment session.
     /// - Returns: An instance of Request.Body.Klarna.CreatePaymentSession
     static func getKlarnaPaymentSessionBody(
-        with attachment: Request.Body.Klarna.CreatePaymentSession.Attachment?,
-        paymentMethodConfigId: String,
+        with paymentMethodConfigId: String,
         clientSession: ClientSession.APIResponse?,
         recurringPaymentDescription: String?,
         redirectUrl: String?) -> Request.Body.Klarna.CreatePaymentSession {
@@ -93,7 +92,6 @@ struct KlarnaHelpers {
                 redirectUrl: redUrl,
                 totalAmount: totalAmount,
                 orderItems: orderItems,
-                attachment: attachment,
                 billingAddress: billingAddress,
                 shippingAddress: shippingAddress)
         }

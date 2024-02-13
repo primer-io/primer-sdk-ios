@@ -47,29 +47,8 @@ public extension KlarnaPaymentSessionCreationComponent {
             ]
         )
         
-        guard let paymentMethod = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.name == "Klarna" }) else {
-            self.handleError(error: .missingConfiguration)
-            return
-        }
-        
-        var attachment: Request.Body.Klarna.CreatePaymentSession.Attachment?
-        if let customerAccountInfo = customerAccountInfo {
-            attachment = .init(
-                body: .init(
-                    customerAccountInfo: [
-                        .init(
-                            uniqueAccountIdenitfier: customerAccountInfo.accountUniqueId,
-                            acountRegistrationDate: customerAccountInfo.accountRegistrationDate.toString(),
-                            accountLastModified: customerAccountInfo.accountLastModified.toString(),
-                            appId: (paymentMethod.options as? MerchantOptions)?.appId
-                        )
-                    ]
-                )
-            )
-        }
-        
         firstly {
-            tokenizationComponent.createPaymentSession(attachment: attachment)
+            tokenizationComponent.createPaymentSession()
         }
         .done { paymentSession in
             self.handleSuccess(success: paymentSession)

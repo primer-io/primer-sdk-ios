@@ -439,7 +439,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 redirectUrl: settings.paymentMethodOptions.urlScheme,
                 totalAmount: nil,
                 orderItems: nil,
-                attachment: nil,
                 billingAddress: nil,
                 shippingAddress: nil)
 
