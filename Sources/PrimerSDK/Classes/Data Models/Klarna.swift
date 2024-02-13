@@ -64,6 +64,16 @@ extension Request.Body.Klarna {
         let productType: String?
         let taxAmount: Int?
     }
+    
+    struct Attachment: Codable {
+        let body: String
+        let contentType: String
+        
+        init(body: String) {
+            self.body = body
+            self.contentType = "application/vnd.klarna.internal.emd-v2+json"
+        }
+    }
 }
 
 extension Response.Body.Klarna {

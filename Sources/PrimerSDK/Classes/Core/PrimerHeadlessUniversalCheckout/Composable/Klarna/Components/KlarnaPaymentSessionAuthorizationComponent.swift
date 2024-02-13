@@ -45,17 +45,16 @@ public extension KlarnaPaymentSessionAuthorizationComponent {
     func authorizeSession(autoFinalize: Bool = true) {
         var extraMerchantDataString: String?
         
-        if let paymentMethod = PrimerAPIConfiguration.current?.clientSession?.paymentMethod {
-            if let klarnaOptions = paymentMethod.options?.first(where: { $0["type"] as? String == PrimerPaymentMethodType.klarna.rawValue }) {
-                if let extraMerchantData = klarnaOptions["extraMerchantData"] {
-                    // Here we will serialize the the attachment into a String and send it to klarnaProvider for authorize call.
+        if let paymentMethod = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
+            if let merchantOptions = paymentMethod.options as? MerchantOptions {
+                if let extraMerchantData = merchantOptions.extraMerchantData?.jsonString {
+                    extraMerchantDataString = KlarnaHelpers.getSerializedAttachmentString(from: extraMerchantData)
                 }
             }
         }
         
         recordAuthorizeEvent(autoFinalize, jsonData: extraMerchantDataString)
-        
-        self.klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: extraMerchantDataString)
+        klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: extraMerchantDataString)
     }
     
     func reauthorizeSession(jsonData: String? = nil) {
