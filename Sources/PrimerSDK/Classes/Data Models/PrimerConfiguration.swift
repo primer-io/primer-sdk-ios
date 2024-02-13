@@ -100,8 +100,8 @@ extension Response.Body {
                 .filter({ $0.baseLogoImage != nil })
                 .compactMap({ $0.tokenizationViewModel })
                 ?? []
-
-            let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
+            
+            let supportedNetworks = ApplePayUtils.supportedPKPaymentNetworks()
             var canMakePayment: Bool
             if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
                 canMakePayment = PKPaymentAuthorizationController.canMakePayments(usingNetworks: supportedNetworks)
@@ -227,6 +227,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
 
         let coreUrl: String?
         let pciUrl: String?
+        let binDataUrl: String?
         let assetsUrl: String?
         var clientSession: ClientSession.APIResponse?
         let paymentMethods: [PrimerPaymentMethod]?
@@ -244,6 +245,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
             self.pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
+            self.binDataUrl = (try? container.decode(String?.self, forKey: .binDataUrl)) ?? nil
             self.assetsUrl = (try? container.decode(String?.self, forKey: .assetsUrl)) ?? nil
             self.clientSession = (try? container.decode(ClientSession.APIResponse?.self, forKey: .clientSession)) ?? nil
             let throwables = try container.decode([Throwable<PrimerPaymentMethod>].self, forKey: .paymentMethods)
@@ -279,7 +281,8 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
         init(
             coreUrl: String?,
             pciUrl: String?,
-            assetsUrl: String?,
+            binDataUrl: String?,
+            assetsUrl: String?, /// poghledaj u responsu kako se zove
             clientSession: ClientSession.APIResponse?,
             paymentMethods: [PrimerPaymentMethod]?,
             primerAccountId: String?,
@@ -288,6 +291,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
         ) {
             self.coreUrl = coreUrl
             self.pciUrl = pciUrl
+            self.binDataUrl = binDataUrl
             self.assetsUrl = assetsUrl
             self.clientSession = clientSession
             self.paymentMethods = paymentMethods

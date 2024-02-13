@@ -18,7 +18,9 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
             clientSessionId: "mock-client-session-id-1",
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
-                options: nil),
+                options: nil,
+                orderedAllowedCardNetworks: nil
+            ),
             order: ClientSession.Order(
                 id: "mock-client-session-order-id-1",
                 merchantAmount: nil,
@@ -45,6 +47,7 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
+            binDataUrl: "https://primer.io/bindata",
             assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: clientSession,
             paymentMethods: [
@@ -108,7 +111,9 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
             clientSessionId: "mock-client-session-id-2",
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
-                options: nil),
+                options: nil,
+                orderedAllowedCardNetworks: nil
+            ),
             order: ClientSession.Order(
                 id: "mock-client-session-order-id-1",
                 merchantAmount: nil,
@@ -141,6 +146,7 @@ class HeadlessUniversalCheckoutTests: XCTestCase {
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
+            binDataUrl: "https://primer.io/bindata",
             assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: clientSession,
             paymentMethods: [

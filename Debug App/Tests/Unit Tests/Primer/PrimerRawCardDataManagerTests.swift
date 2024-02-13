@@ -12,7 +12,15 @@ import XCTest
 class PrimerRawCardDataManagerTests: XCTestCase {
 
     static let validationTimeout = 1.0
-
+    
+    override func setUp() {
+        SDKSessionHelper.setUp()
+    }
+    
+    override func tearDown() {
+        SDKSessionHelper.tearDown()
+    }
+    
     func test_invalid_cardnumber_in_raw_card_data() throws {
         var exp = expectation(description: "Await validation")
 
@@ -138,7 +146,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
 
         wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
-
+        
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = ""
             return tokenizationBuilder.validateRawData(rawCardData)
@@ -153,7 +161,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
 
         wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
-
+        
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = "13"
             return tokenizationBuilder.validateRawData(rawCardData)
@@ -168,7 +176,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
 
         wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
-
+        
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = "019"
             return tokenizationBuilder.validateRawData(rawCardData)
@@ -183,7 +191,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
 
         wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
-
+        
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate = "02/"
             return tokenizationBuilder.validateRawData(rawCardData)
@@ -213,7 +221,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
 
         wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
-
+        
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate  = "02/2a5"
             return tokenizationBuilder.validateRawData(rawCardData)
@@ -228,7 +236,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
 
         wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
-
+        
         firstly { () -> Promise<Void> in
             rawCardData.expiryDate  = "02/2019"
             return tokenizationBuilder.validateRawData(rawCardData)
@@ -252,9 +260,8 @@ class PrimerRawCardDataManagerTests: XCTestCase {
             expiryDate: "99/2040",
             cvv: "12345",
             cardholderName: "John Smith")
-
         let tokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: "PAYMENT_CARD")
-
+        
         firstly {
             return tokenizationBuilder.validateRawData(rawCardData)
         }
@@ -281,10 +288,10 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         .catch { _ in
             exp.fulfill()
         }
-
+        
         wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
-
+        
         firstly { () -> Promise<Void> in
             rawCardData.cardNumber = Constants.testCardNumbers[.visa]!.first!
             rawCardData.cvv = "1234"
@@ -297,7 +304,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         .catch { _ in
             exp.fulfill()
         }
-
+        
         wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
 
@@ -313,7 +320,7 @@ class PrimerRawCardDataManagerTests: XCTestCase {
         .catch { _ in
             exp.fulfill()
         }
-
+        
         wait(for: [exp], timeout: Self.validationTimeout)
         exp = expectation(description: "Await validation")
 

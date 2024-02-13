@@ -9,21 +9,42 @@
 import XCTest
 @testable import PrimerSDK
 
-class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
+class RawDataManagerTests: XCTestCase {
+    
+    private static let validationTimeout = 2.0
+    
+    var rawDataManager: RawDataManager!
+    
+    var delegate: MockRawDataManagerDelegate!
 
-    private static let validationTimeout = 1.0
-
-    var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager!
-
-    func test_validation_callback() throws {
-        let startHeadlessExpectation = expectation(description: "Start Headless Universal Checkout")
-        let expectationsToBeFulfilled = [startHeadlessExpectation]
-
+    // MARK: Per-test setUp and tearDown
+    
+    override func setUp() {
+        delegate = MockRawDataManagerDelegate()
+        setupRawDataManager()
+    }
+    
+    override func tearDown() {
+        delegate = nil
+        rawDataManager = nil
+    }
+    
+    // MARK: suite-wide setUp and tearDown
+    
+    override class func setUp() {
         let clientSession = ClientSession.APIResponse(
             clientSessionId: "mock-client-session-id-1",
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
-                options: nil),
+                options: nil,
+                orderedAllowedCardNetworks: [
+                    CardNetwork.visa.rawValue,
+                    CardNetwork.masterCard.rawValue,
+                    CardNetwork.amex.rawValue
+//                    ,
+//                    CardNetwork.unknown.rawValue
+                ]
+            ),
             order: ClientSession.Order(
                 id: "mock-client-session-order-id-1",
                 merchantAmount: nil,
@@ -50,6 +71,7 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
+            binDataUrl: "https://primer.io/bindata",
             assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: clientSession,
             paymentMethods: [
@@ -72,9 +94,563 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.fetchVaultedPaymentMethodsResult = (vaultedPaymentMethods, nil)
         mockApiClient.fetchConfigurationResult = (mockPrimerApiConfiguration, nil)
+        mockApiClient.listCardNetworksResult = (Mocks.listCardNetworksData, nil)
         VaultService.apiClient = mockApiClient
+        DefaultCardValidationService.apiClient = mockApiClient
         PrimerAPIConfigurationModule.apiClient = mockApiClient
+    }
+    
+    override class func tearDown() {
+        VaultService.apiClient = nil
+        DefaultCardValidationService.apiClient = nil
+        PrimerAPIConfigurationModule.apiClient = nil
+    }
+    
+    // MARK: Tests
+    
+    func test_validation_callback_invalidData() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(isValid, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 4, "Should have thrown 4 errors")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-card-number")
+            XCTAssertEqual((errors?[1] as? PrimerValidationError)?.errorId, "invalid-expiry-date")
+            XCTAssertEqual((errors?[2] as? PrimerValidationError)?.errorId, "invalid-cvv")
+            XCTAssertEqual((errors?[3] as? PrimerValidationError)?.errorId, "invalid-cardholder-name")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid data
+        let cardData = PrimerCardData(cardNumber: "",
+                                      expiryDate: "",
+                                      cvv: "",
+                                      cardholderName: nil)
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+        
+    }
+    
+    func test_validation_callback_validData() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertTrue(isValid, "Data should be valid")
+            XCTAssertNil(errors, "Should not have thrown errors")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Valid data
+        let cardData = PrimerCardData(cardNumber: "4242424242424242",
+                                  expiryDate: "03/2030",
+                                  cvv: "123",
+                                  cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+        
+    }
+    
+    func test_validation_callback_invalidCardNumberLengthShort() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(false, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-card-number")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid cardnumber
+        let cardData = PrimerCardData(cardNumber: "424242424242424",
+                                      expiryDate: "03/2030",
+                                      cvv: "123",
+                                      cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+    }
+    
+    func test_validation_callback_invalidCardNumberLengthLong() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(false, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-card-number")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid cardnumber
+        let cardData = PrimerCardData(cardNumber: "42424242424242424242",
+                                      expiryDate: "03/2030",
+                                      cvv: "123",
+                                      cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+        
+    }
+    
+    func test_validation_callback_invalidCardNumberEmpty() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(false, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-card-number")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid cardnumber
+        let cardData = PrimerCardData(cardNumber: "",
+                                      expiryDate: "03/2030",
+                                      cvv: "123",
+                                      cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+    }
+    
+    func test_validation_callback_invalidCardNumberLuhnFailure() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(false, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-card-number")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid cardnumber
+        let cardData = PrimerCardData(cardNumber: "4242424242424243",
+                                      expiryDate: "03/2030",
+                                      cvv: "123",
+                                      cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+    }
+    
+    func test_validation_callback_invalidExpiryDateMonthInvalid() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(false, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-expiry-date")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid expiry date
+        let cardData = PrimerCardData(cardNumber: "4242424242424242",
+                                      expiryDate: "0/2030",
+                                      cvv: "123",
+                                      cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+    }
+    
+    func test_validation_callback_invalidExpiryDateMonthMissing() throws {
+        setupRawDataManager()
+        
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(false, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-expiry-date")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid expiry date
+        let cardData = PrimerCardData(cardNumber: "4242424242424242",
+                                      expiryDate: "/2030",
+                                      cvv: "123",
+                                      cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+        
+    }
+    
+    func test_validation_callback_invalidExpiryDateMonth() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(false, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-expiry-date")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid expiry date
+        let cardData = PrimerCardData(cardNumber: "4242424242424242",
+                                      expiryDate: "2030",
+                                      cvv: "123",
+                                      cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+    }
+    
+    func test_validation_callback_invalidExpiryDateInvalid() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(false, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-expiry-date")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid expiry date
+        let cardData = PrimerCardData(cardNumber: "4242424242424242",
+                                      expiryDate: "/",
+                                      cvv: "123",
+                                      cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+        
+    }
+    
+    func test_validation_callback_invalidExpiryDatePast() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(false, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-expiry-date")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid expiry date
+        let cardData = PrimerCardData(cardNumber: "4242424242424242",
+                                      expiryDate: "01/2022",
+                                      cvv: "123",
+                                      cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+    }
+    
+    func test_validation_callback_invalidExpiryDatePast2() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(false, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-expiry-date")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid expiry date
+        let cardData = PrimerCardData(cardNumber: "4242424242424242",
+                                      expiryDate: "05/2022",
+                                      cvv: "123",
+                                      cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+    }
+    
+    func test_validation_callback_invalidExpiryDateMonthOnly() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(isValid, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-expiry-date")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid expiry date
+        let cardData = PrimerCardData(cardNumber: "4242424242424242",
+                                      expiryDate: "02",
+                                      cvv: "123",
+                                      cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+    }
+    
+    func test_validation_callback_invalidExpiryDateNonNumeric() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(isValid, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-expiry-date")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid expiry date
+        let cardData = PrimerCardData(cardNumber: "4242424242424242",
+                                      expiryDate: "aa",
+                                      cvv: "123",
+                                      cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+    }
+    
+    func test_validation_callback_invalidExpiryDateOrder() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(isValid, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
+            validation.fulfill()
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-expiry-date")
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid expiry date
+        let cardData = PrimerCardData(cardNumber: "4242424242424242",
+                                      expiryDate: "2030/03",
+                                      cvv: "123",
+                                      cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+    }
+    
+    func test_validation_callback_invalidExpiryDateYearShort() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(isValid, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-expiry-date")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid expiry date
+        let cardData = PrimerCardData(cardNumber: "4242424242424242",
+                                      expiryDate: "03/30",
+                                      cvv: "123",
+                                      cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+    }
+    
+    func test_validation_callback_invalidExpiryDateYearMalformed() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(isValid, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-expiry-date")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid expiry date
+        let cardData = PrimerCardData(cardNumber: "4242424242424242",
+                                      expiryDate: "03/203030",
+                                      cvv: "123",
+                                      cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+    }
+    
+    func test_validation_callback_invalidCVVLengthShort() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(isValid, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-cvv")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid CVV
+        let cardData = PrimerCardData(cardNumber: "4242424242424242",
+                                      expiryDate: "03/2030",
+                                      cvv: "12",
+                                      cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+    }
+    
+    func test_validation_callback_invalidCVVNonNumeric() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(isValid, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-cvv")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid CVV
+        let cardData = PrimerCardData(cardNumber: "4242424242424242",
+                                      expiryDate: "03/2030",
+                                      cvv: "abc",
+                                      cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+    }
+    
+    func test_validation_callback_invalidCVVLengthLong() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(isValid, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-cvv")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid CVV
+        let cardData = PrimerCardData(cardNumber: "4242424242424242",
+                                      expiryDate: "03/2030",
+                                      cvv: "12345",
+                                      cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+    }
+    
+    func test_validation_callback_invalidCVVLengthShorter() throws {
+        let validation = self.expectation(description: "Await validation")
+        
+        firstly {
+            self.validateWithRawDataManager()
+        }
+        .done { (isValid, errors) in
+            XCTAssertFalse(isValid, "Data should be invalid")
+            XCTAssertEqual(errors?.count, 1, "Should have thrown 1 error")
+            XCTAssertEqual((errors?[0] as? PrimerValidationError)?.errorId, "invalid-cvv")
+            validation.fulfill()
+        }
+        .catch { _ in
+            XCTFail()
+        }
+        
+        // Invalid CVV
+        let cardData = PrimerCardData(cardNumber: "4242424242424242",
+                                      expiryDate: "03/2030",
+                                      cvv: "1",
+                                      cardholderName: "Test")
+        self.rawDataManager.rawData = cardData
+        wait(for: [validation], timeout: Self.validationTimeout)
+    }
+}
 
+extension RawDataManagerTests {
+    
+    // MARK: Helpers
+    
+    private func setupRawDataManager() {
+        let startHeadlessExpectation = expectation(description: "Start Headless Universal Checkout")
+        let expectationsToBeFulfilled = [startHeadlessExpectation]
+        
         firstly {
             self.startHeadlessUniversalCheckout(clientToken: MockAppState.mockClientToken)
         }
@@ -90,518 +666,12 @@ class RawDataManagerTests: XCTestCase, PrimerHeadlessUniversalCheckoutRawDataMan
 
         do {
             self.rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: "PAYMENT_CARD")
-            self.rawDataManager.delegate = self
+            self.rawDataManager.delegate = delegate
         } catch {
             XCTAssert(false, "Raw Data Manager should had been initialized")
         }
-
-        // -------------------
-
-        var validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 4, "Should have thrown 4 errors")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid data
-        var cardData = PrimerCardData(cardNumber: "", expiryDate: "", cvv: "", cardholderName: nil)
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == true, "Data should be valid")
-            XCTAssert(errors == nil, "Should not have thrown errors")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Valid data
-        cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "03/2030", cvv: "123", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid cardnumber
-        cardData = PrimerCardData(cardNumber: "424242424242424", expiryDate: "03/2030", cvv: "123", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid cardnumber
-        cardData = PrimerCardData(cardNumber: "42424242424242424242", expiryDate: "03/2030", cvv: "123", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid cardnumber
-        cardData = PrimerCardData(cardNumber: "", expiryDate: "03/2030", cvv: "123", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid cardnumber
-        cardData = PrimerCardData(cardNumber: "4242424242424243", expiryDate: "03/2030", cvv: "123", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid expiry date
-        cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "0/2030", cvv: "123", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid expiry date
-        cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "/2030", cvv: "123", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid expiry date
-        cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "2030", cvv: "123", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid expiry date
-        cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "/", cvv: "123", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid expiry date
-        cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "01/2022", cvv: "123", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid expiry date
-        cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "05/2022", cvv: "123", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid expiry date
-        cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "02", cvv: "123", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid expiry date
-        cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "aa", cvv: "123", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid expiry date
-        cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "2030/03", cvv: "123", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid expiry date
-        cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "03/30", cvv: "123", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid expiry date
-        cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "03/203030", cvv: "123", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid CVV
-        cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "03/2030", cvv: "12", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid CVV
-        cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "03/2030", cvv: "12345", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid CVV
-        cardData = PrimerCardData(cardNumber: "4242424242424242", expiryDate: "03/2030", cvv: "abc", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid CVV
-        cardData = PrimerCardData(cardNumber: "9120000000000006", expiryDate: "03/2030", cvv: "12345", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
-
-        // -------------------
-
-        validation = self.expectation(description: "Await validation")
-
-        firstly {
-            self.validateWithRawDataManager()
-        }
-        .done { (isValid, errors) in
-            XCTAssert(isValid == false, "Data should be invalid")
-            XCTAssert(errors?.count == 1, "Should have thrown 1 error")
-            validation.fulfill()
-        }
-        .catch { _ in
-            XCTAssert(true)
-            validation.fulfill()
-        }
-
-        // Invalid CVV
-        cardData = PrimerCardData(cardNumber: "9120000000000006", expiryDate: "03/2030", cvv: "1", cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
-        wait(for: [validation], timeout: Self.validationTimeout)
     }
-
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?) {
-        self.onRawDataManagerValidation?(isValid, errors)
-    }
-
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String: Any]?) {
-        self.onRawDataManagerMetadataChange?(metadata)
-    }
-
-    var onRawDataManagerValidation: ((_ isValid: Bool, _ errors: [Error]?) -> Void)?
-    var onRawDataManagerMetadataChange: ((_ metadata: [String: Any]?) -> Void)?
-
-    func validateWithRawDataManager() -> Promise<(isValid: Bool, errors: [Error]?)> {
-        return Promise { seal in
-            self.onRawDataManagerValidation = { (isValid, errors) in
-                seal.fulfill((isValid, errors))
-            }
-        }
-    }
-}
-
-extension RawDataManagerTests {
-
+    
     func startHeadlessUniversalCheckout(clientToken: String) -> Promise<[PrimerHeadlessUniversalCheckout.PaymentMethod]> {
         return Promise { seal in
             PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken) { paymentMethods, err in
@@ -610,6 +680,14 @@ extension RawDataManagerTests {
                 } else if let paymentMethods = paymentMethods {
                     seal.fulfill(paymentMethods)
                 }
+            }
+        }
+    }
+    
+    func validateWithRawDataManager() -> Promise<(isValid: Bool, errors: [Error]?)> {
+        return Promise { seal in
+            self.delegate.onDataIsValid = { (_, isValid, errors) in
+                seal.fulfill((isValid, errors))
             }
         }
     }
