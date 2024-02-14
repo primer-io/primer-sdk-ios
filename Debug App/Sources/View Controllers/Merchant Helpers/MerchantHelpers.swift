@@ -101,7 +101,7 @@ struct MerchantMockDataManager {
     static var extraMerchantData: [String: Any] = [
         "subscription": [
             [
-                "subscription_name": "Contact_lenses",
+                "subscription_name": "Implant_lenses",
                 "start_time": "2020-11-24T15:00",
                 "end_time": "2021-11-24T15:00",
                 "auto_renewal_of_subscription": false,
@@ -109,7 +109,7 @@ struct MerchantMockDataManager {
         ],
         "customer_account_info": [
             [
-                "unique_account_identifier": "Adam_Adamsson",
+                "unique_account_identifier": "Owen Owenson",
                 "account_registration_date": "2020-11-24T15:00",
                 "account_last_modified": "2020-11-24T15:00",
             ],
