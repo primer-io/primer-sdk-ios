@@ -10,9 +10,9 @@ import Foundation
 @testable import PrimerSDK
 
 final class SDKSessionHelper {
-    
+
     private init() {}
-    
+
     static func setUp(withPaymentMethods paymentMethods: [PrimerPaymentMethod]? = nil) {
         let paymentMethods = paymentMethods ?? [
             Mocks.PaymentMethods.paymentCardPaymentMethod
@@ -24,6 +24,7 @@ final class SDKSessionHelper {
                                                 testId: nil)
         let apiConfig = PrimerAPIConfiguration(coreUrl: "core_url",
                                                pciUrl: "pci_url",
+                                               binDataUrl: "bindata_url",
                                                assetsUrl: "https://assets.staging.core.primer.io",
                                                clientSession: session,
                                                paymentMethods: paymentMethods,
@@ -33,21 +34,22 @@ final class SDKSessionHelper {
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfig
     }
-    
+
     static func tearDown() {
         PrimerAPIConfigurationModule.apiConfiguration = nil
         PrimerAPIConfigurationModule.clientToken = nil
     }
-    
+
     static func updateAllowedCardNetworks(cardNetworks: [CardNetwork]) {
         PrimerAPIConfigurationModule.apiConfiguration?.clientSession = .init(
             clientSessionId: "",
             paymentMethod: .init(vaultOnSuccess: false,
-                                 options: nil),
+                                 options: nil,
+                                 orderedAllowedCardNetworks: cardNetworks.map { $0.rawValue }),
             order: nil,
             customer: nil,
             testId: nil
         )
     }
-    
+
 }

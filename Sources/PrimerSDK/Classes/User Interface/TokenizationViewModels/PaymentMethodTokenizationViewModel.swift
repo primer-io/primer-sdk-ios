@@ -11,11 +11,13 @@ import UIKit
 typealias TokenizationCompletion = ((PrimerPaymentMethodTokenData?, Error?) -> Void)
 typealias PaymentCompletion = ((PrimerCheckoutData?, Error?) -> Void)
 
+// swiftlint:disable type_name
 internal protocol PaymentMethodTokenizationViewModelProtocol: PaymentMethodTokenizationModelProtocol, PaymentMethodTokenizationViewProtocol {
     func submitButtonTapped()
 }
 
 internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
+    // swiftlint:enable type_name
 
     var tableView: UITableView { get set }
     var searchableTextField: PrimerSearchTextField { get set }

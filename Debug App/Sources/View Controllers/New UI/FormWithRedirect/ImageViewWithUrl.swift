@@ -52,23 +52,23 @@ class ImageLoaderService: ObservableObject {
 
     func loadImage(url: URL?, placeholder: UIImage?) {
         guard let url = url else { return }
-            let request = URLRequest(url: url)
-            if let data = URLCache.shared.cachedResponse(for: request)?.data, let image = UIImage(data: data) {
-                self.image = image
-            } else {
-                if let placeholder {
-                    self.image = placeholder
-                }
-                URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
-                    if let data = data, let response = response, ((response as? HTTPURLResponse)?.statusCode ?? 500) < 300, let image = UIImage(data: data) {
-                        let cachedData = CachedURLResponse(response: response, data: data)
-                        URLCache.shared.storeCachedResponse(cachedData, for: request)
-
-                        DispatchQueue.main.async {
-                            self.image = image
-                        }
-                    }
-                }).resume()
+        let request = URLRequest(url: url)
+        if let data = URLCache.shared.cachedResponse(for: request)?.data, let image = UIImage(data: data) {
+            self.image = image
+        } else {
+            if let placeholder {
+                self.image = placeholder
             }
+            URLSession.shared.dataTask(with: request, completionHandler: { (data, response, _) in
+                if let data = data, let response = response, ((response as? HTTPURLResponse)?.statusCode ?? 500) < 300, let image = UIImage(data: data) {
+                    let cachedData = CachedURLResponse(response: response, data: data)
+                    URLCache.shared.storeCachedResponse(cachedData, for: request)
+
+                    DispatchQueue.main.async {
+                        self.image = image
+                    }
+                }
+            }).resume()
         }
+    }
 }

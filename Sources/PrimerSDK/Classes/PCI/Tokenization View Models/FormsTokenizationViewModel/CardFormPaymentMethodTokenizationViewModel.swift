@@ -9,8 +9,9 @@ import Foundation
 import SafariServices
 import UIKit
 
+// swiftlint:disable:next type_name
 class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel,
-                                                    SearchableItemsPaymentMethodTokenizationViewModelProtocol {
+                                                  SearchableItemsPaymentMethodTokenizationViewModelProtocol {
 
     // MARK: - Properties
 
@@ -18,6 +19,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
     private var userInputCompletion: (() -> Void)?
+    // swiftlint:disable:next identifier_name
     private var cardComponentsManagerTokenizationCompletion: ((PrimerPaymentMethodTokenData?, Error?) -> Void)?
     private var webViewController: SFSafariViewController?
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
@@ -262,6 +264,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         billingAddressFields.flatMap { $0.filter { $0.isFieldHidden == false } }.map { $0.fieldView }
     }
 
+    // swiftlint:disable:next identifier_name
     internal var allVisibleBillingAddressFieldContainerViews: [[PrimerCustomFieldView]] {
         let allVisibleBillingAddressFields = billingAddressFields.map { $0.filter { $0.isFieldHidden == false } }
         return allVisibleBillingAddressFields.map { $0.map { $0.containerFieldView } }
@@ -529,24 +532,24 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 }
 
                 var threeDSService: ThreeDSServiceProtocol = ThreeDSService()
-#if DEBUG
+                #if DEBUG
                 if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
                     threeDSService = Mock3DSService()
                 }
-#endif
+                #endif
                 threeDSService.perform3DS(
                     paymentMethodTokenData: paymentMethodTokenData,
                     sdkDismissed: nil) { result in
-                        DispatchQueue.main.async {
-                            switch result {
-                            case .success(let resumeToken):
-                                seal.fulfill(resumeToken)
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .success(let resumeToken):
+                            seal.fulfill(resumeToken)
 
-                            case .failure(let err):
-                                seal.reject(err)
-                            }
+                        case .failure(let err):
+                            seal.reject(err)
                         }
                     }
+                }
             } else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
                 if let redirectUrlStr = decodedJWTToken.redirectUrl,
                    let redirectUrl = URL(string: redirectUrlStr),
@@ -981,7 +984,7 @@ extension CardFormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
         var countryResults: [CountryCode] = []
 
         for country in countries where
-        country.country.lowercasedAndFolded().contains(query.lowercasedAndFolded()) == true {
+            country.country.lowercasedAndFolded().contains(query.lowercasedAndFolded()) == true {
             countryResults.append(country)
         }
 
@@ -997,11 +1000,11 @@ extension CardFormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
 }
 
 private extension String {
-   func lowercasedAndFolded() -> String {
-       self
-       .lowercased()
-       .folding(
-           options: .diacriticInsensitive,
-           locale: nil)
-   }
+    func lowercasedAndFolded() -> String {
+        self
+            .lowercased()
+            .folding(
+                options: .diacriticInsensitive,
+                locale: nil)
+    }
 }

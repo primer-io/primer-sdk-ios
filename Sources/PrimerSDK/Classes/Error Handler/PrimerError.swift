@@ -236,7 +236,7 @@ public enum PrimerError: PrimerErrorProtocol {
         switch self {
         case .generic(let message, let userInfo, _):
             if let userInfo = userInfo,
-                let jsonData = try? JSONSerialization.data(withJSONObject: userInfo, options: .fragmentsAllowed),
+               let jsonData = try? JSONSerialization.data(withJSONObject: userInfo, options: .fragmentsAllowed),
                let jsonStr = jsonData.prettyPrintedJSONString as String? {
                 return "Generic error | Message: \(message) | Data: \(jsonStr))"
             } else {
@@ -326,41 +326,41 @@ public enum PrimerError: PrimerErrorProtocol {
 
         switch self {
         case .generic(_, let userInfo, _),
-                .uninitializedSDKSession(let userInfo, _),
-                .invalidClientToken(let userInfo, _),
-                .missingPrimerConfiguration(let userInfo, _),
-                .missingPrimerDelegate(let userInfo, _),
-                .missingPrimerCheckoutComponentsDelegate(let userInfo, _),
-                .missingPrimerInputElement(_, let userInfo, _),
-                .misconfiguredPaymentMethods(let userInfo, _),
-                .cancelled(_, let userInfo, _),
-                .failedToCreateSession(_, let userInfo, _),
-                .failedOnWebViewFlow(_, let userInfo, _),
-                .failedToImport3DS(let userInfo, _),
-                .failedToPerform3DS(_, _, let userInfo, _),
-                .invalidUrl(_, let userInfo, _),
-                .invalid3DSKey(let userInfo, _),
-                .invalidArchitecture(_, _, let userInfo, _),
-                .invalidClientSessionValue(_, _, _, let userInfo, _),
-                .invalidMerchantIdentifier(_, let userInfo, _),
-                .invalidUrlScheme(_, let userInfo, _),
-                .invalidSetting(_, _, let userInfo, _),
-                .invalidValue(_, _, let userInfo, _),
-                .unableToMakePaymentsOnProvidedNetworks(let userInfo, _),
-                .unableToPresentPaymentMethod(_, let userInfo, _),
-                .unsupportedIntent(_, let userInfo, _),
-                .unsupportedPaymentMethod(_, let userInfo, _),
-                .unsupportedPaymentMethodForManager(_, _, let userInfo, _),
-                .underlyingErrors(_, let userInfo, _),
-                .missingSDK(_, _, let userInfo, _),
-                .merchantError(_, let userInfo, _),
-                .paymentFailed(_, _, let userInfo, _),
-                .applePayTimedOut(let userInfo, _),
-                .failedToProcessPayment(_, _, _, let userInfo, _),
-                .invalidVaultedPaymentMethodId(_, let userInfo, _),
-                .nolError(_, _, let userInfo, _),
-                .unableToPresentApplePay(let userInfo, _),
-                .unknown(let userInfo, _):
+             .uninitializedSDKSession(let userInfo, _),
+             .invalidClientToken(let userInfo, _),
+             .missingPrimerConfiguration(let userInfo, _),
+             .missingPrimerDelegate(let userInfo, _),
+             .missingPrimerCheckoutComponentsDelegate(let userInfo, _),
+             .missingPrimerInputElement(_, let userInfo, _),
+             .misconfiguredPaymentMethods(let userInfo, _),
+             .cancelled(_, let userInfo, _),
+             .failedToCreateSession(_, let userInfo, _),
+             .failedOnWebViewFlow(_, let userInfo, _),
+             .failedToImport3DS(let userInfo, _),
+             .failedToPerform3DS(_, _, let userInfo, _),
+             .invalidUrl(_, let userInfo, _),
+             .invalid3DSKey(let userInfo, _),
+             .invalidArchitecture(_, _, let userInfo, _),
+             .invalidClientSessionValue(_, _, _, let userInfo, _),
+             .invalidMerchantIdentifier(_, let userInfo, _),
+             .invalidUrlScheme(_, let userInfo, _),
+             .invalidSetting(_, _, let userInfo, _),
+             .invalidValue(_, _, let userInfo, _),
+             .unableToMakePaymentsOnProvidedNetworks(let userInfo, _),
+             .unableToPresentPaymentMethod(_, let userInfo, _),
+             .unsupportedIntent(_, let userInfo, _),
+             .unsupportedPaymentMethod(_, let userInfo, _),
+             .unsupportedPaymentMethodForManager(_, _, let userInfo, _),
+             .underlyingErrors(_, let userInfo, _),
+             .missingSDK(_, _, let userInfo, _),
+             .merchantError(_, let userInfo, _),
+             .paymentFailed(_, _, let userInfo, _),
+             .applePayTimedOut(let userInfo, _),
+             .failedToProcessPayment(_, _, _, let userInfo, _),
+             .invalidVaultedPaymentMethodId(_, let userInfo, _),
+             .nolError(_, _, let userInfo, _),
+             .unableToPresentApplePay(let userInfo, _),
+             .unknown(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
 
         case .sdkDismissed:
@@ -393,7 +393,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Primer's delegate has not been set. Ensure that you have added Primer.shared.delegate = self on the view controller you wish to present Primer's SDK."
         case .missingPrimerCheckoutComponentsDelegate:
             let message =
-"""
+                """
 Primer Checkout Components' delegate has not been set. \
 Ensure that you have added PrimerCheckoutComponents.delegate = self, \
 on the view controller you wish to implement the components.
@@ -403,7 +403,7 @@ on the view controller you wish to implement the components.
             return "A PrimerInputElement for \(inputElementtype) has to be provided."
         case .misconfiguredPaymentMethods:
             let message =
-"""
+                """
 Payment Methods are not configured correctly. \
 Ensure that you have configured them in the Connection, \
 and/or that they are set up for the specified conditions \
@@ -496,14 +496,14 @@ on your dashboard https://dashboard.primer.io/
     private var paymentMethodType: String? {
         switch self {
         case .cancelled(let paymentMethodType, _, _),
-                .unableToPresentPaymentMethod(let paymentMethodType, _, _),
-                .unsupportedPaymentMethod(let paymentMethodType, _, _),
-                .missingSDK(let paymentMethodType, _, _, _),
-                .failedToProcessPayment(let paymentMethodType?, _, _, _, _),
-                .failedToPerform3DS(let paymentMethodType, _, _, _):
+             .unableToPresentPaymentMethod(let paymentMethodType, _, _),
+             .unsupportedPaymentMethod(let paymentMethodType, _, _),
+             .missingSDK(let paymentMethodType, _, _, _),
+             .failedToProcessPayment(let paymentMethodType?, _, _, _, _),
+             .failedToPerform3DS(let paymentMethodType, _, _, _):
             return paymentMethodType
         case .applePayTimedOut,
-                .unableToMakePaymentsOnProvidedNetworks:
+             .unableToMakePaymentsOnProvidedNetworks:
             return PrimerPaymentMethodType.applePay.rawValue
         case .nolError:
             return PrimerPaymentMethodType.nolPay.rawValue

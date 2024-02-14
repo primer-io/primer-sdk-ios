@@ -24,7 +24,8 @@ final class IdealPaymentMethodTests: XCTestCase {
             clientSessionId: "mock_client_session_ideal_id",
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
-                options: nil),
+                options: nil,
+                orderedAllowedCardNetworks: nil),
             order: nil,
             customer: nil,
             testId: nil)
@@ -53,7 +54,7 @@ final class IdealPaymentMethodTests: XCTestCase {
             }
             expectation.fulfill()
         }
-        self.availablePaymentMethodsLoadedCompletion = { availablePaymentMethods, err in
+        self.availablePaymentMethodsLoadedCompletion = { _, _ in
             XCTAssertTrue(subject.listAvailablePaymentMethodsTypes()?.contains(PrimerPaymentMethodType.adyenIDeal.rawValue) ?? false)
         }
         wait(for: [expectation], timeout: 10)
@@ -82,4 +83,3 @@ extension IdealPaymentMethodTests: TokenizationTestDelegate {
         self.availablePaymentMethodsLoadedCompletion = nil
     }
 }
-

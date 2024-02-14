@@ -7,7 +7,9 @@
 
 import Foundation
 
+// swiftlint:disable large_tuple
 typealias PhoneMetadataCompletion = (Result<(PrimerValidationStatus, String?, String?), PrimerError>) -> Void
+// swiftlint:enable large_tuple
 
 protocol NolPayPhoneMetadataProviding {
     func getPhoneMetadata(mobileNumber: String, completion: @escaping PhoneMetadataCompletion)

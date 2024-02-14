@@ -59,10 +59,10 @@ final class DefaultBanksComponent: BanksComponent {
                 let error = banks.isEmpty ? PrimerValidationError.banksNotLoaded(
                     userInfo: userInfo,
                     diagnosticsId: UUID().uuidString) :
-                PrimerValidationError.invalidBankId(
-                    bankId: bankId,
-                    userInfo: userInfo,
-                    diagnosticsId: UUID().uuidString)
+                    PrimerValidationError.invalidBankId(
+                        bankId: bankId,
+                        userInfo: userInfo,
+                        diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
             } else {

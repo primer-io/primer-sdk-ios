@@ -20,7 +20,7 @@ extension PrimerImageView {
                 let mimeType = response?.mimeType, mimeType.hasPrefix("image"),
                 let data = data, error == nil,
                 let image = UIImage(data: data)
-                else { return }
+            else { return }
             DispatchQueue.main.async { [weak self] in
                 self?.image = image
             }

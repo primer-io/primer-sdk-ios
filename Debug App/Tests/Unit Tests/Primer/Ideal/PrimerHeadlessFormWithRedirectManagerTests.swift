@@ -27,7 +27,8 @@ final class PrimerHeadlessFormWithRedirectManagerTests: XCTestCase {
             clientSessionId: "mock_client_session_ideal_id",
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
-                options: nil),
+                options: nil,
+                orderedAllowedCardNetworks: nil),
             order: nil,
             customer: nil,
             testId: nil)
@@ -48,7 +49,7 @@ final class PrimerHeadlessFormWithRedirectManagerTests: XCTestCase {
         PrimerAPIConfigurationModule.apiClient = mockApiClient
 
         let expectation = XCTestExpectation(description: "Successful HUC initialization")
-        self.availablePaymentMethodsLoadedCompletion = { availablePaymentMethods, err in
+        self.availablePaymentMethodsLoadedCompletion = { _, _ in
             XCTAssertTrue(subject.listAvailablePaymentMethodsTypes()?.contains(PrimerPaymentMethodType.adyenIDeal.rawValue) ?? false)
             PrimerPaymentMethodType.allCases.forEach {
                 let manager = PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager()
@@ -62,7 +63,7 @@ final class PrimerHeadlessFormWithRedirectManagerTests: XCTestCase {
             }
         }
 
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken, delegate: self, uiDelegate: self) { availablePaymentMethods, err in
+        PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken, delegate: self, uiDelegate: self) { _, _ in
             expectation.fulfill()
         }
 

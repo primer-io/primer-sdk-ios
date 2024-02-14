@@ -10,7 +10,7 @@ import XCTest
 @testable import PrimerSDK
 
 class UserInterfaceModuleTests: XCTestCase {
-    
+
     func test_user_interface_module() throws {
         let paymentMethodButton = PrimerPaymentMethod.DisplayMetadata.Button(
             iconUrl: PrimerTheme.BaseColoredURLs(
@@ -35,9 +35,9 @@ class UserInterfaceModuleTests: XCTestCase {
                 coloredHex: "#FFFFFF",
                 lightHex: "#FFFFFF",
                 darkHex: "#000000"))
-        
+
         let paymentMethodDisplayMetadata = PrimerPaymentMethod.DisplayMetadata(button: paymentMethodButton)
-        
+
         let paymentMethod = PrimerPaymentMethod(
             id: "mock_payment_method",
             implementationType: .nativeSdk,
@@ -47,23 +47,23 @@ class UserInterfaceModuleTests: XCTestCase {
             surcharge: 99,
             options: nil,
             displayMetadata: paymentMethodDisplayMetadata)
-        
+
         let mockPaymentMethodTokenizationViewModel = MockPaymentMethodTokenizationViewModel(
             config: paymentMethod,
             intent: .checkout,
             validationError: nil,
             tokenizationResult: (PrimerPaymentMethodTokenData(
-                analyticsId: "mock_analytics_id",
-                id: "mock_id",
-                isVaulted: false,
-                isAlreadyVaulted: false,
-                paymentInstrumentType: .unknown,
-                paymentMethodType: "MOCK_PAYMENT_METHOD",
-                paymentInstrumentData: nil,
-                threeDSecureAuthentication: nil,
-                token: "mock_payment_method_token",
-                tokenType: .singleUse,
-                vaultData: nil), nil),
+                                    analyticsId: "mock_analytics_id",
+                                    id: "mock_id",
+                                    isVaulted: false,
+                                    isAlreadyVaulted: false,
+                                    paymentInstrumentType: .unknown,
+                                    paymentMethodType: "MOCK_PAYMENT_METHOD",
+                                    paymentInstrumentData: nil,
+                                    threeDSecureAuthentication: nil,
+                                    token: "mock_payment_method_token",
+                                    tokenType: .singleUse,
+                                    vaultData: nil), nil),
             paymentCreationDecision: .continuePaymentCreation(),
             paymentResult: (
                 PrimerCheckoutData(
@@ -74,9 +74,9 @@ class UserInterfaceModuleTests: XCTestCase {
                     additionalInfo: nil),
                 nil)
         )
-        
+
         let userInterfaceModule = UserInterfaceModule(paymentMethodTokenizationViewModel: mockPaymentMethodTokenizationViewModel)
         XCTAssert(userInterfaceModule.submitButton != nil, "Should have created the submit button")
     }
-    
+
 }

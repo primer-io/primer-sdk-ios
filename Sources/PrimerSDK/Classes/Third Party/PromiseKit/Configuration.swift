@@ -7,7 +7,7 @@ import Dispatch
  Do not change these after any Promise machinery executes as the configuration object is not thread-safe.
 
  We would like it to be, but sadly `Swift` does not expose `dispatch_once` et al. which is what we used to use in order to make the configuration immutable once first used.
-*/
+ */
 internal struct PMKConfiguration {
     /// Backward compatibility: the default Dispatcher to which handlers dispatch, represented as DispatchQueues.
     internal var Q: (map: DispatchQueue?, return: DispatchQueue?) {

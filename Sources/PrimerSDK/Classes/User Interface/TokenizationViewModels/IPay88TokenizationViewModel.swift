@@ -14,7 +14,7 @@ import PrimerIPay88MYSDK
 
 class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
 
-#if canImport(PrimerIPay88MYSDK)
+    #if canImport(PrimerIPay88MYSDK)
     private var backendCallbackUrl: URL!
     private var primerTransactionId: String!
     private var statusUrl: URL!
@@ -25,11 +25,11 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var didFail: ((_ err: PrimerError) -> Void)?
     private var iPay88PaymentMethodId: String?
     private var iPay88ActionType: String?
-#endif
+    #endif
 
-#if DEBUG
+    #if DEBUG
     private var demoThirdPartySDKViewController: PrimerThirdPartySDKViewController?
-#endif
+    #endif
 
     private lazy var iPay88NumberFormatter: NumberFormatter = {
         let numberFormatter = NumberFormatter()
@@ -185,7 +185,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             errors.append(err)
         }
 
-#if !canImport(PrimerIPay88MYSDK)
+        #if !canImport(PrimerIPay88MYSDK)
         let err = PrimerError.missingSDK(
             paymentMethodType: self.config.type,
             sdkName: "PrimerIPay88SDK",
@@ -196,7 +196,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: err)
         errors.append(err)
-#endif
+        #endif
 
         if errors.count == 1 {
             throw errors.first!
@@ -218,7 +218,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
 
         return Promise { seal in
-#if canImport(PrimerIPay88MYSDK)
+            #if canImport(PrimerIPay88MYSDK)
             firstly {
                 self.validateReturningPromise()
             }
@@ -239,7 +239,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.reject(err)
             }
 
-#else
+            #else
             let err = PrimerError.missingSDK(
                 paymentMethodType: self.config.type,
                 sdkName: "PrimerIPay88SDK",
@@ -250,13 +250,13 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             seal.reject(err)
-#endif
+            #endif
         }
     }
 
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
-#if canImport(PrimerIPay88MYSDK)
+            #if canImport(PrimerIPay88MYSDK)
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
 
             firstly {
@@ -276,7 +276,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.reject(err)
             }
 
-#else
+            #else
             let err = PrimerError.missingSDK(
                 paymentMethodType: self.config.type,
                 sdkName: "PrimerIPay88SDK",
@@ -287,16 +287,16 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             seal.reject(err)
-#endif
+            #endif
         }
     }
 
     override func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
-#if canImport(PrimerIPay88MYSDK)
+            #if canImport(PrimerIPay88MYSDK)
             seal.fulfill()
 
-#else
+            #else
             let err = PrimerError.missingSDK(
                 paymentMethodType: self.config.type,
                 sdkName: "PrimerIPay88SDK",
@@ -307,13 +307,13 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             seal.reject(err)
-#endif
+            #endif
         }
     }
 
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
-#if canImport(PrimerIPay88MYSDK)
+            #if canImport(PrimerIPay88MYSDK)
             guard let configId = config.id else {
                 let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file,
                                                                                                          "class": "\(Self.self)",
@@ -344,7 +344,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.reject(err)
             }
 
-#else
+            #else
             let err = PrimerError.missingSDK(
                 paymentMethodType: self.config.type,
                 sdkName: "PrimerIPay88SDK",
@@ -355,18 +355,18 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             seal.reject(err)
-#endif
+            #endif
         }
     }
 
     override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
-#if canImport(PrimerIPay88MYSDK)
+            #if canImport(PrimerIPay88MYSDK)
             if decodedJWTToken.intent == "IPAY88_CARD_REDIRECTION" {
                 guard let backendCallbackUrlRawString = decodedJWTToken.backendCallbackUrl,
                       let backendCallbackUrlStr =
                         backendCallbackUrlRawString.addingPercentEncoding(withAllowedCharacters: .urlPasswordAllowed)?
-                    .replacingOccurrences(of: "=", with: "%3D"),
+                        .replacingOccurrences(of: "=", with: "%3D"),
                       let backendCallbackUrl = URL(string: backendCallbackUrlStr),
                       let statusUrlStr = decodedJWTToken.statusUrl,
                       let statusUrl = URL(string: statusUrlStr),
@@ -415,7 +415,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.fulfill(nil)
             }
 
-#else
+            #else
             let err = PrimerError.missingSDK(
                 paymentMethodType: self.config.type,
                 sdkName: "PrimerIPay88SDK",
@@ -426,11 +426,11 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             seal.reject(err)
-#endif
+            #endif
         }
     }
 
-#if canImport(PrimerIPay88MYSDK)
+    #if canImport(PrimerIPay88MYSDK)
     internal func createPrimerIPay88Payment() throws -> PrimerIPay88Payment {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
               let primerTransactionId = decodedJWTToken.primerTransactionId,
@@ -506,11 +506,11 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             DispatchQueue.main.async { [unowned self] in
                 var isMockBE = false
 
-#if DEBUG
+                #if DEBUG
                 if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
                     isMockBE = true
                 }
-#endif
+                #endif
 
                 if !isMockBE {
                     self.primerIPay88ViewController = PrimerIPay88ViewController(delegate: self,
@@ -540,12 +540,12 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                     PrimerUIManager.primerRootViewController?.present(self.primerIPay88ViewController,
                                                                       animated: true,
                                                                       completion: {
-                        DispatchQueue.main.async {
-                            PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod?(for: self.config.type)
-                            self.didPresentPaymentMethodUI?()
-                            seal.fulfill()
-                        }
-                    })
+                                                                        DispatchQueue.main.async {
+                                                                            PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod?(for: self.config.type)
+                                                                            self.didPresentPaymentMethodUI?()
+                                                                            seal.fulfill()
+                                                                        }
+                                                                      })
 
                     self.didComplete = { [unowned self] in
                         DispatchQueue.main.async { [unowned self] in
@@ -558,7 +558,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                     }
 
                 } else {
-#if DEBUG
+                    #if DEBUG
                     firstly {
                         PrimerUIManager.prepareRootViewController()
                     }
@@ -585,13 +585,13 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                         PrimerUIManager.primerRootViewController?.present(self.demoThirdPartySDKViewController!,
                                                                           animated: true,
                                                                           completion: {
-                            seal.fulfill()
-                        })
+                                                                            seal.fulfill()
+                                                                          })
                     }
                     .catch { _ in
                         seal.fulfill()
                     }
-#endif
+                    #endif
                 }
             }
         }
@@ -641,18 +641,18 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 DispatchQueue.main.async { [unowned self] in
                     var isMockBE = false
 
-#if DEBUG
+                    #if DEBUG
                     if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
                         isMockBE = true
                     }
-#endif
+                    #endif
 
                     if !isMockBE {
                         self.primerIPay88ViewController?.dismiss(animated: true)
                     } else {
-#if DEBUG
+                        #if DEBUG
                         self.demoThirdPartySDKViewController?.dismiss(animated: true)
-#endif
+                        #endif
                     }
                 }
             }
@@ -667,7 +667,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         self.didComplete = nil
         self.didFail = nil
     }
-#endif
+    #endif
 }
 
 #if canImport(PrimerIPay88MYSDK)

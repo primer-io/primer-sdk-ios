@@ -3,14 +3,14 @@ import Dispatch
 internal extension Thenable where T: Sequence {
     /**
      `Promise<[T]>` => `T` -> `U` => `Promise<[U]>`
-     
-         firstly {
-            .value([1,2,3])
-         }.mapValues { integer in
-            integer * 2
-         }.done {
-            // $0 => [2,4,6]
-         }
+
+     firstly {
+     .value([1,2,3])
+     }.mapValues { integer in
+     integer * 2
+     }.done {
+     // $0 => [2,4,6]
+     }
      */
     func mapValues<U>(on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil, _ transform: @escaping(T.Iterator.Element) throws -> U) -> Promise<[U]> {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
@@ -19,14 +19,14 @@ internal extension Thenable where T: Sequence {
 
     /**
      `Promise<[T]>` => `T` -> `[U]` => `Promise<[U]>`
-     
-         firstly {
-            .value([1,2,3])
-         }.flatMapValues { integer in
-            [integer, integer]
-         }.done {
-            // $0 => [1,1,2,2,3,3]
-         }
+
+     firstly {
+     .value([1,2,3])
+     }.flatMapValues { integer in
+     [integer, integer]
+     }.done {
+     // $0 => [1,1,2,2,3,3]
+     }
      */
     func flatMapValues<U: Sequence>(on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil, _ transform: @escaping(T.Iterator.Element) throws -> U) -> Promise<[U.Iterator.Element]> {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
@@ -35,14 +35,14 @@ internal extension Thenable where T: Sequence {
 
     /**
      `Promise<[T]>` => `T` -> `U?` => `Promise<[U]>`
-     
-         firstly {
-            .value(["1","2","a","3"])
-         }.compactMapValues {
-            Int($0)
-         }.done {
-            // $0 => [1,2,3]
-         }
+
+     firstly {
+     .value(["1","2","a","3"])
+     }.compactMapValues {
+     Int($0)
+     }.done {
+     // $0 => [1,2,3]
+     }
      */
     func compactMapValues<U>(on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil, _ transform: @escaping(T.Iterator.Element) throws -> U?) -> Promise<[U]> {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
@@ -51,14 +51,14 @@ internal extension Thenable where T: Sequence {
 
     /**
      `Promise<[T]>` => `T` -> `Promise<U>` => `Promise<[U]>`
-     
-         firstly {
-            .value([1,2,3])
-         }.thenMap { integer in
-            .value(integer * 2)
-         }.done {
-            // $0 => [2,4,6]
-         }
+
+     firstly {
+     .value([1,2,3])
+     }.thenMap { integer in
+     .value(integer * 2)
+     }.done {
+     // $0 => [2,4,6]
+     }
      */
     func thenMap<U: Thenable>(on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil, _ transform: @escaping(T.Iterator.Element) throws -> U) -> Promise<[U.T]> {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
@@ -67,14 +67,14 @@ internal extension Thenable where T: Sequence {
 
     /**
      `Promise<[T]>` => `T` -> `Promise<[U]>` => `Promise<[U]>`
-     
-         firstly {
-            .value([1,2,3])
-         }.thenFlatMap { integer in
-            .value([integer, integer])
-         }.done {
-            // $0 => [1,1,2,2,3,3]
-         }
+
+     firstly {
+     .value([1,2,3])
+     }.thenFlatMap { integer in
+     .value([integer, integer])
+     }.done {
+     // $0 => [1,1,2,2,3,3]
+     }
      */
     func thenFlatMap<U: Thenable>(on: DispatchQueue? = .pmkDefault,
                                   flags: DispatchWorkItemFlags? = nil,
@@ -87,14 +87,14 @@ internal extension Thenable where T: Sequence {
 
     /**
      `Promise<[T]>` => `T` -> Bool => `Promise<[U]>`
-     
-         firstly {
-            .value([1,2,3])
-         }.filterValues {
-            $0 > 1
-         }.done {
-            // $0 => [2,3]
-         }
+
+     firstly {
+     .value([1,2,3])
+     }.filterValues {
+     $0 > 1
+     }.done {
+     // $0 => [2,3]
+     }
      */
     func filterValues(on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil, _ isIncluded: @escaping (T.Iterator.Element) -> Bool) -> Promise<[T.Iterator.Element]> {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
@@ -121,13 +121,13 @@ internal extension CancellableThenable where U.T: Sequence {
     /**
      `CancellablePromise<[U.T]>` => `U.T` -> `V` => `CancellablePromise<[V]>`
 
-         firstly {
-             cancellize(Promise.value([1,2,3]))
-         }.mapValues { integer in
-             integer * 2
-         }.done {
-             // $0 => [2,4,6]
-         }
+     firstly {
+     cancellize(Promise.value([1,2,3]))
+     }.mapValues { integer in
+     integer * 2
+     }.done {
+     // $0 => [2,4,6]
+     }
      */
     func mapValues<V>(on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil, _ transform: @escaping(U.T.Iterator.Element) throws -> V) -> CancellablePromise<[V]> {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
@@ -137,13 +137,13 @@ internal extension CancellableThenable where U.T: Sequence {
     /**
      `CancellablePromise<[U.T]>` => `U.T` -> `[V]` => `CancellablePromise<[V]>`
 
-         firstly {
-             cancellize(Promise.value([1,2,3]))
-         }.flatMapValues { integer in
-             [integer, integer]
-         }.done {
-             // $0 => [1,1,2,2,3,3]
-         }
+     firstly {
+     cancellize(Promise.value([1,2,3]))
+     }.flatMapValues { integer in
+     [integer, integer]
+     }.done {
+     // $0 => [1,1,2,2,3,3]
+     }
      */
     func flatMapValues<V: Sequence>(on: DispatchQueue? = .pmkDefault,
                                     flags: DispatchWorkItemFlags? = nil,
@@ -157,13 +157,13 @@ internal extension CancellableThenable where U.T: Sequence {
     /**
      `CancellablePromise<[U.T]>` => `U.T` -> `V?` => `CancellablePromise<[V]>`
 
-         firstly {
-             cancellize(Promise.value(["1","2","a","3"]))
-         }.compactMapValues {
-             Int($0)
-         }.done {
-             // $0 => [1,2,3]
-         }
+     firstly {
+     cancellize(Promise.value(["1","2","a","3"]))
+     }.compactMapValues {
+     Int($0)
+     }.done {
+     // $0 => [1,2,3]
+     }
      */
     func compactMapValues<V>(on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil, _ transform: @escaping(U.T.Iterator.Element) throws -> V?) -> CancellablePromise<[V]> {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)
@@ -173,13 +173,13 @@ internal extension CancellableThenable where U.T: Sequence {
     /**
      `CancellablePromise<[U.T]>` => `U.T` -> `CancellablePromise<V>` => `CancellablePromise<[V]>`
 
-         firstly {
-             cancellize(Promise.value([1,2,3]))
-         }.thenMap { integer in
-             cancellize(Promise.value(integer * 2))
-         }.done {
-             // $0 => [2,4,6]
-         }
+     firstly {
+     cancellize(Promise.value([1,2,3]))
+     }.thenMap { integer in
+     cancellize(Promise.value(integer * 2))
+     }.done {
+     // $0 => [2,4,6]
+     }
      */
     func thenMap<V: CancellableThenable>(on: DispatchQueue? = .pmkDefault,
                                          flags: DispatchWorkItemFlags? = nil,
@@ -193,13 +193,13 @@ internal extension CancellableThenable where U.T: Sequence {
     /**
      `CancellablePromise<[U.T]>` => `U.T` -> `Promise<V>` => `CancellablePromise<[V]>`
 
-         firstly {
-             Promise.value([1,2,3])
-         }.cancellize().thenMap { integer in
-             .value(integer * 2)
-         }.done {
-             // $0 => [2,4,6]
-         }
+     firstly {
+     Promise.value([1,2,3])
+     }.cancellize().thenMap { integer in
+     .value(integer * 2)
+     }.done {
+     // $0 => [2,4,6]
+     }
      */
     func thenMap<V: Thenable>(on: DispatchQueue? = .pmkDefault,
                               flags: DispatchWorkItemFlags? = nil,
@@ -213,13 +213,13 @@ internal extension CancellableThenable where U.T: Sequence {
     /**
      `CancellablePromise<[T]>` => `T` -> `CancellablePromise<[U]>` => `CancellablePromise<[U]>`
 
-         firstly {
-             cancellize(Promise.value([1,2,3]))
-         }.thenFlatMap { integer in
-             cancellize(Promise.value([integer, integer]))
-         }.done {
-             // $0 => [1,1,2,2,3,3]
-         }
+     firstly {
+     cancellize(Promise.value([1,2,3]))
+     }.thenFlatMap { integer in
+     cancellize(Promise.value([integer, integer]))
+     }.done {
+     // $0 => [1,1,2,2,3,3]
+     }
      */
     func thenFlatMap<V: CancellableThenable>(on: DispatchQueue? = .pmkDefault,
                                              flags: DispatchWorkItemFlags? = nil,
@@ -233,13 +233,13 @@ internal extension CancellableThenable where U.T: Sequence {
     /**
      `CancellablePromise<[T]>` => `T` -> `Promise<[U]>` => `CancellablePromise<[U]>`
 
-         firstly {
-             Promise.value([1,2,3])
-         }.cancellize().thenFlatMap { integer in
-             .value([integer, integer])
-         }.done {
-             // $0 => [1,1,2,2,3,3]
-         }
+     firstly {
+     Promise.value([1,2,3])
+     }.cancellize().thenFlatMap { integer in
+     .value([integer, integer])
+     }.done {
+     // $0 => [1,1,2,2,3,3]
+     }
      */
     func thenFlatMap<V: Thenable>(on: DispatchQueue? = .pmkDefault,
                                   flags: DispatchWorkItemFlags? = nil,
@@ -253,13 +253,13 @@ internal extension CancellableThenable where U.T: Sequence {
     /**
      `CancellablePromise<[T]>` => `T` -> Bool => `CancellablePromise<[U]>`
 
-         firstly {
-             cancellize(Promise.value([1,2,3]))
-         }.filterValues {
-             $0 > 1
-         }.done {
-             // $0 => [2,3]
-         }
+     firstly {
+     cancellize(Promise.value([1,2,3]))
+     }.filterValues {
+     $0 > 1
+     }.done {
+     // $0 => [2,3]
+     }
      */
     func filterValues(on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil, _ isIncluded: @escaping (U.T.Iterator.Element) -> Bool) -> CancellablePromise<[U.T.Iterator.Element]> {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)

@@ -29,7 +29,7 @@ class CurrencyLoaderTests: XCTestCase {
         currencyLoader = nil
         super.tearDown()
     }
-    
+
     private func mockConfiguration() {
         let paymentMethods = [
             Mocks.PaymentMethods.paymentCardPaymentMethod
@@ -41,6 +41,7 @@ class CurrencyLoaderTests: XCTestCase {
                                                 testId: nil)
         let apiConfig = PrimerAPIConfiguration(coreUrl: "core_url",
                                                pciUrl: "pci_url",
+                                               binDataUrl: "bin_data_url",
                                                assetsUrl: "https://assets.staging.core.primer.io",
                                                clientSession: session,
                                                paymentMethods: paymentMethods,
@@ -76,7 +77,7 @@ class CurrencyLoaderTests: XCTestCase {
         // Then
         XCTAssertNil(currency)
     }
-        
+
     func testUpdateCurrenciesFromAPISuccess() {
         // Given
         let mockCurrencyData = """
@@ -102,8 +103,6 @@ class CurrencyLoaderTests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
     }
 
-
-    
     func testUpdateCurrenciesFromAPIWithEmptyResponse() {
         // Simulate an empty response
         let emptyData = "[]".data(using: .utf8)!
@@ -126,7 +125,7 @@ class CurrencyLoaderTests: XCTestCase {
         let invalidData = "{\"invalid\":\"data\"}".data(using: .utf8)!
         networkService.mockResponse = (invalidData, nil, nil)
         mockConfiguration()
-        
+
         let expectation = XCTestExpectation(description: "CurrencyLoader handles unexpected data format")
 
         currencyLoader.updateCurrenciesFromAPI { error in
@@ -137,7 +136,7 @@ class CurrencyLoaderTests: XCTestCase {
 
         wait(for: [expectation], timeout: 1.0)
     }
-    
+
     func testLoadingCurrenciesFromStorage() {
         // Given currencies in storage
         let storedCurrencies = [Currency(code: "JPY", decimalDigits: 0)]
@@ -167,12 +166,12 @@ class CurrencyLoaderTests: XCTestCase {
         XCTAssertNotNil(currency, "Currency should be loaded from the bundle")
         XCTAssertEqual(currency?.code, "BRL", "Currency loaded should match the one simulated from the bundle")
     }
-    
+
     func testUpdateCurrenciesFromAPIWithNetworkFailure() {
         // Simulate a network failure
         let networkError = NSError(domain: "NetworkError", code: 1, userInfo: nil)
         networkService.mockResponse = (nil, nil, networkError)
-        
+
         let expectation = XCTestExpectation(description: "CurrencyLoader handles network failure")
 
         currencyLoader.updateCurrenciesFromAPI { error in
@@ -185,23 +184,23 @@ class CurrencyLoaderTests: XCTestCase {
 
         wait(for: [expectation], timeout: 1.0)
     }
-    
+
     func testFallbackToStorageOnAPIFailure() {
         // Given
         let networkError = NSError(domain: "NetworkError", code: 1, userInfo: nil)
         networkService.mockResponse = (nil, nil, networkError)
-        
+
         // Preset some currencies in storage to simulate previously stored data
         let fallbackCurrencies = [Currency(code: "CNY", decimalDigits: 2)]
         storage.mockCurrencies = fallbackCurrencies
         inMemoryCurrencies = fallbackCurrencies
-        
+
         let expectation = XCTestExpectation(description: "CurrencyLoader uses fallback data from storage on API failure")
 
         currencyLoader.updateCurrenciesFromAPI { error in
             // Then
             XCTAssertNotNil(error, "Expected API error, received nil")
-            
+
             // Verify that the loader falls back to using stored currencies
             XCTAssertFalse(inMemoryCurrencies?.isEmpty ?? true, "inMemoryCurrencies should not be empty after API failure")
             XCTAssertEqual(inMemoryCurrencies?.first?.code, "CNY", "Fallback currency should be used from storage")
@@ -210,14 +209,14 @@ class CurrencyLoaderTests: XCTestCase {
 
         wait(for: [expectation], timeout: 1.0)
     }
-    
+
     func testCurrencySymbolResolution() {
         // Given a known currency
         let currency = Currency(code: "USD", decimalDigits: 2)
-        
+
         // When fetching its symbol
         let symbol = currency.symbol
-        
+
         // Then the symbol should match the expected value
         XCTAssertEqual(symbol, "US$", "Currency symbol for USD should be 'US$'")
     }

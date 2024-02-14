@@ -47,13 +47,13 @@ internal class PrimerInternal: LogReporter {
     }
 
     internal func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-#if canImport(Primer3DS)
+        #if canImport(Primer3DS)
         let is3DSHandled = Primer3DS.application(app, open: url, options: options)
 
         if is3DSHandled {
             return true
         }
-#endif
+        #endif
 
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         if let urlScheme = settings.paymentMethodOptions.urlScheme, url.absoluteString.contains(urlScheme) {
@@ -71,11 +71,11 @@ internal class PrimerInternal: LogReporter {
     internal func application(_ application: UIApplication,
                               continue userActivity: NSUserActivity,
                               restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-#if canImport(Primer3DS)
+        #if canImport(Primer3DS)
         return Primer3DS.application(application, continue: userActivity, restorationHandler: restorationHandler)
-#else
+        #else
         return false
-#endif
+        #endif
     }
 
     @objc
