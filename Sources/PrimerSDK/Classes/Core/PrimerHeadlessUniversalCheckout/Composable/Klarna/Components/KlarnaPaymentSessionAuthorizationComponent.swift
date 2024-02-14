@@ -78,11 +78,7 @@ private extension KlarnaPaymentSessionAuthorizationComponent {
 
 // MARK: - PrimerKlarnaProviderAuthorizationDelegate
 extension KlarnaPaymentSessionAuthorizationComponent: PrimerKlarnaProviderAuthorizationDelegate {
-    public func primerKlarnaWrapperAuthorized(
-        approved: Bool,
-        authToken: String?,
-        finalizeRequired: Bool
-    ) {
+    public func primerKlarnaWrapperAuthorized(approved: Bool, authToken: String?, finalizeRequired: Bool) {
         if approved == false {
             if finalizeRequired == true {
                 let step = KlarnaPaymentSessionAuthorization.paymentSessionFinalizationRequired
@@ -114,7 +110,6 @@ extension KlarnaPaymentSessionAuthorizationComponent: PrimerKlarnaProviderAuthor
         }
     }
 }
-#endif
 
 // MARK: - Helpers
 private extension KlarnaPaymentSessionAuthorizationComponent {
@@ -135,3 +130,4 @@ private extension KlarnaPaymentSessionAuthorizationComponent {
         )
     }
 }
+#endif

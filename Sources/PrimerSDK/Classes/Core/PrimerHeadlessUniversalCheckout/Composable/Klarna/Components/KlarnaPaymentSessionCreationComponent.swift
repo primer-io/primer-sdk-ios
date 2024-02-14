@@ -60,7 +60,7 @@ private extension KlarnaPaymentSessionCreationComponent {
             clientToken: success.clientToken,
             paymentCategories: success.categories.map { KlarnaPaymentCategory(response: $0) }
         )
-        self.stepDelegate?.didReceiveStep(step: step)
+        stepDelegate?.didReceiveStep(step: step)
     }
     
     func handleError(error: KlarnaPaymentSessionCreationComponentError) {
@@ -94,7 +94,7 @@ private extension KlarnaPaymentSessionCreationComponent {
             )
         }
         
-        self.errorDelegate?.didReceiveError(error: primerError)
+        errorDelegate?.didReceiveError(error: primerError)
     }
 }
 
