@@ -77,7 +77,7 @@ extension Analytics {
                     var combinedEvents: [Analytics.Event] = eventsToAppend.sorted(by: { $0.createdAt > $1.createdAt })
                     combinedEvents.append(contentsOf: storedEvents)
 
-                    self.logger.debug(message: "📚 Analytics: Recording \(events.count) events (new total: \(combinedEvents.count)")
+                    self.logger.debug(message: "📚 Analytics: Recording \(events.count) events (new total: \(combinedEvents.count))")
 
                     do {
                         try self.storage.save(combinedEvents)
@@ -88,10 +88,13 @@ extension Analytics {
                             let count = combinedEvents.count
                             let message = "📚 Analytics: Minimum batch size of \(self.batchSize) \(sizeString) (\(count) events present). Attempting sync ..."
                             self.logger.debug(message: message)
-                            self.sync(events: combinedEvents)
+                            self.sync(events: combinedEvents).ensure {
+                                seal.fulfill()
+                            }
+                        } else {
+                            seal.fulfill()
                         }
 
-                        seal.fulfill()
                     } catch {
                         seal.reject(error)
                     }
@@ -146,9 +149,7 @@ extension Analytics {
                             let remainingEvents = self.storage.loadEvents()
                             self.logger.debug(message: "📚 Analytics: \(syncType.capitalized) completed. \(remainingEvents.count) events remain")
                             self.isSyncing = false
-
                             seal.fulfill()
-
                             if remainingEvents.count >= self.batchSize {
                                 self.sync(events: remainingEvents)
                             }
@@ -157,6 +158,8 @@ extension Analytics {
                             let errorMessage = err.localizedDescription
                             let message = "📚 Analytics: Failed to \(syncType) events with error \(errorMessage)"
                             self.logger.error(message: message)
+                            self.isSyncing = false
+                            seal.reject(err)
                         }
                 }
             }
@@ -276,18 +279,15 @@ extension Analytics {
         }
 
         private func handleFailedEvents(forUrl url: URL, completion: @escaping () -> Void) {
-            Analytics.queue.async { [weak self] in
-                guard let self = self else { return }
-                self.eventSendFailureCount += 1
-                if eventSendFailureCount >= 3 {
-                    logger.error(message: "Failed to send events three or more times. Deleting analytics file ...")
-                    storage.deleteAnalyticsFile()
-                    eventSendFailureCount = 0
-                } else {
-                    self.storage.delete(eventsWithUrl: url)
-                }
-                completion()
+            self.eventSendFailureCount += 1
+            if eventSendFailureCount >= 3 {
+                logger.error(message: "Failed to send events three or more times. Deleting analytics file ...")
+                storage.deleteAnalyticsFile()
+                eventSendFailureCount = 0
+            } else {
+                self.storage.delete(eventsWithUrl: url)
             }
+            completion()
         }
 
         struct Response: Decodable {

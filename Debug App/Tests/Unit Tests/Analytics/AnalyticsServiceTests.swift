@@ -13,8 +13,8 @@ final class AnalyticsServiceTests: XCTestCase {
     
     var apiClient: MockPrimerAPIAnalyticsClient!
 
-    var storage: Analytics.Storage!
-    
+    var storage: MockAnalyticsStorage!
+
     var service: Analytics.Service!
     
     override func setUp() {
@@ -145,17 +145,69 @@ final class AnalyticsServiceTests: XCTestCase {
         XCTAssertEqual(apiClient.batches.joined().count, 4)
         XCTAssertEqual(storage.loadEvents().count, 0)
     }
-    
+
+    func testSendFailureDeleteSdkEvents() throws {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+
+        apiClient.shouldSucceed = false
+
+        sendEvents(numberOfEvents: 4, eventType: .sdkEvent)
+        waitForExpectations(timeout: 10.0)
+
+        XCTAssertEqual(storage.events.count, 4)
+
+        let expectation = self.expectation(description: "Expect event deletion on failure")
+        storage.onDeleteEventsWithUrl = { _ in
+            expectation.fulfill()
+        }
+
+        sendEvents(numberOfEvents: 4, eventType: .sdkEvent)
+        waitForExpectations(timeout: 10.0)
+
+        XCTAssertEqual(storage.events.count, 0)
+    }
+
+    func testSendFailurePurgeAllEvents() {
+        SDKSessionHelper.setUp()
+        defer { SDKSessionHelper.tearDown() }
+
+        apiClient.shouldSucceed = false
+
+        let expectation2 = self.expectation(description: "Full event purge triggered")
+        self.storage.onDeleteAnalyticsFile = {
+            expectation2.fulfill()
+        }
+
+        let expectation = self.expectation(description: "Did complete")
+
+        _ = firstly {
+            self.sendEvents(numberOfEvents: 5, eventType: .sdkEvent, shouldExpect: false)
+        }.then {
+            self.sendEvents(numberOfEvents: 5, eventType: .sdkEvent, shouldExpect: false)
+        }.then {
+            self.sendEvents(numberOfEvents: 5, eventType: .sdkEvent, shouldExpect: false)
+        }.ensure {
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 10.0)
+
+        XCTAssertEqual(storage.loadEvents().count, 0)
+    }
+
     // MARK: Helpers
     
     static func createQueue() -> DispatchQueue {
         DispatchQueue(label: "AnalyticsServiceTestsQueue-\(UUID().uuidString)", qos: .background, attributes: .concurrent)
     }
     
+    @discardableResult
     func sendEvents(numberOfEvents: Int,
                     eventType: Analytics.Event.EventType = .message,
                     after delay: TimeInterval? = nil,
-                    onQueue queue: DispatchQueue = AnalyticsServiceTests.createQueue()) {
+                    onQueue queue: DispatchQueue = AnalyticsServiceTests.createQueue(),
+                    shouldExpect: Bool = true) -> Promise<Void> {
         let events = (0..<numberOfEvents).compactMap { num in
             switch eventType {
             case .message:
@@ -167,19 +219,23 @@ final class AnalyticsServiceTests: XCTestCase {
                 return nil
             }
         }
-        events.forEach { (event: Analytics.Event) in
-            let expectEventToRecord = self.expectation(description: "event is recorded - \(event.localId)")
-            let _callback = {
-                _ = self.service.record(event: event).ensure {
-                    expectEventToRecord.fulfill()
+        let promises = events.map { (event: Analytics.Event) in
+            Promise { seal in
+                let expectEventToRecord = shouldExpect ? self.expectation(description: "event is recorded - \(event.localId)") : nil
+                let _callback = {
+                    _ = self.service.record(event: event).ensure {
+                        expectEventToRecord?.fulfill()
+                        seal.fulfill()
+                    }
+                }
+                if let delay = delay {
+                    queue.asyncAfter(deadline: .now() + delay, execute: _callback)
+                } else {
+                    queue.async(execute: _callback)
                 }
             }
-            if let delay = delay {
-                queue.asyncAfter(deadline: .now() + delay, execute: _callback)
-            } else {
-                queue.async(execute: _callback)
-            }
         }
+        return when(fulfilled: promises)
     }
     
     func messageEvent(withMessage message: String) -> Analytics.Event {
@@ -195,59 +251,5 @@ final class AnalyticsServiceTests: XCTestCase {
             name: name,
             params: params
         )
-    }
-}
-
-class MockAnalyticsStorage: Analytics.Storage {
-    
-    var events: [Analytics.Event] = []
-    
-    func loadEvents() -> [Analytics.Event] {
-        return events
-    }
-    
-    func save(_ events: [Analytics.Event]) throws {
-        self.events = events
-    }
-    
-    func delete(_ eventsToDelete: [Analytics.Event]) {
-        let idsToDelete = eventsToDelete.map { $0.localId }
-        print(">>>> Delete events (before): \(self.events.count)")
-        self.events = self.events.filter { event in
-            !idsToDelete.contains(event.localId)
-        }
-        
-        print(">>>> Delete events (after): \(self.events.count)")
-    }
-
-    func delete(eventsWithUrl url: URL) {
-        delete(loadEvents().filter { $0.analyticsUrl == url.absoluteString })
-    }
-
-    func deleteAnalyticsFile() {
-        events = []
-    }
-}
-
-class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
-    
-    var shouldSucceed: Bool = true
-    
-    var onSendAnalyticsEvent: (([PrimerSDK.Analytics.Event]?) -> Void)?
-    
-    var batches: [[Analytics.Event]] = []
-    
-    func sendAnalyticsEvents(clientToken: DecodedJWTToken?, url: URL, body: [Analytics.Event]?, completion: @escaping ResponseHandler) {
-        guard let body = body else {
-            XCTFail(); return
-        }
-        print(">>>>> Received batch of: \(body.count)")
-        batches.append(body)
-        if shouldSucceed {
-            completion(.success(.init(id: nil, result: nil)))
-        } else {
-            completion(.failure(PrimerError.generic(message: "", userInfo: nil, diagnosticsId: "")))
-        }
-        self.onSendAnalyticsEvent?(body)
     }
 }
