@@ -10,15 +10,15 @@ import Foundation
 
 class StringTyper {
     let receiver: (String) -> Void
-    
+
     let queue: DispatchQueue
-    
+
     /// - Parameter receiver: The receiver to send results to
     init(_ receiver: @escaping (String) -> Void, queue: DispatchQueue = .main) {
         self.receiver = receiver
         self.queue = queue
     }
-    
+
     /// Simulate typing output to a string
     ///
     /// For example, for the string "test", the following will be sent to the receiver with a delay of `delay` seconds:
@@ -46,7 +46,7 @@ class StringTyper {
             self.type(string, result, delay: delay, completion: completion)
         }
     }
-    
+
     func delete(_ string: String, delay: Double = 0.1, completion: @escaping () -> Void = {}) {
         var string = string
         _ = string.removeFirst()
@@ -62,5 +62,5 @@ class StringTyper {
             self.type(string, string, delay: delay, completion: completion)
         }
     }
-    
+
 }

@@ -584,7 +584,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func listCardNetworks(clientToken: DecodedJWTToken,
                           bin: String,
                           completion: @escaping (Result<Response.Body.Bin.Networks, Error>) -> Void) -> PrimerCancellable? {

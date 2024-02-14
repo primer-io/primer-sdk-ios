@@ -92,9 +92,9 @@ class Mocks {
         primerAccountId: nil,
         keys: nil,
         checkoutModules: nil)
-    
+
     static var listCardNetworksData = Response.Body.Bin.Networks(networks: [])
-    
+
     class Static {
 
         class Strings {
@@ -384,7 +384,7 @@ class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
                 XCTAssert(false, "Set 'mockedAPIConfiguration' on your MockPrimerAPIConfigurationModule")
                 return
             }
-            
+
             DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
                 PrimerAPIConfigurationModule.clientToken = clientToken
                 PrimerAPIConfigurationModule.apiConfiguration = mockedAPIConfiguration
@@ -399,7 +399,7 @@ class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
                 XCTAssert(false, "Set 'mockedAPIConfiguration' on your MockPrimerAPIConfigurationModule")
                 return
             }
-            
+
             DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
                 PrimerAPIConfigurationModule.apiConfiguration = mockedAPIConfiguration
             }
@@ -407,7 +407,7 @@ class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
     }
 
     func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void> {
-        return Promise { seal in
+        return Promise { _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
                 PrimerAPIConfigurationModule.clientToken = newClientToken
             }
