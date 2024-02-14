@@ -7,15 +7,6 @@
 
 import Foundation
 
-class AnalyticsScheduler {
-
-    let queue = OperationQueue()
-
-    init() {
-        queue.maxConcurrentOperationCount = 1
-    }
-}
-
 extension Analytics {
 
     internal class Service: LogReporter {
