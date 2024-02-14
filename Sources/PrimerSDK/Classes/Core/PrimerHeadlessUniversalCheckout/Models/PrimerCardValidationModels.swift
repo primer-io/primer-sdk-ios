@@ -23,7 +23,7 @@ public enum PrimerCardValidationSource: Int {
 @objc
 public class PrimerCardNumberEntryState: NSObject, PrimerValidationState {
     public let cardNumber: String
-    
+
     init(cardNumber: String) {
         self.cardNumber = cardNumber
     }
@@ -33,23 +33,23 @@ public class PrimerCardNumberEntryState: NSObject, PrimerValidationState {
 public class PrimerCardNetwork: NSObject {
     public let displayName: String
     public let network: CardNetwork
-    
+
     public var allowed: Bool {
         return [CardNetwork].allowedCardNetworks.contains(network)
     }
-    
+
     init(displayName: String, network: CardNetwork) {
         self.displayName = displayName
         self.network = network
     }
-    
+
     convenience init(network: CardNetwork) {
         self.init(
             displayName: network.displayName,
             network: network
         )
     }
-    
+
     convenience init?(network: CardNetwork?) {
         guard let network = network else { return nil }
         self.init(network: network)
@@ -60,7 +60,7 @@ public class PrimerCardNetwork: NSObject {
 public class PrimerCardNetworksMetadata: NSObject {
     public let items: [PrimerCardNetwork]
     public let preferred: PrimerCardNetwork?
-    
+
     init(items: [PrimerCardNetwork], preferred: PrimerCardNetwork?) {
         self.items = items
         self.preferred = preferred
@@ -69,18 +69,18 @@ public class PrimerCardNetworksMetadata: NSObject {
 
 @objc
 public class PrimerCardNumberEntryMetadata: NSObject, PrimerPaymentMethodMetadata {
-    
+
     public let source: PrimerCardValidationSource
 
     public let selectableCardNetworks: PrimerCardNetworksMetadata?
-    
+
     public let detectedCardNetworks: PrimerCardNetworksMetadata
-        
+
     init(source: PrimerCardValidationSource,
          selectableCardNetworks: [PrimerCardNetwork]?,
          detectedCardNetworks: [PrimerCardNetwork]) {
         self.source = source
-        
+
         if source == .remote, let selectableCardNetworks = selectableCardNetworks, !selectableCardNetworks.isEmpty {
             self.selectableCardNetworks = PrimerCardNetworksMetadata(
                 items: selectableCardNetworks,
@@ -89,7 +89,7 @@ public class PrimerCardNumberEntryMetadata: NSObject, PrimerPaymentMethodMetadat
         } else {
             self.selectableCardNetworks = nil
         }
-        
+
         let preferredNetwork = [CardNetwork].allowedCardNetworks.first {
             detectedCardNetworks.map { $0.network }.contains($0)
         }

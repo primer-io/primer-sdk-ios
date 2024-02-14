@@ -10,11 +10,11 @@ import XCTest
 @testable import PrimerSDK
 
 final class ApplePayUtilsTest: XCTestCase {
-    
+
     override func setUp() {
         SDKSessionHelper.setUp()
     }
-    
+
     override func tearDown() {
         SDKSessionHelper.tearDown()
     }
@@ -22,24 +22,24 @@ final class ApplePayUtilsTest: XCTestCase {
     func testApplePaySupportedPaymentNetworks() {
         // w/ CB
         XCTAssertEqual(Set(ApplePayUtils.supportedPKPaymentNetworks(cardNetworks: [.cartesBancaires])), Set([.cartesBancaires]))
-        
+
         // w/ mixed
         XCTAssertEqual(Set(ApplePayUtils.supportedPKPaymentNetworks(cardNetworks: [.visa, .masterCard, .amex, .cartesBancaires])), Set([.visa, .masterCard, .amex, .cartesBancaires]))
-        
+
         // w/ none
         XCTAssertEqual(Set(ApplePayUtils.supportedPKPaymentNetworks(cardNetworks: [])), Set())
     }
-    
+
     func testApplePaySupportedPaymentNetworksViaPrimerSettings() {
-        
+
         // w/ CB
         SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.cartesBancaires])
         XCTAssertEqual(Set(ApplePayUtils.supportedPKPaymentNetworks()), Set([.cartesBancaires]))
-        
+
         // w/ mixed
         SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [.visa, .masterCard, .amex, .cartesBancaires])
         XCTAssertEqual(Set(ApplePayUtils.supportedPKPaymentNetworks()), Set([.visa, .masterCard, .amex, .cartesBancaires]))
-        
+
         // w/ none
         SDKSessionHelper.updateAllowedCardNetworks(cardNetworks: [])
         XCTAssertEqual(Set(ApplePayUtils.supportedPKPaymentNetworks()), Set())

@@ -22,9 +22,8 @@ struct CardNetworkCode {
     var length: Int
 }
 
-
 public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
-    
+
     // https://github.com/primer-io/platform/blob/59980a07113089000c9814b079579e15c616b6db/platform/commons/models/bin_range.py#L66
     case amex = "AMEX"
     case bancontact = "BANCONTACT"
@@ -53,7 +52,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
                 code: CardNetworkCode(
                     name: "CID",
                     length: 4))
-            
+
         case .bancontact, .cartesBancaires:
             return nil
 
@@ -231,12 +230,12 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
             return nil
         }
     }
-    
+
     public var displayName: String {
         if let displayName = self.validation?.niceType {
             return displayName
         }
-        
+
         switch self {
         case .bancontact:
             return "Bancontact"
@@ -344,15 +343,15 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
 
         return false
     }
-    
+
     var assetName: String {
         rawValue.lowercased().filter { $0.isLetter }
     }
-    
+
     static var coBadgedNetworks: [CardNetwork] {
         return [.cartesBancaires]
     }
-    
+
     public init(cardNumber: String) {
         self = .unknown
 
@@ -370,17 +369,17 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
         self = .unknown
 
         let stringValue = cardNetworkStr.uppercased()
-        
+
         if ["DINERS", "DINERSCLUB"].contains(stringValue) {
             self = .diners
             return
         }
-        
+
         if "CARTESBANCAIRES" == stringValue {
             self = .cartesBancaires
             return
         }
-        
+
         if let cardNetwork = CardNetwork(rawValue: stringValue) {
             self = cardNetwork
         }
@@ -388,7 +387,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
 }
 
 extension Array<CardNetwork>: LogReporter {
-    
+
     /// A list of card networks that the merchant supports
     static var allowedCardNetworks: Self {
         guard let networkStrings = PrimerAPIConfiguration.current?.clientSession?.paymentMethod?.orderedAllowedCardNetworks else {
@@ -397,7 +396,7 @@ extension Array<CardNetwork>: LogReporter {
         }
         return networkStrings.compactMap { CardNetwork(rawValue: $0) }
     }
-    
+
     /// A list of all card networks, used by default when a merchant does not specify the networks they support
     /// Also used to configure suppoted networks for Apple Pay
     static var allCardNetworks: Self {

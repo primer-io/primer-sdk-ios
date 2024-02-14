@@ -29,7 +29,7 @@ public class PrimerCardData: PrimerRawData {
             self.onDataDidChange?()
         }
     }
-    
+
     public var cardNetwork: CardNetwork? {
         didSet {
             if cardNetwork != oldValue {
@@ -37,7 +37,7 @@ public class PrimerCardData: PrimerRawData {
             }
         }
     }
-    
+
     private enum CodingKeys: String, CodingKey {
         case cardNumber,
              expiryDate,

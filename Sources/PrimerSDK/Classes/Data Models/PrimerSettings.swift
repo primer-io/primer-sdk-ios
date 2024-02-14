@@ -131,7 +131,7 @@ public class PrimerKlarnaOptions: Codable {
 // MARK: Card Payment
 
 public class PrimerCardPaymentOptions: Codable {
-        
+
     let is3DSOnVaultingEnabled: Bool
 
     @available(swift, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
