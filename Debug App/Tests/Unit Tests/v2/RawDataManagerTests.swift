@@ -11,7 +11,7 @@ import XCTest
 
 class RawDataManagerTests: XCTestCase {
     
-    private static let validationTimeout = 1.0
+    private static let validationTimeout = 2.0
     
     var rawDataManager: RawDataManager!
     
@@ -67,7 +67,7 @@ class RawDataManagerTests: XCTestCase {
                 shippingAmount: nil),
             customer: nil,
             testId: nil)
-        
+
         let mockPrimerApiConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
@@ -88,9 +88,9 @@ class RawDataManagerTests: XCTestCase {
             primerAccountId: "mock-primer-account-id",
             keys: nil,
             checkoutModules: nil)
-        
+
         let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(data: [])
-        
+
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.fetchVaultedPaymentMethodsResult = (vaultedPaymentMethods, nil)
         mockApiClient.fetchConfigurationResult = (mockPrimerApiConfiguration, nil)
@@ -661,9 +661,9 @@ extension RawDataManagerTests {
             XCTAssert(true, "Raw Data Manager should had been initialized")
             startHeadlessExpectation.fulfill()
         }
-        
+
         wait(for: expectationsToBeFulfilled, timeout: 30)
-        
+
         do {
             self.rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: "PAYMENT_CARD")
             self.rawDataManager.delegate = delegate

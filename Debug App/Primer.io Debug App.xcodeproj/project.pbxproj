@@ -36,7 +36,6 @@
 		14EE32F4821BD1F19F75227F /* MerchantHeadlessCheckoutRawRetailDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C353D84EABA4990DAB4DD28 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift */; };
 		1589385B62C86DE7C735F3EC /* PrimerAPIConfigurationModuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C690FB7E6E8C942C87B1A1B /* PrimerAPIConfigurationModuleTests.swift */; };
 		161D4BE3FFD5E4A60F4461F0 /* CreateResumePaymentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DD0A9535544D446514124A /* CreateResumePaymentService.swift */; };
-		170F3A07A039EE30E065AA30 /* MerchantNewLineItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */; };
 		208CA849F3187C2DA63CC17B /* HUC_TokenizationViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5E3ACDA26D44F66B55766B /* HUC_TokenizationViewModelTests.swift */; };
 		213196DEDF2A3A84037ED884 /* PollingModuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49DFB1ACD5014BF28ED283B3 /* PollingModuleTests.swift */; };
 		242EF5037D6FB396B7AE1CB5 /* HeadlessUniversalCheckoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E63F5C5C1FD2F3E6CB02EC5A /* HeadlessUniversalCheckoutTests.swift */; };
@@ -106,15 +105,10 @@
 		E108F58E2B0D4F0800EC3CC6 /* WebRedirectComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E108F58D2B0D4F0800EC3CC6 /* WebRedirectComponentTests.swift */; };
 		E11F473D2B0694C50091C31F /* PrimerHeadlessFormWithRedirectManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F473C2B0694C50091C31F /* PrimerHeadlessFormWithRedirectManagerTests.swift */; };
 		E11F47482B06C4E30091C31F /* MerchantHeadlessCheckoutBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47422B06C4E30091C31F /* MerchantHeadlessCheckoutBankViewController.swift */; };
-		E11F47492B06C4E30091C31F /* BanksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47432B06C4E30091C31F /* BanksListView.swift */; };
 		E11F474A2B06C4E30091C31F /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47442B06C4E30091C31F /* BanksListModel.swift */; };
-		E11F474B2B06C4E30091C31F /* ImageViewWithUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47452B06C4E30091C31F /* ImageViewWithUrl.swift */; };
 		E11F474C2B06C4E30091C31F /* MerchantNewLineItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47462B06C4E30091C31F /* MerchantNewLineItemViewController.swift */; };
-		E11F474D2B06C4E30091C31F /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47472B06C4E30091C31F /* MerchantHeadlessCheckoutNolPayViewController.swift */; };
 		E11F47542B06C5030091C31F /* BanksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47502B06C5030091C31F /* BanksListView.swift */; };
-		E11F47552B06C5030091C31F /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47512B06C5030091C31F /* BanksListModel.swift */; };
 		E11F47562B06C5030091C31F /* ImageViewWithUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47522B06C5030091C31F /* ImageViewWithUrl.swift */; };
-		E129D6702B162022004694F9 /* MerchantHeadlessCheckoutBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E129D66F2B162022004694F9 /* MerchantHeadlessCheckoutBankViewController.swift */; };
 		E130C3D92AFD19FF00AC3E7C /* NetworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E130C3D82AFD19FF00AC3E7C /* NetworkTests.swift */; };
 		E13E72452AFE653000911866 /* IdealPaymentMethodTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E13E72442AFE653000911866 /* IdealPaymentMethodTests.swift */; };
 		E1A2971F2B021ABA005ADA51 /* URL+NetworkHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB44D12AFE13AF00639DC5 /* URL+NetworkHeaders.swift */; };
@@ -1095,13 +1089,10 @@
 				53E3182FFC4E5F05D866CFAE /* Networking.swift in Sources */,
 				592E00D98C8835CBCDAA26D9 /* MerchantDropInUIViewController.swift in Sources */,
 				E11F474C2B06C4E30091C31F /* MerchantNewLineItemViewController.swift in Sources */,
-				E11F47492B06C4E30091C31F /* BanksListView.swift in Sources */,
 				041295AA2AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */,
 				135E5BFD51371FABB5FF35D3 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift in Sources */,
-				E129D6702B162022004694F9 /* MerchantHeadlessCheckoutBankViewController.swift in Sources */,
 				E11F47542B06C5030091C31F /* BanksListView.swift in Sources */,
 				AD9CF1073EE0676E6640481A /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */,
-				E11F474D2B06C4E30091C31F /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */,
 				72F8D6065334FCD5B726A52C /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift in Sources */,
 				14EE32F4821BD1F19F75227F /* MerchantHeadlessCheckoutRawRetailDataViewController.swift in Sources */,
 				F02F496FD20B5291C044F62C /* MerchantResultViewController.swift in Sources */,
@@ -1109,10 +1100,7 @@
 				E11F47562B06C5030091C31F /* ImageViewWithUrl.swift in Sources */,
 				34CDCA7B403C001E4C55D26D /* MerchantSessionAndSettingsViewController.swift in Sources */,
 				E11F474A2B06C4E30091C31F /* BanksListModel.swift in Sources */,
-				170F3A07A039EE30E065AA30 /* MerchantNewLineItemViewController.swift in Sources */,
 				C5B3635FC90C149C4961BD9A /* Apaya.swift in Sources */,
-				E11F474B2B06C4E30091C31F /* ImageViewWithUrl.swift in Sources */,
-				E11F47552B06C5030091C31F /* BanksListModel.swift in Sources */,
 				C0115AC7BC96FDF49EF8E530 /* PaymentMethodCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

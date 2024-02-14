@@ -10,9 +10,9 @@ import Foundation
 @testable import PrimerSDK
 
 final class SDKSessionHelper {
-    
+
     private init() {}
-    
+
     static func setUp(withPaymentMethods paymentMethods: [PrimerPaymentMethod]? = nil) {
         let paymentMethods = paymentMethods ?? [
             Mocks.PaymentMethods.paymentCardPaymentMethod
@@ -34,12 +34,12 @@ final class SDKSessionHelper {
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfig
     }
-    
+
     static func tearDown() {
         PrimerAPIConfigurationModule.apiConfiguration = nil
         PrimerAPIConfigurationModule.clientToken = nil
     }
-    
+
     static func updateAllowedCardNetworks(cardNetworks: [CardNetwork]) {
         PrimerAPIConfigurationModule.apiConfiguration?.clientSession = .init(
             clientSessionId: "",
@@ -51,5 +51,5 @@ final class SDKSessionHelper {
             testId: nil
         )
     }
-    
+
 }

@@ -8,13 +8,13 @@
 @testable import PrimerSDK
 
 class MockVaultService: VaultServiceProtocol {
-    
+
     static var apiClient: PrimerAPIClientProtocol?
-    
+
     func fetchVaultedPaymentMethods() -> Promise<Void> {
         return Promise()
     }
-    
+
     func deleteVaultedPaymentMethod(with id: String) -> Promise<Void> {
         return Promise()
     }

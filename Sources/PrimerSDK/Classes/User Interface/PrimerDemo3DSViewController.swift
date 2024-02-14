@@ -72,9 +72,9 @@ class PrimerDemo3DSViewController: UIViewController {
     }
 
     @IBAction func sendCredentialsButtonTapped(_ sender: UIButton) {
-#if DEBUG
+        #if DEBUG
         self.onSendCredentialsButtonTapped?()
-#endif
+        #endif
     }
 }
 
@@ -142,8 +142,8 @@ class PrimerThirdPartySDKViewController: UIViewController {
     }
 
     @IBAction func sendCredentialsButtonTapped(_ sender: UIButton) {
-#if DEBUG
+        #if DEBUG
         self.onSendCredentialsButtonTapped?()
-#endif
+        #endif
     }
 }

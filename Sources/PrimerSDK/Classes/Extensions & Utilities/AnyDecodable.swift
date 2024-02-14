@@ -18,23 +18,23 @@ import Foundation
  You can decode mixed-type values in dictionaries
  and other collections that require `Decodable` conformance
  by declaring their contained type to be `AnyDecodable`:
-     let json = """
-     {
-         "boolean": true,
-         "integer": 42,
-         "double": 3.141592653589793,
-         "string": "string",
-         "array": [1, 2, 3],
-         "nested": {
-             "a": "alpha",
-             "b": "bravo",
-             "c": "charlie"
-         },
-         "null": null
-     }
-     """.data(using: .utf8)!
-     let decoder = JSONDecoder()
-     let dictionary = try! decoder.decode([String: AnyDecodable].self, from: json)
+ let json = """
+ {
+ "boolean": true,
+ "integer": 42,
+ "double": 3.141592653589793,
+ "string": "string",
+ "array": [1, 2, 3],
+ "nested": {
+ "a": "alpha",
+ "b": "bravo",
+ "c": "charlie"
+ },
+ "null": null
+ }
+ """.data(using: .utf8)!
+ let decoder = JSONDecoder()
+ let dictionary = try! decoder.decode([String: AnyDecodable].self, from: json)
  */
 internal struct AnyDecodable: Decodable {
     public let value: Any
@@ -58,9 +58,9 @@ extension _AnyDecodable {
 
         if container.decodeNil() {
             #if canImport(Foundation)
-                self.init(NSNull())
+            self.init(NSNull())
             #else
-                self.init(Optional<Self>.none)
+            self.init(Optional<Self>.none)
             #endif
         } else if let bool = try? container.decode(Bool.self) {
             self.init(bool)
@@ -85,10 +85,10 @@ extension _AnyDecodable {
 extension AnyDecodable: Equatable {
     public static func == (lhs: AnyDecodable, rhs: AnyDecodable) -> Bool {
         switch (lhs.value, rhs.value) {
-#if canImport(Foundation)
+        #if canImport(Foundation)
         case is (NSNull, NSNull), is (Void, Void):
             return true
-#endif
+        #endif
         case let (lhs as Bool, rhs as Bool):
             return lhs == rhs
         case let (lhs as Int, rhs as Int):

@@ -13,13 +13,13 @@ private func _race<U: Thenable>(_ thenables: [U]) -> Promise<U.T> {
 /**
  Waits for one promise to resolve
 
-     race(promise1, promise2, promise3).then { winner in
-         //…
-     }
+ race(promise1, promise2, promise3).then { winner in
+ //…
+ }
 
  - Returns: The promise that resolves first
  - Warning: If the first resolution is a rejection, the returned promise is rejected
-*/
+ */
 internal func race<U: Thenable>(_ thenables: U...) -> Promise<U.T> {
     return _race(thenables)
 }
@@ -27,14 +27,14 @@ internal func race<U: Thenable>(_ thenables: U...) -> Promise<U.T> {
 /**
  Waits for one promise to resolve
 
-     race(promise1, promise2, promise3).then { winner in
-         //…
-     }
+ race(promise1, promise2, promise3).then { winner in
+ //…
+ }
 
  - Returns: The promise that resolves first
  - Warning: If the first resolution is a rejection, the returned promise is rejected
  - Remark: If the provided array is empty the returned promise is rejected with PMKError.badInput
-*/
+ */
 internal func race<U: Thenable>(_ thenables: [U]) -> Promise<U.T> {
     guard !thenables.isEmpty else {
         return Promise(error: PMKError.badInput)
@@ -45,12 +45,12 @@ internal func race<U: Thenable>(_ thenables: [U]) -> Promise<U.T> {
 /**
  Waits for one guarantee to resolve
 
-     race(promise1, promise2, promise3).then { winner in
-         //…
-     }
+ race(promise1, promise2, promise3).then { winner in
+ //…
+ }
 
  - Returns: The guarantee that resolves first
-*/
+ */
 internal func race<T>(_ guarantees: Guarantee<T>...) -> Guarantee<T> {
     let rg = Guarantee<T>(.pending)
     for guarantee in guarantees {
@@ -66,18 +66,18 @@ internal func race<T>(_ guarantees: Guarantee<T>...) -> Guarantee<T> {
  `cancel` on the race promise cancels all pending promises. All promises will be cancelled if any
  promise rejects.
 
-     let racePromise = race(promise1, promise2, promise3).then { winner in
-         //…
-     }
+ let racePromise = race(promise1, promise2, promise3).then { winner in
+ //…
+ }
 
-     //…
+ //…
 
-     racePromise.cancel()
+ racePromise.cancel()
 
  - Returns: A new promise that resolves when the first promise in the provided promises resolves.
  - Warning: If any of the provided promises reject, the returned promise is rejected.
  - Warning: aborts if the array is empty.
-*/
+ */
 internal func race<V: CancellableThenable>(_ thenables: V...) -> CancellablePromise<V.U.T> {
     return race(thenables)
 }
@@ -86,18 +86,18 @@ internal func race<V: CancellableThenable>(_ thenables: V...) -> CancellableProm
  Resolves with the first resolving promise from a set of promises. Calling `cancel` on the race
  promise cancels all pending promises. All promises will be cancelled if any promise rejects.
 
-     let racePromise = race(promise1, promise2, promise3).then { winner in
-         //…
-     }
+ let racePromise = race(promise1, promise2, promise3).then { winner in
+ //…
+ }
 
-     //…
+ //…
 
-     racePromise.cancel()
+ racePromise.cancel()
 
  - Returns: A new promise that resolves when the first promise in the provided promises resolves.
  - Warning: If any of the provided promises reject, the returned promise is rejected.
  - Remark: Returns promise rejected with PMKError.badInput if empty array provided
-*/
+ */
 internal func race<V: CancellableThenable>(_ thenables: [V]) -> CancellablePromise<V.U.T> {
     guard !thenables.isEmpty else {
         return CancellablePromise(error: PMKError.badInput)
@@ -122,14 +122,14 @@ internal func race<V: CancellableThenable>(_ thenables: [V]) -> CancellablePromi
 /**
  Waits for one promise to fulfill
 
-     race(fulfilled: [promise1, promise2, promise3]).then { winner in
-         //…
-     }
+ race(fulfilled: [promise1, promise2, promise3]).then { winner in
+ //…
+ }
 
  - Returns: The promise that was fulfilled first.
  - Warning: Skips all rejected promises.
  - Remark: If the provided array is empty, the returned promise is rejected with `PMKError.badInput`. If there are no fulfilled promises, the returned promise is rejected with `PMKError.noWinner`.
-*/
+ */
 internal func race<U: Thenable>(fulfilled thenables: [U]) -> Promise<U.T> {
     var countdown = thenables.count
     guard countdown > 0 else {
@@ -165,21 +165,21 @@ internal func race<U: Thenable>(fulfilled thenables: [U]) -> Promise<U.T> {
 /**
  Returns a promise that can be used to set a timeout for `race`.
 
-     let promise1, promise2: Promise<Void>
-     race(promise1, promise2, timeout(seconds: 1.0)).done { winner in
-         //…
-     }.catch(policy: .allErrors) {
-         // Rejects with `PMKError.timedOut` if the timeout is exceeded before either `promise1` or
-         // `promise2` succeeds.
-     }
+ let promise1, promise2: Promise<Void>
+ race(promise1, promise2, timeout(seconds: 1.0)).done { winner in
+ //…
+ }.catch(policy: .allErrors) {
+ // Rejects with `PMKError.timedOut` if the timeout is exceeded before either `promise1` or
+ // `promise2` succeeds.
+ }
 
  When used with cancellable promises, all promises will be cancelled if the timeout is
  exceeded or any promise rejects:
 
-     let promise1, promise2: CancellablePromise<Void>
-     race(promise1, promise2, cancellize(timeout(seconds: 1.0))).done { winner in
-         //…
-     }
+ let promise1, promise2: CancellablePromise<Void>
+ race(promise1, promise2, cancellize(timeout(seconds: 1.0))).done { winner in
+ //…
+ }
  */
 internal func timeout(seconds: TimeInterval) -> Promise<Void> {
     return after(seconds: seconds).done { throw PMKError.timedOut }

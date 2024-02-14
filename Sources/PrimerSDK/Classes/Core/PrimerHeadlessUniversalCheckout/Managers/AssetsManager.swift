@@ -54,9 +54,9 @@ extension PrimerHeadlessUniversalCheckout {
             }
 
             guard let paymentMethodBackgroundColor = PrimerPaymentMethodBackgroundColor(
-                coloredStr: baseBackgroundColor.coloredHex,
-                lightStr: baseBackgroundColor.lightHex,
-                darkStr: baseBackgroundColor.darkHex) else {
+                    coloredStr: baseBackgroundColor.coloredHex,
+                    lightStr: baseBackgroundColor.lightHex,
+                    darkStr: baseBackgroundColor.darkHex) else {
                 return nil
             }
 
@@ -92,9 +92,9 @@ extension PrimerHeadlessUniversalCheckout {
                 }
 
                 guard let paymentMethodBackgroundColor = PrimerPaymentMethodBackgroundColor(
-                    coloredStr: baseBackgroundColor.coloredHex,
-                    lightStr: baseBackgroundColor.lightHex,
-                    darkStr: baseBackgroundColor.darkHex)
+                        coloredStr: baseBackgroundColor.coloredHex,
+                        lightStr: baseBackgroundColor.lightHex,
+                        darkStr: baseBackgroundColor.darkHex)
                 else {
                     continue
                 }

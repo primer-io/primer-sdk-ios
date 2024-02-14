@@ -54,7 +54,7 @@ final class IdealPaymentMethodTests: XCTestCase {
             }
             expectation.fulfill()
         }
-        self.availablePaymentMethodsLoadedCompletion = { availablePaymentMethods, err in
+        self.availablePaymentMethodsLoadedCompletion = { _, _ in
             XCTAssertTrue(subject.listAvailablePaymentMethodsTypes()?.contains(PrimerPaymentMethodType.adyenIDeal.rawValue) ?? false)
         }
         wait(for: [expectation], timeout: 10)
@@ -83,4 +83,3 @@ extension IdealPaymentMethodTests: TokenizationTestDelegate {
         self.availablePaymentMethodsLoadedCompletion = nil
     }
 }
-

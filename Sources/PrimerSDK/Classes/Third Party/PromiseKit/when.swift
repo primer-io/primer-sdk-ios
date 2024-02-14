@@ -10,13 +10,13 @@ private func _when<U: Thenable>(_ thenables: [U]) -> Promise<Void> {
 
     let rp = Promise<Void>(.pending)
 
-#if PMKDisableProgress || os(Linux) || os(Android)
+    #if PMKDisableProgress || os(Linux) || os(Android)
     var progress: (completedUnitCount: Int, totalUnitCount: Int) = (0, 0)
-#else
+    #else
     let progress = Progress(totalUnitCount: Int64(thenables.count))
     progress.isCancellable = false
     progress.isPausable = false
-#endif
+    #endif
 
     let barrier = DispatchQueue(label: "org.promisekit.barrier.when", attributes: .concurrent)
 
@@ -49,26 +49,26 @@ private func _when<U: Thenable>(_ thenables: [U]) -> Promise<Void> {
 
  For example:
 
-     when(fulfilled: promise1, promise2).then { results in
-         //…
-     }.catch { error in
-         switch error {
-         case URLError.notConnectedToInternet:
-             //…
-         case CLError.denied:
-             //…
-         }
-     }
+ when(fulfilled: promise1, promise2).then { results in
+ //…
+ }.catch { error in
+ switch error {
+ case URLError.notConnectedToInternet:
+ //…
+ case CLError.denied:
+ //…
+ }
+ }
 
  - Note: If *any* of the provided promises reject, the returned promise is immediately rejected with that error.
- - Warning: In the event of rejection the other promises will continue to resolve and, as per any other promise, will either fulfill or reject. 
-    This is the right pattern for `getter` style asynchronous tasks, but often for `setter` tasks (eg. storing data on a server),
-    you most likely will need to wait on all tasks and then act based on which have succeeded and which have failed, in such situations use `when(resolved:)`.
+ - Warning: In the event of rejection the other promises will continue to resolve and, as per any other promise, will either fulfill or reject.
+ This is the right pattern for `getter` style asynchronous tasks, but often for `setter` tasks (eg. storing data on a server),
+ you most likely will need to wait on all tasks and then act based on which have succeeded and which have failed, in such situations use `when(resolved:)`.
  - Parameter promises: The promises upon which to wait before the returned promise resolves.
  - Returns: A new promise that resolves when all the provided promises fulfill or one of the provided promises rejects.
  - Note: `when` provides `NSProgress`.
  - SeeAlso: `when(resolved:)`
-*/
+ */
 internal func when<U: Thenable>(fulfilled thenables: [U]) -> Promise<[U.T]> {
     return _when(thenables).map(on: nil) { thenables.map { $0.value! } }
 }
@@ -107,25 +107,25 @@ internal func when<U: Thenable, V: Thenable, W: Thenable, X: Thenable, Y: Thenab
  Generate promises at a limited rate and wait for all to fulfill.
 
  For example:
- 
-     func downloadFile(url: URL) -> Promise<Data> {
-         // …
-     }
- 
-     let urls: [URL] = /*…*/
-     let urlGenerator = urls.makeIterator()
 
-     let generator = AnyIterator<Promise<Data>> {
-         guard url = urlGenerator.next() else {
-             return nil
-         }
-         return downloadFile(url)
-     }
+ func downloadFile(url: URL) -> Promise<Data> {
+ // …
+ }
 
-     when(generator, concurrently: 3).done { datas in
-         // …
-     }
- 
+ let urls: [URL] = /*…*/
+ let urlGenerator = urls.makeIterator()
+
+ let generator = AnyIterator<Promise<Data>> {
+ guard url = urlGenerator.next() else {
+ return nil
+ }
+ return downloadFile(url)
+ }
+
+ when(generator, concurrently: 3).done { datas in
+ // …
+ }
+
  No more than three downloads will occur simultaneously.
 
  - Note: The generator is called *serially* on a *background* queue.
@@ -203,22 +203,22 @@ internal func when<It: IteratorProtocol>(fulfilled promiseIterator: It, concurre
 /**
  Waits on all provided promises.
 
- `when(fulfilled:)` rejects as soon as one of the provided promises rejects. `when(resolved:)` waits on all provided 
+ `when(fulfilled:)` rejects as soon as one of the provided promises rejects. `when(resolved:)` waits on all provided
  promises whatever their result, and then provides an array of `Result<T>` so you can individually inspect the results.
  As a consequence this function returns a `Guarantee`, ie. errors are lifted from the individual promises into the results array of the returned `Guarantee`.
 
-     when(resolved: promise1, promise2, promise3).then { results in
-         for result in results where case .success(let value) {
-            //…
-         }
-     }.catch { error in
-         // invalid! Never rejects
-     }
+ when(resolved: promise1, promise2, promise3).then { results in
+ for result in results where case .success(let value) {
+ //…
+ }
+ }.catch { error in
+ // invalid! Never rejects
+ }
 
  - Returns: A new promise that resolves once all the provided promises resolve. The array is ordered the same as the input, ie. the result order is *not* resolution order.
  - Note: we do not provide tuple variants for `when(resolved:)` but will accept a pull-request
  - Remark: Doesn't take Thenable due to protocol `associatedtype` paradox
-*/
+ */
 internal func when<T>(resolved promises: Promise<T>...) -> Guarantee<[Result<T, Error>]> {
     return when(resolved: promises)
 }
@@ -249,38 +249,38 @@ internal func when<T>(resolved promises: [Promise<T>]) -> Guarantee<[Result<T, E
 }
 
 /**
-Generate promises at a limited rate and wait for all to resolve.
+ Generate promises at a limited rate and wait for all to resolve.
 
-For example:
+ For example:
 
-    func downloadFile(url: URL) -> Promise<Data> {
-        // ...
-    }
+ func downloadFile(url: URL) -> Promise<Data> {
+ // ...
+ }
 
-    let urls: [URL] = /*…*/
-    let urlGenerator = urls.makeIterator()
+ let urls: [URL] = /*…*/
+ let urlGenerator = urls.makeIterator()
 
-    let generator = AnyIterator<Promise<Data>> {
-        guard url = urlGenerator.next() else {
-            return nil
-        }
-        return downloadFile(url)
-    }
+ let generator = AnyIterator<Promise<Data>> {
+ guard url = urlGenerator.next() else {
+ return nil
+ }
+ return downloadFile(url)
+ }
 
-    when(resolved: generator, concurrently: 3).done { results in
-        // ...
-    }
+ when(resolved: generator, concurrently: 3).done { results in
+ // ...
+ }
 
-No more than three downloads will occur simultaneously. Downloads will continue if one of them fails
+ No more than three downloads will occur simultaneously. Downloads will continue if one of them fails
 
-- Note: The generator is called *serially* on a *background* queue.
-- Warning: Refer to the warnings on `when(resolved:)`
-- Parameter promiseGenerator: Generator of promises.
-- Returns: A new promise that resolves once all the provided promises resolve. The array is ordered the same as the input, ie. the result order is *not* resolution order.
-- SeeAlso: `when(resolved:)`
-*/
+ - Note: The generator is called *serially* on a *background* queue.
+ - Warning: Refer to the warnings on `when(resolved:)`
+ - Parameter promiseGenerator: Generator of promises.
+ - Returns: A new promise that resolves once all the provided promises resolve. The array is ordered the same as the input, ie. the result order is *not* resolution order.
+ - SeeAlso: `when(resolved:)`
+ */
 internal func when<It: IteratorProtocol>(resolved promiseIterator: It, concurrently: Int)
-    -> Guarantee<[Result<It.Element.T, Error>]> where It.Element: Thenable {
+-> Guarantee<[Result<It.Element.T, Error>]> where It.Element: Thenable {
     guard concurrently > 0 else {
         return Guarantee.value([Result.failure(PMKError.badInput)])
     }
@@ -321,11 +321,11 @@ internal func when<It: IteratorProtocol>(resolved promiseIterator: It, concurren
         func testDone() {
             barrier.sync {
                 if pendingPromises == 0 {
-                  #if !swift(>=3.3) || (swift(>=4) && !swift(>=4.1))
+                    #if !swift(>=3.3) || (swift(>=4) && !swift(>=4.1))
                     root.resolve(promises.flatMap { $0.result })
-                  #else
+                    #else
                     root.resolve(promises.compactMap { $0.result })
-                  #endif
+                    #endif
                 }
             }
         }
@@ -368,30 +368,30 @@ internal func when(guarantees: [Guarantee<Void>]) -> Guarantee<Void> {
 
  For example:
 
-     let p = when(fulfilled: promise1, promise2).then { results in
-         //…
-     }.catch { error in
-         switch error {
-         case URLError.notConnectedToInternet:
-             //…
-         case CLError.denied:
-             //…
-         }
-     }
- 
-     //…
+ let p = when(fulfilled: promise1, promise2).then { results in
+ //…
+ }.catch { error in
+ switch error {
+ case URLError.notConnectedToInternet:
+ //…
+ case CLError.denied:
+ //…
+ }
+ }
 
-     p.cancel()
+ //…
+
+ p.cancel()
 
  - Note: If *any* of the provided promises reject, the returned promise is immediately rejected with that error.
- - Warning: In the event of rejection the other promises will continue to resolve and, as per any other promise, 
+ - Warning: In the event of rejection the other promises will continue to resolve and, as per any other promise,
  will either fulfill or reject. This is the right pattern for `getter` style asynchronous tasks, but often for `setter` tasks (eg. storing data on a server),
  you most likely will need to wait on all tasks and then act based on which have succeeded and which have failed, in such situations use `when(resolved:)`.
  - Parameter promises: The promises upon which to wait before the returned promise resolves.
  - Returns: A new promise that resolves when all the provided promises fulfill or one of the provided promises rejects.
  - Note: `when` provides `NSProgress`.
  - SeeAlso: `when(resolved:)`
-*/
+ */
 internal func when<V: CancellableThenable>(fulfilled thenables: V...) -> CancellablePromise<[V.U.T]> {
     let rp = CancellablePromise(when(fulfilled: asThenables(thenables)))
     for t in thenables {
@@ -430,25 +430,25 @@ internal func when<V: CancellableThenable>(fulfilled promises: [V]) -> Cancellab
  Wait for all cancellable promises in a set to fulfill.
 
  - Note: by convention the cancellable 'when' functions should not have a 'cancellable' prefix, however the prefix is necessary due to a compiler bug exemplified by the following:
- 
-     ````
-     This works fine:
-       1  func hi(_: String...) { }
-       2  func hi(_: String, _: String) { }
-       3  hi("hi", "there")
 
-     This does not compile:
-       1  func hi(_: String...) { }
-       2  func hi(_: String, _: String) { }
-       3  func hi(_: Int...) { }
-       4  func hi(_: Int, _: Int) { }
-       5
-       6  hi("hi", "there")  // Ambiguous use of 'hi' (lines 1 & 2 are candidates)
-       7  hi(1, 2)           // Ambiguous use of 'hi' (lines 3 & 4 are candidates)
-     ````
- 
-  - SeeAlso: `when(fulfilled:,_:)`
-*/
+ ````
+ This works fine:
+ 1  func hi(_: String...) { }
+ 2  func hi(_: String, _: String) { }
+ 3  hi("hi", "there")
+
+ This does not compile:
+ 1  func hi(_: String...) { }
+ 2  func hi(_: String, _: String) { }
+ 3  func hi(_: Int...) { }
+ 4  func hi(_: Int, _: Int) { }
+ 5
+ 6  hi("hi", "there")  // Ambiguous use of 'hi' (lines 1 & 2 are candidates)
+ 7  hi(1, 2)           // Ambiguous use of 'hi' (lines 3 & 4 are candidates)
+ ````
+
+ - SeeAlso: `when(fulfilled:,_:)`
+ */
 internal func cancellableWhen<U: CancellableThenable, V: CancellableThenable>(fulfilled pu: U, _ pv: V) -> CancellablePromise<(U.U.T, V.U.T)> {
     return when(fulfilled: [pu.asVoid(), pv.asVoid()]).map(on: nil) { (pu.value!, pv.value!) }
 }
@@ -479,34 +479,34 @@ internal func cancellableWhen<U: CancellableThenable,
 }
 
 /**
- Generate cancellable promises at a limited rate and wait for all to fulfill.  
+ Generate cancellable promises at a limited rate and wait for all to fulfill.
  Call `cancel` on the returned promise to cancel all currently pending promises.
 
  For example:
- 
-     func downloadFile(url: URL) -> CancellablePromise<Data> {
-         // …
-     }
- 
-     let urls: [URL] = /*…*/
-     let urlGenerator = urls.makeIterator()
 
-     let generator = AnyIterator<CancellablePromise<Data>> {
-         guard url = urlGenerator.next() else {
-             return nil
-         }
-         return downloadFile(url)
-     }
+ func downloadFile(url: URL) -> CancellablePromise<Data> {
+ // …
+ }
 
-     let promise = when(generator, concurrently: 3).done { datas in
-         // …
-     }
- 
-     // …
- 
-     promise.cancel()
+ let urls: [URL] = /*…*/
+ let urlGenerator = urls.makeIterator()
 
- 
+ let generator = AnyIterator<CancellablePromise<Data>> {
+ guard url = urlGenerator.next() else {
+ return nil
+ }
+ return downloadFile(url)
+ }
+
+ let promise = when(generator, concurrently: 3).done { datas in
+ // …
+ }
+
+ // …
+
+ promise.cancel()
+
+
  No more than three downloads will occur simultaneously.
 
  - Note: The generator is called *serially* on a *background* queue.
@@ -547,26 +547,26 @@ internal func when<It: IteratorProtocol>(fulfilled promiseIterator: It, concurre
 /**
  Waits on all provided cancellable promises.
 
- `when(fulfilled:)` rejects as soon as one of the provided promises rejects. `when(resolved:)` waits on all provided promises and *never* rejects.  
+ `when(fulfilled:)` rejects as soon as one of the provided promises rejects. `when(resolved:)` waits on all provided promises and *never* rejects.
  When cancelled, all promises will attempt to be cancelled and those that are successfully cancelled will have a result of
  PMKError.cancelled.
 
-     let p = when(resolved: promise1, promise2, promise3, cancel: context).then { results in
-         for result in results where case .fulfilled(let value) {
-            //…
-         }
-     }.catch { error in
-         // invalid! Never rejects
-     }
- 
-     //…
+ let p = when(resolved: promise1, promise2, promise3, cancel: context).then { results in
+ for result in results where case .fulfilled(let value) {
+ //…
+ }
+ }.catch { error in
+ // invalid! Never rejects
+ }
 
-     p.cancel()
- 
+ //…
+
+ p.cancel()
+
  - Returns: A new promise that resolves once all the provided promises resolve. The array is ordered the same as the input, ie. the result order is *not* resolution order.
  - Note: Any promises that error are implicitly consumed.
  - Remark: Doesn't take CancellableThenable due to protocol associatedtype paradox
-*/
+ */
 internal func when<T>(resolved promises: CancellablePromise<T>...) -> CancellablePromise<[Result<T, Error>]> {
     return when(resolved: promises)
 }

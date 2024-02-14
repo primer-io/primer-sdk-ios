@@ -25,6 +25,7 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
     case invalidPhoneNumberCountryCode(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidRetailer(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidRawData(userInfo: [String: String]?, diagnosticsId: String)
+    // swiftlint:disable:next identifier_name
     case vaultedPaymentMethodAdditionalDataMismatch(paymentMethodType: String, validVaultedPaymentMethodAdditionalDataType: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidOTPCode(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidCardType(message: String, userInfo: [String: String]?, diagnosticsId: String)
@@ -157,6 +158,7 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "[\(errorId)] Raw data is not valid."
         case .invalidRetailer(let message, _, _):
             return "[\(errorId)] \(message)"
+        // swiftlint:disable:next identifier_name
         case .vaultedPaymentMethodAdditionalDataMismatch(let paymentMethodType, let validVaultedPaymentMethodAdditionalDataType, _, _):
             return "[\(errorId)] Vaulted payment method \(paymentMethodType) needs additional data of type \(validVaultedPaymentMethodAdditionalDataType)"
         case .invalidPhoneNumberCountryCode(message: let message, _, _):
@@ -311,7 +313,7 @@ extension PrimerValidationError: Equatable {
             (.invalidCardType(let message1, let userInfo1, let id1), .invalidCardType(let message2, let userInfo2, let id2)):
             return message1 == message2 && userInfo1 == userInfo2 && id1 == id2
         case (.invalidRawData(let userInfo1, let id1), .invalidRawData(let userInfo2, let id2)),
-            (.banksNotLoaded(let userInfo1, let id1), .banksNotLoaded(let userInfo2, let id2)):
+             (.banksNotLoaded(let userInfo1, let id1), .banksNotLoaded(let userInfo2, let id2)):
             return userInfo1 == userInfo2 && id1 == id2
         case (.vaultedPaymentMethodAdditionalDataMismatch(let type1, let validType1, let userInfo1, let id1),
               .vaultedPaymentMethodAdditionalDataMismatch(let type2, let validType2, let userInfo2, let id2)):

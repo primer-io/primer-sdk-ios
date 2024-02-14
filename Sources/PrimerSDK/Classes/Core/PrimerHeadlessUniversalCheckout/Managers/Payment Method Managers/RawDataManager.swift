@@ -8,6 +8,7 @@
 import Foundation
 import SafariServices
 
+// swiftlint:disable type_name
 @objc
 public protocol PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
@@ -49,9 +50,7 @@ extension PrimerHeadlessUniversalCheckout {
 
     public class RawDataManager: NSObject, LogReporter {
         
-        public typealias Delegate = PrimerHeadlessUniversalCheckoutRawDataManagerDelegate
-        
-        public var delegate: Delegate?
+        public var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
         public private(set) var paymentMethodType: String
         public var rawData: PrimerRawData? {
             didSet {
@@ -82,7 +81,7 @@ extension PrimerHeadlessUniversalCheckout {
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
         var initializationData: PrimerInitializationData?
         
-        required public init(paymentMethodType: String, delegate: Delegate? = nil) throws {
+        required public init(paymentMethodType: String, delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? = nil) throws {
             PrimerInternal.shared.sdkIntegrationType = .headless
 
             let sdkEvent = Analytics.Event.sdk(
@@ -114,7 +113,7 @@ extension PrimerHeadlessUniversalCheckout {
                 self.rawDataTokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: paymentMethodType)
 
             case PrimerPaymentMethodType.xenditOvo.rawValue,
-                PrimerPaymentMethodType.adyenMBWay.rawValue:
+                 PrimerPaymentMethodType.adyenMBWay.rawValue:
                 self.rawDataTokenizationBuilder = PrimerRawPhoneNumberDataTokenizationBuilder(paymentMethodType: paymentMethodType)
 
             case PrimerPaymentMethodType.xenditRetailOutlets.rawValue:
@@ -275,7 +274,7 @@ extension PrimerHeadlessUniversalCheckout {
                     Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
                         if !decisionHandlerHasBeenCalled {
                             let message =
-"""
+                                """
 "The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. \
 Make sure you call the decision handler otherwise the SDK will hang."
 """
@@ -532,16 +531,16 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     threeDSService.perform3DS(
                         paymentMethodTokenData: paymentMethodTokenData,
                         sdkDismissed: nil) { result in
-                            DispatchQueue.main.async {
-                                switch result {
-                                case .success(let resumeToken):
-                                    seal.fulfill(resumeToken)
+                        DispatchQueue.main.async {
+                            switch result {
+                            case .success(let resumeToken):
+                                seal.fulfill(resumeToken)
 
-                                case .failure(let err):
-                                    seal.reject(err)
-                                }
+                            case .failure(let err):
+                                seal.reject(err)
                             }
                         }
+                    }
 
                 } else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
                     if let redirectUrlStr = decodedJWTToken.redirectUrl,
@@ -1007,9 +1006,9 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager: SFSafariViewController
             // Cancelled
             let err = PrimerError.cancelled(paymentMethodType: self.paymentMethodType,
                                             userInfo: ["file": #file,
-                                                                                                  "class": "\(Self.self)",
-                                                                                                  "function": #function,
-                                                                                                  "line": "\(#line)"],
+                                                       "class": "\(Self.self)",
+                                                       "function": #function,
+                                                       "line": "\(#line)"],
                                             diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             webViewCompletion(nil, err)

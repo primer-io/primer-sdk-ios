@@ -39,7 +39,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     private var currentPollingIteration: Int = 0
     var testFetchNolSdkSecretResult: (Response.Body.NolPay.NolPaySecretDataResponse?, Error?)?
     var phoneMetadataResult = Response.Body.PhoneMetadata.PhoneMetadataDataResponse(isValid: true, countryCode: "+111", nationalNumber: "12341234")
-    
+
     func validateClientToken(
         request: Request.Body.ClientTokenValidation,
         completion: @escaping (_ result: Result<SuccessResponse, Error>) -> Void
@@ -59,7 +59,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func fetchConfiguration(
         clientToken: DecodedJWTToken,
         requestParameters: Request.URLParameters.Configuration?,
@@ -80,7 +80,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func fetchVaultedPaymentMethods(
         clientToken: DecodedJWTToken,
         completion: @escaping (_ result: Result<Response.Body.VaultedPaymentMethods, Error>) -> Void
@@ -100,7 +100,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) -> Promise<Response.Body.VaultedPaymentMethods> {
         return Promise { seal in
             self.fetchVaultedPaymentMethods(clientToken: clientToken) { result in
@@ -113,7 +113,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func deleteVaultedPaymentMethod(
         clientToken: DecodedJWTToken,
         id: String,
@@ -132,7 +132,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     // PayPal
     func createPayPalOrderSession(
         clientToken: DecodedJWTToken,
@@ -154,7 +154,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func createPayPalBillingAgreementSession(
         clientToken: DecodedJWTToken,
         payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement,
@@ -175,7 +175,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func confirmPayPalBillingAgreement(
         clientToken: DecodedJWTToken,
         payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement,
@@ -196,7 +196,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     // Klarna
     func createKlarnaPaymentSession(
         clientToken: DecodedJWTToken,
@@ -218,7 +218,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func createKlarnaCustomerToken(
         clientToken: DecodedJWTToken,
         klarnaCreateCustomerTokenAPIRequest: Request.Body.Klarna.CreateCustomerToken,
@@ -239,7 +239,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func finalizeKlarnaPaymentSession(
         clientToken: DecodedJWTToken,
         klarnaFinalizePaymentSessionRequest: Request.Body.Klarna.FinalizePaymentSession,
@@ -260,7 +260,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     // Tokenization
     func tokenizePaymentMethod(
         clientToken: DecodedJWTToken,
@@ -282,7 +282,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func exchangePaymentMethodToken(
         clientToken: PrimerSDK.DecodedJWTToken,
         vaultedPaymentMethodId: String,
@@ -304,7 +304,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     // 3DS
     func begin3DSAuth(clientToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void
     ) {
@@ -323,7 +323,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func continue3DSAuth(clientToken: PrimerSDK.DecodedJWTToken, threeDSTokenId: String, continueInfo: PrimerSDK.ThreeDS.ContinueInfo, completion: @escaping (Result<PrimerSDK.ThreeDS.PostAuthResponse, Error>) -> Void) {
         guard let result = continue3DSAuthResult,
               result.0 != nil || result.1 != nil
@@ -340,7 +340,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     // Apaya
     func createApayaSession(
         clientToken: DecodedJWTToken,
@@ -362,7 +362,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func listAdyenBanks(
         clientToken: DecodedJWTToken,
         request: Request.Body.Adyen.BanksList,
@@ -383,7 +383,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func listRetailOutlets(
         clientToken: PrimerSDK.DecodedJWTToken,
         paymentMethodId: String,
@@ -474,7 +474,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             XCTAssert(false, "Set 'sendAnalyticsResult' on your MockPrimerAPIClient")
             return
         }
-        
+
         DispatchQueue.main.async {
             if let err = result.1 {
                 completion(.failure(err))
@@ -483,7 +483,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func fetchPayPalExternalPayerInfo(
         clientToken: DecodedJWTToken,
         payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo,
@@ -526,7 +526,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func resumePayment(clientToken: DecodedJWTToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (Result<Response.Body.Payment, Error>) -> Void) {
         guard let result = resumePaymentResult,
               result.0 != nil || result.1 != nil
@@ -543,7 +543,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func testFinalizePolling(clientToken: PrimerSDK.DecodedJWTToken, testId: String, completion: @escaping (Result<Void, Error>) -> Void) {
         guard let result = testFinalizePollingResult,
               result.0 != nil || result.1 != nil
@@ -579,14 +579,14 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
     
     func fetchNolSdkSecret(clientToken: PrimerSDK.DecodedJWTToken, paymentRequestBody: PrimerSDK.Request.Body.NolPay.NolPaySecretDataRequest, completion: @escaping (Result<PrimerSDK.Response.Body.NolPay.NolPaySecretDataResponse, Error>) -> Void) {
-        
+
         guard let result = testFetchNolSdkSecretResult,
               result.0 != nil || result.1 != nil
         else {
             XCTAssert(false, "Set 'testFetchNolSdkSecretResult' on your MockPrimerAPIClient")
             return
         }
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
@@ -595,7 +595,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func genericAPICall(clientToken: PrimerSDK.DecodedJWTToken, url: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
         Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
             DispatchQueue.main.async {
@@ -603,11 +603,11 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func getPhoneMetadata(clientToken: PrimerSDK.DecodedJWTToken, paymentRequestBody: PrimerSDK.Request.Body.PhoneMetadata.PhoneMetadataDataRequest, completion: @escaping (Result<PrimerSDK.Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>) -> Void) {
         completion(.success(phoneMetadataResult))
     }
-    
+
     func mockSuccessfulResponses() {
         self.validateClientTokenResult                  = (MockPrimerAPIClient.Samples.mockValidateClientToken, nil)
         self.fetchConfigurationResult                   = (MockPrimerAPIClient.Samples.mockPrimerAPIConfiguration, nil)
@@ -635,9 +635,9 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
 }
 
 extension MockPrimerAPIClient {
-    
+
     class Samples {
-        
+
         static let mockValidateClientToken: SuccessResponse = SuccessResponse(success: true)
         static let mockPrimerAPIConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
@@ -907,8 +907,8 @@ extension MockPrimerAPIClient {
             requiredAction: nil,
             status: .success,
             paymentFailureReason: nil)
-        
+
         static let mockFetchNolSdkSecret = Response.Body.NolPay.NolPaySecretDataResponse(sdkSecret: "")
-        
+
     }
 }

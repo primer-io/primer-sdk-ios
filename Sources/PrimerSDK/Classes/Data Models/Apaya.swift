@@ -25,6 +25,7 @@ extension Request.Body.Apaya {
         let currencyCode: String
         let phoneNumber: String?
 
+        // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case merchantAccountId = "merchant_account_id"
             case reference = "reference"
