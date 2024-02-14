@@ -11,13 +11,13 @@ internal class ErrorHandler: LogReporter {
 
     // Call this function to log any error to Analytics
     static func handle(error: Error) {
-        _ = ErrorHandler.shared.handle(error: error)
+        ErrorHandler.shared.handle(error: error)
     }
 
     static var shared = ErrorHandler()
 
     @discardableResult
-    func handle(error: Error) -> Bool {
+    func handle(error: Error) {
         self.logger.error(message: error.localizedDescription)
 
         var event: Analytics.Event!
@@ -66,7 +66,5 @@ internal class ErrorHandler: LogReporter {
         }
 
         Analytics.Service.record(event: event)
-
-        return false
     }
 }

@@ -123,10 +123,6 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
             }
         }
     }
-    
-    public func setupPaymentIntent(_ intent: PrimerSessionIntent) {
-        PrimerInternal.shared.intent = intent
-    }
 
     public func cleanUp() {
         PrimerAPIConfigurationModule.resetSession()

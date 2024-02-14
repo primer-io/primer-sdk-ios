@@ -12,17 +12,8 @@ import PrimerKlarnaSDK
 extension PrimerHeadlessUniversalCheckout {
     
     public class KlarnaHeadlessManager: NSObject, PrimerKlarnaProviderErrorDelegate {
-        /// Responsible for performing operations related to Klarna's payment process.
-        private var klarnaProvider: PrimerKlarnaProviding?
         
-        /// A component that handles the tokenization process required for Klarna payments.
-        private var tokenizationComponent: KlarnaTokenizationComponentProtocol?
-        
-        /// Global settings for the payment process, injected as a dependency.
-        private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        
-        /// A delegate to handle errors that may occur during the payment process, involving KlarnaHeadlessManager logic.
-        public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
+        // MARK: - Session components
         
         /// Component responsible for managing session creation stages of the Klarna payment session.
         var sessionCreationComponent: KlarnaPaymentSessionCreationComponent?
@@ -36,8 +27,24 @@ extension PrimerHeadlessUniversalCheckout {
         /// Component responsible for managing klarna view stages of the Klarna payment session.
         var viewHandlingComponent: KlarnaPaymentViewHandlingComponent?
         
+        // MARK: - Manager properties
+        
+        /// A component that handles the tokenization process required for Klarna payments.
+        private var tokenizationComponent: KlarnaTokenizationComponentProtocol?
+        
+        /// Global settings for the payment process, injected as a dependency.
+        private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        
+        /// A delegate to handle errors that may occur during the payment process, involving KlarnaHeadlessManager logic.
+        public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
+        
+        // MARK: - Klarna properties
+        
+        /// Responsible for performing operations related to Klarna's payment process.
+        private var klarnaProvider: PrimerKlarnaProviding?
+        
         // MARK: - Init
-        public init(paymentMethodType: String) {
+        public init(paymentMethodType: String, intent: PrimerSessionIntent) {
             super.init()
             
             guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?.first(where: { $0.type == paymentMethodType }) else {
@@ -47,6 +54,20 @@ extension PrimerHeadlessUniversalCheckout {
                 ErrorHandler.handle(error: err)
                 return
             }
+            
+            if (intent == .vault && !paymentMethod.isVaultingEnabled) ||
+                (intent == .checkout && !paymentMethod.isCheckoutEnabled) {
+                let err = PrimerError.unsupportedIntent(intent: intent,
+                                                        userInfo: ["file": #file,
+                                                                   "class": "\(Self.self)",
+                                                                   "function": #function,
+                                                                   "line": "\(#line)"],
+                                                        diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                return
+            }
+            
+            PrimerInternal.shared.intent = intent
             
             let tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: paymentMethod)
             self.tokenizationComponent = tokenizationComponent
@@ -84,11 +105,6 @@ extension PrimerHeadlessUniversalCheckout {
         public func startSession() {
             sessionCreationComponent?.start()
             validate()
-        }
-        
-        /// Updates the payment session with data collected from the user.
-        public func updateSessionCollectedData(collectableData: KlarnaPaymentSessionCollectableData) {
-            sessionCreationComponent?.updateCollectedData(collectableData: collectableData)
         }
         
         // MARK: - Session authorization public methods

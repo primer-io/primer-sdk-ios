@@ -31,24 +31,16 @@ public class KlarnaPaymentSessionFinalizationComponent: PrimerHeadlessAnalyticsR
     
     // MARK: - Set
     func setProvider(provider: PrimerKlarnaProviding?) {
-        self.klarnaProvider = provider
-        self.klarnaProvider?.finalizationDelegate = self
+        klarnaProvider = provider
+        klarnaProvider?.finalizationDelegate = self
     }
 }
 
 // MARK: - Finalization
 public extension KlarnaPaymentSessionFinalizationComponent {
     func finalise(jsonData: String? = nil) {
-        self.recordEvent(
-            type: .sdkEvent,
-            name: KlarnaAnalyticsEvents.FINALIZE_SESSION_METHOD,
-            params: [
-                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
-                KlarnaAnalyticsEvents.JSON_DATA_KEY: jsonData ?? KlarnaAnalyticsEvents.JSON_DATA_DEFAULT_VALUE
-            ]
-        )
-        
-        self.klarnaProvider?.finalise(jsonData: jsonData)
+        recordFinalizationEvent(jsonData: jsonData)
+        klarnaProvider?.finalise(jsonData: jsonData)
     }
 }
 
@@ -77,12 +69,26 @@ extension KlarnaPaymentSessionFinalizationComponent: PrimerKlarnaProviderFinaliz
     public func primerKlarnaWrapperFinalized(approved: Bool, authToken: String?) {
         if approved == false {
             let step = KlarnaPaymentSessionFinalization.paymentSessionFinalizationFailed
-            self.stepDelegate?.didReceiveStep(step: step)
+            stepDelegate?.didReceiveStep(step: step)
         }
         
         if let authToken = authToken, approved == true {
-            self.finalizeSession(token: authToken)
+            finalizeSession(token: authToken)
         }
+    }
+}
+
+// MARK: - Helpers
+extension KlarnaPaymentSessionFinalizationComponent {
+    private func recordFinalizationEvent(jsonData: String?) {
+        recordEvent(
+            type: .sdkEvent,
+            name: KlarnaAnalyticsEvents.FINALIZE_SESSION_METHOD,
+            params: [
+                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
+                KlarnaAnalyticsEvents.JSON_DATA_KEY: jsonData ?? KlarnaAnalyticsEvents.JSON_DATA_DEFAULT_VALUE
+            ]
+        )
     }
 }
 #endif

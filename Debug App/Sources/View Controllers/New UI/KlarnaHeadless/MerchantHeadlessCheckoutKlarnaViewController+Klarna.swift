@@ -16,24 +16,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaComp
     }
     
     // MARK: - PrimerHeadlessValidatableDelegate
-    func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
-        switch validationStatus {
-        case .invalid(let errors):
-            var message = ""
-            for error in errors {
-                message += (error.errorDescription ?? error.localizedDescription) + "\n"
-            }
-            self.showAlert(title: "Validation Error", message: "\(message)")
-            
-        case .valid:
-            if let _ = data as? KlarnaPaymentSessionCollectableData {
-                self.startPaymentSession()
-            }
-            
-        default:
-            break
-        }
-    }
+    func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {}
     
     // MARK: - PrimerHeadlessSteppableDelegate
     func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {

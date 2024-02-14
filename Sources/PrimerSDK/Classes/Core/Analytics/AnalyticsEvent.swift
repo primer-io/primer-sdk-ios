@@ -207,6 +207,7 @@ extension Analytics.Event {
 
             var issuerId: String?
             var paymentMethodType: String?
+            var cardNetworks: [String]?
             var url: String?
             var iPay88PaymentMethodId: String?
             var iPay88ActionType: String?
@@ -214,24 +215,17 @@ extension Analytics.Event {
             init(
                 issuerId: String? = nil,
                 paymentMethodType: String? = nil,
+                cardNetworks: [String]? = nil,
                 url: String? = nil,
                 iPay88PaymentMethodId: String? = nil,
                 iPay88ActionType: String? = nil
             ) {
                 self.issuerId = issuerId
                 self.paymentMethodType = paymentMethodType
+                self.cardNetworks = cardNetworks
                 self.url = url
                 self.iPay88PaymentMethodId = iPay88PaymentMethodId
                 self.iPay88ActionType = iPay88ActionType
-            }
-
-            func encode(to encoder: Encoder) throws {
-                var container = encoder.container(keyedBy: Analytics.Event.Property.Context.CodingKeys.self)
-                try container.encodeIfPresent(self.issuerId, forKey: Analytics.Event.Property.Context.CodingKeys.issuerId)
-                try container.encodeIfPresent(self.paymentMethodType, forKey: Analytics.Event.Property.Context.CodingKeys.paymentMethodType)
-                try container.encodeIfPresent(self.url, forKey: Analytics.Event.Property.Context.CodingKeys.url)
-                try container.encodeIfPresent(self.iPay88PaymentMethodId, forKey: Analytics.Event.Property.Context.CodingKeys.iPay88PaymentMethodId)
-                try container.encodeIfPresent(self.iPay88ActionType, forKey: Analytics.Event.Property.Context.CodingKeys.iPay88ActionType)
             }
         }
 
@@ -260,6 +254,7 @@ extension Analytics.Event {
             case image          = "IMAGE"
             case input          = "INPUT"
             case label          = "LABEL"
+            case list           = "LIST"
             case listItem       = "LIST_ITEM"
             case loader         = "LOADER"
             case view           = "VIEW"
@@ -272,6 +267,7 @@ extension Analytics.Event {
             case cancel                     = "CANCEL"
             case cardHolder                 = "CARD_HOLDER"
             case cardNumber                 = "CARD_NUMBER"
+            case cardNetwork                = "CARD_NETWORK"
             case cvc                        = "CVC"
             case delete                     = "DELETE"
             case done                       = "DONE"
