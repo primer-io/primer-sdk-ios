@@ -1,3 +1,13 @@
+## 2.22.0 (2024-02-15)
+
+### Feat
+
+- Co-Badged Cards (#774)
+
+### Fix
+
+- ensure REQUEST_END events are sent for all relevant endpoints (#798)
+
 ## 2.21.0 (2024-02-06)
 
 ### Feat
