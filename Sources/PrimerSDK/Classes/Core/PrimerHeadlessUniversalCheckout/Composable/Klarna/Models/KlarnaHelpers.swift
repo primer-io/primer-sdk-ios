@@ -131,18 +131,6 @@ struct KlarnaHelpers {
             taxAmount: item.taxAmount ?? 0)
     }
     
-    /// - Converts a 'Response.Body.Klarna.SessionData' from the tokenize session into a 'Response.Body.Klarna.AuthorizationSessionData'.
-    /// - Returns: An instance of Response.Body.Klarna.AuthorizationSessionData
-    static func getAuthorizationSessionData(from sessionData: Response.Body.Klarna.SessionData) -> Response.Body.Klarna.AuthorizationSessionData {
-        Response.Body.Klarna.AuthorizationSessionData(
-            purchaseCountry: sessionData.purchaseCountry,
-            purchaseCurrency: sessionData.purchaseCurrency,
-            locale: sessionData.locale,
-            orderLines: sessionData.orderLines,
-            billingAddress: sessionData.billingAddress,
-            shippingAddress: sessionData.shippingAddress)
-    }
-    
     /// - Adds a surcharge item to the list of order items if applicable.
     /// - Returns an array of Request.Body.Klarna.OrderItem
     static func addedSurchargeItem(to list: [Request.Body.Klarna.OrderItem], surcharge: Int?) -> [Request.Body.Klarna.OrderItem] {

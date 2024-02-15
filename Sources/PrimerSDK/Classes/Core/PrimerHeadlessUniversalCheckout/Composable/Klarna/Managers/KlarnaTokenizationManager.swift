@@ -60,7 +60,7 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
                 customerTokenId = offSessionAuthorizationId
                 
                 // Prepares the payment instrument by creating a `KlarnaCustomerTokenPaymentInstrument` object
-                paymentInstrument = KlarnaAuthorizationTokenPaymentInstrument(klarnaAuthorizationToken: customerTokenId, sessionData: KlarnaHelpers.getAuthorizationSessionData(from: sessionData))
+                paymentInstrument = KlarnaAuthorizationTokenPaymentInstrument(klarnaAuthorizationToken: customerTokenId, sessionData: sessionData)
             }
             
             // Constructs a request body with the payment instrument and initiates a tokenization request through the `tokenizationService`.
