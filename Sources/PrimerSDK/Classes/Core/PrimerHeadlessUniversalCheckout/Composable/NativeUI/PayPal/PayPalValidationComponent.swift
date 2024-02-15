@@ -6,3 +6,20 @@
 //
 
 import Foundation
+
+struct PayPalValidationComponent: NativeUIValidateable {
+    let paymentMethodType = PrimerPaymentMethodType.payPal.rawValue
+
+    func validatePaymentMethod() throws {
+        if PrimerSettings.current.paymentMethodOptions.urlScheme == nil {
+            let err = PrimerError.invalidUrlScheme(urlScheme: nil,
+                                                   userInfo: ["file": #file,
+                                                              "class": "\(Self.self)",
+                                                              "function": #function,
+                                                              "line": "\(#line)"],
+                                                   diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+    }
+}

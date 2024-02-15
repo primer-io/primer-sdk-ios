@@ -14,6 +14,8 @@ extension PrimerHeadlessUniversalCheckout {
         public let paymentMethodType: String
         private var paymentMethod: PrimerPaymentMethod?
 
+        private var validationComponent: NativeUIValidateable
+
         required public init(paymentMethodType: String) throws {
             PrimerInternal.shared.sdkIntegrationType = .headless
 
@@ -26,6 +28,17 @@ extension PrimerHeadlessUniversalCheckout {
                 ]
             )
             Analytics.Service.record(events: [sdkEvent])
+            
+            switch paymentMethodType {
+            case PrimerPaymentMethodType.applePay.rawValue:
+                self.validationComponent = ApplePayValidationComponent()
+            case PrimerPaymentMethodType.payPal.rawValue:
+                self.validationComponent = PayPalValidationComponent()
+            default:
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil, diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
 
             self.paymentMethodType = paymentMethodType
             self.paymentMethod = try self.validatePaymentMethod(withType: paymentMethodType)
@@ -34,78 +47,13 @@ extension PrimerHeadlessUniversalCheckout {
             settings.uiOptions.isInitScreenEnabled = false
             settings.uiOptions.isSuccessScreenEnabled = false
             settings.uiOptions.isErrorScreenEnabled = false
+
         }
 
         @discardableResult
-        private func validatePaymentMethod(withType paymentMethodType: String, andIntent intent: PrimerSessionIntent? = nil) throws -> PrimerPaymentMethod {
-            guard PrimerAPIConfigurationModule.decodedJWTToken != nil,
-                  PrimerAPIConfigurationModule.apiConfiguration != nil
-            else {
-                let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
-
-            guard let paymentMethod = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.first(where: { $0.type == paymentMethodType }) else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil, diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
-
-            guard let cats = paymentMethod.paymentMethodManagerCategories, cats.contains(.nativeUI) else {
-                let err = PrimerError.unsupportedPaymentMethodForManager(paymentMethodType: paymentMethod.type,
-                                                                         category: PrimerPaymentMethodManagerCategory.nativeUI.rawValue,
-                                                                         userInfo: nil,
-                                                                         diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
-
-            if let intent = intent {
-                if (intent == .vault && !paymentMethod.isVaultingEnabled) ||
-                    (intent == .checkout && !paymentMethod.isCheckoutEnabled) {
-                    let err = PrimerError.unsupportedIntent(intent: intent,
-                                                            userInfo: ["file": #file,
-                                                                       "class": "\(Self.self)",
-                                                                       "function": #function,
-                                                                       "line": "\(#line)"],
-                                                            diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    throw err
-                }
-            }
-
-            switch paymentMethodType {
-            case PrimerPaymentMethodType.applePay.rawValue:
-                if PrimerSettings.current.paymentMethodOptions.applePayOptions == nil {
-                    let err = PrimerError.invalidValue(key: "settings.paymentMethodOptions.applePayOptions",
-                                                       value: nil,
-                                                       userInfo: ["file": #file,
-                                                                  "class": "\(Self.self)",
-                                                                  "function": #function,
-                                                                  "line": "\(#line)"],
-                                                       diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    throw err
-                }
-
-            case PrimerPaymentMethodType.payPal.rawValue:
-                if PrimerSettings.current.paymentMethodOptions.urlScheme == nil {
-                    let err = PrimerError.invalidUrlScheme(urlScheme: nil,
-                                                           userInfo: ["file": #file,
-                                                                      "class": "\(Self.self)",
-                                                                      "function": #function,
-                                                                      "line": "\(#line)"],
-                                                           diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    throw err
-                }
-
-            default:
-                break
-            }
-
-            return paymentMethod
+        private func validatePaymentMethod(withType paymentMethodType: String,
+                                           andIntent intent: PrimerSessionIntent? = nil) throws -> PrimerPaymentMethod {
+            try validationComponent.validate(intent: intent)
         }
 
         public func showPaymentMethod(intent: PrimerSessionIntent) throws {
@@ -136,4 +84,5 @@ extension PrimerHeadlessUniversalCheckout {
             self.paymentMethod?.tokenizationViewModel?.cancel()
         }
     }
+
 }

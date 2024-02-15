@@ -8,5 +8,19 @@
 import Foundation
 
 struct ApplePayValidationComponent: NativeUIValidateable {
-    
+    let paymentMethodType = PrimerPaymentMethodType.applePay.rawValue
+
+    func validatePaymentMethod() throws {
+        if PrimerSettings.current.paymentMethodOptions.applePayOptions == nil {
+            let err = PrimerError.invalidValue(key: "settings.paymentMethodOptions.applePayOptions",
+                                               value: nil,
+                                               userInfo: ["file": #file,
+                                                          "class": "\(Self.self)",
+                                                          "function": #function,
+                                                          "line": "\(#line)"],
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+    }
 }
