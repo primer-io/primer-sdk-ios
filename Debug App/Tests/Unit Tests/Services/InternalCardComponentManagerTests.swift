@@ -72,7 +72,8 @@ class InternalCardComponentManagerTests: XCTestCase {
     }
 
     func test_card_component_manager_initialization_with_invalid_access_token() throws {
-        let clientAccessToken = try JWTFactory().create(accessToken: "39edaba8-ba49-4c09-9936-a43334f69223")
+        let clientAccessToken = try JWTFactory().create(accessToken: "39edaba8-ba49-4c09-9936-a43334f69223",
+                                                        expiry: 1625901334)
         AppState.current.clientToken = clientAccessToken
 
         let cardComponentManager = MockCardComponentsManager(cardnumber: nil)

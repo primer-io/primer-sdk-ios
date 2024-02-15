@@ -60,9 +60,11 @@ class JWTFactory {
 
     let encoder: JSONEncoder = JSONEncoder()
 
-    func create(accessToken: String = "00000000-0000-0000-0000-000000000000") throws -> String {
+    func create(accessToken: String = "00000000-0000-0000-0000-000000000000",
+                expiry: UInt64 = 2625901334) throws -> String {
         let header = String(data: try encoder.encode(JWTHeaderSegment()).base64EncodedData(), encoding: .utf8)!
-        let payload = String(data: try encoder.encode(JWTPayloadSegment(accessToken: accessToken)).base64EncodedData(), encoding: .utf8)!
+        let payloadModel = JWTPayloadSegment(exp: expiry, accessToken: accessToken)
+        let payload = String(data: try encoder.encode(payloadModel).base64EncodedData(), encoding: .utf8)!
         let signature = "5CZOemFCcuoQQEvlNqCb-aiKf7zwT7jXJxZZhHySM_o"
         return "\(header).\(payload).\(signature)"
     }
