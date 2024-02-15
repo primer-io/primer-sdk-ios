@@ -99,6 +99,15 @@ extension Response.Body.Klarna {
         let sessionData: SessionData
     }
     
+    struct AuthorizationSessionData: Codable {
+        public let purchaseCountry: String?
+        public let purchaseCurrency: String?
+        public let locale: String?
+        public let orderLines: [SessionOrderLines]
+        public let billingAddress: BillingAddress?
+        public let shippingAddress: BillingAddress?
+    }
+    
     struct SessionCategory: Codable {
         let identifier: String
         let name: String

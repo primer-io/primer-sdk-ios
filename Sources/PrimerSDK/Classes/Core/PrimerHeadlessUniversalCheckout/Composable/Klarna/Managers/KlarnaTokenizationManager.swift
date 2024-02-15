@@ -16,7 +16,7 @@ protocol KlarnaTokenizationManagerProtocol {
      
      - Returns: A `Promise<PrimerPaymentMethodTokenData>` which resolves to a `PrimerPaymentMethodTokenData` object on successful tokenization or rejects with an `Error` if the tokenization process fails.
      */
-    func tokenize(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerPaymentMethodTokenData>
+    func tokenize(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerCheckoutData>
 }
 
 class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
@@ -30,23 +30,10 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
     }
     
     // MARK: - Tokenize
-    func tokenize(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerPaymentMethodTokenData> {
+    func tokenize(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerCheckoutData> {
         return Promise { seal in
             var customerTokenId: String?
-            
-            // Checks if the session type is for recurring payments. If so, it attempts to extract the customer token ID.
-            // Otherwise it sets the 'customerTokenId' with 'offSessionAuthorizationId' value which is 'authToken' returned from 'primerKlarnaWrapperFinalized' KlarnaProvider delegate method
-            // If the token ID is not found, it generates an error indicating an invalid value for `tokenization.customerToken`
-            if KlarnaHelpers.getSessionType() == .recurringPayment {
-                guard let klarnaCustomerToken = customerToken?.customerTokenId else {
-                    let error = self.getInvalidValueError(key: "tokenization.customerToken", value: nil)
-                    seal.reject(error)
-                    return
-                }
-                customerTokenId = klarnaCustomerToken
-            } else {
-                customerTokenId = offSessionAuthorizationId
-            }
+            var paymentInstrument: TokenizationRequestBodyPaymentInstrument
             
             // Validates the presence of session data.
             // If the session data is missing, it generates an error indicating an invalid value for `tokenization.sessionData`
@@ -56,8 +43,25 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
                 return
             }
             
-            // Prepares the payment instrument by creating a `KlarnaCustomerTokenPaymentInstrument` object
-            let paymentInstrument = KlarnaCustomerTokenPaymentInstrument(klarnaCustomerToken: customerTokenId, sessionData: sessionData)
+            // Checks if the session type is for recurring payments. If so, it attempts to extract the customer token ID and sets 'KlarnaCustomerTokenPaymentInstrument' as a payment instrument.
+            // Otherwise it sets the 'customerTokenId' with 'offSessionAuthorizationId' value which is 'authToken' returned from 'primerKlarnaWrapperFinalized' KlarnaProvider delegate method and sets 'KlarnaAuthorizationTokenPaymentInstrument' as a payment instrument.
+            // If the token ID is not found, it generates an error indicating an invalid value for `tokenization.customerToken`
+            if KlarnaHelpers.getSessionType() == .recurringPayment {
+                guard let klarnaCustomerToken = customerToken?.customerTokenId else {
+                    let error = self.getInvalidValueError(key: "tokenization.customerToken", value: nil)
+                    seal.reject(error)
+                    return
+                }
+                customerTokenId = klarnaCustomerToken
+                
+                // Prepares the payment instrument by creating a `KlarnaCustomerTokenPaymentInstrument` object
+                paymentInstrument = KlarnaCustomerTokenPaymentInstrument(klarnaCustomerToken: customerTokenId, sessionData: sessionData)
+            } else {
+                customerTokenId = offSessionAuthorizationId
+                
+                // Prepares the payment instrument by creating a `KlarnaCustomerTokenPaymentInstrument` object
+                paymentInstrument = KlarnaAuthorizationTokenPaymentInstrument(klarnaAuthorizationToken: customerTokenId, sessionData: KlarnaHelpers.getAuthorizationSessionData(from: sessionData))
+            }
             
             // Constructs a request body with the payment instrument and initiates a tokenization request through the `tokenizationService`.
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
@@ -65,14 +69,67 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
             firstly {
                 tokenizationService.tokenize(requestBody: requestBody)
             }
-            .done { paymentMethodTokenData in
-                seal.fulfill(paymentMethodTokenData)
+            .then { paymentMethodTokenData in
+                self.startPaymentFlow(with: paymentMethodTokenData)
+            }
+            .done { checkoutData in
+                seal.fulfill(checkoutData)
             }
             .catch { error in
                 seal.reject(error)
             }
         }
     }
+}
+
+extension KlarnaTokenizationManager {
+    
+    func startPaymentFlow(with paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData> {
+        return Promise { seal in
+            guard let token = paymentMethodTokenData.token else {
+                seal.reject(self.getInvalidTokenError())
+                return
+            }
+
+            firstly {
+                self.createPaymentEvent(token)
+            }
+            .done { paymentResponse -> Void in
+                let paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
+                seal.fulfill(paymentCheckoutData)
+            }
+            .catch { error in
+                seal.reject(error)
+            }
+        }
+    }
+
+    // Create payment with Payment method token
+    private func createPaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
+        return Promise { seal in
+            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
+            let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
+            createResumePaymentService.createPayment(paymentRequest: paymentRequest) { paymentResponse, error in
+
+                if let error {
+                    seal.reject(error)
+                } else if let paymentResponse {
+                    
+                    if paymentResponse.id == nil {
+                        seal.reject(self.getPaymentFailedError())
+                    } else if paymentResponse.status == .failed {
+                        seal.reject(self.getFailedToProcessPaymentError(paymentResponse: paymentResponse))
+                    } else {
+                        seal.fulfill(paymentResponse)
+                    }
+
+                } else {
+                    seal.reject(self.getPaymentFailedError())
+                }
+            }
+        }
+    }
+    
 }
 
 // MARK: - Errors
@@ -109,6 +166,32 @@ extension KlarnaTokenizationManager {
             userInfo: self.getErrorUserInfo(),
             diagnosticsId: UUID().uuidString
         )
+        ErrorHandler.handle(error: error)
+        return error
+    }
+    
+    func getPaymentFailedError() -> PrimerError {
+        let error = PrimerError.paymentFailed(
+            paymentMethodType: "KLARNA",
+            description: "Failed to create payment",
+            userInfo: self.getErrorUserInfo(),
+            diagnosticsId: UUID().uuidString)
+        ErrorHandler.handle(error: error)
+        return error
+    }
+    
+    func getFailedToProcessPaymentError(paymentResponse: Response.Body.Payment) -> PrimerError {
+        let error = PrimerError.failedToProcessPayment(
+            paymentMethodType: "KLARNA",
+            paymentId: paymentResponse.id ?? "nil",
+            status: paymentResponse.status.rawValue,
+            userInfo: [
+                "file": #file,
+                "class": "\(Self.self)",
+                "function": #function,
+                "line": "\(#line)"
+            ],
+            diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: error)
         return error
     }
