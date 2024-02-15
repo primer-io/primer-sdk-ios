@@ -14,12 +14,6 @@ class PayPalServiceTests: XCTestCase {
     func test_startOrderSession_calls_api() throws {
         let expectation = XCTestExpectation(description: "Create PayPal payment sesion | Success")
         let approvalUrl = "https://primer.io"
-        let response = Response.Body.PayPal.CreateOrder(orderId: "oid", approvalUrl: approvalUrl)
-        let data = try JSONEncoder().encode(response)
-        //        let api = MockPrimerAPIClient(with: data, throwsError: false)
-        let mockAppState: AppStateProtocol = DependencyContainer.resolve()
-
-        let clientAccessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjI2MjU5MDEzMzQsImFjY2Vzc1Rva2VuIjoiMzllZGFiYTgtYmE0OS00YzA5LTk5MzYtYTQzMzM0ZjY5MjIzIiwiYW5hbHl0aWNzVXJsIjoiaHR0cHM6Ly9hbmFseXRpY3MuYXBpLnNhbmRib3guY29yZS5wcmltZXIuaW8vbWl4cGFuZWwiLCJpbnRlbnQiOiJDSEVDS09VVCIsImNvbmZpZ3VyYXRpb25VcmwiOiJodHRwczovL2FwaS5zYW5kYm94LnByaW1lci5pby9jbGllbnQtc2RrL2NvbmZpZ3VyYXRpb24iLCJjb3JlVXJsIjoiaHR0cHM6Ly9hcGkuc2FuZGJveC5wcmltZXIuaW8iLCJwY2lVcmwiOiJodHRwczovL3Nkay5hcGkuc2FuZGJveC5wcmltZXIuaW8iLCJlbnYiOiJTQU5EQk9YIiwidGhyZWVEU2VjdXJlSW5pdFVybCI6Imh0dHBzOi8vc29uZ2JpcmRzdGFnLmNhcmRpbmFsY29tbWVyY2UuY29tL2NhcmRpbmFsY3J1aXNlL3YxL3NvbmdiaXJkLmpzIiwidGhyZWVEU2VjdXJlVG9rZW4iOiJleUowZVhBaU9pSktWMVFpTENKaGJHY2lPaUpJVXpJMU5pSjkuZXlKcWRHa2lPaUk0T0RZeFlUUmpPQzAxT0RRMExUUTJaRGd0T0dRNVl5MDNNR1EzTkdRMFlqSmlNRE1pTENKcFlYUWlPakUyTWpVNE1UUTVNelFzSW1semN5STZJalZsWWpWaVlXVmpaVFpsWXpjeU5tVmhOV1ppWVRkbE5TSXNJazl5WjFWdWFYUkpaQ0k2SWpWbFlqVmlZVFF4WkRRNFptSmtOakE0T0RoaU9HVTBOQ0o5LnRTQ0NYU19wYVVJNUpHbE1wc2ZuQlBjYnNyRDVaNVFkajNhU0JmN3VGUW8iLCJwYXltZW50RmxvdyI6IlBSRUZFUl9WQVVMVCJ9.5CZOemFCcuoQQEvlNqCb-aiKf7zwT7jXJxZZhHySM_o"
 
         MockLocator.registerDependencies()
 
@@ -44,7 +38,6 @@ class PayPalServiceTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Create PayPal payment sesion | Failure: No client token")
 
         let response = Response.Body.PayPal.CreateOrder(orderId: "oid", approvalUrl: "primer.io")
-        let data = try JSONEncoder().encode(response)
         //        let api = MockPrimerAPIClient(with: data, throwsError: true)
         let state = MockAppState()
 
