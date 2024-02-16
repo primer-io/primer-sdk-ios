@@ -143,12 +143,12 @@ final class AnalyticsServiceTests: XCTestCase {
 
     func testFlush() throws {
 
-        sendEvents(numberOfEvents: 4, after: 0.5)
-
-        waitForExpectations(timeout: 10.0)
-
         let flushExpectation = self.expectation(description: "All events flushed")
-        service.flush().done { _ in
+        firstly {
+            sendEvents(numberOfEvents: 4, after: 0.5)
+        }.then {
+            self.service.flush()
+        }.done { _ in
             flushExpectation.fulfill()
         }.catch { err in
             XCTFail("Failed to successfully flush - error message: \(err)")
@@ -203,11 +203,11 @@ final class AnalyticsServiceTests: XCTestCase {
         let expectation = self.expectation(description: "Did complete")
 
         _ = firstly {
-            self.sendEvents(numberOfEvents: 5, eventType: .sdkEvent, shouldExpect: false)
+            self.sendEvents(numberOfEvents: 5, eventType: .sdkEvent)
         }.then {
-            self.sendEvents(numberOfEvents: 5, eventType: .sdkEvent, shouldExpect: false)
+            self.sendEvents(numberOfEvents: 5, eventType: .sdkEvent)
         }.then {
-            self.sendEvents(numberOfEvents: 5, eventType: .sdkEvent, shouldExpect: false)
+            self.sendEvents(numberOfEvents: 5, eventType: .sdkEvent)
         }.ensure {
             expectation.fulfill()
         }
@@ -227,8 +227,7 @@ final class AnalyticsServiceTests: XCTestCase {
     func sendEvents(numberOfEvents: Int,
                     eventType: Analytics.Event.EventType = .message,
                     after delay: TimeInterval? = nil,
-                    onQueue queue: DispatchQueue = AnalyticsServiceTests.createQueue(),
-                    shouldExpect: Bool = true) -> Promise<Void> {
+                    onQueue queue: DispatchQueue = AnalyticsServiceTests.createQueue()) -> Promise<Void> {
         let events = (0..<numberOfEvents).compactMap { num in
             switch eventType {
             case .message:
@@ -242,10 +241,8 @@ final class AnalyticsServiceTests: XCTestCase {
         }
         let promises = events.map { (event: Analytics.Event) in
             Promise { seal in
-                let expectEventToRecord = shouldExpect ? self.expectation(description: "event is recorded - \(event.localId)") : nil
                 let _callback = { [weak self] in
                     _ = self?.service.record(event: event).ensure {
-                        expectEventToRecord?.fulfill()
                         seal.fulfill()
                     }
                 }
