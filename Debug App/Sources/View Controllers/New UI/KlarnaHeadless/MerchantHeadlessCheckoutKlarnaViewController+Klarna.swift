@@ -81,6 +81,8 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaComp
         }
         
         if let step = step as? KlarnaPaymentSessionFinalization {
+            hideLoader()
+            
             switch step {
             case .paymentSessionFinalized(let authToken):
                 showAlert(title: "Success", message: "Payment session finalized with token: \(authToken)") { [unowned self] in
@@ -137,6 +139,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
     }
     
     func finalizeSession() {
+        showLoader()
         klarnaManager.setSessionFinalizationDelegate(self)
         klarnaManager.finalizeSession()
     }
