@@ -1,5 +1,5 @@
 //
-//  KlarnaPaymentViewHandlingComponentTests.swift
+//  KlarnaPaymentSessionAuthorizationComponentTests.swift
 //  Debug App Tests
 //
 //  Created by Stefan Vrancianu on 28.01.2024.
@@ -10,18 +10,22 @@
 import XCTest
 @testable import PrimerSDK
 
-final class KlarnaPaymentViewHandlingComponentTests: XCTestCase {
+final class KlarnaComponentTests: XCTestCase {
     
-    var sut: KlarnaPaymentViewHandlingComponent!
+    var sut: KlarnaComponent!
+    var tokenizationComponent: KlarnaTokenizationComponent!
     
     override func setUp() {
         super.setUp()
-        sut = KlarnaPaymentViewHandlingComponent()
+        let paymentMethod = Mocks.PaymentMethods.klarnaPaymentMethod
+        tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: paymentMethod)
+        sut = KlarnaComponent(tokenizationComponent: tokenizationComponent)
         sut.setProvider(provider: KlarnaTestsMocks.klarnaProvider)
     }
     
     override func tearDown() {
         sut = nil
+        tokenizationComponent = nil
         super.tearDown()
     }
     
@@ -29,6 +33,7 @@ final class KlarnaPaymentViewHandlingComponentTests: XCTestCase {
         XCTAssertNotNil(sut)
     }
     
+    // View Handling
     func testKlarnaProvider_NotNil() {
         XCTAssertNotNil(sut.klarnaProvider)
     }

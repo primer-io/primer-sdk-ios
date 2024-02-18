@@ -101,7 +101,7 @@ final class KlarnaTokenizationComponentTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Successful Create Klarna Payment Session")
         
         firstly {
-            tokenizationComponent.createPaymentSession(attachment: nil)
+            tokenizationComponent.createPaymentSession()
         }
         .done { paymentSession in
             XCTAssertNotNil(paymentSession, "Result should not be nil")

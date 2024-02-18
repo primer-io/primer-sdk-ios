@@ -35,7 +35,8 @@ class KlarnaTestsMocks {
             clientSessionId: "mock-client-session-id-1",
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
-                options: nil),
+                options: nil,
+                orderedAllowedCardNetworks: nil),
             order: ClientSession.Order(
                 id: "mock-client-session-order-id-1",
                 merchantAmount: nil,
@@ -54,6 +55,7 @@ class KlarnaTestsMocks {
         return Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
+            binDataUrl: "https://bindata.url",
             assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: clientSession,
             paymentMethods: [
