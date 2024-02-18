@@ -1,47 +1,36 @@
 //
-//  KlarnaHeadlessManager.swift
+//  KlarnaManager.swift
 //  PrimerSDK
 //
-//  Created by Stefan Vrancianu on 25.01.2024.
+//  Created by Stefan Vrancianu on 17.02.2024.
 //
 
 #if canImport(PrimerKlarnaSDK)
-import Foundation
+import UIKit
 import PrimerKlarnaSDK
 
 extension PrimerHeadlessUniversalCheckout {
     
-    public class KlarnaHeadlessManager: NSObject, PrimerKlarnaProviderErrorDelegate {
+    public class KlarnaManager: NSObject, PrimerKlarnaProviderErrorDelegate {
         
-        // MARK: - Session components
+        // MARK: - Klarna properties
         
         /// Component responsible for managing session creation stages of the Klarna payment session.
-        var sessionCreationComponent: KlarnaPaymentSessionCreationComponent?
-        
-        /// Component responsible for managing session authorization stages of the Klarna payment session.
-        var sessionAuthorizationComponent: KlarnaPaymentSessionAuthorizationComponent?
-        
-        /// Component responsible for managing session finalization stages of the Klarna payment session.
-        var sessionFinalizationComponent: KlarnaPaymentSessionFinalizationComponent?
-        
-        /// Component responsible for managing klarna view stages of the Klarna payment session.
-        var viewHandlingComponent: KlarnaPaymentViewHandlingComponent?
-        
-        // MARK: - Manager properties
+        var klarnaComponent: KlarnaComponent?
         
         /// A component that handles the tokenization process required for Klarna payments.
         private var tokenizationComponent: KlarnaTokenizationComponentProtocol?
         
-        /// Global settings for the payment process, injected as a dependency.
-        private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        /// Responsible for performing operations related to Klarna's payment process.
+        private var klarnaProvider: PrimerKlarnaProviding?
+        
+        // MARK: - Manager properties
         
         /// A delegate to handle errors that may occur during the payment process, involving KlarnaHeadlessManager logic.
         public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
         
-        // MARK: - Klarna properties
-        
-        /// Responsible for performing operations related to Klarna's payment process.
-        private var klarnaProvider: PrimerKlarnaProviding?
+        /// Global settings for the payment process, injected as a dependency.
+        private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         
         // MARK: - Init
         public init(paymentMethodType: String, intent: PrimerSessionIntent) {
@@ -72,65 +61,46 @@ extension PrimerHeadlessUniversalCheckout {
             let tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: paymentMethod)
             self.tokenizationComponent = tokenizationComponent
             
-            self.sessionCreationComponent = KlarnaPaymentSessionCreationComponent(
-                tokenizationComponent: tokenizationComponent
-            )
-            
-            self.sessionAuthorizationComponent = KlarnaPaymentSessionAuthorizationComponent(
-                tokenizationComponent: tokenizationComponent
-            )
-            
-            self.sessionFinalizationComponent = KlarnaPaymentSessionFinalizationComponent(
-                tokenizationComponent: tokenizationComponent
-            )
-            self.viewHandlingComponent = KlarnaPaymentViewHandlingComponent()
-        }
-        
-        /// Sets a delegate to handle various events and errors during the Klarna payment process.
-        public func setDelegate(_ delegate: PrimerHeadlessKlarnaComponent) {
-            errorDelegate = delegate
-            validate()
+            self.klarnaComponent = KlarnaComponent(tokenizationComponent: tokenizationComponent)
         }
         
         // MARK: - Session creation public methods
         
         /// Configures delegates for the session creation component to handle validation, errors, and steps in the payment process.
-        public func setSessionCreationDelegates(_ delegate: PrimerHeadlessKlarnaComponent) {
-            sessionCreationComponent?.validationDelegate = delegate
-            sessionCreationComponent?.errorDelegate = delegate
-            sessionCreationComponent?.stepDelegate = delegate
+        public func setKlarnaDelegates(_ delegate: PrimerHeadlessKlarnaComponent) {
+            klarnaComponent?.validationDelegate = delegate
+            klarnaComponent?.errorDelegate = delegate
+            klarnaComponent?.stepDelegate = delegate
+            
+            /// Sets a delegate to handle various errors during the Klarna payment process.
+            errorDelegate = delegate
+            validate()
+        }
+        
+        public func setPaymentSessionDelegates() {
+            klarnaComponent?.setAuthorizationDelegate()
+            klarnaComponent?.setFinalizationDelegate()
+            klarnaComponent?.setPaymentViewDelegate()
         }
         
         /// Initiates the creation of a Klarna payment session.
         public func startSession() {
-            sessionCreationComponent?.start()
+            klarnaComponent?.start()
             validate()
         }
         
         // MARK: - Session authorization public methods
         
-        /// Sets a delegate to handle steps during the session authorization process.
-        public func setSessionAuthorizationDelegate(_ delegate: PrimerHeadlessKlarnaComponent) {
-            sessionAuthorizationComponent?.setProvider(provider: klarnaProvider)
-            sessionAuthorizationComponent?.stepDelegate = delegate
-        }
-        
         /// Authorizes the payment session, optionally finalizing it automatically.
         public func authorizeSession(autoFinalize: Bool, jsonData: String? = nil) {
-            sessionAuthorizationComponent?.authorizeSession(autoFinalize: autoFinalize)
+            klarnaComponent?.authorizeSession(autoFinalize: autoFinalize)
         }
         
         // MARK: - Session finalization public methods
         
-        /// Sets a delegate to manage the finalization step of the payment session.
-        public func setSessionFinalizationDelegate(_ delegate: PrimerHeadlessKlarnaComponent) {
-            sessionFinalizationComponent?.setProvider(provider: klarnaProvider)
-            sessionFinalizationComponent?.stepDelegate = delegate
-        }
-        
         /// Finalizes the payment session, completing the payment process.
         public func finalizeSession() {
-            sessionFinalizationComponent?.finalise()
+            klarnaComponent?.finalise()
         }
         
         // MARK: - Klarna PaymentView handling methods
@@ -139,27 +109,22 @@ extension PrimerHeadlessUniversalCheckout {
         public func setProvider(with clientToken: String, paymentCategory: String) {
             klarnaProvider = PrimerKlarnaProvider(clientToken: clientToken, paymentCategory: paymentCategory, urlScheme: settings.paymentMethodOptions.urlScheme)
             
-            viewHandlingComponent?.setProvider(provider: klarnaProvider)
-        }
-        
-        /// Sets a delegate to handle steps related to payment view management.
-        public func setViewHandlingDelegate(_ delegate: PrimerHeadlessKlarnaComponent) {
-            viewHandlingComponent?.stepDelegate = delegate
+            klarnaComponent?.setProvider(provider: klarnaProvider)
         }
         
         /// Creates and returns a payment view for the Klarna payment process.
         public func createPaymentView() -> UIView? {
-            viewHandlingComponent?.createPaymentView()
+            klarnaComponent?.createPaymentView()
         }
         
         /// Initializes the payment view, preparing it for user interaction.
         public func initPaymentView() {
-            viewHandlingComponent?.initPaymentView()
+            klarnaComponent?.initPaymentView()
         }
         
         /// Loads the payment view with optional JSON data for customization.
         public func loadPaymentView(jsonData: String? = nil) {
-            viewHandlingComponent?.loadPaymentView(jsonData: jsonData)
+            klarnaComponent?.loadPaymentView(jsonData: jsonData)
         }
         
         /// Validates the current state of the Klarna payment process, handling any errors that may occur.
@@ -195,3 +160,4 @@ extension PrimerHeadlessUniversalCheckout {
     
 }
 #endif
+

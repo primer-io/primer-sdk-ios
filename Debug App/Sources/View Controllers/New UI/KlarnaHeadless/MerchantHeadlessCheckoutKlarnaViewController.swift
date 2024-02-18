@@ -62,7 +62,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     }
     
     // MARK: - Klarna Manager
-    private(set) var klarnaManager: PrimerHeadlessUniversalCheckout.KlarnaHeadlessManager!
+    private(set) var klarnaManager: PrimerHeadlessUniversalCheckout.KlarnaManager!
     
     init(sessionIntent: PrimerSessionIntent) {
         self.sessionIntent = sessionIntent
@@ -81,14 +81,12 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
         setupLayout()
         setupCustomerDetails(visible: false)
         
-        klarnaManager = PrimerHeadlessUniversalCheckout.KlarnaHeadlessManager(paymentMethodType: paymentMethodType, intent: sessionIntent)
-        klarnaManager.setDelegate(self)
-        
-        setupKlarnaSessionCreationDelegates()
+        klarnaManager = PrimerHeadlessUniversalCheckout.KlarnaManager(paymentMethodType: paymentMethodType, intent: sessionIntent)
+        setupKlarnaDelegates()
     }
     
-    private func setupKlarnaSessionCreationDelegates() {
-        klarnaManager.setSessionCreationDelegates(self)
+    private func setupKlarnaDelegates() {
+        klarnaManager.setKlarnaDelegates(self)
     }
     
     override func viewWillAppear(_ animated: Bool) {

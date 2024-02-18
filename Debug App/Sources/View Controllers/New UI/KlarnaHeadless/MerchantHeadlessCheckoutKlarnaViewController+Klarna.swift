@@ -20,7 +20,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaComp
     
     // MARK: - PrimerHeadlessSteppableDelegate
     func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
-        if let step = step as? KlarnaPaymentSessionCreation {
+        if let step = step as? KlarnaSessionCreationStep {
             switch step {
             case .paymentSessionCreated(let clientToken, let paymentCategories):
                 DispatchQueue.main.async { [weak self] in
@@ -31,7 +31,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaComp
             }
         }
         
-        if let step = step as? KlarnaPaymentViewHandling {
+        if let step = step as? KlarnaViewHandlingStep {
             switch step {
             case .viewInitialized:
                 klarnaManager.loadPaymentView()
@@ -50,7 +50,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaComp
             }
         }
         
-        if let step = step as? KlarnaPaymentSessionAuthorization {
+        if let step = step as? KlarnaSessionAuthorizationStep {
             hideLoader()
             
             switch step {
@@ -80,7 +80,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaComp
             }
         }
         
-        if let step = step as? KlarnaPaymentSessionFinalization {
+        if let step = step as? KlarnaSessionFinalizationStep {
             hideLoader()
             
             switch step {
@@ -113,7 +113,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
         }
         
         klarnaManager.setProvider(with: clientToken, paymentCategory: category.id)
-        klarnaManager.setViewHandlingDelegate(self)
+        klarnaManager.setPaymentSessionDelegates()
         
         guard let paymentView = klarnaManager.createPaymentView() else {
             showAlert(title: "Payment view", message: "Unable to create payment view")
@@ -134,13 +134,11 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
     }
     
     func authorizeSession() {
-        klarnaManager.setSessionAuthorizationDelegate(self)
         klarnaManager.authorizeSession(autoFinalize: !finalizeManually)
     }
     
     func finalizeSession() {
         showLoader()
-        klarnaManager.setSessionFinalizationDelegate(self)
         klarnaManager.finalizeSession()
     }
 }
