@@ -135,6 +135,8 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
         validateRawData(data, cardNetworksMetadata: nil)
     }
 
+    private var lastValidationErrors: [PrimerValidationError] = []
+
     func validateRawData(_ data: PrimerRawData, cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.global(qos: .userInteractive).async { [self] in
@@ -244,6 +246,9 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                     }
                 }
 
+                let reportableErrors = errors.filter { !lastValidationErrors.has($0) }
+                self.lastValidationErrors = errors
+
                 if !errors.isEmpty {
                     let err = PrimerError.underlyingErrors(
                         errors: errors,
@@ -260,7 +265,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                         if let rawDataManager = self.rawDataManager {
                             self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager,
                                                                                  dataIsValid: self.isDataValid,
-                                                                                 errors: errors.count == 0 ? nil : errors)
+                                                                                 errors: reportableErrors.count == 0 ? nil : reportableErrors)
                         }
 
                         seal.reject(err)
@@ -273,7 +278,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                         if let rawDataManager = self.rawDataManager {
                             self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager,
                                                                                  dataIsValid: self.isDataValid,
-                                                                                 errors: errors.count == 0 ? nil : errors)
+                                                                                 errors: reportableErrors.count == 0 ? nil : reportableErrors)
                         }
 
                         seal.fulfill()
@@ -281,5 +286,11 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 }
             }
         }
+    }
+}
+
+private extension Array<PrimerValidationError> {
+    func has(_ error: PrimerValidationError) -> Bool {
+        contains(where: { $0.errorId == error.errorId && $0.errorDescription == error.errorDescription })
     }
 }

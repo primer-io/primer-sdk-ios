@@ -132,7 +132,7 @@ final class BankComponentTests: XCTestCase {
         bankComponent.validationDelegate = self
         bankComponent.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: "mock_id"))
         XCTAssertEqual(validationStatuses, ["validating", "invalid"])
-        XCTAssertEqual(validationErrors, ["Banks need to be loaded before bank id can be collected."])
+        XCTAssertEqual(validationErrors, ["[banks-not-loaded] Banks need to be loaded before bank id can be collected."])
     }
 
     func testValidationNoBanksAtFilter() {
@@ -144,7 +144,7 @@ final class BankComponentTests: XCTestCase {
         bankComponent.validationDelegate = self
         bankComponent.updateCollectedData(collectableData: BanksCollectableData.bankFilterText(text: "mock_query"))
         XCTAssertEqual(validationStatuses, ["validating", "invalid"])
-        XCTAssertEqual(validationErrors, ["Banks need to be loaded before bank id can be collected."])
+        XCTAssertEqual(validationErrors, ["[banks-not-loaded] Banks need to be loaded before bank id can be collected."])
     }
 
     func testValidationForValidBankId() {
@@ -180,7 +180,7 @@ final class BankComponentTests: XCTestCase {
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
             bankComponent.updateCollectedData(collectableData: BanksCollectableData.bankId(bankId: "mock_bank_id"))
             XCTAssertEqual(self.validationStatuses, ["validating", "invalid"])
-            XCTAssertEqual(self.validationErrors, ["Please provide a valid bank id"])
+            XCTAssertEqual(self.validationErrors, ["[invalid-bank-id] Please provide a valid bank id"])
             expectation.fulfill()
         }
         waitForExpectations(timeout: 10)
