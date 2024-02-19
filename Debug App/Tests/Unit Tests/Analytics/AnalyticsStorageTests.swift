@@ -94,58 +94,6 @@ final class AnalyticsStorageTests: XCTestCase {
             XCTAssertNotNil(error)
         }
     }
-
-    func testOperationQueue() {
-        let queue = OperationQueue()
-        queue.maxConcurrentOperationCount = 1
-        queue.qualityOfService = .background
-
-        queue.addOperation {
-            sleep(1)
-            print("addOperation")
-        }
-        queue.addOperation {
-            sleep(1)
-            print("addOperation")
-        }
-        queue.addOperation {
-            sleep(1)
-            print("addOperation")
-        }
-        queue.addOperation {
-            sleep(1)
-            print("addOperation")
-        }
-        queue.addOperation {
-            sleep(1)
-            print("addOperation")
-        }
-        queue.schedule {
-            print("schedule")
-        }
-        queue.addOperation {
-            sleep(1)
-            print("addOperation")
-        }
-        queue.addOperation {
-            sleep(1)
-            print("addOperation")
-        }
-        queue.addOperation {
-            sleep(1)
-            print("addOperation")
-        }
-        queue.addOperation {
-            sleep(1)
-            print("addOperation")
-        }
-        queue.addOperation {
-            sleep(1)
-            print("addOperation")
-        }
-
-        sleep(10)
-    }
 }
 
 extension Analytics.Event: Hashable {

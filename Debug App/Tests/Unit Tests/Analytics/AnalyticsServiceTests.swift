@@ -117,9 +117,8 @@ final class AnalyticsServiceTests: XCTestCase {
 
     func testComplexMultiBatchSlowSend() throws {
 
-        let expectation = self.expectation(description: "Called expected number of times")
+        let expectation = self.expectation(description: "Events sent to API client expected number of times")
         expectation.expectedFulfillmentCount = 3
-
         apiClient.onSendAnalyticsEvent = { _ in
             expectation.fulfill()
         }
