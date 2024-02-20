@@ -34,7 +34,6 @@ class StringTyper {
     func type(_ string: String, _ result: String = "", delay: Double = 0.1, completion: @escaping () -> Void = {}) {
         var string = string
         let result = "\(result)\(string.removeFirst())"
-        print(">> TYPE: \(result)")
         receiver(result)
         guard !string.isEmpty else {
             queue.asyncAfter(deadline: .now() + 1) {
@@ -50,7 +49,6 @@ class StringTyper {
     func delete(_ string: String, delay: Double = 0.1, completion: @escaping () -> Void = {}) {
         var string = string
         _ = string.removeFirst()
-        print(">> DELETE: \(string)")
         receiver(string)
         guard !string.isEmpty else {
             queue.asyncAfter(deadline: .now() + 1) {

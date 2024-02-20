@@ -877,7 +877,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         var network = self.cardNetwork?.rawValue.uppercased()
         let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
 
-        if let cardNetwork = cardNetwork, cardNetwork != .unknown, cardNumberContainerView.rightImage2 == nil && cardNetwork.icon != nil {
+        if let cardNetwork = cardNetwork, cardNetwork != .unknown, cardNumberContainerView.rightImage2 != cardNetwork.icon {
             if network == nil || network == "UNKNOWN" {
                 network = "OTHER"
             }
@@ -891,7 +891,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
                 self.updateButtonUI()
             }
             .catch { _ in }
-        } else if cardNumberContainerView.rightImage2 != nil && cardNetwork?.icon == nil {
+        } else if cardNumberContainerView.rightImage2 != nil && (cardNetwork?.icon == nil || cardNetwork == .unknown) {
             cardNumberContainerView.rightImage2 = nil
 
             firstly {
