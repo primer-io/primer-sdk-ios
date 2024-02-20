@@ -79,7 +79,7 @@ extension Analytics {
                             let count = combinedEvents.count
                             let message = "📚 Analytics: Minimum batch size of \(self.batchSize) \(sizeString) (\(count) events present). Attempting sync ..."
                             self.logger.debug(message: message)
-                            self.sync(events: combinedEvents).ensure {
+                            _ = self.sync(events: combinedEvents).ensure {
                                 seal.fulfill()
                             }
                         } else {
@@ -261,15 +261,14 @@ extension Analytics {
 
                         // Handle error
                         ErrorHandler.handle(error: err)
-                        self.handleFailedEvents(forUrl: url) {
-                            completion(err)
-                        }
+                        self.handleFailedEvents(forUrl: url)
+                        completion(err)
                     }
                 }
             }
         }
 
-        private func handleFailedEvents(forUrl url: URL, completion: @escaping () -> Void) {
+        private func handleFailedEvents(forUrl url: URL) {
             self.eventSendFailureCount += 1
             if eventSendFailureCount >= 3 {
                 logger.error(message: "Failed to send events three or more times. Deleting analytics file ...")
@@ -278,7 +277,6 @@ extension Analytics {
             } else {
                 self.storage.delete(eventsWithUrl: url)
             }
-            completion()
         }
 
         // swiftlint:disable:next nesting
