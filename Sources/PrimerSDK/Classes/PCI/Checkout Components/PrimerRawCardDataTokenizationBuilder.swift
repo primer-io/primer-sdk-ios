@@ -246,9 +246,11 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                     }
                 }
 
-                let newValidationErrorsPresent = errors.map { $0.errorDescription } != lastValidationErrors.map { $0.errorDescription }
-                guard newValidationErrorsPresent else {
-                    return
+                if !errors.isEmpty {
+                    let newValidationErrorsPresent = errors.map { $0.errorDescription } != lastValidationErrors.map { $0.errorDescription }
+                    guard newValidationErrorsPresent else {
+                        return
+                    }
                 }
                 self.lastValidationErrors = errors
 
