@@ -24,9 +24,10 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaComp
             switch step {
             case .paymentSessionCreated(let clientToken, let paymentCategories):
                 DispatchQueue.main.async { [weak self] in
-                    self?.hideLoader()
-                    self?.clientToken = clientToken
-                    self?.paymentCategories = paymentCategories
+                    guard let self = self else { return }
+                    self.hideLoader()
+                    self.clientToken = clientToken
+                    self.klarnaHeadlessPaymentViewModel.updatePaymentCategories(paymentCategories)
                 }
             }
         }
@@ -36,14 +37,11 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaComp
             case .viewInitialized:
                 klarnaManager.loadPaymentView()
                 
-            case .viewResized(let height):
-                paymentViewContainerHeightConstraint.constant = height
+            case .viewResized:
                 view.layoutIfNeeded()
                 
             case .viewLoaded:
                 hideLoader()
-                paymentContainerView.isHidden = false
-                view.bringSubviewToFront(paymentContainerView)
                 
             default:
                 break
@@ -65,8 +63,8 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaComp
                 }
                 
             case .paymentSessionFinalizationRequired:
-                finalizePayment = true
-                paymentContinueButton.setTitle("Finalize", for: .normal)
+                klarnaHeadlessPaymentViewModel.updatSnackBar(with: "Finalizing in 2 seconds")
+                finalizeSession()
                 
             case .paymentSessionReauthorized(let authToken):
                 showAlert(title: "Success", message: "Payment session reauthorized with token: \(authToken)") { [unowned self] in
@@ -102,14 +100,13 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaComp
 extension MerchantHeadlessCheckoutKlarnaViewController {
     func startPaymentSession() {
         showLoader()
-        checkoutTypeContainerView.isHidden = true
         klarnaManager.startSession()
     }
     
-    func createPaymentView(category: KlarnaPaymentCategory) {
+    func createPaymentView(category: KlarnaPaymentCategory) -> UIView? {
         guard let clientToken = clientToken else {
             showAlert(title: "Client token", message: "Client token not available")
-            return
+            return nil
         }
         
         klarnaManager.setProvider(with: clientToken, paymentCategory: category.id)
@@ -117,24 +114,16 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
         
         guard let paymentView = klarnaManager.createPaymentView() else {
             showAlert(title: "Payment view", message: "Unable to create payment view")
-            return
+            return nil
         }
         
-        paymentView.translatesAutoresizingMaskIntoConstraints = false
-        paymentViewContainerView.addSubview(paymentView)
-        
-        NSLayoutConstraint.activate([
-            paymentView.topAnchor.constraint(equalTo: paymentViewContainerView.topAnchor),
-            paymentView.leadingAnchor.constraint(equalTo: paymentViewContainerView.leadingAnchor),
-            paymentView.trailingAnchor.constraint(equalTo: paymentViewContainerView.trailingAnchor),
-            paymentView.bottomAnchor.constraint(equalTo: paymentViewContainerView.bottomAnchor)
-        ])
-        
         klarnaManager.initPaymentView()
+        
+        return paymentView
     }
     
     func authorizeSession() {
-        klarnaManager.authorizeSession(autoFinalize: !finalizeManually)
+        klarnaManager.authorizeSession(autoFinalize: autoFinalize)
     }
     
     func finalizeSession() {

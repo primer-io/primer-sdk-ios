@@ -7,59 +7,25 @@
 //
 
 import UIKit
+import SwiftUI
 import PrimerSDK
 
 class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     
     // MARK: - Subviews
     let activityIndicator = UIActivityIndicatorView(style: .large)
-    let checkoutTypeContainerView = UIView()
-    let checkoutTypeTitleLabel = UILabel()
-    let guestCheckoutButton = UIButton()
-    let customerInfoContainerView = UIView()
-    let customerInfoTitleLabel = UILabel()
-    let customerAccountIdTextField = UITextField()
-    let customerAccountRegistrationTextField = UITextField()
-    let customerAccountLastModifiedTextField = UITextField()
-    let customerCheckoutButton = UIButton()
-    let categoriesContainerView = UIView()
-    let categoriesTitleLabel = UILabel()
-    let categoriesTableView = UITableView()
-    let paymentContainerView = UIView()
-    let paymentViewContainerView = UIView()
-    let paymentContinueButton = UIButton()
-    let finalizationLabel = UILabel()
-    let finalizationSwitch = UISwitch()
-    
-    // MARK: - Constraints
-    lazy var paymentViewContainerHeightConstraint = paymentViewContainerView.heightAnchor.constraint(equalToConstant: 0.0)
-    
     // MARK: - Properties
     var clientToken: String?
-    var finalizeManually: Bool = false
+    var autoFinalize: Bool = false
     var finalizePayment: Bool = false
-    var registrationFieldActive: Bool = false
     let paymentMethodType: String = "KLARNA"
     
     private var sessionIntent: PrimerSessionIntent = .checkout
     
-    var accountRegistrationDate: Date = Date() {
-        didSet {
-            customerAccountRegistrationTextField.text = getDateString(date: accountRegistrationDate)
-        }
-    }
-    var accountLastModifiedDate: Date = Date() {
-        didSet {
-            customerAccountLastModifiedTextField.text = getDateString(date: accountLastModifiedDate)
-        }
-    }
-    var paymentCategories: [KlarnaPaymentCategory] = [] {
-        didSet {
-            categoriesTableView.reloadData()
-            categoriesContainerView.isHidden = false
-            view.bringSubviewToFront(categoriesTableView)
-        }
-    }
+    let klarnaHeadlessPaymentViewModel: KlarnaHeadlessPaymentViewModel = KlarnaHeadlessPaymentViewModel()
+    var klarnaView: MerchantHeadlessKlarnaView?
+    var renderedKlarnaView = UIView()
+    let sharedWrapper = SharedUIViewWrapper()
     
     // MARK: - Klarna Manager
     private(set) var klarnaManager: PrimerHeadlessUniversalCheckout.KlarnaManager!
@@ -76,14 +42,44 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        setupUI()
-        setupLayout()
-        setupCustomerDetails(visible: false)
-        
         klarnaManager = PrimerHeadlessUniversalCheckout.KlarnaManager(paymentMethodType: paymentMethodType, intent: sessionIntent)
         setupKlarnaDelegates()
+        
+        addKlarnaView()
+        startPaymentSession()
     }
+    
+    private func addKlarnaView() {
+        klarnaView = MerchantHeadlessKlarnaView(viewModel: klarnaHeadlessPaymentViewModel, sharedWrapper: sharedWrapper) { paymentCategory in
+            guard let paymentCategory = paymentCategory else { return }
+            if let renderedKlarnaView = self.createPaymentView(category: paymentCategory) {
+                self.passRenderedKlarnaView(renderedKlarnaView)
+            }
+        } onContinuePressed: {
+            self.authorizeSession()
+        }
+        
+        let hostingViewController = UIHostingController(rootView: klarnaView)
+        hostingViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        addChild(hostingViewController)
+        view.addSubview(hostingViewController.view)
+        hostingViewController.didMove(toParent: self)
+        NSLayoutConstraint.activate([
+            hostingViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            hostingViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            hostingViewController.view.widthAnchor.constraint(equalTo: view.widthAnchor),
+            hostingViewController.view.heightAnchor.constraint(
+                equalTo: view.heightAnchor,
+                multiplier: 1
+            )
+        ])
+    }
+    
+    private func passRenderedKlarnaView(_ renderedKlarnaView: UIView) {
+        sharedWrapper.uiView = renderedKlarnaView
+    }
+    
+    
     
     private func setupKlarnaDelegates() {
         klarnaManager.setKlarnaDelegates(self)
@@ -91,43 +87,25 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        view.bringSubviewToFront(checkoutTypeContainerView)
     }
 }
 
-// MARK: - Actions
+// MARK: - Setup UI
 extension MerchantHeadlessCheckoutKlarnaViewController {
-    @objc func guestCheckoutButtonTapped(_ sender: UIButton) {
-        self.startPaymentSession()
-    }
-    
-    @objc func customerCheckoutButtonTapped(_ sender: UIButton) {
+    func setupUI() {
+        view.backgroundColor = .white
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        
         
     }
     
-    @objc func continueButtonTapped(_ sender: UIButton) {
-        if finalizePayment {
-            paymentContinueButton.isHidden = true
-            finalizeSession()
-        } else {
-            authorizeSession()
-        }
-    }
-    
-    @objc func datePickerValueChanged(_ sender: UIDatePicker) {
-        if registrationFieldActive {
-            accountRegistrationDate = sender.date
-        } else {
-            accountLastModifiedDate = sender.date
-        }
-    }
-    
-    @objc func doneToolBarButtonPressed(_ sender: UIBarButtonItem) {
-        view.endEditing(true)
-    }
-    
-    @objc func finalizationSwitchValueChanged(_ sender: UISwitch) {
-        finalizeManually = sender.isOn
+    func setupLayout() {
+        view.addSubview(activityIndicator)
+        NSLayoutConstraint.activate([
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
     }
 }
 
@@ -147,25 +125,5 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
     
     func hideLoader() {
         activityIndicator.stopAnimating()
-    }
-    
-    func getToolbar() -> UIToolbar {
-        let doneButton = UIBarButtonItem(title: "Done", style:.done, target: self, action: #selector(doneToolBarButtonPressed(_:)))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        
-        let toolBar = UIToolbar()
-        toolBar.barStyle = .default
-        toolBar.tintColor = .black
-        toolBar.sizeToFit()
-        toolBar.setItems([spaceButton, doneButton], animated: true)
-        
-        return toolBar
-    }
-    
-    func getDateString(date: Date, withFormat format: String = "yyyy-MM-dd HH:mm:ss") -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = format
-        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-        return dateFormatter.string(from: date)
     }
 }
