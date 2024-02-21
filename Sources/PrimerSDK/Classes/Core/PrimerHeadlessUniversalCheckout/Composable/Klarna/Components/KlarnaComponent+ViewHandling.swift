@@ -9,24 +9,6 @@
 import UIKit
 import PrimerKlarnaSDK
 
-/**
- * Enumerates the steps involved in handling Klarna views during a payment session.
- * This enum represents various stages of Klarna view interactions within the payment process, including initialization, resizing, loading, and review stages.
- * It conforms to `PrimerHeadlessStep` to integrate with the broader Primer payment flow.
- *
- * Cases:
- *  - `viewInitialized`: Indicates that the Klarna view has been initialized. This is the first step in the Klarna view handling process.
- *  - `viewResized(height: CGFloat)`: Represents a change in the view's height, which may occur when the Klarna view adjusts to display different content. The `height` parameter specifies the new height of the view.
- *  - `viewLoaded`: Signifies that the Klarna view has finished loading its initial content and is ready for interaction.
- *  - `reviewLoaded`: Indicates that the reviewed information has been loaded into the Klarna view.
- */
-public enum KlarnaViewHandlingStep: PrimerHeadlessStep {
-    case viewInitialized
-    case viewResized(height: CGFloat)
-    case viewLoaded
-    case reviewLoaded
-}
-
 extension KlarnaComponent {
     
     /// Sets Klarna provider payment view delegate
@@ -38,19 +20,19 @@ extension KlarnaComponent {
 // MARK: - PrimerKlarnaProviderPaymentViewDelegate
 extension KlarnaComponent: PrimerKlarnaProviderPaymentViewDelegate {
     public func primerKlarnaWrapperInitialized() {
-        stepDelegate?.didReceiveStep(step: KlarnaViewHandlingStep.viewInitialized)
+        stepDelegate?.didReceiveStep(step: KlarnaStep.viewInitialized)
     }
     
     public func primerKlarnaWrapperResized(to newHeight: CGFloat) {
-        stepDelegate?.didReceiveStep(step: KlarnaViewHandlingStep.viewResized(height: newHeight))
+        stepDelegate?.didReceiveStep(step: KlarnaStep.viewResized(height: newHeight))
     }
     
     public func primerKlarnaWrapperLoaded() {
-        stepDelegate?.didReceiveStep(step: KlarnaViewHandlingStep.viewLoaded)
+        stepDelegate?.didReceiveStep(step: KlarnaStep.viewLoaded)
     }
     
     public func primerKlarnaWrapperReviewLoaded() {
-        stepDelegate?.didReceiveStep(step: KlarnaViewHandlingStep.reviewLoaded)
+        stepDelegate?.didReceiveStep(step: KlarnaStep.reviewLoaded)
     }
 }
 

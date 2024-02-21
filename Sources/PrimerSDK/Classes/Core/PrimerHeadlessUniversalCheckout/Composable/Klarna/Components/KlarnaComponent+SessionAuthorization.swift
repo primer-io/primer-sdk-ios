@@ -9,28 +9,6 @@
 import Foundation
 import PrimerKlarnaSDK
 
-/**
- * Enumerates the possible states and outcomes related to the authorization of a Klarna payment session.
- * This enum is designed to communicate the various stages of authorization (and reauthorization, if necessary) for a Klarna payment session.
- * It conforms to `PrimerHeadlessStep`.
- *
- * - Cases:
- *  - paymentSessionAuthorized: Indicates that the payment session has been successfully authorized. It carries an `authToken` string for subsequent operations that require authorization.
- *  - paymentSessionAuthorizationFailed: Represents a failure in the authorization process.
- *  - paymentSessionFinalizationRequired: Signals that the payment session requires finalization steps to be completed by the user or the system.
- *
- *  - paymentSessionReauthorized: Similar to `paymentSessionAuthorized`.
- *  - paymentSessionReauthorizationFailed: Indicates a failure in the reauthorization process of an existing payment session.
- */
-public enum KlarnaSessionAuthorizationStep: PrimerHeadlessStep {
-    case paymentSessionAuthorized(authToken: String, checkoutData: PrimerCheckoutData)
-    case paymentSessionAuthorizationFailed(error: Error?)
-    case paymentSessionFinalizationRequired
-    
-    case paymentSessionReauthorized(authToken: String, checkoutData: PrimerCheckoutData)
-    case paymentSessionReauthorizationFailed(error: Error?)
-}
-
 extension KlarnaComponent {
     
     /// Sets Klarna provider authorization delegate
@@ -53,10 +31,10 @@ extension KlarnaComponent: PrimerKlarnaProviderAuthorizationDelegate {
     public func primerKlarnaWrapperAuthorized(approved: Bool, authToken: String?, finalizeRequired: Bool) {
         if approved == false {
             if finalizeRequired == true {
-                let step = KlarnaSessionAuthorizationStep.paymentSessionFinalizationRequired
+                let step = KlarnaStep.paymentSessionFinalizationRequired
                 stepDelegate?.didReceiveStep(step: step)
             } else {
-                let step = KlarnaSessionAuthorizationStep.paymentSessionAuthorizationFailed(error: nil)
+                let step = KlarnaStep.paymentSessionAuthorizationFailed(error: nil)
                 stepDelegate?.didReceiveStep(step: step)
             }
         }
@@ -66,7 +44,7 @@ extension KlarnaComponent: PrimerKlarnaProviderAuthorizationDelegate {
         }
         
         if finalizeRequired == true {
-            let step = KlarnaSessionAuthorizationStep.paymentSessionFinalizationRequired
+            let step = KlarnaStep.paymentSessionFinalizationRequired
             stepDelegate?.didReceiveStep(step: step)
         }
     }
@@ -78,27 +56,7 @@ extension KlarnaComponent: PrimerKlarnaProviderAuthorizationDelegate {
      *  -  `authToken` - An optional `String` containing the authorization token.  Returned only if `approved` is `true`.
      */
     public func primerKlarnaWrapperReauthorized(approved: Bool, authToken: String?) {
-        if approved == false {
-            let step = KlarnaSessionAuthorizationStep.paymentSessionReauthorizationFailed(error: nil)
-            stepDelegate?.didReceiveStep(step: step)
-        }
-        
-        if let authToken = authToken, approved == true {
-            finalizeSession(token: authToken, reauthorization: true, fromAuthorization: true)
-        }
-    }
-}
-
-// MARK: - Authorization / Reauthorize session
-extension KlarnaComponent {
-    public func authorizeSession(autoFinalize: Bool, jsonData: String? = nil) {
-        recordAuthorizeEvent(name: KlarnaAnalyticsEvents.AUTHORIZE_SESSION_METHOD, autoFinalize: autoFinalize, jsonData: jsonData)
-        klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: jsonData)
-    }
-    
-    public func reauthorizeSession(jsonData: String? = nil) {
-        recordAuthorizeEvent(name: KlarnaAnalyticsEvents.REAUTHORIZE_SESSION_METHOD, jsonData: jsonData)
-        klarnaProvider?.reauthorize(jsonData: jsonData)
+        // no-op
     }
 }
 

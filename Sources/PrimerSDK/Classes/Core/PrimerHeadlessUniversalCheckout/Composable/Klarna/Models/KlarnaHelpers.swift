@@ -10,6 +10,11 @@ import Foundation
 // KlarnaHelpers: A utility structure to facilitate various operations related to Klarna payment sessions.
 struct KlarnaHelpers {
     
+    enum AddressType {
+        case shipping
+        case billing
+    }
+    
     struct KlarnaPaymentSessionParams {
         var paymentMethodConfigId: String
         var sessionId: String

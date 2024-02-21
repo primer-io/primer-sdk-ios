@@ -9,18 +9,22 @@
 import UIKit
 import PrimerSDK
 
-extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaComponent {
+extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaDelegates {
     // MARK: - PrimerHeadlessErrorableDelegate
     func didReceiveError(error: PrimerSDK.PrimerError) {
         showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
     }
     
     // MARK: - PrimerHeadlessValidatableDelegate
-    func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {}
+    func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
+        
+        // Aici logica de la creation step
+        
+    }
     
     // MARK: - PrimerHeadlessSteppableDelegate
     func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
-        if let step = step as? KlarnaSessionCreationStep {
+        if let step = step as? KlarnaStep {
             switch step {
             case .paymentSessionCreated(let clientToken, let paymentCategories):
                 DispatchQueue.main.async { [weak self] in
@@ -29,11 +33,23 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaComp
                     self.clientToken = clientToken
                     self.klarnaInitializationViewModel.updatePaymentCategories(paymentCategories)
                 }
-            }
-        }
-        
-        if let step = step as? KlarnaViewHandlingStep {
-            switch step {
+                
+            case .paymentSessionAuthorized( _, let checkoutData):
+                presentResultsVC(checkoutData: checkoutData, error: nil)
+                
+            case .paymentSessionAuthorizationFailed(let error):
+                presentResultsVC(checkoutData: nil, error: error)
+                
+            case .paymentSessionFinalizationRequired:
+                klarnaInitializationViewModel.updatSnackBar(with: "Finalizing in 2 seconds")
+                finalizeSession()
+                
+            case .paymentSessionFinalized( _, let checkoutData):
+                presentResultsVC(checkoutData: checkoutData, error: nil)
+                
+            case .paymentSessionFinalizationFailed(let error):
+                presentResultsVC(checkoutData: nil, error: error)
+                
             case .viewInitialized:
                 klarnaComponent?.loadPaymentView()
                 
@@ -45,40 +61,6 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaComp
                 
             default:
                 break
-            }
-        }
-        
-        if let step = step as? KlarnaSessionAuthorizationStep {
-            hideLoader()
-            
-            switch step {
-            case .paymentSessionAuthorized( _, let checkoutData):
-                presentResultsVC(checkoutData: checkoutData, error: nil)
-                
-            case .paymentSessionAuthorizationFailed(let error):
-                presentResultsVC(checkoutData: nil, error: error)
-                
-            case .paymentSessionFinalizationRequired:
-                klarnaInitializationViewModel.updatSnackBar(with: "Finalizing in 2 seconds")
-                finalizeSession()
-                
-            case .paymentSessionReauthorized( _, let checkoutData):
-                presentResultsVC(checkoutData: checkoutData, error: nil)
-            
-            case .paymentSessionReauthorizationFailed(let error):
-                presentResultsVC(checkoutData: nil, error: error)
-            }
-        }
-        
-        if let step = step as? KlarnaSessionFinalizationStep {
-            hideLoader()
-            
-            switch step {
-            case .paymentSessionFinalized( _, let checkoutData):
-                presentResultsVC(checkoutData: checkoutData, error: nil)
-                
-            case .paymentSessionFinalizationFailed(let error):
-                presentResultsVC(checkoutData: nil, error: error)
             }
         }
     }
@@ -95,7 +77,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
     func startPaymentSession() {
         logs.append(#function)
         showLoader()
-        klarnaComponent?.startSession()
+        klarnaComponent?.start()
     }
     
     func createPaymentView(category: KlarnaPaymentCategory) -> UIView? {
@@ -120,7 +102,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
     
     func authorizeSession() {
         logs.append(#function)
-        klarnaComponent?.authorizeSession(autoFinalize: autoFinalize)
+        klarnaComponent?.submit()
     }
     
     func finalizeSession() {

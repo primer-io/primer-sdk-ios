@@ -7,4 +7,5 @@
 
 import Foundation
 
-public protocol PrimerHeadlessKlarnaComponent: PrimerHeadlessValidatableDelegate, PrimerHeadlessErrorableDelegate, PrimerHeadlessSteppableDelegate {}
+public protocol PrimerHeadlessKlarnaDelegates: PrimerHeadlessValidatableDelegate, PrimerHeadlessErrorableDelegate, PrimerHeadlessSteppableDelegate {}
+public protocol PrimerHeadlessKlarnaComponent: PrimerHeadlessMainComponent where Data == KlarnaCollectableData, Step == KlarnaStep {}

@@ -8,21 +8,6 @@
 import Foundation
 
 /**
- * Represents the possible outcomes of a Klarna payment session creation process.
- *
- * This enum is used to communicate the result of attempting to create a payment session with Klarna.
- * It conforms to `PrimerHeadlessStep`.
- *
- * Cases:
- * - paymentSessionCreated: Indicates a successful creation of a payment session. It caries:
- *     - `clientToken` string, which is used for further API interactions.
- *     - `paymentCategories` of type `KlarnaPaymentCategory`, representing the available payment options for the user.
- */
-public enum KlarnaSessionCreationStep: PrimerHeadlessStep {
-    case paymentSessionCreated(clientToken: String, paymentCategories: [KlarnaPaymentCategory])
-}
-
-/**
  * Defines the specific errors that can be encountered during the Klarna payment session creation process.
  * This enum categorizes errors specific to the Klarna payment session creation component.
  *
@@ -46,7 +31,7 @@ extension KlarnaComponent {
      - Success: it handles the creation of a payment session step
      - Failure: It handles the creation of a payment session error
      */
-    func start() {
+    func startSession() {
         recordCreationEvent()
         
         firstly {
@@ -71,7 +56,7 @@ extension KlarnaComponent {
      * Then notifies the `stepDelegate` of this successful step
      */
     func createSessionStep(_ response: Response.Body.Klarna.PaymentSession) {
-        let step = KlarnaSessionCreationStep.paymentSessionCreated(
+        let step = KlarnaStep.paymentSessionCreated(
             clientToken: response.clientToken,
             paymentCategories: response.categories.map { KlarnaPaymentCategory(response: $0) }
         )

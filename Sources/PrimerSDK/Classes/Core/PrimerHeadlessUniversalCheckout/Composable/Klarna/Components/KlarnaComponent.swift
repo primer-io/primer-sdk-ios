@@ -21,9 +21,11 @@ public class KlarnaComponent {
     var klarnaProvider: PrimerKlarnaProviding?
     
     // MARK: - Delegates
-    weak var errorDelegate: PrimerHeadlessErrorableDelegate?
-    weak var stepDelegate: PrimerHeadlessSteppableDelegate?
-    weak var validationDelegate: PrimerHeadlessValidatableDelegate?
+    public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
+    public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
+    public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
+    
+    public internal(set) var nextDataStep: KlarnaStep = .isLoading
     
     // MARK: - Init
     init(tokenizationComponent: KlarnaTokenizationComponentProtocol) {
@@ -31,7 +33,7 @@ public class KlarnaComponent {
     }
     
     /// Configures delegates for the session creation component to handle validation, errors, and steps in the payment process.
-    public func setKlarnaDelegates(_ delegate: PrimerHeadlessKlarnaComponent) {
+    public func setKlarnaDelegates(_ delegate: PrimerHeadlessKlarnaDelegates) {
         validationDelegate = delegate
         errorDelegate = delegate
         stepDelegate = delegate
@@ -42,12 +44,6 @@ public class KlarnaComponent {
         setAuthorizationDelegate()
         setFinalizationDelegate()
         setPaymentViewDelegate()
-    }
-    
-    /// Initiates the creation of a Klarna payment session.
-    public func startSession() {
-        start()
-        validate()
     }
     
     /// Configures the Klarna provider and view handling component with necessary information for payment processing.
@@ -69,6 +65,26 @@ public class KlarnaComponent {
     }
 }
 
+// MARK: - PrimerHeadlessMainComponent
+extension KlarnaComponent: PrimerHeadlessKlarnaComponent {
+    
+    public func updateCollectedData(collectableData: KlarnaCollectableData) {
+        //
+    }
+    
+    public func submit() {
+        let autoFinalize = PrimerInternal.shared.sdkIntegrationType != .headless
+        recordAuthorizeEvent(name: KlarnaAnalyticsEvents.AUTHORIZE_SESSION_METHOD, autoFinalize: false, jsonData: nil)
+        klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: nil)
+    }
+    
+    /// Initiates the creation of a Klarna payment session.
+    public func start() {
+        startSession()
+        validate()
+    }
+}
+
 // MARK: - Finalize payment session and Tokenization process
 extension KlarnaComponent {
     
@@ -78,13 +94,12 @@ extension KlarnaComponent {
      * - Parameters:
      *   - token: A `String` representing the authorization token used for payment session authorization.
      *            This token is necessary for both the initial authorization request and the tokenization process that follows.
-     *   - reauthorization: A `Bool` indicating whether the current operation is a reauthorization.
+     *   - fromAuthorization: A `Bool` indicating whether the current operation is coming from Authorization or Finalization flow.
      *
-     * This method first attempts to authorize the payment session using the provided `token`.
-     * Upon successful authorization, it proceeds to tokenize the customer token received in response.
-     * Based on the `reauthorization` flag, it then determines the correct step to proceed with.
+     * This method first attempts to finalize the payment session using the provided `token`.
+     * Upon successful finalization, it proceeds to tokenize the customer token received in response.
      */
-    func finalizeSession(token: String, reauthorization: Bool = false, fromAuthorization: Bool) {
+    func finalizeSession(token: String, fromAuthorization: Bool) {
         firstly {
             tokenizationComponent.authorizePaymentSession(authorizationToken: token)
         }
@@ -93,24 +108,21 @@ extension KlarnaComponent {
         }
         .done { checkoutData in
             if fromAuthorization {
-                let step = reauthorization ?
-                KlarnaSessionAuthorizationStep.paymentSessionReauthorized(authToken: token, checkoutData: checkoutData) :
-                KlarnaSessionAuthorizationStep.paymentSessionAuthorized(authToken: token, checkoutData: checkoutData)
-                
+                let step = KlarnaStep.paymentSessionAuthorized(authToken: token, checkoutData: checkoutData)
                 self.stepDelegate?.didReceiveStep(step: step)
             } else {
                 // Finalization
-                let step = KlarnaSessionFinalizationStep.paymentSessionFinalized(authToken: token, checkoutData: checkoutData)
+                let step = KlarnaStep.paymentSessionFinalized(authToken: token, checkoutData: checkoutData)
                 self.stepDelegate?.didReceiveStep(step: step)
             }
         }
         .catch { error in
             if fromAuthorization {
-                let step = KlarnaSessionAuthorizationStep.paymentSessionAuthorizationFailed(error: error)
+                let step = KlarnaStep.paymentSessionAuthorizationFailed(error: error)
                 self.stepDelegate?.didReceiveStep(step: step)
             } else {
                 // Finalization
-                let step = KlarnaSessionFinalizationStep.paymentSessionFinalizationFailed(error: error)
+                let step = KlarnaStep.paymentSessionFinalizationFailed(error: error)
                 self.stepDelegate?.didReceiveStep(step: step)
             }
         }

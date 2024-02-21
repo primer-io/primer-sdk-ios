@@ -9,22 +9,6 @@
 import Foundation
 import PrimerKlarnaSDK
 
-/**
- * Represents the possible outcomes of a Klarna payment session finalization process.
- *
- * This enum is used to communicate the result of attempting to finalize a payment session with Klarna.
- * It conforms to `PrimerHeadlessStep`.
- *
- * Cases:
- * - paymentSessionFinalized: Indicates a successful finalization of a payment session. It caries:
- *     - `authToken` string, which is used for further API interactions.
- * - paymentSessionFinalizationFailed: Represents a failure in finalizing the process.
- */
-public enum KlarnaSessionFinalizationStep: PrimerHeadlessStep {
-    case paymentSessionFinalized(authToken: String, checkoutData: PrimerCheckoutData)
-    case paymentSessionFinalizationFailed(error: Error?)
-}
-
 extension KlarnaComponent {
     
     /// Sets Klarna provider finalization delegate
@@ -44,7 +28,7 @@ extension KlarnaComponent: PrimerKlarnaProviderFinalizationDelegate {
      */
     public func primerKlarnaWrapperFinalized(approved: Bool, authToken: String?) {
         if approved == false {
-            let step = KlarnaSessionFinalizationStep.paymentSessionFinalizationFailed(error: nil)
+            let step = KlarnaStep.paymentSessionFinalizationFailed(error: nil)
             stepDelegate?.didReceiveStep(step: step)
         }
         
