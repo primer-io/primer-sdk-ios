@@ -95,8 +95,8 @@ extension KlarnaComponent: PrimerHeadlessKlarnaComponent {
     
     /// Initiates the creation of a Klarna payment session.
     public func start() {
-        startSession()
         validate()
+        startSession()
     }
 }
 

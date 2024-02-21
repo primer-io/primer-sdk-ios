@@ -25,6 +25,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     
     
     // MARK: - Klarna
+    lazy var manager: PrimerHeadlessUniversalCheckout.KlarnaManager = PrimerHeadlessUniversalCheckout.KlarnaManager()
     let klarnaInitializationViewModel: MerchantHeadlessKlarnaInitializationViewModel = MerchantHeadlessKlarnaInitializationViewModel()
     var klarnaInitializationView: MerchantHeadlessKlarnaInitializationView?
     let sharedWrapper = SharedUIViewWrapper()
@@ -32,9 +33,23 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     var klarnaComponent: KlarnaComponent?
     
     init(sessionIntent: PrimerSessionIntent) {
-        let klarnaManager = PrimerHeadlessUniversalCheckout.KlarnaManager(paymentMethodType: paymentMethodType, intent: sessionIntent)
-        klarnaComponent = klarnaManager.provideKlarnaComponent()
         super.init(nibName: nil, bundle: nil)
+        
+        do {
+            klarnaComponent = try manager.provideKlarnaComponent(for: paymentMethodType, intent: sessionIntent)
+        } catch let error as PrimerError {
+            switch error {
+            case .generic(let message, _, _):
+                showAlert(title: "Error", message: message)
+            case .unsupportedIntent(let intent, _, _):
+                showAlert(title: "Error", message: "Unsupported intent: \(intent.rawValue)")
+            default: 
+                return
+            }
+        } catch {
+            showAlert(title: "Error", message: "Klarna component provider not found.")
+        }
+        
     }
     
     required init?(coder: NSCoder) {

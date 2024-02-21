@@ -13,21 +13,13 @@ extension PrimerHeadlessUniversalCheckout {
     
     public class KlarnaManager: NSObject {
         
-        // MARK: - Klarna Component
-        
-        /// Component responsible for managing session creation stages of the Klarna payment session.
-        var klarnaComponent: KlarnaComponent?
-        
-        // MARK: - Init
-        public init(paymentMethodType: String, intent: PrimerSessionIntent) {
-            super.init()
-            
+        public func provideKlarnaComponent(for paymentMethodType: String, intent: PrimerSessionIntent) throws -> KlarnaComponent? {
             guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?.first(where: { $0.type == paymentMethodType }) else {
                 let err = PrimerError.generic(message: "Unable to locate a valid payment method component",
                                               userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                                               diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
-                return
+                throw err
             }
             
             if (intent == .vault && !paymentMethod.isVaultingEnabled) ||
@@ -39,17 +31,13 @@ extension PrimerHeadlessUniversalCheckout {
                                                                    "line": "\(#line)"],
                                                         diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
-                return
+                throw err
             }
             
             PrimerInternal.shared.intent = intent
             
             let tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: paymentMethod)
-            self.klarnaComponent = KlarnaComponent(tokenizationComponent: tokenizationComponent)
-        }
-        
-        public func provideKlarnaComponent() -> KlarnaComponent? {
-            return klarnaComponent
+            return KlarnaComponent(tokenizationComponent: tokenizationComponent)
         }
     }
     
