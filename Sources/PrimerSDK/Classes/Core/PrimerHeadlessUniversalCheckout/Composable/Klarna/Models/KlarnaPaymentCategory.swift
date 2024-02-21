@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct KlarnaPaymentCategory {
+public struct KlarnaPaymentCategory: Codable {
     public let id: String
     public let name: String
     public let descriptiveAssetUrl: String

@@ -17,8 +17,21 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaDele
     
     // MARK: - PrimerHeadlessValidatableDelegate
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
-        
-        // Aici logica de la creation step
+        switch validationStatus {
+        case .validating:
+            showLoader()
+        case .valid:
+            hideLoader()
+            
+            if let renderedKlarnaView = getPaymentView() {
+                passRenderedKlarnaView(renderedKlarnaView)
+            }
+        case .invalid:
+            hideLoader()
+        case .error(error: let error):
+            hideLoader()
+            showAlert(title: error.errorId, message: error.recoverySuggestion ?? error.localizedDescription)
+        }
         
     }
     
@@ -80,23 +93,14 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
         klarnaComponent?.start()
     }
     
-    func createPaymentView(category: KlarnaPaymentCategory) -> UIView? {
+    func getPaymentView() -> UIView? {
         logs.append(#function)
-        guard let clientToken = clientToken else {
-            showAlert(title: "Client token", message: "Client token not available")
-            return nil
-        }
-        
-        klarnaComponent?.setProvider(with: clientToken, paymentCategory: category.id)
-        klarnaComponent?.setPaymentSessionDelegates()
-        
         guard let paymentView = klarnaComponent?.createPaymentView() else {
             showAlert(title: "Payment view", message: "Unable to create payment view")
             return nil
         }
         
         klarnaComponent?.initPaymentView()
-        
         return paymentView
     }
     

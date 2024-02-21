@@ -50,11 +50,11 @@ extension KlarnaTokenizationComponent {
             decodedJWTToken.isValid,
             decodedJWTToken.pciUrl != nil
         else {
-            throw getInvalidTokenError()
+            throw KlarnaHelpers.getInvalidTokenError()
         }
         
         guard paymentMethod.id != nil else {
-            throw getInvalidValueError(
+            throw KlarnaHelpers.getInvalidValueError(
                 key: "configuration.id",
                 value: paymentMethod.id
             )
@@ -71,21 +71,21 @@ extension KlarnaTokenizationComponent {
     /// - Validates the necessary conditions specific to one-off payment operations.
     func validateOneOffPayment() throws {
         if AppState.current.amount == nil {
-            throw getInvalidSettingError(name: "amount")
+            throw KlarnaHelpers.getInvalidSettingError(name: "amount")
         }
         
         if AppState.current.currency == nil {
-            throw getInvalidSettingError(name: "currency")
+            throw KlarnaHelpers.getInvalidSettingError(name: "currency")
         }
         
         let lineItems = clientSession?.order?.lineItems ?? []
         
         if lineItems.isEmpty {
-            throw getInvalidValueError(key: "lineItems")
+            throw KlarnaHelpers.getInvalidValueError(key: "lineItems")
         }
         
         if !(lineItems.filter({ $0.amount == nil })).isEmpty {
-            throw getInvalidValueError(key: "settings.orderItems")
+            throw KlarnaHelpers.getInvalidValueError(key: "settings.orderItems")
         }
     }
 }
@@ -98,13 +98,13 @@ extension KlarnaTokenizationComponent {
             
             // Verify if we have a valid decoded JWT token
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                seal.reject(getInvalidTokenError())
+                seal.reject(KlarnaHelpers.getInvalidTokenError())
                 return
             }
             
             // Ensure the payment method has a valid ID
             guard let paymentMethodConfigId = paymentMethod.id else {
-                seal.reject(getInvalidValueError(key: "configuration.id", value: paymentMethod.id))
+                seal.reject(KlarnaHelpers.getInvalidValueError(key: "configuration.id", value: paymentMethod.id))
                 return
             }
             
@@ -139,13 +139,13 @@ extension KlarnaTokenizationComponent {
         return Promise { seal in
             // Verify if we have a valid decoded JWT token
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                seal.reject(getInvalidTokenError())
+                seal.reject(KlarnaHelpers.getInvalidTokenError())
                 return
             }
             
             // Ensure the payment method has a valid ID and the payment session id is available
             guard let paymentMethodConfigId = paymentMethod.id, let sessionId = paymentSessionId else {
-                seal.reject(getInvalidValueError(key: "paymentSessionId || configId", value: nil))
+                seal.reject(KlarnaHelpers.getInvalidValueError(key: "paymentSessionId || configId", value: nil))
                 return
             }
             

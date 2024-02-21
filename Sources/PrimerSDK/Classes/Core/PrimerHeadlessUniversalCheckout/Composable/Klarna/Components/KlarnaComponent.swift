@@ -69,7 +69,22 @@ public class KlarnaComponent {
 extension KlarnaComponent: PrimerHeadlessKlarnaComponent {
     
     public func updateCollectedData(collectableData: KlarnaCollectableData) {
-        //
+        validationDelegate?.didUpdate(validationStatus: .validating, for: collectableData)
+        switch collectableData {
+        case .paymentCategory(_: let category, clientToken: let clientToken):
+            
+            guard let clientToken = clientToken else {
+                let error = KlarnaHelpers.getInvalidTokenError()
+                ErrorHandler.handle(error: error)
+                validationDelegate?.didUpdate(validationStatus: .error(error: error), for: collectableData)
+                return
+            }
+            
+            setProvider(with: clientToken, paymentCategory: category.id)
+            setPaymentSessionDelegates()
+            
+            validationDelegate?.didUpdate(validationStatus: .valid, for: collectableData)
+        }
     }
     
     public func submit() {

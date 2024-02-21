@@ -56,9 +56,8 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     private func addKlarnaView() {
         klarnaInitializationView = MerchantHeadlessKlarnaInitializationView(viewModel: klarnaInitializationViewModel, sharedWrapper: sharedWrapper) { paymentCategory in
             guard let paymentCategory = paymentCategory else { return }
-            if let renderedKlarnaView = self.createPaymentView(category: paymentCategory) {
-                self.passRenderedKlarnaView(renderedKlarnaView)
-            }
+            let klarnaCollectableData = KlarnaCollectableData.paymentCategory(paymentCategory, clientToken: self.clientToken)
+            self.klarnaComponent?.updateCollectedData(collectableData: klarnaCollectableData)
         } onContinuePressed: {
             self.authorizeSession()
         }
@@ -79,7 +78,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
         ])
     }
     
-    private func passRenderedKlarnaView(_ renderedKlarnaView: UIView) {
+    func passRenderedKlarnaView(_ renderedKlarnaView: UIView) {
         sharedWrapper.uiView = renderedKlarnaView
     }
     
