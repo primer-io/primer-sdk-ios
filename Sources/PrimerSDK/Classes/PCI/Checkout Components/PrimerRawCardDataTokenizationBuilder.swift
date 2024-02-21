@@ -42,6 +42,8 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
 
     var cardValidationService: CardValidationService?
 
+    private var lastValidationErrors: [PrimerValidationError] = []
+
     var isDataValid: Bool = false
     var paymentMethodType: String
 
@@ -243,6 +245,14 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                             diagnosticsId: UUID().uuidString))
                     }
                 }
+
+                if !errors.isEmpty {
+                    let newValidationErrorsPresent = errors.map { $0.errorDescription } != lastValidationErrors.map { $0.errorDescription }
+                    guard newValidationErrorsPresent else {
+                        return
+                    }
+                }
+                self.lastValidationErrors = errors
 
                 if !errors.isEmpty {
                     let err = PrimerError.underlyingErrors(
