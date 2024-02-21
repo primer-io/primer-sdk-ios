@@ -23,12 +23,12 @@ import PrimerKlarnaSDK
  *  - paymentSessionReauthorizationFailed: Indicates a failure in the reauthorization process of an existing payment session.
  */
 public enum KlarnaSessionAuthorizationStep: PrimerHeadlessStep {
-    case paymentSessionAuthorized(authToken: String)
-    case paymentSessionAuthorizationFailed
+    case paymentSessionAuthorized(authToken: String, checkoutData: PrimerCheckoutData)
+    case paymentSessionAuthorizationFailed(error: Error?)
     case paymentSessionFinalizationRequired
     
-    case paymentSessionReauthorized(authToken: String)
-    case paymentSessionReauthorizationFailed
+    case paymentSessionReauthorized(authToken: String, checkoutData: PrimerCheckoutData)
+    case paymentSessionReauthorizationFailed(error: Error?)
 }
 
 extension KlarnaComponent {
@@ -56,7 +56,7 @@ extension KlarnaComponent: PrimerKlarnaProviderAuthorizationDelegate {
                 let step = KlarnaSessionAuthorizationStep.paymentSessionFinalizationRequired
                 stepDelegate?.didReceiveStep(step: step)
             } else {
-                let step = KlarnaSessionAuthorizationStep.paymentSessionAuthorizationFailed
+                let step = KlarnaSessionAuthorizationStep.paymentSessionAuthorizationFailed(error: nil)
                 stepDelegate?.didReceiveStep(step: step)
             }
         }
@@ -79,7 +79,7 @@ extension KlarnaComponent: PrimerKlarnaProviderAuthorizationDelegate {
      */
     public func primerKlarnaWrapperReauthorized(approved: Bool, authToken: String?) {
         if approved == false {
-            let step = KlarnaSessionAuthorizationStep.paymentSessionReauthorizationFailed
+            let step = KlarnaSessionAuthorizationStep.paymentSessionReauthorizationFailed(error: nil)
             stepDelegate?.didReceiveStep(step: step)
         }
         

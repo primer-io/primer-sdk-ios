@@ -21,8 +21,8 @@ import PrimerKlarnaSDK
  * - paymentSessionFinalizationFailed: Represents a failure in finalizing the process.
  */
 public enum KlarnaSessionFinalizationStep: PrimerHeadlessStep {
-    case paymentSessionFinalized(authToken: String)
-    case paymentSessionFinalizationFailed
+    case paymentSessionFinalized(authToken: String, checkoutData: PrimerCheckoutData)
+    case paymentSessionFinalizationFailed(error: Error?)
 }
 
 extension KlarnaComponent {
@@ -44,7 +44,7 @@ extension KlarnaComponent: PrimerKlarnaProviderFinalizationDelegate {
      */
     public func primerKlarnaWrapperFinalized(approved: Bool, authToken: String?) {
         if approved == false {
-            let step = KlarnaSessionFinalizationStep.paymentSessionFinalizationFailed
+            let step = KlarnaSessionFinalizationStep.paymentSessionFinalizationFailed(error: nil)
             stepDelegate?.didReceiveStep(step: step)
         }
         

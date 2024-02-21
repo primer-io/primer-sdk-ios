@@ -15,6 +15,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     // MARK: - Subviews
     let activityIndicator = UIActivityIndicatorView(style: .large)
     // MARK: - Properties
+    var logs: [String] = []
     var clientToken: String?
     var autoFinalize: Bool = false
     var finalizePayment: Bool = false
@@ -22,8 +23,8 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     
     private var sessionIntent: PrimerSessionIntent = .checkout
     
-    let klarnaHeadlessPaymentViewModel: KlarnaHeadlessPaymentViewModel = KlarnaHeadlessPaymentViewModel()
-    var klarnaView: MerchantHeadlessKlarnaView?
+    let klarnaInitializationViewModel: MerchantHeadlessKlarnaInitializationViewModel = MerchantHeadlessKlarnaInitializationViewModel()
+    var klarnaInitializationView: MerchantHeadlessKlarnaInitializationView?
     var renderedKlarnaView = UIView()
     let sharedWrapper = SharedUIViewWrapper()
     
@@ -45,12 +46,14 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
         klarnaManager = PrimerHeadlessUniversalCheckout.KlarnaManager(paymentMethodType: paymentMethodType, intent: sessionIntent)
         setupKlarnaDelegates()
         
+        setupUI()
+        setupLayout()
         addKlarnaView()
         startPaymentSession()
     }
     
     private func addKlarnaView() {
-        klarnaView = MerchantHeadlessKlarnaView(viewModel: klarnaHeadlessPaymentViewModel, sharedWrapper: sharedWrapper) { paymentCategory in
+        klarnaInitializationView = MerchantHeadlessKlarnaInitializationView(viewModel: klarnaInitializationViewModel, sharedWrapper: sharedWrapper) { paymentCategory in
             guard let paymentCategory = paymentCategory else { return }
             if let renderedKlarnaView = self.createPaymentView(category: paymentCategory) {
                 self.passRenderedKlarnaView(renderedKlarnaView)
@@ -59,7 +62,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
             self.authorizeSession()
         }
         
-        let hostingViewController = UIHostingController(rootView: klarnaView)
+        let hostingViewController = UIHostingController(rootView: klarnaInitializationView)
         hostingViewController.view.translatesAutoresizingMaskIntoConstraints = false
         addChild(hostingViewController)
         view.addSubview(hostingViewController.view)
@@ -96,8 +99,6 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
         view.backgroundColor = .white
         activityIndicator.hidesWhenStopped = true
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        
-        
     }
     
     func setupLayout() {

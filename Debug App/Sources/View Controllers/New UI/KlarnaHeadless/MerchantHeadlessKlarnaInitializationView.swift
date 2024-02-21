@@ -10,8 +10,8 @@ import Foundation
 import SwiftUI
 import PrimerSDK
 
-struct MerchantHeadlessKlarnaView: View {
-    @ObservedObject var viewModel = KlarnaHeadlessPaymentViewModel()
+struct MerchantHeadlessKlarnaInitializationView: View {
+    @ObservedObject var viewModel = MerchantHeadlessKlarnaInitializationViewModel()
     @ObservedObject var sharedWrapper: SharedUIViewWrapper
     
     @State private var selectedCategory: KlarnaPaymentCategory?

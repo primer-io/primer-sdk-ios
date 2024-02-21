@@ -27,7 +27,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaComp
                     guard let self = self else { return }
                     self.hideLoader()
                     self.clientToken = clientToken
-                    self.klarnaHeadlessPaymentViewModel.updatePaymentCategories(paymentCategories)
+                    self.klarnaInitializationViewModel.updatePaymentCategories(paymentCategories)
                 }
             }
         }
@@ -52,29 +52,21 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaComp
             hideLoader()
             
             switch step {
-            case .paymentSessionAuthorized(let authToken):
-                showAlert(title: "Success", message: "Payment session completed with token: \(authToken)") { [unowned self] in
-                    navigationController?.popToRootViewController(animated: true)
-                }
+            case .paymentSessionAuthorized( _, let checkoutData):
+                presentResultsVC(checkoutData: checkoutData, error: nil)
                 
-            case .paymentSessionAuthorizationFailed:
-                showAlert(title: "Authorization", message: "Payment authorization failed") { [unowned self] in
-                    navigationController?.popToRootViewController(animated: true)
-                }
+            case .paymentSessionAuthorizationFailed(let error):
+                presentResultsVC(checkoutData: nil, error: error)
                 
             case .paymentSessionFinalizationRequired:
-                klarnaHeadlessPaymentViewModel.updatSnackBar(with: "Finalizing in 2 seconds")
+                klarnaInitializationViewModel.updatSnackBar(with: "Finalizing in 2 seconds")
                 finalizeSession()
                 
-            case .paymentSessionReauthorized(let authToken):
-                showAlert(title: "Success", message: "Payment session reauthorized with token: \(authToken)") { [unowned self] in
-                    navigationController?.popToRootViewController(animated: true)
-                }
+            case .paymentSessionReauthorized( _, let checkoutData):
+                presentResultsVC(checkoutData: checkoutData, error: nil)
             
-            case .paymentSessionReauthorizationFailed:
-                showAlert(title: "Reauthorization", message: "Payment reauthorization failed") { [unowned self] in
-                    navigationController?.popViewController(animated: true)
-                }
+            case .paymentSessionReauthorizationFailed(let error):
+                presentResultsVC(checkoutData: nil, error: error)
             }
         }
         
@@ -82,28 +74,32 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaComp
             hideLoader()
             
             switch step {
-            case .paymentSessionFinalized(let authToken):
-                showAlert(title: "Success", message: "Payment session finalized with token: \(authToken)") { [unowned self] in
-                    navigationController?.popToRootViewController(animated: true)
-                }
+            case .paymentSessionFinalized( _, let checkoutData):
+                presentResultsVC(checkoutData: checkoutData, error: nil)
                 
-            case .paymentSessionFinalizationFailed:
-                showAlert(title: "Finalization", message: "Payment finalization failed") { [unowned self] in
-                    navigationController?.popViewController(animated: true)
-                }
+            case .paymentSessionFinalizationFailed(let error):
+                presentResultsVC(checkoutData: nil, error: error)
             }
         }
+    }
+    
+    private func presentResultsVC(checkoutData: PrimerCheckoutData?, error: Error?) {
+        let rvc = MerchantResultViewController.instantiate(checkoutData: checkoutData, error: error, logs: logs)
+        navigationController?.popToRootViewController(animated: true)
+        navigationController?.pushViewController(rvc, animated: true)
     }
 }
 
 // MARK: - Payment
 extension MerchantHeadlessCheckoutKlarnaViewController {
     func startPaymentSession() {
+        logs.append(#function)
         showLoader()
         klarnaManager.startSession()
     }
     
     func createPaymentView(category: KlarnaPaymentCategory) -> UIView? {
+        logs.append(#function)
         guard let clientToken = clientToken else {
             showAlert(title: "Client token", message: "Client token not available")
             return nil
@@ -123,10 +119,12 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
     }
     
     func authorizeSession() {
+        logs.append(#function)
         klarnaManager.authorizeSession(autoFinalize: autoFinalize)
     }
     
     func finalizeSession() {
+        logs.append(#function)
         showLoader()
         klarnaManager.finalizeSession()
     }

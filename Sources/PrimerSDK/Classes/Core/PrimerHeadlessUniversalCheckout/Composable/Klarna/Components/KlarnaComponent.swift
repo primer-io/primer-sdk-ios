@@ -55,26 +55,26 @@ extension KlarnaComponent {
         .then { customerToken in
             self.tokenizationComponent.tokenize(customerToken: customerToken, offSessionAuthorizationId: token)
         }
-        .done { _ in
+        .done { checkoutData in
             if fromAuthorization {
                 let step = reauthorization ?
-                KlarnaSessionAuthorizationStep.paymentSessionReauthorized(authToken: token) :
-                KlarnaSessionAuthorizationStep.paymentSessionAuthorized(authToken: token)
+                KlarnaSessionAuthorizationStep.paymentSessionReauthorized(authToken: token, checkoutData: checkoutData) :
+                KlarnaSessionAuthorizationStep.paymentSessionAuthorized(authToken: token, checkoutData: checkoutData)
                 
                 self.stepDelegate?.didReceiveStep(step: step)
             } else {
                 // Finalization
-                let step = KlarnaSessionFinalizationStep.paymentSessionFinalized(authToken: token)
+                let step = KlarnaSessionFinalizationStep.paymentSessionFinalized(authToken: token, checkoutData: checkoutData)
                 self.stepDelegate?.didReceiveStep(step: step)
             }
         }
-        .catch { _ in
+        .catch { error in
             if fromAuthorization {
-                let step = KlarnaSessionAuthorizationStep.paymentSessionAuthorizationFailed
+                let step = KlarnaSessionAuthorizationStep.paymentSessionAuthorizationFailed(error: error)
                 self.stepDelegate?.didReceiveStep(step: step)
             } else {
                 // Finalization
-                let step = KlarnaSessionFinalizationStep.paymentSessionFinalizationFailed
+                let step = KlarnaSessionFinalizationStep.paymentSessionFinalizationFailed(error: error)
                 self.stepDelegate?.didReceiveStep(step: step)
             }
         }

@@ -9,7 +9,7 @@
 import SwiftUI
 import PrimerSDK
 
-class KlarnaHeadlessPaymentViewModel: ObservableObject {
+class MerchantHeadlessKlarnaInitializationViewModel: ObservableObject {
     @Published var paymentCategories: [KlarnaPaymentCategory] = []
     @Published var snackBarMessage: String = ""
     @Published var showMessage: Bool = false
