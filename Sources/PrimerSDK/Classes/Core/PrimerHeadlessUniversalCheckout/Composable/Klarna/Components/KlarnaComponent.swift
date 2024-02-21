@@ -14,8 +14,11 @@ public class KlarnaComponent {
     // MARK: - Tokenization
     var tokenizationComponent: KlarnaTokenizationComponentProtocol
     
+    /// Global settings for the payment process, injected as a dependency.
+    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+    
     // MARK: - Provider
-    weak var klarnaProvider: PrimerKlarnaProviding?
+    var klarnaProvider: PrimerKlarnaProviding?
     
     // MARK: - Delegates
     weak var errorDelegate: PrimerHeadlessErrorableDelegate?
@@ -27,9 +30,42 @@ public class KlarnaComponent {
         self.tokenizationComponent = tokenizationComponent
     }
     
-    // MARK: - Set Klarna provider
-    func setProvider(provider: PrimerKlarnaProviding?) {
+    /// Configures delegates for the session creation component to handle validation, errors, and steps in the payment process.
+    public func setKlarnaDelegates(_ delegate: PrimerHeadlessKlarnaComponent) {
+        validationDelegate = delegate
+        errorDelegate = delegate
+        stepDelegate = delegate
+        validate()
+    }
+    
+    public func setPaymentSessionDelegates() {
+        setAuthorizationDelegate()
+        setFinalizationDelegate()
+        setPaymentViewDelegate()
+    }
+    
+    /// Initiates the creation of a Klarna payment session.
+    public func startSession() {
+        start()
+        validate()
+    }
+    
+    /// Configures the Klarna provider and view handling component with necessary information for payment processing.
+    public func setProvider(with clientToken: String, paymentCategory: String) {
+        let provider: PrimerKlarnaProviding = PrimerKlarnaProvider(clientToken: clientToken, paymentCategory: paymentCategory, urlScheme: settings.paymentMethodOptions.urlScheme)
+        
         klarnaProvider = provider
+    }
+    
+    /// Validates the tokenization component, handling any errors that occur during the process.
+    private func validate() {
+        do {
+            try tokenizationComponent.validate()
+        } catch {
+            if let err = error as? PrimerError {
+                errorDelegate?.didReceiveError(error: err)
+            }
+        }
     }
 }
 
@@ -78,6 +114,21 @@ extension KlarnaComponent {
                 self.stepDelegate?.didReceiveStep(step: step)
             }
         }
+    }
+    
+}
+
+// MARK: - PrimerKlarnaProviderErrorDelegate
+extension KlarnaComponent: PrimerKlarnaProviderErrorDelegate {
+    
+    /// Handles errors from the Klarna SDK, forwarding them to the configured error delegate.
+    public func primerKlarnaWrapperFailed(with error: PrimerKlarnaSDK.PrimerKlarnaError) {
+        let primerError = PrimerError.klarnaWrapperError(
+            message: error.errorDescription,
+            userInfo: error.info,
+            diagnosticsId: error.diagnosticsId
+        )
+        errorDelegate?.didReceiveError(error: primerError)
     }
     
 }

@@ -91,12 +91,12 @@ extension KlarnaComponent: PrimerKlarnaProviderAuthorizationDelegate {
 
 // MARK: - Authorization / Reauthorize session
 extension KlarnaComponent {
-    func authorizeSession(autoFinalize: Bool, jsonData: String? = nil) {
+    public func authorizeSession(autoFinalize: Bool, jsonData: String? = nil) {
         recordAuthorizeEvent(name: KlarnaAnalyticsEvents.AUTHORIZE_SESSION_METHOD, autoFinalize: autoFinalize, jsonData: jsonData)
         klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: jsonData)
     }
     
-    func reauthorizeSession(jsonData: String? = nil) {
+    public func reauthorizeSession(jsonData: String? = nil) {
         recordAuthorizeEvent(name: KlarnaAnalyticsEvents.REAUTHORIZE_SESSION_METHOD, jsonData: jsonData)
         klarnaProvider?.reauthorize(jsonData: jsonData)
     }

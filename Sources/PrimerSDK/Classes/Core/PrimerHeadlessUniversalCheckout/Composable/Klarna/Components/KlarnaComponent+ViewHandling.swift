@@ -56,24 +56,24 @@ extension KlarnaComponent: PrimerKlarnaProviderPaymentViewDelegate {
 
 // MARK: - Payment view
 extension KlarnaComponent {
-    func createPaymentView() -> UIView? {
+    public func createPaymentView() -> UIView? {
         recordPaymentViewEvent(name: KlarnaAnalyticsEvents.CREATE_PAYMENT_VIEW_METHOD)
         klarnaProvider?.createPaymentView()
         
         return klarnaProvider?.paymentView
     }
     
-    func removePaymentView() {
+    public func removePaymentView() {
         recordPaymentViewEvent(name: KlarnaAnalyticsEvents.REMOVE_PAYMENT_VIEW_METHOD)
         klarnaProvider?.removePaymentView()
     }
     
-    func initPaymentView() {
+    public func initPaymentView() {
         recordPaymentViewEvent(name: KlarnaAnalyticsEvents.INIT_PAYMENT_VIEW_METHOD)
         klarnaProvider?.initializePaymentView()
     }
     
-    func loadPaymentView(jsonData: String? = nil) {
+    public func loadPaymentView(jsonData: String? = nil) {
         recordPaymentViewEvent(name: KlarnaAnalyticsEvents.LOAD_PAYMENT_VIEW_METHOD, jsonData: jsonData ?? KlarnaAnalyticsEvents.JSON_DATA_DEFAULT_VALUE)
         klarnaProvider?.loadPaymentView(jsonData: jsonData)
     }
@@ -81,7 +81,7 @@ extension KlarnaComponent {
 
 // MARK: - Payment review
 extension KlarnaComponent {
-    func loadPaymentReview() {
+    public func loadPaymentReview() {
         recordPaymentViewEvent(name: KlarnaAnalyticsEvents.LOAD_PAYMENT_REVIEW_METHOD)
         klarnaProvider?.loadPaymentReview()
     }

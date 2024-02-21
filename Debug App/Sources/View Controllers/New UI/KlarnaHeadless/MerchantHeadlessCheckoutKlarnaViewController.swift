@@ -14,6 +14,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     
     // MARK: - Subviews
     let activityIndicator = UIActivityIndicatorView(style: .large)
+    
     // MARK: - Properties
     var logs: [String] = []
     var clientToken: String?
@@ -21,18 +22,18 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     var finalizePayment: Bool = false
     let paymentMethodType: String = "KLARNA"
     
-    private var sessionIntent: PrimerSessionIntent = .checkout
     
+    
+    // MARK: - Klarna
     let klarnaInitializationViewModel: MerchantHeadlessKlarnaInitializationViewModel = MerchantHeadlessKlarnaInitializationViewModel()
     var klarnaInitializationView: MerchantHeadlessKlarnaInitializationView?
-    var renderedKlarnaView = UIView()
     let sharedWrapper = SharedUIViewWrapper()
-    
-    // MARK: - Klarna Manager
-    private(set) var klarnaManager: PrimerHeadlessUniversalCheckout.KlarnaManager!
+    var renderedKlarnaView = UIView()
+    var klarnaComponent: KlarnaComponent?
     
     init(sessionIntent: PrimerSessionIntent) {
-        self.sessionIntent = sessionIntent
+        let klarnaManager = PrimerHeadlessUniversalCheckout.KlarnaManager(paymentMethodType: paymentMethodType, intent: sessionIntent)
+        klarnaComponent = klarnaManager.provideKlarnaComponent()
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -43,7 +44,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        klarnaManager = PrimerHeadlessUniversalCheckout.KlarnaManager(paymentMethodType: paymentMethodType, intent: sessionIntent)
+        
         setupKlarnaDelegates()
         
         setupUI()
@@ -82,10 +83,8 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
         sharedWrapper.uiView = renderedKlarnaView
     }
     
-    
-    
     private func setupKlarnaDelegates() {
-        klarnaManager.setKlarnaDelegates(self)
+        klarnaComponent?.setKlarnaDelegates(self)
     }
     
     override func viewWillAppear(_ animated: Bool) {

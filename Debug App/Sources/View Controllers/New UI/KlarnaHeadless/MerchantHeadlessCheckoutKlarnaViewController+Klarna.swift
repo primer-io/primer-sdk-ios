@@ -35,7 +35,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaComp
         if let step = step as? KlarnaViewHandlingStep {
             switch step {
             case .viewInitialized:
-                klarnaManager.loadPaymentView()
+                klarnaComponent?.loadPaymentView()
                 
             case .viewResized:
                 view.layoutIfNeeded()
@@ -95,7 +95,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
     func startPaymentSession() {
         logs.append(#function)
         showLoader()
-        klarnaManager.startSession()
+        klarnaComponent?.startSession()
     }
     
     func createPaymentView(category: KlarnaPaymentCategory) -> UIView? {
@@ -105,27 +105,27 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
             return nil
         }
         
-        klarnaManager.setProvider(with: clientToken, paymentCategory: category.id)
-        klarnaManager.setPaymentSessionDelegates()
+        klarnaComponent?.setProvider(with: clientToken, paymentCategory: category.id)
+        klarnaComponent?.setPaymentSessionDelegates()
         
-        guard let paymentView = klarnaManager.createPaymentView() else {
+        guard let paymentView = klarnaComponent?.createPaymentView() else {
             showAlert(title: "Payment view", message: "Unable to create payment view")
             return nil
         }
         
-        klarnaManager.initPaymentView()
+        klarnaComponent?.initPaymentView()
         
         return paymentView
     }
     
     func authorizeSession() {
         logs.append(#function)
-        klarnaManager.authorizeSession(autoFinalize: autoFinalize)
+        klarnaComponent?.authorizeSession(autoFinalize: autoFinalize)
     }
     
     func finalizeSession() {
         logs.append(#function)
         showLoader()
-        klarnaManager.finalizeSession()
+        klarnaComponent?.finalise()
     }
 }

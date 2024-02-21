@@ -56,7 +56,7 @@ extension KlarnaComponent: PrimerKlarnaProviderFinalizationDelegate {
 
 // MARK: - Finalization
 extension KlarnaComponent {
-    func finalise(jsonData: String? = nil) {
+    public func finalise(jsonData: String? = nil) {
         recordFinalizationEvent(jsonData: jsonData)
         klarnaProvider?.finalise(jsonData: jsonData)
     }
