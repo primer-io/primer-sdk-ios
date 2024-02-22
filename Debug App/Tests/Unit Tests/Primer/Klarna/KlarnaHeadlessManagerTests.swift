@@ -10,20 +10,15 @@
 import XCTest
 @testable import PrimerSDK
 
-final class KlarnaHeadlessManagerTests: XCTestCase {
+final class PrimerHeadlessUniversalCheckoutKlarnaManagerTests: XCTestCase {
     
     var manager: PrimerHeadlessUniversalCheckout.KlarnaManager!
-    var currentStep: PrimerSDK.PrimerHeadlessStep?
-    var errorType: ErrorDelegationType = .none
-    var stepType: StepDelegationType = .none
-    var validateType: ValidateDelegationType = .none
+    var klarnaComponent: (any KlarnaComponent)!
     
     override func setUp() {
         super.setUp()
         prepareConfigurations()
-        manager = PrimerHeadlessUniversalCheckout.KlarnaManager(paymentMethodType: "KLARNA", intent: .checkout)
-        manager.setProvider(with: KlarnaTestsMocks.clientToken, paymentCategory: KlarnaTestsMocks.paymentMethod)
-        manager.setKlarnaDelegates(self)
+        manager = PrimerHeadlessUniversalCheckout.KlarnaManager()
     }
     
     override func tearDown() {
@@ -31,113 +26,28 @@ final class KlarnaHeadlessManagerTests: XCTestCase {
         super.tearDown()
     }
     
-    func test_initialization_succeeds() {
+    func test_manager_initialization_succeed() {
         XCTAssertNotNil(manager)
     }
     
-    func test_manager_error() {
-        let error = getInvalidTokenError()
-        let expectedErrorType: ErrorDelegationType = .managerError
-        manager.errorDelegate?.didReceiveError(error: error)
-        XCTAssertEqual(expectedErrorType, errorType)
+    func test_klarnaComponent_initialization_succeed() {
+        let paymentMethodType = "KLARNA"
+        let sessionIntent: PrimerSessionIntent = .checkout
+        klarnaComponent = try? manager.provideKlarnaComponent(for: paymentMethodType, intent: sessionIntent)
+        
+        XCTAssertNotNil(klarnaComponent)
     }
     
-    func test_sessionCreation_error() {
-        let error = PrimerError.failedToCreateSession(
-            error: nil,
-            userInfo: [:],
-            diagnosticsId: UUID().uuidString
-        )
-        let expectedErrorType: ErrorDelegationType = .creationError
-        manager.klarnaComponent?.errorDelegate?.didReceiveError(error: error)
-        XCTAssertEqual(expectedErrorType, errorType)
+    func test_klarnaComponent_initialization_fail() {
+        let paymentMethodType = ""
+        let sessionIntent: PrimerSessionIntent = .checkout
+        klarnaComponent = try? manager.provideKlarnaComponent(for: paymentMethodType, intent: sessionIntent)
+        
+        XCTAssertNil(klarnaComponent)
     }
-    
-    func test_sessionCreation_validation() {
-        let expectedValidationType: ValidateDelegationType = .creationValidate
-        manager.klarnaComponent?.validationDelegate?.didUpdate(validationStatus: .validating, for: nil)
-        XCTAssertEqual(expectedValidationType, validateType)
-    }
-    
-    func test_sessionCreation_step() {
-        let expectedStepType: StepDelegationType = .creationStep
-        
-        let step = KlarnaSessionCreationStep.paymentSessionCreated(clientToken: "", paymentCategories: [])
-        manager.klarnaComponent?.stepDelegate?.didReceiveStep(step: step)
-        
-        XCTAssertEqual(expectedStepType, .creationStep)
-    }
-    
-    func test_viewHandling_step() {
-        let expectedStepType: StepDelegationType = .viewHandlingStep
-        
-        let step = KlarnaViewHandlingStep.viewInitialized
-        manager.klarnaComponent?.stepDelegate?.didReceiveStep(step: step)
-        
-        XCTAssertEqual(expectedStepType, .viewHandlingStep)
-    }
-    
-    func test_sessionAuthorization_step() {
-        let expectedStepType: StepDelegationType = .authorizationStep
-        
-        let step = KlarnaSessionAuthorizationStep.paymentSessionAuthorizationFailed
-        manager.klarnaComponent?.stepDelegate?.didReceiveStep(step: step)
-        
-        XCTAssertEqual(expectedStepType, .authorizationStep)
-    }
-    
-    func test_sessionFinalization_step() {
-        let expectedStepType: StepDelegationType = .finalizationStep
-        
-        let step = KlarnaSessionFinalizationStep.paymentSessionFinalizationFailed
-        manager.klarnaComponent?.stepDelegate?.didReceiveStep(step: step)
-        
-        XCTAssertEqual(expectedStepType, .finalizationStep)
-    }
-    
 }
 
-extension KlarnaHeadlessManagerTests: PrimerHeadlessKlarnaComponent {
-    func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
-        validateType = .creationValidate
-    }
-    
-    func didReceiveError(error: PrimerSDK.PrimerError) {
-        if error.errorId == "invalid-client-token" {
-            errorType = .managerError
-        }
-        
-        if error.errorId == "failed-to-create-session" {
-            errorType = .creationError
-        }
-    }
-    
-    func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
-        if let step = step as? KlarnaSessionCreationStep {
-            stepType = .creationStep
-            currentStep = step
-        }
-        
-        if let step = step as? KlarnaViewHandlingStep {
-            stepType = .viewHandlingStep
-            currentStep = step
-        }
-        
-        if let step = step as? KlarnaSessionAuthorizationStep {
-            stepType = .authorizationStep
-            currentStep = step
-        }
-        
-        if let step = step as? KlarnaSessionFinalizationStep {
-            stepType = .finalizationStep
-            currentStep = step
-        }
-    }
-    
-    
-}
-
-extension KlarnaHeadlessManagerTests {
+extension PrimerHeadlessUniversalCheckoutKlarnaManagerTests {
     private func setupPrimerConfiguration(paymentMethod: PrimerPaymentMethod, apiConfiguration: PrimerAPIConfiguration) {
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.fetchConfigurationWithActionsResult = (apiConfiguration, nil)
@@ -158,6 +68,7 @@ extension KlarnaHeadlessManagerTests {
     
     private func restartPrimerConfiguration() {
         manager = nil
+        klarnaComponent = nil
         AppState.current.clientToken = nil
         PrimerAPIConfigurationModule.clientToken = nil
         PrimerAPIConfigurationModule.apiConfiguration = nil
@@ -180,27 +91,6 @@ extension KlarnaHeadlessManagerTests {
             "function": #function,
             "line": "\(#line)"
         ]
-    }
-}
-
-extension KlarnaHeadlessManagerTests {
-    enum ErrorDelegationType {
-        case managerError
-        case creationError
-        case none
-    }
-    
-    enum StepDelegationType {
-        case creationStep
-        case authorizationStep
-        case finalizationStep
-        case viewHandlingStep
-        case none
-    }
-    
-    enum ValidateDelegationType {
-        case creationValidate
-        case none
     }
 }
 

@@ -19,11 +19,6 @@ class KlarnaTestsMocks {
         clientToken: clientToken,
         paymentCategory: paymentMethod
     )
-    static let klarnaAccountInfo = KlarnaCustomerAccountInfo(
-        accountUniqueId: "test@gmail.com",
-        accountRegistrationDate: "2022-04-25T14:05:15.953Z".toDate(),
-        accountLastModified: "2023-04-25T14:05:15.953Z".toDate()
-    )
     
     static func getClientSession(
         hasLineItemAmout: Bool = true,

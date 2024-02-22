@@ -96,7 +96,7 @@ extension PrimerHeadlessKlarnaComponent: KlarnaComponent {
     
     public func submit() {
         let autoFinalize = PrimerInternal.shared.sdkIntegrationType != .headless
-        recordAuthorizeEvent(name: KlarnaAnalyticsEvents.AUTHORIZE_SESSION_METHOD, autoFinalize: false, jsonData: nil)
+        recordAuthorizeEvent(name: KlarnaAnalyticsEvents.authorizeSessionMethod, autoFinalize: false, jsonData: nil)
         klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: nil)
     }
     
@@ -172,21 +172,21 @@ extension PrimerHeadlessKlarnaComponent: PrimerHeadlessAnalyticsRecordable {
     func recordCreationEvent() {
         recordEvent(
             type: .sdkEvent,
-            name: KlarnaAnalyticsEvents.CREATE_SESSION_START_METHOD,
+            name: KlarnaAnalyticsEvents.createSessionStartMethod,
             params: [
-                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
+                KlarnaAnalyticsEvents.categoryKey: KlarnaAnalyticsEvents.categoryValue,
             ]
         )
     }
     
     func recordAuthorizeEvent(name: String, autoFinalize: Bool? = nil, jsonData: String?) {
         var params = [
-            KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
-            KlarnaAnalyticsEvents.JSON_DATA_KEY: jsonData ?? KlarnaAnalyticsEvents.JSON_DATA_DEFAULT_VALUE
+            KlarnaAnalyticsEvents.categoryKey: KlarnaAnalyticsEvents.categoryValue,
+            KlarnaAnalyticsEvents.jsonDataKey: jsonData ?? KlarnaAnalyticsEvents.jsonDataDefaultValue
         ]
         
         if let autoFinalize {
-            params[KlarnaAnalyticsEvents.AUTO_FINALIZE_KEY] = "\(autoFinalize)"
+            params[KlarnaAnalyticsEvents.autoFinalizeKey] = "\(autoFinalize)"
         }
         
         recordEvent(
@@ -199,19 +199,19 @@ extension PrimerHeadlessKlarnaComponent: PrimerHeadlessAnalyticsRecordable {
     func recordFinalizationEvent(jsonData: String?) {
         recordEvent(
             type: .sdkEvent,
-            name: KlarnaAnalyticsEvents.FINALIZE_SESSION_METHOD,
+            name: KlarnaAnalyticsEvents.finalizeSessionMethod,
             params: [
-                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
-                KlarnaAnalyticsEvents.JSON_DATA_KEY: jsonData ?? KlarnaAnalyticsEvents.JSON_DATA_DEFAULT_VALUE
+                KlarnaAnalyticsEvents.categoryKey: KlarnaAnalyticsEvents.categoryValue,
+                KlarnaAnalyticsEvents.jsonDataKey: jsonData ?? KlarnaAnalyticsEvents.jsonDataDefaultValue
             ]
         )
     }
     
     func recordPaymentViewEvent(name: String, jsonData: String? = nil) {
-        var params = [KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE]
+        var params = [KlarnaAnalyticsEvents.categoryKey: KlarnaAnalyticsEvents.categoryValue]
         
         if let jsonData {
-            params[KlarnaAnalyticsEvents.JSON_DATA_KEY] = jsonData
+            params[KlarnaAnalyticsEvents.jsonDataKey] = jsonData
         }
         
         recordEvent(
