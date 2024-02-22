@@ -17,6 +17,15 @@ extension PrimerHeadlessKlarnaComponent {
     }
 }
 
+// MARK: - Session authorization
+extension PrimerHeadlessKlarnaComponent {
+    func authorizeSession() {
+        let autoFinalize = PrimerInternal.shared.sdkIntegrationType != .headless
+        recordAuthorizeEvent(name: KlarnaAnalyticsEvents.authorizeSessionMethod, autoFinalize: false, jsonData: nil)
+        klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: nil)
+    }
+}
+
 // MARK: - PrimerKlarnaProviderAuthorizationDelegate
 extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderAuthorizationDelegate {
     

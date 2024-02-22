@@ -28,8 +28,8 @@ extension PrimerHeadlessKlarnaComponent {
     /**
      * Initiates the process of creating a payment session.
      * This method kicks off the payment session creation process by first recording the creation event for tracking or analytical purposes.
-     - Success: it handles the creation of a payment session step
-     - Failure: It handles the creation of a payment session error
+     * - Success: it handles the creation of a payment session step
+     * - Failure: It handles the creation of a payment session error
      */
     func startSession() {
         recordCreationEvent()

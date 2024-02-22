@@ -39,22 +39,22 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderPaymentViewDelegate
 
 // MARK: - Payment view
 extension PrimerHeadlessKlarnaComponent {
-    public func createPaymentView() {
+    func createPaymentView() {
         recordPaymentViewEvent(name: KlarnaAnalyticsEvents.createPaymentViewMethod)
         klarnaProvider?.createPaymentView()
     }
     
-    public func removePaymentView() {
+    func removePaymentView() {
         recordPaymentViewEvent(name: KlarnaAnalyticsEvents.removePaymentViewMethod)
         klarnaProvider?.removePaymentView()
     }
     
-    public func initPaymentView() {
+    func initPaymentView() {
         recordPaymentViewEvent(name: KlarnaAnalyticsEvents.initPaymentViewMethod)
         klarnaProvider?.initializePaymentView()
     }
     
-    public func loadPaymentView(jsonData: String? = nil) {
+    func loadPaymentView(jsonData: String? = nil) {
         recordPaymentViewEvent(name: KlarnaAnalyticsEvents.loadPaymentViewMethod, jsonData: jsonData ?? KlarnaAnalyticsEvents.jsonDataDefaultValue)
         klarnaProvider?.loadPaymentView(jsonData: jsonData)
     }
@@ -62,7 +62,7 @@ extension PrimerHeadlessKlarnaComponent {
 
 // MARK: - Payment review
 extension PrimerHeadlessKlarnaComponent {
-    public func loadPaymentReview() {
+    func loadPaymentReview() {
         recordPaymentViewEvent(name: KlarnaAnalyticsEvents.loadPaymentReviewMethod)
         klarnaProvider?.loadPaymentReview()
     }

@@ -9,7 +9,7 @@
 import Foundation
 import PrimerKlarnaSDK
 
-public class PrimerHeadlessKlarnaComponent {
+class PrimerHeadlessKlarnaComponent {
     
     // MARK: - Tokenization
     var tokenizationComponent: KlarnaTokenizationComponentProtocol
@@ -32,21 +32,21 @@ public class PrimerHeadlessKlarnaComponent {
         self.tokenizationComponent = tokenizationComponent
     }
     
-    public func setPaymentSessionDelegates() {
+    func setPaymentSessionDelegates() {
         setAuthorizationDelegate()
         setFinalizationDelegate()
         setPaymentViewDelegate()
     }
     
     /// Configures the Klarna provider and view handling component with necessary information for payment processing.
-    public func setProvider(with clientToken: String, paymentCategory: String) {
+    func setProvider(with clientToken: String, paymentCategory: String) {
         let provider: PrimerKlarnaProviding = PrimerKlarnaProvider(clientToken: clientToken, paymentCategory: paymentCategory, urlScheme: settings.paymentMethodOptions.urlScheme)
         
         klarnaProvider = provider
     }
     
     /// Validates the tokenization component, handling any errors that occur during the process.
-    private func validate() {
+    func validate() {
         do {
             try tokenizationComponent.validate()
         } catch {
@@ -95,9 +95,7 @@ extension PrimerHeadlessKlarnaComponent: KlarnaComponent {
     }
     
     public func submit() {
-        let autoFinalize = PrimerInternal.shared.sdkIntegrationType != .headless
-        recordAuthorizeEvent(name: KlarnaAnalyticsEvents.authorizeSessionMethod, autoFinalize: false, jsonData: nil)
-        klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: nil)
+        authorizeSession()
     }
     
     /// Initiates the creation of a Klarna payment session.
