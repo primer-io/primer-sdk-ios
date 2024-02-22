@@ -12,14 +12,14 @@ import XCTest
 
 final class KlarnaComponentTests: XCTestCase {
     
-    var sut: KlarnaComponent!
+    var sut: PrimerHeadlessKlarnaComponent!
     var tokenizationComponent: KlarnaTokenizationComponent!
     
     override func setUp() {
         super.setUp()
         let paymentMethod = Mocks.PaymentMethods.klarnaPaymentMethod
         tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: paymentMethod)
-        sut = KlarnaComponent(tokenizationComponent: tokenizationComponent)
+        sut = PrimerHeadlessKlarnaComponent(tokenizationComponent: tokenizationComponent)
         sut.setProvider(provider: KlarnaTestsMocks.klarnaProvider)
     }
     

@@ -13,7 +13,7 @@ extension PrimerHeadlessUniversalCheckout {
     
     public class KlarnaManager: NSObject {
         
-        public func provideKlarnaComponent(for paymentMethodType: String, intent: PrimerSessionIntent) throws -> KlarnaComponent? {
+        public func provideKlarnaComponent(for paymentMethodType: String, intent: PrimerSessionIntent) throws -> (any KlarnaComponent)? {
             guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?.first(where: { $0.type == paymentMethodType }) else {
                 let err = PrimerError.generic(message: "Unable to locate a valid payment method component",
                                               userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
@@ -37,7 +37,7 @@ extension PrimerHeadlessUniversalCheckout {
             PrimerInternal.shared.intent = intent
             
             let tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: paymentMethod)
-            return KlarnaComponent(tokenizationComponent: tokenizationComponent)
+            return PrimerHeadlessKlarnaComponent(tokenizationComponent: tokenizationComponent)
         }
     }
     

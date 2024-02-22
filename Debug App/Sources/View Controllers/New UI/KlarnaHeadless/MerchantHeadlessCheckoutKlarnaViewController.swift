@@ -30,13 +30,16 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     var klarnaInitializationView: MerchantHeadlessKlarnaInitializationView?
     let sharedWrapper = SharedUIViewWrapper()
     var renderedKlarnaView = UIView()
-    var klarnaComponent: KlarnaComponent?
+    var klarnaComponent: (any KlarnaComponent)?
     
     init(sessionIntent: PrimerSessionIntent) {
         super.init(nibName: nil, bundle: nil)
         
         do {
             klarnaComponent = try manager.provideKlarnaComponent(for: paymentMethodType, intent: sessionIntent)
+            klarnaComponent?.stepDelegate = self
+            klarnaComponent?.errorDelegate = self
+            klarnaComponent?.validationDelegate = self
         } catch let error as PrimerError {
             switch error {
             case .generic(let message, _, _):
@@ -59,9 +62,6 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        setupKlarnaDelegates()
-        
         setupUI()
         setupLayout()
         addKlarnaView()
@@ -95,10 +95,6 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     
     func passRenderedKlarnaView(_ renderedKlarnaView: UIView) {
         sharedWrapper.uiView = renderedKlarnaView
-    }
-    
-    private func setupKlarnaDelegates() {
-        klarnaComponent?.setKlarnaDelegates(self)
     }
     
     override func viewWillAppear(_ animated: Bool) {

@@ -9,4 +9,5 @@ import Foundation
 
 public enum KlarnaCollectableData: PrimerCollectableData, Encodable {
     case paymentCategory(_ category: KlarnaPaymentCategory, clientToken: String?)
+    case finalizePayment
 }

@@ -9,7 +9,9 @@
 import UIKit
 import PrimerSDK
 
-extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaDelegates {
+extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessErrorableDelegate,
+                                                        PrimerHeadlessValidatableDelegate,
+                                                        PrimerHeadlessSteppableDelegate {
     // MARK: - PrimerHeadlessErrorableDelegate
     func didReceiveError(error: PrimerSDK.PrimerError) {
         showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
@@ -20,13 +22,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaDele
         switch validationStatus {
         case .validating:
             showLoader()
-        case .valid:
-            hideLoader()
-            
-            if let renderedKlarnaView = getPaymentView() {
-                passRenderedKlarnaView(renderedKlarnaView)
-            }
-        case .invalid:
+        case .valid, .invalid:
             hideLoader()
         case .error(error: let error):
             hideLoader()
@@ -63,14 +59,15 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessKlarnaDele
             case .paymentSessionFinalizationFailed(let error):
                 presentResultsVC(checkoutData: nil, error: error)
                 
-            case .viewInitialized:
-                klarnaComponent?.loadPaymentView()
-                
             case .viewResized:
                 view.layoutIfNeeded()
                 
-            case .viewLoaded:
+            case .viewLoaded(let view):
                 hideLoader()
+                logs.append("Loaded klarna view")
+                if let view {
+                    passRenderedKlarnaView(view)
+                }
                 
             default:
                 break
@@ -93,17 +90,6 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
         klarnaComponent?.start()
     }
     
-    func getPaymentView() -> UIView? {
-        logs.append(#function)
-        guard let paymentView = klarnaComponent?.createPaymentView() else {
-            showAlert(title: "Payment view", message: "Unable to create payment view")
-            return nil
-        }
-        
-        klarnaComponent?.initPaymentView()
-        return paymentView
-    }
-    
     func authorizeSession() {
         logs.append(#function)
         klarnaComponent?.submit()
@@ -112,6 +98,6 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
     func finalizeSession() {
         logs.append(#function)
         showLoader()
-        klarnaComponent?.finalise()
+        klarnaComponent?.updateCollectedData(collectableData: KlarnaCollectableData.finalizePayment)
     }
 }

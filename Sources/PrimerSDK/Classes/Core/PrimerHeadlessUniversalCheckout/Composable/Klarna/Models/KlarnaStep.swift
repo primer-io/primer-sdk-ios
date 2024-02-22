@@ -50,7 +50,7 @@ public enum KlarnaStep: PrimerHeadlessStep {
     /// Payment view handling
     case viewInitialized
     case viewResized(height: CGFloat)
-    case viewLoaded
+    case viewLoaded(view: UIView?)
     case reviewLoaded
     case isLoading
 }

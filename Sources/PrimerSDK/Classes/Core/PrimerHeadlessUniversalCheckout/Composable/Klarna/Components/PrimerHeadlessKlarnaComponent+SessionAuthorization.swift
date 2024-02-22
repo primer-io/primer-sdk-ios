@@ -9,7 +9,7 @@
 import Foundation
 import PrimerKlarnaSDK
 
-extension KlarnaComponent {
+extension PrimerHeadlessKlarnaComponent {
     
     /// Sets Klarna provider authorization delegate
     func setAuthorizationDelegate() {
@@ -18,7 +18,7 @@ extension KlarnaComponent {
 }
 
 // MARK: - PrimerKlarnaProviderAuthorizationDelegate
-extension KlarnaComponent: PrimerKlarnaProviderAuthorizationDelegate {
+extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderAuthorizationDelegate {
     
     /**
      * Handles the authorization response from the Primer Klarna Wrapper.

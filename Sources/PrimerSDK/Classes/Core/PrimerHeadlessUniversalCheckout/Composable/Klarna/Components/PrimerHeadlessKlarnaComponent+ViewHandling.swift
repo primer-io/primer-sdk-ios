@@ -9,7 +9,7 @@
 import UIKit
 import PrimerKlarnaSDK
 
-extension KlarnaComponent {
+extension PrimerHeadlessKlarnaComponent {
     
     /// Sets Klarna provider payment view delegate
     func setPaymentViewDelegate() {
@@ -18,8 +18,9 @@ extension KlarnaComponent {
 }
 
 // MARK: - PrimerKlarnaProviderPaymentViewDelegate
-extension KlarnaComponent: PrimerKlarnaProviderPaymentViewDelegate {
+extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderPaymentViewDelegate {
     public func primerKlarnaWrapperInitialized() {
+        loadPaymentView()
         stepDelegate?.didReceiveStep(step: KlarnaStep.viewInitialized)
     }
     
@@ -28,7 +29,7 @@ extension KlarnaComponent: PrimerKlarnaProviderPaymentViewDelegate {
     }
     
     public func primerKlarnaWrapperLoaded() {
-        stepDelegate?.didReceiveStep(step: KlarnaStep.viewLoaded)
+        stepDelegate?.didReceiveStep(step: KlarnaStep.viewLoaded(view: klarnaProvider?.paymentView))
     }
     
     public func primerKlarnaWrapperReviewLoaded() {
@@ -37,12 +38,10 @@ extension KlarnaComponent: PrimerKlarnaProviderPaymentViewDelegate {
 }
 
 // MARK: - Payment view
-extension KlarnaComponent {
-    public func createPaymentView() -> UIView? {
+extension PrimerHeadlessKlarnaComponent {
+    public func createPaymentView() {
         recordPaymentViewEvent(name: KlarnaAnalyticsEvents.CREATE_PAYMENT_VIEW_METHOD)
         klarnaProvider?.createPaymentView()
-        
-        return klarnaProvider?.paymentView
     }
     
     public func removePaymentView() {
@@ -62,7 +61,7 @@ extension KlarnaComponent {
 }
 
 // MARK: - Payment review
-extension KlarnaComponent {
+extension PrimerHeadlessKlarnaComponent {
     public func loadPaymentReview() {
         recordPaymentViewEvent(name: KlarnaAnalyticsEvents.LOAD_PAYMENT_REVIEW_METHOD)
         klarnaProvider?.loadPaymentReview()

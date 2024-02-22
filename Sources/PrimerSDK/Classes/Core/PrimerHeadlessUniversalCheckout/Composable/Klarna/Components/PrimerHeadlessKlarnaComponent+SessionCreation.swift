@@ -23,7 +23,7 @@ enum KlarnaSessionCreationError {
 }
 
 // MARK: - Start
-extension KlarnaComponent {
+extension PrimerHeadlessKlarnaComponent {
     
     /**
      * Initiates the process of creating a payment session.
@@ -47,7 +47,7 @@ extension KlarnaComponent {
 }
 
 // MARK: - Private
-extension KlarnaComponent {
+extension PrimerHeadlessKlarnaComponent {
     
     /**
      * Processes and communicates the successful creation of a payment session.

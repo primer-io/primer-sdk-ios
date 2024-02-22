@@ -9,7 +9,7 @@
 import Foundation
 import PrimerKlarnaSDK
 
-extension KlarnaComponent {
+extension PrimerHeadlessKlarnaComponent {
     
     /// Sets Klarna provider finalization delegate
     func setFinalizationDelegate() {
@@ -18,7 +18,7 @@ extension KlarnaComponent {
 }
 
 // MARK: - PrimerKlarnaProviderFinalizationDelegate
-extension KlarnaComponent: PrimerKlarnaProviderFinalizationDelegate {
+extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderFinalizationDelegate {
     
     /**
      * Finalizes the Klarna payment session based on the approval status and authentication token.
@@ -39,8 +39,8 @@ extension KlarnaComponent: PrimerKlarnaProviderFinalizationDelegate {
 }
 
 // MARK: - Finalization
-extension KlarnaComponent {
-    public func finalise(jsonData: String? = nil) {
+extension PrimerHeadlessKlarnaComponent {
+    public func finalizePayment(jsonData: String? = nil) {
         recordFinalizationEvent(jsonData: jsonData)
         klarnaProvider?.finalise(jsonData: jsonData)
     }
