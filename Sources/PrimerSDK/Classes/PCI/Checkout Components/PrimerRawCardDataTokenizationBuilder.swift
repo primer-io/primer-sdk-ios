@@ -42,9 +42,11 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
 
     var cardValidationService: CardValidationService?
 
+    private var lastValidationErrors: [PrimerValidationError] = []
+
     var isDataValid: Bool = false
     var paymentMethodType: String
-    
+
     public private(set) var cardNetwork: CardNetwork = .unknown {
         didSet {
             guard let rawDataManager = rawDataManager else {
@@ -56,12 +58,12 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
             }
         }
     }
-        
+
     /// List of supported card networks taken from merchant configuration
     var allowedCardNetworks: Set<CardNetwork> {
         Set(Array.allowedCardNetworks)
     }
-    
+
     var requiredInputElementTypes: [PrimerInputElementType] {
 
         var mutableRequiredInputElementTypes: [PrimerInputElementType] = [.cardNumber, .expiryDate, .cvv]
@@ -84,7 +86,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
     required init(paymentMethodType: String) {
         self.paymentMethodType = paymentMethodType
     }
-    
+
     func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
         self.rawDataManager = rawDataManager
         self.cardValidationService = DefaultCardValidationService(rawDataManager: rawDataManager)
@@ -130,14 +132,14 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
             seal.fulfill(requestBody)
         }
     }
-    
+
     func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
         validateRawData(data, cardNetworksMetadata: nil)
     }
 
     func validateRawData(_ data: PrimerRawData, cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> Promise<Void> {
         return Promise { seal in
-            DispatchQueue.global(qos: .userInteractive).async {
+            DispatchQueue.global(qos: .userInteractive).async { [self] in
                 var errors: [PrimerValidationError] = []
 
                 // Invalid raw data error
@@ -161,22 +163,22 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                     }
                     return
                 }
-                
+
                 // Locally validated card network
                 var cardNetwork = CardNetwork(cardNumber: rawData.cardNumber)
-                
+
                 // Remotely validated card network
                 if let cardNetworksMetadata = cardNetworksMetadata {
                     let didDetectNetwork = !cardNetworksMetadata.detectedCardNetworks.items.isEmpty &&
                         cardNetworksMetadata.detectedCardNetworks.items.map { $0.network } != [.unknown]
-                    
+
                     if didDetectNetwork && cardNetworksMetadata.detectedCardNetworks.preferred == nil,
                     let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
                         cardNetwork = network
                     } else {
                         return
                     }
-                    
+
                     // Unsupported card type error
                     if !self.allowedCardNetworks.contains(cardNetwork) {
                         let err = PrimerValidationError.invalidCardType(
@@ -213,7 +215,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                         errors.append(err)
                     }
                 }
-                
+
                 // Invalid cvv error
                 if rawData.cvv.isEmpty {
                     let err = PrimerValidationError.invalidCvv(
@@ -221,7 +223,6 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                         userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     errors.append(err)
-
                 } else if !rawData.cvv.isValidCVV(cardNetwork: cardNetwork) {
                     let err = PrimerValidationError.invalidCvv(
                         message: "CVV is not valid.",
@@ -244,6 +245,14 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                             diagnosticsId: UUID().uuidString))
                     }
                 }
+
+                if !errors.isEmpty {
+                    let newValidationErrorsPresent = errors.map { $0.errorDescription } != lastValidationErrors.map { $0.errorDescription }
+                    guard newValidationErrorsPresent else {
+                        return
+                    }
+                }
+                self.lastValidationErrors = errors
 
                 if !errors.isEmpty {
                     let err = PrimerError.underlyingErrors(

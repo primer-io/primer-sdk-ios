@@ -11,13 +11,17 @@
 		0402B7B82AFBBC2200B02C75 /* ApplePayUtilsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0402B7B72AFBBC2200B02C75 /* ApplePayUtilsTest.swift */; };
 		041295AA2AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041295A92AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift */; };
 		041295AD2AB9E2C100A4F243 /* PrimerHeadlessNolPayManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041295AB2AB9E2A900A4F243 /* PrimerHeadlessNolPayManagerTests.swift */; };
+		0442B6472B7BA4C7004DB054 /* MockPrimerAPIAnalyticsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0442B6452B7BA498004DB054 /* MockPrimerAPIAnalyticsClient.swift */; };
+		0442B6492B7BA4CD004DB054 /* MockAnalyticsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0442B6432B7BA477004DB054 /* MockAnalyticsStorage.swift */; };
 		041F52092ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041F52082ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift */; };
+		04236A9B2B7D2EA50041EC11 /* JWTFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04236A9A2B7D2EA50041EC11 /* JWTFactory.swift */; };
 		042ED15D2AF010500027833F /* CardValidationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042ED15C2AF010500027833F /* CardValidationServiceTests.swift */; };
 		042ED1622AF0F5600027833F /* MockBINDataAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042ED1612AF0F5600027833F /* MockBINDataAPIClient.swift */; };
 		042ED1652AF0F5FD0027833F /* MockRawDataManagerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042ED1642AF0F5FD0027833F /* MockRawDataManagerDelegate.swift */; };
 		04769C152B1A680C0051581C /* Promises+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04769C142B1A680C0051581C /* Promises+Helper.swift */; };
 		0479FB192AF2599A00D0AFC9 /* StringTyper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0479FB172AF2599200D0AFC9 /* StringTyper.swift */; };
 		047D8E892ADEA4C700A5E7BD /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047D8E882ADEA4C700A5E7BD /* NetworkService.swift */; };
+		0489E2BB2B68F71300FA0682 /* TapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0489E2BA2B68F71300FA0682 /* TapGestureRecognizer.swift */; };
 		049298012B1DD466002E04B8 /* AnalyticsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049298002B1DD466002E04B8 /* AnalyticsServiceTests.swift */; };
 		049298072B1E1F4D002E04B8 /* AnalyticsStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */; };
 		049A055E2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
@@ -25,7 +29,6 @@
 		04DAAED42B03EED1002E2614 /* AssetsManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DAAED32B03EED1002E2614 /* AssetsManagerTests.swift */; };
 		04DAAED62B03EF0B002E2614 /* SDKSessionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DAAED52B03EF0B002E2614 /* SDKSessionHelper.swift */; };
 		04DFAADC2AAA01E60030FECE /* Debug App Tests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */; };
-		04F6EF722AE69FC500115D05 /* AnalyticsTests+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F6EF712AE69FC500115D05 /* AnalyticsTests+Helpers.swift */; };
 		04F6EF742AE6A06200115D05 /* AnalyticsEventsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F6EF732AE6A06200115D05 /* AnalyticsEventsTests.swift */; };
 		04FAF9EC2AE7B33E002E4BAE /* StringExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FAF9EB2AE7B33E002E4BAE /* StringExtensionTests.swift */; };
 		05FAC0D894B841B52E9E0A9A /* PrimerRawCardDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB1E1B37192BF739461AFF1 /* PrimerRawCardDataManagerTests.swift */; };
@@ -124,8 +127,6 @@
 		E1A2971F2B021ABA005ADA51 /* URL+NetworkHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB44D12AFE13AF00639DC5 /* URL+NetworkHeaders.swift */; };
 		E1A297262B036AB1005ADA51 /* BankComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A297252B036AB1005ADA51 /* BankComponentTests.swift */; };
 		E1E502B12AFE9ECF00CD7F0A /* XCTestCase+Tokenization.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E502B02AFE9ECF00CD7F0A /* XCTestCase+Tokenization.swift */; };
-		E4DF956CABAE0633980D5B89 /* AnalyticsTests+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90441E821B5FE76643B62A6 /* AnalyticsTests+Constants.swift */; };
-		E52B5646C4E1E712FEDE06CB /* AnalyticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF07D2421252EA2AE5C2FC4F /* AnalyticsTests.swift */; };
 		E6F85ECD80B64754E7A6D35E /* RawDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7C082270CF1C6B7810F9B3 /* RawDataManagerTests.swift */; };
 		E9F5265EB7A157AC5ED162C5 /* Pods_Debug_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21898D647270491BF4A68C19 /* Pods_Debug_App.framework */; };
 		EA7FAA4F8476BD3711D628CB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B18D7E7738BF86467B0F1465 /* Images.xcassets */; };
@@ -178,13 +179,17 @@
 		0402B7B72AFBBC2200B02C75 /* ApplePayUtilsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePayUtilsTest.swift; sourceTree = "<group>"; };
 		041295A92AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutNolPayViewController.swift; sourceTree = "<group>"; };
 		041295AB2AB9E2A900A4F243 /* PrimerHeadlessNolPayManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimerHeadlessNolPayManagerTests.swift; sourceTree = "<group>"; };
+		0442B6432B7BA477004DB054 /* MockAnalyticsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAnalyticsStorage.swift; sourceTree = "<group>"; };
+		0442B6452B7BA498004DB054 /* MockPrimerAPIAnalyticsClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPrimerAPIAnalyticsClient.swift; sourceTree = "<group>"; };
 		041F52082ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCardNetworksEndpointTests.swift; sourceTree = "<group>"; };
+		04236A9A2B7D2EA50041EC11 /* JWTFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JWTFactory.swift; sourceTree = "<group>"; };
 		042ED15C2AF010500027833F /* CardValidationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardValidationServiceTests.swift; sourceTree = "<group>"; };
 		042ED1612AF0F5600027833F /* MockBINDataAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockBINDataAPIClient.swift; sourceTree = "<group>"; };
 		042ED1642AF0F5FD0027833F /* MockRawDataManagerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRawDataManagerDelegate.swift; sourceTree = "<group>"; };
 		04769C142B1A680C0051581C /* Promises+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Promises+Helper.swift"; sourceTree = "<group>"; };
 		0479FB172AF2599200D0AFC9 /* StringTyper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTyper.swift; sourceTree = "<group>"; };
 		047D8E882ADEA4C700A5E7BD /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		0489E2BA2B68F71300FA0682 /* TapGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapGestureRecognizer.swift; sourceTree = "<group>"; };
 		049298002B1DD466002E04B8 /* AnalyticsServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsServiceTests.swift; sourceTree = "<group>"; };
 		049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsStorageTests.swift; sourceTree = "<group>"; };
 		049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessVaultManagerViewController.swift; sourceTree = "<group>"; };
@@ -192,7 +197,6 @@
 		04DAAED32B03EED1002E2614 /* AssetsManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsManagerTests.swift; sourceTree = "<group>"; };
 		04DAAED52B03EF0B002E2614 /* SDKSessionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKSessionHelper.swift; sourceTree = "<group>"; };
 		04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Debug App Tests-Info.plist"; sourceTree = "<group>"; };
-		04F6EF712AE69FC500115D05 /* AnalyticsTests+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnalyticsTests+Helpers.swift"; sourceTree = "<group>"; };
 		04F6EF732AE6A06200115D05 /* AnalyticsEventsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEventsTests.swift; sourceTree = "<group>"; };
 		04FAF9EB2AE7B33E002E4BAE /* StringExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensionTests.swift; sourceTree = "<group>"; };
 		0DA32ABCF07A4EBED014327B /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -286,7 +290,6 @@
 		A1A3D0F42AD56BE300F7D8C9 /* NolPayPaymentComponentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NolPayPaymentComponentTests.swift; sourceTree = "<group>"; };
 		A6AEF11B151368BF993C3EA9 /* TestScenario.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScenario.swift; sourceTree = "<group>"; };
 		AD381E7E16D01D8D743232F7 /* ThemeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeTests.swift; sourceTree = "<group>"; };
-		AF07D2421252EA2AE5C2FC4F /* AnalyticsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsTests.swift; sourceTree = "<group>"; };
 		B18D7E7738BF86467B0F1465 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B1FD8065D40A2D691F643F3B /* UIViewController+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+API.swift"; sourceTree = "<group>"; };
 		B266F9E1651BD20E45DCCF68 /* PrimerRawRetailerDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerRawRetailerDataTests.swift; sourceTree = "<group>"; };
@@ -331,7 +334,6 @@
 		E63F5C5C1FD2F3E6CB02EC5A /* HeadlessUniversalCheckoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadlessUniversalCheckoutTests.swift; sourceTree = "<group>"; };
 		E7640DB186F9638C2F556F77 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Main.strings; sourceTree = "<group>"; };
 		E8DE1E4FB055B60582977315 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
-		E90441E821B5FE76643B62A6 /* AnalyticsTests+Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnalyticsTests+Constants.swift"; sourceTree = "<group>"; };
 		E9899972360BCA5992CEE5BC /* PrimerBancontactCardDataManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerBancontactCardDataManagerTests.swift; sourceTree = "<group>"; };
 		EEB1E1B37192BF739461AFF1 /* PrimerRawCardDataManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerRawCardDataManagerTests.swift; sourceTree = "<group>"; };
 		F4AC1EC0F98CB56DA4D075CA /* Mocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
@@ -363,6 +365,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0442B6422B7BA468004DB054 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				0442B6432B7BA477004DB054 /* MockAnalyticsStorage.swift */,
+				0442B6452B7BA498004DB054 /* MockPrimerAPIAnalyticsClient.swift */,
+			);
+			path = Analytics;
+			sourceTree = "<group>";
+		};
 		042ED1632AF0F5CE0027833F /* Delegates */ = {
 			isa = PBXGroup;
 			children = (
@@ -376,8 +387,17 @@
 			children = (
 				0479FB172AF2599200D0AFC9 /* StringTyper.swift */,
 				04DAAED52B03EF0B002E2614 /* SDKSessionHelper.swift */,
+				04236A9A2B7D2EA50041EC11 /* JWTFactory.swift */,
 			);
 			path = "Test Utilities";
+			sourceTree = "<group>";
+		};
+		0489E2B92B68F70400FA0682 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				0489E2BA2B68F71300FA0682 /* TapGestureRecognizer.swift */,
+			);
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 		04DAAED22B03EEBE002E2614 /* Assets */ = {
@@ -499,6 +519,7 @@
 				553A7EDE72B8249F55A0E6B9 /* Extension */,
 				D9AC6F54A87D432982864A63 /* Model */,
 				64FB843527A1671D550B536F /* Network */,
+				0489E2B92B68F70400FA0682 /* Utilities */,
 				F214F09DF97D2A83FC7D0BE0 /* View */,
 				0E5CB4D963647832FF985B29 /* View Controllers */,
 				A9ACBE5F8E70CF200C80001F /* View Model */,
@@ -779,9 +800,6 @@
 		E1A2F78003351E14426E0B36 /* Analytics */ = {
 			isa = PBXGroup;
 			children = (
-				AF07D2421252EA2AE5C2FC4F /* AnalyticsTests.swift */,
-				E90441E821B5FE76643B62A6 /* AnalyticsTests+Constants.swift */,
-				04F6EF712AE69FC500115D05 /* AnalyticsTests+Helpers.swift */,
 				04F6EF732AE6A06200115D05 /* AnalyticsEventsTests.swift */,
 				049298002B1DD466002E04B8 /* AnalyticsServiceTests.swift */,
 				049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */,
@@ -792,6 +810,7 @@
 		E4C8DBB82E4149A7C4D26467 /* Mocks */ = {
 			isa = PBXGroup;
 			children = (
+				0442B6422B7BA468004DB054 /* Analytics */,
 				042ED1632AF0F5CE0027833F /* Delegates */,
 				61C1263B3C114C5B0A1E5AB4 /* Services */,
 				DAAB90DB09F0793B3580DE69 /* ViewModels */,
@@ -1032,8 +1051,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E4DF956CABAE0633980D5B89 /* AnalyticsTests+Constants.swift in Sources */,
-				E52B5646C4E1E712FEDE06CB /* AnalyticsTests.swift in Sources */,
 				876140DE2B66F86A0058CA8C /* KlarnaComponentTests.swift in Sources */,
 				9AB1ABF4E46A37766CDBF197 /* ApayaTests.swift in Sources */,
 				70EAA3B33425CC9D16239BB0 /* ApplePayTests.swift in Sources */,
@@ -1047,6 +1064,7 @@
 				A1536BAF2AEC0A6D0087DDC0 /* NolTestsMocks.swift in Sources */,
 				A61B9E61EDCE18D34438352E /* PayPalConfirmBillingAgreementTests.swift in Sources */,
 				E13E72452AFE653000911866 /* IdealPaymentMethodTests.swift in Sources */,
+				0442B6472B7BA4C7004DB054 /* MockPrimerAPIAnalyticsClient.swift in Sources */,
 				8064B65A8F83D5B004D081FD /* PaymentMethodConfigTests.swift in Sources */,
 				04DAAED62B03EF0B002E2614 /* SDKSessionHelper.swift in Sources */,
 				4BD7794627267B40E9E10686 /* PrimerCheckoutTheme.swift in Sources */,
@@ -1093,6 +1111,7 @@
 				05FAC0D894B841B52E9E0A9A /* PrimerRawCardDataManagerTests.swift in Sources */,
 				D649870C2D022B4063BDC0B4 /* PrimerRawRetailerDataTests.swift in Sources */,
 				A1536BAD2AEBEC3A0087DDC0 /* NolPayPhoneMetadataServiceTests.swift in Sources */,
+				04236A9B2B7D2EA50041EC11 /* JWTFactory.swift in Sources */,
 				7F49B29FCC55CF3C5CB6C506 /* InternalCardComponentManagerTests.swift in Sources */,
 				DB1A2989DDE0928C62B15303 /* PayPalServiceTests.swift in Sources */,
 				97F0B302DF965C1AD1EC6F4D /* PaymentMethodConfigServiceTests.swift in Sources */,
@@ -1110,9 +1129,9 @@
 				876140F42B70FBFE0058CA8C /* KlarnaTokenizationComponentTests.swift in Sources */,
 				242EF5037D6FB396B7AE1CB5 /* HeadlessUniversalCheckoutTests.swift in Sources */,
 				042ED15D2AF010500027833F /* CardValidationServiceTests.swift in Sources */,
-				04F6EF722AE69FC500115D05 /* AnalyticsTests+Helpers.swift in Sources */,
 				2662EB3445AE8C7188953EFD /* HeadlessVaultManagerTests.swift in Sources */,
 				A1A3D0F52AD56BE300F7D8C9 /* NolPayPaymentComponentTests.swift in Sources */,
+				0442B6492B7BA4CD004DB054 /* MockAnalyticsStorage.swift in Sources */,
 				9263BD762EC26F6AA986F0C9 /* MockAPIClient.swift in Sources */,
 				A1055D6F2AF125E90027B967 /* DebouncerTests.swift in Sources */,
 				8B5CB0C992DBAB293D378FAD /* MockModule.swift in Sources */,
@@ -1154,6 +1173,7 @@
 				F02F496FD20B5291C044F62C /* MerchantResultViewController.swift in Sources */,
 				8761410C2B849A250058CA8C /* MerchantHeadlessKlarnaInitializationView+Elements.swift in Sources */,
 				876140EF2B6BE8C20058CA8C /* MerchantHelpers.swift in Sources */,
+				0489E2BB2B68F71300FA0682 /* TapGestureRecognizer.swift in Sources */,
 				E11F47562B06C5030091C31F /* ImageViewWithUrl.swift in Sources */,
 				34CDCA7B403C001E4C55D26D /* MerchantSessionAndSettingsViewController.swift in Sources */,
 				E11F474A2B06C4E30091C31F /* BanksListModel.swift in Sources */,
@@ -1368,7 +1388,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALIDATE_PRODUCT = YES;
@@ -1456,7 +1476,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";

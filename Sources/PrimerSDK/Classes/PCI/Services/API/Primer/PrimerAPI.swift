@@ -76,7 +76,7 @@ enum PrimerAPI: Endpoint, Equatable {
     case resumePayment(clientToken: DecodedJWTToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume)
 
     case testFinalizePolling(clientToken: DecodedJWTToken, testId: String)
-    
+
     // BIN Data
     case listCardNetworks(clientToken: DecodedJWTToken, bin: String)
     case getNolSdkSecret(clientToken: DecodedJWTToken, request: Request.Body.NolPay.NolPaySecretDataRequest)
@@ -96,6 +96,10 @@ internal extension PrimerAPI {
 
     var headers: [String: String]? {
         var tmpHeaders = PrimerAPI.headers
+
+        if method == .get {
+            tmpHeaders.removeValue(forKey: "Content-Type")
+        }
 
         if let checkoutSessionId = PrimerInternal.shared.checkoutSessionId {
             tmpHeaders["Primer-SDK-Checkout-Session-ID"] = checkoutSessionId
@@ -231,7 +235,7 @@ internal extension PrimerAPI {
             .getNolSdkSecret(let clientToken, _):
             guard let baseURL = configuration?.coreUrl ?? clientToken.coreUrl else { return nil }
             return baseURL
-        case .listCardNetworks(_, _):
+        case .listCardNetworks:
             guard let baseURL = configuration?.binDataUrl else { return nil }
             return baseURL
         case .deleteVaultedPaymentMethod(let clientToken, _),
@@ -451,20 +455,20 @@ internal extension PrimerAPI {
             return true
         }
     }
-    
+
     // MARK: Timeout
-    
+
     var timeout: TimeInterval? {
         switch self {
-        case .listCardNetworks(_, _):
+        case .listCardNetworks:
             return 10
-        default: 
+        default:
             return nil
         }
     }
-    
+
     // MARK: Helpers
-    
+
     var configuration: PrimerAPIConfiguration? {
         PrimerAPIConfiguration.current
     }

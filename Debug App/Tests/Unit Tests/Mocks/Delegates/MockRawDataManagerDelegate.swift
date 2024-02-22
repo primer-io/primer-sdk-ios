@@ -10,29 +10,29 @@ import Foundation
 @testable import PrimerSDK
 
 class MockRawDataManagerDelegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
-    
+
     // MARK: metadataDidChange
-    
+
     var onMetadataDidChange: ((RawDataManager, [String: Any]?) -> Void)?
-    
+
     func primerRawDataManager(_ rawDataManager: RawDataManager,
-                              metadataDidChange metadata: [String : Any]?) {
+                              metadataDidChange metadata: [String: Any]?) {
         onMetadataDidChange?(rawDataManager, metadata)
     }
-    
+
     // MARK: dataIsValid
-    
+
     var onDataIsValid: ((RawDataManager, Bool, [Error]?) -> Void)?
-    
+
     func primerRawDataManager(_ rawDataManager: RawDataManager,
                               dataIsValid isValid: Bool, errors: [Error]?) {
         onDataIsValid?(rawDataManager, isValid, errors)
     }
-    
+
     // MARK: willFetchCardMetadataForState
-    
+
     var onWillFetchCardMetadataForState: ((RawDataManager, PrimerCardNumberEntryState) -> Void)?
-    
+
     var onWillFetchCardMetadataForStateCount = 0
 
     func primerRawDataManager(_ rawDataManager: RawDataManager,
@@ -40,13 +40,13 @@ class MockRawDataManagerDelegate: PrimerHeadlessUniversalCheckoutRawDataManagerD
         onWillFetchCardMetadataForStateCount += 1
         onWillFetchCardMetadataForState?(rawDataManager, state as! PrimerCardNumberEntryState)
     }
-    
+
     // MARK: metadata forCardValidationState
-    
+
     var onMetadataForCardValidationState: ((RawDataManager, PrimerCardNumberEntryMetadata, PrimerCardNumberEntryState) -> Void)?
-    
+
     var onMetadataForCardValidationStateCount = 0
-    
+
     func primerRawDataManager(_ rawDataManager: RawDataManager,
                               didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
                               forState state: PrimerValidationState) {
