@@ -1,3 +1,11 @@
+## 2.22.1 (2024-02-22)
+
+### Fix
+
+- Update raw card data validation to only send errors that are different from previous send (#806)
+- Analytics service improvements (#801)
+- Ensure card network is updated correctly in drop-in card form (#805)
+
 ## 2.22.0 (2024-02-15)
 
 ### Feat
