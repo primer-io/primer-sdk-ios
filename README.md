@@ -50,17 +50,22 @@ Take a look at our [Quick Start Guide](https://primer.io/docs/get-started/ios) f
 
 ## With CocoaPods
 
-The iOS SDK is available with Cocoapods. Just add the PrimerSDK pod and run `pod install`.
+The iOS SDK is available via Cocoapods. Add the PrimerSDK to your Podfile:
 
-```swift{:copy}
+```ruby
 target 'MyApp' do
   # Other pods...
 
   # Add this to your Podfile
   pod 'PrimerSDK' # Add this line
 end
-
 ```
+
+Then, at the root of this repo, open your terminal and run
+  - `bundle install`
+  - `cd Debug\ App`
+  - `bundle exec pod install`
+
 For specific versions of the SDK, please refer to the changelog.
 
 ## With Swift Package Manager
@@ -140,9 +145,3 @@ The payment’s data will be returned on `primerDidCompleteCheckoutWithData(:)`.
 ## Using the Debug App
 
 The Debug App provides you with tools to test your Primer configuration and interact with different payment methods and Universal Checkout features
-
-### Make sure you've got CocoaPods installed
-
-- At the root of this repo, open your Terminal
-  - `cd Debug\ App`
-  - `pod install`
