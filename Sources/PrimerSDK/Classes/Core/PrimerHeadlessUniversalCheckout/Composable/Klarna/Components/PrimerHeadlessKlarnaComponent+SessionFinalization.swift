@@ -28,8 +28,7 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderFinalizationDelegat
      */
     public func primerKlarnaWrapperFinalized(approved: Bool, authToken: String?) {
         if approved == false {
-            let step = KlarnaStep.paymentSessionFinalizationFailed(error: nil)
-            stepDelegate?.didReceiveStep(step: step)
+            createSessionError(.klarnaFinalizationFailed)
         }
         
         if let authToken = authToken, approved == true {

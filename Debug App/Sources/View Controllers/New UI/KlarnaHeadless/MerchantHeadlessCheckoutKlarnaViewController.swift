@@ -20,7 +20,6 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     var clientToken: String?
     var autoFinalize: Bool = false
     var finalizePayment: Bool = false
-    let paymentMethodType: String = "KLARNA"
     
     
     
@@ -36,7 +35,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         
         do {
-            klarnaComponent = try manager.provideKlarnaComponent(for: paymentMethodType, intent: sessionIntent)
+            klarnaComponent = try manager.provideKlarnaComponent(with: sessionIntent)
             klarnaComponent?.stepDelegate = self
             klarnaComponent?.errorDelegate = self
             klarnaComponent?.validationDelegate = self

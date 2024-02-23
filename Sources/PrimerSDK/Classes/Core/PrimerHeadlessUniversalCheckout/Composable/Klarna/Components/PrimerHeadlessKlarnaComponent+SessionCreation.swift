@@ -16,10 +16,13 @@ import Foundation
  *  - invalidClientToken: Signifies that the client token provided for the session creation is invalid or malformed, preventing further API interactions.
  *  - createPaymentSessionFailed: Represents a failure in the payment session creation process, encapsulating the underlying `Error` that led to the failure.
  */
-enum KlarnaSessionCreationError {
+enum KlarnaSessionError {
     case missingConfiguration
     case invalidClientToken
     case sessionCreationFailed(error: Error)
+    case sessionAuthorizationFailed(error: Error)
+    case klarnaAuthorizationFailed
+    case klarnaFinalizationFailed
 }
 
 // MARK: - Start
@@ -72,33 +75,45 @@ extension PrimerHeadlessKlarnaComponent {
      * This method utilizes a switch statement to differentiate between various types of `KlarnaPaymentSessionCreationComponentError`, and constructs a specific `PrimerError`.
      * Then notifies the `errorDelegate` with the specific `PrimerError`.
      */
-    func createSessionError(_ error: KlarnaSessionCreationError) {
+    func createSessionError(_ error: KlarnaSessionError) {
         var primerError: PrimerError
-        
-        let userInfo: [String: String] = [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ]
         
         switch error {
         case .missingConfiguration:
             primerError = PrimerError.missingPrimerConfiguration(
-                userInfo: userInfo,
+                userInfo: KlarnaHelpers.getErrorUserInfo(),
                 diagnosticsId: UUID().uuidString
             )
             
         case .invalidClientToken:
             primerError = PrimerError.invalidClientToken(
-                userInfo: userInfo,
+                userInfo: KlarnaHelpers.getErrorUserInfo(),
                 diagnosticsId: UUID().uuidString
             )
             
         case .sessionCreationFailed(let error):
             primerError = PrimerError.failedToCreateSession(
                 error: error,
-                userInfo: userInfo,
+                userInfo: KlarnaHelpers.getErrorUserInfo(),
+                diagnosticsId: UUID().uuidString
+            )
+        case .sessionAuthorizationFailed(error: let error):
+            primerError = PrimerError.paymentFailed(
+                paymentMethodType: "KLARNA",
+                description: error.localizedDescription,
+                userInfo: KlarnaHelpers.getErrorUserInfo(),
+                diagnosticsId: UUID().uuidString
+            )
+        case .klarnaAuthorizationFailed:
+            primerError = PrimerError.klarnaWrapperError(
+                message: "PrimerKlarnaWrapperAuthorization failed",
+                userInfo: KlarnaHelpers.getErrorUserInfo(),
+                diagnosticsId: UUID().uuidString
+            )
+        case .klarnaFinalizationFailed:
+            primerError = PrimerError.klarnaWrapperError(
+                message: "PrimerKlarnaWrapperFinalization failed",
+                userInfo: KlarnaHelpers.getErrorUserInfo(),
                 diagnosticsId: UUID().uuidString
             )
         }

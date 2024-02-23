@@ -25,7 +25,7 @@ class PrimerHeadlessKlarnaComponent {
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     
-    public internal(set) var nextDataStep: KlarnaStep = .isLoading
+    public internal(set) var nextDataStep: KlarnaStep = .notLoaded
     
     // MARK: - Init
     init(tokenizationComponent: KlarnaTokenizationComponentProtocol) {
@@ -137,14 +137,7 @@ extension PrimerHeadlessKlarnaComponent {
             }
         }
         .catch { error in
-            if fromAuthorization {
-                let step = KlarnaStep.paymentSessionAuthorizationFailed(error: error)
-                self.stepDelegate?.didReceiveStep(step: step)
-            } else {
-                // Finalization
-                let step = KlarnaStep.paymentSessionFinalizationFailed(error: error)
-                self.stepDelegate?.didReceiveStep(step: step)
-            }
+            self.createSessionError(.sessionAuthorizationFailed(error: error))
         }
     }
     

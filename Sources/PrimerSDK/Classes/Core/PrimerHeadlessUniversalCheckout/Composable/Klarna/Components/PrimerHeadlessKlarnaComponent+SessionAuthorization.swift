@@ -43,8 +43,7 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderAuthorizationDelega
                 let step = KlarnaStep.paymentSessionFinalizationRequired
                 stepDelegate?.didReceiveStep(step: step)
             } else {
-                let step = KlarnaStep.paymentSessionAuthorizationFailed(error: nil)
-                stepDelegate?.didReceiveStep(step: step)
+                createSessionError(.klarnaAuthorizationFailed)
             }
         }
         

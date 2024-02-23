@@ -11,8 +11,8 @@ import PrimerKlarnaSDK
 
 extension PrimerHeadlessUniversalCheckout {
     public class KlarnaManager: NSObject {
-        public func provideKlarnaComponent(for paymentMethodType: String, intent: PrimerSessionIntent) throws -> (any KlarnaComponent)? {
-            guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?.first(where: { $0.type == paymentMethodType }) else {
+        public func provideKlarnaComponent(with intent: PrimerSessionIntent) throws -> (any KlarnaComponent)? {
+            guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?.first(where: { $0.type == "KLARNA" }) else {
                 let err = PrimerError.generic(message: "Unable to locate a valid payment method configuration.",
                                               userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
                                               diagnosticsId: UUID().uuidString)

@@ -14,7 +14,12 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessErrorableD
                                                         PrimerHeadlessSteppableDelegate {
     // MARK: - PrimerHeadlessErrorableDelegate
     func didReceiveError(error: PrimerSDK.PrimerError) {
-        showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
+        switch error {
+        case .klarnaWrapperError:
+            showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
+        default:
+            presentResultsVC(checkoutData: nil, error: error)
+        }
     }
     
     // MARK: - PrimerHeadlessValidatableDelegate
@@ -46,21 +51,12 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessErrorableD
             case .paymentSessionAuthorized( _, let checkoutData):
                 presentResultsVC(checkoutData: checkoutData, error: nil)
                 
-            case .paymentSessionAuthorizationFailed(let error):
-                presentResultsVC(checkoutData: nil, error: error)
-                
             case .paymentSessionFinalizationRequired:
                 klarnaInitializationViewModel.updatSnackBar(with: "Finalizing in 2 seconds")
                 finalizeSession()
                 
             case .paymentSessionFinalized( _, let checkoutData):
                 presentResultsVC(checkoutData: checkoutData, error: nil)
-                
-            case .paymentSessionFinalizationFailed(let error):
-                presentResultsVC(checkoutData: nil, error: error)
-                
-            case .viewResized:
-                view.layoutIfNeeded()
                 
             case .viewLoaded(let view):
                 hideLoader()
