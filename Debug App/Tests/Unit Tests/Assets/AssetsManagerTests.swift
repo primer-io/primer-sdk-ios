@@ -12,7 +12,7 @@ import XCTest
 final class AssetsManagerTests: XCTestCase {
 
     typealias AssetsManager = PrimerHeadlessUniversalCheckout.AssetsManager
-    
+
     override func setUpWithError() throws {
         SDKSessionHelper.setUp()
     }

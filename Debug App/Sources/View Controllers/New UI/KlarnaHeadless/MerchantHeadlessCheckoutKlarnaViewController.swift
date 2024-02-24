@@ -7,66 +7,51 @@
 //
 
 import UIKit
+import SwiftUI
 import PrimerSDK
 
 class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     
     // MARK: - Subviews
     let activityIndicator = UIActivityIndicatorView(style: .large)
-    let checkoutTypeContainerView = UIView()
-    let checkoutTypeTitleLabel = UILabel()
-    let guestCheckoutButton = UIButton()
-    let customerInfoContainerView = UIView()
-    let customerInfoTitleLabel = UILabel()
-    let customerAccountIdTextField = UITextField()
-    let customerAccountRegistrationTextField = UITextField()
-    let customerAccountLastModifiedTextField = UITextField()
-    let customerCheckoutButton = UIButton()
-    let categoriesContainerView = UIView()
-    let categoriesTitleLabel = UILabel()
-    let categoriesTableView = UITableView()
-    let paymentContainerView = UIView()
-    let paymentViewContainerView = UIView()
-    let paymentContinueButton = UIButton()
-    let finalizationLabel = UILabel()
-    let finalizationSwitch = UISwitch()
-    
-    // MARK: - Constraints
-    lazy var paymentViewContainerHeightConstraint = paymentViewContainerView.heightAnchor.constraint(equalToConstant: 0.0)
     
     // MARK: - Properties
+    var logs: [String] = []
     var clientToken: String?
-    var finalizeManually: Bool = false
+    var autoFinalize: Bool = false
     var finalizePayment: Bool = false
-    var registrationFieldActive: Bool = false
-    let paymentMethodType: String = "KLARNA"
     
-    private var sessionIntent: PrimerSessionIntent = .checkout
     
-    var accountRegistrationDate: Date = Date() {
-        didSet {
-            customerAccountRegistrationTextField.text = getDateString(date: accountRegistrationDate)
-        }
-    }
-    var accountLastModifiedDate: Date = Date() {
-        didSet {
-            customerAccountLastModifiedTextField.text = getDateString(date: accountLastModifiedDate)
-        }
-    }
-    var paymentCategories: [KlarnaPaymentCategory] = [] {
-        didSet {
-            categoriesTableView.reloadData()
-            categoriesContainerView.isHidden = false
-            view.bringSubviewToFront(categoriesTableView)
-        }
-    }
     
-    // MARK: - Klarna Manager
-    private(set) var klarnaManager: PrimerHeadlessUniversalCheckout.KlarnaHeadlessManager!
+    // MARK: - Klarna
+    lazy var manager: PrimerHeadlessUniversalCheckout.KlarnaManager = PrimerHeadlessUniversalCheckout.KlarnaManager()
+    let klarnaInitializationViewModel: MerchantHeadlessKlarnaInitializationViewModel = MerchantHeadlessKlarnaInitializationViewModel()
+    var klarnaInitializationView: MerchantHeadlessKlarnaInitializationView?
+    let sharedWrapper = SharedUIViewWrapper()
+    var renderedKlarnaView = UIView()
+    var klarnaComponent: (any KlarnaComponent)?
     
     init(sessionIntent: PrimerSessionIntent) {
-        self.sessionIntent = sessionIntent
         super.init(nibName: nil, bundle: nil)
+        
+        do {
+            klarnaComponent = try manager.provideKlarnaComponent(with: sessionIntent)
+            klarnaComponent?.stepDelegate = self
+            klarnaComponent?.errorDelegate = self
+            klarnaComponent?.validationDelegate = self
+        } catch let error as PrimerError {
+            switch error {
+            case .generic(let message, _, _):
+                showAlert(title: "Error", message: message)
+            case .unsupportedIntent(let intent, _, _):
+                showAlert(title: "Error", message: "Unsupported intent: \(intent.rawValue)")
+            default: 
+                return
+            }
+        } catch {
+            showAlert(title: "Error", message: "Klarna component provider not found.")
+        }
+        
     }
     
     required init?(coder: NSCoder) {
@@ -76,60 +61,60 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupUI()
         setupLayout()
-        setupCustomerDetails(visible: false)
-        
-        klarnaManager = PrimerHeadlessUniversalCheckout.KlarnaHeadlessManager(paymentMethodType: paymentMethodType, intent: sessionIntent)
-        klarnaManager.setDelegate(self)
-        
-        setupKlarnaSessionCreationDelegates()
+        addKlarnaView()
+        startPaymentSession()
     }
     
-    private func setupKlarnaSessionCreationDelegates() {
-        klarnaManager.setSessionCreationDelegates(self)
+    private func addKlarnaView() {
+        klarnaInitializationView = MerchantHeadlessKlarnaInitializationView(viewModel: klarnaInitializationViewModel, sharedWrapper: sharedWrapper) { paymentCategory in
+            guard let paymentCategory = paymentCategory else { return }
+            let klarnaCollectableData = KlarnaCollectableData.paymentCategory(paymentCategory, clientToken: self.clientToken)
+            self.klarnaComponent?.updateCollectedData(collectableData: klarnaCollectableData)
+        } onContinuePressed: {
+            self.authorizeSession()
+        }
+        
+        let hostingViewController = UIHostingController(rootView: klarnaInitializationView)
+        hostingViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        addChild(hostingViewController)
+        view.addSubview(hostingViewController.view)
+        hostingViewController.didMove(toParent: self)
+        NSLayoutConstraint.activate([
+            hostingViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            hostingViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            hostingViewController.view.widthAnchor.constraint(equalTo: view.widthAnchor),
+            hostingViewController.view.heightAnchor.constraint(
+                equalTo: view.heightAnchor,
+                multiplier: 1
+            )
+        ])
+    }
+    
+    func passRenderedKlarnaView(_ renderedKlarnaView: UIView) {
+        sharedWrapper.uiView = renderedKlarnaView
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        view.bringSubviewToFront(checkoutTypeContainerView)
     }
 }
 
-// MARK: - Actions
+// MARK: - Setup UI
 extension MerchantHeadlessCheckoutKlarnaViewController {
-    @objc func guestCheckoutButtonTapped(_ sender: UIButton) {
-        self.startPaymentSession()
+    func setupUI() {
+        view.backgroundColor = .white
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    @objc func customerCheckoutButtonTapped(_ sender: UIButton) {
-        
-    }
-    
-    @objc func continueButtonTapped(_ sender: UIButton) {
-        if finalizePayment {
-            paymentContinueButton.isHidden = true
-            finalizeSession()
-        } else {
-            authorizeSession()
-        }
-    }
-    
-    @objc func datePickerValueChanged(_ sender: UIDatePicker) {
-        if registrationFieldActive {
-            accountRegistrationDate = sender.date
-        } else {
-            accountLastModifiedDate = sender.date
-        }
-    }
-    
-    @objc func doneToolBarButtonPressed(_ sender: UIBarButtonItem) {
-        view.endEditing(true)
-    }
-    
-    @objc func finalizationSwitchValueChanged(_ sender: UISwitch) {
-        finalizeManually = sender.isOn
+    func setupLayout() {
+        view.addSubview(activityIndicator)
+        NSLayoutConstraint.activate([
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
     }
 }
 
@@ -149,25 +134,5 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
     
     func hideLoader() {
         activityIndicator.stopAnimating()
-    }
-    
-    func getToolbar() -> UIToolbar {
-        let doneButton = UIBarButtonItem(title: "Done", style:.done, target: self, action: #selector(doneToolBarButtonPressed(_:)))
-        let spaceButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        
-        let toolBar = UIToolbar()
-        toolBar.barStyle = .default
-        toolBar.tintColor = .black
-        toolBar.sizeToFit()
-        toolBar.setItems([spaceButton, doneButton], animated: true)
-        
-        return toolBar
-    }
-    
-    func getDateString(date: Date, withFormat format: String = "yyyy-MM-dd HH:mm:ss") -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = format
-        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-        return dateFormatter.string(from: date)
     }
 }

@@ -24,7 +24,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
     // swiftlint:disable function_body_length
     @discardableResult
     func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResultCallback<T>) -> PrimerCancellable? {
-        
+
         let urlStr: String = (endpoint.baseURL ?? "") + endpoint.path
         let id = String.randomString(length: 32)
 
@@ -63,7 +63,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
         if let data = endpoint.body {
             request.httpBody = data
         }
-        
+
         if let timeout = endpoint.timeout {
             request.timeoutInterval = timeout
         }

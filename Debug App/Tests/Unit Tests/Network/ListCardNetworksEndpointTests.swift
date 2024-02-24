@@ -10,9 +10,9 @@ import XCTest
 @testable import PrimerSDK
 
 final class ListCardNetworksEndpointTests: XCTestCase {
-    
+
     var networkService: MockNetworkService!
-    
+
     var apiClient: PrimerAPIClientProtocol!
 
     override func setUp() {
@@ -28,23 +28,23 @@ final class ListCardNetworksEndpointTests: XCTestCase {
     }
 
     func testValidRequestWithSuccessResponse() throws {
-        
+
         let bin = "1234 5678 1234"
         let network = Response.Body.Bin.Networks.Network(displayName: "Test", value: "Test")
-        
+
         let expectSuccessfulResponse = self.expectation(description: "Expect request to complete successfully")
-        
+
         let expectValidEndpointReceived = self.expectation(description: "Expect endpoint to be valid")
-        
+
         networkService.onReceiveEndpoint = { endpoint in
             XCTAssertEqual(endpoint.path, "/v1/bin-data/\(bin)/networks")
             XCTAssertEqual(endpoint.headers?["X-Api-Version"], "2.2")
             XCTAssertEqual(endpoint.headers?["Primer-Client-Token"], mockClientToken.accessToken)
             expectValidEndpointReceived.fulfill()
         }
-        
+
         networkService.mockedResult = Response.Body.Bin.Networks(networks: [network])
-        
+
         apiClient.listCardNetworks(clientToken: mockClientToken, bin: bin) { result in
             switch result {
             case .success(let result):
@@ -54,27 +54,27 @@ final class ListCardNetworksEndpointTests: XCTestCase {
                 XCTFail("Expected successful response")
             }
         }
-        
+
         waitForExpectations(timeout: 2.0)
     }
-    
+
     func testValidRequestWithErrorResponse() throws {
-        
+
         let bin = "1234 5678 1234"
-        
+
         let expectSuccessfulResponse = self.expectation(description: "Expect request to complete successfully")
-        
+
         let expectValidEndpointReceived = self.expectation(description: "Expect endpoint to be valid")
-        
+
         networkService.onReceiveEndpoint = { endpoint in
             XCTAssertEqual(endpoint.path, "/v1/bin-data/\(bin)/networks")
             XCTAssertEqual(endpoint.headers?["X-Api-Version"], "2.2")
             XCTAssertEqual(endpoint.headers?["Primer-Client-Token"], mockClientToken.accessToken)
             expectValidEndpointReceived.fulfill()
         }
-        
+
         networkService.mockedError = NSError(domain: "", code: 123)
-        
+
         apiClient.listCardNetworks(clientToken: mockClientToken, bin: bin) { result in
             switch result {
             case .success:
@@ -84,7 +84,7 @@ final class ListCardNetworksEndpointTests: XCTestCase {
                 expectSuccessfulResponse.fulfill()
             }
         }
-        
+
         waitForExpectations(timeout: 2.0)
     }
 

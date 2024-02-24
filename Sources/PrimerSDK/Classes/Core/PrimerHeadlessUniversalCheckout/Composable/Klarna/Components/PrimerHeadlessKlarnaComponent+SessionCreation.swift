@@ -1,26 +1,11 @@
 //
-//  KlarnaPaymentSessionCreationComponent.swift
+//  KlarnaComponent+Creation.swift
 //  PrimerSDK
 //
-//  Created by Stefan Vrancianu on 26.01.2024.
+//  Created by Stefan Vrancianu on 16.02.2024.
 //
 
 import Foundation
-
-/**
- * Represents the possible outcomes of a Klarna payment session creation process.
- *
- * This enum is used to communicate the result of attempting to create a payment session with Klarna.
- * It conforms to `PrimerHeadlessStep`.
- *
- * Cases:
- * - paymentSessionCreated: Indicates a successful creation of a payment session. It caries:
- *     - `clientToken` string, which is used for further API interactions.
- *     - `paymentCategories` of type `KlarnaPaymentCategory`, representing the available payment options for the user.
- */
-public enum KlarnaPaymentSessionCreation: PrimerHeadlessStep {
-    case paymentSessionCreated(clientToken: String, paymentCategories: [KlarnaPaymentCategory])
-}
 
 /**
  * Defines the specific errors that can be encountered during the Klarna payment session creation process.
@@ -30,42 +15,29 @@ public enum KlarnaPaymentSessionCreation: PrimerHeadlessStep {
  *  - missingConfiguration: Indicates that essential configuration details are missing, which are required to initiate the payment session creation process.
  *  - invalidClientToken: Signifies that the client token provided for the session creation is invalid or malformed, preventing further API interactions.
  *  - createPaymentSessionFailed: Represents a failure in the payment session creation process, encapsulating the underlying `Error` that led to the failure.
+ *  - sessionAuthorizationFailed: Indicates a failure during the authorization phase of the payment, encapsulating the underlying `Error` that caused the authorization to fail.
+ *  - klarnaAuthorizationFailed: Represents a failure specific to Klarna's authorization process, which is a step where Klarna verifies and authorizes the payment details provided by the user.
+ *  - klarnaFinalizationFailed: Indicates that the finalization step of the Klarna payment process has failed.
  */
-enum KlarnaPaymentSessionCreationComponentError {
+enum KlarnaSessionError {
     case missingConfiguration
     case invalidClientToken
-    case createPaymentSessionFailed(error: Error)
-}
-
-public class KlarnaPaymentSessionCreationComponent: PrimerHeadlessAnalyticsRecordable {
-    
-    // MARK: - Tokenization
-    private var tokenizationComponent: KlarnaTokenizationComponentProtocol
-    
-    // MARK: - Properties
-    private(set) var customerAccountInfo: KlarnaCustomerAccountInfo?
-    
-    // MARK: - Delegates
-    public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
-    public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
-    public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
-    
-    // MARK: - Init
-    init(tokenizationComponent: KlarnaTokenizationComponentProtocol) {
-        self.tokenizationComponent = tokenizationComponent
-    }
+    case sessionCreationFailed(error: Error)
+    case sessionAuthorizationFailed(error: Error)
+    case klarnaAuthorizationFailed
+    case klarnaFinalizationFailed
 }
 
 // MARK: - Start
-public extension KlarnaPaymentSessionCreationComponent {
+extension PrimerHeadlessKlarnaComponent {
     
     /**
      * Initiates the process of creating a payment session.
      * This method kicks off the payment session creation process by first recording the creation event for tracking or analytical purposes.
-        - Success: it handles the creation of a payment session step
-        - Failure: It handles the creation of a payment session error
+     * - Success: it handles the creation of a payment session step
+     * - Failure: It handles the creation of a payment session error
      */
-    func start() {
+    func startSession() {
         recordCreationEvent()
         
         firstly {
@@ -75,13 +47,13 @@ public extension KlarnaPaymentSessionCreationComponent {
             self.createSessionStep(paymentSession)
         }
         .catch { error in
-            self.createSessionError(.createPaymentSessionFailed(error: error))
+            self.createSessionError(.sessionCreationFailed(error: error))
         }
     }
 }
 
 // MARK: - Private
-private extension KlarnaPaymentSessionCreationComponent {
+extension PrimerHeadlessKlarnaComponent {
     
     /**
      * Processes and communicates the successful creation of a payment session.
@@ -90,7 +62,7 @@ private extension KlarnaPaymentSessionCreationComponent {
      * Then notifies the `stepDelegate` of this successful step
      */
     func createSessionStep(_ response: Response.Body.Klarna.PaymentSession) {
-        let step = KlarnaPaymentSessionCreation.paymentSessionCreated(
+        let step = KlarnaStep.paymentSessionCreated(
             clientToken: response.clientToken,
             paymentCategories: response.categories.map { KlarnaPaymentCategory(response: $0) }
         )
@@ -103,53 +75,52 @@ private extension KlarnaPaymentSessionCreationComponent {
      *
      * - Parameter error: A `KlarnaPaymentSessionCreationComponentError` representing the specific error encountered during the payment session creation process.
      *
-     * This method utilizes a switch statement to differentiate between various types of `KlarnaPaymentSessionCreationComponentError`, and constructs a specific `PrimerError`.
+     * This method utilizes a switch statement to differentiate between various types of `KlarnaSessionError`, and constructs a specific `PrimerError`.
      * Then notifies the `errorDelegate` with the specific `PrimerError`.
      */
-    func createSessionError(_ error: KlarnaPaymentSessionCreationComponentError) {
+    func createSessionError(_ error: KlarnaSessionError) {
         var primerError: PrimerError
-        
-        let userInfo: [String: String] = [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ]
         
         switch error {
         case .missingConfiguration:
             primerError = PrimerError.missingPrimerConfiguration(
-                userInfo: userInfo,
+                userInfo: KlarnaHelpers.getErrorUserInfo(),
                 diagnosticsId: UUID().uuidString
             )
             
         case .invalidClientToken:
             primerError = PrimerError.invalidClientToken(
-                userInfo: userInfo,
+                userInfo: KlarnaHelpers.getErrorUserInfo(),
                 diagnosticsId: UUID().uuidString
             )
             
-        case .createPaymentSessionFailed(let error):
+        case .sessionCreationFailed(let error):
             primerError = PrimerError.failedToCreateSession(
                 error: error,
-                userInfo: userInfo,
+                userInfo: KlarnaHelpers.getErrorUserInfo(),
+                diagnosticsId: UUID().uuidString
+            )
+        case .sessionAuthorizationFailed(error: let error):
+            primerError = PrimerError.paymentFailed(
+                paymentMethodType: "KLARNA",
+                description: error.localizedDescription,
+                userInfo: KlarnaHelpers.getErrorUserInfo(),
+                diagnosticsId: UUID().uuidString
+            )
+        case .klarnaAuthorizationFailed:
+            primerError = PrimerError.klarnaWrapperError(
+                message: "PrimerKlarnaWrapperAuthorization failed",
+                userInfo: KlarnaHelpers.getErrorUserInfo(),
+                diagnosticsId: UUID().uuidString
+            )
+        case .klarnaFinalizationFailed:
+            primerError = PrimerError.klarnaWrapperError(
+                message: "PrimerKlarnaWrapperFinalization failed",
+                userInfo: KlarnaHelpers.getErrorUserInfo(),
                 diagnosticsId: UUID().uuidString
             )
         }
         
         errorDelegate?.didReceiveError(error: primerError)
-    }
-}
-
-// MARK: - Helpers
-private extension KlarnaPaymentSessionCreationComponent {
-    private func recordCreationEvent() {
-        recordEvent(
-            type: .sdkEvent,
-            name: KlarnaAnalyticsEvents.CREATE_SESSION_START_METHOD,
-            params: [
-                KlarnaAnalyticsEvents.CATEGORY_KEY: KlarnaAnalyticsEvents.CATEGORY_VALUE,
-            ]
-        )
     }
 }

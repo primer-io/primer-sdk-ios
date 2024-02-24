@@ -38,7 +38,7 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
             // Validates the presence of session data.
             // If the session data is missing, it generates an error indicating an invalid value for `tokenization.sessionData`
             guard let sessionData = customerToken?.sessionData else {
-                let error = self.getInvalidValueError(key: "tokenization.sessionData", value: nil)
+                let error = KlarnaHelpers.getInvalidValueError(key: "tokenization.sessionData", value: nil)
                 seal.reject(error)
                 return
             }
@@ -48,7 +48,7 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
             // If the token ID is not found, it generates an error indicating an invalid value for `tokenization.customerToken`
             if KlarnaHelpers.getSessionType() == .recurringPayment {
                 guard let klarnaCustomerToken = customerToken?.customerTokenId else {
-                    let error = self.getInvalidValueError(key: "tokenization.customerToken", value: nil)
+                    let error = KlarnaHelpers.getInvalidValueError(key: "tokenization.customerToken", value: nil)
                     seal.reject(error)
                     return
                 }
@@ -87,7 +87,7 @@ extension KlarnaTokenizationManager {
     func startPaymentFlow(with paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData> {
         return Promise { seal in
             guard let token = paymentMethodTokenData.token else {
-                seal.reject(self.getInvalidTokenError())
+                seal.reject(KlarnaHelpers.getInvalidTokenError())
                 return
             }
 
@@ -116,92 +116,18 @@ extension KlarnaTokenizationManager {
                 } else if let paymentResponse {
                     
                     if paymentResponse.id == nil {
-                        seal.reject(self.getPaymentFailedError())
+                        seal.reject(KlarnaHelpers.getPaymentFailedError())
                     } else if paymentResponse.status == .failed {
-                        seal.reject(self.getFailedToProcessPaymentError(paymentResponse: paymentResponse))
+                        seal.reject(KlarnaHelpers.getFailedToProcessPaymentError(paymentResponse: paymentResponse))
                     } else {
                         seal.fulfill(paymentResponse)
                     }
 
                 } else {
-                    seal.reject(self.getPaymentFailedError())
+                    seal.reject(KlarnaHelpers.getPaymentFailedError())
                 }
             }
         }
     }
     
-}
-
-// MARK: - Errors
-extension KlarnaTokenizationManager {
-    func getInvalidTokenError() -> PrimerError {
-        let error = PrimerError.invalidClientToken(
-            userInfo: self.getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
-        ErrorHandler.handle(error: error)
-        return error
-    }
-    
-    func getInvalidSettingError(
-        name: String
-    ) -> PrimerError {
-        let error = PrimerError.invalidSetting(
-            name: name,
-            value: nil,
-            userInfo: self.getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
-        ErrorHandler.handle(error: error)
-        return error
-    }
-    
-    func getInvalidValueError(
-        key: String,
-        value: Any? = nil
-    ) -> PrimerError {
-        let error = PrimerError.invalidValue(
-            key: key,
-            value: value,
-            userInfo: self.getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString
-        )
-        ErrorHandler.handle(error: error)
-        return error
-    }
-    
-    func getPaymentFailedError() -> PrimerError {
-        let error = PrimerError.paymentFailed(
-            paymentMethodType: "KLARNA",
-            description: "Failed to create payment",
-            userInfo: self.getErrorUserInfo(),
-            diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: error)
-        return error
-    }
-    
-    func getFailedToProcessPaymentError(paymentResponse: Response.Body.Payment) -> PrimerError {
-        let error = PrimerError.failedToProcessPayment(
-            paymentMethodType: "KLARNA",
-            paymentId: paymentResponse.id ?? "nil",
-            status: paymentResponse.status.rawValue,
-            userInfo: [
-                "file": #file,
-                "class": "\(Self.self)",
-                "function": #function,
-                "line": "\(#line)"
-            ],
-            diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: error)
-        return error
-    }
-    
-    func getErrorUserInfo() -> [String: String] {
-        return [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ]
-    }
 }

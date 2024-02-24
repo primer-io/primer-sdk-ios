@@ -127,7 +127,6 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPICli
         testId: String,
         completion: @escaping (_ result: Result<Void, Error>) -> Void)
 
-
     // NolPay
     func fetchNolSdkSecret(clientToken: DecodedJWTToken,
                            paymentRequestBody: Request.Body.NolPay.NolPaySecretDataRequest,
@@ -584,7 +583,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func listCardNetworks(clientToken: DecodedJWTToken,
                           bin: String,
                           completion: @escaping (Result<Response.Body.Bin.Networks, Error>) -> Void) -> PrimerCancellable? {

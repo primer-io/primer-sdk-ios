@@ -92,9 +92,9 @@ final class URLSessionStackTests: XCTestCase {
         XCTAssertTrue(sut.shouldReportNetworkEvents(for: PrimerAPI.fetchConfiguration(clientToken: mockClientToken, requestParameters: .init(skipPaymentMethodTypes: nil, requestDisplayMetadata: nil))))
         XCTAssertTrue(sut.shouldReportNetworkEvents(for: PrimerAPI.fetchVaultedPaymentMethods(clientToken: mockClientToken)))
         let paymentInstrument = CardPaymentInstrument(number: "", cvv: "", expirationMonth: "", expirationYear: "")
-        XCTAssertTrue(sut.shouldReportNetworkEvents(for: .tokenizePaymentMethod(clientToken: mockClientToken, tokenizationRequestBody: .init(paymentInstrument: paymentInstrument))))
-        let klarnaCreatePaymentSession = Request.Body.Klarna.CreatePaymentSession(paymentMethodConfigId: "", sessionType: .oneOffPayment, description: nil, redirectUrl: nil, totalAmount: nil, orderItems: nil, attachment: nil, billingAddress: nil, shippingAddress: nil)
-        XCTAssertTrue(sut.shouldReportNetworkEvents(for: .createKlarnaPaymentSession(clientToken: mockClientToken, klarnaCreatePaymentSessionAPIRequest: klarnaCreatePaymentSession)))
+        XCTAssertTrue(sut.shouldReportNetworkEvents(for: PrimerAPI.tokenizePaymentMethod(clientToken: mockClientToken, tokenizationRequestBody: .init(paymentInstrument: paymentInstrument))))
+        let klarnaCreatePaymentSession = Request.Body.Klarna.CreatePaymentSession(paymentMethodConfigId: "", sessionType: .oneOffPayment, description: nil, redirectUrl: nil, totalAmount: nil, orderItems: nil, billingAddress: nil, shippingAddress: nil)
+        XCTAssertTrue(sut.shouldReportNetworkEvents(for: PrimerAPI.createKlarnaPaymentSession(clientToken: mockClientToken, klarnaCreatePaymentSessionAPIRequest: klarnaCreatePaymentSession)))
     }
 
 }

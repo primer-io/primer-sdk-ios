@@ -9,28 +9,28 @@ import Foundation
 
 struct KlarnaAnalyticsEvents {
     // session creation component
-    static let CREATE_SESSION_UPDATE_COLLECTED_DATA_METHOD = "KlarnaPaymentSessionCreationComponent.updateCollectedData()"
-    static let CREATE_SESSION_START_METHOD = "KlarnaPaymentSessionCreationComponent.start()"
+    static let createSessionUpdateCollectedDataMethod = "KlarnaPaymentSessionCreationComponent.updateCollectedData()"
+    static let createSessionStartMethod = "KlarnaPaymentSessionCreationComponent.start()"
     
     // view handling component
-    static let CREATE_PAYMENT_VIEW_METHOD = "KlarnaPaymentViewHandlingComponent.createPaymentView()"
-    static let REMOVE_PAYMENT_VIEW_METHOD = "KlarnaPaymentViewHandlingComponent.removePaymentView()"
-    static let INIT_PAYMENT_VIEW_METHOD = "KlarnaPaymentViewHandlingComponent.initPaymentView()"
-    static let LOAD_PAYMENT_VIEW_METHOD = "KlarnaPaymentViewHandlingComponent.loadPaymentView(jsonData: String?)"
-    static let LOAD_PAYMENT_REVIEW_METHOD = "KlarnaPaymentViewHandlingComponent.loadPaymentReview(jsonData: String?)"
+    static let createPaymentViewMethod = "KlarnaPaymentViewHandlingComponent.createPaymentView()"
+    static let removePaymentViewMethod = "KlarnaPaymentViewHandlingComponent.removePaymentView()"
+    static let initPaymentViewMethod = "KlarnaPaymentViewHandlingComponent.initPaymentView()"
+    static let loadPaymentViewMethod = "KlarnaPaymentViewHandlingComponent.loadPaymentView(jsonData: String?)"
+    static let loadPaymentReviewMethod = "KlarnaPaymentViewHandlingComponent.loadPaymentReview(jsonData: String?)"
     
     // session authorization component
-    static let AUTHORIZE_SESSION_METHOD = "KlarnaPaymentSessionAuthorizationComponent.authorizeSession(autoFinalize: Bool, jsonData: String?)"
-    static let REAUTHORIZE_SESSION_METHOD = "KlarnaPaymentSessionAuthorizationComponent.reauthorizeSession(jsonData: String?)"
+    static let authorizeSessionMethod = "KlarnaPaymentSessionAuthorizationComponent.authorizeSession(autoFinalize: Bool, jsonData: String?)"
+    static let reauthorizeSessionMethod = "KlarnaPaymentSessionAuthorizationComponent.reauthorizeSession(jsonData: String?)"
     
     // session finalization component
-    static let FINALIZE_SESSION_METHOD = "KlarnaPaymentSessionFinalizationComponent.finalise(jsonData: String?)"
+    static let finalizeSessionMethod = "KlarnaPaymentSessionFinalizationComponent.finalise(jsonData: String?)"
     
     // params
-    static let CATEGORY_KEY = "category"
-    static let CATEGORY_VALUE = "KLARNA"
-    static let SESSION_TYPE_KEY = "sessionType"
-    static let JSON_DATA_KEY = "jsonData (optional)"
-    static let JSON_DATA_DEFAULT_VALUE = "None"
-    static let AUTO_FINALIZE_KEY = "autoFinalize"
+    static let categoryKey = "category"
+    static let categoryValue = "KLARNA"
+    static let sessionTypeKey = "sessionType"
+    static let jsonDataKey = "jsonData (optional)"
+    static let jsonDataDefaultValue = "None"
+    static let autoFinalizeKey = "autoFinalize"
 }

@@ -15,14 +15,16 @@ class KlarnaTestsMocks {
     static let sessionType: KlarnaSessionType = .oneOffPayment
     static let clientToken: String = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6ImNsaWVudC10b2tlbi1zaWduaW5nLWtleSJ9.eyJleHAiOjIwMDAwMDAwMDAsImFjY2Vzc1Rva2VuIjoiYzJlOTM3YmMtYmUzOS00ZjVmLTkxYmYtNTIyNWExNDg0OTc1IiwiYW5hbHl0aWNzVXJsIjoiaHR0cHM6Ly9hbmFseXRpY3MuYXBpLnNhbmRib3guY29yZS5wcmltZXIuaW8vbWl4cGFuZWwiLCJhbmFseXRpY3NVcmxWMiI6Imh0dHBzOi8vYW5hbHl0aWNzLnNhbmRib3guZGF0YS5wcmltZXIuaW8vY2hlY2tvdXQvdHJhY2siLCJpbnRlbnQiOiJDSEVDS09VVCIsImNvbmZpZ3VyYXRpb25VcmwiOiJodHRwczovL2FwaS5zYW5kYm94LnByaW1lci5pby9jbGllbnQtc2RrL2NvbmZpZ3VyYXRpb24iLCJjb3JlVXJsIjoiaHR0cHM6Ly9hcGkuc2FuZGJveC5wcmltZXIuaW8iLCJwY2lVcmwiOiJodHRwczovL3Nkay5hcGkuc2FuZGJveC5wcmltZXIuaW8iLCJlbnYiOiJTQU5EQk9YIiwicGF5bWVudEZsb3ciOiJERUZBVUxUIn0.1Epm-502bLNhjhIQrmp4ZtrMQa0vQ2FjckPAlgJtuao"
     static let paymentMethod: String = "pay_now"
+    static let klarnaCategoryResponse = Response.Body.Klarna.SessionCategory(identifier: "", name: "Pay now", descriptiveAssetUrl: "", standardAssetUrl: "")
+    static let paymentCategory = KlarnaPaymentCategory(response: klarnaCategoryResponse)
     static let klarnaProvider: PrimerKlarnaProviding = PrimerKlarnaProvider(
         clientToken: clientToken,
         paymentCategory: paymentMethod
     )
-    static let klarnaAccountInfo = KlarnaCustomerAccountInfo(
-        accountUniqueId: "test@gmail.com",
-        accountRegistrationDate: "2022-04-25T14:05:15.953Z".toDate(),
-        accountLastModified: "2023-04-25T14:05:15.953Z".toDate()
+    
+    static let invalidTokenError = PrimerError.invalidClientToken(
+        userInfo: [:],
+        diagnosticsId: UUID().uuidString
     )
     
     static func getClientSession(
@@ -35,7 +37,8 @@ class KlarnaTestsMocks {
             clientSessionId: "mock-client-session-id-1",
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
-                options: nil),
+                options: nil,
+                orderedAllowedCardNetworks: nil),
             order: ClientSession.Order(
                 id: "mock-client-session-order-id-1",
                 merchantAmount: nil,
@@ -54,6 +57,7 @@ class KlarnaTestsMocks {
         return Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
+            binDataUrl: "https://bindata.url",
             assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: clientSession,
             paymentMethods: [

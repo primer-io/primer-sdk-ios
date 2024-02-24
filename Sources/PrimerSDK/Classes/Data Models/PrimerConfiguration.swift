@@ -100,7 +100,7 @@ extension Response.Body {
                 .filter({ $0.baseLogoImage != nil })
                 .compactMap({ $0.tokenizationViewModel })
                 ?? []
-            
+
             let supportedNetworks = ApplePayUtils.supportedPKPaymentNetworks()
             var canMakePayment: Bool
             if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {

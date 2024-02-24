@@ -296,7 +296,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         }
 
     }
-    
+
     private func reportAllowedCardNetworks() {
         let networksDescription = [CardNetwork].allowedCardNetworks.map { $0.rawValue }.joined(separator: ", ")
         let event = Analytics.Event.message(

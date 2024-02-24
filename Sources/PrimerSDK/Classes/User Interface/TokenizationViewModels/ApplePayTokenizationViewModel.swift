@@ -236,7 +236,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     countryCode: countryCode,
                     items: orderItems
                 )
-                
+
                 let supportedNetworks = ApplePayUtils.supportedPKPaymentNetworks()
                 var canMakePayment: Bool
                 if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
