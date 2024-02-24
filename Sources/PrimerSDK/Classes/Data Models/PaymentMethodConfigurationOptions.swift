@@ -26,26 +26,32 @@ struct CardOptions: PaymentMethodOptions {
 struct MerchantOptions: PaymentMethodOptions {
     let merchantId: String
     let merchantAccountId: String
-    let appId: String? // Nol pay, Klarna
-    let extraMerchantData: KlarnaOptions?
-}
-
-struct KlarnaOptions: Codable {
-    var jsonString: String?
+    let clientId: String?
+    let appId: String? // Nol pay
+    let extraMerchantData: [String: Any]?
     
     enum CodingKeys: String, CodingKey {
-        case jsonString
+        case merchantId, merchantAccountId, clientId, appId, extraMerchantData
     }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        if let extraMerchantData = try container.decodeIfPresent([String: Any].self, forKey: .jsonString) {
+        merchantId = try container.decode(String.self, forKey: .merchantId)
+        merchantAccountId = try container.decode(String.self, forKey: .merchantAccountId)
+        clientId = try container.decodeIfPresent(String.self, forKey: .clientId)
+        appId = try container.decodeIfPresent(String.self, forKey: .appId)
+        extraMerchantData = try container.decodeIfPresent([String: Any].self, forKey: .extraMerchantData)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        if let extraMerchantData = extraMerchantData {
             let jsonData = try JSONSerialization.data(withJSONObject: extraMerchantData, options: [])
-            self.jsonString = String(data: jsonData, encoding: .utf8)
-        } else {
-            self.jsonString = nil
+            try container.encode(jsonData, forKey: .extraMerchantData)
         }
     }
+    
 }
 
 extension PrimerTestPaymentMethodSessionInfo.FlowDecision {

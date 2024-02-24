@@ -23,10 +23,10 @@ extension PrimerHeadlessKlarnaComponent {
         var extraMerchantDataString: String?
         
         if let paymentMethod = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
-            if let merchantOptions = paymentMethod.options {
-//                if let extraMerchantData = merchantOptions.extraMerchantData {
-//                    extraMerchantDataString = KlarnaHelpers.getSerializedAttachmentString(from: extraMerchantData)
-//                }
+            if let merchantOptions = paymentMethod.options as? MerchantOptions {
+                if let extraMerchantData = merchantOptions.extraMerchantData {
+                    extraMerchantDataString = KlarnaHelpers.getSerializedAttachmentString(from: extraMerchantData)
+                }
             }
         }
         
