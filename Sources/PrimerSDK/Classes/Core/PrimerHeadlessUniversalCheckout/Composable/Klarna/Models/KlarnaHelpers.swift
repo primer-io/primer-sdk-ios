@@ -162,14 +162,14 @@ struct KlarnaHelpers {
     }
     
     /// - Returns the serialized string value of the attachment data
-    static func getSerializedAttachmentString(from extraMerchantData: String) -> String? {
-        let attachment = constructAttachment(from: extraMerchantData)
+    static func getSerializedAttachmentString(from extraMerchantData: [String: Any]) -> String? {
+        let dict = ["contentType": "application/vnd.klarna.internal.emd-v2+json",
+                    "body": extraMerchantData] as [String : Any]
         
         do {
-            let jsonData = try JSONSerialization.data(withJSONObject: attachment, options: [])
-            return String(data: jsonData, encoding: .utf8)
+            let jsonData = try JSONSerialization.data(withJSONObject: dict, options: [])
+            return String(data: jsonData, encoding: .utf8)!
         } catch {
-            ErrorHandler.handle(error: error)
             return nil
         }
     }
@@ -184,11 +184,6 @@ struct KlarnaHelpers {
             countryCode: countryCode,
             currencyCode: currencyCode,
             localeCode: localeCode)
-    }
-    
-    /// - Helper function to construct attachment data for extraMerchantData.
-    private static func constructAttachment(from extraMerchantData: String) -> Request.Body.Klarna.Attachment {
-        return Request.Body.Klarna.Attachment(body: extraMerchantData)
     }
     
     // MARK: - Error helpers

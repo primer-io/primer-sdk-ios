@@ -20,9 +20,19 @@ extension PrimerHeadlessKlarnaComponent {
 // MARK: - Session authorization
 extension PrimerHeadlessKlarnaComponent {
     func authorizeSession() {
+        var extraMerchantDataString: String?
+        
+        if let paymentMethod = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
+            if let merchantOptions = paymentMethod.options {
+//                if let extraMerchantData = merchantOptions.extraMerchantData {
+//                    extraMerchantDataString = KlarnaHelpers.getSerializedAttachmentString(from: extraMerchantData)
+//                }
+            }
+        }
+        
         let autoFinalize = PrimerInternal.shared.sdkIntegrationType != .headless
         recordAuthorizeEvent(name: KlarnaAnalyticsEvents.authorizeSessionMethod, autoFinalize: false, jsonData: nil)
-        klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: nil)
+        klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: extraMerchantDataString)
     }
 }
 
