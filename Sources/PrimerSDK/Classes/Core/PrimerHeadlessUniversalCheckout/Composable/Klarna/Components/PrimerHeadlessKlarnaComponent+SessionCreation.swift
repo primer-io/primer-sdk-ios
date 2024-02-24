@@ -15,6 +15,9 @@ import Foundation
  *  - missingConfiguration: Indicates that essential configuration details are missing, which are required to initiate the payment session creation process.
  *  - invalidClientToken: Signifies that the client token provided for the session creation is invalid or malformed, preventing further API interactions.
  *  - createPaymentSessionFailed: Represents a failure in the payment session creation process, encapsulating the underlying `Error` that led to the failure.
+ *  - sessionAuthorizationFailed: Indicates a failure during the authorization phase of the payment, encapsulating the underlying `Error` that caused the authorization to fail.
+ *  - klarnaAuthorizationFailed: Represents a failure specific to Klarna's authorization process, which is a step where Klarna verifies and authorizes the payment details provided by the user.
+ *  - klarnaFinalizationFailed: Indicates that the finalization step of the Klarna payment process has failed.
  */
 enum KlarnaSessionError {
     case missingConfiguration
@@ -72,7 +75,7 @@ extension PrimerHeadlessKlarnaComponent {
      *
      * - Parameter error: A `KlarnaPaymentSessionCreationComponentError` representing the specific error encountered during the payment session creation process.
      *
-     * This method utilizes a switch statement to differentiate between various types of `KlarnaPaymentSessionCreationComponentError`, and constructs a specific `PrimerError`.
+     * This method utilizes a switch statement to differentiate between various types of `KlarnaSessionError`, and constructs a specific `PrimerError`.
      * Then notifies the `errorDelegate` with the specific `PrimerError`.
      */
     func createSessionError(_ error: KlarnaSessionError) {
