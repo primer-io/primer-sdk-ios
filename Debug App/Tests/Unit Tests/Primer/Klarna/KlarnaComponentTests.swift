@@ -15,10 +15,9 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
     var sut: PrimerHeadlessKlarnaComponent!
     var tokenizationComponent: KlarnaTokenizationComponent!
     
-    var currentStep: PrimerSDK.PrimerHeadlessStep?
-    var errorType: ErrorDelegationType = .none
+    var errorResult: PrimerSDK.PrimerError!
     var stepType: StepDelegationType = .none
-    var validateType: ValidateDelegationType = .none
+    var validationResult: PrimerSDK.PrimerValidationStatus = .validating
     
     override func setUp() {
         super.setUp()
@@ -58,25 +57,67 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
             userInfo: [:],
             diagnosticsId: UUID().uuidString
         )
-        let expectedErrorType: ErrorDelegationType = .creationError
         
         sut?.errorDelegate?.didReceiveError(error: error)
-        XCTAssertEqual(expectedErrorType, errorType)
+        XCTAssertEqual(error.diagnosticsId, errorResult.diagnosticsId)
     }
     
-    func test_sessionCreation_validation() {
-        let expectedValidationType: ValidateDelegationType = .creationValidate
-        sut?.validationDelegate?.didUpdate(validationStatus: .validating, for: nil)
-        XCTAssertEqual(expectedValidationType, validateType)
+    func test_sessionAuthorization_error() {
+        let error = PrimerError.paymentFailed(
+            paymentMethodType: "KLARNA",
+            description: "",
+            userInfo: [:],
+            diagnosticsId: UUID().uuidString
+        )
+        
+        sut?.errorDelegate?.didReceiveError(error: error)
+        XCTAssertEqual(error.diagnosticsId, errorResult.diagnosticsId)
+    }
+    
+    func test_klarnaAuthorization_error() {
+        let error = PrimerError.klarnaWrapperError(
+            message: "PrimerKlarnaWrapperAuthorization failed",
+            userInfo: [:],
+            diagnosticsId: UUID().uuidString
+        )
+        
+        sut?.errorDelegate?.didReceiveError(error: error)
+        XCTAssertEqual(error.diagnosticsId, errorResult.diagnosticsId)
+    }
+    
+    func test_klarnaFinalization_error() {
+        let error = PrimerError.klarnaWrapperError(
+            message: "PrimerKlarnaWrapperFinalization failed",
+            userInfo: [:],
+            diagnosticsId: UUID().uuidString
+        )
+        
+        sut?.errorDelegate?.didReceiveError(error: error)
+        XCTAssertEqual(error.diagnosticsId, errorResult.diagnosticsId)
+    }
+    
+    func test_updateCollectable_valid() {
+        let expectedValidationType: PrimerSDK.PrimerValidationStatus = .valid
+        let collectableData = KlarnaCollectableData.paymentCategory(KlarnaTestsMocks.paymentCategory, clientToken: KlarnaTestsMocks.clientToken)
+        
+        sut?.updateCollectedData(collectableData: collectableData)
+        XCTAssertEqual(expectedValidationType, validationResult)
+    }
+    
+    func test_updateCollectable_error() {
+        let expectedValidationType: PrimerSDK.PrimerValidationStatus = .error(error: KlarnaTestsMocks.invalidTokenError)
+        let collectableData = KlarnaCollectableData.paymentCategory(KlarnaTestsMocks.paymentCategory, clientToken: nil)
+        
+        sut?.updateCollectedData(collectableData: collectableData)
+        XCTAssertEqual(expectedValidationType, validationResult)
     }
     
     func test_sessionCreation_step() {
         let expectedStepType: StepDelegationType = .creationStep
-        
         let step = KlarnaStep.paymentSessionCreated(clientToken: "", paymentCategories: [])
         sut?.stepDelegate?.didReceiveStep(step: step)
         
-        XCTAssertEqual(expectedStepType, .creationStep)
+        XCTAssertEqual(stepType, expectedStepType)
     }
     
     func test_viewHandling_step() {
@@ -91,7 +132,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
     func test_sessionAuthorization_step() {
         let expectedStepType: StepDelegationType = .authorizationStep
         
-        let step = KlarnaStep.paymentSessionAuthorizationFailed(error: nil)
+        let step = KlarnaStep.paymentSessionAuthorized(authToken: "", checkoutData: PrimerCheckoutData(payment: nil))
         sut?.stepDelegate?.didReceiveStep(step: step)
         
         XCTAssertEqual(expectedStepType, .authorizationStep)
@@ -100,7 +141,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
     func test_sessionFinalization_step() {
         let expectedStepType: StepDelegationType = .finalizationStep
         
-        let step = KlarnaStep.paymentSessionFinalizationFailed(error: nil)
+        let step = KlarnaStep.paymentSessionFinalized(authToken: "", checkoutData: PrimerCheckoutData(payment: nil))
         sut?.stepDelegate?.didReceiveStep(step: step)
         
         XCTAssertEqual(expectedStepType, .finalizationStep)
@@ -112,35 +153,24 @@ extension PrimerHeadlessKlarnaComponentTests: PrimerHeadlessErrorableDelegate,
                                               PrimerHeadlessSteppableDelegate {
     
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
-        validateType = .creationValidate
+        validationResult = validationStatus
     }
     
     func didReceiveError(error: PrimerSDK.PrimerError) {
-        if error.errorId == "invalid-client-token" {
-            errorType = .managerError
-        }
-        
-        if error.errorId == "failed-to-create-session" {
-            errorType = .creationError
-        }
+        errorResult = error
     }
     
     func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
         if let step = step as? KlarnaStep {
             switch step {
-                
             case .paymentSessionCreated(clientToken: let clientToken, paymentCategories: let paymentCategories):
                 stepType = .creationStep
-                currentStep = step
-            case .paymentSessionAuthorized, .paymentSessionAuthorizationFailed, .paymentSessionFinalizationRequired:
+            case .paymentSessionAuthorized, .paymentSessionFinalizationRequired:
                 stepType = .authorizationStep
-                currentStep = step
-            case .paymentSessionFinalized, .paymentSessionFinalizationFailed:
+            case .paymentSessionFinalized:
                 stepType = .finalizationStep
-                currentStep = step
-            case .viewInitialized, .viewResized, .viewLoaded, .reviewLoaded, .isLoading:
+            case .viewInitialized, .viewResized, .viewLoaded, .reviewLoaded, .notLoaded:
                 stepType = .viewHandlingStep
-                currentStep = step
             }
         }
     }
@@ -191,28 +221,14 @@ extension PrimerHeadlessKlarnaComponentTests {
             "line": "\(#line)"
         ]
     }
-}
-
-extension PrimerHeadlessKlarnaComponentTests {
-    enum ErrorDelegationType {
-        case managerError
-        case creationError
-        case none
-    }
     
     enum StepDelegationType {
-        case creationStep
-        case authorizationStep
-        case finalizationStep
-        case viewHandlingStep
-        case none
-    }
-    
-    enum ValidateDelegationType {
-        case creationValidate
-        case none
-    }
+           case creationStep
+           case authorizationStep
+           case finalizationStep
+           case viewHandlingStep
+           case none
+       }
 }
-
 #endif
 

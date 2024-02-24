@@ -31,19 +31,10 @@ final class PrimerHeadlessUniversalCheckoutKlarnaManagerTests: XCTestCase {
     }
     
     func test_klarnaComponent_initialization_succeed() {
-        let paymentMethodType = "KLARNA"
         let sessionIntent: PrimerSessionIntent = .checkout
-        klarnaComponent = try? manager.provideKlarnaComponent(for: paymentMethodType, intent: sessionIntent)
+        klarnaComponent = try? manager.provideKlarnaComponent(with: sessionIntent)
         
         XCTAssertNotNil(klarnaComponent)
-    }
-    
-    func test_klarnaComponent_initialization_fail() {
-        let paymentMethodType = ""
-        let sessionIntent: PrimerSessionIntent = .checkout
-        klarnaComponent = try? manager.provideKlarnaComponent(for: paymentMethodType, intent: sessionIntent)
-        
-        XCTAssertNil(klarnaComponent)
     }
 }
 
