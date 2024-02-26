@@ -6,7 +6,6 @@
 //
 
 import Foundation
-
 /**
  * This enum is used to communicate the result of attempting to create, authorize and finalize a payment session with Klarna also handling the PaymentView.
  * It conforms to `PrimerHeadlessStep`.
@@ -33,14 +32,11 @@ import Foundation
 public enum KlarnaStep: PrimerHeadlessStep {
     /// Session creation
     case paymentSessionCreated(clientToken: String, paymentCategories: [KlarnaPaymentCategory])
-    
     /// Session authorization
     case paymentSessionAuthorized(authToken: String, checkoutData: PrimerCheckoutData)
     case paymentSessionFinalizationRequired
-    
     /// Session finalization
     case paymentSessionFinalized(authToken: String, checkoutData: PrimerCheckoutData)
-    
     /// Payment view handling
     case viewInitialized
     case viewResized(height: CGFloat)

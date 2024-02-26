@@ -10,7 +10,6 @@ import Foundation
 import PrimerKlarnaSDK
 
 extension PrimerHeadlessKlarnaComponent {
-    
     /// Sets Klarna provider finalization delegate
     func setFinalizationDelegate() {
         klarnaProvider?.finalizationDelegate = self
@@ -19,7 +18,6 @@ extension PrimerHeadlessKlarnaComponent {
 
 // MARK: - PrimerKlarnaProviderFinalizationDelegate
 extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderFinalizationDelegate {
-    
     /**
      * Finalizes the Klarna payment session based on the approval status and authentication token.
      * It processes the outcome of the payment session based on the combination of:
@@ -30,7 +28,6 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderFinalizationDelegat
         if approved == false {
             createSessionError(.klarnaFinalizationFailed)
         }
-        
         if let authToken = authToken, approved == true {
             finalizeSession(token: authToken, fromAuthorization: false)
         }

@@ -422,7 +422,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
             let clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-            
             let countryCode = clientSession?.order?.countryCode?.rawValue ?? ""
             let currencyCode = clientSession?.order?.currencyCode?.code ?? ""
             let localeCode = PrimerSettings.current.localeData.localeCode

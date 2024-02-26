@@ -10,7 +10,6 @@ import Foundation
 import PrimerKlarnaSDK
 
 extension PrimerHeadlessKlarnaComponent {
-    
     /// Sets Klarna provider authorization delegate
     func setAuthorizationDelegate() {
         klarnaProvider?.authorizationDelegate = self
@@ -28,7 +27,6 @@ extension PrimerHeadlessKlarnaComponent {
 
 // MARK: - PrimerKlarnaProviderAuthorizationDelegate
 extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderAuthorizationDelegate {
-    
     /**
      * Handles the authorization response from the Primer Klarna Wrapper.
      * This function is called in response to the authorization attempt via the Primer Klarna Wrapper.
@@ -46,17 +44,14 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderAuthorizationDelega
                 createSessionError(.klarnaAuthorizationFailed)
             }
         }
-        
         if let authToken = authToken, approved == true {
             finalizeSession(token: authToken, fromAuthorization: true)
         }
-        
         if finalizeRequired == true {
             let step = KlarnaStep.paymentSessionFinalizationRequired
             stepDelegate?.didReceiveStep(step: step)
         }
     }
-    
     /**
      * Handles the re-authorization response from the Primer Klarna Wrapper.
      * It processes the result of the re-authorization attempt, which can lead to various outcomes based on the combination of:

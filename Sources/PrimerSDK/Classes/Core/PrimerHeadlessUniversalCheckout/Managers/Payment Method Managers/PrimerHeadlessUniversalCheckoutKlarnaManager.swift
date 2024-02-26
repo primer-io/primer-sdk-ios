@@ -19,7 +19,6 @@ extension PrimerHeadlessUniversalCheckout {
                 ErrorHandler.handle(error: err)
                 throw err
             }
-            
             if (intent == .vault && !paymentMethod.isVaultingEnabled) ||
                 (intent == .checkout && !paymentMethod.isCheckoutEnabled) {
                 let err = PrimerError.unsupportedIntent(intent: intent,
@@ -31,9 +30,7 @@ extension PrimerHeadlessUniversalCheckout {
                 ErrorHandler.handle(error: err)
                 throw err
             }
-            
             PrimerInternal.shared.intent = intent
-            
             let tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: paymentMethod)
             return PrimerHeadlessKlarnaComponent(tokenizationComponent: tokenizationComponent)
         }

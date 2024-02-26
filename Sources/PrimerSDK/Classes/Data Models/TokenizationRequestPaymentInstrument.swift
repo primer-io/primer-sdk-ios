@@ -62,7 +62,7 @@ struct KlarnaCustomerTokenPaymentInstrument: TokenizationRequestBodyPaymentInstr
     var sessionData: Response.Body.Klarna.SessionData
 }
 
-struct KlarnaAuthorizationTokenPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
+struct KlarnaAuthorizationPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
     var klarnaAuthorizationToken: String?
     var sessionData: Response.Body.Klarna.SessionData
 }
