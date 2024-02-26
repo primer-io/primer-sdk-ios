@@ -126,7 +126,6 @@ extension Response.Body.Klarna {
             case totalDiscountAmount = "total_discount_amount"
         }
     }
-    
     public struct TokenDetails: Codable {
         public let brand: String?
         public let maskedNumber: String?

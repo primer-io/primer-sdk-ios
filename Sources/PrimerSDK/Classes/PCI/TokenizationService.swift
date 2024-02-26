@@ -66,7 +66,6 @@ internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
-                    
                 case .success(let paymentMethodTokenData):
                     self.paymentMethodTokenData = paymentMethodTokenData
                     seal.fulfill(paymentMethodTokenData)

@@ -101,7 +101,6 @@ extension KlarnaTokenizationManager {
                 if let error {
                     seal.reject(error)
                 } else if let paymentResponse {
-                    
                     if paymentResponse.id == nil {
                         seal.reject(KlarnaHelpers.getPaymentFailedError())
                     } else if paymentResponse.status == .failed {

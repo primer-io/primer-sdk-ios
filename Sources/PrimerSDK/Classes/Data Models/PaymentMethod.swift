@@ -142,7 +142,6 @@ class PrimerPaymentMethod: Codable, LogReporter {
 
         return nil
     }()
-    
     lazy var tokenizationModel: PaymentMethodTokenizationModelProtocol? = {
         switch internalPaymentMethodType {
         case .adyenIDeal:

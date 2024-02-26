@@ -98,7 +98,6 @@ extension KlarnaTokenizationComponent {
             .then({ () -> Promise<Response.Body.Klarna.PaymentSession> in
                 // Prepare the body for the payment session creation request
                 let body = self.prepareKlarnaPaymentSessionRequestBody(paymentMethodConfigId: paymentMethodConfigId)
-                
                 // Create the Klarna payment session
                 return self.createKlarnaSession(with: body, decodedJWTToken: decodedJWTToken)
             })
@@ -110,7 +109,6 @@ extension KlarnaTokenizationComponent {
             }
         }
     }
-    
 }
 
 // MARK: - Authorize payment session
@@ -169,14 +167,12 @@ private extension KlarnaTokenizationComponent {
             recurringPaymentDescription: recurringPaymentDescription,
             redirectUrl: settings.paymentMethodOptions.urlScheme)
     }
-    
     /// - Helper method to prepare Client Session Update Request body with actions
     private func prepareKlarnaClientSessionActionsRequestBody() -> ClientSessionUpdateRequest {
         let params: [String: Any] = ["paymentMethodType": paymentMethod.type]
         let actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
         return ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
     }
-    
     /// - Request to update Primer Configuration with actions
     /// - Sets the client session with updated primer configuration request data
     private func requestPrimerConfiguration(decodedJWTToken: DecodedJWTToken, request: ClientSessionUpdateRequest) -> Promise<Void> {
@@ -194,7 +190,6 @@ private extension KlarnaTokenizationComponent {
             }
         }
     }
-    
     /// - Request to create  Klarna Payment Session
     /// - Sets the 'paymentSessionId'  with response's 'sessionId'
     private func createKlarnaSession(with body: Request.Body.Klarna.CreatePaymentSession, decodedJWTToken: DecodedJWTToken) -> Promise<Response.Body.Klarna.PaymentSession> {
@@ -221,7 +216,6 @@ extension KlarnaTokenizationComponent {
             with: paymentMethodConfigId,
             sessionId: sessionId)
     }
-    
     /// - Request to finalize  Klarna Payment Session
     private func finalizeKlarnaPaymentSession(with clientToken: DecodedJWTToken, body: Request.Body.Klarna.FinalizePaymentSession) -> Promise<Response.Body.Klarna.CustomerToken> {
         return Promise { seal in
@@ -235,7 +229,6 @@ extension KlarnaTokenizationComponent {
             }
         }
     }
-    
     /// - Helper method to prepare Klarna Customer Token body
     private func prepareKlarnaCustomerTokenBody(paymentMethodConfigId: String, sessionId: String, authorizationToken: String) -> Request.Body.Klarna.CreateCustomerToken {
         return KlarnaHelpers.getKlarnaCustomerTokenBody(
@@ -244,12 +237,11 @@ extension KlarnaTokenizationComponent {
             authorizationToken: authorizationToken,
             recurringPaymentDescription: recurringPaymentDescription)
     }
-    
     /// - Request to create  Klarna Customer Token
     private func createKlarnaCustomerToken(with clientToken: DecodedJWTToken, body: Request.Body.Klarna.CreateCustomerToken) -> Promise<Response.Body.Klarna.CustomerToken> {
         return Promise { seal in
             apiClient.createKlarnaCustomerToken(clientToken: clientToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
-                switch result{
+                switch result {
                 case .success(let response):
                     seal.fulfill(response)
                 case .failure(let error):

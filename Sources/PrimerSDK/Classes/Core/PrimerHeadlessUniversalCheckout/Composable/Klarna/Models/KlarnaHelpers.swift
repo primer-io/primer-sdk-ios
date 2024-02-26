@@ -60,12 +60,12 @@ struct KlarnaHelpers {
         redirectUrl: String?) -> Request.Body.Klarna.CreatePaymentSession {
             let sessionType = getSessionType()
             let localeData = constructLocaleData(using: clientSession)
-            var orderItems: [Request.Body.Klarna.OrderItem]? = nil
-            var totalAmount: Int? = nil
-            var billingAddress: Response.Body.Klarna.BillingAddress? = nil
-            var shippingAddress: Response.Body.Klarna.BillingAddress? = nil
-            var description: String? = nil
-            var redUrl: String? = nil
+            var orderItems: [Request.Body.Klarna.OrderItem]?
+            var totalAmount: Int?
+            var billingAddress: Response.Body.Klarna.BillingAddress?
+            var shippingAddress: Response.Body.Klarna.BillingAddress?
+            var description: String?
+            var redUrl: String?
             
             switch sessionType {
             case .oneOffPayment:
@@ -142,7 +142,9 @@ struct KlarnaHelpers {
     }
     /// - Returns the surcharge value from the order fees if any
     static func getSurcharge(fees: [ClientSession.Order.Fee]?) -> Int? {
-        if let fees { return fees.first(where:{ $0.type == .surcharge })?.amount }
+        if let fees {
+            return fees.first(where: { $0.type == .surcharge })?.amount
+        }
         return nil
     }
     /// - Helper function to construct locale data.

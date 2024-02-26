@@ -55,7 +55,6 @@ extension PrimerHeadlessKlarnaComponent: KlarnaComponent {
         case .paymentCategory:
             createPaymentView()
             initPaymentView()
-            
         case .finalizePayment:
             finalizePayment()
         }
@@ -143,7 +142,7 @@ extension PrimerHeadlessKlarnaComponent: PrimerHeadlessAnalyticsRecordable {
             type: .sdkEvent,
             name: KlarnaAnalyticsEvents.createSessionStartMethod,
             params: [
-                KlarnaAnalyticsEvents.categoryKey: KlarnaAnalyticsEvents.categoryValue,
+                KlarnaAnalyticsEvents.categoryKey: KlarnaAnalyticsEvents.categoryValue
             ]
         )
     }
