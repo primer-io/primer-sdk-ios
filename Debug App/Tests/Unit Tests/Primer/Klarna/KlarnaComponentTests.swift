@@ -1,5 +1,5 @@
 //
-//  KlarnaPaymentSessionAuthorizationComponentTests.swift
+//  PrimerHeadlessKlarnaComponentTests.swift
 //  Debug App Tests
 //
 //  Created by Stefan Vrancianu on 28.01.2024.
@@ -145,6 +145,20 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         sut?.stepDelegate?.didReceiveStep(step: step)
         
         XCTAssertEqual(expectedStepType, .finalizationStep)
+    }
+    
+    func test_extraMerchantData() {
+        var extraMerchantDataString: String?
+        
+        if let paymentMethod = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
+            if let merchantOptions = paymentMethod.options as? MerchantOptions {
+                if let extraMerchantData = merchantOptions.extraMerchantData {
+                    extraMerchantDataString = KlarnaHelpers.getSerializedAttachmentString(from: extraMerchantData)
+                }
+            }
+        }
+        
+        XCTAssertNotNil(extraMerchantDataString)
     }
 }
 

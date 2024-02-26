@@ -1,5 +1,5 @@
 //
-//  PrimerHeadlessKlarnaManagerTests.swift
+//  PrimerHeadlessUniversalCheckoutKlarnaManagerTests.swift
 //  Debug App Tests
 //
 //  Created by Stefan Vrancianu on 28.01.2024.
