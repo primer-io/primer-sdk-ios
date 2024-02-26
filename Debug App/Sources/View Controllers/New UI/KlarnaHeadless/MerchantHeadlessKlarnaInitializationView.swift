@@ -27,6 +27,7 @@ struct MerchantHeadlessKlarnaInitializationView: View {
             Text("Klarna session")
                 .font(.title)
                 .fontWeight(.semibold)
+                .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.KlarnaComponent.title.rawValue)
             
             ForEach(viewModel.paymentCategories, id: \.id) { category in
                 RadioButtonView(isSelected: selectedCategory?.id == category.id, title: category.name) {
@@ -38,6 +39,7 @@ struct MerchantHeadlessKlarnaInitializationView: View {
                 onInitializePressed(selectedCategory)
                 initializePressed = true
             }
+            .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.KlarnaComponent.initializeView.rawValue)
             
             VStack {
                 DynamicUIViewRepresentable(wrapper: sharedWrapper)
@@ -47,12 +49,14 @@ struct MerchantHeadlessKlarnaInitializationView: View {
                             shouldShowKlarnaView = initializePressed
                         }
                     }
+                    .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.KlarnaComponent.paymentViewContainer.rawValue)
                 
                 if shouldShowKlarnaView {
                     KlarnaButton(title: "CONTINUE") {
                         onContinuePressed()
                         shouldDisableKlarnaViews = true
                     }
+                    .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.KlarnaComponent.authorize.rawValue)
                 }
             }
             
