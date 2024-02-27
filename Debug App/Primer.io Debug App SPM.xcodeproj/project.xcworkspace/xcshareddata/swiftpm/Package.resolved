@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/primer-io/primer-klarna-sdk-ios",
         "state": {
           "branch": null,
-          "revision": "f13260c24a900f28e21bafd213c22191e6280e86",
-          "version": "1.0.4"
+          "revision": "146d9ae8f7accc1ad7b64b2a455106d54914edef",
+          "version": "1.1.0"
         }
       },
       {
@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/primer-io/primer-sdk-3ds-ios",
         "state": {
           "branch": null,
-          "revision": "56e39e0778b1abdb5d5abe20d96ea96e803b07a9",
-          "version": "2.0.0"
+          "revision": "9904050b5d7f9b9814a6a49bbd617945875bfc41",
+          "version": "2.2.1"
         }
       }
     ]

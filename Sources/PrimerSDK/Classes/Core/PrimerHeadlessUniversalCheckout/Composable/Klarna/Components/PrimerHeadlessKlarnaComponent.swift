@@ -7,6 +7,7 @@
 
 #if canImport(PrimerKlarnaSDK)
 import Foundation
+import UIKit
 import PrimerKlarnaSDK
 
 class PrimerHeadlessKlarnaComponent {

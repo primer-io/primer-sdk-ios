@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 /**
  * Defines the specific errors that can be encountered during the Klarna payment session creation process.
