@@ -15,7 +15,6 @@ public struct AccessibilityIdentifier {
         case banksList = "banks_list"
         case searchBar = "search_bar"
     }
-    
     public enum KlarnaComponent: String {
         case title = "title"
         case initializeView = "initialize_klarna_view"

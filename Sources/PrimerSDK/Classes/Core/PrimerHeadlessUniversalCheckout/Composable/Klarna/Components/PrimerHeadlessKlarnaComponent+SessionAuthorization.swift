@@ -19,9 +19,21 @@ extension PrimerHeadlessKlarnaComponent {
 // MARK: - Session authorization
 extension PrimerHeadlessKlarnaComponent {
     func authorizeSession() {
-        let autoFinalize = PrimerInternal.shared.sdkIntegrationType != .headless
-        recordAuthorizeEvent(name: KlarnaAnalyticsEvents.authorizeSessionMethod, autoFinalize: false, jsonData: nil)
-        klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: nil)
+        var isMocked = false
+#if DEBUG
+        if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
+            isMocked = true
+        }
+#endif
+        if isMocked {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                self.finalizeSession(token: UUID().uuidString, fromAuthorization: true)
+            }
+        } else {
+            let autoFinalize = PrimerInternal.shared.sdkIntegrationType != .headless
+            recordAuthorizeEvent(name: KlarnaAnalyticsEvents.authorizeSessionMethod, autoFinalize: false, jsonData: nil)
+            klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: nil)
+        }
     }
 }
 
