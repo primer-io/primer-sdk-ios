@@ -10,6 +10,7 @@
 import XCTest
 
 class MockPrimerAPIClient: PrimerAPIClientProtocol {
+    
     var mockedNetworkDelay: TimeInterval = 1
     var validateClientTokenResult: (SuccessResponse?, Error?)?
     var fetchConfigurationResult: (Response.Body.Configuration?, Error?)?
@@ -27,7 +28,6 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     var exchangePaymentMethodTokenResult: (PrimerPaymentMethodTokenData?, Error?)?
     var begin3DSAuthResult: (ThreeDS.BeginAuthResponse?, Error?)?
     var continue3DSAuthResult: (ThreeDS.PostAuthResponse?, Error?)?
-    var createApayaSessionResult: (Response.Body.Apaya.CreateSession?, Error?)?
     var listAdyenBanksResult: ([Response.Body.Adyen.Bank]?, Error?)?
     var listRetailOutletsResult: (RetailOutletsList?, Error?)?
     var paymentResult: (Response.Body.Payment?, Error?)?
@@ -341,28 +341,6 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    // Apaya
-    func createApayaSession(
-        clientToken: DecodedJWTToken,
-        request: Request.Body.Apaya.CreateSession,
-        completion: @escaping (_ result: Result<Response.Body.Apaya.CreateSession, Error>) -> Void
-    ) {
-        guard let result = createApayaSessionResult,
-              result.0 != nil || result.1 != nil
-        else {
-            XCTAssert(false, "Set 'createApayaSessionResult' on your MockPrimerAPIClient")
-            return
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
-            if let err = result.1 {
-                completion(.failure(err))
-            } else if let successResult = result.0 {
-                completion(.success(successResult))
-            }
-        }
-    }
-
     func listAdyenBanks(
         clientToken: DecodedJWTToken,
         request: Request.Body.Adyen.BanksList,
@@ -623,7 +601,6 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         self.exchangePaymentMethodTokenResult           = (MockPrimerAPIClient.Samples.mockExchangePaymentMethodToken, nil)
         self.begin3DSAuthResult                         = (MockPrimerAPIClient.Samples.mockBegin3DSAuth, nil)
         self.continue3DSAuthResult                      = (MockPrimerAPIClient.Samples.mockContinue3DSAuth, nil)
-        self.createApayaSessionResult                   = (MockPrimerAPIClient.Samples.mockApayaSessionResult, nil)
         self.listAdyenBanksResult                       = (MockPrimerAPIClient.Samples.mockAdyenBanks, nil)
         self.listRetailOutletsResult                    = (MockPrimerAPIClient.Samples.mockListRetailOutlets, nil)
         self.paymentResult                              = (MockPrimerAPIClient.Samples.mockPayment, nil)
@@ -851,10 +828,6 @@ extension MockPrimerAPIClient {
             token: MockPrimerAPIClient.Samples.mockTokenizePaymentMethod,
             resumeToken: "mock-resume-token",
             authentication: nil)
-        static let mockApayaSessionResult = Response.Body.Apaya.CreateSession(
-            url: "https://primer.io/apaya",
-            token: "mock-token",
-            passthroughVariable: nil)
         static let mockAdyenBanks = [
             Response.Body.Adyen.Bank(
                 id: "mock-bank-id",

@@ -393,29 +393,6 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     text: nil,
                     textColor: nil))
 
-        case .apaya:
-            return PrimerPaymentMethod.DisplayMetadata(
-                button: PrimerPaymentMethod.DisplayMetadata.Button(
-                    iconUrl: nil,
-                    backgroundColor: PrimerTheme.BaseColors(
-                        coloredHex: nil,
-                        lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
-                    cornerRadius: 4,
-                    borderWidth: PrimerTheme.BaseBorderWidth(
-                        colored: 0,
-                        light: 1,
-                        dark: 1),
-                    borderColor: PrimerTheme.BaseColors(
-                        coloredHex: nil,
-                        lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
-                    text: Strings.PaymentButton.payByMobile,
-                    textColor: PrimerTheme.BaseColors(
-                        coloredHex: nil,
-                        lightHex: "#000000",
-                        darkHex: "#FFFFFF")))
-
         case .applePay:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -793,10 +770,6 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
         case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
             return Strings.PaymentButton.payWithCard
-
-        case PrimerPaymentMethodType.apaya.rawValue:
-            // Update with `metadataButtonText ?? Strings.PaymentButton.payByMobile` once we'll get localized strings
-            return Strings.PaymentButton.payByMobile
 
         case PrimerPaymentMethodType.iPay88Card.rawValue:
             return Strings.PaymentButton.payWithCard

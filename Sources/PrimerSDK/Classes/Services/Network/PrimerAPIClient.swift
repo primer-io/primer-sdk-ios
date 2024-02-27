@@ -81,12 +81,6 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPICli
         continueInfo: ThreeDS.ContinueInfo,
         completion: @escaping (_ result: Result<ThreeDS.PostAuthResponse, Error>) -> Void)
 
-    // Apaya
-    func createApayaSession(
-        clientToken: DecodedJWTToken,
-        request: Request.Body.Apaya.CreateSession,
-        completion: @escaping (_ result: Result<Response.Body.Apaya.CreateSession, Error>) -> Void)
-
     // Adyen Banks List
     func listAdyenBanks(
         clientToken: DecodedJWTToken,
@@ -421,22 +415,6 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success(let klarnaFinalizePaymentSessionResponse):
                 completion(.success(klarnaFinalizePaymentSessionResponse))
-            case .failure(let err):
-                completion(.failure(err))
-            }
-        }
-    }
-
-    func createApayaSession(
-        clientToken: DecodedJWTToken,
-        request: Request.Body.Apaya.CreateSession,
-        completion: @escaping (Result<Response.Body.Apaya.CreateSession, Error>) -> Void
-    ) {
-        let endpoint = PrimerAPI.createApayaSession(clientToken: clientToken, request: request)
-        networkService.request(endpoint) { (result: Result<Response.Body.Apaya.CreateSession, Error>) in
-            switch result {
-            case .success(let response):
-                completion(.success(response))
             case .failure(let err):
                 completion(.failure(err))
             }

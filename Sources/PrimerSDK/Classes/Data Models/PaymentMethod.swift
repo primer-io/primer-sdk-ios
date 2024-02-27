@@ -102,9 +102,6 @@ class PrimerPaymentMethod: Codable, LogReporter {
                  PrimerPaymentMethodType.adyenIDeal:
                 return BankSelectorTokenizationViewModel(config: self)
 
-            case PrimerPaymentMethodType.apaya:
-                return ApayaTokenizationViewModel(config: self)
-
             case PrimerPaymentMethodType.applePay:
                 if #available(iOS 11.0, *) {
                     return ApplePayTokenizationViewModel(config: self)
@@ -161,8 +158,7 @@ class PrimerPaymentMethod: Codable, LogReporter {
         }
 
         switch internalPaymentMethodType {
-        case PrimerPaymentMethodType.apaya,
-             PrimerPaymentMethodType.goCardless,
+        case PrimerPaymentMethodType.goCardless,
              PrimerPaymentMethodType.googlePay,
              PrimerPaymentMethodType.nolPay:
             return false

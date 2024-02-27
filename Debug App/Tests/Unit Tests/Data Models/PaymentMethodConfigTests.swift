@@ -89,7 +89,6 @@ class PaymentMethodConfigTests: XCTestCase {
         pciUrl = "https://pci.com"
 
         var applePayStr: String
-        var apayaStr: String
         var goCardlessStr: String
         var googlePayStr: String
         var klarnaStr: String
@@ -105,13 +104,6 @@ class PaymentMethodConfigTests: XCTestCase {
             name: "Apple Pay",
             processorConfigId: String.randomString(length: 8),
             options: nil)
-        apayaStr = PaymentMethodConfigTests.buildPaymentMethodStr(
-            id: String.randomString(length: 8),
-            implementationType: "NATIVE_SDK",
-            type: "APAYA",
-            name: "Apaya",
-            processorConfigId: String.randomString(length: 8),
-            options: "{\"merchantAccountId\": \"apaya_account_id\"}")
         googlePayStr = PaymentMethodConfigTests.buildPaymentMethodStr(
             id: String.randomString(length: 8),
             implementationType: "NATIVE_SDK",
@@ -157,7 +149,6 @@ class PaymentMethodConfigTests: XCTestCase {
 
         paymentMethodsArr = [
             applePayStr,
-            apayaStr,
             googlePayStr,
             klarnaStr,
             paymentCardStr,
@@ -185,15 +176,6 @@ class PaymentMethodConfigTests: XCTestCase {
                 if String(paymentMethodStr) == applePayStr {
                     if config.paymentMethods?.contains(where: { $0.type == "APPLE_PAY" }) != true {
                         XCTFail("Failed to parse Apple Pay")
-                    }
-                } else if String(paymentMethodStr) == apayaStr {
-                    if config.paymentMethods?.contains(where: { $0.type == "APAYA" }) != true {
-                        XCTFail("Failed to parse Apaya")
-                    } else {
-                        let apayaConfig = config.paymentMethods!.filter({ $0.type == "APAYA" }).first!
-                        if (apayaConfig.options as? MerchantOptions)?.merchantAccountId != "apaya_account_id" {
-                            XCTFail("Failed to parse merchant account id for Apaya")
-                        }
                     }
                 } else if String(paymentMethodStr) == googlePayStr {
                     if config.paymentMethods?.contains(where: { $0.type == "GOOGLE_PAY" }) != true {
@@ -231,8 +213,7 @@ class PaymentMethodConfigTests: XCTestCase {
             options: nil)
 
         paymentMethodsArr = [
-            applePayStr,
-            apayaStr
+            applePayStr
         ]
 
         do {
