@@ -37,7 +37,6 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
     case sessionNotCreated(userInfo: [String: String]?, diagnosticsId: String)
     case invalidPaymentCategory(userInfo: [String: String]?, diagnosticsId: String)
     case paymentAlreadyFinalized(userInfo: [String: String]?, diagnosticsId: String)
-    
     public var diagnosticsId: String {
         switch self {
         case .invalidCardholderName(_, _, let diagnosticsId):

@@ -77,21 +77,18 @@ extension PrimerHeadlessKlarnaComponent: KlarnaComponent {
                 validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)
                 return
             }
-            
             guard !availableCategories.isEmpty else {
                 let error = PrimerValidationError.sessionNotCreated(userInfo: KlarnaHelpers.getErrorUserInfo(), diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
                 return
             }
-            
-            guard availableCategories.contains(where: { $0 == category } ) else {
+            guard availableCategories.contains(where: { $0 == category }) else {
                 let error = PrimerValidationError.invalidPaymentCategory(userInfo: KlarnaHelpers.getErrorUserInfo(), diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
                 return
             }
-            
             setProvider(with: clientToken, paymentCategory: category.id)
             setPaymentSessionDelegates()
             validationDelegate?.didUpdate(validationStatus: .valid, for: data)
@@ -102,7 +99,6 @@ extension PrimerHeadlessKlarnaComponent: KlarnaComponent {
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
                 return
             }
-            break
         }
     }
     public func submit() {

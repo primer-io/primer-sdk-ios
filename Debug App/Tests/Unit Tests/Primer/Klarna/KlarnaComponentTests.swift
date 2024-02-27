@@ -96,7 +96,20 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         XCTAssertEqual(error.diagnosticsId, errorResult.diagnosticsId)
     }
     
+    func test_updateCollectable_invalid() {
+        let collectableData = KlarnaCollectableData.paymentCategory(KlarnaTestsMocks.paymentCategory, clientToken: KlarnaTestsMocks.clientToken)
+        sut?.updateCollectedData(collectableData: collectableData)
+        
+        switch validationResult {
+        case .invalid(let errors):
+            XCTAssertTrue(!errors.isEmpty)
+        default:
+            break
+        }
+    }
+    
     func test_updateCollectable_valid() {
+        sut.availableCategories = [KlarnaTestsMocks.paymentCategory]
         let expectedValidationType: PrimerSDK.PrimerValidationStatus = .valid
         let collectableData = KlarnaCollectableData.paymentCategory(KlarnaTestsMocks.paymentCategory, clientToken: KlarnaTestsMocks.clientToken)
         
