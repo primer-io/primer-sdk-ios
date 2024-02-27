@@ -382,7 +382,7 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
             let cardNetwork = CardNetwork(cardNetworkStr: paymentMethodTokenData.paymentInstrumentData?.binData?.network ?? "")
 
-            guard let directoryServerId = cardNetwork.directoryServerId else {
+            guard let network = DirectoryServerNetwork.from(cardNetworkIdentifier: cardNetwork.rawValue) else {
                 let uuid = UUID().uuidString
 
                 let primer3DSError = Primer3DSError.missingDsRid(
@@ -416,7 +416,7 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
             do {
                 let result = try self.primer3DS.createTransaction(
-                    directoryServerId: directoryServerId,
+                    directoryServerNetwork: network,
                     supportedThreeDsProtocolVersions: supportedThreeDsProtocolVersions)
                 seal.fulfill(result)
 
