@@ -34,7 +34,10 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
     case invalidCardType(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case banksNotLoaded(userInfo: [String: String]?, diagnosticsId: String)
     case invalidBankId(bankId: String?, userInfo: [String: String]?, diagnosticsId: String)
-
+    case sessionNotCreated(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidPaymentCategory(userInfo: [String: String]?, diagnosticsId: String)
+    case paymentAlreadyFinalized(userInfo: [String: String]?, diagnosticsId: String)
+    
     public var diagnosticsId: String {
         switch self {
         case .invalidCardholderName(_, _, let diagnosticsId):
@@ -85,6 +88,12 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return diagnosticId
         case .invalidBankId(bankId: _, userInfo: _, let diagnosticId):
             return diagnosticId
+        case .sessionNotCreated(userInfo: _, diagnosticsId: let diagnosticsId):
+            return diagnosticsId
+        case .invalidPaymentCategory(userInfo: _, diagnosticsId: let diagnosticsId):
+            return diagnosticsId
+        case .paymentAlreadyFinalized(userInfo: _, diagnosticsId: let diagnosticsId):
+            return diagnosticsId
         }
     }
 
@@ -138,6 +147,12 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "invalid-bank-id"
         case .banksNotLoaded:
             return "banks-not-loaded"
+        case .sessionNotCreated:
+            return "session-not-created"
+        case .invalidPaymentCategory:
+            return "invalid-payment-category"
+        case .paymentAlreadyFinalized:
+            return "payment-already-finalized"
         }
     }
 
@@ -192,6 +207,12 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "Please provide a valid bank id"
         case .banksNotLoaded:
             return "Banks need to be loaded before bank id can be collected."
+        case .sessionNotCreated:
+            return "Session needs to be created before payment category can be collected."
+        case .invalidPaymentCategory:
+            return "Payment category is invalid."
+        case .paymentAlreadyFinalized:
+            return "This payment was configured to be finalized automatically."
         }
     }
 
@@ -222,7 +243,10 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
              .invalidAccountLastModified(message: _, let userInfo, _),
              .invalidCardType(_, let userInfo, _),
              .invalidBankId(_, let userInfo, _),
-             .banksNotLoaded(let userInfo, _):
+             .banksNotLoaded(let userInfo, _),
+             .sessionNotCreated(let userInfo, _),
+             .invalidPaymentCategory(let userInfo, _),
+             .paymentAlreadyFinalized(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
 
@@ -300,6 +324,8 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "BANKS"
         case .invalidBankId:
             return "BANK"
+        case .sessionNotCreated, .invalidPaymentCategory, .paymentAlreadyFinalized:
+            return nil
         }
     }
 
@@ -346,7 +372,10 @@ extension PrimerValidationError: Equatable {
             (.invalidCardType(let message1, let userInfo1, let id1), .invalidCardType(let message2, let userInfo2, let id2)):
             return message1 == message2 && userInfo1 == userInfo2 && id1 == id2
         case (.invalidRawData(let userInfo1, let id1), .invalidRawData(let userInfo2, let id2)),
-             (.banksNotLoaded(let userInfo1, let id1), .banksNotLoaded(let userInfo2, let id2)):
+             (.banksNotLoaded(let userInfo1, let id1), .banksNotLoaded(let userInfo2, let id2)),
+             (.sessionNotCreated(let userInfo1, let id1), .sessionNotCreated(let userInfo2, let id2)),
+             (.invalidPaymentCategory(let userInfo1, let id1), .invalidPaymentCategory(let userInfo2, let id2)),
+             (.paymentAlreadyFinalized(let userInfo1, let id1), .paymentAlreadyFinalized(let userInfo2, let id2)):
             return userInfo1 == userInfo2 && id1 == id2
         case (.vaultedPaymentMethodAdditionalDataMismatch(let type1, let validType1, let userInfo1, let id1),
               .vaultedPaymentMethodAdditionalDataMismatch(let type2, let validType2, let userInfo2, let id2)):

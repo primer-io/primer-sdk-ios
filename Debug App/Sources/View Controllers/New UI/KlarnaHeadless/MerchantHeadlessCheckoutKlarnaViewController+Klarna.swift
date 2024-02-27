@@ -27,8 +27,15 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessErrorableD
         switch validationStatus {
         case .validating:
             showLoader()
-        case .valid, .invalid:
+        case .valid:
             hideLoader()
+        case .invalid(errors: let errors):
+            hideLoader()
+            var message = ""
+            for error in errors {
+                message += (error.errorDescription ?? error.localizedDescription) + "\n"
+            }
+            showAlert(title: "Validation Error", message: "\(message)")
         case .error(error: let error):
             hideLoader()
             showAlert(title: error.errorId, message: error.recoverySuggestion ?? error.localizedDescription)

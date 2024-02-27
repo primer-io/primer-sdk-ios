@@ -39,7 +39,6 @@ extension PrimerHeadlessKlarnaComponent {
                 }
             }
             let autoFinalize = PrimerInternal.shared.sdkIntegrationType != .headless
-            recordAuthorizeEvent(name: KlarnaAnalyticsEvents.authorizeSessionMethod, autoFinalize: false, jsonData: extraMerchantDataString)
             klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: extraMerchantDataString)
         }
     }
@@ -56,6 +55,7 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderAuthorizationDelega
      *  - `finalizeRequired`. - A `Bool` indicating whether additional steps are required to finalize the payment session.
      */
     public func primerKlarnaWrapperAuthorized(approved: Bool, authToken: String?, finalizeRequired: Bool) {
+        isFinalizationRequired = finalizeRequired
         if approved == false {
             if finalizeRequired == true {
                 let step = KlarnaStep.paymentSessionFinalizationRequired

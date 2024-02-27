@@ -38,7 +38,6 @@ extension PrimerHeadlessKlarnaComponent {
      * - Failure: It handles the creation of a payment session error
      */
     func startSession() {
-        recordCreationEvent()
         firstly {
             tokenizationComponent.createPaymentSession()
         }
@@ -60,6 +59,7 @@ extension PrimerHeadlessKlarnaComponent {
      * Then notifies the `stepDelegate` of this successful step
      */
     func createSessionStep(_ response: Response.Body.Klarna.PaymentSession) {
+        availableCategories = response.categories.map { KlarnaPaymentCategory(response: $0) }
         let step = KlarnaStep.paymentSessionCreated(
             clientToken: response.clientToken,
             paymentCategories: response.categories.map { KlarnaPaymentCategory(response: $0) }

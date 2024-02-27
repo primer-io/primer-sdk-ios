@@ -37,7 +37,6 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderFinalizationDelegat
 // MARK: - Finalization
 extension PrimerHeadlessKlarnaComponent {
     func finalizePayment(jsonData: String? = nil) {
-        recordFinalizationEvent(jsonData: jsonData)
         klarnaProvider?.finalise(jsonData: jsonData)
     }
 }

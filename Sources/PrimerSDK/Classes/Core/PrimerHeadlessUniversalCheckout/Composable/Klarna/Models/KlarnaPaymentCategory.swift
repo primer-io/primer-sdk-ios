@@ -20,3 +20,11 @@ public struct KlarnaPaymentCategory: Codable {
         self.standardAssetUrl = response.standardAssetUrl
     }
 }
+extension KlarnaPaymentCategory: Equatable {
+    public static func == (lhs: KlarnaPaymentCategory, rhs: KlarnaPaymentCategory) -> Bool {
+        return lhs.id == rhs.id &&
+        lhs.name == rhs.name &&
+        lhs.descriptiveAssetUrl == rhs.descriptiveAssetUrl &&
+        lhs.standardAssetUrl == rhs.standardAssetUrl
+    }
+}

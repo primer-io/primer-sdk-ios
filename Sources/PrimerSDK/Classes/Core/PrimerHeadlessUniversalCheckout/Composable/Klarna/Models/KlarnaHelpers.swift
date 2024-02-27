@@ -66,7 +66,6 @@ struct KlarnaHelpers {
             var shippingAddress: Response.Body.Klarna.BillingAddress?
             var description: String?
             var redUrl: String?
-            
             switch sessionType {
             case .oneOffPayment:
                 // Configure fields specific to one-off payments.
