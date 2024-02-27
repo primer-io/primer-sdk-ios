@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 /**
  * This enum is used to communicate the result of attempting to create, authorize and finalize a payment session with Klarna also handling the PaymentView.
  * It conforms to `PrimerHeadlessStep`.
