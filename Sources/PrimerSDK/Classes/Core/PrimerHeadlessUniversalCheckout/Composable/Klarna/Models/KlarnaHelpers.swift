@@ -150,8 +150,7 @@ struct KlarnaHelpers {
     /// - Returns the serialized string value of the attachment data
     static func getSerializedAttachmentString(from extraMerchantData: [String: Any]) -> String? {
         let dict = ["contentType": "application/vnd.klarna.internal.emd-v2+json",
-                    "body": extraMerchantData] as [String : Any]
-        
+                    "body": extraMerchantData] as [String: Any]
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: dict, options: [])
             return String(data: jsonData, encoding: .utf8)!
