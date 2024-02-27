@@ -76,7 +76,6 @@
 		949864026D1CDE6F5C62C66E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE259612A00F85709107B872 /* Main.storyboard */; };
 		961B5D18058EF4CFCD0185AE /* MockVaultCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A3E75CD834937EF85DE1C14 /* MockVaultCheckoutViewModel.swift */; };
 		97F0B302DF965C1AD1EC6F4D /* PaymentMethodConfigServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 743F107C464526926A34A433 /* PaymentMethodConfigServiceTests.swift */; };
-		9AB1ABF4E46A37766CDBF197 /* ApayaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F79B50111AC4161CFB1EFE8 /* ApayaTests.swift */; };
 		A1055D6F2AF125E90027B967 /* DebouncerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1055D6E2AF125E90027B967 /* DebouncerTests.swift */; };
 		A12AC2532B5046CF00C26999 /* CurrencyStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12AC2522B5046CF00C26999 /* CurrencyStorageTests.swift */; };
 		A12AC2552B505B6200C26999 /* CurrencyLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12AC2542B505B6100C26999 /* CurrencyLoaderTests.swift */; };
@@ -982,7 +981,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9AB1ABF4E46A37766CDBF197 /* ApayaTests.swift in Sources */,
 				70EAA3B33425CC9D16239BB0 /* ApplePayTests.swift in Sources */,
 				A13392BC2AD459E90005A4D7 /* NolPayLinkCardComponentTest.swift in Sources */,
 				3FD160A4D951EA772ADF4E25 /* DecodedClientToken.swift in Sources */,
