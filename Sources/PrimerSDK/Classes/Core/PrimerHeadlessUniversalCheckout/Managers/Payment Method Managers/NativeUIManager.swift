@@ -12,9 +12,10 @@ extension PrimerHeadlessUniversalCheckout {
     public class NativeUIManager: PrimerPaymentMethodManager {
 
         public let paymentMethodType: String
-        private var paymentMethod: PrimerPaymentMethod?
 
-        private var validationComponent: NativeUIValidateable
+        private var paymentMethod: PrimerPaymentMethod?
+        private let validationComponent: NativeUIValidateable
+        private let presentationComponent: NativeUIPresentable
 
         required public init(paymentMethodType: String) throws {
             PrimerInternal.shared.sdkIntegrationType = .headless
@@ -28,7 +29,7 @@ extension PrimerHeadlessUniversalCheckout {
                 ]
             )
             Analytics.Service.record(events: [sdkEvent])
-            
+
             switch paymentMethodType {
             case PrimerPaymentMethodType.applePay.rawValue:
                 self.validationComponent = ApplePayValidationComponent()
@@ -39,6 +40,8 @@ extension PrimerHeadlessUniversalCheckout {
                 ErrorHandler.handle(error: err)
                 throw err
             }
+
+            self.presentationComponent = NativeUIPresentationComponent(paymentMethodType: paymentMethodType)
 
             self.paymentMethodType = paymentMethodType
             self.paymentMethod = try self.validatePaymentMethod(withType: paymentMethodType)
@@ -76,8 +79,8 @@ extension PrimerHeadlessUniversalCheckout {
                 throw error
             }
 
-            PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidStartPreparation?(for: self.paymentMethodType)
-            PrimerInternal.shared.showPaymentMethod(self.paymentMethodType, withIntent: intent, andClientToken: PrimerAPIConfigurationModule.clientToken!)
+            self.presentationComponent.present(intent: intent,
+                                               clientToken: PrimerAPIConfigurationModule.clientToken!)
         }
 
         private func cancel() {
