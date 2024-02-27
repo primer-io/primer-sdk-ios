@@ -10,7 +10,6 @@ import Foundation
 import PrimerKlarnaSDK
 
 extension PrimerHeadlessKlarnaComponent {
-    
     /// Sets Klarna provider authorization delegate
     func setAuthorizationDelegate() {
         klarnaProvider?.authorizationDelegate = self
@@ -20,25 +19,34 @@ extension PrimerHeadlessKlarnaComponent {
 // MARK: - Session authorization
 extension PrimerHeadlessKlarnaComponent {
     func authorizeSession() {
-        var extraMerchantDataString: String?
-        
-        if let paymentMethod = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
-            if let merchantOptions = paymentMethod.options as? MerchantOptions {
-                if let extraMerchantData = merchantOptions.extraMerchantData {
-                    extraMerchantDataString = KlarnaHelpers.getSerializedAttachmentString(from: extraMerchantData)
+        var isMocked = false
+#if DEBUG
+        if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
+            isMocked = true
+        }
+#endif
+        if isMocked {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                self.finalizeSession(token: UUID().uuidString, fromAuthorization: true)
+            }
+        } else {
+            var extraMerchantDataString: String?
+            if let paymentMethod = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
+                if let merchantOptions = paymentMethod.options as? MerchantOptions {
+                    if let extraMerchantData = merchantOptions.extraMerchantData {
+                        extraMerchantDataString = KlarnaHelpers.getSerializedAttachmentString(from: extraMerchantData)
+                    }
                 }
             }
+            let autoFinalize = PrimerInternal.shared.sdkIntegrationType != .headless
+            recordAuthorizeEvent(name: KlarnaAnalyticsEvents.authorizeSessionMethod, autoFinalize: false, jsonData: extraMerchantDataString)
+            klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: extraMerchantDataString)
         }
-        
-        let autoFinalize = PrimerInternal.shared.sdkIntegrationType != .headless
-        recordAuthorizeEvent(name: KlarnaAnalyticsEvents.authorizeSessionMethod, autoFinalize: false, jsonData: nil)
-        klarnaProvider?.authorize(autoFinalize: autoFinalize, jsonData: extraMerchantDataString)
     }
 }
 
 // MARK: - PrimerKlarnaProviderAuthorizationDelegate
 extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderAuthorizationDelegate {
-    
     /**
      * Handles the authorization response from the Primer Klarna Wrapper.
      * This function is called in response to the authorization attempt via the Primer Klarna Wrapper.
@@ -56,17 +64,14 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderAuthorizationDelega
                 createSessionError(.klarnaAuthorizationFailed)
             }
         }
-        
         if let authToken = authToken, approved == true {
             finalizeSession(token: authToken, fromAuthorization: true)
         }
-        
         if finalizeRequired == true {
             let step = KlarnaStep.paymentSessionFinalizationRequired
             stepDelegate?.didReceiveStep(step: step)
         }
     }
-    
     /**
      * Handles the re-authorization response from the Primer Klarna Wrapper.
      * It processes the result of the re-authorization attempt, which can lead to various outcomes based on the combination of:

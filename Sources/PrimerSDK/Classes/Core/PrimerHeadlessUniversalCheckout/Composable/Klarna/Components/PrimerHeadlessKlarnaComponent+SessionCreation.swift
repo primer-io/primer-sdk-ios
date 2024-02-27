@@ -30,7 +30,6 @@ enum KlarnaSessionError {
 
 // MARK: - Start
 extension PrimerHeadlessKlarnaComponent {
-    
     /**
      * Initiates the process of creating a payment session.
      * This method kicks off the payment session creation process by first recording the creation event for tracking or analytical purposes.
@@ -39,7 +38,6 @@ extension PrimerHeadlessKlarnaComponent {
      */
     func startSession() {
         recordCreationEvent()
-        
         firstly {
             tokenizationComponent.createPaymentSession()
         }
@@ -54,7 +52,6 @@ extension PrimerHeadlessKlarnaComponent {
 
 // MARK: - Private
 extension PrimerHeadlessKlarnaComponent {
-    
     /**
      * Processes and communicates the successful creation of a payment session.
      * This method takes the response from a successful payment session creation and extracts necessary details to form a `KlarnaPaymentSessionCreation` step.
@@ -68,7 +65,6 @@ extension PrimerHeadlessKlarnaComponent {
         )
         stepDelegate?.didReceiveStep(step: step)
     }
-    
     /**
      * Handles errors encountered during the payment session creation process.
      * This method processes a specific `KlarnaPaymentSessionCreationComponentError` and converts it into a more generalized `PrimerError`.
@@ -80,20 +76,17 @@ extension PrimerHeadlessKlarnaComponent {
      */
     func createSessionError(_ error: KlarnaSessionError) {
         var primerError: PrimerError
-        
         switch error {
         case .missingConfiguration:
             primerError = PrimerError.missingPrimerConfiguration(
                 userInfo: KlarnaHelpers.getErrorUserInfo(),
                 diagnosticsId: UUID().uuidString
             )
-            
         case .invalidClientToken:
             primerError = PrimerError.invalidClientToken(
                 userInfo: KlarnaHelpers.getErrorUserInfo(),
                 diagnosticsId: UUID().uuidString
             )
-            
         case .sessionCreationFailed(let error):
             primerError = PrimerError.failedToCreateSession(
                 error: error,
@@ -120,7 +113,6 @@ extension PrimerHeadlessKlarnaComponent {
                 diagnosticsId: UUID().uuidString
             )
         }
-        
         errorDelegate?.didReceiveError(error: primerError)
     }
 }

@@ -9,18 +9,15 @@ import Foundation
 
 // KlarnaHelpers: A utility structure to facilitate various operations related to Klarna payment sessions.
 struct KlarnaHelpers {
-    
     enum AddressType {
         case shipping
         case billing
     }
-    
     struct KlarnaPaymentSessionParams {
         var paymentMethodConfigId: String
         var sessionId: String
         var decodedJWTToken: DecodedJWTToken
     }
-    
     /// - Returns the session type based on the current payment intent (vault or checkout).
     static func getSessionType() -> KlarnaSessionType {
         if PrimerInternal.shared.intent == .vault {
@@ -29,7 +26,6 @@ struct KlarnaHelpers {
             return .oneOffPayment
         }
     }
-    
     /// - Constructs the request body for finalize a Klarna payment session
     /// - Returns: An instance of Request.Body.Klarna.FinalizePaymentSession
     static func getKlarnaFinalizePaymentBody(
@@ -40,7 +36,6 @@ struct KlarnaHelpers {
             paymentMethodConfigId: paymentMethodConfigId,
             sessionId: sessionId)
     }
-    
     /// - Constructs the request body for creating a Klarna customer token.
     /// - Returns: An instance of Request.Body.Klarna.CreateCustomerToken
     static func getKlarnaCustomerTokenBody(
@@ -56,7 +51,6 @@ struct KlarnaHelpers {
             description: recurringPaymentDescription,
             localeData: PrimerSettings.current.localeData)
     }
-    
     /// - Prepares the request body for creating a Klarna payment session.
     /// - Returns: An instance of Request.Body.Klarna.CreatePaymentSession
     static func getKlarnaPaymentSessionBody(
@@ -64,15 +58,14 @@ struct KlarnaHelpers {
         clientSession: ClientSession.APIResponse?,
         recurringPaymentDescription: String?,
         redirectUrl: String?) -> Request.Body.Klarna.CreatePaymentSession {
-            
             let sessionType = getSessionType()
             let localeData = constructLocaleData(using: clientSession)
-            var orderItems: [Request.Body.Klarna.OrderItem]? = nil
-            var totalAmount: Int? = nil
-            var billingAddress: Response.Body.Klarna.BillingAddress? = nil
-            var shippingAddress: Response.Body.Klarna.BillingAddress? = nil
-            var description: String? = nil
-            var redUrl: String? = nil
+            var orderItems: [Request.Body.Klarna.OrderItem]?
+            var totalAmount: Int?
+            var billingAddress: Response.Body.Klarna.BillingAddress?
+            var shippingAddress: Response.Body.Klarna.BillingAddress?
+            var description: String?
+            var redUrl: String?
             
             switch sessionType {
             case .oneOffPayment:
@@ -88,7 +81,6 @@ struct KlarnaHelpers {
                 description = recurringPaymentDescription
                 redUrl = redirectUrl
             }
-            
             return Request.Body.Klarna.CreatePaymentSession(
                 paymentMethodConfigId: paymentMethodConfigId,
                 sessionType: sessionType,
@@ -100,14 +92,12 @@ struct KlarnaHelpers {
                 billingAddress: billingAddress,
                 shippingAddress: shippingAddress)
         }
-    
     /// - Returns a customer's address, either billing or shipping, based on the specified type.
     static func getCustomerAddress(of type: AddressType, clientSession: ClientSession.APIResponse?) -> Response.Body.Klarna.BillingAddress {
         let billingAddress = clientSession?.customer?.billingAddress
         let shippingAddress = clientSession?.customer?.shippingAddress
         let customerEmail = clientSession?.customer?.emailAddress
         let customerPhone = clientSession?.customer?.mobileNumber
-        
         return Response.Body.Klarna.BillingAddress(
             addressLine1: type == .billing ? billingAddress?.addressLine1 : shippingAddress?.addressLine1,
             addressLine2: type == .billing ? billingAddress?.addressLine2 : shippingAddress?.addressLine2,
@@ -122,7 +112,6 @@ struct KlarnaHelpers {
             state: type == .billing ? billingAddress?.state : shippingAddress?.state,
             title: nil)
     }
-    
     /// - Converts a 'ClientSession.Order.LineItem' from the client session into a 'Request.Body.Klarna.OrderItem'.
     /// - Returns: An instance of Request.Body.Klarna.OrderItem
     static func getOrderItem(from item: ClientSession.Order.LineItem) -> Request.Body.Klarna.OrderItem {
@@ -135,13 +124,11 @@ struct KlarnaHelpers {
             productType: item.productType,
             taxAmount: item.taxAmount ?? 0)
     }
-    
     /// - Adds a surcharge item to the list of order items if applicable.
     /// - Returns an array of Request.Body.Klarna.OrderItem
     static func addedSurchargeItem(to list: [Request.Body.Klarna.OrderItem], surcharge: Int?) -> [Request.Body.Klarna.OrderItem] {
         var orderList = list
         guard let surcharge else { return orderList }
-        
         let surchargeItem = Request.Body.Klarna.OrderItem(
             name: "surcharge",
             unitAmount: surcharge,
@@ -151,16 +138,15 @@ struct KlarnaHelpers {
             productType: "surcharge",
             taxAmount: nil)
         orderList.append(surchargeItem)
-        
         return orderList
     }
-    
     /// - Returns the surcharge value from the order fees if any
     static func getSurcharge(fees: [ClientSession.Order.Fee]?) -> Int? {
-        if let fees { return fees.first(where:{ $0.type == .surcharge })?.amount }
+        if let fees {
+            return fees.first(where: { $0.type == .surcharge })?.amount
+        }
         return nil
     }
-    
     /// - Returns the serialized string value of the attachment data
     static func getSerializedAttachmentString(from extraMerchantData: [String: Any]) -> String? {
         let dict = ["contentType": "application/vnd.klarna.internal.emd-v2+json",
@@ -173,21 +159,17 @@ struct KlarnaHelpers {
             return nil
         }
     }
-    
     /// - Helper function to construct locale data.
     private static func constructLocaleData(using clientSession: ClientSession.APIResponse?) -> Request.Body.Klarna.KlarnaLocaleData {
         let countryCode = clientSession?.order?.countryCode?.rawValue ?? ""
         let currencyCode = clientSession?.order?.currencyCode?.code ?? ""
         let localeCode = PrimerSettings.current.localeData.localeCode
-        
         return Request.Body.Klarna.KlarnaLocaleData(
             countryCode: countryCode,
             currencyCode: currencyCode,
             localeCode: localeCode)
     }
-    
     // MARK: - Error helpers
-    
     static func getInvalidTokenError() -> PrimerError {
         let error = PrimerError.invalidClientToken(
             userInfo: self.getErrorUserInfo(),
@@ -196,7 +178,6 @@ struct KlarnaHelpers {
         ErrorHandler.handle(error: error)
         return error
     }
-    
     static func getInvalidSettingError(
         name: String
     ) -> PrimerError {
@@ -209,7 +190,6 @@ struct KlarnaHelpers {
         ErrorHandler.handle(error: error)
         return error
     }
-    
     static func getInvalidValueError(
         key: String,
         value: Any? = nil
@@ -223,7 +203,6 @@ struct KlarnaHelpers {
         ErrorHandler.handle(error: error)
         return error
     }
-    
     static func getPaymentFailedError() -> PrimerError {
         let error = PrimerError.paymentFailed(
             paymentMethodType: "KLARNA",
@@ -233,7 +212,6 @@ struct KlarnaHelpers {
         ErrorHandler.handle(error: error)
         return error
     }
-    
     static func getFailedToProcessPaymentError(paymentResponse: Response.Body.Payment) -> PrimerError {
         let error = PrimerError.failedToProcessPayment(
             paymentMethodType: "KLARNA",
@@ -249,7 +227,6 @@ struct KlarnaHelpers {
         ErrorHandler.handle(error: error)
         return error
     }
-    
     static func getErrorUserInfo() -> [String: String] {
         return [
             "file": #file,
