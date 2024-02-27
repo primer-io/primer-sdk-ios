@@ -15,6 +15,8 @@ class PrimerHeadlessKlarnaComponent {
     var tokenizationComponent: KlarnaTokenizationComponentProtocol
     /// Global settings for the payment process, injected as a dependency.
     let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+    var availableCategories: [KlarnaPaymentCategory] = []
+    var isFinalizationRequired: Bool = false
     // MARK: - Provider
     var klarnaProvider: PrimerKlarnaProviding?
     // MARK: - Delegates
@@ -46,11 +48,16 @@ class PrimerHeadlessKlarnaComponent {
             }
         }
     }
+    func resetKlarnaSessionVariables() {
+        isFinalizationRequired = false
+        availableCategories = []
+    }
 }
 
 // MARK: - PrimerHeadlessMainComponent
 extension PrimerHeadlessKlarnaComponent: KlarnaComponent {
     public func updateCollectedData(collectableData: KlarnaCollectableData) {
+        trackCollectableData()
         validateData(for: collectableData)
         switch collectableData {
         case .paymentCategory:
@@ -70,19 +77,42 @@ extension PrimerHeadlessKlarnaComponent: KlarnaComponent {
                 validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)
                 return
             }
+            
+            guard !availableCategories.isEmpty else {
+                let error = PrimerValidationError.sessionNotCreated(userInfo: KlarnaHelpers.getErrorUserInfo(), diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: error)
+                validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
+                return
+            }
+            
+            guard availableCategories.contains(where: { $0 == category } ) else {
+                let error = PrimerValidationError.invalidPaymentCategory(userInfo: KlarnaHelpers.getErrorUserInfo(), diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: error)
+                validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
+                return
+            }
+            
             setProvider(with: clientToken, paymentCategory: category.id)
             setPaymentSessionDelegates()
             validationDelegate?.didUpdate(validationStatus: .valid, for: data)
         case .finalizePayment:
+            guard isFinalizationRequired else {
+                let error = PrimerValidationError.paymentAlreadyFinalized(userInfo: KlarnaHelpers.getErrorUserInfo(), diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: error)
+                validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
+                return
+            }
             break
         }
     }
     public func submit() {
+        trackSubmit()
         authorizeSession()
     }
     /// Initiates the creation of a Klarna payment session.
     public func start() {
         validate()
+        trackStart()
         startSession()
     }
 }
@@ -116,9 +146,11 @@ extension PrimerHeadlessKlarnaComponent {
                 let step = KlarnaStep.paymentSessionFinalized(authToken: token, checkoutData: checkoutData)
                 self.stepDelegate?.didReceiveStep(step: step)
             }
+            self.resetKlarnaSessionVariables()
         }
         .catch { error in
             self.createSessionError(.sessionAuthorizationFailed(error: error))
+            self.resetKlarnaSessionVariables()
         }
     }
 }
@@ -138,48 +170,25 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderErrorDelegate {
 
 // MARK: Recording Analytics
 extension PrimerHeadlessKlarnaComponent: PrimerHeadlessAnalyticsRecordable {
-    func recordCreationEvent() {
+    func trackStart() {
         recordEvent(
             type: .sdkEvent,
-            name: KlarnaAnalyticsEvents.createSessionStartMethod,
-            params: [
-                KlarnaAnalyticsEvents.categoryKey: KlarnaAnalyticsEvents.categoryValue
-            ]
+            name: KlarnaAnalyticsEvents.createSessionMethod,
+            params: [:]
         )
     }
-    func recordAuthorizeEvent(name: String, autoFinalize: Bool? = nil, jsonData: String?) {
-        var params = [
-            KlarnaAnalyticsEvents.categoryKey: KlarnaAnalyticsEvents.categoryValue,
-            KlarnaAnalyticsEvents.jsonDataKey: jsonData ?? KlarnaAnalyticsEvents.jsonDataDefaultValue
-        ]
-        if let autoFinalize {
-            params[KlarnaAnalyticsEvents.autoFinalizeKey] = "\(autoFinalize)"
-        }
+    func trackSubmit() {
         recordEvent(
             type: .sdkEvent,
-            name: name,
-            params: params
+            name: KlarnaAnalyticsEvents.authorizeSessionMethod,
+            params: [:]
         )
     }
-    func recordFinalizationEvent(jsonData: String?) {
+    func trackCollectableData() {
         recordEvent(
             type: .sdkEvent,
-            name: KlarnaAnalyticsEvents.finalizeSessionMethod,
-            params: [
-                KlarnaAnalyticsEvents.categoryKey: KlarnaAnalyticsEvents.categoryValue,
-                KlarnaAnalyticsEvents.jsonDataKey: jsonData ?? KlarnaAnalyticsEvents.jsonDataDefaultValue
-            ]
-        )
-    }
-    func recordPaymentViewEvent(name: String, jsonData: String? = nil) {
-        var params = [KlarnaAnalyticsEvents.categoryKey: KlarnaAnalyticsEvents.categoryValue]
-        if let jsonData {
-            params[KlarnaAnalyticsEvents.jsonDataKey] = jsonData
-        }
-        recordEvent(
-            type: .sdkEvent,
-            name: name,
-            params: params
+            name: KlarnaAnalyticsEvents.updateCollectedData,
+            params: [:]
         )
     }
 }
