@@ -154,7 +154,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         networkService.request(endpoint) { (result: Result<SuccessResponse, Error>) in
 
             switch result {
-                
+
             case .success:
                 completion(.success(true))
             case .failure(let error):
@@ -264,7 +264,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
                                 fileExtension: "png",
                                 remoteUrl: remoteUrl,
                                 base64Data: base64Data)
-                            
+
                         } else {
                             lightImageFile = ImageFile(
                                 fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-light",
@@ -278,7 +278,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
                         if let darkVal = paymentMethod.displayMetadata?.button.iconUrl?.darkUrlStr {
                             var remoteUrl: URL?
                             var base64Data: Data?
-                            
+
                             if let data = Data(base64Encoded: darkVal) {
                                 base64Data = data
                             } else if let url = URL(string: darkVal) {
