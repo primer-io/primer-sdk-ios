@@ -94,7 +94,28 @@ struct MerchantMockDataManager {
     
     static var paymentOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOptionGroup(
         KLARNA: ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(
-            surcharge: ClientSessionRequestBody.PaymentMethod.SurchargeOption(amount: 140)))
+            surcharge: ClientSessionRequestBody.PaymentMethod.SurchargeOption(amount: 140),
+            instalmentDuration: "test",
+            extraMerchantData: extraMerchantData))
+    
+    static var extraMerchantData: [String: Any] = [
+        "subscription": [
+            [
+                "subscription_name": "Implant_lenses",
+                "start_time": "2020-11-24T15:00",
+                "end_time": "2021-11-24T15:00",
+                "auto_renewal_of_subscription": false,
+            ],
+        ],
+        "customer_account_info": [
+            [
+                "unique_account_identifier": "Owen Owenson",
+                "account_registration_date": "2020-11-24T15:00",
+                "account_last_modified": "2020-11-24T15:00",
+            ],
+        ]
+    ]
+
     
 }
 

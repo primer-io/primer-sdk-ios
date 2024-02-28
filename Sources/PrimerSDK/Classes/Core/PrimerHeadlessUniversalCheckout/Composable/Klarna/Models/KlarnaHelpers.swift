@@ -146,6 +146,17 @@ struct KlarnaHelpers {
         }
         return nil
     }
+    /// - Returns the serialized string value of the attachment data
+    static func getSerializedAttachmentString(from extraMerchantData: [String: Any]) -> String? {
+        let dict = ["contentType": "application/vnd.klarna.internal.emd-v2+json",
+                    "body": extraMerchantData] as [String: Any]
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: dict, options: [])
+            return String(data: jsonData, encoding: .utf8)!
+        } catch {
+            return nil
+        }
+    }
     /// - Helper function to construct locale data.
     private static func constructLocaleData(using clientSession: ClientSession.APIResponse?) -> Request.Body.Klarna.KlarnaLocaleData {
         let countryCode = clientSession?.order?.countryCode?.rawValue ?? ""
