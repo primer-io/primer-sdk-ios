@@ -12,10 +12,10 @@ import UIKit
 /// all have a delegate of PrimerTextFieldViewDelegate type.
 public protocol PrimerTextFieldViewDelegate: AnyObject {
     /// Will return true if valid, false if invalid, nil if it cannot be detected yet.
-    ///  It is applied on all PrimerTextFieldViews.
+    /// It is applied on all PrimerTextFieldViews.
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?)
     /// Will return the card network (e.g. Visa) detected, unknown if the network cannot be detected.
-    ///  Only applies on PrimerCardNumberFieldView
+    /// Only applies on PrimerCardNumberFieldView
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?)
     /// Will return a the validation error on the text input.
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error)

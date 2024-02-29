@@ -221,7 +221,7 @@ internal class PrimerRootViewController: PrimerViewController {
         view.layoutIfNeeded()
     }
 
-    internal func show(viewController: UIViewController) {
+    internal func show(viewController: UIViewController, animated: Bool = false) {
         viewController.view.translatesAutoresizingMaskIntoConstraints = false
         viewController.view.widthAnchor.constraint(equalToConstant: self.childView.frame.width).isActive = true
         viewController.view.layoutIfNeeded()
@@ -253,7 +253,7 @@ internal class PrimerRootViewController: PrimerViewController {
         }
 
         if isPresented {
-            self.navController.setViewControllers([cvc], animated: false)
+            self.navController.setViewControllers([cvc], animated: animated)
 
             let container = PrimerViewController()
             container.addChild(self.navController)
@@ -271,7 +271,7 @@ internal class PrimerRootViewController: PrimerViewController {
             container.view.bottomAnchor.constraint(equalTo: self.childView.bottomAnchor, constant: 0).isActive = true
             container.didMove(toParent: self)
         } else {
-            self.navController.pushViewController(viewController: cvc, animated: false) {
+            self.navController.pushViewController(viewController: cvc, animated: animated) {
                 var viewControllers = self.navController.viewControllers
                 for (index, viewController) in viewControllers.enumerated().reversed() {
                     // If the loading screen is the last one in the stack, do not remove it yet.
@@ -353,9 +353,8 @@ internal class PrimerRootViewController: PrimerViewController {
         }
     }
 
-    internal func popViewController() {
+    internal func popViewController(animated: Bool = false, completion: (() -> Void)? = nil) {
         let index = navController.viewControllers.count-2
-
         guard navController.viewControllers.count > 1,
               let viewController = (navController.viewControllers[index] as? PrimerContainerViewController)?.childViewController
         else {
@@ -371,12 +370,12 @@ internal class PrimerRootViewController: PrimerViewController {
 
         childViewHeightConstraint.constant = navigationControllerHeight + bottomPadding
 
-        navController.popViewController(animated: false)
+        navController.popViewController(animated: animated)
 
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
             self.view.layoutIfNeeded()
         } completion: { _ in
-
+            completion?()
         }
     }
 
