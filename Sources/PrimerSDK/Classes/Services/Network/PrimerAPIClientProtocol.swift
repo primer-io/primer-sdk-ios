@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPIClientBINDataProtocol {
 
     typealias APIResult<T> = Result<T, Error>
@@ -24,7 +23,6 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPICli
         request: Request.Body.ClientTokenValidation,
         completion: @escaping APICompletion<SuccessResponse>)
 
-
     func requestPrimerConfigurationWithActions(clientToken: DecodedJWTToken,
                                                request: ClientSessionUpdateRequest,
                                                completion: @escaping APICompletion<PrimerAPIConfiguration>)
@@ -34,7 +32,7 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPICli
     func fetchVaultedPaymentMethods(
         clientToken: DecodedJWTToken,
         completion: @escaping APICompletion<Response.Body.VaultedPaymentMethods>)
-    
+
     func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) -> Promise<Response.Body.VaultedPaymentMethods>
 
     func deleteVaultedPaymentMethod(
@@ -43,7 +41,7 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPICli
         completion: @escaping APICompletion<Void>)
 
     // MARK: PayPal
-    
+
     func createPayPalOrderSession(
         clientToken: DecodedJWTToken,
         payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder,
@@ -64,17 +62,17 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPICli
                                       completion: @escaping APICompletion<Response.Body.PayPal.PayerInfo>)
 
     // MARK: Klarna
-    
+
     func createKlarnaPaymentSession(
         clientToken: DecodedJWTToken,
         klarnaCreatePaymentSessionAPIRequest: Request.Body.Klarna.CreatePaymentSession,
         completion: @escaping APICompletion<Response.Body.Klarna.CreatePaymentSession>)
-    
+
     func createKlarnaCustomerToken(
         clientToken: DecodedJWTToken,
         klarnaCreateCustomerTokenAPIRequest: Request.Body.Klarna.CreateCustomerToken,
         completion: @escaping APICompletion<Response.Body.Klarna.CustomerToken>)
-    
+
     func finalizeKlarnaPaymentSession(
         clientToken: DecodedJWTToken,
         klarnaFinalizePaymentSessionRequest: Request.Body.Klarna.FinalizePaymentSession,
@@ -86,7 +84,7 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPICli
         clientToken: DecodedJWTToken,
         tokenizationRequestBody: Request.Body.Tokenization,
         completion: @escaping APICompletion<PrimerPaymentMethodTokenData>)
-   
+
     func exchangePaymentMethodToken(
         clientToken: DecodedJWTToken,
         vaultedPaymentMethodId: String,
@@ -94,12 +92,12 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPICli
         completion: @escaping APICompletion<PrimerPaymentMethodTokenData>)
 
     // MARK: 3DS
-    
+
     func begin3DSAuth(clientToken: DecodedJWTToken,
                       paymentMethodTokenData: PrimerPaymentMethodTokenData,
                       threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest,
                       completion: @escaping APICompletion<ThreeDS.BeginAuthResponse>)
-    
+
     func continue3DSAuth(
         clientToken: DecodedJWTToken,
         threeDSTokenId: String,
@@ -148,7 +146,7 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPICli
         clientToken: DecodedJWTToken,
         paymentRequestBody: Request.Body.Payment.Create,
         completion: @escaping APICompletion<Response.Body.Payment>)
-    
+
     func resumePayment(
         clientToken: DecodedJWTToken,
         paymentId: String,
