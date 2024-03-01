@@ -35,7 +35,6 @@
 		F00C660D2ACC67FA00187028 /* MerchantResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */; };
 		F00C660E2ACC67FA00187028 /* MerchantSessionAndSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18C9664115CFDEB59FED19A /* MerchantSessionAndSettingsViewController.swift */; };
 		F00C660F2ACC67FA00187028 /* MerchantNewLineItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */; };
-		F00C66102ACC67FA00187028 /* Apaya.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95E4B74F7EEA3D2D19E08FDA /* Apaya.swift */; };
 		F00C66112ACC67FA00187028 /* PaymentMethodCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E79C93EA805E87E1137A513 /* PaymentMethodCell.swift */; };
 		F00C66132ACC67FA00187028 /* Debug App Tests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */; };
 		F00C66142ACC67FA00187028 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B18D7E7738BF86467B0F1465 /* Images.xcassets */; };
@@ -645,7 +644,6 @@
 				F00C660D2ACC67FA00187028 /* MerchantResultViewController.swift in Sources */,
 				F00C660E2ACC67FA00187028 /* MerchantSessionAndSettingsViewController.swift in Sources */,
 				F00C660F2ACC67FA00187028 /* MerchantNewLineItemViewController.swift in Sources */,
-				F00C66102ACC67FA00187028 /* Apaya.swift in Sources */,
 				F00C66112ACC67FA00187028 /* PaymentMethodCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

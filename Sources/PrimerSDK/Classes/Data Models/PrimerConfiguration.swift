@@ -305,16 +305,6 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
             return method.id
         }
 
-        func getProductId(for type: String) -> String? {
-            guard let method = self.paymentMethods?
-                    .first(where: { method in return method.type == type }) else { return nil }
-
-            if let apayaOptions = method.options as? MerchantOptions {
-                return apayaOptions.merchantAccountId
-            } else {
-                return nil
-            }
-        }
     }
 }
 
