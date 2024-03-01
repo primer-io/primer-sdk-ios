@@ -52,15 +52,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         let endpoint = PrimerAPI.exchangePaymentMethodToken(clientToken: clientToken,
                                                             vaultedPaymentMethodId: vaultedPaymentMethodId,
                                                             vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData)
-        networkService.request(endpoint) { (result: Result<PrimerPaymentMethodTokenData, Error>) in
-            switch result {
-            case .success(let paymentInstrument):
-                completion(.success(paymentInstrument))
-            case .failure(let error):
-                ErrorHandler.shared.handle(error: error)
-                completion(.failure(error))
-            }
-        }
+        execute(endpoint, completion: completion)
     }
 
     func deleteVaultedPaymentMethod(clientToken: DecodedJWTToken, id: String, completion: @escaping APICompletion<Void>) {
@@ -181,18 +173,10 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         execute(endpoint, completion: completion)
     }
 
-    func validateClientToken(request: Request.Body.ClientTokenValidation, 
+    func validateClientToken(request: Request.Body.ClientTokenValidation,
                              completion: @escaping APICompletion<SuccessResponse>) {
         let endpoint = PrimerAPI.validateClientToken(request: request)
-        networkService.request(endpoint) { (result: Result<SuccessResponse, Error>) in
-            switch result {
-            case .success(let success):
-                completion(.success(success))
-            case .failure(let error):
-                ErrorHandler.handle(error: error)
-                completion(.failure(error))
-            }
-        }
+        execute(endpoint, completion: completion)
     }
 
     func createPayment(clientToken: DecodedJWTToken,
@@ -253,8 +237,9 @@ extension PrimerAPIClient {
             switch result {
             case .success(let result):
                 completion(.success(result))
-            case .failure(let err):
-                completion(.failure(err))
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
+                completion(.failure(error))
             }
         }
     }

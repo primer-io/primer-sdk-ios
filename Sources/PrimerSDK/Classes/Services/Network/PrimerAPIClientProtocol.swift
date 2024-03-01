@@ -33,8 +33,6 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPICli
         clientToken: DecodedJWTToken,
         completion: @escaping APICompletion<Response.Body.VaultedPaymentMethods>)
 
-    func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) -> Promise<Response.Body.VaultedPaymentMethods>
-
     func deleteVaultedPaymentMethod(
         clientToken: DecodedJWTToken,
         id: String,
