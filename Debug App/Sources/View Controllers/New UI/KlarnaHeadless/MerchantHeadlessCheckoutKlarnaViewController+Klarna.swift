@@ -42,7 +42,6 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessErrorableD
             hideLoader()
             showAlert(title: error.errorId, message: error.recoverySuggestion ?? error.localizedDescription)
         }
-        
     }
     
     // MARK: - PrimerHeadlessSteppableDelegate

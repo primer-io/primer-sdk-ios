@@ -5,6 +5,7 @@
 //  Created by Stefan Vrancianu on 16.02.2024.
 //
 
+#if canImport(PrimerKlarnaSDK)
 import Foundation
 import UIKit
 
@@ -117,3 +118,4 @@ extension PrimerHeadlessKlarnaComponent {
         errorDelegate?.didReceiveError(error: primerError)
     }
 }
+#endif
