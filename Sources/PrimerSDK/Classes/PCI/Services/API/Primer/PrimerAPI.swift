@@ -21,7 +21,6 @@ enum PrimerAPI: Endpoint, Equatable {
              (.createKlarnaPaymentSession, .createKlarnaPaymentSession),
              (.createKlarnaCustomerToken, .createKlarnaCustomerToken),
              (.finalizeKlarnaPaymentSession, .finalizeKlarnaPaymentSession),
-             (.createApayaSession, .createApayaSession),
              (.tokenizePaymentMethod, .tokenizePaymentMethod),
              (.listAdyenBanks, .listAdyenBanks),
              (.listRetailOutlets, .listRetailOutlets),
@@ -50,7 +49,6 @@ enum PrimerAPI: Endpoint, Equatable {
     case createKlarnaPaymentSession(clientToken: DecodedJWTToken, klarnaCreatePaymentSessionAPIRequest: Request.Body.Klarna.CreatePaymentSession)
     case createKlarnaCustomerToken(clientToken: DecodedJWTToken, klarnaCreateCustomerTokenAPIRequest: Request.Body.Klarna.CreateCustomerToken)
     case finalizeKlarnaPaymentSession(clientToken: DecodedJWTToken, klarnaFinalizePaymentSessionRequest: Request.Body.Klarna.FinalizePaymentSession)
-    case createApayaSession(clientToken: DecodedJWTToken, request: Request.Body.Apaya.CreateSession)
     case tokenizePaymentMethod(clientToken: DecodedJWTToken, tokenizationRequestBody: Request.Body.Tokenization)
     case listAdyenBanks(clientToken: DecodedJWTToken, request: Request.Body.Adyen.BanksList)
     case listRetailOutlets(clientToken: DecodedJWTToken, paymentMethodId: String)
@@ -76,6 +74,9 @@ enum PrimerAPI: Endpoint, Equatable {
     case resumePayment(clientToken: DecodedJWTToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume)
 
     case testFinalizePolling(clientToken: DecodedJWTToken, testId: String)
+
+    // BIN Data
+    case listCardNetworks(clientToken: DecodedJWTToken, bin: String)
     case getNolSdkSecret(clientToken: DecodedJWTToken, request: Request.Body.NolPay.NolPaySecretDataRequest)
     case getPhoneMetadata(clientToken: DecodedJWTToken, request: Request.Body.PhoneMetadata.PhoneMetadataDataRequest)
 
@@ -94,33 +95,37 @@ internal extension PrimerAPI {
     var headers: [String: String]? {
         var tmpHeaders = PrimerAPI.headers
 
+        if method == .get {
+            tmpHeaders.removeValue(forKey: "Content-Type")
+        }
+
         if let checkoutSessionId = PrimerInternal.shared.checkoutSessionId {
             tmpHeaders["Primer-SDK-Checkout-Session-ID"] = checkoutSessionId
         }
 
         switch self {
         case .redirect(let clientToken, _),
-             .deleteVaultedPaymentMethod(let clientToken, _),
-             .exchangePaymentMethodToken(let clientToken, _, _),
-             .fetchVaultedPaymentMethods(let clientToken),
-             .createPayPalOrderSession(let clientToken, _),
-             .createPayPalBillingAgreementSession(let clientToken, _),
-             .confirmPayPalBillingAgreement(let clientToken, _),
-             .createKlarnaPaymentSession(let clientToken, _),
-             .createKlarnaCustomerToken(let clientToken, _),
-             .finalizeKlarnaPaymentSession(let clientToken, _),
-             .tokenizePaymentMethod(let clientToken, _),
-             .begin3DSRemoteAuth(let clientToken, _, _),
-             .continue3DSRemoteAuth(let clientToken, _, _),
-             .createApayaSession(let clientToken, _),
-             .listAdyenBanks(let clientToken, _),
-             .listRetailOutlets(let clientToken, _),
-             .requestPrimerConfigurationWithActions(let clientToken, _),
-             .fetchPayPalExternalPayerInfo(let clientToken, _),
-             .createPayment(let clientToken, _),
-             .resumePayment(let clientToken, _, _),
-             .testFinalizePolling(let clientToken, _),
-             .getPhoneMetadata(let clientToken, _):
+            .deleteVaultedPaymentMethod(let clientToken, _),
+            .exchangePaymentMethodToken(let clientToken, _, _),
+            .fetchVaultedPaymentMethods(let clientToken),
+            .createPayPalOrderSession(let clientToken, _),
+            .createPayPalBillingAgreementSession(let clientToken, _),
+            .confirmPayPalBillingAgreement(let clientToken, _),
+            .createKlarnaPaymentSession(let clientToken, _),
+            .createKlarnaCustomerToken(let clientToken, _),
+            .finalizeKlarnaPaymentSession(let clientToken, _),
+            .tokenizePaymentMethod(let clientToken, _),
+            .begin3DSRemoteAuth(let clientToken, _, _),
+            .continue3DSRemoteAuth(let clientToken, _, _),
+            .listAdyenBanks(let clientToken, _),
+            .listRetailOutlets(let clientToken, _),
+            .requestPrimerConfigurationWithActions(let clientToken, _),
+            .fetchPayPalExternalPayerInfo(let clientToken, _),
+            .createPayment(let clientToken, _),
+            .resumePayment(let clientToken, _, _),
+            .testFinalizePolling(let clientToken, _),
+            .listCardNetworks(let clientToken, _),
+            .getPhoneMetadata(let clientToken, _):
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
@@ -169,8 +174,6 @@ internal extension PrimerAPI {
             break
         case .finalizeKlarnaPaymentSession:
             break
-        case .createApayaSession:
-            break
         case .tokenizePaymentMethod:
             tmpHeaders["X-Api-Version"] = "2.2"
         case .listAdyenBanks:
@@ -197,6 +200,8 @@ internal extension PrimerAPI {
             tmpHeaders["X-Api-Version"] = "2.2"
         case .testFinalizePolling:
             break
+        case .listCardNetworks:
+            tmpHeaders["X-Api-Version"] = "2.2"
         case .getNolSdkSecret:
             break
         case .redirect:
@@ -212,34 +217,36 @@ internal extension PrimerAPI {
     var baseURL: String? {
         switch self {
         case .createPayPalOrderSession(let clientToken, _),
-             .createPayPalBillingAgreementSession(let clientToken, _),
-             .confirmPayPalBillingAgreement(let clientToken, _),
-             .createKlarnaPaymentSession(let clientToken, _),
-             .createKlarnaCustomerToken(let clientToken, _),
-             .finalizeKlarnaPaymentSession(let clientToken, _),
-             .createApayaSession(let clientToken, _),
-             .listAdyenBanks(let clientToken, _),
-             .listRetailOutlets(let clientToken, _),
-             .fetchPayPalExternalPayerInfo(let clientToken, _),
-             .testFinalizePolling(let clientToken, _),
-             .getNolSdkSecret(let clientToken, _):
-            guard let urlStr = clientToken.coreUrl else { return nil }
-            return urlStr
+            .createPayPalBillingAgreementSession(let clientToken, _),
+            .confirmPayPalBillingAgreement(let clientToken, _),
+            .createKlarnaPaymentSession(let clientToken, _),
+            .createKlarnaCustomerToken(let clientToken, _),
+            .finalizeKlarnaPaymentSession(let clientToken, _),
+            .listAdyenBanks(let clientToken, _),
+            .listRetailOutlets(let clientToken, _),
+            .fetchPayPalExternalPayerInfo(let clientToken, _),
+            .testFinalizePolling(let clientToken, _),
+            .getNolSdkSecret(let clientToken, _):
+            guard let baseURL = configuration?.coreUrl ?? clientToken.coreUrl else { return nil }
+            return baseURL
+        case .listCardNetworks:
+            guard let baseURL = configuration?.binDataUrl else { return nil }
+            return baseURL
         case .deleteVaultedPaymentMethod(let clientToken, _),
-             .fetchVaultedPaymentMethods(let clientToken),
-             .exchangePaymentMethodToken(let clientToken, _, _),
-             .tokenizePaymentMethod(let clientToken, _),
-             .begin3DSRemoteAuth(let clientToken, _, _),
-             .continue3DSRemoteAuth(let clientToken, _, _),
-             .createPayment(let clientToken, _),
-             .resumePayment(let clientToken, _, _),
-             .requestPrimerConfigurationWithActions(let clientToken, _),
-             .getPhoneMetadata(let clientToken, _):
-            guard let urlStr = clientToken.pciUrl else { return nil }
-            return urlStr
+            .fetchVaultedPaymentMethods(let clientToken),
+            .exchangePaymentMethodToken(let clientToken, _, _),
+            .tokenizePaymentMethod(let clientToken, _),
+            .begin3DSRemoteAuth(let clientToken, _, _),
+            .continue3DSRemoteAuth(let clientToken, _, _),
+            .createPayment(let clientToken, _),
+            .resumePayment(let clientToken, _, _),
+            .requestPrimerConfigurationWithActions(let clientToken, _),
+            .getPhoneMetadata(let clientToken, _):
+            guard let baseURL = configuration?.pciUrl ?? clientToken.pciUrl else { return nil }
+            return baseURL
         case .fetchConfiguration(let clientToken, _):
-            guard let urlStr = clientToken.configurationUrl else { return nil }
-            return urlStr
+            guard let baseURL = clientToken.configurationUrl else { return nil }
+            return baseURL
         case .poll(_, let url):
             return url
         case .sendAnalyticsEvents(_, let url, _):
@@ -280,8 +287,6 @@ internal extension PrimerAPI {
             return "/3ds/\(paymentMethodToken.token ?? "")/auth"
         case .continue3DSRemoteAuth(_, let threeDSTokenId, _):
             return "/3ds/\(threeDSTokenId)/continue"
-        case .createApayaSession:
-            return "/session-token"
         case .listAdyenBanks:
             return "/adyen/checkout"
         case .listRetailOutlets(_, let paymentMethodId):
@@ -302,12 +307,14 @@ internal extension PrimerAPI {
             return "/payments/\(paymentId)/resume"
         case .testFinalizePolling:
             return "/finalize-polling"
+        case .listCardNetworks(_, let bin):
+            return "/v1/bin-data/\(bin)/networks"
         case .getNolSdkSecret:
             return "/nol-pay/sdk-secrets"
         case .redirect:
             return ""
         case .getPhoneMetadata(_, let request):
-            return "phone-number-lookups/\(request.phoneNumber)"
+            return "/phone-number-lookups/\(request.phoneNumber)"
         }
     }
 
@@ -325,10 +332,11 @@ internal extension PrimerAPI {
         case .deleteVaultedPaymentMethod:
             return .delete
         case .redirect,
-             .fetchConfiguration,
-             .fetchVaultedPaymentMethods,
-             .listRetailOutlets,
-             .getPhoneMetadata:
+            .fetchConfiguration,
+            .fetchVaultedPaymentMethods,
+            .listRetailOutlets,
+            .listCardNetworks,
+            .getPhoneMetadata:
             return .get
         case .createPayPalOrderSession,
              .createPayPalBillingAgreementSession,
@@ -341,7 +349,6 @@ internal extension PrimerAPI {
              .requestPrimerConfigurationWithActions,
              .begin3DSRemoteAuth,
              .continue3DSRemoteAuth,
-             .createApayaSession,
              .listAdyenBanks,
              .sendAnalyticsEvents,
              .fetchPayPalExternalPayerInfo,
@@ -385,8 +392,6 @@ internal extension PrimerAPI {
             return nil
         case .finalizeKlarnaPaymentSession(_, let klarnaFinalizePaymentSessionRequest):
             return try? JSONEncoder().encode(klarnaFinalizePaymentSessionRequest)
-        case .createApayaSession(_, let request):
-            return try? JSONEncoder().encode(request)
         case .tokenizePaymentMethod(_, let req):
             return try? JSONEncoder().encode(req)
         case .begin3DSRemoteAuth(_, _, let threeDSecureBeginAuthRequest):
@@ -419,7 +424,7 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(paymentCreateRequestBody)
         case .resumePayment(_, _, let paymentResumeRequestBody):
             return try? JSONEncoder().encode(paymentResumeRequestBody)
-        case .testFinalizePolling:
+        case .testFinalizePolling, .listCardNetworks:
             return nil
         case .getNolSdkSecret(_, let requestBody):
             return try? JSONEncoder().encode(requestBody)
@@ -438,6 +443,23 @@ internal extension PrimerAPI {
         default:
             return true
         }
+    }
+
+    // MARK: Timeout
+
+    var timeout: TimeInterval? {
+        switch self {
+        case .listCardNetworks:
+            return 10
+        default:
+            return nil
+        }
+    }
+
+    // MARK: Helpers
+
+    var configuration: PrimerAPIConfiguration? {
+        PrimerAPIConfiguration.current
     }
 
 }

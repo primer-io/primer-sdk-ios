@@ -55,7 +55,12 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
             clientSessionId: "mock_client_session_id",
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
-                options: nil),
+                options: nil,
+                orderedAllowedCardNetworks: [
+                    CardNetwork.visa.rawValue,
+                    CardNetwork.masterCard.rawValue
+                ]
+            ),
             order: nil,
             customer: nil,
             testId: nil)
@@ -273,7 +278,12 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
             clientSessionId: "mock_client_session_id",
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
-                options: isSurchargeIncluded ? [["surcharge": 99]] : nil),
+                options: isSurchargeIncluded ? [["surcharge": 99]] : nil,
+                orderedAllowedCardNetworks: [
+                    CardNetwork.visa.rawValue,
+                    CardNetwork.masterCard.rawValue
+                ]
+            ),
             order: nil,
             customer: nil,
             testId: nil)
@@ -295,12 +305,14 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
         mockApiClient.paymentResult = (Mocks.payment, nil)
         mockApiClient.fetchConfigurationResult = (apiConfiguration, nil)
         mockApiClient.fetchConfigurationWithActionsResult = (apiConfiguration, nil)
+        mockApiClient.listCardNetworksResult = (Mocks.listCardNetworksData, nil)
 
         PrimerAPIConfigurationModule.apiClient = mockApiClient
         PaymentMethodTokenizationViewModel.apiClient = mockApiClient
         TokenizationService.apiClient = mockApiClient
         PollingModule.apiClient = mockApiClient
         CreateResumePaymentService.apiClient = mockApiClient
+        DefaultCardValidationService.apiClient = mockApiClient
 
         PrimerHeadlessUniversalCheckout.current.delegate = self
         PrimerHeadlessUniversalCheckout.current.uiDelegate = self

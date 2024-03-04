@@ -50,9 +50,6 @@
 /* Class = "UILabel"; text = "Postal code:"; ObjectID = "Zgj-Y0-gEw"; */
 "Zgj-Y0-gEw.text" = "Postal code:";
 
-/* Class = "UIButton"; normalTitle = "Add Apaya"; ObjectID = "a9R-Y4-8Wy"; */
-"a9R-Y4-8Wy.normalTitle" = "Add Apaya";
-
 /* Class = "UIButton"; normalTitle = "Vault"; ObjectID = "but-Bs-no4"; */
 "but-Bs-no4.normalTitle" = "Vault";
 

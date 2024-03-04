@@ -30,6 +30,8 @@ extension Analytics {
 
         let apiClient: PrimerAPIClientAnalyticsProtocol
 
+        var eventSendFailureCount: UInt = 0
+
         private var isSyncing: Bool = false
 
         init(sdkLogsUrl: URL,
@@ -53,7 +55,6 @@ extension Analytics {
                 Analytics.queue.async(flags: .barrier) { [weak self] in
                     guard let self = self else { return }
 
-                    self.logger.debug(message: "📚 Analytics: Recording \(events.count) events")
                     let storedEvents: [Analytics.Event] = self.storage.loadEvents()
 
                     let storedEventsIds = storedEvents.compactMap({ $0.localId })
@@ -67,6 +68,8 @@ extension Analytics {
                     var combinedEvents: [Analytics.Event] = eventsToAppend.sorted(by: { $0.createdAt > $1.createdAt })
                     combinedEvents.append(contentsOf: storedEvents)
 
+                    self.logger.debug(message: "📚 Analytics: Recording \(events.count) events (new total: \(combinedEvents.count))")
+
                     do {
                         try self.storage.save(combinedEvents)
 
@@ -76,10 +79,13 @@ extension Analytics {
                             let count = combinedEvents.count
                             let message = "📚 Analytics: Minimum batch size of \(self.batchSize) \(sizeString) (\(count) events present). Attempting sync ..."
                             self.logger.debug(message: message)
-                            self.sync(events: combinedEvents)
+                            _ = self.sync(events: combinedEvents).ensure {
+                                seal.fulfill()
+                            }
+                        } else {
+                            seal.fulfill()
                         }
 
-                        seal.fulfill()
                     } catch {
                         seal.reject(error)
                     }
@@ -115,6 +121,7 @@ extension Analytics {
                 }
                 isSyncing = true
             }
+
             return Promise<Void> { seal in
                 Analytics.queue.async(flags: .barrier) { [weak self] in
                     guard let self = self else { return }
@@ -124,19 +131,16 @@ extension Analytics {
                     self.logger.debug(message: "📚 Analytics: \(syncType.capitalized)ing \(events.count) events ...")
 
                     let promises: [Promise<Void>] = [
-                        self.sendSkdLogEvents(events: events),
-                        self.sendSkdAnalyticsEvents(events: events)
+                        self.sendSdkLogEvents(events: events),
+                        self.sendSdkAnalyticsEvents(events: events)
                     ]
 
                     when(fulfilled: promises)
                         .done { _ in
-                            self.logger.debug(message: "📚 Analytics: All events \(syncType)ed ...")
                             let remainingEvents = self.storage.loadEvents()
                             self.logger.debug(message: "📚 Analytics: \(syncType.capitalized) completed. \(remainingEvents.count) events remain")
                             self.isSyncing = false
-
                             seal.fulfill()
-
                             if remainingEvents.count >= self.batchSize {
                                 self.sync(events: remainingEvents)
                             }
@@ -145,6 +149,8 @@ extension Analytics {
                             let errorMessage = err.localizedDescription
                             let message = "📚 Analytics: Failed to \(syncType) events with error \(errorMessage)"
                             self.logger.error(message: message)
+                            self.isSyncing = false
+                            seal.reject(err)
                         }
                 }
             }
@@ -154,7 +160,7 @@ extension Analytics {
             storage.deleteAnalyticsFile()
         }
 
-        private func sendSkdLogEvents(events: [Analytics.Event]) -> Promise<Void> {
+        private func sendSdkLogEvents(events: [Analytics.Event]) -> Promise<Void> {
             let storedEvents = events
             let sdkLogEvents = storedEvents.filter({ $0.analyticsUrl == nil })
             let sdkLogEventsBatches = sdkLogEvents.toBatches(of: batchSize)
@@ -169,19 +175,27 @@ extension Analytics {
             return when(fulfilled: promises)
         }
 
-        private func sendSkdAnalyticsEvents(events: [Analytics.Event]) -> Promise<Void> {
-            let storedEvents = events
-            let analyticsEvents = storedEvents.filter({ $0.analyticsUrl != nil })
-            let analyticsEventsBatches = analyticsEvents.toBatches(of: batchSize)
+        private func sendSdkAnalyticsEvents(events: [Analytics.Event]) -> Promise<Void> {
+            let events = events.filter({ $0.analyticsUrl != nil })
+
+            let urls = Set(events.compactMap { $0.analyticsUrl }).compactMap { URL(string: $0) }
+            let eventSets = urls.map { url in (url: url, events: events.filter { $0.analyticsUrl == url.absoluteString }) }
+
+            let promises = eventSets.map { item in
+                sendSdkAnalyticsEvents(url: item.url, events: item.events)
+            }
+
+            return when(fulfilled: promises)
+        }
+
+        private func sendSdkAnalyticsEvents(url: URL, events: [Analytics.Event]) -> Promise<Void> {
+            let batches = events.toBatches(of: batchSize)
 
             var promises: [Promise<Void>] = []
 
-            if let analyticsUrlStr = analyticsEvents.first(where: { $0.analyticsUrl != nil })?.analyticsUrl,
-               let analyticsUrl = URL(string: analyticsUrlStr) {
-                for analyticsEventsBatch in analyticsEventsBatches {
-                    let promise = sendEvents(analyticsEventsBatch, to: analyticsUrl)
-                    promises.append(promise)
-                }
+            for batch in batches {
+                let promise = sendEvents(batch, to: url)
+                promises.append(promise)
             }
 
             return when(fulfilled: promises)
@@ -230,20 +244,38 @@ extension Analytics {
             ) { result in
                 switch result {
                 case .success:
-                    let urlString = url.absoluteString
-                    let message = "📚 Analytics: Finished sending \(events.count) events on URL: \(urlString)"
-                    self.logger.debug(message: message)
-                    self.storage.delete(events)
-                    completion(nil)
-
+                    Analytics.queue.async {
+                        let urlString = url.absoluteString
+                        self.storage.delete(events)
+                        let message = "📚 Analytics: Finished sending \(events.count) events on URL: \(urlString). Deleted \(events.count) sent events from store"
+                        self.logger.debug(message: message)
+                        completion(nil)
+                    }
                 case .failure(let err):
-                    let urlString = url.absoluteString
-                    let count = events.count
-                    let message = "📚 Analytics: Failed to send \(count) events on URL \(urlString) with error \(err)"
-                    self.logger.error(message: message)
-                    ErrorHandler.handle(error: err)
-                    completion(err)
+                    Analytics.queue.async {
+                        // Log failure
+                        let urlString = url.absoluteString
+                        let count = events.count
+                        let message = "📚 Analytics: Failed to send \(count) events on URL \(urlString) with error \(err)"
+                        self.logger.error(message: message)
+
+                        // Handle error
+                        ErrorHandler.handle(error: err)
+                        self.handleFailedEvents(forUrl: url)
+                        completion(err)
+                    }
                 }
+            }
+        }
+
+        private func handleFailedEvents(forUrl url: URL) {
+            self.eventSendFailureCount += 1
+            if eventSendFailureCount >= 3 {
+                logger.error(message: "Failed to send events three or more times. Deleting analytics file ...")
+                storage.deleteAnalyticsFile()
+                eventSendFailureCount = 0
+            } else {
+                self.storage.delete(eventsWithUrl: url)
             }
         }
 

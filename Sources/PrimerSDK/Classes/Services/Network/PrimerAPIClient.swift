@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol {
+protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPIClientBINDataProtocol {
 
     func genericAPICall(clientToken: DecodedJWTToken,
                         url: URL,
@@ -80,12 +80,6 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol {
         threeDSTokenId: String,
         continueInfo: ThreeDS.ContinueInfo,
         completion: @escaping (_ result: Result<ThreeDS.PostAuthResponse, Error>) -> Void)
-
-    // Apaya
-    func createApayaSession(
-        clientToken: DecodedJWTToken,
-        request: Request.Body.Apaya.CreateSession,
-        completion: @escaping (_ result: Result<Response.Body.Apaya.CreateSession, Error>) -> Void)
 
     // Adyen Banks List
     func listAdyenBanks(
@@ -427,22 +421,6 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func createApayaSession(
-        clientToken: DecodedJWTToken,
-        request: Request.Body.Apaya.CreateSession,
-        completion: @escaping (Result<Response.Body.Apaya.CreateSession, Error>) -> Void
-    ) {
-        let endpoint = PrimerAPI.createApayaSession(clientToken: clientToken, request: request)
-        networkService.request(endpoint) { (result: Result<Response.Body.Apaya.CreateSession, Error>) in
-            switch result {
-            case .success(let response):
-                completion(.success(response))
-            case .failure(let err):
-                completion(.failure(err))
-            }
-        }
-    }
-
     func listAdyenBanks(
         clientToken: DecodedJWTToken,
         request: Request.Body.Adyen.BanksList,
@@ -578,6 +556,20 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
             switch result {
             case .success:
                 completion(.success(()))
+            case .failure(let err):
+                completion(.failure(err))
+            }
+        }
+    }
+
+    func listCardNetworks(clientToken: DecodedJWTToken,
+                          bin: String,
+                          completion: @escaping (Result<Response.Body.Bin.Networks, Error>) -> Void) -> PrimerCancellable? {
+        let endpoint = PrimerAPI.listCardNetworks(clientToken: clientToken, bin: bin)
+        return networkService.request(endpoint) { (result: Result<Response.Body.Bin.Networks, Error>) in
+            switch result {
+            case .success(let res):
+                completion(.success(res))
             case .failure(let err):
                 completion(.failure(err))
             }

@@ -100,13 +100,6 @@ extension Strings {
             value: "Pay in installments",
             comment: "The title of the primer 'pay in installments' button")
 
-        static let payByMobile = NSLocalizedString(
-            "payment-method-type-pay-by-mobile",
-            tableName: nil,
-            bundle: Bundle.primerResources,
-            value: "Pay by mobile",
-            comment: "Pay by mobile - Payment By Mobile (e.g. Apaya)")
-
         static let payWithCard = NSLocalizedString(
             "payment-method-type-card-not-vaulted",
             tableName: nil,

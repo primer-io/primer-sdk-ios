@@ -7,16 +7,28 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0402B7B62AFBBA7200B02C75 /* CardNetworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0402B7B52AFBBA7200B02C75 /* CardNetworkTests.swift */; };
+		0402B7B82AFBBC2200B02C75 /* ApplePayUtilsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0402B7B72AFBBC2200B02C75 /* ApplePayUtilsTest.swift */; };
 		041295AA2AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041295A92AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift */; };
 		041295AD2AB9E2C100A4F243 /* PrimerHeadlessNolPayManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041295AB2AB9E2A900A4F243 /* PrimerHeadlessNolPayManagerTests.swift */; };
+		041F52092ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041F52082ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift */; };
+		04236A9B2B7D2EA50041EC11 /* JWTFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04236A9A2B7D2EA50041EC11 /* JWTFactory.swift */; };
+		042ED15D2AF010500027833F /* CardValidationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042ED15C2AF010500027833F /* CardValidationServiceTests.swift */; };
+		042ED1622AF0F5600027833F /* MockBINDataAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042ED1612AF0F5600027833F /* MockBINDataAPIClient.swift */; };
+		042ED1652AF0F5FD0027833F /* MockRawDataManagerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042ED1642AF0F5FD0027833F /* MockRawDataManagerDelegate.swift */; };
+		0442B6472B7BA4C7004DB054 /* MockPrimerAPIAnalyticsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0442B6452B7BA498004DB054 /* MockPrimerAPIAnalyticsClient.swift */; };
+		0442B6492B7BA4CD004DB054 /* MockAnalyticsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0442B6432B7BA477004DB054 /* MockAnalyticsStorage.swift */; };
 		04769C152B1A680C0051581C /* Promises+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04769C142B1A680C0051581C /* Promises+Helper.swift */; };
+		0479FB192AF2599A00D0AFC9 /* StringTyper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0479FB172AF2599200D0AFC9 /* StringTyper.swift */; };
+		047D8E892ADEA4C700A5E7BD /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047D8E882ADEA4C700A5E7BD /* NetworkService.swift */; };
+		0489E2BB2B68F71300FA0682 /* TapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0489E2BA2B68F71300FA0682 /* TapGestureRecognizer.swift */; };
 		049298012B1DD466002E04B8 /* AnalyticsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049298002B1DD466002E04B8 /* AnalyticsServiceTests.swift */; };
 		049298072B1E1F4D002E04B8 /* AnalyticsStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */; };
 		049A055E2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
 		049A05602B4C191D002CEEBA /* NativeUIManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055F2B4C191D002CEEBA /* NativeUIManagerTests.swift */; };
-		049A05642B4C1EEB002CEEBA /* SDKSessionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A05622B4C1EE6002CEEBA /* SDKSessionHelper.swift */; };
+		04DAAED42B03EED1002E2614 /* AssetsManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DAAED32B03EED1002E2614 /* AssetsManagerTests.swift */; };
+		04DAAED62B03EF0B002E2614 /* SDKSessionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DAAED52B03EF0B002E2614 /* SDKSessionHelper.swift */; };
 		04DFAADC2AAA01E60030FECE /* Debug App Tests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */; };
-		04F6EF722AE69FC500115D05 /* AnalyticsTests+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F6EF712AE69FC500115D05 /* AnalyticsTests+Helpers.swift */; };
 		04F6EF742AE6A06200115D05 /* AnalyticsEventsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F6EF732AE6A06200115D05 /* AnalyticsEventsTests.swift */; };
 		04FAF9EC2AE7B33E002E4BAE /* StringExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FAF9EB2AE7B33E002E4BAE /* StringExtensionTests.swift */; };
 		05FAC0D894B841B52E9E0A9A /* PrimerRawCardDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB1E1B37192BF739461AFF1 /* PrimerRawCardDataManagerTests.swift */; };
@@ -26,7 +38,6 @@
 		14EE32F4821BD1F19F75227F /* MerchantHeadlessCheckoutRawRetailDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C353D84EABA4990DAB4DD28 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift */; };
 		1589385B62C86DE7C735F3EC /* PrimerAPIConfigurationModuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C690FB7E6E8C942C87B1A1B /* PrimerAPIConfigurationModuleTests.swift */; };
 		161D4BE3FFD5E4A60F4461F0 /* CreateResumePaymentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DD0A9535544D446514124A /* CreateResumePaymentService.swift */; };
-		170F3A07A039EE30E065AA30 /* MerchantNewLineItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */; };
 		208CA849F3187C2DA63CC17B /* HUC_TokenizationViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5E3ACDA26D44F66B55766B /* HUC_TokenizationViewModelTests.swift */; };
 		213196DEDF2A3A84037ED884 /* PollingModuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49DFB1ACD5014BF28ED283B3 /* PollingModuleTests.swift */; };
 		242EF5037D6FB396B7AE1CB5 /* HeadlessUniversalCheckoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E63F5C5C1FD2F3E6CB02EC5A /* HeadlessUniversalCheckoutTests.swift */; };
@@ -65,7 +76,6 @@
 		949864026D1CDE6F5C62C66E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE259612A00F85709107B872 /* Main.storyboard */; };
 		961B5D18058EF4CFCD0185AE /* MockVaultCheckoutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A3E75CD834937EF85DE1C14 /* MockVaultCheckoutViewModel.swift */; };
 		97F0B302DF965C1AD1EC6F4D /* PaymentMethodConfigServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 743F107C464526926A34A433 /* PaymentMethodConfigServiceTests.swift */; };
-		9AB1ABF4E46A37766CDBF197 /* ApayaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F79B50111AC4161CFB1EFE8 /* ApayaTests.swift */; };
 		A1055D6F2AF125E90027B967 /* DebouncerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1055D6E2AF125E90027B967 /* DebouncerTests.swift */; };
 		A12AC2532B5046CF00C26999 /* CurrencyStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12AC2522B5046CF00C26999 /* CurrencyStorageTests.swift */; };
 		A12AC2552B505B6200C26999 /* CurrencyLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12AC2542B505B6100C26999 /* CurrencyLoaderTests.swift */; };
@@ -82,7 +92,6 @@
 		AD9CF1073EE0676E6640481A /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866FF13033A5CB8B4C3388E /* MerchantHeadlessCheckoutRawDataViewController.swift */; };
 		C0115AC7BC96FDF49EF8E530 /* PaymentMethodCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E79C93EA805E87E1137A513 /* PaymentMethodCell.swift */; };
 		C29B625B5698094691227852 /* TokenizationResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0A003705AFF7F922BCFE75F /* TokenizationResponseTests.swift */; };
-		C5B3635FC90C149C4961BD9A /* Apaya.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95E4B74F7EEA3D2D19E08FDA /* Apaya.swift */; };
 		C6D7F7ECFD35B3DC3AFD6CB2 /* PayPalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FD540BEA16ABBDFE7DE182 /* PayPalService.swift */; };
 		C75A11E6AEEFC2B7A29BBC04 /* TestScenario.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6AEF11B151368BF993C3EA9 /* TestScenario.swift */; };
 		C8A64A69AD55D9BF82F0D876 /* StringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 872A0647D4136E27365FB7F8 /* StringTests.swift */; };
@@ -96,27 +105,19 @@
 		E108F58E2B0D4F0800EC3CC6 /* WebRedirectComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E108F58D2B0D4F0800EC3CC6 /* WebRedirectComponentTests.swift */; };
 		E11F473D2B0694C50091C31F /* PrimerHeadlessFormWithRedirectManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F473C2B0694C50091C31F /* PrimerHeadlessFormWithRedirectManagerTests.swift */; };
 		E11F47482B06C4E30091C31F /* MerchantHeadlessCheckoutBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47422B06C4E30091C31F /* MerchantHeadlessCheckoutBankViewController.swift */; };
-		E11F47492B06C4E30091C31F /* BanksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47432B06C4E30091C31F /* BanksListView.swift */; };
 		E11F474A2B06C4E30091C31F /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47442B06C4E30091C31F /* BanksListModel.swift */; };
-		E11F474B2B06C4E30091C31F /* ImageViewWithUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47452B06C4E30091C31F /* ImageViewWithUrl.swift */; };
 		E11F474C2B06C4E30091C31F /* MerchantNewLineItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47462B06C4E30091C31F /* MerchantNewLineItemViewController.swift */; };
-		E11F474D2B06C4E30091C31F /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47472B06C4E30091C31F /* MerchantHeadlessCheckoutNolPayViewController.swift */; };
 		E11F47542B06C5030091C31F /* BanksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47502B06C5030091C31F /* BanksListView.swift */; };
-		E11F47552B06C5030091C31F /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47512B06C5030091C31F /* BanksListModel.swift */; };
 		E11F47562B06C5030091C31F /* ImageViewWithUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47522B06C5030091C31F /* ImageViewWithUrl.swift */; };
-		E129D6702B162022004694F9 /* MerchantHeadlessCheckoutBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E129D66F2B162022004694F9 /* MerchantHeadlessCheckoutBankViewController.swift */; };
 		E130C3D92AFD19FF00AC3E7C /* NetworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E130C3D82AFD19FF00AC3E7C /* NetworkTests.swift */; };
 		E13E72452AFE653000911866 /* IdealPaymentMethodTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E13E72442AFE653000911866 /* IdealPaymentMethodTests.swift */; };
 		E1A2971F2B021ABA005ADA51 /* URL+NetworkHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB44D12AFE13AF00639DC5 /* URL+NetworkHeaders.swift */; };
 		E1A297262B036AB1005ADA51 /* BankComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A297252B036AB1005ADA51 /* BankComponentTests.swift */; };
 		E1E502B12AFE9ECF00CD7F0A /* XCTestCase+Tokenization.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E502B02AFE9ECF00CD7F0A /* XCTestCase+Tokenization.swift */; };
-		E4DF956CABAE0633980D5B89 /* AnalyticsTests+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90441E821B5FE76643B62A6 /* AnalyticsTests+Constants.swift */; };
-		E52B5646C4E1E712FEDE06CB /* AnalyticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF07D2421252EA2AE5C2FC4F /* AnalyticsTests.swift */; };
 		E6F85ECD80B64754E7A6D35E /* RawDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7C082270CF1C6B7810F9B3 /* RawDataManagerTests.swift */; };
 		E9F5265EB7A157AC5ED162C5 /* Pods_Debug_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21898D647270491BF4A68C19 /* Pods_Debug_App.framework */; };
 		EA7FAA4F8476BD3711D628CB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B18D7E7738BF86467B0F1465 /* Images.xcassets */; };
 		F02F496FD20B5291C044F62C /* MerchantResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */; };
-		F03699592AC2E63700E4179D /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		F0C2147F6FA26527BE55549A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC701AFD94F96F0F1D108D1A /* LaunchScreen.xib */; };
 		F1A71C2E0D900FEB9AF1351C /* ThreeDSProtocolVersionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021A00DEB01A46C876592575 /* ThreeDSProtocolVersionTests.swift */; };
 		F99DAF50E86E6F8CCD127E5B /* ThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD381E7E16D01D8D743232F7 /* ThemeTests.swift */; };
@@ -160,16 +161,28 @@
 		00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantResultViewController.swift; sourceTree = "<group>"; };
 		01C09DEAB07F42004B26A278 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		021A00DEB01A46C876592575 /* ThreeDSProtocolVersionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreeDSProtocolVersionTests.swift; sourceTree = "<group>"; };
+		0402B7B52AFBBA7200B02C75 /* CardNetworkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardNetworkTests.swift; sourceTree = "<group>"; };
+		0402B7B72AFBBC2200B02C75 /* ApplePayUtilsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePayUtilsTest.swift; sourceTree = "<group>"; };
 		041295A92AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutNolPayViewController.swift; sourceTree = "<group>"; };
 		041295AB2AB9E2A900A4F243 /* PrimerHeadlessNolPayManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimerHeadlessNolPayManagerTests.swift; sourceTree = "<group>"; };
+		041F52082ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListCardNetworksEndpointTests.swift; sourceTree = "<group>"; };
+		04236A9A2B7D2EA50041EC11 /* JWTFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JWTFactory.swift; sourceTree = "<group>"; };
+		042ED15C2AF010500027833F /* CardValidationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardValidationServiceTests.swift; sourceTree = "<group>"; };
+		042ED1612AF0F5600027833F /* MockBINDataAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockBINDataAPIClient.swift; sourceTree = "<group>"; };
+		042ED1642AF0F5FD0027833F /* MockRawDataManagerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRawDataManagerDelegate.swift; sourceTree = "<group>"; };
+		0442B6432B7BA477004DB054 /* MockAnalyticsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAnalyticsStorage.swift; sourceTree = "<group>"; };
+		0442B6452B7BA498004DB054 /* MockPrimerAPIAnalyticsClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPrimerAPIAnalyticsClient.swift; sourceTree = "<group>"; };
 		04769C142B1A680C0051581C /* Promises+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Promises+Helper.swift"; sourceTree = "<group>"; };
+		0479FB172AF2599200D0AFC9 /* StringTyper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTyper.swift; sourceTree = "<group>"; };
+		047D8E882ADEA4C700A5E7BD /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		0489E2BA2B68F71300FA0682 /* TapGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapGestureRecognizer.swift; sourceTree = "<group>"; };
 		049298002B1DD466002E04B8 /* AnalyticsServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsServiceTests.swift; sourceTree = "<group>"; };
 		049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsStorageTests.swift; sourceTree = "<group>"; };
 		049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessVaultManagerViewController.swift; sourceTree = "<group>"; };
 		049A055F2B4C191D002CEEBA /* NativeUIManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeUIManagerTests.swift; sourceTree = "<group>"; };
-		049A05622B4C1EE6002CEEBA /* SDKSessionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKSessionHelper.swift; sourceTree = "<group>"; };
+		04DAAED32B03EED1002E2614 /* AssetsManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsManagerTests.swift; sourceTree = "<group>"; };
+		04DAAED52B03EF0B002E2614 /* SDKSessionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKSessionHelper.swift; sourceTree = "<group>"; };
 		04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Debug App Tests-Info.plist"; sourceTree = "<group>"; };
-		04F6EF712AE69FC500115D05 /* AnalyticsTests+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnalyticsTests+Helpers.swift"; sourceTree = "<group>"; };
 		04F6EF732AE6A06200115D05 /* AnalyticsEventsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEventsTests.swift; sourceTree = "<group>"; };
 		04FAF9EB2AE7B33E002E4BAE /* StringExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensionTests.swift; sourceTree = "<group>"; };
 		0DA32ABCF07A4EBED014327B /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -233,7 +246,6 @@
 		93F15C1E46C70C3D73B50F31 /* UIStackViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIStackViewExtensions.swift; sourceTree = "<group>"; };
 		942332BD921CBCAFBC77BD6D /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Main.strings; sourceTree = "<group>"; };
 		952364FBFD6FA09653ECA37E /* TokenizationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenizationServiceTests.swift; sourceTree = "<group>"; };
-		95E4B74F7EEA3D2D19E08FDA /* Apaya.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Apaya.swift; sourceTree = "<group>"; };
 		96546334148213F72E898EB7 /* Pods-Debug App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App.debug.xcconfig"; path = "Target Support Files/Pods-Debug App/Pods-Debug App.debug.xcconfig"; sourceTree = "<group>"; };
 		98079137F3DE1FE6221DA7EC /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Main.strings; sourceTree = "<group>"; };
 		9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantDropInUIViewController.swift; sourceTree = "<group>"; };
@@ -252,7 +264,6 @@
 		A1A3D0F42AD56BE300F7D8C9 /* NolPayPaymentComponentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NolPayPaymentComponentTests.swift; sourceTree = "<group>"; };
 		A6AEF11B151368BF993C3EA9 /* TestScenario.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScenario.swift; sourceTree = "<group>"; };
 		AD381E7E16D01D8D743232F7 /* ThemeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeTests.swift; sourceTree = "<group>"; };
-		AF07D2421252EA2AE5C2FC4F /* AnalyticsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsTests.swift; sourceTree = "<group>"; };
 		B18D7E7738BF86467B0F1465 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B1FD8065D40A2D691F643F3B /* UIViewController+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+API.swift"; sourceTree = "<group>"; };
 		B266F9E1651BD20E45DCCF68 /* PrimerRawRetailerDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerRawRetailerDataTests.swift; sourceTree = "<group>"; };
@@ -297,7 +308,6 @@
 		E63F5C5C1FD2F3E6CB02EC5A /* HeadlessUniversalCheckoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadlessUniversalCheckoutTests.swift; sourceTree = "<group>"; };
 		E7640DB186F9638C2F556F77 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Main.strings; sourceTree = "<group>"; };
 		E8DE1E4FB055B60582977315 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
-		E90441E821B5FE76643B62A6 /* AnalyticsTests+Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnalyticsTests+Constants.swift"; sourceTree = "<group>"; };
 		E9899972360BCA5992CEE5BC /* PrimerBancontactCardDataManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerBancontactCardDataManagerTests.swift; sourceTree = "<group>"; };
 		EEB1E1B37192BF739461AFF1 /* PrimerRawCardDataManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerRawCardDataManagerTests.swift; sourceTree = "<group>"; };
 		F4AC1EC0F98CB56DA4D075CA /* Mocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
@@ -329,12 +339,47 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		049A05612B4C1ED4002CEEBA /* Test Utilities */ = {
+		042ED1632AF0F5CE0027833F /* Delegates */ = {
 			isa = PBXGroup;
 			children = (
-				049A05622B4C1EE6002CEEBA /* SDKSessionHelper.swift */,
+				042ED1642AF0F5FD0027833F /* MockRawDataManagerDelegate.swift */,
+			);
+			path = Delegates;
+			sourceTree = "<group>";
+		};
+		0442B6422B7BA468004DB054 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				0442B6432B7BA477004DB054 /* MockAnalyticsStorage.swift */,
+				0442B6452B7BA498004DB054 /* MockPrimerAPIAnalyticsClient.swift */,
+			);
+			path = Analytics;
+			sourceTree = "<group>";
+		};
+		0479FB162AF2598800D0AFC9 /* Test Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				0479FB172AF2599200D0AFC9 /* StringTyper.swift */,
+				04DAAED52B03EF0B002E2614 /* SDKSessionHelper.swift */,
+				04236A9A2B7D2EA50041EC11 /* JWTFactory.swift */,
 			);
 			path = "Test Utilities";
+			sourceTree = "<group>";
+		};
+		0489E2B92B68F70400FA0682 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				0489E2BA2B68F71300FA0682 /* TapGestureRecognizer.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		04DAAED22B03EEBE002E2614 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				04DAAED32B03EED1002E2614 /* AssetsManagerTests.swift */,
+			);
+			path = Assets;
 			sourceTree = "<group>";
 		};
 		094077DEFDC2739B10CF4183 /* Resources */ = {
@@ -387,6 +432,7 @@
 			children = (
 				E130C3D82AFD19FF00AC3E7C /* NetworkTests.swift */,
 				1F4E35F809D3FAF4354D5B05 /* URLSessionStackTests.swift */,
+				041F52082ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -421,6 +467,7 @@
 				743F107C464526926A34A433 /* PaymentMethodConfigServiceTests.swift */,
 				5D7EC742DEB5BE12252E3E5B /* PayPalServiceTests.swift */,
 				952364FBFD6FA09653ECA37E /* TokenizationServiceTests.swift */,
+				042ED15C2AF010500027833F /* CardValidationServiceTests.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -444,9 +491,9 @@
 				553A7EDE72B8249F55A0E6B9 /* Extension */,
 				D9AC6F54A87D432982864A63 /* Model */,
 				64FB843527A1671D550B536F /* Network */,
+				0489E2B92B68F70400FA0682 /* Utilities */,
 				F214F09DF97D2A83FC7D0BE0 /* View */,
 				0E5CB4D963647832FF985B29 /* View Controllers */,
-				A9ACBE5F8E70CF200C80001F /* View Model */,
 				DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */,
 			);
 			path = Sources;
@@ -459,6 +506,8 @@
 				25FD540BEA16ABBDFE7DE182 /* PayPalService.swift */,
 				2E8F69253D85350BB7A1A761 /* TokenizationService.swift */,
 				5E8D7F3C53F8CCE4A03C975E /* VaultService.swift */,
+				047D8E882ADEA4C700A5E7BD /* NetworkService.swift */,
+				042ED1612AF0F5600027833F /* MockBINDataAPIClient.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -530,14 +579,6 @@
 			path = Helpers;
 			sourceTree = "<group>";
 		};
-		A9ACBE5F8E70CF200C80001F /* View Model */ = {
-			isa = PBXGroup;
-			children = (
-				95E4B74F7EEA3D2D19E08FDA /* Apaya.swift */,
-			);
-			path = "View Model";
-			sourceTree = "<group>";
-		};
 		ACC4CBBD9744630CB46A5EE4 /* v2 */ = {
 			isa = PBXGroup;
 			children = (
@@ -553,6 +594,7 @@
 		C8A971C6C0021F0115DF44CC /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				0402B7B72AFBBC2200B02C75 /* ApplePayUtilsTest.swift */,
 				BA0B2BEE5C389FD13E210847 /* DateTests.swift */,
 				A1055D6E2AF125E90027B967 /* DebouncerTests.swift */,
 				9314E0A4E884A8228611A030 /* IntExtensionTests.swift */,
@@ -568,6 +610,7 @@
 			children = (
 				1F79B50111AC4161CFB1EFE8 /* ApayaTests.swift */,
 				31CFA93A373A7DB78DA77283 /* ApplePayTests.swift */,
+				0402B7B52AFBBA7200B02C75 /* CardNetworkTests.swift */,
 				5F8DC3341BDBB9AEDBE8D6DD /* DecodedClientToken.swift */,
 				A12AC2522B5046CF00C26999 /* CurrencyStorageTests.swift */,
 				7A5E6F7A9C12C69CB66032E3 /* IPay88Tests.swift */,
@@ -585,6 +628,7 @@
 		D99811C39E1808A948623732 /* Unit Tests */ = {
 			isa = PBXGroup;
 			children = (
+				04DAAED22B03EEBE002E2614 /* Assets */,
 				E1A2F78003351E14426E0B36 /* Analytics */,
 				D83EED4C1249B62B908781B0 /* Data Models */,
 				626776D8EFEF24D5C5A36307 /* Extensions */,
@@ -594,7 +638,7 @@
 				2F23D3C9CC9CBC1B95329B1C /* Network */,
 				5CC7BF9D8A0A9D8490C48151 /* Primer */,
 				5836043C1C4E5A1CF7B81CDD /* Services */,
-				049A05612B4C1ED4002CEEBA /* Test Utilities */,
+				0479FB162AF2598800D0AFC9 /* Test Utilities */,
 				C8A971C6C0021F0115DF44CC /* Utils */,
 				ACC4CBBD9744630CB46A5EE4 /* v2 */,
 				F4AC1EC0F98CB56DA4D075CA /* Mocks.swift */,
@@ -687,9 +731,6 @@
 		E1A2F78003351E14426E0B36 /* Analytics */ = {
 			isa = PBXGroup;
 			children = (
-				AF07D2421252EA2AE5C2FC4F /* AnalyticsTests.swift */,
-				E90441E821B5FE76643B62A6 /* AnalyticsTests+Constants.swift */,
-				04F6EF712AE69FC500115D05 /* AnalyticsTests+Helpers.swift */,
 				04F6EF732AE6A06200115D05 /* AnalyticsEventsTests.swift */,
 				049298002B1DD466002E04B8 /* AnalyticsServiceTests.swift */,
 				049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */,
@@ -700,6 +741,8 @@
 		E4C8DBB82E4149A7C4D26467 /* Mocks */ = {
 			isa = PBXGroup;
 			children = (
+				0442B6422B7BA468004DB054 /* Analytics */,
+				042ED1632AF0F5CE0027833F /* Delegates */,
 				61C1263B3C114C5B0A1E5AB4 /* Services */,
 				DAAB90DB09F0793B3580DE69 /* ViewModels */,
 				8A23886804B13FA754E775D0 /* MockPaymentMethodTokenizationViewModel.swift */,
@@ -744,7 +787,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4700FFD06E10F0EE123A7B8B /* Build configuration list for PBXNativeTarget "Debug App Tests" */;
 			buildPhases = (
-				7FF1A844A9C16F11745972F2 /* [CP] Check Pods Manifest.lock */,
+				A9E4A28817B41EF38C6AEA99 /* [CP] Check Pods Manifest.lock */,
 				1E0FCAD905F5F8F13B6A164B /* Sources */,
 				9CED4C4EFACB340F3C55B1F0 /* Resources */,
 				D11E367C3560C383BC4CA0A7 /* Embed Frameworks */,
@@ -851,7 +894,26 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		7FF1A844A9C16F11745972F2 /* [CP] Check Pods Manifest.lock */ = {
+		A18BD8BD2AFE4B0900923C87 /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif which swiftlint > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+		A9E4A28817B41EF38C6AEA99 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -872,25 +934,6 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
-		};
-		A18BD8BD2AFE4B0900923C87 /* SwiftLint */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = SwiftLint;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif which swiftlint > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 		D29AC5EE3F62516192AF0EB6 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -938,18 +981,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E4DF956CABAE0633980D5B89 /* AnalyticsTests+Constants.swift in Sources */,
-				E52B5646C4E1E712FEDE06CB /* AnalyticsTests.swift in Sources */,
-				9AB1ABF4E46A37766CDBF197 /* ApayaTests.swift in Sources */,
 				70EAA3B33425CC9D16239BB0 /* ApplePayTests.swift in Sources */,
 				A13392BC2AD459E90005A4D7 /* NolPayLinkCardComponentTest.swift in Sources */,
 				3FD160A4D951EA772ADF4E25 /* DecodedClientToken.swift in Sources */,
 				E1E502B12AFE9ECF00CD7F0A /* XCTestCase+Tokenization.swift in Sources */,
 				3D112A8DE292D097E651FCDB /* IPay88Tests.swift in Sources */,
+				04DAAED42B03EED1002E2614 /* AssetsManagerTests.swift in Sources */,
 				A1536BAF2AEC0A6D0087DDC0 /* NolTestsMocks.swift in Sources */,
 				A61B9E61EDCE18D34438352E /* PayPalConfirmBillingAgreementTests.swift in Sources */,
 				E13E72452AFE653000911866 /* IdealPaymentMethodTests.swift in Sources */,
+				0442B6472B7BA4C7004DB054 /* MockPrimerAPIAnalyticsClient.swift in Sources */,
 				8064B65A8F83D5B004D081FD /* PaymentMethodConfigTests.swift in Sources */,
+				04DAAED62B03EF0B002E2614 /* SDKSessionHelper.swift in Sources */,
 				4BD7794627267B40E9E10686 /* PrimerCheckoutTheme.swift in Sources */,
 				A12AC2552B505B6200C26999 /* CurrencyLoaderTests.swift in Sources */,
 				F99DAF50E86E6F8CCD127E5B /* ThemeTests.swift in Sources */,
@@ -961,6 +1004,9 @@
 				E108F58E2B0D4F0800EC3CC6 /* WebRedirectComponentTests.swift in Sources */,
 				04FAF9EC2AE7B33E002E4BAE /* StringExtensionTests.swift in Sources */,
 				C29B625B5698094691227852 /* TokenizationResponseTests.swift in Sources */,
+				047D8E892ADEA4C700A5E7BD /* NetworkService.swift in Sources */,
+				041F52092ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift in Sources */,
+				0402B7B62AFBBA7200B02C75 /* CardNetworkTests.swift in Sources */,
 				A1585C752ACDAA700014F0B9 /* NolPayLinkedCardsComponentTests.swift in Sources */,
 				088961D00784BD296EA9745C /* EncodingDecodingContainerTests.swift in Sources */,
 				800B92A57CAAC6471D01A89D /* CardData.swift in Sources */,
@@ -971,40 +1017,44 @@
 				E11F473D2B0694C50091C31F /* PrimerHeadlessFormWithRedirectManagerTests.swift in Sources */,
 				161D4BE3FFD5E4A60F4461F0 /* CreateResumePaymentService.swift in Sources */,
 				C6D7F7ECFD35B3DC3AFD6CB2 /* PayPalService.swift in Sources */,
+				042ED1622AF0F5600027833F /* MockBINDataAPIClient.swift in Sources */,
 				5976CCA261F0811F5D7707DA /* TokenizationService.swift in Sources */,
 				583EBAA90902121CEA479416 /* VaultService.swift in Sources */,
 				961B5D18058EF4CFCD0185AE /* MockVaultCheckoutViewModel.swift in Sources */,
 				622A605DDEA98D981670B53F /* DropInUI_TokenizationViewModelTests.swift in Sources */,
-				F03699592AC2E63700E4179D /* BuildFile in Sources */,
 				208CA849F3187C2DA63CC17B /* HUC_TokenizationViewModelTests.swift in Sources */,
-				049A05642B4C1EEB002CEEBA /* SDKSessionHelper.swift in Sources */,
 				213196DEDF2A3A84037ED884 /* PollingModuleTests.swift in Sources */,
 				04F6EF742AE6A06200115D05 /* AnalyticsEventsTests.swift in Sources */,
 				049298012B1DD466002E04B8 /* AnalyticsServiceTests.swift in Sources */,
 				1589385B62C86DE7C735F3EC /* PrimerAPIConfigurationModuleTests.swift in Sources */,
 				E130C3D92AFD19FF00AC3E7C /* NetworkTests.swift in Sources */,
 				A39750255D4C33527A3766A0 /* UserInterfaceModuleTests.swift in Sources */,
+				0479FB192AF2599A00D0AFC9 /* StringTyper.swift in Sources */,
 				3EE90DEB1DB7BE9270FB17BF /* URLSessionStackTests.swift in Sources */,
 				2C98B33ECA68109C7A6AA134 /* PrimerBancontactCardDataManagerTests.swift in Sources */,
 				05FAC0D894B841B52E9E0A9A /* PrimerRawCardDataManagerTests.swift in Sources */,
 				D649870C2D022B4063BDC0B4 /* PrimerRawRetailerDataTests.swift in Sources */,
 				A1536BAD2AEBEC3A0087DDC0 /* NolPayPhoneMetadataServiceTests.swift in Sources */,
+				04236A9B2B7D2EA50041EC11 /* JWTFactory.swift in Sources */,
 				7F49B29FCC55CF3C5CB6C506 /* InternalCardComponentManagerTests.swift in Sources */,
 				DB1A2989DDE0928C62B15303 /* PayPalServiceTests.swift in Sources */,
 				97F0B302DF965C1AD1EC6F4D /* PaymentMethodConfigServiceTests.swift in Sources */,
 				33EA4F728A7984997A0EF515 /* TokenizationServiceTests.swift in Sources */,
 				E1A297262B036AB1005ADA51 /* BankComponentTests.swift in Sources */,
 				91FAC91E687B6981268E677E /* DateTests.swift in Sources */,
+				042ED1652AF0F5FD0027833F /* MockRawDataManagerDelegate.swift in Sources */,
 				041295AD2AB9E2C100A4F243 /* PrimerHeadlessNolPayManagerTests.swift in Sources */,
 				DC98712939835FB79A20BD63 /* IntExtensionTests.swift in Sources */,
 				049A05602B4C191D002CEEBA /* NativeUIManagerTests.swift in Sources */,
 				6B2212601374387CB004DA86 /* MaskTests.swift in Sources */,
 				C8A64A69AD55D9BF82F0D876 /* StringTests.swift in Sources */,
+				0402B7B82AFBBC2200B02C75 /* ApplePayUtilsTest.swift in Sources */,
 				77A8EFBA78D6C6B95A400C74 /* WebViewUtilTests.swift in Sources */,
 				242EF5037D6FB396B7AE1CB5 /* HeadlessUniversalCheckoutTests.swift in Sources */,
-				04F6EF722AE69FC500115D05 /* AnalyticsTests+Helpers.swift in Sources */,
+				042ED15D2AF010500027833F /* CardValidationServiceTests.swift in Sources */,
 				2662EB3445AE8C7188953EFD /* HeadlessVaultManagerTests.swift in Sources */,
 				A1A3D0F52AD56BE300F7D8C9 /* NolPayPaymentComponentTests.swift in Sources */,
+				0442B6492B7BA4CD004DB054 /* MockAnalyticsStorage.swift in Sources */,
 				9263BD762EC26F6AA986F0C9 /* MockAPIClient.swift in Sources */,
 				A1055D6F2AF125E90027B967 /* DebouncerTests.swift in Sources */,
 				8B5CB0C992DBAB293D378FAD /* MockModule.swift in Sources */,
@@ -1034,23 +1084,17 @@
 				53E3182FFC4E5F05D866CFAE /* Networking.swift in Sources */,
 				592E00D98C8835CBCDAA26D9 /* MerchantDropInUIViewController.swift in Sources */,
 				E11F474C2B06C4E30091C31F /* MerchantNewLineItemViewController.swift in Sources */,
-				E11F47492B06C4E30091C31F /* BanksListView.swift in Sources */,
 				041295AA2AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */,
 				135E5BFD51371FABB5FF35D3 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift in Sources */,
-				E129D6702B162022004694F9 /* MerchantHeadlessCheckoutBankViewController.swift in Sources */,
 				E11F47542B06C5030091C31F /* BanksListView.swift in Sources */,
 				AD9CF1073EE0676E6640481A /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */,
-				E11F474D2B06C4E30091C31F /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */,
 				72F8D6065334FCD5B726A52C /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift in Sources */,
 				14EE32F4821BD1F19F75227F /* MerchantHeadlessCheckoutRawRetailDataViewController.swift in Sources */,
 				F02F496FD20B5291C044F62C /* MerchantResultViewController.swift in Sources */,
+				0489E2BB2B68F71300FA0682 /* TapGestureRecognizer.swift in Sources */,
 				E11F47562B06C5030091C31F /* ImageViewWithUrl.swift in Sources */,
 				34CDCA7B403C001E4C55D26D /* MerchantSessionAndSettingsViewController.swift in Sources */,
 				E11F474A2B06C4E30091C31F /* BanksListModel.swift in Sources */,
-				170F3A07A039EE30E065AA30 /* MerchantNewLineItemViewController.swift in Sources */,
-				C5B3635FC90C149C4961BD9A /* Apaya.swift in Sources */,
-				E11F474B2B06C4E30091C31F /* ImageViewWithUrl.swift in Sources */,
-				E11F47552B06C5030091C31F /* BanksListModel.swift in Sources */,
 				C0115AC7BC96FDF49EF8E530 /* PaymentMethodCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1260,7 +1304,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALIDATE_PRODUCT = YES;
@@ -1348,7 +1392,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";

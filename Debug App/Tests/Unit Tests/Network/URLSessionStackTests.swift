@@ -10,6 +10,8 @@ import XCTest
 @testable import PrimerSDK
 
 private struct DummyEndpoint: Endpoint {
+
+    var timeout: TimeInterval?
     var baseURL: String?
     var port: Int?
     var path: String = ""
@@ -80,18 +82,19 @@ final class URLSessionStackTests: XCTestCase {
     // Test that /sdk-logs and polling endpoints are omitted from network analytics reporting
     func testAnalyticsReportingForOmitted() {
         // Test endpoints that shouldn't cause a network event to be reported
-        XCTAssertFalse(sut.shouldReportNetworkEvents(for: .poll(clientToken: nil, url: "")))
-        XCTAssertFalse(sut.shouldReportNetworkEvents(for: .sendAnalyticsEvents(clientToken: nil, url: Analytics.Service.defaultSdkLogsUrl, body: nil)))
-        XCTAssertFalse(sut.shouldReportNetworkEvents(for: .sendAnalyticsEvents(clientToken: nil, url: URL(string: "https://anything-that-ends.with/sdk-logs")!, body: nil)))
+        XCTAssertFalse(sut.shouldReportNetworkEvents(for: PrimerAPI.poll(clientToken: nil, url: "")))
+        XCTAssertFalse(sut.shouldReportNetworkEvents(for: PrimerAPI.sendAnalyticsEvents(clientToken: nil, url: Analytics.Service.defaultSdkLogsUrl, body: nil)))
+        XCTAssertFalse(sut.shouldReportNetworkEvents(for: PrimerAPI.sendAnalyticsEvents(clientToken: nil, url: URL(string: "https://anything-that-ends.with/sdk-logs")!, body: nil)))
+        XCTAssertFalse(sut.shouldReportNetworkEvents(for: PrimerAPI.sendAnalyticsEvents(clientToken: nil, url: URL(string: "https://anything-that-ends.with/checkout/track")!, body: nil)))
 
         // Test selection of endpoints that should cause a network event to be reported
-        XCTAssertTrue(sut.shouldReportNetworkEvents(for: .createPayment(clientToken: mockClientToken, paymentRequest: .init(token: ""))))
-        XCTAssertTrue(sut.shouldReportNetworkEvents(for: .fetchConfiguration(clientToken: mockClientToken, requestParameters: .init(skipPaymentMethodTypes: nil, requestDisplayMetadata: nil))))
-        XCTAssertTrue(sut.shouldReportNetworkEvents(for: .fetchVaultedPaymentMethods(clientToken: mockClientToken)))
+        XCTAssertTrue(sut.shouldReportNetworkEvents(for: PrimerAPI.createPayment(clientToken: mockClientToken, paymentRequest: .init(token: ""))))
+        XCTAssertTrue(sut.shouldReportNetworkEvents(for: PrimerAPI.fetchConfiguration(clientToken: mockClientToken, requestParameters: .init(skipPaymentMethodTypes: nil, requestDisplayMetadata: nil))))
+        XCTAssertTrue(sut.shouldReportNetworkEvents(for: PrimerAPI.fetchVaultedPaymentMethods(clientToken: mockClientToken)))
         let paymentInstrument = CardPaymentInstrument(number: "", cvv: "", expirationMonth: "", expirationYear: "")
-        XCTAssertTrue(sut.shouldReportNetworkEvents(for: .tokenizePaymentMethod(clientToken: mockClientToken, tokenizationRequestBody: .init(paymentInstrument: paymentInstrument))))
+        XCTAssertTrue(sut.shouldReportNetworkEvents(for: PrimerAPI.tokenizePaymentMethod(clientToken: mockClientToken, tokenizationRequestBody: .init(paymentInstrument: paymentInstrument))))
         let klarnaCreatePaymentSession = Request.Body.Klarna.CreatePaymentSession(paymentMethodConfigId: "", sessionType: .hostedPaymentPage, description: nil, redirectUrl: nil, totalAmount: nil, orderItems: nil)
-        XCTAssertTrue(sut.shouldReportNetworkEvents(for: .createKlarnaPaymentSession(clientToken: mockClientToken, klarnaCreatePaymentSessionAPIRequest: klarnaCreatePaymentSession)))
+        XCTAssertTrue(sut.shouldReportNetworkEvents(for: PrimerAPI.createKlarnaPaymentSession(clientToken: mockClientToken, klarnaCreatePaymentSessionAPIRequest: klarnaCreatePaymentSession)))
     }
 
 }
