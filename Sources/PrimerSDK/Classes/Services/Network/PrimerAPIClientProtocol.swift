@@ -102,13 +102,6 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPICli
         continueInfo: ThreeDS.ContinueInfo,
         completion: @escaping APICompletion<ThreeDS.PostAuthResponse>)
 
-    // MARK: Apaya
-
-    func createApayaSession(
-        clientToken: DecodedJWTToken,
-        request: Request.Body.Apaya.CreateSession,
-        completion: @escaping APICompletion<Response.Body.Apaya.CreateSession>)
-
     // MARK: Adyen
 
     func listAdyenBanks(
