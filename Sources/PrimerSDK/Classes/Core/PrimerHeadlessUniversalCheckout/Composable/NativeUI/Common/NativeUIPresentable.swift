@@ -11,5 +11,3 @@ protocol NativeUIPresentable {
     func present(intent: PrimerSessionIntent,
                  clientToken: String)
 }
-
-
