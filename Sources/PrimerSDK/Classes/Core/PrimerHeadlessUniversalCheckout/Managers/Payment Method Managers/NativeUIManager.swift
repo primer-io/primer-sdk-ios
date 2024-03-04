@@ -87,9 +87,3 @@ extension PrimerHeadlessUniversalCheckout {
     }
 
 }
-
-struct GenericValidationComponent: NativeUIValidateable {
-    var paymentMethodType: String
-    
-    func validatePaymentMethod() throws {}
-}

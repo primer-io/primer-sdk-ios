@@ -63,3 +63,11 @@ extension NativeUIValidateable {
         return paymentMethod
     }
 }
+
+// Used currently for all web redirect APMs
+// There is no specific validation on top of the default implementation
+struct GenericValidationComponent: NativeUIValidateable {
+    var paymentMethodType: String
+
+    func validatePaymentMethod() throws {}
+}
