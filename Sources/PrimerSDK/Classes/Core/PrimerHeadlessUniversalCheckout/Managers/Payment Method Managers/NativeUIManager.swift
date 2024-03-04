@@ -36,9 +36,7 @@ extension PrimerHeadlessUniversalCheckout {
             case PrimerPaymentMethodType.payPal.rawValue:
                 self.validationComponent = PayPalValidationComponent()
             default:
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil, diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
+                self.validationComponent = GenericValidationComponent(paymentMethodType: paymentMethodType)
             }
 
             self.presentationComponent = NativeUIPresentationComponent(paymentMethodType: paymentMethodType)
@@ -88,4 +86,10 @@ extension PrimerHeadlessUniversalCheckout {
         }
     }
 
+}
+
+struct GenericValidationComponent: NativeUIValidateable {
+    var paymentMethodType: String
+    
+    func validatePaymentMethod() throws {}
 }
