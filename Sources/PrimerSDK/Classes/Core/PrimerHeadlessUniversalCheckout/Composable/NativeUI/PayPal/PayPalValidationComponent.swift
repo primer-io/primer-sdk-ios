@@ -12,14 +12,14 @@ struct PayPalValidationComponent: NativeUIValidateable {
 
     func validatePaymentMethod() throws {
         if PrimerSettings.current.paymentMethodOptions.urlScheme == nil {
-            let err = PrimerError.invalidUrlScheme(urlScheme: nil,
+            let error = PrimerError.invalidUrlScheme(urlScheme: nil,
                                                    userInfo: ["file": #file,
                                                               "class": "\(Self.self)",
                                                               "function": #function,
                                                               "line": "\(#line)"],
                                                    diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+            ErrorHandler.handle(error: error)
+            throw error
         }
     }
 }
