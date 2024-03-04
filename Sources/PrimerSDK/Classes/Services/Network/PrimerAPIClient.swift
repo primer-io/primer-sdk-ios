@@ -122,16 +122,10 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         execute(endpoint, completion: completion)
     }
 
-    func createApayaSession(clientToken: DecodedJWTToken,
-                            request: Request.Body.Apaya.CreateSession,
-                            completion: @escaping APICompletion<Response.Body.Apaya.CreateSession>) {
-        let endpoint = PrimerAPI.createApayaSession(clientToken: clientToken, request: request)
-        execute(endpoint, completion: completion)
-    }
-
-    func listAdyenBanks(clientToken: DecodedJWTToken,
-                        request: Request.Body.Adyen.BanksList,
-                        completion: @escaping (Result<[Response.Body.Adyen.Bank], Error>) -> Void) {
+    func listAdyenBanks(
+        clientToken: DecodedJWTToken,
+        request: Request.Body.Adyen.BanksList,
+        completion: @escaping (Result<[Response.Body.Adyen.Bank], Error>) -> Void) {
         let endpoint = PrimerAPI.listAdyenBanks(clientToken: clientToken, request: request)
         execute(endpoint, completion: completion)
     }
