@@ -40,20 +40,20 @@ internal class PrimerInternal: LogReporter {
     static var isInHeadlessMode: Bool {
         PrimerInternal.shared.sdkIntegrationType == .headless
     }
-    
+
     fileprivate init() {
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willTerminateNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willResignActiveNotification, object: nil)
     }
 
     internal func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-#if canImport(Primer3DS)
+        #if canImport(Primer3DS)
         let is3DSHandled = Primer3DS.application(app, open: url, options: options)
 
         if is3DSHandled {
             return true
         }
-#endif
+        #endif
 
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         if let urlScheme = settings.paymentMethodOptions.urlScheme, url.absoluteString.contains(urlScheme) {
@@ -71,11 +71,11 @@ internal class PrimerInternal: LogReporter {
     internal func application(_ application: UIApplication,
                               continue userActivity: NSUserActivity,
                               restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-#if canImport(Primer3DS)
+        #if canImport(Primer3DS)
         return Primer3DS.application(application, continue: userActivity, restorationHandler: restorationHandler)
-#else
+        #else
         return false
-#endif
+        #endif
     }
 
     @objc
@@ -142,6 +142,8 @@ internal class PrimerInternal: LogReporter {
         }
         .done {
             PrimerUIManager.presentPaymentUI()
+            let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(), networkService: CurrencyNetworkService())
+            currencyLoader.updateCurrenciesFromAPI()
             completion?(nil)
         }
         .catch { err in
@@ -210,14 +212,13 @@ internal class PrimerInternal: LogReporter {
 
         let sdkEvent = Analytics.Event.sdk(name: #function, params: nil)
 
-
         let connectivityEvent = Analytics.Event.networkConnectivity(networkType: Connectivity.networkType)
 
         let timingStartEvent = Analytics.Event.timer(
             momentType: .start,
             id: PrimerInternal.shared.timingEventId ?? "Unknown"
         )
-        
+
         events = [sdkEvent, connectivityEvent, timingStartEvent]
         Analytics.Service.record(events: events)
 

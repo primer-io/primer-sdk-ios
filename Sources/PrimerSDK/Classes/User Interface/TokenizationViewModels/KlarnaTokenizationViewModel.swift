@@ -12,13 +12,13 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
 
-#if canImport(PrimerKlarnaSDK)
+    #if canImport(PrimerKlarnaSDK)
     private var klarnaViewController: PrimerKlarnaViewController?
-#endif
+    #endif
 
-#if DEBUG
+    #if DEBUG
     private var demoThirdPartySDKViewController: PrimerThirdPartySDKViewController?
-#endif
+    #endif
     private var klarnaPaymentSession: Response.Body.Klarna.CreatePaymentSession?
     private var klarnaCustomerTokenAPIResponse: Response.Body.Klarna.CustomerToken?
     private var klarnaPaymentSessionCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
@@ -120,7 +120,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
 
         return Promise { seal in
-#if canImport(PrimerKlarnaSDK)
+            #if canImport(PrimerKlarnaSDK)
             firstly {
                 self.validateReturningPromise()
             }
@@ -158,16 +158,16 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     self.didDismissExternalView?()
                 })
 
-#if DEBUG
+                #if DEBUG
                 self.demoThirdPartySDKViewController?.dismiss(animated: true, completion: {
                     self.didDismissExternalView?()
                 })
-#endif
+                #endif
             }
             .catch { err in
                 seal.reject(err)
             }
-#else
+            #else
             let err = PrimerError.missingSDK(paymentMethodType: PrimerPaymentMethodType.klarna.rawValue,
                                              sdkName: "KlarnaSDK",
                                              userInfo: ["file": #file,
@@ -177,7 +177,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                                              diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             seal.reject(err)
-#endif
+            #endif
         }
     }
 
@@ -212,14 +212,14 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         return Promise { seal in
             DispatchQueue.main.async {
                 var isMockedBE = false
-#if DEBUG
+                #if DEBUG
                 if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
                     isMockedBE = true
                 }
-#endif
+                #endif
 
                 if !isMockedBE {
-#if canImport(PrimerKlarnaSDK)
+                    #if canImport(PrimerKlarnaSDK)
                     let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
 
                     guard let urlSchemeStr = settings.paymentMethodOptions.urlScheme,
@@ -254,11 +254,11 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     PrimerUIManager.primerRootViewController?.show(viewController: self.klarnaViewController!)
                     self.didPresentExternalView?()
                     seal.fulfill()
-#else
+                    #else
                     seal.fulfill()
-#endif
+                    #endif
                 } else {
-#if DEBUG
+                    #if DEBUG
                     firstly {
                         PrimerUIManager.prepareRootViewController()
                     }
@@ -274,7 +274,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     .catch { _ in
                         seal.fulfill()
                     }
-#endif
+                    #endif
                 }
             }
         }
@@ -413,7 +413,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 //                This is not being used?
                 //                orderItems = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.lineItems?.compactMap({ try? $0.toOrderItem() })
                 //
-                self.logger.info(message: "Klarna amount: \(amount!) \(AppState.current.currency!.rawValue)")
+                self.logger.info(message: "Klarna amount: \(amount!) \(AppState.current.currency!.code)")
 
             } else if case .recurringPayment = klarnaSessionType {
                 // Do not send amount for recurring payments, even if it's set

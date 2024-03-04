@@ -15,7 +15,9 @@ protocol AnalyticsStorage {
 
     func save(_ events: [Analytics.Event]) throws
 
-    func delete(_ events: [Analytics.Event]?)
+    func delete(_ events: [Analytics.Event])
+
+    func delete(eventsWithUrl url: URL)
 
     func deleteAnalyticsFile()
 }
@@ -62,26 +64,33 @@ extension Analytics {
             }
         }
 
-        func delete(_ events: [Analytics.Event]?) {
-            logger.debug(message: "📚 Analytics: Deleting \(events == nil ? "all" : "\(events!.count)") events")
+        func delete(_ events: [Analytics.Event]) {
+            guard events.count > 0 else {
+                logger.warn(message: "📚 Analytics: tried to delete events but array was empty ...")
+                return
+            }
+
+            logger.debug(message: "📚 Analytics: Deleting \(events.count) events")
 
             do {
-                if let events = events {
-                    let storedEvents = loadEvents()
-                    let eventsLocalIds = events.compactMap({ $0.localId })
-                    let remainingEvents = storedEvents.filter({ !eventsLocalIds.contains($0.localId )})
+                let storedEvents = loadEvents()
+                let eventsLocalIds = events.compactMap({ $0.localId })
+                let remainingEvents = storedEvents.filter({ !eventsLocalIds.contains($0.localId )})
 
-                    logger.debug(message: "📚 Analytics: Deleted \(eventsLocalIds.count) events, saving remaining \(remainingEvents.count)")
+                logger.debug(message: "📚 Analytics: Deleted \(eventsLocalIds.count) events, saving remaining \(remainingEvents.count)")
 
-                    try save(remainingEvents)
-                } else {
-                    deleteAnalyticsFile()
-                }
+                try save(remainingEvents)
             } catch {
                 logger.error(message: "📚 Analytics: Failed to save partial events before deleting file. Deleting file anyway.")
                 deleteAnalyticsFile()
             }
         }
+
+        func delete(eventsWithUrl url: URL) {
+            let events = loadEvents().filter { $0.analyticsUrl == url.absoluteString }
+            delete(events)
+        }
+
 
         func deleteAnalyticsFile() {
             logger.debug(message: "📚 Analytics: Deleting analytics file at \(fileURL.absoluteString)")

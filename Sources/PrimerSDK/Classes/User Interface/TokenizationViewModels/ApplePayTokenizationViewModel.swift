@@ -237,7 +237,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     items: orderItems
                 )
 
-                let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
+                let supportedNetworks = ApplePayUtils.supportedPKPaymentNetworks()
                 var canMakePayment: Bool
                 if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
                     canMakePayment = PKPaymentAuthorizationController.canMakePayments(usingNetworks: supportedNetworks)
@@ -249,7 +249,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     let request = PKPaymentRequest()
                     let isBillingContactFieldsRequired = PrimerSettings.current.paymentMethodOptions.applePayOptions?.isCaptureBillingAddressEnabled == true
                     request.requiredBillingContactFields = isBillingContactFieldsRequired ? [.postalAddress] : []
-                    request.currencyCode = applePayRequest.currency.rawValue
+                    request.currencyCode = applePayRequest.currency.code
                     request.countryCode = applePayRequest.countryCode.rawValue
                     request.merchantIdentifier = merchantIdentifier
                     request.merchantCapabilities = [.capability3DS]
@@ -538,13 +538,13 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                                         didAuthorizePayment payment: PKPayment,
                                         handler completion: @escaping (PKPaymentAuthorizationResult) -> Void) {
         var isMockedBE: Bool = false
-#if DEBUG
+        #if DEBUG
         if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
             isMockedBE = true
         }
-#endif
+        #endif
 
-#if targetEnvironment(simulator)
+        #if targetEnvironment(simulator)
         if payment.token.paymentData.count == 0 && !isMockedBE {
             let err = PrimerError.invalidArchitecture(
                 description: "Apple Pay does not work with Primer when used in the simulator due to a limitation from Apple Pay.",
@@ -563,7 +563,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
             applePayReceiveDataCompletion = nil
             return
         }
-#endif
+        #endif
 
         self.isCancelled = false
         self.didTimeout = true

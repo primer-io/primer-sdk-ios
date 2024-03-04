@@ -14,6 +14,7 @@ internal class PayPalService: PayPalServiceProtocol {
 
     private var paypalTokenId: String?
 
+    // swiftlint:disable:next large_tuple
     private func prepareUrlAndTokenAndId(path: String) -> (DecodedJWTToken, URL, String)? {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             return nil
@@ -110,7 +111,7 @@ internal class PayPalService: PayPalServiceProtocol {
         let body = Request.Body.PayPal.CreateOrder(
             paymentMethodConfigId: configId,
             amount: amount,
-            currencyCode: currency,
+            currencyCode: currency.code,
             returnUrl: "\(urlScheme)://paypal-success",
             cancelUrl: "\(urlScheme)://paypal-cancel"
         )
@@ -289,12 +290,12 @@ internal class PayPalService: PayPalServiceProtocol {
         apiClient.fetchPayPalExternalPayerInfo(
             clientToken: decodedJWTToken,
             payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo(paymentMethodConfigId: configId, orderId: orderId)) { result in
-                switch result {
-                case .success(let response):
-                    completion(.success(response))
-                case .failure(let err):
-                    completion(.failure(err))
-                }
+            switch result {
+            case .success(let response):
+                completion(.success(response))
+            case .failure(let err):
+                completion(.failure(err))
             }
+        }
     }
 }

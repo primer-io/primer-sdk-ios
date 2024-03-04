@@ -21,7 +21,7 @@ private let tropical9 = UIColor(red: 31/255, green: 130/255, blue: 118/255, alph
 private let tropical10 = UIColor(red: 230/255, green: 244/255, blue: 190/255, alpha: 1)
 
 struct CheckoutTheme {
-    
+
     static var tropical: PrimerTheme {
         let data = PrimerThemeData()
         data.colors.primary = tropical7
@@ -43,7 +43,7 @@ struct CheckoutTheme {
         data.input.text = PrimerThemeData.Text(defaultColor: tropical4)
         return PrimerTheme.init(with: data)
     }
-    
+
     static var primer: PrimerTheme {
         let themeData = PrimerThemeData()
         themeData.colors.primary = .systemBlue

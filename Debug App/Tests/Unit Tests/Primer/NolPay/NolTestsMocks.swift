@@ -22,43 +22,47 @@ class MockPrimerNolPay: PrimerNolPayProtocol {
 
     required init(appId: String, isDebug: Bool, isSandbox: Bool, appSecretHandler: @escaping (String, String) async throws -> String) {
     }
-    
+
     func scanNFCCard(completion: @escaping (Result<String, PrimerNolPayError>) -> Void) {
         completion(.success(mockCardNumber))
     }
-    
+
     func makeLinkingToken(for cardNumber: String, completion: @escaping (Result<String, PrimerNolPayError>) -> Void) {
         completion(.success("mockLinkingToken"))
     }
-    
+
     func sendLinkOTP(to mobileNumber: String, with countryCode: String, and token: String, completion: ((Result<Bool, PrimerNolPayError>) -> Void)?) {
         completion?(.success(mockBoolResponse))
     }
-    
+
     func linkCard(for otp: String, and linkToken: String, completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void) {
         completion(.success(mockBoolResponse))
     }
-    
+
     func sendUnlinkOTP(to mobileNumber: String, with countryCode: String, and cardNumber: String, completion: @escaping (Result<(String, String), PrimerNolPayError>) -> Void) {
         completion(.success(mockOTPResponse))
     }
-    
+
     func unlinkCard(with cardNumber: String, otp: String, and unlinkToken: String, completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void) {
         completion(.success(mockBoolResponse))
     }
-    
+
     func requestPayment(for cardNumber: String, and transactionNumber: String, completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void) {
         completion(.success(mockBoolResponse))
     }
-    
+
     func getAvailableCards(for mobileNumber: String, with countryCode: String, completion: @escaping (Result<[PrimerNolPayCard], PrimerNolPayError>) -> Void) {
-        completion(.success(mockCards))
+        if mockCards.count > 0 {
+            completion(.success(mockCards))
+        } else {
+            completion(.failure(PrimerNolPayError.nolPaySdkError(message: "Failed")))
+        }
     }
 }
 
 class MockPhoneMetadataService: NolPayPhoneMetadataProviding {
     var resultToReturn: Result<(PrimerValidationStatus, String?, String?), PrimerError>?
-    
+
     func getPhoneMetadata(mobileNumber: String, completion: @escaping PhoneMetadataCompletion) {
         if let result = resultToReturn {
             completion(result)
@@ -74,7 +78,7 @@ class MockValidationDelegate: PrimerHeadlessValidatableDelegate {
         }
         wasValidatedCalled = true
     }
-    
+
     var validationsReceived: PrimerSDK.PrimerValidationStatus?
     var wasValidatedCalled = false
     var validationErrorsReceived: [PrimerValidationError] = []
@@ -82,7 +86,7 @@ class MockValidationDelegate: PrimerHeadlessValidatableDelegate {
 
 class MockStepDelegate: PrimerHeadlessSteppableDelegate {
     var stepReceived: PrimerHeadlessStep?
-    
+
     func didReceiveStep(step: PrimerHeadlessStep) {
         stepReceived = step
     }
@@ -90,14 +94,14 @@ class MockStepDelegate: PrimerHeadlessSteppableDelegate {
 
 class MockErrorDelegate: PrimerHeadlessErrorableDelegate {
     var errorReceived: Error?
-    
+
     func didReceiveError(error: PrimerSDK.PrimerError) {
         errorReceived = error
     }
 }
 
 class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
-    
+
     // Mock response values
     var mockValidateError: Error?
     var mockTokenizationResult: Result<PrimerPaymentMethodTokenData, Error>?
@@ -179,7 +183,7 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
             return .value(()) // Default stubbed value
         }
     }
-    
+
     override func performTokenizationStep() -> Promise<Void> {
         switch mockTokenizationStepResult {
         case .success:
@@ -190,7 +194,7 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
             return .value(()) // Default stubbed value
         }
     }
-    
+
     override func performPostTokenizationSteps() -> Promise<Void> {
         switch mockPostTokenizationStepsResult {
         case .success:
@@ -201,7 +205,7 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
             return .value(()) // Default stubbed value
         }
     }
-    
+
     override func submitButtonTapped() {
         // No-op for mock
     }

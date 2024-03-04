@@ -98,19 +98,6 @@ extension Response.Body.Tokenization {
                 expiry: "",
                 imageName: self.icon,
                 paymentMethodType: self.paymentInstrumentType)
-        case .apayaToken:
-            if let apayaViewModel = Apaya.ViewModel(paymentMethod: self) {
-                return CardButtonViewModel(
-                    network: "[\(apayaViewModel.carrier.name)] \(apayaViewModel.hashedIdentifier ?? "")",
-                    cardholder: "Apaya",
-                    last4: "",
-                    expiry: "",
-                    imageName: self.icon,
-                    paymentMethodType: self.paymentInstrumentType)
-            } else {
-                return nil
-            }
-
         default:
             return nil
         }
@@ -137,10 +124,8 @@ extension Response.Body.Tokenization {
         public let threeDSecureAuthentication: ThreeDS.AuthenticationDetails?
         public let gocardlessMandateId: String?
         public let authorizationToken: String?
-        // APAYA
-        public let hashedIdentifier: String?
-        public let mnc: Int?
-        public let mcc: Int?
+
+        // swiftlint:disable:next identifier_name
         public let mx: String?
         public let currencyCode: Currency?
         public let productId: String?
@@ -149,6 +134,7 @@ extension Response.Body.Tokenization {
         public let paymentMethodType: String?
         public let sessionInfo: SessionInfo?
 
+        // swiftlint:disable:next nesting
         public struct SessionInfo: Codable {
             public let locale: String?
             public let platform: String?

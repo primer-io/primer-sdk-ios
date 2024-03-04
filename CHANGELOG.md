@@ -1,3 +1,32 @@
+## 2.22.1 (2024-02-22)
+
+### Fix
+
+- Update raw card data validation to only send errors that are different from previous send (#806)
+- Analytics service improvements (#801)
+- Ensure card network is updated correctly in drop-in card form (#805)
+
+## 2.22.0 (2024-02-15)
+
+### Feat
+
+- Co-Badged Cards (#774)
+
+### Fix
+
+- ensure REQUEST_END events are sent for all relevant endpoints (#798)
+
+## 2.21.0 (2024-02-06)
+
+### Feat
+
+- Implement new currencies logic (#776)
+- Primer3DS SDK has been updated to version 2.2.0
+
+### Fix
+
+- Fix NOL pay bug - fetching of the cards (#793)
+
 ## 2.20.1 (2024-01-26)
 
 ### Fix

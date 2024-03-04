@@ -21,12 +21,12 @@ public enum NolPayPaymentStep: PrimerHeadlessStep {
 
 public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
 
-    public typealias T = NolPayPaymentCollectableData
-    public typealias P = NolPayPaymentStep
+    public typealias CollectableDataType = NolPayPaymentCollectableData
+    public typealias CardStepType = NolPayPaymentStep
 
-#if canImport(PrimerNolPaySDK)
+    #if canImport(PrimerNolPaySDK)
     private var nolPay: PrimerNolPay!
-#endif
+    #endif
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
@@ -39,8 +39,8 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     var cardNumber: String?
     public var nextDataStep: NolPayPaymentStep = .collectCardAndPhoneData
 
-    public func updateCollectedData(collectableData: T) {
-       switch collectableData {
+    public func updateCollectedData(collectableData: CollectableDataType) {
+        switch collectableData {
         case let .paymentData(cardNumber, mobileNumber):
             nextDataStep = .collectCardAndPhoneData
             self.cardNumber = cardNumber
@@ -66,14 +66,14 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
 
             if cardNumber.isEmpty {
                 errors.append(PrimerValidationError.invalidCardnumber(
-                    message: "Card number is not valid.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
-                    diagnosticsId: UUID().uuidString))
+                                message: "Card number is not valid.",
+                                userInfo: [
+                                    "file": #file,
+                                    "class": "\(Self.self)",
+                                    "function": #function,
+                                    "line": "\(#line)"
+                                ],
+                                diagnosticsId: UUID().uuidString))
                 ErrorHandler.handle(error: errors.last!)
             }
 
@@ -141,7 +141,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
             paymentMethod.mobileCountryCode = countryCode
 
             paymentMethod.triggerAsyncAction = { (transactionNumber: String, completion: ((Result<Bool, Error>) -> Void)?)  in
-#if canImport(PrimerNolPaySDK)
+                #if canImport(PrimerNolPaySDK)
                 self.nolPay.requestPayment(for: cardNumber, and: transactionNumber) { result in
                     switch result {
 
@@ -177,7 +177,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
                         completion?(.failure(error))
                     }
                 }
-#endif
+                #endif
             }
             paymentMethod.start()
 
@@ -211,11 +211,11 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
 
         let isSandbox = clientToken.env != "PRODUCTION"
         var isDebug = false
-#if DEBUG
+        #if DEBUG
         isDebug =  PrimerLogging.shared.logger.logLevel == .debug
-#endif
+        #endif
 
-#if canImport(PrimerNolPaySDK)
+        #if canImport(PrimerNolPaySDK)
         nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
 
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
@@ -236,7 +236,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
                 }
             }
         }
-#else
+        #else
         let error = PrimerError.missingSDK(
             paymentMethodType: PrimerPaymentMethodType.nolPay.rawValue,
             sdkName: "PrimerNolPaySDK",
@@ -247,6 +247,6 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
             diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: error)
         errorDelegate?.didReceiveError(error: error)
-#endif
+        #endif
     }
 }

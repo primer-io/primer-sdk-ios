@@ -36,7 +36,7 @@ class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationBuilder
         self.paymentMethodType = paymentMethodType
     }
 
-    func configureRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
+    func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
         self.rawDataManager = rawDataManager
     }
 
@@ -102,13 +102,13 @@ class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationBuilder
 
                 if rawData.id.isEmpty {
                     errors.append(PrimerValidationError.invalidRawData(
-                        userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
-                        diagnosticsId: UUID().uuidString))
+                                    userInfo: [
+                                        "file": #file,
+                                        "class": "\(Self.self)",
+                                        "function": #function,
+                                        "line": "\(#line)"
+                                    ],
+                                    diagnosticsId: UUID().uuidString))
                 }
 
                 if !errors.isEmpty {

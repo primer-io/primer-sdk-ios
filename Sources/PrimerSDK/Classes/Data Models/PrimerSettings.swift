@@ -96,10 +96,10 @@ public class PrimerApplePayOptions: Codable {
     let merchantIdentifier: String
     let merchantName: String
     let isCaptureBillingAddressEnabled: Bool
-    /// If in some cases you dont want to present ApplePay option if the device is not supporting it set this to `false`. 
+    /// If in some cases you dont want to present ApplePay option if the device is not supporting it set this to `false`.
     /// Default value is `true`.
     let showApplePayForUnsupportedDevice: Bool
-    /// Due to merchant report about ApplePay flow which was not presenting because 
+    /// Due to merchant report about ApplePay flow which was not presenting because
     /// canMakePayments(usingNetworks:) was returning false if there were no cards in the Wallet,
     /// we introduced this flag to continue supporting the old behaviour. Default value is `true`.
     let checkProvidedNetworks: Bool
@@ -130,10 +130,8 @@ public class PrimerKlarnaOptions: Codable {
 
 // MARK: Card Payment
 
-@available(*, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
 public class PrimerCardPaymentOptions: Codable {
 
-    @available(*, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
     let is3DSOnVaultingEnabled: Bool
 
     @available(swift, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")

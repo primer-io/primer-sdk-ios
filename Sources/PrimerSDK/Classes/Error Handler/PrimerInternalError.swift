@@ -77,8 +77,8 @@ internal enum InternalError: PrimerErrorProtocol {
         case .underlyingErrors(_, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         case .failedToPerform3dsButShouldContinue,
-                .failedToPerform3dsAndShouldBreak,
-                .noNeedToPerform3ds:
+             .failedToPerform3dsAndShouldBreak,
+             .noNeedToPerform3ds:
             return UUID().uuidString
         }
     }
@@ -125,20 +125,20 @@ internal enum InternalError: PrimerErrorProtocol {
 
         switch self {
         case .failedToEncode(_, let userInfo, _),
-                .failedToDecode(_, let userInfo, _),
-                .failedToSerialize(_, let userInfo, _),
-                .connectivityErrors(_, let userInfo, _),
-                .invalidUrl(_, let userInfo, _),
-                .invalidValue(_, _, let userInfo, _),
-                .noData(let userInfo, _),
-                .serverError(_, _, let userInfo, _),
-                .unauthorized(_, _, let userInfo, _),
-                .underlyingErrors(_, let userInfo, _):
+             .failedToDecode(_, let userInfo, _),
+             .failedToSerialize(_, let userInfo, _),
+             .connectivityErrors(_, let userInfo, _),
+             .invalidUrl(_, let userInfo, _),
+             .invalidValue(_, _, let userInfo, _),
+             .noData(let userInfo, _),
+             .serverError(_, _, let userInfo, _),
+             .unauthorized(_, _, let userInfo, _),
+             .underlyingErrors(_, let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
             tmpUserInfo["diagnosticsId"] = self.diagnosticsId
         case .failedToPerform3dsButShouldContinue,
-                .failedToPerform3dsAndShouldBreak,
-                .noNeedToPerform3ds:
+             .failedToPerform3dsAndShouldBreak,
+             .noNeedToPerform3ds:
             break
         }
 
@@ -172,8 +172,8 @@ internal enum InternalError: PrimerErrorProtocol {
         case .underlyingErrors(let errors, _, _):
             return "Check underlying errors' recovery suggestions for more information.\nRecovery Suggestions:\n\(errors.compactMap({ ($0 as NSError).localizedRecoverySuggestion }))"
         case .failedToPerform3dsButShouldContinue,
-                .failedToPerform3dsAndShouldBreak,
-                .noNeedToPerform3ds:
+             .failedToPerform3dsAndShouldBreak,
+             .noNeedToPerform3ds:
             return nil
         }
     }
@@ -190,7 +190,7 @@ internal enum InternalError: PrimerErrorProtocol {
     }
 
     var analyticsContext: [String: Any] {
-        var context: [String: Any] = [:]
+        var context: [String: Any] = [: ]
         context[AnalyticsContextKeys.errorId] = errorId
         return context
     }

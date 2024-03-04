@@ -21,12 +21,14 @@ internal class URLSessionStack: NetworkService, LogReporter {
 
     // MARK: - Network Stack logic
 
-    func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResultCallback<T>) {
+    // swiftlint:disable function_body_length
+    @discardableResult
+    func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResultCallback<T>) -> PrimerCancellable? {
 
         let urlStr: String = (endpoint.baseURL ?? "") + endpoint.path
         let id = String.randomString(length: 32)
 
-        if let primerAPI = endpoint as? PrimerAPI, shouldReportNetworkEvents(for: primerAPI) {
+        if shouldReportNetworkEvents(for: endpoint) {
             let reqEvent = Analytics.Event.networkCall(
                 callType: .requestStart,
                 id: id,
@@ -48,7 +50,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
                                                                                                                                       "line": "\(#line)"], diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
-            return
+            return nil
         }
 
         var request = URLRequest(url: url)
@@ -62,7 +64,11 @@ internal class URLSessionStack: NetworkService, LogReporter {
             request.httpBody = data
         }
 
-#if DEBUG
+        if let timeout = endpoint.timeout {
+            request.timeoutInterval = timeout
+        }
+
+        #if DEBUG
         if let queryParams = endpoint.queryParameters {
             var urlQueryItems: [URLQueryItem] = []
 
@@ -82,40 +88,35 @@ internal class URLSessionStack: NetworkService, LogReporter {
             return " - \(key) = \(value)"
         } ?? []
         logger.debug(message: "📃 Request Headers:\n\(headerDescriptions.joined(separator: "\n"))")
-#endif
+        #endif
 
         let dataTask = session.dataTask(with: request) { [logger] data, response, error in
             let httpResponse = response as? HTTPURLResponse
 
-            var resEventProperties: NetworkCallEventProperties?
-            var resEvent: Analytics.Event?
-            if !endpoint.path.isEmpty {
-                resEvent = Analytics.Event.networkCall(
-                    callType: .requestEnd,
-                    id: id,
-                    url: urlStr,
-                    method: endpoint.method,
-                    errorBody: nil,
-                    responseCode: (response as? HTTPURLResponse)?.statusCode
-                )
+            var resEvent = Analytics.Event.networkCall(
+                callType: .requestEnd,
+                id: id,
+                url: urlStr,
+                method: endpoint.method,
+                errorBody: nil,
+                responseCode: (response as? HTTPURLResponse)?.statusCode
+            )
+            var resEventProperties: NetworkCallEventProperties? = resEvent.properties as? NetworkCallEventProperties
 
-                resEvent!.properties = resEventProperties
-            }
+            #if DEBUG
 
-#if DEBUG
-
-#endif
+            #endif
 
             if let error = error {
-                if resEvent != nil {
+                if self.shouldReportNetworkEvents(for: endpoint) {
                     resEventProperties!.errorBody = "\(error)"
-                    resEvent!.properties = resEventProperties
-                    Analytics.Service.record(event: resEvent!)
+                    resEvent.properties = resEventProperties
+                    Analytics.Service.record(event: resEvent)
                 }
 
-#if DEBUG
+                #if DEBUG
                 logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)", userInfo: ["ErrorMessage": error.localizedDescription])
-#endif
+                #endif
 
                 let err = InternalError.underlyingErrors(errors: [error], userInfo: ["file": #file,
                                                                                      "class": "\(Self.self)",
@@ -127,16 +128,16 @@ internal class URLSessionStack: NetworkService, LogReporter {
             }
 
             guard let data = data else {
-                if resEvent != nil {
+                if self.shouldReportNetworkEvents(for: endpoint) {
                     resEventProperties?.errorBody = "No data received"
-                    resEvent!.properties = resEventProperties
-                    Analytics.Service.record(event: resEvent!)
+                    resEvent.properties = resEventProperties
+                    Analytics.Service.record(event: resEvent)
                 }
 
-#if DEBUG
+                #if DEBUG
                 self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                 self.logger.error(message: "No data received.")
-#endif
+                #endif
 
                 let err = InternalError.noData(userInfo: ["file": #file,
                                                           "class": "\(Self.self)",
@@ -148,17 +149,17 @@ internal class URLSessionStack: NetworkService, LogReporter {
             }
 
             do {
-                if resEvent != nil {
-                    resEvent?.properties = resEventProperties
-                    Analytics.Service.record(event: resEvent!)
+                if self.shouldReportNetworkEvents(for: endpoint) {
+                    resEvent.properties = resEventProperties
+                    Analytics.Service.record(event: resEvent)
                 }
 
-#if DEBUG
+                #if DEBUG
                 if endpoint.shouldParseResponseBody {
                     if let primerAPI = endpoint as? PrimerAPI, case .sendAnalyticsEvents = primerAPI {
                         logger.debug(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                         logger.debug(message: "Analytics event sent")
-                    } else {
+                    } else if !data.isEmpty {
                         let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
                         let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
                         var jsonStr: String?
@@ -178,7 +179,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
                         logger.debug(message: "Body:\n\(bodyDescription)")
                     }
                 }
-#endif
+                #endif
 
                 if endpoint.shouldParseResponseBody == false, httpResponse?.statusCode == 200 {
                     guard let dummyRes: T = DummySuccess(success: true) as? T
@@ -198,10 +199,9 @@ internal class URLSessionStack: NetworkService, LogReporter {
 
                     let primerErrorResponse = try? self.parser.parse(PrimerServerErrorResponse.self, from: primerErrorObject)
 
-                    if resEvent != nil {
+                    if self.shouldReportNetworkEvents(for: endpoint) {
                         resEventProperties?.errorBody = "\(primerErrorJSON)"
-                        resEvent!.properties = resEventProperties
-                        Analytics.Service.record(event: resEvent!)
+                        Analytics.Service.record(event: resEvent)
                     }
 
                     if statusCode == 401 {
@@ -211,10 +211,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
                                                                                                               "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
 
-#if DEBUG
+                        #if DEBUG
                         logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                         logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
-#endif
+                        #endif
 
                         DispatchQueue.main.async { completion(.failure(err)) }
 
@@ -225,10 +225,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
                                                                                                                           "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
 
-#if DEBUG
+                        #if DEBUG
                         self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                         logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
-#endif
+                        #endif
 
                         DispatchQueue.main.async { completion(.failure(err)) }
 
@@ -239,10 +239,10 @@ internal class URLSessionStack: NetworkService, LogReporter {
                                                                                                                           "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
 
-#if DEBUG
+                        #if DEBUG
                         self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                         logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
-#endif
+                        #endif
 
                         DispatchQueue.main.async { completion(.failure(err)) }
 
@@ -253,16 +253,13 @@ internal class URLSessionStack: NetworkService, LogReporter {
                                                                                                                           "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
 
-                        if resEvent != nil {
-                            resEventProperties?.errorBody = err.localizedDescription
-                            resEvent!.properties = resEventProperties
-                            Analytics.Service.record(event: resEvent!)
-                        }
+                        resEventProperties?.errorBody = err.localizedDescription
+                        Analytics.Service.record(event: resEvent)
 
-#if DEBUG
+                        #if DEBUG
                         self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                         logger.error(message: "Error: \n - Status code \(statusCode)\n - \(err)")
-#endif
+                        #endif
 
                         DispatchQueue.main.async { completion(.failure(err)) }
                     }
@@ -274,28 +271,38 @@ internal class URLSessionStack: NetworkService, LogReporter {
                                                                                                                                 "line": "\(#line)"], diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
 
-                    if resEvent != nil {
-                        resEventProperties?.errorBody = err.localizedDescription
-                        resEvent!.properties = resEventProperties
-                        Analytics.Service.record(event: resEvent!)
-                    }
+                    resEventProperties?.errorBody = err.localizedDescription
+                    Analytics.Service.record(event: resEvent)
 
-#if DEBUG
+                    #if DEBUG
                     self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
                     self.logger.error(message: "Error: Failed to parse")
-#endif
+                    if let stringResponse = String(data: data, encoding: .utf8) {
+                        logger.error(message: "String response: \(stringResponse)")
+                    }
+                    #endif
 
-                    DispatchQueue.main.async { completion(.failure(InternalError.underlyingErrors(errors: [err], userInfo: ["file": #file,
-                                                                                                                            "class": "\(Self.self)",
-                                                                                                                            "function": #function,
-                                                                                                                            "line": "\(#line)"], diagnosticsId: UUID().uuidString))) }
+                    let error = InternalError.underlyingErrors(errors: [err],
+                                                               userInfo: ["file": #file,
+                                                                          "class": "\(Self.self)",
+                                                                          "function": #function,
+                                                                          "line": "\(#line)"],
+                                                               diagnosticsId: UUID().uuidString)
+
+                    DispatchQueue.main.async { completion(.failure(error)) }
                 }
 
             }
         }
         dataTask.resume()
+        return dataTask
     }
 }
+
+private let disallowedTrackingPaths: [String] = [
+    "/sdk-logs",
+    "/checkout/track"
+]
 
 internal extension URLSessionStack {
 
@@ -328,12 +335,16 @@ internal extension URLSessionStack {
         return url
     }
 
-    func shouldReportNetworkEvents(for primerAPI: PrimerAPI) -> Bool {
+    func shouldReportNetworkEvents(for endpoint: Endpoint) -> Bool {
+        guard let primerAPI = endpoint as? PrimerAPI else {
+            return false
+        }
         // Don't report events for polling requests
         guard primerAPI != PrimerAPI.poll(clientToken: nil, url: "") else {
             return false
         }
-        guard let baseURL = primerAPI.baseURL, let url = URL(string: baseURL), url.path != "/sdk-logs" else {
+        guard let baseURL = primerAPI.baseURL, let url = URL(string: baseURL),
+                !disallowedTrackingPaths.contains(url.path) else {
             return false
         }
         return true

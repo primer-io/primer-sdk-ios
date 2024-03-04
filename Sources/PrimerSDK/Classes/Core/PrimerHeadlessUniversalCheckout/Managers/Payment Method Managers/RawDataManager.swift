@@ -8,13 +8,28 @@
 import Foundation
 import SafariServices
 
+// swiftlint:disable type_name
 @objc
 public protocol PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
-    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                                             metadataDidChange metadata: [String: Any]?)
-    @objc optional func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                                             dataIsValid isValid: Bool,
-                                             errors: [Error]?)
+
+    @available(*, deprecated, message: "Use _:didReceiveCardMetadata:forState: instead")
+    @objc optional
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              metadataDidChange metadata: [String: Any]?)
+
+    @objc optional
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              dataIsValid isValid: Bool,
+                              errors: [Error]?)
+
+    @objc optional
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              willFetchMetadataForState state: PrimerValidationState)
+
+    @objc optional
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
+                              forState state: PrimerValidationState)
 }
 
 protocol PrimerRawDataTokenizationBuilderProtocol {
@@ -26,7 +41,7 @@ protocol PrimerRawDataTokenizationBuilderProtocol {
     var rawData: PrimerRawData? { get set }
 
     init(paymentMethodType: String)
-    func configureRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager)
+    func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager)
     func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization>
     func validateRawData(_ data: PrimerRawData) -> Promise<Void>
 }
@@ -98,7 +113,7 @@ extension PrimerHeadlessUniversalCheckout {
                 self.rawDataTokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: paymentMethodType)
 
             case PrimerPaymentMethodType.xenditOvo.rawValue,
-                PrimerPaymentMethodType.adyenMBWay.rawValue:
+                 PrimerPaymentMethodType.adyenMBWay.rawValue:
                 self.rawDataTokenizationBuilder = PrimerRawPhoneNumberDataTokenizationBuilder(paymentMethodType: paymentMethodType)
 
             case PrimerPaymentMethodType.xenditRetailOutlets.rawValue:
@@ -112,7 +127,7 @@ extension PrimerHeadlessUniversalCheckout {
 
             super.init()
 
-            self.rawDataTokenizationBuilder.configureRawDataManager(self)
+            self.rawDataTokenizationBuilder.configure(withRawDataManager: self)
         }
 
         /// The provided function provides additional data after initializing a Raw Data Manager.
@@ -159,7 +174,8 @@ extension PrimerHeadlessUniversalCheckout {
                 params: [
                     "category": "RAW_DATA",
                     "intent": PrimerInternal.shared.intent?.rawValue ?? "null",
-                    "paymentMethodType": paymentMethodType
+                    "paymentMethodType": paymentMethodType,
+                    "selectedNetwork": (rawData as? PrimerCardData)?.cardNetwork?.rawValue ?? ""
                 ]
             )
             Analytics.Service.record(events: [sdkEvent])
@@ -214,8 +230,17 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
 
-        internal func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
+        func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
             return rawDataTokenizationBuilder.validateRawData(data)
+        }
+
+        func validateRawData(withCardNetworksMetadata cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> Promise<Void>? {
+            guard let rawData = self.rawData else {
+                logger.warn(message: "Unable to validate with card networks metadata as `rawData` was nil")
+                return nil
+            }
+            return (rawDataTokenizationBuilder as? PrimerRawCardDataTokenizationBuilder)?
+                .validateRawData(rawData, cardNetworksMetadata: cardNetworksMetadata)
         }
 
         private func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
@@ -249,7 +274,7 @@ extension PrimerHeadlessUniversalCheckout {
                     Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
                         if !decisionHandlerHasBeenCalled {
                             let message =
-"""
+                                """
 "The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. \
 Make sure you call the decision handler otherwise the SDK will hang."
 """
@@ -506,16 +531,16 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     threeDSService.perform3DS(
                         paymentMethodTokenData: paymentMethodTokenData,
                         sdkDismissed: nil) { result in
-                            DispatchQueue.main.async {
-                                switch result {
-                                case .success(let resumeToken):
-                                    seal.fulfill(resumeToken)
+                        DispatchQueue.main.async {
+                            switch result {
+                            case .success(let resumeToken):
+                                seal.fulfill(resumeToken)
 
-                                case .failure(let err):
-                                    seal.reject(err)
-                                }
+                            case .failure(let err):
+                                seal.reject(err)
                             }
                         }
+                    }
 
                 } else if decodedJWTToken.intent == RequiredActionName.processor3DS.rawValue {
                     if let redirectUrlStr = decodedJWTToken.redirectUrl,
@@ -981,9 +1006,9 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager: SFSafariViewController
             // Cancelled
             let err = PrimerError.cancelled(paymentMethodType: self.paymentMethodType,
                                             userInfo: ["file": #file,
-                                                                                                  "class": "\(Self.self)",
-                                                                                                  "function": #function,
-                                                                                                  "line": "\(#line)"],
+                                                       "class": "\(Self.self)",
+                                                       "function": #function,
+                                                       "line": "\(#line)"],
                                             diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             webViewCompletion(nil, err)

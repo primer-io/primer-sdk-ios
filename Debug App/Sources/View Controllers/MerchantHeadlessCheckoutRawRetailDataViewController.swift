@@ -10,21 +10,21 @@ import PrimerSDK
 import UIKit
 
 class MerchantHeadlessCheckoutRawRetailDataViewController: UIViewController {
-    
+
     static func instantiate(paymentMethodType: String) -> MerchantHeadlessCheckoutRawRetailDataViewController {
         let mpmvc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MerchantHUCRawRetailDataViewController") as! MerchantHeadlessCheckoutRawRetailDataViewController
         mpmvc.paymentMethodType = paymentMethodType
         return mpmvc
     }
-    
+
     var paymentMethodType: String!
     var paymentId: String?
     var activityIndicator: UIActivityIndicatorView?
     var rawData: PrimerRawData?
     private let cellIdentifier = "RetailDataTableViewCell"
-    
+
     internal lazy var tableView: UITableView = {
-                
+
         let tableView = UITableView()
         tableView.showsVerticalScrollIndicator = false
         tableView.showsHorizontalScrollIndicator = false
@@ -35,7 +35,7 @@ class MerchantHeadlessCheckoutRawRetailDataViewController: UIViewController {
         tableView.delegate = self
         return tableView
     }()
-    
+
     var selectedOutletIdentifier: String!
     var selectedIndexPath: IndexPath?
     var payButton: UIButton!
@@ -44,13 +44,13 @@ class MerchantHeadlessCheckoutRawRetailDataViewController: UIViewController {
             self.tableView.reloadData()
         }
     }
-    
+
     var logs: [String] = []
     var primerRawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         self.view.addSubview(tableView)
         self.tableView.translatesAutoresizingMaskIntoConstraints = false
         self.tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
@@ -59,7 +59,7 @@ class MerchantHeadlessCheckoutRawRetailDataViewController: UIViewController {
         self.tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10).isActive = true
 
         self.payButton = UIButton(frame: .zero)
-        
+
         self.payButton.accessibilityIdentifier = "submit_btn"
         self.payButton.setTitle("Issue voucher", for: .normal)
         self.payButton.titleLabel?.adjustsFontSizeToFitWidth = true
@@ -69,7 +69,7 @@ class MerchantHeadlessCheckoutRawRetailDataViewController: UIViewController {
         self.payButton.addTarget(self, action: #selector(issueVoucherButtonTapped), for: .touchUpInside)
         self.tableView.tableFooterView = self.payButton
         self.tableView.tableFooterView?.frame.size.height = 45
-        
+
         do {
             self.showLoadingOverlay()
             self.primerRawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: self.paymentMethodType)
@@ -83,10 +83,10 @@ class MerchantHeadlessCheckoutRawRetailDataViewController: UIViewController {
                 self?.hideLoadingOverlay()
             }
         } catch {
-            
+
         }
     }
-    
+
     @IBAction func issueVoucherButtonTapped(_ sender: UIButton) {
         if paymentMethodType == "XENDIT_RETAIL_OUTLETS" {
             self.rawData = PrimerRetailerData(id: selectedOutletIdentifier)
@@ -95,9 +95,9 @@ class MerchantHeadlessCheckoutRawRetailDataViewController: UIViewController {
             self.showLoadingOverlay()
         }
     }
-    
+
     // MARK: - HELPERS
-    
+
     private func showLoadingOverlay() {
         DispatchQueue.main.async {
             if self.activityIndicator == nil {
@@ -109,7 +109,7 @@ class MerchantHeadlessCheckoutRawRetailDataViewController: UIViewController {
             self.activityIndicator?.startAnimating()
         }
     }
-    
+
     private func hideLoadingOverlay() {
         DispatchQueue.main.async {
             self.activityIndicator?.stopAnimating()
@@ -120,7 +120,7 @@ class MerchantHeadlessCheckoutRawRetailDataViewController: UIViewController {
 }
 
 extension MerchantHeadlessCheckoutRawRetailDataViewController: UITableViewDataSource, UITableViewDelegate {
-    
+
     // MARK: - Table View delegate methods
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -133,17 +133,17 @@ extension MerchantHeadlessCheckoutRawRetailDataViewController: UITableViewDataSo
         selectedOutletIdentifier = retailer.id
         self.tableView.deselectRow(at: indexPath, animated: true)
     }
-    
+
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return "Select a retailer"
     }
-    
+
     // MARK: - Table View data source methods
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return retailers.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let retailer = retailers[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
@@ -155,18 +155,18 @@ extension MerchantHeadlessCheckoutRawRetailDataViewController: UITableViewDataSo
         } else {
             cell.textLabel?.text = retailer.name
         }
-        
+
         return cell
     }
 }
 
 extension MerchantHeadlessCheckoutRawRetailDataViewController: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
-    
+
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?) {
         print("\n\nMERCHANT APP\n\(#function)\ndataIsValid: \(isValid)")
         self.logs.append(#function)
     }
-    
+
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String: Any]?) {
         print("\n\nMERCHANT APP\n\(#function)\nmetadataDidChange: \(String(describing: metadata))")
         self.logs.append(#function)

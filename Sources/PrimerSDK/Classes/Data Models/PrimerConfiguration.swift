@@ -17,6 +17,7 @@ extension Request.URLParameters {
         let skipPaymentMethodTypes: [String]?
         let requestDisplayMetadata: Bool?
 
+        // swiftlint:disable:next nesting
         private enum CodingKeys: String, CodingKey {
             case skipPaymentMethodTypes = "skipPaymentMethods"
             case requestDisplayMetadata = "withDisplayMetadata"
@@ -98,9 +99,9 @@ extension Response.Body {
                 .filter({ $0.isEnabled })
                 .filter({ $0.baseLogoImage != nil })
                 .compactMap({ $0.tokenizationViewModel })
-            ?? []
+                ?? []
 
-            let supportedNetworks = PaymentNetwork.iOSSupportedPKPaymentNetworks
+            let supportedNetworks = ApplePayUtils.supportedPKPaymentNetworks()
             var canMakePayment: Bool
             if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
                 canMakePayment = PKPaymentAuthorizationController.canMakePayments(usingNetworks: supportedNetworks)
@@ -115,11 +116,11 @@ extension Response.Body {
                 }
             }
 
-#if !canImport(PrimerKlarnaSDK)
+            #if !canImport(PrimerKlarnaSDK)
             if let klarnaViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.klarna.rawValue }) {
                 viewModels.remove(at: klarnaViewModelIndex)
                 let message =
-"""
+                    """
 Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing. \
 Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your Podfile, \
 or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager.
@@ -133,13 +134,13 @@ or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager.
                 )
                 Analytics.Service.record(events: [event])
             }
-#endif
+            #endif
 
-#if !canImport(PrimerIPay88MYSDK)
+            #if !canImport(PrimerIPay88MYSDK)
             if let iPay88ViewModelIndex = viewModels.firstIndex(where: { $0.config.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
                 viewModels.remove(at: iPay88ViewModelIndex)
                 let message =
-"""
+                    """
 iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. \
 Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your Podfile.
 """
@@ -152,7 +153,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
                 )
                 Analytics.Service.record(events: [event])
             }
-#endif
+            #endif
 
             var validViewModels: [PaymentMethodTokenizationViewModelProtocol] = []
 
@@ -226,6 +227,8 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
 
         let coreUrl: String?
         let pciUrl: String?
+        let binDataUrl: String?
+        let assetsUrl: String?
         var clientSession: ClientSession.APIResponse?
         let paymentMethods: [PrimerPaymentMethod]?
         let primerAccountId: String?
@@ -242,6 +245,8 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
             self.pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
+            self.binDataUrl = (try? container.decode(String?.self, forKey: .binDataUrl)) ?? nil
+            self.assetsUrl = (try? container.decode(String?.self, forKey: .assetsUrl)) ?? nil
             self.clientSession = (try? container.decode(ClientSession.APIResponse?.self, forKey: .clientSession)) ?? nil
             let throwables = try container.decode([Throwable<PrimerPaymentMethod>].self, forKey: .paymentMethods)
             self.paymentMethods = throwables.compactMap({ $0.value })
@@ -276,6 +281,8 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
         init(
             coreUrl: String?,
             pciUrl: String?,
+            binDataUrl: String?,
+            assetsUrl: String?, /// poghledaj u responsu kako se zove
             clientSession: ClientSession.APIResponse?,
             paymentMethods: [PrimerPaymentMethod]?,
             primerAccountId: String?,
@@ -284,6 +291,8 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
         ) {
             self.coreUrl = coreUrl
             self.pciUrl = pciUrl
+            self.binDataUrl = binDataUrl
+            self.assetsUrl = assetsUrl
             self.clientSession = clientSession
             self.paymentMethods = paymentMethods
             self.primerAccountId = primerAccountId
@@ -296,16 +305,6 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
             return method.id
         }
 
-        func getProductId(for type: String) -> String? {
-            guard let method = self.paymentMethods?
-                .first(where: { method in return method.type == type }) else { return nil }
-
-            if let apayaOptions = method.options as? MerchantOptions {
-                return apayaOptions.merchantAccountId
-            } else {
-                return nil
-            }
-        }
     }
 }
 
@@ -319,15 +318,18 @@ extension Response.Body.Configuration {
         let requestUrlStr: String?
         let options: CheckoutModuleOptions?
 
+        // swiftlint:disable:next nesting
         private enum CodingKeys: String, CodingKey {
             case type, options
             case requestUrlStr = "requestUrl"
         }
 
+        // swiftlint:disable:next nesting
         struct CardInformationOptions: CheckoutModuleOptions {
             let cardHolderName: Bool?
             let saveCardCheckbox: Bool?
 
+            // swiftlint:disable:next nesting
             private enum CodingKeys: String, CodingKey {
                 case cardHolderName
                 case saveCardCheckbox
@@ -351,6 +353,7 @@ extension Response.Body.Configuration {
             }
         }
 
+        // swiftlint:disable:next nesting
         struct PostalCodeOptions: CheckoutModuleOptions {
             let firstName: Bool?
             let lastName: Bool?
@@ -362,6 +365,7 @@ extension Response.Body.Configuration {
             let phoneNumber: Bool?
             let state: Bool?
 
+            // swiftlint:disable:next nesting
             private enum CodingKeys: String, CodingKey {
                 case firstName
                 case lastName

@@ -397,6 +397,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         billingAddressFields.flatMap { $0.filter { $0.isFieldHidden == false } }.map { $0.fieldView }
     }
 
+    // swiftlint:disable:next identifier_name
     internal var allVisibleBillingAddressFieldContainerViews: [[PrimerCustomFieldView]] {
         let allVisibleBillingAddressFields = billingAddressFields.map { $0.filter { $0.isFieldHidden == false } }
         return allVisibleBillingAddressFields.map { $0.map { $0.containerFieldView } }
@@ -432,6 +433,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
 
     /// Dictionary containing the payment method types expecting to show a view with the Payment Logo and a message
     /// informing the user to complete the payment outside of the current Application context
+    // swiftlint:disable:next identifier_name
     let needingExternalCompletionPaymentMethodDictionary: [PrimerPaymentMethodType: String] = [.adyenMBWay: Strings.MBWay.completeYourPayment,
                                                                                                .adyenBlik: Strings.Blik.completeYourPayment]
 
@@ -660,7 +662,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
 
         guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
-                inputPaymentMethodTypes.contains(paymentMethodType) ||
+              inputPaymentMethodTypes.contains(paymentMethodType) ||
                 voucherPaymentMethodTypes.contains(paymentMethodType)
         else {
             return Promise()
@@ -701,8 +703,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
 
         switch config.type {
         case PrimerPaymentMethodType.adyenBlik.rawValue,
-            PrimerPaymentMethodType.adyenMBWay.rawValue,
-            PrimerPaymentMethodType.adyenMultibanco.rawValue:
+             PrimerPaymentMethodType.adyenMBWay.rawValue,
+             PrimerPaymentMethodType.adyenMultibanco.rawValue:
             self.uiModule.submitButton?.startAnimating()
             self.userInputCompletion?()
 

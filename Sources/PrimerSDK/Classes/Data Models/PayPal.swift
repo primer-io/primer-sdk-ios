@@ -23,7 +23,7 @@ extension Request.Body.PayPal {
 
         let paymentMethodConfigId: String
         let amount: Int
-        let currencyCode: Currency
+        let currencyCode: String
         var locale: CountryCode?
         let returnUrl: String
         let cancelUrl: String
@@ -68,10 +68,12 @@ extension Response.Body.Tokenization {
 
     public class PayPal {
 
+        // swiftlint:disable:next nesting
         public struct ShippingAddress: Codable {
             let firstName, lastName, addressLine1, addressLine2, city, state, countryCode, postalCode: String?
         }
 
+        // swiftlint:disable:next nesting
         public struct ExternalPayerInfo: Codable {
             public var externalPayerId, email, firstName, lastName: String?
         }

@@ -11,7 +11,6 @@ extension PrimerHeadlessUniversalCheckout {
         @objc public func provideComponent(paymentMethodType: String) -> PrimerHeadlessBanksComponentWrapper {
             PrimerHeadlessBanksComponentWrapper(manager: self, paymentMethodType: paymentMethodType)
         }
-        @available(iOS 13, *)
         public func provide<PrimerHeadlessMainComponent>(paymentMethodType: String) throws -> PrimerHeadlessMainComponent? 
 		where PrimerCollectableData: Any, PrimerHeadlessStep: Any {
             try provideBanksComponent(paymentMethodType: paymentMethodType) as? PrimerHeadlessMainComponent

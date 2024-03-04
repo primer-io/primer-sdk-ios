@@ -93,17 +93,14 @@ class PrimerPaymentMethod: Codable, LogReporter {
         } else if let internalPaymentMethodType = internalPaymentMethodType {
             switch internalPaymentMethodType {
             case PrimerPaymentMethodType.adyenBlik,
-                PrimerPaymentMethodType.rapydFast,
-                PrimerPaymentMethodType.adyenMBWay,
-                PrimerPaymentMethodType.adyenMultibanco:
+                 PrimerPaymentMethodType.rapydFast,
+                 PrimerPaymentMethodType.adyenMBWay,
+                 PrimerPaymentMethodType.adyenMultibanco:
                 return FormPaymentMethodTokenizationViewModel(config: self)
 
             case PrimerPaymentMethodType.adyenDotPay,
-                PrimerPaymentMethodType.adyenIDeal:
+                 PrimerPaymentMethodType.adyenIDeal:
                 return BankSelectorTokenizationViewModel(config: self)
-
-            case PrimerPaymentMethodType.apaya:
-                return ApayaTokenizationViewModel(config: self)
 
             case PrimerPaymentMethodType.applePay:
                 return ApplePayTokenizationViewModel(config: self)
@@ -112,20 +109,20 @@ class PrimerPaymentMethod: Codable, LogReporter {
                 return KlarnaTokenizationViewModel(config: self)
 
             case PrimerPaymentMethodType.paymentCard,
-                PrimerPaymentMethodType.adyenBancontactCard:
+                 PrimerPaymentMethodType.adyenBancontactCard:
                 return CardFormPaymentMethodTokenizationViewModel(config: self)
 
             case PrimerPaymentMethodType.payPal:
                 return PayPalTokenizationViewModel(config: self)
 
             case PrimerPaymentMethodType.primerTestKlarna,
-                PrimerPaymentMethodType.primerTestPayPal,
-                PrimerPaymentMethodType.primerTestSofort:
+                 PrimerPaymentMethodType.primerTestPayPal,
+                 PrimerPaymentMethodType.primerTestSofort:
                 return PrimerTestPaymentMethodTokenizationViewModel(config: self)
 
             case PrimerPaymentMethodType.xfersPayNow,
-                PrimerPaymentMethodType.rapydPromptPay,
-                PrimerPaymentMethodType.omisePromptPay:
+                 PrimerPaymentMethodType.rapydPromptPay,
+                 PrimerPaymentMethodType.omisePromptPay:
                 return QRCodeTokenizationViewModel(config: self)
             case PrimerPaymentMethodType.nolPay:
                 return NolPayTokenizationViewModel(config: self)
@@ -159,9 +156,9 @@ class PrimerPaymentMethod: Codable, LogReporter {
         }
 
         switch internalPaymentMethodType {
-        case PrimerPaymentMethodType.apaya,
-            PrimerPaymentMethodType.goCardless,
-            PrimerPaymentMethodType.googlePay:
+        case PrimerPaymentMethodType.goCardless,
+             PrimerPaymentMethodType.googlePay,
+             PrimerPaymentMethodType.nolPay:
             return false
         default:
             return true
@@ -179,10 +176,10 @@ class PrimerPaymentMethod: Codable, LogReporter {
 
         switch self.type {
         case PrimerPaymentMethodType.applePay.rawValue,
-            PrimerPaymentMethodType.goCardless.rawValue,
-            PrimerPaymentMethodType.googlePay.rawValue,
-            PrimerPaymentMethodType.iPay88Card.rawValue,
-            PrimerPaymentMethodType.nolPay.rawValue:
+             PrimerPaymentMethodType.goCardless.rawValue,
+             PrimerPaymentMethodType.googlePay.rawValue,
+             PrimerPaymentMethodType.iPay88Card.rawValue,
+             PrimerPaymentMethodType.nolPay.rawValue:
             return false
         default:
             return true
@@ -354,6 +351,7 @@ extension PrimerPaymentMethod {
             self.button = button
         }
 
+        // swiftlint:disable:next nesting
         class Button: Codable {
 
             var iconUrl: PrimerTheme.BaseColoredURLs?
@@ -364,6 +362,7 @@ extension PrimerPaymentMethod {
             var text: String?
             var textColor: PrimerTheme.BaseColors?
 
+            // swiftlint:disable:next nesting
             private enum CodingKeys: String, CodingKey {
                 case iconUrl,
                      backgroundColor,
@@ -444,6 +443,7 @@ extension PrimerTheme {
         var darkUrlStr: String?
         var lightUrlStr: String?
 
+        // swiftlint:disable:next nesting
         private enum CodingKeys: String, CodingKey {
             case coloredUrlStr = "colored"
             case darkUrlStr = "dark"
@@ -488,6 +488,7 @@ extension PrimerTheme {
         var darkHex: String?
         var lightHex: String?
 
+        // swiftlint:disable:next nesting
         private enum CodingKeys: String, CodingKey {
             case coloredHex = "colored"
             case darkHex = "dark"
@@ -532,6 +533,7 @@ extension PrimerTheme {
         var dark: CGFloat?
         var light: CGFloat?
 
+        // swiftlint:disable:next nesting
         private enum CodingKeys: String, CodingKey {
             case colored
             case dark

@@ -164,8 +164,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     textColor: nil))
 
         case .adyenGiropay,
-            .buckarooGiropay,
-            .payNLGiropay:
+             .buckarooGiropay,
+             .payNLGiropay:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
                     iconUrl: nil,
@@ -186,9 +186,9 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     textColor: nil))
 
         case .adyenIDeal,
-            .buckarooIdeal,
-            .mollieIdeal,
-            .payNLIdeal:
+             .buckarooIdeal,
+             .mollieIdeal,
+             .payNLIdeal:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
                     iconUrl: nil,
@@ -312,8 +312,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     textColor: nil))
 
         case .adyenSofort,
-            .buckarooSofort,
-            .primerTestSofort:
+             .buckarooSofort,
+             .primerTestSofort:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
                     iconUrl: nil,
@@ -393,29 +393,6 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     text: nil,
                     textColor: nil))
 
-        case .apaya:
-            return PrimerPaymentMethod.DisplayMetadata(
-                button: PrimerPaymentMethod.DisplayMetadata.Button(
-                    iconUrl: nil,
-                    backgroundColor: PrimerTheme.BaseColors(
-                        coloredHex: nil,
-                        lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
-                    cornerRadius: 4,
-                    borderWidth: PrimerTheme.BaseBorderWidth(
-                        colored: 0,
-                        light: 1,
-                        dark: 1),
-                    borderColor: PrimerTheme.BaseColors(
-                        coloredHex: nil,
-                        lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
-                    text: Strings.PaymentButton.payByMobile,
-                    textColor: PrimerTheme.BaseColors(
-                        coloredHex: nil,
-                        lightHex: "#000000",
-                        darkHex: "#FFFFFF")))
-
         case .applePay:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
@@ -457,8 +434,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     textColor: nil))
 
         case .buckarooBancontact,
-            .mollieBankcontact,
-            .payNLBancontact:
+             .mollieBankcontact,
+             .payNLBancontact:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
                     iconUrl: nil,
@@ -568,7 +545,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF")))
 
         case .klarna,
-                .primerTestKlarna:
+             .primerTestKlarna:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
                     iconUrl: nil,
@@ -652,7 +629,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         darkHex: "#FFFFFF")))
 
         case .payPal,
-                .primerTestPayPal:
+             .primerTestPayPal:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
                     iconUrl: nil,
@@ -705,7 +682,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return nil
 
         case .rapydPromptPay,
-                .omisePromptPay:
+             .omisePromptPay:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
                     iconUrl: nil,
@@ -793,10 +770,6 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
         case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
             return Strings.PaymentButton.payWithCard
-
-        case PrimerPaymentMethodType.apaya.rawValue:
-            // Update with `metadataButtonText ?? Strings.PaymentButton.payByMobile` once we'll get localized strings
-            return Strings.PaymentButton.payByMobile
 
         case PrimerPaymentMethodType.iPay88Card.rawValue:
             return Strings.PaymentButton.payWithCard
@@ -972,7 +945,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
         switch self.paymentMethodTokenizationViewModel.config.type {
         case PrimerPaymentMethodType.paymentCard.rawValue,
-            PrimerPaymentMethodType.adyenMBWay.rawValue:
+             PrimerPaymentMethodType.adyenMBWay.rawValue:
             switch PrimerInternal.shared.intent {
             case .checkout:
                 let universalCheckoutViewModel: UniversalCheckoutViewModelProtocol = UniversalCheckoutViewModel()
@@ -991,12 +964,12 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return makePrimerButtonWithTitleText(buttonTitle, isEnabled: false)
 
         case PrimerPaymentMethodType.primerTestKlarna.rawValue,
-            PrimerPaymentMethodType.primerTestPayPal.rawValue,
-            PrimerPaymentMethodType.primerTestSofort.rawValue:
+             PrimerPaymentMethodType.primerTestPayPal.rawValue,
+             PrimerPaymentMethodType.primerTestSofort.rawValue:
             return makePrimerButtonWithTitleText(Strings.PaymentButton.pay, isEnabled: false)
 
         case PrimerPaymentMethodType.adyenBlik.rawValue,
-            PrimerPaymentMethodType.xfersPayNow.rawValue:
+             PrimerPaymentMethodType.xfersPayNow.rawValue:
             return makePrimerButtonWithTitleText(Strings.PaymentButton.confirm, isEnabled: false)
 
         case PrimerPaymentMethodType.adyenMultibanco.rawValue:

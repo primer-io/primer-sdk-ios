@@ -7,6 +7,7 @@
 
 import Foundation
 
+// swiftlint:disable:next type_name
 class PrimerRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var requiredInputElementTypes: [PrimerInputElementType]
@@ -23,7 +24,7 @@ class PrimerRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBui
         fatalError("\(#function) must be overriden")
     }
 
-    func configureRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
+    func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
         fatalError("\(#function) must be overriden")
     }
 
@@ -36,6 +37,7 @@ class PrimerRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBui
     }
 }
 
+// swiftlint:disable:next type_name
 class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var rawData: PrimerRawData? {
@@ -91,7 +93,7 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
         self.paymentMethodType = paymentMethodType
     }
 
-    func configureRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
+    func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
         self.rawDataManager = rawDataManager
     }
 
@@ -197,25 +199,25 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
                 if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
                     if rawData.cardholderName.isEmpty {
                         errors.append(PrimerValidationError.invalidCardholderName(
-                            message: "Cardholder name cannot be blank.",
-                            userInfo: [
-                                "file": #file,
-                                "class": "\(Self.self)",
-                                "function": #function,
-                                "line": "\(#line)"
-                            ],
-                            diagnosticsId: UUID().uuidString))
+                                        message: "Cardholder name cannot be blank.",
+                                        userInfo: [
+                                            "file": #file,
+                                            "class": "\(Self.self)",
+                                            "function": #function,
+                                            "line": "\(#line)"
+                                        ],
+                                        diagnosticsId: UUID().uuidString))
 
                     } else if !(rawData.cardholderName).isValidNonDecimalString {
                         errors.append(PrimerValidationError.invalidCardholderName(
-                            message: "Cardholder name is not valid.",
-                            userInfo: [
-                                "file": #file,
-                                "class": "\(Self.self)",
-                                "function": #function,
-                                "line": "\(#line)"
-                            ],
-                            diagnosticsId: UUID().uuidString))
+                                        message: "Cardholder name is not valid.",
+                                        userInfo: [
+                                            "file": #file,
+                                            "class": "\(Self.self)",
+                                            "function": #function,
+                                            "line": "\(#line)"
+                                        ],
+                                        diagnosticsId: UUID().uuidString))
                     }
                 }
 
@@ -227,7 +229,6 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
                                    "function": #function,
                                    "line": "\(#line)"],
                         diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
 
                     self.isDataValid = false
 

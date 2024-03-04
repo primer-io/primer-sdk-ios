@@ -7,6 +7,7 @@
 
 import Foundation
 
+// swiftlint:disable all
 extension Analytics {
     struct Event: Codable, Equatable {
 
@@ -55,11 +56,11 @@ extension Analytics {
             self.sdkPaymentHandling = PrimerSettings.current.paymentHandling
             self.minDeploymentTarget = Bundle.main.minimumOSVersion ?? "Unknown"
 
-#if COCOAPODS
+            #if COCOAPODS
             self.integrationType = "COCOAPODS"
-#else
+            #else
             self.integrationType = "SPM"
-#endif
+            #endif
         }
 
         private enum CodingKeys: String, CodingKey {
@@ -206,6 +207,7 @@ extension Analytics.Event {
 
             var issuerId: String?
             var paymentMethodType: String?
+            var cardNetworks: [String]?
             var url: String?
             var iPay88PaymentMethodId: String?
             var iPay88ActionType: String?
@@ -213,24 +215,17 @@ extension Analytics.Event {
             init(
                 issuerId: String? = nil,
                 paymentMethodType: String? = nil,
+                cardNetworks: [String]? = nil,
                 url: String? = nil,
                 iPay88PaymentMethodId: String? = nil,
                 iPay88ActionType: String? = nil
             ) {
                 self.issuerId = issuerId
                 self.paymentMethodType = paymentMethodType
+                self.cardNetworks = cardNetworks
                 self.url = url
                 self.iPay88PaymentMethodId = iPay88PaymentMethodId
                 self.iPay88ActionType = iPay88ActionType
-            }
-
-            func encode(to encoder: Encoder) throws {
-                var container = encoder.container(keyedBy: Analytics.Event.Property.Context.CodingKeys.self)
-                try container.encodeIfPresent(self.issuerId, forKey: Analytics.Event.Property.Context.CodingKeys.issuerId)
-                try container.encodeIfPresent(self.paymentMethodType, forKey: Analytics.Event.Property.Context.CodingKeys.paymentMethodType)
-                try container.encodeIfPresent(self.url, forKey: Analytics.Event.Property.Context.CodingKeys.url)
-                try container.encodeIfPresent(self.iPay88PaymentMethodId, forKey: Analytics.Event.Property.Context.CodingKeys.iPay88PaymentMethodId)
-                try container.encodeIfPresent(self.iPay88ActionType, forKey: Analytics.Event.Property.Context.CodingKeys.iPay88ActionType)
             }
         }
 
@@ -259,6 +254,7 @@ extension Analytics.Event {
             case image          = "IMAGE"
             case input          = "INPUT"
             case label          = "LABEL"
+            case list           = "LIST"
             case listItem       = "LIST_ITEM"
             case loader         = "LOADER"
             case view           = "VIEW"
@@ -271,6 +267,7 @@ extension Analytics.Event {
             case cancel                     = "CANCEL"
             case cardHolder                 = "CARD_HOLDER"
             case cardNumber                 = "CARD_NUMBER"
+            case cardNetwork                = "CARD_NETWORK"
             case cvc                        = "CVC"
             case delete                     = "DELETE"
             case done                       = "DONE"
@@ -504,7 +501,7 @@ struct SDKEventProperties: AnalyticsEventProperties {
         }
 
         if !parameters.isEmpty,
-            let parametersData = try? JSONSerialization.data(withJSONObject: parameters, options: .fragmentsAllowed) {
+           let parametersData = try? JSONSerialization.data(withJSONObject: parameters, options: .fragmentsAllowed) {
             let decoder = JSONDecoder()
             if let anyDecodableDictionary = try? decoder.decode([String: AnyCodable].self, from: parametersData) {
                 self.params = anyDecodableDictionary
@@ -673,11 +670,11 @@ struct SDKProperties: Codable {
     fileprivate init() {
         self.clientToken = AppState.current.clientToken
         self.sdkIntegrationType = PrimerInternal.shared.sdkIntegrationType
-#if COCOAPODS
+        #if COCOAPODS
         self.integrationType = "COCOAPODS"
-#else
+        #else
         self.integrationType = "SPM"
-#endif
+        #endif
         self.paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType
         self.sdkIntent = PrimerInternal.shared.intent
         self.sdkPaymentHandling = PrimerSettings.current.paymentHandling
@@ -726,9 +723,8 @@ struct SDKProperties: Codable {
     }
 }
 
-
 extension Analytics.Event {
-    
+
     static func sdk(name: String, params: [String: String]?) -> Self {
         return .init(
             eventType: .sdkEvent,
@@ -738,12 +734,12 @@ extension Analytics.Event {
             )
         )
     }
-    
+
     static func message(message: String?,
                         messageType: Property.MessageType,
                         severity: Property.Severity,
                         diagnosticsId: String? = nil,
-                        context: [String : Any]? = nil) -> Self {
+                        context: [String: Any]? = nil) -> Self {
         return .init(
             eventType: .message,
             properties: MessageEventProperties(
@@ -755,7 +751,7 @@ extension Analytics.Event {
             )
         )
     }
-    
+
     static func ui(action: Property.Action,
                    context: Property.Context?,
                    extra: String?,
@@ -775,7 +771,7 @@ extension Analytics.Event {
                 place: place)
         )
     }
-    
+
     static func networkCall(callType: Property.NetworkCallType,
                             id: String,
                             url: String,
@@ -794,14 +790,14 @@ extension Analytics.Event {
             )
         )
     }
-    
+
     static func networkConnectivity(networkType: Connectivity.NetworkType) -> Self {
         return .init(
             eventType: .networkConnectivity,
             properties: NetworkConnectivityEventProperties(networkType: networkType)
         )
     }
-    
+
     static func timer(momentType: Property.TimerType,
                       id: String?) -> Self {
         return .init(
@@ -812,7 +808,7 @@ extension Analytics.Event {
             )
         )
     }
-    
+
     static func allImagesLoading(momentType: Property.TimerType,
                                  id: String?) -> Self {
         return .init(
@@ -823,7 +819,7 @@ extension Analytics.Event {
             )
         )
     }
-    
+
     static func imageLoading(momentType: Property.TimerType,
                              id: String?) -> Self {
         return .init(
@@ -835,3 +831,4 @@ extension Analytics.Event {
         )
     }
 }
+// swiftlint:enable all

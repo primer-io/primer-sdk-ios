@@ -22,22 +22,24 @@ struct CardNetworkCode {
     var length: Int
 }
 
-public enum CardNetwork: String, CaseIterable, LogReporter {
+public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
 
-    case amex
-    case bancontact
-    case diners
-    case discover
-    case elo
-    case hiper
-    case hipercard
-    case jcb
-    case maestro
-    case masterCard = "mastercard"
-    case mir
-    case visa
-    case unionpay
-    case unknown
+    // https://github.com/primer-io/platform/blob/59980a07113089000c9814b079579e15c616b6db/platform/commons/models/bin_range.py#L66
+    case amex = "AMEX"
+    case bancontact = "BANCONTACT"
+    case cartesBancaires = "CARTES_BANCAIRES"
+    case diners = "DINERS_CLUB"
+    case discover = "DISCOVER"
+    case elo = "ELO"
+    case hiper = "HIPER"
+    case hipercard = "HIPERCARD"
+    case jcb = "JCB"
+    case maestro = "MAESTRO"
+    case masterCard = "MASTERCARD"
+    case mir = "MIR"
+    case visa = "VISA"
+    case unionpay = "UNIONPAY"
+    case unknown = "OTHER" // or "UNKNOWN"
 
     var validation: CardNetworkValidation? {
         switch self {
@@ -51,7 +53,7 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
                     name: "CID",
                     length: 4))
 
-        case .bancontact:
+        case .bancontact, .cartesBancaires:
             return nil
 
         case .diners:
@@ -162,7 +164,7 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
                     [63],
                     [67],
                     [6]
-                  ],
+                ],
                 gaps: [4, 8, 12],
                 lengths: [16, 17, 18, 19],
                 code: CardNetworkCode(
@@ -193,32 +195,32 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
             return CardNetworkValidation(
                 niceType: "UnionPay",
                 patterns: [
-              [620],
-              [624, 626],
-              [62100, 62182],
-              [62184, 62187],
-              [62185, 62197],
-              [62200, 62205],
-              [622010, 622999],
-              [622018],
-              [622019, 622999],
-              [62207, 62209],
-              [622126, 622925],
-              [623, 626],
-              [6270],
-              [6272],
-              [6276],
-              [627700, 627779],
-              [627781, 627799],
-              [6282, 6289],
-              [6291],
-              [6292],
-              [810],
-              [8110, 8131],
-              [8132, 8151],
-              [8152, 8163],
-              [8164, 8171]
-            ],
+                    [620],
+                    [624, 626],
+                    [62100, 62182],
+                    [62184, 62187],
+                    [62185, 62197],
+                    [62200, 62205],
+                    [622010, 622999],
+                    [622018],
+                    [622019, 622999],
+                    [62207, 62209],
+                    [622126, 622925],
+                    [623, 626],
+                    [6270],
+                    [6272],
+                    [6276],
+                    [627700, 627779],
+                    [627781, 627799],
+                    [6282, 6289],
+                    [6291],
+                    [6292],
+                    [810],
+                    [8110, 8131],
+                    [8132, 8151],
+                    [8152, 8163],
+                    [8164, 8171]
+                ],
                 gaps: [4, 8, 12],
                 lengths: [14, 15, 16, 17, 18, 19],
                 code: CardNetworkCode(
@@ -229,12 +231,29 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
         }
     }
 
+    public var displayName: String {
+        if let displayName = self.validation?.niceType {
+            return displayName
+        }
+
+        switch self {
+        case .bancontact:
+            return "Bancontact"
+        case .cartesBancaires:
+            return "Cartes Bancaires"
+        default:
+            return "Unknown"
+        }
+    }
+
     public var icon: UIImage? {
         switch self {
         case .amex:
             return UIImage(named: "amex-card-icon-colored", in: Bundle.primerResources, compatibleWith: nil)
         case .bancontact:
             return UIImage(named: "bancontact-icon", in: Bundle.primerResources, compatibleWith: nil)
+        case .cartesBancaires:
+            return UIImage(named: "cartesbancaires-card-icon-colored", in: Bundle.primerResources, compatibleWith: nil)
         case .diners:
             return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
         case .discover:
@@ -273,7 +292,7 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
         case .jcb:
             return "A000000065"
         case .diners,
-                .discover:
+             .discover:
             return "A000000152"
         case .unionpay:
             return "A000000333"
@@ -325,6 +344,14 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
         return false
     }
 
+    var assetName: String {
+        rawValue.lowercased().filter { $0.isLetter }
+    }
+
+    static var coBadgedNetworks: [CardNetwork] {
+        return [.cartesBancaires]
+    }
+
     public init(cardNumber: String) {
         self = .unknown
 
@@ -341,110 +368,38 @@ public enum CardNetwork: String, CaseIterable, LogReporter {
     public init(cardNetworkStr: String) {
         self = .unknown
 
-        if let cardNetwork = CardNetwork(rawValue: cardNetworkStr.lowercased()) {
+        let stringValue = cardNetworkStr.uppercased()
+
+        if ["DINERS", "DINERSCLUB"].contains(stringValue) {
+            self = .diners
+            return
+        }
+
+        if "CARTESBANCAIRES" == stringValue {
+            self = .cartesBancaires
+            return
+        }
+
+        if let cardNetwork = CardNetwork(rawValue: stringValue) {
             self = cardNetwork
         }
     }
-
 }
 
-public enum PaymentNetwork: String {
+extension Array<CardNetwork>: LogReporter {
 
-    case chinaUnionPay
-    case discover
-    case eftpos
-    case electron
-    case elo
-    case idCredit
-    case interac
-    case jcb
-    case mada
-    case maestro
-    case masterCard
-    case privateLabel
-    case quicPay
-    case suica
-    case visa
-    case vPay
-    case barcode
-    case girocard
-
-    var applePayPaymentNetwork: PKPaymentNetwork? {
-        switch self {
-        case .chinaUnionPay:
-            return .chinaUnionPay
-        case .discover:
-            return .discover
-        case .eftpos:
-                return .eftpos
-        case .electron:
-            return .electron
-        case .elo:
-            return .elo
-        case .idCredit:
-            return .idCredit
-        case .interac:
-            return .interac
-        case .jcb:
-            return .JCB
-        case .mada:
-            return .mada
-        case .maestro:
-            return .maestro
-        case .masterCard:
-            return .masterCard
-        case .privateLabel:
-            return .privateLabel
-        case .quicPay:
-            return .quicPay
-        case .suica:
-            return .suica
-        case .visa:
-            return .visa
-        case .vPay:
-            return .vPay
-        case .barcode:
-            if #available(iOS 14.0, *) {
-                return .barcode
-            } else {
-                return nil
-            }
-        case .girocard:
-            if #available(iOS 14.0, *) {
-                return .girocard
-            } else {
-                return nil
-            }
+    /// A list of card networks that the merchant supports
+    static var allowedCardNetworks: Self {
+        guard let networkStrings = PrimerAPIConfiguration.current?.clientSession?.paymentMethod?.orderedAllowedCardNetworks else {
+            logger.warn(message: "Expected allowed networks to be present in client session")
+            return []
         }
+        return networkStrings.compactMap { CardNetwork(rawValue: $0) }
     }
 
-    static var iOSSupportedPKPaymentNetworks: [PKPaymentNetwork] {
-        var supportedNetworks: [PKPaymentNetwork] = [
-            .amex,
-            .chinaUnionPay,
-            .discover,
-            .interac,
-            .masterCard,
-            .privateLabel,
-            .visa,
-            .cartesBancaires,
-            .eftpos,
-            .electron,
-            .maestro,
-            .vPay,
-            .elo,
-            .mada,
-            .idCredit,
-            .JCB,
-            .suica,
-            .quicPay
-        ]
-                
-        if #available(iOS 14.0, *) {
-            supportedNetworks.append(.girocard)
-        }
-        
-        return supportedNetworks
+    /// A list of all card networks, used by default when a merchant does not specify the networks they support
+    /// Also used to configure suppoted networks for Apple Pay
+    static var allCardNetworks: Self {
+        return Element.allCases
     }
-
 }
