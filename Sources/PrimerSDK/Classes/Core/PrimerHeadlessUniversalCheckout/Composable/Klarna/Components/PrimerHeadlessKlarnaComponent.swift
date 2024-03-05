@@ -139,7 +139,7 @@ extension PrimerHeadlessKlarnaComponent {
             tokenizationComponent.authorizePaymentSession(authorizationToken: token)
         }
         .then { customerToken in
-            self.tokenizationComponent.tokenize(customerToken: customerToken, offSessionAuthorizationId: token)
+            self.tokenizationComponent.tokenizeHeadless(customerToken: customerToken, offSessionAuthorizationId: token)
         }
         .done { checkoutData in
             if fromAuthorization {

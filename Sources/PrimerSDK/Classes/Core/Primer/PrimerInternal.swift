@@ -116,9 +116,9 @@ internal class PrimerInternal: LogReporter {
      Show Primer Checkout
      */
 
-    internal func showUniversalCheckout(clientToken: String, completion: ((Error?) -> Void)? = nil) {
+    internal func showUniversalCheckout(clientToken: String, intent: PrimerSessionIntent, completion: ((Error?) -> Void)? = nil) {
         self.sdkIntegrationType = .dropIn
-        self.intent = .checkout
+        self.intent = intent
         self.selectedPaymentMethodType = nil
         self.checkoutSessionId = UUID().uuidString
         self.timingEventId = UUID().uuidString
