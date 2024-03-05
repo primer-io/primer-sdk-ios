@@ -24,20 +24,24 @@ class PrimerHeadlessKlarnaComponent {
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public internal(set) var nextDataStep: KlarnaStep = .notLoaded
+
     // MARK: - Init
     init(tokenizationComponent: KlarnaTokenizationComponentProtocol) {
         self.tokenizationComponent = tokenizationComponent
     }
+
     func setPaymentSessionDelegates() {
         setAuthorizationDelegate()
         setFinalizationDelegate()
         setPaymentViewDelegate()
     }
+
     /// Configures the Klarna provider and view handling component with necessary information for payment processing.
     func setProvider(with clientToken: String, paymentCategory: String) {
         let provider: PrimerKlarnaProviding = PrimerKlarnaProvider(clientToken: clientToken, paymentCategory: paymentCategory, urlScheme: settings.paymentMethodOptions.urlScheme)
         klarnaProvider = provider
     }
+
     /// Validates the tokenization component, handling any errors that occur during the process.
     func validate() {
         do {
@@ -48,6 +52,7 @@ class PrimerHeadlessKlarnaComponent {
             }
         }
     }
+
     func resetKlarnaSessionVariables() {
         isFinalizationRequired = false
         availableCategories = []
@@ -67,6 +72,7 @@ extension PrimerHeadlessKlarnaComponent: KlarnaComponent {
             finalizePayment()
         }
     }
+
     func validateData(for data: KlarnaCollectableData) {
         validationDelegate?.didUpdate(validationStatus: .validating, for: data)
         switch data {
@@ -101,10 +107,12 @@ extension PrimerHeadlessKlarnaComponent: KlarnaComponent {
             }
         }
     }
+
     public func submit() {
         trackSubmit()
         authorizeSession()
     }
+
     /// Initiates the creation of a Klarna payment session.
     public func start() {
         validate()
@@ -173,6 +181,7 @@ extension PrimerHeadlessKlarnaComponent: PrimerHeadlessAnalyticsRecordable {
             params: [:]
         )
     }
+
     func trackSubmit() {
         recordEvent(
             type: .sdkEvent,
@@ -180,6 +189,7 @@ extension PrimerHeadlessKlarnaComponent: PrimerHeadlessAnalyticsRecordable {
             params: [:]
         )
     }
+
     func trackCollectableData() {
         recordEvent(
             type: .sdkEvent,
