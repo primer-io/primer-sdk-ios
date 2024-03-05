@@ -293,13 +293,11 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         let backendFlag = true
 
         if backendFlag {
-            let cvvViewController = CVVRecaptureViewController()
-            cvvViewController.cardButtonViewModel = cardButtonViewModel
-            cvvViewController.didSubmitCvv = { cvv in
-                PrimerUIManager.primerRootViewController?.popViewController(animated: true, completion: {
-                    let cvvData = PrimerVaultedCardAdditionalData(cvv: cvv)
-                    startCheckout(withAdditionalData: cvvData)
-                })
+            let cvvViewController = CVVRecaptureViewController(viewModel: CVVRecaptureViewModel())
+            cvvViewController.viewModel.cardButtonViewModel = cardButtonViewModel
+            cvvViewController.viewModel.didSubmitCvv = { cvv in
+                let cvvData = PrimerVaultedCardAdditionalData(cvv: cvv)
+                startCheckout(withAdditionalData: cvvData)
             }
             PrimerUIManager.primerRootViewController?.show(viewController: cvvViewController, animated: true)
         } else {

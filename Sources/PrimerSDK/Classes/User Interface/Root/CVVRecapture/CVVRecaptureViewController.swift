@@ -9,9 +9,7 @@ import UIKit
 
 class CVVRecaptureViewController: UIViewController {
 
-    var didSubmitCvv: ((String) -> Void)?
-    var cardButtonViewModel: CardButtonViewModel!
-
+    var viewModel: CVVRecaptureViewModel
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private let explanationLabel = UILabel()
     private let imageView = UIImageView()
@@ -20,22 +18,42 @@ class CVVRecaptureViewController: UIViewController {
     private var cvvContainerView: PrimerCustomFieldView!
     private let continueButton = PrimerButton()
 
+    // Designated initializer
+    init(viewModel: CVVRecaptureViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    // Required initializer for decoding
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
-        title = "Enter CVV"
+        bindViewModel()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         _ = cvvField.becomeFirstResponder()
+    }
+
+    private func bindViewModel() {
+        viewModel.onContinueButtonStateChange = { [weak self] isEnabled in
+            self?.continueButton.isEnabled = isEnabled
+            let continueButtonColor = isEnabled ? self?.theme.mainButton.color(for: .enabled) : self?.theme.mainButton.color(for: .disabled)
+            self?.continueButton.backgroundColor = continueButtonColor
+        }
     }
 
     // MARK: - View Setup Functions
     private let padding: CGFloat = 16.0
     private let height: CGFloat = 48.0
-
+    private let defaultElementDistance: CGFloat = 24.0
     private func setupViews() {
+        title = "Enter CVV"
         setupExplanationLabel()
         setupImageView()
         setupCardNumberLabel()
@@ -53,7 +71,7 @@ class CVVRecaptureViewController: UIViewController {
     }
 
     private func setupImageView() {
-        imageView.image = cardButtonViewModel.imageName.image
+        imageView.image = viewModel.cardButtonViewModel.imageName.image
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFit
         view.addSubview(imageView)
@@ -62,7 +80,7 @@ class CVVRecaptureViewController: UIViewController {
     }
 
     private func setupCardNumberLabel() {
-        cardNumberLabel.text = cardButtonViewModel.last4
+        cardNumberLabel.text = viewModel.cardButtonViewModel.last4
         cardNumberLabel.textColor = theme.text.body.color
         cardNumberLabel.font = .systemFont(ofSize: CGFloat(theme.text.body.fontSize), weight: .bold)
         view.addSubview(cardNumberLabel)
@@ -72,9 +90,9 @@ class CVVRecaptureViewController: UIViewController {
 
     private func setupCVVContainerView() {
         cvvField = PrimerCVVField.cvvFieldViewWithDelegate(self)
-        cvvField.cardNetwork = CardNetwork(cardNetworkStr: self.cardButtonViewModel.network)
+        cvvField.cardNetwork = CardNetwork(cardNetworkStr: self.viewModel.cardButtonViewModel.network)
         cvvField.isValid = { text in
-            let cardNetwork = CardNetwork(cardNetworkStr: self.cardButtonViewModel.network)
+            let cardNetwork = CardNetwork(cardNetworkStr: self.viewModel.cardButtonViewModel.network)
             return !text.isEmpty && text.isValidCVV(cardNetwork: cardNetwork)
         }
         cvvContainerView = PrimerCVVField.cvvContainerViewFieldView(cvvField)
@@ -110,7 +128,7 @@ class CVVRecaptureViewController: UIViewController {
 
     private func activateImageViewConstraints() {
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: explanationLabel.bottomAnchor, constant: 24),
+            imageView.topAnchor.constraint(equalTo: explanationLabel.bottomAnchor, constant: defaultElementDistance),
             imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
             imageView.widthAnchor.constraint(equalToConstant: 56),
             imageView.heightAnchor.constraint(equalToConstant: 40)
@@ -127,14 +145,14 @@ class CVVRecaptureViewController: UIViewController {
     private func activateCVVContainerViewConstraints() {
         NSLayoutConstraint.activate([
             cvvContainerView.centerYAnchor.constraint(equalTo: imageView.centerYAnchor),
-            cvvContainerView.leadingAnchor.constraint(equalTo: cardNumberLabel.trailingAnchor, constant: 24),
+            cvvContainerView.leadingAnchor.constraint(equalTo: cardNumberLabel.trailingAnchor, constant: defaultElementDistance),
             cvvContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding)
         ])
     }
 
     private func activateContinueButtonConstraints() {
         NSLayoutConstraint.activate([
-            continueButton.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 24),
+            continueButton.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: defaultElementDistance),
             continueButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
             continueButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             continueButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: padding)
@@ -142,16 +160,13 @@ class CVVRecaptureViewController: UIViewController {
     }
 
     @objc private func continueButtonTapped() {
-        didSubmitCvv?(cvvField.cvv)
+        continueButton.startAnimating()
+        viewModel.continueButtonTapped(with: cvvField.cvv)
     }
 }
 
 extension CVVRecaptureViewController: PrimerTextFieldViewDelegate {
-
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        print(isValid!)
-        continueButton.isEnabled = isValid ?? true
-        let continueButtonColor = theme.mainButton.color(for: (isValid ?? true) ? .enabled : .disabled)
-        continueButton.backgroundColor = continueButtonColor
+        viewModel.isValidCvv = isValid ?? true
     }
 }
