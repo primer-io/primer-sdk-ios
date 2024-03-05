@@ -265,7 +265,9 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 case .failure(let err):
                     seal.reject(err)
                 case .success(let config):
-                    seal.fulfill(config)
+                    _ = ImageFileProcessor().process(configuration: config).ensure {
+                        seal.fulfill(config)
+                    }
                 }
             }
         }
