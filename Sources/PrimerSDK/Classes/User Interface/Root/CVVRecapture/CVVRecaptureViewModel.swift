@@ -15,7 +15,7 @@ class CVVRecaptureViewModel {
 
     var isValidCvv: Bool = false {
         didSet {
-            updateContinueButtonState()
+            onContinueButtonStateChange?(isValidCvv)
         }
     }
 
@@ -26,11 +26,5 @@ class CVVRecaptureViewModel {
         if isValidCvv {
             didSubmitCvv?(cvv)
         }
-    }
-
-    // Update UI based on CVV validation
-    private func updateContinueButtonState() {
-        // This closure can be used by the ViewController to update the continue button's state
-        onContinueButtonStateChange?(isValidCvv)
     }
 }

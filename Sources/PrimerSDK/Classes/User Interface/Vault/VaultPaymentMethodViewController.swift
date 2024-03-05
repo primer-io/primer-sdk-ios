@@ -109,7 +109,12 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
         verticalRightStackView.distribution = .fillEqually
         verticalRightStackView.spacing = 0
 
-        cardNetworkImageView.image = paymentMethod.cardButtonViewModel?.imageName.image
+        if let network = paymentMethod.cardButtonViewModel?.network {
+            let cardNetworkImage = CardNetwork(cardNetworkStr: network).icon
+            cardNetworkImageView.image = cardNetworkImage
+        } else {
+            cardNetworkImageView.image = paymentMethod.cardButtonViewModel?.imageName.image
+        }
         cardNetworkImageView.contentMode = .scaleAspectFit
 
         checkmarkImageView.image = isDeleting ?

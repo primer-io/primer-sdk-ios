@@ -38,7 +38,7 @@ internal class CardButton: PrimerButton {
             toggleIcon()
         }
 
-        addCardIcon(image: model.imageName.image)
+        addCardIcon(image: CardNetwork(cardNetworkStr: model.network).icon)
         addBorder()
 
         switch model.paymentMethodType {

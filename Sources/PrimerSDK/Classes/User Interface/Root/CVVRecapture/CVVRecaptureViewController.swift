@@ -42,8 +42,9 @@ class CVVRecaptureViewController: UIViewController {
 
     private func bindViewModel() {
         viewModel.onContinueButtonStateChange = { [weak self] isEnabled in
+            if self?.continueButton.isAnimating == true { return }
             self?.continueButton.isEnabled = isEnabled
-            let continueButtonColor = isEnabled ? self?.theme.mainButton.color(for: .enabled) : self?.theme.mainButton.color(for: .disabled)
+            let continueButtonColor = self?.theme.mainButton.color(for: isEnabled ? .enabled : .disabled)
             self?.continueButton.backgroundColor = continueButtonColor
         }
     }
@@ -71,7 +72,8 @@ class CVVRecaptureViewController: UIViewController {
     }
 
     private func setupImageView() {
-        imageView.image = viewModel.cardButtonViewModel.imageName.image
+        let networkIcon = CardNetwork(cardNetworkStr: viewModel.cardButtonViewModel.network).icon
+        imageView.image = networkIcon
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFit
         view.addSubview(imageView)
@@ -90,7 +92,7 @@ class CVVRecaptureViewController: UIViewController {
 
     private func setupCVVContainerView() {
         cvvField = PrimerCVVField.cvvFieldViewWithDelegate(self)
-        cvvField.cardNetwork = CardNetwork(cardNetworkStr: self.viewModel.cardButtonViewModel.network)
+        cvvField.cardNetwork = CardNetwork(cardNetworkStr: viewModel.cardButtonViewModel.network)
         cvvField.isValid = { text in
             let cardNetwork = CardNetwork(cardNetworkStr: self.viewModel.cardButtonViewModel.network)
             return !text.isEmpty && text.isValidCVV(cardNetwork: cardNetwork)
@@ -161,6 +163,7 @@ class CVVRecaptureViewController: UIViewController {
 
     @objc private func continueButtonTapped() {
         continueButton.startAnimating()
+        continueButton.isEnabled = false
         viewModel.continueButtonTapped(with: cvvField.cvv)
     }
 }
