@@ -93,7 +93,7 @@ final class URLSessionStackTests: XCTestCase {
         XCTAssertTrue(sut.shouldReportNetworkEvents(for: PrimerAPI.fetchVaultedPaymentMethods(clientToken: mockClientToken)))
         let paymentInstrument = CardPaymentInstrument(number: "", cvv: "", expirationMonth: "", expirationYear: "")
         XCTAssertTrue(sut.shouldReportNetworkEvents(for: PrimerAPI.tokenizePaymentMethod(clientToken: mockClientToken, tokenizationRequestBody: .init(paymentInstrument: paymentInstrument))))
-        let klarnaCreatePaymentSession = Request.Body.Klarna.CreatePaymentSession(paymentMethodConfigId: "", sessionType: .hostedPaymentPage, description: nil, redirectUrl: nil, totalAmount: nil, orderItems: nil)
+        let klarnaCreatePaymentSession = Request.Body.Klarna.CreatePaymentSession(paymentMethodConfigId: "", sessionType: .oneOffPayment, description: nil, redirectUrl: nil, totalAmount: nil, orderItems: nil, billingAddress: nil, shippingAddress: nil)
         XCTAssertTrue(sut.shouldReportNetworkEvents(for: PrimerAPI.createKlarnaPaymentSession(clientToken: mockClientToken, klarnaCreatePaymentSessionAPIRequest: klarnaCreatePaymentSession)))
     }
 

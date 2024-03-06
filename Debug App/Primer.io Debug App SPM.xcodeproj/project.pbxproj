@@ -9,6 +9,12 @@
 /* Begin PBXBuildFile section */
 		0442C4072B7CE1E900EAD8EE /* TapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0442C4062B7CE1E900EAD8EE /* TapGestureRecognizer.swift */; };
 		049A055C2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055B2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
+		8723ADDD2B8E0F5100A5FE23 /* MerchantHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADDC2B8E0F5100A5FE23 /* MerchantHelpers.swift */; };
+		8723ADE42B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADDF2B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift */; };
+		8723ADE52B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE02B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationViewModel.swift */; };
+		8723ADE62B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView+Elements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE12B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView+Elements.swift */; };
+		8723ADE72B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE22B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift */; };
+		8723ADE82B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE32B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift */; };
 		E11F475C2B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47582B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift */; };
 		E11F475D2B06C5A40091C31F /* BanksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47592B06C5A40091C31F /* BanksListView.swift */; };
 		E11F475E2B06C5A40091C31F /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F475A2B06C5A40091C31F /* BanksListModel.swift */; };
@@ -113,6 +119,12 @@
 		7A3E75CD834937EF85DE1C14 /* MockVaultCheckoutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockVaultCheckoutViewModel.swift; sourceTree = "<group>"; };
 		7A5E6F7A9C12C69CB66032E3 /* IPay88Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IPay88Tests.swift; sourceTree = "<group>"; };
 		7EA7D2BB0AC0A1877DB2E6CE /* MockModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockModule.swift; sourceTree = "<group>"; };
+		8723ADDC2B8E0F5100A5FE23 /* MerchantHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHelpers.swift; sourceTree = "<group>"; };
+		8723ADDF2B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessKlarnaInitializationView.swift; sourceTree = "<group>"; };
+		8723ADE02B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessKlarnaInitializationViewModel.swift; sourceTree = "<group>"; };
+		8723ADE12B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView+Elements.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MerchantHeadlessKlarnaInitializationView+Elements.swift"; sourceTree = "<group>"; };
+		8723ADE22B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift"; sourceTree = "<group>"; };
+		8723ADE32B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutKlarnaViewController.swift; sourceTree = "<group>"; };
 		872A0647D4136E27365FB7F8 /* StringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTests.swift; sourceTree = "<group>"; };
 		8A23886804B13FA754E775D0 /* MockPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
 		8A3FDC6FE0EB5AB5828D4D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -212,6 +224,7 @@
 		0E5CB4D963647832FF985B29 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				8723ADDB2B8E0F5100A5FE23 /* Merchant Helpers */,
 				EF5FBE3673FBCB40F55F4DC0 /* New UI */,
 				9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */,
 				72E691B9A6A8EBB9F6A6B266 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift */,
@@ -338,6 +351,27 @@
 				77E08473D1DF8C47A6EB61B2 /* Networking+Models.swift */,
 			);
 			path = Network;
+			sourceTree = "<group>";
+		};
+		8723ADDB2B8E0F5100A5FE23 /* Merchant Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				8723ADDC2B8E0F5100A5FE23 /* MerchantHelpers.swift */,
+			);
+			name = "Merchant Helpers";
+			path = "Sources/View Controllers/Merchant Helpers";
+			sourceTree = SOURCE_ROOT;
+		};
+		8723ADDE2B8E0FAB00A5FE23 /* KlarnaHeadless */ = {
+			isa = PBXGroup;
+			children = (
+				8723ADDF2B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift */,
+				8723ADE02B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationViewModel.swift */,
+				8723ADE12B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView+Elements.swift */,
+				8723ADE22B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift */,
+				8723ADE32B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift */,
+			);
+			path = KlarnaHeadless;
 			sourceTree = "<group>";
 		};
 		9EE81958BB2BB34183F6C0AB /* Modules */ = {
@@ -500,6 +534,7 @@
 		EF5FBE3673FBCB40F55F4DC0 /* New UI */ = {
 			isa = PBXGroup;
 			children = (
+				8723ADDE2B8E0FAB00A5FE23 /* KlarnaHeadless */,
 				E11F47572B06C5A40091C31F /* FormWithRedirect */,
 				0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */,
 			);
@@ -616,9 +651,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8723ADE42B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift in Sources */,
 				F00C65F82ACC67FA00187028 /* AppDelegate.swift in Sources */,
 				F00C65F92ACC67FA00187028 /* Data+Extensions.swift in Sources */,
 				F00C65FA2ACC67FA00187028 /* Range+Extensions.swift in Sources */,
+				8723ADE72B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift in Sources */,
 				F00C65FB2ACC67FA00187028 /* String+Extensions.swift in Sources */,
 				049A055C2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */,
 				F00C65FC2ACC67FA00187028 /* UIStackViewExtensions.swift in Sources */,
@@ -627,6 +664,7 @@
 				F00C65FF2ACC67FA00187028 /* ViewController+PrimerUIHelpers.swift in Sources */,
 				F00C66002ACC67FA00187028 /* CheckoutTheme.swift in Sources */,
 				F00C66012ACC67FA00187028 /* CreateClientToken.swift in Sources */,
+				8723ADDD2B8E0F5100A5FE23 /* MerchantHelpers.swift in Sources */,
 				F00C66022ACC67FA00187028 /* TestScenario.swift in Sources */,
 				F00C66032ACC67FA00187028 /* TransactionResponse.swift in Sources */,
 				E1AB44D02AFE139600639DC5 /* URL+NetworkHeaders.swift in Sources */,
@@ -634,12 +672,15 @@
 				F00C66052ACC67FA00187028 /* Networking.swift in Sources */,
 				F00C66062ACC67FA00187028 /* MerchantDropInUIViewController.swift in Sources */,
 				0442C4072B7CE1E900EAD8EE /* TapGestureRecognizer.swift in Sources */,
+				8723ADE52B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationViewModel.swift in Sources */,
+				8723ADE82B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */,
 				F00C66082ACC67FA00187028 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift in Sources */,
 				E11F475C2B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift in Sources */,
 				E11F475E2B06C5A40091C31F /* BanksListModel.swift in Sources */,
 				F00C660A2ACC67FA00187028 /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */,
 				F00C660B2ACC67FA00187028 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift in Sources */,
 				E11F475F2B06C5A40091C31F /* ImageViewWithUrl.swift in Sources */,
+				8723ADE62B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView+Elements.swift in Sources */,
 				F00C660C2ACC67FA00187028 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift in Sources */,
 				F00C660D2ACC67FA00187028 /* MerchantResultViewController.swift in Sources */,
 				F00C660E2ACC67FA00187028 /* MerchantSessionAndSettingsViewController.swift in Sources */,

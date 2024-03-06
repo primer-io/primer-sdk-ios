@@ -13,7 +13,7 @@ extension Array where Element == Error {
         var message: String = ""
 
         self.forEach { err in
-            if let primerError = err as? PrimerErrorProtocol {
+            if let primerError = err as? (any PrimerErrorProtocol) {
                 message += "\(primerError.localizedDescription) | "
             } else {
                 let nsErr = err as NSError

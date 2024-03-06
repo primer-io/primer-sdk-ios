@@ -139,7 +139,6 @@ class PrimerPaymentMethod: Codable, LogReporter {
 
         return nil
     }()
-
     lazy var tokenizationModel: PaymentMethodTokenizationModelProtocol? = {
         switch internalPaymentMethodType {
         case .adyenIDeal:
@@ -296,14 +295,13 @@ class PrimerPaymentMethod: Codable, LogReporter {
         surcharge = (try? container.decode(Int?.self, forKey: .surcharge)) ?? nil
         displayMetadata = (try? container.decode(PrimerPaymentMethod.DisplayMetadata?.self, forKey: .displayMetadata)) ?? nil
 
-        if let cardOptions = try? container.decode(CardOptions.self, forKey: .options) {
-            options = cardOptions
-        } else if let payPalOptions = try? container.decode(PayPalOptions.self, forKey: .options) {
-            options = payPalOptions
-        } else if let merchantOptions = try? container.decode(MerchantOptions.self, forKey: .options) {
-            options = merchantOptions
-        } else {
-            options = nil
+        switch type {
+        case "PAYMENT_CARD":
+            options = try? container.decode(CardOptions.self, forKey: .options)
+        case "PAYPAL":
+            options = try? container.decode(PayPalOptions.self, forKey: .options)
+        default:
+            options = try? container.decode(MerchantOptions.self, forKey: .options)
         }
     }
 

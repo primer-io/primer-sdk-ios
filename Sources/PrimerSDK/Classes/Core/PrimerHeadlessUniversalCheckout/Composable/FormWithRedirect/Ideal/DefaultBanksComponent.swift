@@ -19,11 +19,11 @@ final class DefaultBanksComponent: BanksComponent {
     private(set) var banks: [IssuingBank] = []
     private(set) var bankId: String?
     private let onFinished: () -> WebRedirectComponent
-    private let tokenizationProvingModel: BankSelectorTokenizationProviding
+    private let tokenizationProvidingModel: BankSelectorTokenizationProviding
 
-    init(paymentMethodType: PrimerPaymentMethodType, tokenizationProvingModel: BankSelectorTokenizationProviding, onFinished: @escaping () -> WebRedirectComponent) {
+    init(paymentMethodType: PrimerPaymentMethodType, tokenizationProvidingModel: BankSelectorTokenizationProviding, onFinished: @escaping () -> WebRedirectComponent) {
         self.paymentMethodType = paymentMethodType
-        self.tokenizationProvingModel = tokenizationProvingModel
+        self.tokenizationProvidingModel = tokenizationProvidingModel
         self.onFinished = onFinished
     }
 
@@ -35,7 +35,7 @@ final class DefaultBanksComponent: BanksComponent {
                 self.bankId = bankId
             }
         case .bankFilterText(text: let text):
-            let filteredBanks = tokenizationProvingModel.filterBanks(query: text)
+            let filteredBanks = tokenizationProvidingModel.filterBanks(query: text)
             stepDelegate?.didReceiveStep(step: BanksStep.banksRetrieved(banks: filteredBanks.map { IssuingBank(bank: $0) }))
         }
         validateData(for: collectableData)
@@ -90,7 +90,7 @@ final class DefaultBanksComponent: BanksComponent {
     public func start() {
         trackStart()
         stepDelegate?.didReceiveStep(step: BanksStep.loading)
-        tokenizationProvingModel.retrieveListOfBanks()
+        tokenizationProvidingModel.retrieveListOfBanks()
             .done { banks -> Void in
                 self.banks = banks.map { IssuingBank(bank: $0) }
                 let step = BanksStep.banksRetrieved(banks: self.banks)
@@ -109,7 +109,7 @@ final class DefaultBanksComponent: BanksComponent {
             guard let bankId = self.bankId else { return }
             let redirectComponent = onFinished()
             redirectComponent.start()
-            tokenizationProvingModel.tokenize(bankId: bankId)
+            tokenizationProvidingModel.tokenize(bankId: bankId)
                 .done { _ in
                     redirectComponent.didReceiveStep(step: WebStep.loaded)
                 }.catch { error in

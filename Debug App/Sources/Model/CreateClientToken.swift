@@ -280,7 +280,8 @@ struct ClientSessionRequestBody {
             var quantity: Int?
             var discountAmount: Int?
             var taxAmount: Int?
-
+            var productType: String?
+            
             var dictionaryValue: [String: Any]? {
                 var dic: [String: Any] = [:]
 
@@ -307,16 +308,20 @@ struct ClientSessionRequestBody {
                 if let discountAmount = discountAmount {
                     dic["discountAmount"] = discountAmount
                 }
-
+                
+                if let productType = productType {
+                    dic["productType"] = productType
+                }
+                
                 return dic.keys.count == 0 ? nil : dic
             }
         }
     }
-
-    struct PaymentMethod {
-
+    
+    struct PaymentMethod: Codable {
         let vaultOnSuccess: Bool?
-        let options: [String: Any]?
+        let options: PaymentMethodOptionGroup?
+        let descriptor: String?
         let paymentType: String?
 
         var dictionaryValue: [String: Any]? {
@@ -327,7 +332,11 @@ struct ClientSessionRequestBody {
             }
 
             if let options = options {
-                dic["options"] = options
+                dic["options"] = options.dictionaryValue
+            }
+            
+            if let descriptor = descriptor {
+                dic["descriptor"] = descriptor
             }
 
             if let paymentType = paymentType {
@@ -335,6 +344,99 @@ struct ClientSessionRequestBody {
             }
 
             return dic.keys.count == 0 ? nil : dic
+        }
+        
+        struct PaymentMethodOptionGroup: Codable {
+            var KLARNA: PaymentMethodOption?
+            
+            var dictionaryValue: [String: Any]? {
+                var dic: [String: Any] = [:]
+                
+                if let KLARNA = KLARNA {
+                    dic["KLARNA"] = KLARNA.dictionaryValue
+                }
+                
+                return dic.keys.count == 0 ? nil : dic
+            }
+        }
+        
+        struct PaymentMethodOption: Codable {
+            var surcharge: SurchargeOption?
+            var instalmentDuration: String?
+            var extraMerchantData: [String: Any]?
+
+            enum CodingKeys: CodingKey {
+                case surcharge, instalmentDuration, extraMerchantData
+            }
+            
+            init(surcharge: SurchargeOption?, instalmentDuration: String?, extraMerchantData: [String: Any]?) {
+                self.surcharge = surcharge
+                self.instalmentDuration = instalmentDuration
+                self.extraMerchantData = extraMerchantData
+            }
+
+            func encode(to encoder: Encoder) throws {
+                var container = encoder.container(keyedBy: CodingKeys.self)
+                
+                if let surcharge = surcharge {
+                    try container.encode(surcharge, forKey: .surcharge)
+                }
+                
+                if let instalmentDuration = instalmentDuration {
+                    try container.encode(instalmentDuration, forKey: .instalmentDuration)
+                }
+                
+                if let extraMerchantData = extraMerchantData {
+                    let jsonData = try JSONSerialization.data(withJSONObject: extraMerchantData, options: [])
+                    let jsonString = String(data: jsonData, encoding: .utf8)
+                    try container.encode(jsonString, forKey: .extraMerchantData)
+                }
+            }
+            
+            init(from decoder: Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                surcharge = try container.decodeIfPresent(SurchargeOption.self, forKey: .surcharge)
+                instalmentDuration = try container.decodeIfPresent(String.self, forKey: .instalmentDuration)
+                
+                let jsonString = try container.decodeIfPresent(String.self, forKey: .extraMerchantData)
+                if let jsonData = jsonString?.data(using: .utf8) {
+                    extraMerchantData = try JSONSerialization.jsonObject(with: jsonData) as? [String: Any]
+                } else {
+                    extraMerchantData = nil
+                }
+            }
+            
+            var dictionaryValue: [String: Any]? {
+                var dic: [String: Any] = [:]
+                
+                if let surcharge = surcharge {
+                    dic["surcharge"] = surcharge.dictionaryValue
+                }
+                
+                if let instalmentDuration = instalmentDuration {
+                    dic["instalmentDuration"] = instalmentDuration
+                }
+                
+                if let extraMerchantData = extraMerchantData {
+                    dic["extraMerchantData"] = extraMerchantData
+                }
+                
+                return dic.keys.count == 0 ? nil : dic
+            }
+        }
+        
+        struct  SurchargeOption: Codable {
+            var amount: Int?
+            
+            var dictionaryValue: [String: Any]? {
+                var dic: [String: Any] = [:]
+                
+                if let amount = amount {
+                    dic["amount"] = amount
+                }
+                
+                return dic.keys.count == 0 ? nil : dic
+            }
         }
     }
 

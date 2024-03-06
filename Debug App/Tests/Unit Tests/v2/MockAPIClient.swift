@@ -20,7 +20,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     var createPayPalOrderSessionResult: (Response.Body.PayPal.CreateOrder?, Error?)?
     var createPayPalBillingAgreementSessionResult: (Response.Body.PayPal.CreateBillingAgreement?, Error?)?
     var confirmPayPalBillingAgreementResult: (Response.Body.PayPal.ConfirmBillingAgreement?, Error?)?
-    var createKlarnaPaymentSessionResult: (Response.Body.Klarna.CreatePaymentSession?, Error?)?
+    var createKlarnaPaymentSessionResult: (Response.Body.Klarna.PaymentSession?, Error?)?
     var createKlarnaCustomerTokenResult: (Response.Body.Klarna.CustomerToken?, Error?)?
     var finalizeKlarnaPaymentSessionResult: (Response.Body.Klarna.CustomerToken?, Error?)?
     var pollingResults: [(PollingResponse?, Error?)]?
@@ -201,7 +201,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func createKlarnaPaymentSession(
         clientToken: DecodedJWTToken,
         klarnaCreatePaymentSessionAPIRequest: Request.Body.Klarna.CreatePaymentSession,
-        completion: @escaping (_ result: Result<Response.Body.Klarna.CreatePaymentSession, Error>) -> Void
+        completion: @escaping (_ result: Result<Response.Body.Klarna.PaymentSession, Error>) -> Void
     ) {
         guard let result = createKlarnaPaymentSessionResult,
               result.0 != nil || result.1 != nil
@@ -645,7 +645,8 @@ extension MockPrimerAPIClient {
                             name: "mock-name-1",
                             description: "mock-description-1",
                             taxAmount: nil,
-                            taxCode: nil)
+                            taxCode: nil,
+                            productType: nil)
                     ],
                     shippingAmount: nil),
                 customer: nil,
@@ -697,7 +698,7 @@ extension MockPrimerAPIClient {
                 state: "London Greater Area",
                 countryCode: "GB",
                 postalCode: "PC12345"))
-        static let mockCreateKlarnaPaymentSession = Response.Body.Klarna.CreatePaymentSession(
+        static let mockCreateKlarnaPaymentSession = Response.Body.Klarna.PaymentSession(
             clientToken: "mock-client-token",
             sessionId: "mock-session-id",
             categories: [
@@ -717,6 +718,7 @@ extension MockPrimerAPIClient {
                 purchaseCurrency: "SEK",
                 locale: "en-US",
                 orderAmount: 100,
+                orderTaxAmount: nil,
                 orderLines: [
                     Response.Body.Klarna.SessionOrderLines(
                         type: "mock-type",
@@ -739,6 +741,7 @@ extension MockPrimerAPIClient {
                     postalCode: "PC123456",
                     state: "Greater London",
                     title: "Mock title"),
+                shippingAddress: nil,
                 tokenDetails: Response.Body.Klarna.TokenDetails(
                     brand: "Visa",
                     maskedNumber: "**** **** **** 1234",
@@ -752,6 +755,7 @@ extension MockPrimerAPIClient {
                 purchaseCurrency: "SEK",
                 locale: "en-US",
                 orderAmount: 100,
+                orderTaxAmount: nil,
                 orderLines: [
                     Response.Body.Klarna.SessionOrderLines(
                         type: "mock-type",
@@ -774,6 +778,7 @@ extension MockPrimerAPIClient {
                     postalCode: "PC123456",
                     state: "Greater London",
                     title: "Mock title"),
+                shippingAddress: nil,
                 tokenDetails: Response.Body.Klarna.TokenDetails(
                     brand: "Visa",
                     maskedNumber: "**** **** **** 1234",

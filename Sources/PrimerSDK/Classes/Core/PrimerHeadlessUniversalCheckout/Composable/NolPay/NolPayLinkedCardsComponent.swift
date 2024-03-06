@@ -9,7 +9,7 @@ import Foundation
 #if canImport(PrimerNolPaySDK)
 import PrimerNolPaySDK
 
-public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
+public class NolPayLinkedCardsComponent {
 
     var nolPay: PrimerNolPayProtocol?
 

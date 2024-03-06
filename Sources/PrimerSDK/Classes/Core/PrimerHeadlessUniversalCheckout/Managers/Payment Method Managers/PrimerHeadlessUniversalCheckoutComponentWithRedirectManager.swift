@@ -37,7 +37,7 @@ extension PrimerHeadlessUniversalCheckout {
                 throw err
             }
 
-            return DefaultBanksComponent(paymentMethodType: paymentMethodType, tokenizationProvingModel: tokenizationModel) {
+            return DefaultBanksComponent(paymentMethodType: paymentMethodType, tokenizationProvidingModel: tokenizationModel) {
                 webDelegate.setup()
                 return WebRedirectComponent(paymentMethodType: paymentMethodType, tokenizationModelDelegate: webDelegate)
             }
