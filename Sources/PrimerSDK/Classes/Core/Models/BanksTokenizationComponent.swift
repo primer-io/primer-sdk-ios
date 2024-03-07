@@ -85,7 +85,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                     seal.reject(err)
 
                 case .success(let banks):
-                    seal.fulfill(banks)
+                    seal.fulfill(banks.result)
                 }
             }
         }

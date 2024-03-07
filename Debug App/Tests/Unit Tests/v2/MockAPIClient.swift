@@ -28,7 +28,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     var exchangePaymentMethodTokenResult: (PrimerPaymentMethodTokenData?, Error?)?
     var begin3DSAuthResult: (ThreeDS.BeginAuthResponse?, Error?)?
     var continue3DSAuthResult: (ThreeDS.PostAuthResponse?, Error?)?
-    var listAdyenBanksResult: ([Response.Body.Adyen.Bank]?, Error?)?
+    var listAdyenBanksResult: (BanksListSessionResponse?, Error?)?
     var listRetailOutletsResult: (RetailOutletsList?, Error?)?
     var paymentResult: (Response.Body.Payment?, Error?)?
     var sendAnalyticsEventsResult: (Analytics.Service.Response?, Error?)?
@@ -340,12 +340,12 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-
+    
     func listAdyenBanks(
         clientToken: DecodedJWTToken,
         request: Request.Body.Adyen.BanksList,
-        completion: @escaping (_ result: Result<[Response.Body.Adyen.Bank], Error>) -> Void
-    ) {
+        completion: @escaping APICompletion<PrimerSDK.BanksListSessionResponse>)
+       {
         guard let result = listAdyenBanksResult,
               result.0 != nil || result.1 != nil
         else {
@@ -833,13 +833,14 @@ extension MockPrimerAPIClient {
             token: MockPrimerAPIClient.Samples.mockTokenizePaymentMethod,
             resumeToken: "mock-resume-token",
             authentication: nil)
-        static let mockAdyenBanks = [
-            Response.Body.Adyen.Bank(
-                id: "mock-bank-id",
-                name: "mock-bank-name",
-                iconUrlStr: "https://primer.io/bank-logo",
-                disabled: false)
-        ]
+        static let mockAdyenBanks = BanksListSessionResponse(
+            result: [
+                Response.Body.Adyen.Bank(
+                    id: "mock-bank-id",
+                    name: "mock-bank-name",
+                    iconUrlStr: "https://primer.io/bank-logo",
+                    disabled: false)
+            ])
         static let mockListRetailOutlets = RetailOutletsList(
             result: [
                 RetailOutletsRetail(
