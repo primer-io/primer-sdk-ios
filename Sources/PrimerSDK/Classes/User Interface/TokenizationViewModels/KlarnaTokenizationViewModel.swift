@@ -18,7 +18,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     #if DEBUG
     private var demoThirdPartySDKViewController: PrimerThirdPartySDKViewController?
-#endif
+    #endif
+    private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
     private var tokenizationComponent: KlarnaTokenizationComponentProtocol
     private var klarnaPaymentSession: Response.Body.Klarna.PaymentSession?
     private var klarnaCustomerTokenAPIResponse: Response.Body.Klarna.CustomerToken?
@@ -100,15 +101,9 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.reject(err)
             }
             #else
-            let err = PrimerError.missingSDK(paymentMethodType: PrimerPaymentMethodType.klarna.rawValue,
-                                             sdkName: "KlarnaSDK",
-                                             userInfo: ["file": #file,
-                                                        "class": "\(Self.self)",
-                                                        "function": #function,
-                                                        "line": "\(#line)"],
-                                             diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            seal.reject(err)
+            let error = KlarnaHelpers.getMissingSDKError()
+            ErrorHandler.handle(error: error)
+            seal.reject(error)
             #endif
         }
     }
@@ -153,19 +148,10 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
                 if !isMockedBE {
                     #if canImport(PrimerKlarnaSDK)
-                    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-
-                    guard let urlSchemeStr = settings.paymentMethodOptions.urlScheme,
+                    guard let urlSchemeStr = self.settings.paymentMethodOptions.urlScheme,
                           URL(string: urlSchemeStr) != nil else {
-                        let err = PrimerError.invalidUrlScheme(
-                            urlScheme: settings.paymentMethodOptions.urlScheme,
-                            userInfo: ["file": #file,
-                                       "class": "\(Self.self)",
-                                       "function": #function,
-                                       "line": "\(#line)"],
-                            diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
+                        let error = KlarnaHelpers.getInvalidUrlSchemeError(settings: self.settings)
+                        seal.reject(error)
                         return
                     }
 
@@ -229,67 +215,12 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
         }
     }
-
-    private func finalizePaymentSession() -> Promise<Response.Body.Klarna.CustomerToken> {
-        return Promise { seal in
-            self.finalizePaymentSession { result in
-                switch result {
-                case .failure(let err):
-                    seal.reject(err)
-                case .success(let res):
-                    seal.fulfill(res)
-                }
-            }
-        }
-    }
-
-    private func finalizePaymentSession(completion: @escaping (Result<Response.Body.Klarna.CustomerToken, Error>) -> Void) {
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
-        }
-
-        guard let configId = PrimerAPIConfigurationModule.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.klarna.rawValue),
-              let sessionId = self.klarnaPaymentSession?.sessionId else {
-            let err = PrimerError.missingPrimerConfiguration(
-                userInfo: ["file": #file,
-                           "class": "\(Self.self)",
-                           "function": #function,
-                           "line": "\(#line)"],
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
-            return
-        }
-
-        let body = Request.Body.Klarna.FinalizePaymentSession(paymentMethodConfigId: configId, sessionId: sessionId)
-        self.logger.info(message: "config ID: \(configId)")
-
-        let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
-
-        apiClient.finalizeKlarnaPaymentSession(clientToken: decodedJWTToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
-            switch result {
-            case .failure(let err):
-                completion(.failure(err))
-            case .success(let response):
-                self.logger.info(message: "\(response)")
-                completion(.success(response))
-            }
-        }
-    }
 }
 
 #if canImport(PrimerKlarnaSDK)
 extension KlarnaTokenizationViewModel: PrimerKlarnaViewControllerDelegate {
 
-    func primerKlarnaViewDidLoad() {
-
-    }
+    func primerKlarnaViewDidLoad() { }
 
     func primerKlarnaPaymentSessionCompleted(authorizationToken: String?, error: PrimerKlarnaError?) {
         self.klarnaPaymentSessionCompletion?(authorizationToken, error)
