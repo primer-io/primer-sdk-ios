@@ -27,9 +27,7 @@ extension Request.Body {
         func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
 
-            if let paymentInstrument = self.paymentInstrument as? ApayaPaymentInstrument {
-                try container.encode(paymentInstrument, forKey: .paymentInstrument)
-            } else if let paymentInstrument = self.paymentInstrument as? ApplePayPaymentInstrument {
+            if let paymentInstrument = self.paymentInstrument as? ApplePayPaymentInstrument {
                 try container.encode(paymentInstrument, forKey: .paymentInstrument)
             } else if let paymentInstrument = self.paymentInstrument as? CardPaymentInstrument {
                 try container.encode(paymentInstrument, forKey: .paymentInstrument)

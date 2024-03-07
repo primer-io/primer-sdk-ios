@@ -234,7 +234,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
                     seal.reject(err)
 
                 case .success(let banks):
-                    seal.fulfill(banks)
+                    seal.fulfill(banks.result)
                 }
             }
         }
