@@ -1,3 +1,17 @@
+## 2.23.0 (2024-03-07)
+
+### Feat
+
+- Klarna Headless (#789)
+
+### Fix
+
+- Adyen IDeal banks request failing (#813)
+
+### Refactor
+
+- NativeUIManager Composable Architecture (#810)
+
 ## 2.22.1 (2024-02-22)
 
 ### Fix
