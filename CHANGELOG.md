@@ -4,10 +4,6 @@
 
 - Klarna Headless (#789)
 
-### Fix
-
-- Adyen IDeal banks request failing (#813)
-
 ### Refactor
 
 - NativeUIManager Composable Architecture (#810)
