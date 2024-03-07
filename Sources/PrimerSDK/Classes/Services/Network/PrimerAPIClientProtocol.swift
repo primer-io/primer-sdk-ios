@@ -107,7 +107,7 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPICli
     func listAdyenBanks(
         clientToken: DecodedJWTToken,
         request: Request.Body.Adyen.BanksList,
-        completion: @escaping APICompletion<[Response.Body.Adyen.Bank]>)
+        completion: @escaping APICompletion<BanksListSessionResponse>)
 
     // MARK: Retail Outlets
 

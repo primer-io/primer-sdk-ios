@@ -125,7 +125,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
     func listAdyenBanks(
         clientToken: DecodedJWTToken,
         request: Request.Body.Adyen.BanksList,
-        completion: @escaping (Result<[Response.Body.Adyen.Bank], Error>) -> Void) {
+        completion: @escaping APICompletion<BanksListSessionResponse>) {
         let endpoint = PrimerAPI.listAdyenBanks(clientToken: clientToken, request: request)
         execute(endpoint, completion: completion)
     }
