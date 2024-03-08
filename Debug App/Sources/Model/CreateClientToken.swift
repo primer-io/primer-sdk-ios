@@ -79,7 +79,7 @@ public struct Customer: Codable {
 public struct LineItem: Codable {
     let itemId: String?
     let description: String?
-    var amount: Int?
+    let amount: Int?
     let discountAmount: Int?
     let quantity: Int?
     let taxAmount: Int?
