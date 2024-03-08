@@ -44,7 +44,6 @@ Ensure ranges have exactly one or exactly two bounds.
             let max2 = max(range2.lowerBound, range2.upperBound)
             return max1 > max2
         })
-        print("TEST")
     }
 
     func cardNetwork(from cardNumberString: String) -> CardNetwork? {
