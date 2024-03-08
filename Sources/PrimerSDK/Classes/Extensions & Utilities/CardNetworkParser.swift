@@ -27,7 +27,10 @@ class CardNetworkParser {
                 } else if bounds.count == 2 {
                     return bounds[0]...bounds[1]
                 } else {
-                    PrimerLogging.shared.logger.warn(message: "Encountered a card network validation range with \(bounds.count) bounds. Ensure ranges have exactly one or exactly two bounds")
+                    PrimerLogging.shared.logger.warn(message: """
+Encountered a card network validation range with \(bounds.count) bounds. 
+Ensure ranges have exactly one or exactly two bounds.
+""")
                     return nil
                 }
             }
