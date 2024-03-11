@@ -190,7 +190,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         
         customerIdTextField.addTarget(self, action: #selector(customerIdChanged(_:)), for: .editingDidEnd)
 
-//        let configProvider = AppetizeConfigProvider(payloadProvider: MockPayloadProvider())
         let configProvider = AppetizeConfigProvider()
         if let config = configProvider.fetchConfig() {
             updateUI(for: config)
@@ -417,8 +416,12 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         }
         
         clientSession.paymentMethod = MerchantMockDataManager.getPaymentMethod(sessionType: paymentSessionType)
+
+        if let metadata = metadataTextField.text, !metadata.isEmpty {
+            clientSession.metadata = MetadataParser().parse(metadata)
+        }
     }
-    
+
     func populateSessionSettingsFields() {
         clientSession = MerchantMockDataManager.getClientSession(sessionType: paymentSessionType)
         
@@ -642,7 +645,7 @@ extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPi
 }
 
 extension MerchantSessionAndSettingsViewController {
-    private func updateUI(for config: PaymentConfiguration) {
+    private func updateUI(for config: SessionConfiguration) {
         apiKeyTextField.text = config.customApiKey
         customerIdTextField.text = config.customerId.isEmpty ? "ios-customer-id" : config.customerId
 
@@ -668,7 +671,7 @@ extension MerchantSessionAndSettingsViewController {
         }
 
         currencyTextField.text = config.currency
-        countryCodeTextField.text = config.currency
+        countryCodeTextField.text = config.countryCode
 
         let lineItem = ClientSessionRequestBody.Order.LineItem(itemId: "ld-lineitem",
                                                                description: "Fancy Shoes",

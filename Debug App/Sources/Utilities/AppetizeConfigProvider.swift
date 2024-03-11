@@ -23,7 +23,7 @@ class AppetizeConfigProvider {
         self.payloadProvider = payloadProvider
     }
 
-    func fetchConfig() -> PaymentConfiguration? {
+    func fetchConfig() -> SessionConfiguration? {
         
         guard payloadProvider.isAppetize == true,
               let jwt = payloadProvider.configJwt,
@@ -34,9 +34,9 @@ class AppetizeConfigProvider {
         return config
     }
 
-    private func getConfig(from jwt: String) -> PaymentConfiguration? {
+    private func getConfig(from jwt: String) -> SessionConfiguration? {
         guard let data = Data(base64Encoded: jwt, options: .ignoreUnknownCharacters) else { return nil }
-        return (try? JSONDecoder().decode(PaymentConfiguration.self, from: data))
+        return (try? JSONDecoder().decode(SessionConfiguration.self, from: data))
     }
 
 }
