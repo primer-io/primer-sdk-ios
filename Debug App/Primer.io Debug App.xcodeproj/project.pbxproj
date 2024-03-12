@@ -134,6 +134,7 @@
 		F08F63DA2B9B5BC5006EF9A9 /* AppetizeConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63D92B9B5BC5006EF9A9 /* AppetizeConfigProvider.swift */; };
 		F08F63DC2B9F27B0006EF9A9 /* MetadataParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63DB2B9F27B0006EF9A9 /* MetadataParser.swift */; };
 		F08F63DE2B9F27F4006EF9A9 /* MetadataParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63DD2B9F27F4006EF9A9 /* MetadataParserTests.swift */; };
+		F08F63E62BA0BF0C006EF9A9 /* AppetizeConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63E52BA0BF0C006EF9A9 /* AppetizeConfigTests.swift */; };
 		F0C2147F6FA26527BE55549A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC701AFD94F96F0F1D108D1A /* LaunchScreen.xib */; };
 		F1A71C2E0D900FEB9AF1351C /* ThreeDSProtocolVersionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021A00DEB01A46C876592575 /* ThreeDSProtocolVersionTests.swift */; };
 		F99DAF50E86E6F8CCD127E5B /* ThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD381E7E16D01D8D743232F7 /* ThemeTests.swift */; };
@@ -341,6 +342,7 @@
 		F08F63D92B9B5BC5006EF9A9 /* AppetizeConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppetizeConfigProvider.swift; sourceTree = "<group>"; };
 		F08F63DB2B9F27B0006EF9A9 /* MetadataParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataParser.swift; sourceTree = "<group>"; };
 		F08F63DD2B9F27F4006EF9A9 /* MetadataParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataParserTests.swift; sourceTree = "<group>"; };
+		F08F63E52BA0BF0C006EF9A9 /* AppetizeConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppetizeConfigTests.swift; sourceTree = "<group>"; };
 		F4AC1EC0F98CB56DA4D075CA /* Mocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
 		F816A2444633C4336A7CB071 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
 		F9023841AFCE8E3205CB713A /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
@@ -669,6 +671,7 @@
 				872A0647D4136E27365FB7F8 /* StringTests.swift */,
 				CA30891B2D5F9B6B97E56B99 /* WebViewUtilTests.swift */,
 				F08F63DD2B9F27F4006EF9A9 /* MetadataParserTests.swift */,
+				F08F63E52BA0BF0C006EF9A9 /* AppetizeConfigTests.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -1060,6 +1063,7 @@
 				E1E502B12AFE9ECF00CD7F0A /* XCTestCase+Tokenization.swift in Sources */,
 				3D112A8DE292D097E651FCDB /* IPay88Tests.swift in Sources */,
 				04DAAED42B03EED1002E2614 /* AssetsManagerTests.swift in Sources */,
+				F08F63E62BA0BF0C006EF9A9 /* AppetizeConfigTests.swift in Sources */,
 				A1536BAF2AEC0A6D0087DDC0 /* NolTestsMocks.swift in Sources */,
 				A61B9E61EDCE18D34438352E /* PayPalConfirmBillingAgreementTests.swift in Sources */,
 				E13E72452AFE653000911866 /* IdealPaymentMethodTests.swift in Sources */,

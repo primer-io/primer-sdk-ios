@@ -9,7 +9,7 @@
 import Foundation
 import PrimerSDK
 
-struct SessionConfiguration: Codable {
+struct SessionConfiguration: Codable, Equatable {
     let customerId: String
     let locale: String
     let paymentFlow: String

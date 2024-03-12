@@ -49,6 +49,9 @@
 		F01193FF2B28FD1700D0ABD9 /* Primer3DS in Frameworks */ = {isa = PBXBuildFile; productRef = F01193FE2B28FD1700D0ABD9 /* Primer3DS */; };
 		F04510E32ACD98E100A0A48C /* PrimerSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F04510E22ACD98E100A0A48C /* PrimerSDK */; };
 		F04510E62ACD990A00A0A48C /* PrimerKlarnaSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F04510E52ACD990A00A0A48C /* PrimerKlarnaSDK */; };
+		F08F63E02BA0BE83006EF9A9 /* SessionConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63DF2BA0BE83006EF9A9 /* SessionConfiguration.swift */; };
+		F08F63E32BA0BEAD006EF9A9 /* AppetizeConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63E12BA0BEAD006EF9A9 /* AppetizeConfigProvider.swift */; };
+		F08F63E42BA0BEAD006EF9A9 /* MetadataParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63E22BA0BEAD006EF9A9 /* MetadataParser.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -135,7 +138,6 @@
 		93F15C1E46C70C3D73B50F31 /* UIStackViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIStackViewExtensions.swift; sourceTree = "<group>"; };
 		942332BD921CBCAFBC77BD6D /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Main.strings; sourceTree = "<group>"; };
 		952364FBFD6FA09653ECA37E /* TokenizationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenizationServiceTests.swift; sourceTree = "<group>"; };
-		95E4B74F7EEA3D2D19E08FDA /* Apaya.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Apaya.swift; sourceTree = "<group>"; };
 		98079137F3DE1FE6221DA7EC /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Main.strings; sourceTree = "<group>"; };
 		9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantDropInUIViewController.swift; sourceTree = "<group>"; };
 		994AE6760B506D02499AEC90 /* CardComponentManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardComponentManagerTests.swift; sourceTree = "<group>"; };
@@ -181,6 +183,9 @@
 		F00C661E2ACC67FA00187028 /* Debug App SPM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Debug App SPM.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F03699582AC2E63700E4179D /* VersionUtilsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionUtilsTests.swift; sourceTree = "<group>"; };
 		F04510DE2ACD4EA500A0A48C /* primer-sdk-ios */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "primer-sdk-ios"; path = ..; sourceTree = "<group>"; };
+		F08F63DF2BA0BE83006EF9A9 /* SessionConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionConfiguration.swift; sourceTree = "<group>"; };
+		F08F63E12BA0BEAD006EF9A9 /* AppetizeConfigProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppetizeConfigProvider.swift; sourceTree = "<group>"; };
+		F08F63E22BA0BEAD006EF9A9 /* MetadataParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetadataParser.swift; sourceTree = "<group>"; };
 		F4AC1EC0F98CB56DA4D075CA /* Mocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
 		F816A2444633C4336A7CB071 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
 		F9023841AFCE8E3205CB713A /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
@@ -207,6 +212,8 @@
 		0442C4052B7CE1E900EAD8EE /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				F08F63E12BA0BEAD006EF9A9 /* AppetizeConfigProvider.swift */,
+				F08F63E22BA0BEAD006EF9A9 /* MetadataParser.swift */,
 				0442C4062B7CE1E900EAD8EE /* TapGestureRecognizer.swift */,
 			);
 			path = Utilities;
@@ -309,7 +316,6 @@
 				64FB843527A1671D550B536F /* Network */,
 				F214F09DF97D2A83FC7D0BE0 /* View */,
 				0E5CB4D963647832FF985B29 /* View Controllers */,
-				A9ACBE5F8E70CF200C80001F /* View Model */,
 				DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */,
 			);
 			path = Sources;
@@ -395,14 +401,6 @@
 			path = Helpers;
 			sourceTree = "<group>";
 		};
-		A9ACBE5F8E70CF200C80001F /* View Model */ = {
-			isa = PBXGroup;
-			children = (
-				95E4B74F7EEA3D2D19E08FDA /* Apaya.swift */,
-			);
-			path = "View Model";
-			sourceTree = "<group>";
-		};
 		ACC4CBBD9744630CB46A5EE4 /* v2 */ = {
 			isa = PBXGroup;
 			children = (
@@ -472,6 +470,7 @@
 				229849A3DBE0858EE90673B9 /* CreateClientToken.swift */,
 				A6AEF11B151368BF993C3EA9 /* TestScenario.swift */,
 				70D3D6CF0F006A06B7CEC71B /* TransactionResponse.swift */,
+				F08F63DF2BA0BE83006EF9A9 /* SessionConfiguration.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -652,8 +651,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				8723ADE42B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift in Sources */,
+				F08F63E42BA0BEAD006EF9A9 /* MetadataParser.swift in Sources */,
 				F00C65F82ACC67FA00187028 /* AppDelegate.swift in Sources */,
 				F00C65F92ACC67FA00187028 /* Data+Extensions.swift in Sources */,
+				F08F63E32BA0BEAD006EF9A9 /* AppetizeConfigProvider.swift in Sources */,
 				F00C65FA2ACC67FA00187028 /* Range+Extensions.swift in Sources */,
 				8723ADE72B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift in Sources */,
 				F00C65FB2ACC67FA00187028 /* String+Extensions.swift in Sources */,
@@ -676,6 +677,7 @@
 				8723ADE82B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */,
 				F00C66082ACC67FA00187028 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift in Sources */,
 				E11F475C2B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift in Sources */,
+				F08F63E02BA0BE83006EF9A9 /* SessionConfiguration.swift in Sources */,
 				E11F475E2B06C5A40091C31F /* BanksListModel.swift in Sources */,
 				F00C660A2ACC67FA00187028 /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */,
 				F00C660B2ACC67FA00187028 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift in Sources */,
