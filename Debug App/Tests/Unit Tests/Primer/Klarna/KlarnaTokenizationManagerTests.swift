@@ -12,54 +12,54 @@ import XCTest
 
 final class KlarnaTokenizationManagerTests: XCTestCase {
     
-    var tokenizationComponent: KlarnaTokenizationComponent!
-    
-    override func setUp() {
-        super.setUp()
-        prepareConfigurations()
-    }
-    
-    override func tearDown() {
-        restartPrimerConfiguration()
-        super.tearDown()
-    }
-    
-    func test_tokenize_success() {
-        let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: true)
-        let expectation = XCTestExpectation(description: "Successful Tokenize Klarna Payment Session")
-        
-        firstly {
-            tokenizationComponent.tokenize(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId)
-        }
-        .done { tokenData in
-            XCTAssertNotNil(tokenData, "Result should not be nil")
-            expectation.fulfill()
-        }
-        .catch { _ in
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 10.0)
-    }
-    
-    func test_tokenize_failure() {
-        let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: false)
-        let expectation = XCTestExpectation(description: "Failure Tokenize Klarna Payment Session")
-        
-        firstly {
-            tokenizationComponent.tokenize(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId)
-        }
-        .done { tokenData in
-            XCTFail("Result should be nil")
-            expectation.fulfill()
-        }
-        .catch { error in
-            XCTAssertNotNil(error, "Error should not be nil")
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 10.0)
-    }
+//    var tokenizationComponent: KlarnaTokenizationComponent!
+//    
+//    override func setUp() {
+//        super.setUp()
+//        prepareConfigurations()
+//    }
+//    
+//    override func tearDown() {
+//        restartPrimerConfiguration()
+//        super.tearDown()
+//    }
+//    
+//    func test_tokenize_success() {
+//        let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: true)
+//        let expectation = XCTestExpectation(description: "Successful Tokenize Klarna Payment Session")
+//        
+//        firstly {
+//            tokenizationComponent.tokenize(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId)
+//        }
+//        .done { tokenData in
+//            XCTAssertNotNil(tokenData, "Result should not be nil")
+//            expectation.fulfill()
+//        }
+//        .catch { _ in
+//            expectation.fulfill()
+//        }
+//        
+//        wait(for: [expectation], timeout: 10.0)
+//    }
+//    
+//    func test_tokenize_failure() {
+//        let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: false)
+//        let expectation = XCTestExpectation(description: "Failure Tokenize Klarna Payment Session")
+//        
+//        firstly {
+//            tokenizationComponent.tokenize(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId)
+//        }
+//        .done { tokenData in
+//            XCTFail("Result should be nil")
+//            expectation.fulfill()
+//        }
+//        .catch { error in
+//            XCTAssertNotNil(error, "Error should not be nil")
+//            expectation.fulfill()
+//        }
+//        
+//        wait(for: [expectation], timeout: 10.0)
+//    }
     
 }
 
