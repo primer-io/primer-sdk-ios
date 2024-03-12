@@ -74,7 +74,7 @@ class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
         self.logs.append(#function)
 
         if let clientToken = clientToken {
-            Primer.shared.showUniversalCheckout(clientToken: clientToken, intent: paymentMethodTypeSessionIntent)
+            Primer.shared.showUniversalCheckout(clientToken: clientToken)
 
         } else if let clientSession = clientSession {
             Networking.requestClientSession(requestBody: clientSession) { (clientToken, err) in
@@ -83,7 +83,7 @@ class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
                     let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
                     print(merchantErr)
                 } else if let clientToken = clientToken {
-                    Primer.shared.showUniversalCheckout(clientToken: clientToken, intent: self.paymentMethodTypeSessionIntent)
+                    Primer.shared.showUniversalCheckout(clientToken: clientToken)
                 }
             }
         } else {

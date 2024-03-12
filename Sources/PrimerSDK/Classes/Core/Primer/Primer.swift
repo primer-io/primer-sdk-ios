@@ -55,8 +55,8 @@ public class Primer {
     /**
      Show Primer Checkout
      */
-    public func showUniversalCheckout(clientToken: String, intent: PrimerSessionIntent, completion: ((Error?) -> Void)? = nil) {
-        PrimerInternal.shared.showUniversalCheckout(clientToken: clientToken, intent: intent, completion: completion)
+    public func showUniversalCheckout(clientToken: String, completion: ((Error?) -> Void)? = nil) {
+        PrimerInternal.shared.showUniversalCheckout(clientToken: clientToken, completion: completion)
     }
 
     /**

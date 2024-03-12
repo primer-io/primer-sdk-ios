@@ -5,6 +5,7 @@ import UIKit
 import PrimerKlarnaSDK
 #endif
 
+@available(iOS 13.0, *)
 class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     var willPresentExternalView: (() -> Void)?
@@ -157,11 +158,15 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
                     // Here, PrimerKlarnaViewController should be loaded with both categories.
                     // PrimerKlarnaViewController need to be refactred and updated to suport 'category pick'.
-                    self.klarnaViewController = PrimerKlarnaViewController(
-                        delegate: self,
-                        paymentCategory: .payNow,
-                        clientToken: self.klarnaPaymentSession!.clientToken,
-                        urlScheme: urlSchemeStr)
+                    // Use klarnaPaymentSession to render the categories in the bottom sheet controller
+                    // The PrimerKlarnaViewController will have to be instantiated in the bottom sheet after user chooses payment option.
+//                    self.klarnaViewController = PrimerKlarnaViewController(
+//                        delegate: self,
+//                        paymentCategory: .payNow,
+//                        clientToken: self.klarnaPaymentSession!.clientToken,
+//                        urlScheme: urlSchemeStr)
+                    
+                    let vc = PrimerKlarnaCategoriesViewController(tokenizationComponent: self.tokenizationComponent)
 
                     self.klarnaPaymentSessionCompletion = { _, err in
                         if let err = err {
@@ -172,7 +177,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     }
 
                     self.willPresentExternalView?()
-                    PrimerUIManager.primerRootViewController?.show(viewController: self.klarnaViewController!)
+                    PrimerUIManager.primerRootViewController?.show(viewController: vc)
                     self.didPresentExternalView?()
                     seal.fulfill()
                     #else
@@ -218,6 +223,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 }
 
 #if canImport(PrimerKlarnaSDK)
+@available(iOS 13.0, *)
 extension KlarnaTokenizationViewModel: PrimerKlarnaViewControllerDelegate {
 
     func primerKlarnaViewDidLoad() { }
