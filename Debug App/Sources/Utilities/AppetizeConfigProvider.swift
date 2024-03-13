@@ -24,13 +24,11 @@ class AppetizeConfigProvider {
     }
 
     func fetchConfig() -> SessionConfiguration? {
-        
         guard payloadProvider.isAppetize == true,
               let jwt = payloadProvider.configJwt,
               let config = getConfig(from: jwt) else {
             return nil
         }
-
         return config
     }
 
@@ -38,18 +36,17 @@ class AppetizeConfigProvider {
         guard let data = Data(base64Encoded: jwt, options: .ignoreUnknownCharacters) else { return nil }
         return (try? JSONDecoder().decode(SessionConfiguration.self, from: data))
     }
-
 }
 
 extension UserDefaults: AppetizePayloadProviding {
-    private static let kIsAppetize = "isAppetize"
-    private static let kJwt = "p"
+    private static let isAppetizeKey = "isAppetize"
+    private static let configJwtKey = "p"
 
     var isAppetize: Bool? {
-        return bool(forKey: Self.kIsAppetize)
+        bool(forKey: Self.isAppetizeKey)
     }
 
     var configJwt: String? {
-        return string(forKey: Self.kJwt)
+        string(forKey: Self.configJwtKey)
     }
 }

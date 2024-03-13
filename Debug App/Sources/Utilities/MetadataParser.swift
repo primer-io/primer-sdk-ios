@@ -37,9 +37,12 @@ struct MetadataParser {
         if value.lowercased() == "true" { return true }
         if value.lowercased() == "false" { return false }
 
-        if let number = Double(value) { return number }
-        if let int = Int(value) { return int }
-        
+        if let intValue = Int(value) {
+            return intValue
+        } else if let doubleValue = Double(value) {
+            return doubleValue
+        }
+
         // String
         if value.hasPrefix("\"") && value.hasSuffix("\"") {
             return String(value.dropFirst().dropLast())
