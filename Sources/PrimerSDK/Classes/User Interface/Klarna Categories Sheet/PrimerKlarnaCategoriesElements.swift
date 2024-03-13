@@ -107,8 +107,8 @@ struct ContinueButton: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.purple)
-                .cornerRadius(10)
+                .background(Color.blue)
+                .cornerRadius(5)
         }
     }
 }

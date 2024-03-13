@@ -51,7 +51,9 @@ class PrimerKlarnaCategoriesViewController: UIViewController {
     }
     
     private func addKlarnaView() {
-        klarnaCategoriesView = PrimerKlarnaCategoriesView(viewModel: klarnaCategoriesVM, sharedWrapper: sharedWrapper) { paymentCategory in
+        klarnaCategoriesView = PrimerKlarnaCategoriesView(viewModel: klarnaCategoriesVM, sharedWrapper: sharedWrapper) {
+            self.navigationController?.popViewController(animated: false)
+        } onInitializePressed: { paymentCategory in
             guard let paymentCategory = paymentCategory else { return }
             let klarnaCollectableData = KlarnaCollectableData.paymentCategory(paymentCategory, clientToken: self.clientToken)
             self.klarnaComponent.updateCollectedData(collectableData: klarnaCollectableData)
@@ -81,6 +83,17 @@ class PrimerKlarnaCategoriesViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        if let parentVC = self.parent as? PrimerContainerViewController {
+            parentVC.mockedNavigationBar.hidesBackButton = true
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let parentVC = self.parent as? PrimerContainerViewController {
+            parentVC.mockedNavigationBar.hidesBackButton = false
+        }
     }
 }
 
