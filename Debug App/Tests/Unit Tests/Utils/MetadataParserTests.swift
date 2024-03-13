@@ -26,13 +26,15 @@ final class MetadataParserTests: XCTestCase {
     func testParseMetadataWithKeyValuePairs() throws {
         let keyValueMetadata = """
                 key1=value1
-                key2=123
+                doubleKey=123.0
+                intKey=123
                 """
 
         let result = metadataParser.parse(keyValueMetadata)
 
         XCTAssertEqual(result["key1"] as? String, "value1")
-        XCTAssertEqual(result["key2"] as? Double, 123)
+        XCTAssertEqual(result["doubleKey"] as? Double, 123)
+        XCTAssertEqual(result["intKey"] as? Int, 123)
     }
 
     func testParseMetadataWithInvalidMetadata() throws {
