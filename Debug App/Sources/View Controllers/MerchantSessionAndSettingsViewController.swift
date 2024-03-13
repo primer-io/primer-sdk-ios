@@ -685,6 +685,5 @@ extension MerchantSessionAndSettingsViewController {
         metadataTextField.text = config.metadata
         useNewWorkflows = config.newWorkflows
         useNewWorkflowsSwitch.isOn = config.newWorkflows
-
     }
 }
