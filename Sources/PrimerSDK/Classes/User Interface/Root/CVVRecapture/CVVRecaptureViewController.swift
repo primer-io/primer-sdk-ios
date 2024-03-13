@@ -63,7 +63,7 @@ class CVVRecaptureViewController: UIViewController {
     }
 
     private func setupExplanationLabel() {
-        explanationLabel.text = "Input the 3 or 4 digit security code on your card for a secure payment."
+        explanationLabel.text = "Input the \(viewModel.cvvLength) digit security code on your card for a secure payment."
         explanationLabel.numberOfLines = 0
         explanationLabel.textColor = theme.text.body.color
         explanationLabel.font = .systemFont(ofSize: CGFloat(theme.text.body.fontSize))

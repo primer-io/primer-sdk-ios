@@ -115,7 +115,4 @@ struct MerchantMockDataManager {
             ],
         ]
     ]
-
-    
 }
-
