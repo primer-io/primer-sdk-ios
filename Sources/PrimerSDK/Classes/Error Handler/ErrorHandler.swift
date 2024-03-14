@@ -35,8 +35,7 @@ internal class ErrorHandler: LogReporter {
             if let createdAt = (threeDsError.info?["createdAt"] as? String)?.toDate() {
                 event.createdAt = createdAt.millisecondsSince1970
             }
-
-        } else if let primerError = error as? PrimerErrorProtocol {
+        } else if let primerError = error as? PrimerError {
             event = Analytics.Event.message(
                 message: primerError.errorDescription,
                 messageType: .error,
@@ -48,7 +47,6 @@ internal class ErrorHandler: LogReporter {
             if let createdAt = (primerError.info?["createdAt"] as? String)?.toDate() {
                 event.createdAt = createdAt.millisecondsSince1970
             }
-
         } else {
             let nsError = error as NSError
             var userInfo = nsError.userInfo

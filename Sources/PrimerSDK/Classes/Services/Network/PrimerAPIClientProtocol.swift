@@ -64,7 +64,7 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPICli
     func createKlarnaPaymentSession(
         clientToken: DecodedJWTToken,
         klarnaCreatePaymentSessionAPIRequest: Request.Body.Klarna.CreatePaymentSession,
-        completion: @escaping APICompletion<Response.Body.Klarna.CreatePaymentSession>)
+        completion: @escaping APICompletion<Response.Body.Klarna.PaymentSession>)
 
     func createKlarnaCustomerToken(
         clientToken: DecodedJWTToken,
@@ -107,7 +107,7 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPICli
     func listAdyenBanks(
         clientToken: DecodedJWTToken,
         request: Request.Body.Adyen.BanksList,
-        completion: @escaping APICompletion<[Response.Body.Adyen.Bank]>)
+        completion: @escaping APICompletion<BanksListSessionResponse>)
 
     // MARK: Retail Outlets
 

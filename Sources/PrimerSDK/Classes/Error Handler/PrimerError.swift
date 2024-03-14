@@ -18,15 +18,16 @@ struct AnalyticsContextKeys {
 }
 
 protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
+    associatedtype InfoType
     var errorId: String { get }
     var exposedError: Error { get }
-    var info: [String: Any]? { get }
+    var info: InfoType? { get }
     var diagnosticsId: String { get }
     var analyticsContext: [String: Any] { get }
 }
 
 public enum PrimerError: PrimerErrorProtocol {
-
+    typealias InfoType = [String: Any]
     case generic(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case uninitializedSDKSession(userInfo: [String: String]?, diagnosticsId: String)
     case invalidClientToken(userInfo: [String: String]?, diagnosticsId: String)
@@ -62,6 +63,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case sdkDismissed
     case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, userInfo: [String: String]?, diagnosticsId: String)
     case nolError(code: String?, message: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case klarnaWrapperError(message: String?, userInfo: [String: String]?, diagnosticsId: String)
     case unableToPresentApplePay(userInfo: [String: String]?, diagnosticsId: String)
     case unknown(userInfo: [String: String]?, diagnosticsId: String)
 
@@ -137,6 +139,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "invalid-vaulted-payment-method-id"
         case .nolError:
             return "nol-pay-sdk-error"
+        case .klarnaWrapperError:
+            return "klarna-wrapper-sdk-error"
         case .unableToPresentApplePay:
             return "unable-to-present-apple-pay"
         case .unknown:
@@ -227,6 +231,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .nolError(_, _, _, let diagnosticsId):
             return diagnosticsId
+        case .klarnaWrapperError(_, _, let diagnosticsId):
+            return diagnosticsId
         case .unknown(_, let diagnosticsId):
             return diagnosticsId
         }
@@ -310,6 +316,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "The vaulted payment method with id '\(vaultedPaymentMethodId)' doesn't exist."
         case .nolError(let code, let message, _, _):
             return "Nol SDK encountered an error: \(String(describing: code)), \(String(describing: message))"
+        case .klarnaWrapperError(let message, _, _):
+            return "Klarna wrapper SDK encountered an error: \(String(describing: message))"
         case .unableToPresentApplePay:
             return "Unable to present Apple Pay"
         case .unknown:
@@ -321,7 +329,7 @@ public enum PrimerError: PrimerErrorProtocol {
         return "[\(errorId)] \(plainDescription ?? "") (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
     }
 
-    var info: [String: Any]? {
+    var info: InfoType? {
         var tmpUserInfo: [String: Any] = errorUserInfo
 
         switch self {
@@ -359,6 +367,7 @@ public enum PrimerError: PrimerErrorProtocol {
              .failedToProcessPayment(_, _, _, let userInfo, _),
              .invalidVaultedPaymentMethodId(_, let userInfo, _),
              .nolError(_, _, let userInfo, _),
+             .klarnaWrapperError(_, let userInfo, _),
              .unableToPresentApplePay(let userInfo, _),
              .unknown(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
@@ -472,6 +481,8 @@ on your dashboard https://dashboard.primer.io/
         case .invalidVaultedPaymentMethodId:
             return "Please provide the id of one of the vaulted payment methods that have been returned by the 'fetchVaultedPaymentMethods' function."
         case .nolError:
+            return nil
+        case .klarnaWrapperError:
             return nil
         case .unableToPresentApplePay:
             return "PassKit was unable to present the Apple Pay UI. Check merchantIdentifier and other parameters are set correctly for the current environment."

@@ -84,7 +84,8 @@ class IPay88Tests: XCTestCase {
                             name: "item-name",
                             description: "item-description",
                             taxAmount: nil,
-                            taxCode: nil)
+                            taxCode: nil,
+                            productType: nil)
                     ],
                     shippingAmount: nil),
                 customer: ClientSession.Customer(

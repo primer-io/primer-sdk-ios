@@ -192,7 +192,7 @@ extension PrimerHeadlessUniversalCheckout {
             if let vaultedPaymentMethodAdditionalData = vaultedPaymentMethodAdditionalData {
                 if let errors = self.validateAdditionalDataSynchronously(vaultedPaymentMethodId: vaultedPaymentMethodId, vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData) {
                     DispatchQueue.main.async {
-                        var primerError: PrimerErrorProtocol?
+                        var primerError: (any PrimerErrorProtocol)?
 
                         if errors.count == 1 {
                             if let primerErr = errors.first as? PrimerValidationError {
@@ -264,9 +264,9 @@ extension PrimerHeadlessUniversalCheckout {
                             }
                             .catch { err in
                                 DispatchQueue.main.async {
-                                    var primerError: PrimerErrorProtocol
+                                    var primerError: any PrimerErrorProtocol
 
-                                    if let primerErr = err as? PrimerErrorProtocol {
+                                    if let primerErr = err as? (any PrimerErrorProtocol) {
                                         primerError = primerErr
                                     } else {
                                         primerError = PrimerError.underlyingErrors(
@@ -306,9 +306,9 @@ extension PrimerHeadlessUniversalCheckout {
                     }
                     .catch { err in
                         DispatchQueue.main.async {
-                            var primerError: PrimerErrorProtocol
+                            var primerError: any PrimerErrorProtocol
 
-                            if let primerErr = err as? PrimerErrorProtocol {
+                            if let primerErr = err as? (any PrimerErrorProtocol) {
                                 primerError = primerErr
                             } else {
                                 primerError = PrimerError.underlyingErrors(
@@ -350,9 +350,9 @@ extension PrimerHeadlessUniversalCheckout {
             }
             .catch { err in
                 DispatchQueue.main.async {
-                    var primerError: PrimerErrorProtocol
+                    var primerError: any PrimerErrorProtocol
 
-                    if let primerErr = err as? PrimerErrorProtocol {
+                    if let primerErr = err as? (any PrimerErrorProtocol) {
                         primerError = primerErr
                     } else {
                         primerError = PrimerError.underlyingErrors(

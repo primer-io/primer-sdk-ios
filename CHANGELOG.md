@@ -1,3 +1,13 @@
+## 2.23.0 (2024-03-07)
+
+### Feat
+
+- Klarna Headless (#789)
+
+### Refactor
+
+- NativeUIManager Composable Architecture (#810)
+
 ## 2.22.1 (2024-02-22)
 
 ### Fix

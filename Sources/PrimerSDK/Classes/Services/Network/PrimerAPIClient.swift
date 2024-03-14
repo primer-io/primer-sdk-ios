@@ -101,7 +101,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
     func createKlarnaPaymentSession(
         clientToken: DecodedJWTToken,
         klarnaCreatePaymentSessionAPIRequest: Request.Body.Klarna.CreatePaymentSession,
-        completion: @escaping APICompletion<Response.Body.Klarna.CreatePaymentSession>) {
+        completion: @escaping APICompletion<Response.Body.Klarna.PaymentSession>) {
         let endpoint = PrimerAPI.createKlarnaPaymentSession(clientToken: clientToken, klarnaCreatePaymentSessionAPIRequest: klarnaCreatePaymentSessionAPIRequest)
         execute(endpoint, completion: completion)
     }
@@ -125,7 +125,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
     func listAdyenBanks(
         clientToken: DecodedJWTToken,
         request: Request.Body.Adyen.BanksList,
-        completion: @escaping (Result<[Response.Body.Adyen.Bank], Error>) -> Void) {
+        completion: @escaping APICompletion<BanksListSessionResponse>) {
         let endpoint = PrimerAPI.listAdyenBanks(clientToken: clientToken, request: request)
         execute(endpoint, completion: completion)
     }
