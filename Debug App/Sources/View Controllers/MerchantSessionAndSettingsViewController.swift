@@ -45,6 +45,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var environmentSegmentedControl: UISegmentedControl!
     @IBOutlet weak var apiKeyTextField: UITextField!
     @IBOutlet weak var clientTokenTextField: UITextField!
+    @IBOutlet weak var metadataTextField: UITextField!
 
     // MARK: Test Inputs
 
@@ -60,7 +61,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var test3DSScenarioTextField: UITextField!
 
     // MARK: SDK Settings Inputs
-
+    @IBOutlet weak var useNewWorkflowsSwitch: UISwitch!
     @IBOutlet weak var checkoutFlowSegmentedControl: UISegmentedControl!
     @IBOutlet weak var merchantNameTextField: UITextField!
     @IBOutlet weak var applyThemingSwitch: UISwitch!
@@ -188,6 +189,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         populateSessionSettingsFields()
         
         customerIdTextField.addTarget(self, action: #selector(customerIdChanged(_:)), for: .editingDidEnd)
+
+        let configProvider = AppetizeConfigProvider()
+        if let config = configProvider.fetchConfig() {
+            updateUI(for: config)
+        }
 
         render()
     }
@@ -410,8 +416,12 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         }
         
         clientSession.paymentMethod = MerchantMockDataManager.getPaymentMethod(sessionType: paymentSessionType)
+
+        if let metadata = metadataTextField.text, !metadata.isEmpty {
+            clientSession.metadata = MetadataParser().parse(metadata)
+        }
     }
-    
+
     func populateSessionSettingsFields() {
         clientSession = MerchantMockDataManager.getClientSession(sessionType: paymentSessionType)
         
@@ -631,5 +641,49 @@ extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPi
         }
 
         render()
+    }
+}
+
+extension MerchantSessionAndSettingsViewController {
+    private func updateUI(for config: SessionConfiguration) {
+        apiKeyTextField.text = config.customApiKey
+        customerIdTextField.text = config.customerId.isEmpty ? "ios-customer-id" : config.customerId
+
+        switch config.env {
+        case .dev:
+            environmentSegmentedControl.selectedSegmentIndex = 0
+        case .sandbox:
+            environmentSegmentedControl.selectedSegmentIndex = 2
+        case .staging:
+            environmentSegmentedControl.selectedSegmentIndex = 1
+        case .production:
+            environmentSegmentedControl.selectedSegmentIndex = 3
+        case .local:
+            environmentSegmentedControl.selectedSegmentIndex = 2
+        }
+        environment = config.env
+
+        switch config.paymentHandling {
+        case .auto:
+            checkoutFlowSegmentedControl.selectedSegmentIndex = 0
+        case .manual:
+            checkoutFlowSegmentedControl.selectedSegmentIndex = 1
+        }
+
+        currencyTextField.text = config.currency
+        countryCodeTextField.text = config.countryCode
+
+        let lineItem = ClientSessionRequestBody.Order.LineItem(itemId: "ld-lineitem",
+                                                               description: "Fancy Shoes",
+                                                               amount: Int(config.value) ?? 100,
+                                                               quantity: 1,
+                                                               discountAmount: nil,
+                                                               taxAmount: nil)
+
+        self.lineItems = [lineItem]
+
+        metadataTextField.text = config.metadata
+        useNewWorkflows = config.newWorkflows
+        useNewWorkflowsSwitch.isOn = config.newWorkflows
     }
 }
