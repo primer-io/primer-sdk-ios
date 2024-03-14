@@ -34,12 +34,6 @@ extension HTTPURLResponse: ResponseMetadata {
     }
 }
 
-protocol DispatcherResponse {
-    var metadata: ResponseMetadata? { get }
-    var data: Data? { get }
-    var error: Error? { get }
-}
-
 // --
 
 enum NetworkEventType {
