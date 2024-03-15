@@ -281,20 +281,15 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                                                                                 phoneModel: UIDevice.modelIdentifier!)
             let client = PrimerAPIClient()
 
-            if #available(iOS 13, *) {
-                return try await withCheckedThrowingContinuation { continuation in
-                    client.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
-                        switch result {
-                        case .success(let appSecret):
-                            continuation.resume(returning: appSecret.sdkSecret)
-                        case .failure(let error):
-                            continuation.resume(throwing: error)
-                        }
+            return try await withCheckedThrowingContinuation { continuation in
+                client.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
+                    switch result {
+                    case .success(let appSecret):
+                        continuation.resume(returning: appSecret.sdkSecret)
+                    case .failure(let error):
+                        continuation.resume(throwing: error)
                     }
                 }
-            } else {
-                assertionFailure("Nol pay SDK requires iOS 13")
-                return ""
             }
         }
         #else

@@ -6,7 +6,7 @@ let package = Package(
     name: "PrimerSDK",
     defaultLocalization: "en",
     platforms: [
-        .iOS(.v10)
+        .iOS(.v13)
     ],
     products: [
         .library(
@@ -24,5 +24,5 @@ let package = Package(
             ]
         )
     ],
-    swiftLanguageVersions: [.v4_2]
+    swiftLanguageVersions: [.v5]
 )

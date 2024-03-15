@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
     s.author       = { "Primer" => "dx@primer.io" }
     s.source       = { :git => "https://github.com/primer-io/primer-sdk-ios.git", :tag => "#{s.version}" }
 
-    s.swift_version = '4.2'
+    s.swift_version = '5'
     s.ios.deployment_target = '13.0'
 
     s.default_subspec = "Core"

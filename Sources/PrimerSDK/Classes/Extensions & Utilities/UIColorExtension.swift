@@ -10,8 +10,6 @@ import UIKit
 internal class PrimerColor: UIColor {
 
     static func dynamic(lightMode: PrimerColor, darkMode: PrimerColor) -> PrimerColor {
-        guard #available(iOS 13.0, *) else { return lightMode }
-
         return PrimerColor { (traitCollection) -> UIColor in
             return traitCollection.userInterfaceStyle == .light ? lightMode : darkMode
         }

@@ -31,9 +31,7 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         tableView.showsHorizontalScrollIndicator = false
         tableView.rowHeight = 56
         tableView.backgroundColor = theme.view.backgroundColor
-        if #available(iOS 11.0, *) {
-            tableView.contentInsetAdjustmentBehavior = .never
-        }
+        tableView.contentInsetAdjustmentBehavior = .never
         tableView.register(FlowDecisionTableViewCell.self, forCellReuseIdentifier: FlowDecisionTableViewCell.identifier)
         tableView.register(HeaderFooterLabelView.self, forHeaderFooterViewReuseIdentifier: "header")
         tableView.dataSource = self
