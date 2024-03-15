@@ -7,13 +7,19 @@
 
 import Foundation
 
+let defaultNetworkService = DefaultNetworkService(
+    requestFactory: DefaultNetworkRequestFactory(),
+    reportingService: DefaultNetworkReportingService(),
+    requestDispatcher: DefaultRequestDispatcher()
+)
+
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
 
     internal let networkService: NetworkService
 
     // MARK: - Object lifecycle
 
-    init(networkService: NetworkService = URLSessionStack()) {
+    init(networkService: NetworkService = defaultNetworkService) {
         self.networkService = networkService
     }
 

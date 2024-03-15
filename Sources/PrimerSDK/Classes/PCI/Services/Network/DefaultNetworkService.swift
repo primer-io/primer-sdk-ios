@@ -46,22 +46,26 @@ protocol NetworkReportingService {
     func report(eventType: NetworkEventType)
 }
 
+class DefaultNetworkReportingService: NetworkReportingService {
+    func report(eventType: NetworkEventType) {
+        // ... 
+    }
+}
+
+// --
+
 class DefaultNetworkService: NetworkService, LogReporter {
 
     let requestFactory: NetworkRequestFactory
-
-    let responseFactory: NetworkResponseFactory
 
     let reportingService: NetworkReportingService
 
     let requestDispatcher: RequestDispatcher
 
     init(requestFactory: NetworkRequestFactory,
-         responseFactory: NetworkResponseFactory,
          reportingService: NetworkReportingService,
          requestDispatcher: RequestDispatcher) {
         self.requestFactory = requestFactory
-        self.responseFactory = responseFactory
         self.reportingService = reportingService
         self.requestDispatcher = requestDispatcher
     }
@@ -76,13 +80,13 @@ class DefaultNetworkService: NetworkService, LogReporter {
                     completion(.failure(InternalError.noData(userInfo: nil, diagnosticsId: nil)))
                     return
                 }
-                logger.debug(message: metadata.description)
+                self.logger.debug(message: metadata.description)
                 guard let data = response.data else {
                     // TODO: add context to error
                     completion(.failure(InternalError.noData(userInfo: nil, diagnosticsId: nil)))
                     return
                 }
-                let response: T = try responseFactory.model(for: data)
+                let response: T = try endpoint.responseFactory.model(for: data)
                 completion(.success(response))
             }
         } catch {

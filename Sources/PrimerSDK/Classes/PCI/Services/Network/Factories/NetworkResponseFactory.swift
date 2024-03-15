@@ -7,8 +7,17 @@
 
 import Foundation
 
-protocol NetworkResponseFactory {
+protocol NetworkResponseFactory: AnyObject {
     func model<T>(for response: Data) throws -> T where T: Decodable
+}
+
+extension Endpoint {
+    var responseFactory: NetworkResponseFactory {
+        switch self {
+        default:
+            return JSONNetworkResponseFactory()
+        }
+    }
 }
 
 class JSONNetworkResponseFactory: NetworkResponseFactory {

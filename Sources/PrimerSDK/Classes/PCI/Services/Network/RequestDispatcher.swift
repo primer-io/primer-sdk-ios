@@ -7,9 +7,11 @@
 
 import Foundation
 
+typealias DispatcherCompletion = (DispatcherResponse) throws -> Void
+
 protocol RequestDispatcher {
     func dispatch(request: URLRequest) async throws -> DispatcherResponse
-    func dispatch(request: URLRequest, completion: (DispatcherResponse) throws -> Void) throws -> PrimerCancellable?
+    func dispatch(request: URLRequest, completion: @escaping DispatcherCompletion) throws -> PrimerCancellable?
 }
 
 struct DispatcherResponseModel: DispatcherResponse {
@@ -21,7 +23,7 @@ struct DispatcherResponseModel: DispatcherResponse {
 struct ResponseMetadataModel: ResponseMetadata {
     let responseUrl: String?
     let statusCode: Int
-    let headers: [String : String]?
+    let headers: [String: String]?
 }
 
 protocol DispatcherResponse {
@@ -53,10 +55,15 @@ class DefaultRequestDispatcher: RequestDispatcher {
                 let responseModel = DispatcherResponseModel(metadata: metadata, data: data, error: error)
                 continuation.resume(returning: responseModel)
             }
+            .resume()
         }
     }
 
-    func dispatch(request: URLRequest, completion: (DispatcherResponse) throws -> Void) throws -> PrimerCancellable? {
-        return nil
+    func dispatch(request: URLRequest, completion: @escaping (DispatcherResponse) throws -> Void) throws -> PrimerCancellable? {
+        Task {
+            let response = try await dispatch(request: request)
+            try completion(response)
+        }
+        return nil // TODO
     }
 }
