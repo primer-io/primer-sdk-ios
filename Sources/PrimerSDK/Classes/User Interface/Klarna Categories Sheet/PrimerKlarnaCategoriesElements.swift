@@ -95,6 +95,8 @@ struct KlarnaCategoryButton: View {
 
 @available(iOS 13.0, *)
 struct ContinueButton: View {
+    @Binding var isActive: Bool
+    
     let title: String
     let action: () -> Void
     
@@ -104,12 +106,13 @@ struct ContinueButton: View {
         }) {
             Text(title)
                 .font(.headline)
-                .foregroundColor(.white)
+                .foregroundColor(isActive ? .white : .black.opacity(0.2))
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.blue)
+                .background(isActive ? Color.blue : Color.gray.opacity(0.2))
                 .cornerRadius(5)
         }
+        .disabled(!isActive)
     }
 }
 

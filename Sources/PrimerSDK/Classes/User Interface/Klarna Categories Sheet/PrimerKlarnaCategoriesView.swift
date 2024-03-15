@@ -15,6 +15,7 @@ struct PrimerKlarnaCategoriesView: View {
 
     @State private var selectedCategory: KlarnaPaymentCategory?
     @State private var shouldDisableKlarnaViews: Bool = false
+    @State private var isButtonActive: Bool = false
 
     var onBackPressed: () -> Void
     var onInitializePressed: (KlarnaPaymentCategory?) -> Void
@@ -37,6 +38,7 @@ struct PrimerKlarnaCategoriesView: View {
                     
                     Spacer()
                 }
+                .opacity(viewModel.showBackButton ? 1 : 0)
             }
 
             Image(uiImage: klarnaLogoImage)
@@ -50,6 +52,7 @@ struct PrimerKlarnaCategoriesView: View {
             ForEach(viewModel.paymentCategories, id: \.id) { category in
                 KlarnaCategoryButton(sharedWrapper: sharedWrapper, isSelected: selectedCategory?.id == category.id, title: category.name) {
                     selectedCategory = selectedCategory?.id == category.id ? nil : category
+                    isButtonActive = selectedCategory != nil
                     onInitializePressed(selectedCategory)
                 }
                 .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.KlarnaComponent.initializeView.rawValue)
@@ -59,16 +62,18 @@ struct PrimerKlarnaCategoriesView: View {
         .frame(height: 450)
         .padding()
         .disabled(shouldDisableKlarnaViews)
+        .opacity(viewModel.isAuthorizing ? 0 : 1)
 
         Spacer()
 
         HStack {
-            ContinueButton(title: "Continue") {
+            ContinueButton(isActive: $isButtonActive, title: "Continue") {
                 onContinuePressed()
                 shouldDisableKlarnaViews = true
             }
         }
         .padding(.horizontal, 15)
         .disabled(shouldDisableKlarnaViews)
+        .opacity(viewModel.showBackButton ? 1 : 0)
     }
 }

@@ -11,11 +11,16 @@ import SwiftUI
 import PrimerKlarnaSDK
 #endif
 
+protocol PrimerKlarnaCategoriesDelegate {
+    func primerKlarnaPaymentSessionCompleted(authorizationToken: String)
+    func primerKlarnaPaymentSessionFailed(error: Error)
+}
+
 @available(iOS 13.0, *)
 class PrimerKlarnaCategoriesViewController: UIViewController {
     
     // MARK: - Subviews
-    let activityIndicator = UIActivityIndicatorView(style: .large)
+    let activityIndicator = UIActivityIndicatorView()
     
     // MARK: - Properties
     let klarnaCategoriesVM: PrimerKlarnaCategoriesViewModel = PrimerKlarnaCategoriesViewModel()
@@ -24,13 +29,15 @@ class PrimerKlarnaCategoriesViewController: UIViewController {
     var renderedKlarnaView = UIView()
     var clientToken: String?
     var klarnaComponent : PrimerHeadlessKlarnaComponent
+    var delegate: PrimerKlarnaCategoriesDelegate
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    init(tokenizationComponent: KlarnaTokenizationComponentProtocol) {
-        klarnaComponent = PrimerHeadlessKlarnaComponent(tokenizationComponent: tokenizationComponent)
+    init(tokenizationComponent: KlarnaTokenizationComponentProtocol, delegate: PrimerKlarnaCategoriesDelegate) {
+        self.klarnaComponent = PrimerHeadlessKlarnaComponent(tokenizationComponent: tokenizationComponent)
+        self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -118,13 +125,6 @@ extension PrimerKlarnaCategoriesViewController {
 // MARK: - Helpers
 @available(iOS 13.0, *)
 extension PrimerKlarnaCategoriesViewController {
-    func showAlert(title: String, message: String, handler: (() -> ())? = nil) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .default) { _ in handler?() }
-        alert.addAction(okAction)
-        present(alert, animated: true, completion: nil)
-    }
-    
     func showLoader() {
         view.bringSubviewToFront(activityIndicator)
         activityIndicator.startAnimating()
@@ -152,14 +152,12 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
             hideLoader()
         case .invalid(errors: let errors):
             hideLoader()
-            var message = ""
-            for error in errors {
-                message += (error.errorDescription ?? error.localizedDescription) + "\n"
+            if let error = errors.first {
+                delegate.primerKlarnaPaymentSessionFailed(error: error)
             }
-            showAlert(title: "Validation Error", message: "\(message)")
         case .error(error: let error):
             hideLoader()
-            showAlert(title: error.errorId, message: error.recoverySuggestion ?? error.localizedDescription)
+            delegate.primerKlarnaPaymentSessionFailed(error: error)
         }
     }
     
@@ -174,24 +172,19 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
                     self.clientToken = clientToken
                     self.klarnaCategoriesVM.updatePaymentCategories(paymentCategories)
                 }
-                
-            case .paymentSessionAuthorized( _, let checkoutData):
-                break
-                
-                // Here do the authorization and pop logic
-                
+
             case .paymentSessionFinalizationRequired:
-                break
-                
-            case .paymentSessionFinalized( _, let checkoutData):
-                break
-                
+                finalizeSession()
+
+            case .paymentSessionAuthorized(let authToken, _), .paymentSessionFinalized( let authToken, _):
+                sessionFinished(with: authToken)
+
             case .viewLoaded(let view):
                 hideLoader()
                 if let view {
                     passRenderedKlarnaView(view)
                 }
-                
+
             default:
                 break
             }
@@ -202,6 +195,13 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
 // MARK: - Payment
 @available(iOS 13.0, *)
 extension PrimerKlarnaCategoriesViewController {
+    func sessionFinished(with authToken: String) {
+        klarnaCategoriesVM.isAuthorizing = true
+        klarnaCategoriesVM.showBackButton = false
+        showLoader()
+        delegate.primerKlarnaPaymentSessionCompleted(authorizationToken: authToken)
+    }
+    
     func startPaymentSession() {
         showLoader()
         klarnaComponent.start()

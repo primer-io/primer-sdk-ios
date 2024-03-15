@@ -51,7 +51,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         )
         Analytics.Service.record(event: event)
 
-        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
 
         return Promise { seal in
             #if canImport(PrimerKlarnaSDK)
@@ -155,26 +155,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                         seal.reject(error)
                         return
                     }
-
-                    // Here, PrimerKlarnaViewController should be loaded with both categories.
-                    // PrimerKlarnaViewController need to be refactred and updated to suport 'category pick'.
-                    // Use klarnaPaymentSession to render the categories in the bottom sheet controller
-                    // The PrimerKlarnaViewController will have to be instantiated in the bottom sheet after user chooses payment option.
-//                    self.klarnaViewController = PrimerKlarnaViewController(
-//                        delegate: self,
-//                        paymentCategory: .payNow,
-//                        clientToken: self.klarnaPaymentSession!.clientToken,
-//                        urlScheme: urlSchemeStr)
                     
-                    let vc = PrimerKlarnaCategoriesViewController(tokenizationComponent: self.tokenizationComponent)
-
-                    self.klarnaPaymentSessionCompletion = { _, err in
-                        if let err = err {
-                            seal.reject(err)
-                        } else {
-                            fatalError()
-                        }
-                    }
+                    let vc = PrimerKlarnaCategoriesViewController(tokenizationComponent: self.tokenizationComponent, delegate: self)
 
                     self.willPresentExternalView?()
                     PrimerUIManager.primerRootViewController?.show(viewController: vc)
@@ -222,15 +204,13 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 }
 
-#if canImport(PrimerKlarnaSDK)
 @available(iOS 13.0, *)
-extension KlarnaTokenizationViewModel: PrimerKlarnaViewControllerDelegate {
+extension KlarnaTokenizationViewModel: PrimerKlarnaCategoriesDelegate {
+    func primerKlarnaPaymentSessionCompleted(authorizationToken: String) {
+        klarnaPaymentSessionCompletion?(authorizationToken, nil)
+    }
 
-    func primerKlarnaViewDidLoad() { }
-
-    func primerKlarnaPaymentSessionCompleted(authorizationToken: String?, error: PrimerKlarnaError?) {
-        self.klarnaPaymentSessionCompletion?(authorizationToken, error)
-        self.klarnaPaymentSessionCompletion = nil
+    func primerKlarnaPaymentSessionFailed(error: Error) {
+        klarnaPaymentSessionCompletion?(nil, error)
     }
 }
-#endif

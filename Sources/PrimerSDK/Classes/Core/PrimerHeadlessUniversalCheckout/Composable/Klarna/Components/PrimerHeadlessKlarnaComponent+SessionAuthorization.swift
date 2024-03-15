@@ -65,7 +65,13 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderAuthorizationDelega
             }
         }
         if let authToken = authToken, approved == true {
-            finalizeSession(token: authToken, fromAuthorization: true)
+            if PrimerInternal.shared.sdkIntegrationType == .headless {
+                finalizeSession(token: authToken, fromAuthorization: true)
+            } else {
+                let checkoutData = PrimerCheckoutData(payment: nil)
+                let step = KlarnaStep.paymentSessionAuthorized(authToken: authToken, checkoutData: checkoutData)
+                self.stepDelegate?.didReceiveStep(step: step)
+            }
         }
         if finalizeRequired == true {
             let step = KlarnaStep.paymentSessionFinalizationRequired

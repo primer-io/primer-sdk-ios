@@ -65,74 +65,87 @@ extension PaymentMethodTokenizationViewModel {
 
     func processPaymentMethodTokenData() {
         if PrimerInternal.shared.intent == .vault {
-            PrimerDelegateProxy.primerDidTokenizePaymentMethod(self.paymentMethodTokenData!) { _ in }
-            self.handleSuccessfulFlow()
-
+            if config.internalPaymentMethodType != .klarna {
+                processVaultPaymentMethodTokenData()
+                return
+            }
+            processCheckoutPaymentMethodTokenData()
         } else {
-            self.didStartPayment?()
-            self.didStartPayment = nil
+            processCheckoutPaymentMethodTokenData()
+        }
+    }
+    
+    func processVaultPaymentMethodTokenData() {
+        PrimerDelegateProxy.primerDidTokenizePaymentMethod(self.paymentMethodTokenData!) { _ in }
+        self.handleSuccessfulFlow()
+    }
+    
+    func processCheckoutPaymentMethodTokenData() {
+        self.didStartPayment?()
+        self.didStartPayment = nil
 
+        if config.internalPaymentMethodType != .klarna {
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+        }
 
-            firstly {
-                self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+        firstly {
+            self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
+        }
+        .done { checkoutData in
+            self.didFinishPayment?(nil)
+            self.nullifyEventCallbacks()
+
+            if PrimerSettings.current.paymentHandling == .auto, let checkoutData = checkoutData {
+                PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
             }
-            .done { checkoutData in
-                self.didFinishPayment?(nil)
-                self.nullifyEventCallbacks()
 
-                if PrimerSettings.current.paymentHandling == .auto, let checkoutData = checkoutData {
-                    PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+            self.handleSuccessfulFlow()
+        }
+        .ensure {
+            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+        }
+        .catch { err in
+            self.didFinishPayment?(err)
+            self.nullifyEventCallbacks()
+
+            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+
+            if let primerErr = err as? PrimerError,
+               case .cancelled = primerErr,
+               PrimerInternal.shared.sdkIntegrationType == .dropIn,
+               PrimerInternal.shared.selectedPaymentMethodType == nil,
+               self.config.implementationType == .webRedirect ||
+                self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
+                self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
+                self.config.type == PrimerPaymentMethodType.payPal.rawValue {
+                firstly {
+                    clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                 }
-
-                self.handleSuccessfulFlow()
-            }
-            .ensure {
-                PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
-            }
-            .catch { err in
-                self.didFinishPayment?(err)
-                self.nullifyEventCallbacks()
-
-                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-
-                if let primerErr = err as? PrimerError,
-                   case .cancelled = primerErr,
-                   PrimerInternal.shared.sdkIntegrationType == .dropIn,
-                   PrimerInternal.shared.selectedPaymentMethodType == nil,
-                   self.config.implementationType == .webRedirect ||
-                    self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
-                    self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-                    self.config.type == PrimerPaymentMethodType.payPal.rawValue {
-                    firstly {
-                        clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                    }
-                    .done { _ in
-                        PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
-                    }
-                    // The above promises will never end up on error.
-                    .catch { _ in }
-
-                } else {
-                    firstly {
-                        clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                    }
-                    .then { () -> Promise<String?> in
-                        var primerErr: PrimerError!
-                        if let error = err as? PrimerError {
-                            primerErr = error
-                        } else {
-                            primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: UUID().uuidString)
-                        }
-
-                        return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
-                    }
-                    .done { merchantErrorMessage in
-                        self.handleFailureFlow(errorMessage: merchantErrorMessage)
-                    }
-                    // The above promises will never end up on error.
-                    .catch { _ in }
+                .done { _ in
+                    PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
                 }
+                // The above promises will never end up on error.
+                .catch { _ in }
+
+            } else {
+                firstly {
+                    clientSessionActionsModule.unselectPaymentMethodIfNeeded()
+                }
+                .then { () -> Promise<String?> in
+                    var primerErr: PrimerError!
+                    if let error = err as? PrimerError {
+                        primerErr = error
+                    } else {
+                        primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: UUID().uuidString)
+                    }
+
+                    return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
+                }
+                .done { merchantErrorMessage in
+                    self.handleFailureFlow(errorMessage: merchantErrorMessage)
+                }
+                // The above promises will never end up on error.
+                .catch { _ in }
             }
         }
     }
