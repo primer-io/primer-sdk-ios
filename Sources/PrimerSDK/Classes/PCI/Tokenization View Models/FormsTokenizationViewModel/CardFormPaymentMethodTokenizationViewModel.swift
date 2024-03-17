@@ -651,6 +651,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
 
     override func submitButtonTapped() {
+        self.uiModule.submitButton?.startAnimating()
         let viewEvent = Analytics.Event.ui(
             action: .click,
             context: Analytics.Event.Property.Context(
