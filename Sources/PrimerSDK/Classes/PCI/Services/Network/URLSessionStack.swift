@@ -8,6 +8,7 @@
 import Foundation
 // swiftlint:disable function_body_length
 // swiftlint:disable cyclomatic_complexity
+// swiftlint:disable type_body_length
 
 internal class URLSessionStack: NetworkService, LogReporter {
 
@@ -369,3 +370,4 @@ internal extension URLSessionStack {
 }
 // swiftlint:enable function_body_length
 // swiftlint:enable cyclomatic_complexity
+// swiftlint:enable type_body_length

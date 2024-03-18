@@ -6,6 +6,7 @@
 //
 
 // swiftlint:disable file_length
+// swiftlint:disable type_body_length
 
 protocol UserInterfaceModuleProtocol {
 
@@ -1049,4 +1050,5 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         self.paymentMethodTokenizationViewModel.submitButtonTapped()
     }
 }
+// swiftlint:enable type_body_length
 // swiftlint:enable file_length

@@ -1,3 +1,4 @@
+// swiftlint:disable type_body_length
 import UIKit
 
 public class PrimerThemeData {
@@ -327,3 +328,4 @@ public class PrimerThemeData {
         }
     }
 }
+// swiftlint:enable type_body_length

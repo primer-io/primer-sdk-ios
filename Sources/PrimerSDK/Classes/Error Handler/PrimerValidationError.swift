@@ -5,6 +5,8 @@
 //  Created by Boris on 19.9.23..
 //
 
+// swiftlint:disable type_body_length
+
 import Foundation
 
 public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
@@ -386,3 +388,4 @@ extension PrimerValidationError: Equatable {
         }
     }
 }
+// swiftlint:enable type_body_length

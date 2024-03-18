@@ -7,6 +7,7 @@
 
 // swiftlint:disable function_body_length
 // swiftlint:disable file_length
+// swiftlint:disable type_body_length
 
 import Foundation
 import SafariServices
@@ -458,4 +459,5 @@ struct PollingResponse: Decodable {
     }
 }
 // swiftlint:enable function_body_length
+// swiftlint:enable type_body_length
 // swiftlint:enable file_length

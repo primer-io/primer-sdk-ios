@@ -1,9 +1,11 @@
+// swiftlint:disable identifier_name
+// swiftlint:disable type_body_length
+
 import Foundation
 import UIKit
 
 // inspired by https://gist.github.com/proxpero/f7ddfd721a0d0d6159589916185d9dc9
 
-// swiftlint:disable identifier_name
 public enum CountryCode: String, Codable, CaseIterable {
     case af = "AF"
     case ax = "AX"
@@ -254,7 +256,7 @@ public enum CountryCode: String, Codable, CaseIterable {
     case ye = "YE"
     case zm = "ZM"
     case zw = "ZW"
-    // swiftlint:enable identifier_name
+
     init?(optionalRawValue: String?) {
         guard let rawValue = optionalRawValue else {
             return nil
@@ -355,3 +357,5 @@ extension CountryCode {
         return try? jsonParser.parse([PhoneNumberCountryCode].self, from: currenciesData)
     }()
 }
+// swiftlint:enable identifier_name
+// swiftlint:enable type_body_length

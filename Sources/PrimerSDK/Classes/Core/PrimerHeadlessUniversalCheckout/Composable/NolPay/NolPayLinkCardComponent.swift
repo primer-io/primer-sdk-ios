@@ -7,6 +7,7 @@
 
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
+// swiftlint:disable type_body_length
 
 import Foundation
 #if canImport(PrimerNolPaySDK)
@@ -335,3 +336,4 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
 }
 // swiftlint:enable cyclomatic_complexity
 // swiftlint:enable function_body_length
+// swiftlint:enable type_body_length
