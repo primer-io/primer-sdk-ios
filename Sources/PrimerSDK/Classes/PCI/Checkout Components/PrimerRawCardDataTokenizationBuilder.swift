@@ -173,7 +173,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                         cardNetworksMetadata.detectedCardNetworks.items.map { $0.network } != [.unknown]
 
                     if didDetectNetwork && cardNetworksMetadata.detectedCardNetworks.preferred == nil,
-                    let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
+                       let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
                         cardNetwork = network
                     } else {
                         return
@@ -235,14 +235,14 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
                     if (rawData.cardholderName ?? "").isEmpty {
                         errors.append(PrimerValidationError.invalidCardholderName(
-                            message: "Cardholder name cannot be blank.",
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString))
+                                        message: "Cardholder name cannot be blank.",
+                                        userInfo: .errorUserInfoDictionary(),
+                                        diagnosticsId: UUID().uuidString))
                     } else if !(rawData.cardholderName ?? "").isValidNonDecimalString {
                         errors.append(PrimerValidationError.invalidCardholderName(
-                            message: "Cardholder name is not valid.",
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString))
+                                        message: "Cardholder name is not valid.",
+                                        userInfo: .errorUserInfoDictionary(),
+                                        diagnosticsId: UUID().uuidString))
                     }
                 }
 

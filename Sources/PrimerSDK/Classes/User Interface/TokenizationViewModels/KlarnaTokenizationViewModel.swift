@@ -18,7 +18,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     #if DEBUG
     private var demoThirdPartySDKViewController: PrimerThirdPartySDKViewController?
-#endif
+    #endif
     private var klarnaPaymentSession: Response.Body.Klarna.PaymentSession?
     private var klarnaCustomerTokenAPIResponse: Response.Body.Klarna.CustomerToken?
     private var klarnaPaymentSessionCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?

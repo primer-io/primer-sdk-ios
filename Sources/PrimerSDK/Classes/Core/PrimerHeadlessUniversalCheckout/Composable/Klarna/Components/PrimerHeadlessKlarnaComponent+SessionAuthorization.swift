@@ -20,11 +20,11 @@ extension PrimerHeadlessKlarnaComponent {
 extension PrimerHeadlessKlarnaComponent {
     func authorizeSession() {
         var isMocked = false
-#if DEBUG
+        #if DEBUG
         if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
             isMocked = true
         }
-#endif
+        #endif
         if isMocked {
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 self.finalizeSession(token: UUID().uuidString, fromAuthorization: true)

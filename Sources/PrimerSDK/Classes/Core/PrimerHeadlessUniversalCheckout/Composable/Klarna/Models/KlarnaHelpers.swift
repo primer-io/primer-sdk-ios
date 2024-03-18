@@ -58,39 +58,39 @@ struct KlarnaHelpers {
         clientSession: ClientSession.APIResponse?,
         recurringPaymentDescription: String?,
         redirectUrl: String?) -> Request.Body.Klarna.CreatePaymentSession {
-            let sessionType = getSessionType()
-            let localeData = constructLocaleData(using: clientSession)
-            var orderItems: [Request.Body.Klarna.OrderItem]?
-            var totalAmount: Int?
-            var billingAddress: Response.Body.Klarna.BillingAddress?
-            var shippingAddress: Response.Body.Klarna.BillingAddress?
-            var description: String?
-            var redUrl: String?
-            switch sessionType {
-            case .oneOffPayment:
-                // Configure fields specific to one-off payments.
-                orderItems = clientSession?.order?.lineItems?.compactMap({ getOrderItem(from: $0) })
-                let surcharge = getSurcharge(fees: clientSession?.order?.fees)
-                orderItems = addedSurchargeItem(to: orderItems ?? [], surcharge: surcharge)
-                totalAmount = clientSession?.order?.totalOrderAmount
-                billingAddress = getCustomerAddress(of: .billing, clientSession: clientSession)
-                shippingAddress = getCustomerAddress(of: .shipping, clientSession: clientSession)
-            case .recurringPayment:
-                // Configure fields specific to recurring payments.
-                description = recurringPaymentDescription
-                redUrl = redirectUrl
-            }
-            return Request.Body.Klarna.CreatePaymentSession(
-                paymentMethodConfigId: paymentMethodConfigId,
-                sessionType: sessionType,
-                localeData: localeData,
-                description: description,
-                redirectUrl: redUrl,
-                totalAmount: totalAmount,
-                orderItems: orderItems,
-                billingAddress: billingAddress,
-                shippingAddress: shippingAddress)
+        let sessionType = getSessionType()
+        let localeData = constructLocaleData(using: clientSession)
+        var orderItems: [Request.Body.Klarna.OrderItem]?
+        var totalAmount: Int?
+        var billingAddress: Response.Body.Klarna.BillingAddress?
+        var shippingAddress: Response.Body.Klarna.BillingAddress?
+        var description: String?
+        var redUrl: String?
+        switch sessionType {
+        case .oneOffPayment:
+            // Configure fields specific to one-off payments.
+            orderItems = clientSession?.order?.lineItems?.compactMap({ getOrderItem(from: $0) })
+            let surcharge = getSurcharge(fees: clientSession?.order?.fees)
+            orderItems = addedSurchargeItem(to: orderItems ?? [], surcharge: surcharge)
+            totalAmount = clientSession?.order?.totalOrderAmount
+            billingAddress = getCustomerAddress(of: .billing, clientSession: clientSession)
+            shippingAddress = getCustomerAddress(of: .shipping, clientSession: clientSession)
+        case .recurringPayment:
+            // Configure fields specific to recurring payments.
+            description = recurringPaymentDescription
+            redUrl = redirectUrl
         }
+        return Request.Body.Klarna.CreatePaymentSession(
+            paymentMethodConfigId: paymentMethodConfigId,
+            sessionType: sessionType,
+            localeData: localeData,
+            description: description,
+            redirectUrl: redUrl,
+            totalAmount: totalAmount,
+            orderItems: orderItems,
+            billingAddress: billingAddress,
+            shippingAddress: shippingAddress)
+    }
     /// - Returns a customer's address, either billing or shipping, based on the specified type.
     static func getCustomerAddress(of type: AddressType, clientSession: ClientSession.APIResponse?) -> Response.Body.Klarna.BillingAddress {
         let billingAddress = clientSession?.customer?.billingAddress

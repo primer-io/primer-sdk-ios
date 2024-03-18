@@ -13,7 +13,7 @@ protocol KlarnaTokenizationManagerProtocol {
      - Parameters:
      - customerToken: An optional `Response.Body.Klarna.CustomerToken` object containing the customer's token and session data.
      - `offSessionAuthorizationId`: An optional `String` representing an off-session authorization ID. This is used when the session `intent` is `checkout`.
-     
+
      - Returns: A `Promise<PrimerPaymentMethodTokenData>` which resolves to a `PrimerPaymentMethodTokenData` object on successful tokenization or rejects with an `Error` if the tokenization process fails.
      */
     func tokenize(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerCheckoutData>
