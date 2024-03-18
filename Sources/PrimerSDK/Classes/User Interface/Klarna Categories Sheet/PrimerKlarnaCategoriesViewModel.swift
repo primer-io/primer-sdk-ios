@@ -15,6 +15,7 @@ class PrimerKlarnaCategoriesViewModel: ObservableObject {
     @Published var paymentCategories: [KlarnaPaymentCategory] = []
     @Published var showBackButton: Bool = false
     @Published var isAuthorizing: Bool = false
+    @Published var shouldDisableKlarnaViews: Bool = false
     
     func updatePaymentCategories(_ paymentCategories: [KlarnaPaymentCategory]) {
         self.paymentCategories = paymentCategories

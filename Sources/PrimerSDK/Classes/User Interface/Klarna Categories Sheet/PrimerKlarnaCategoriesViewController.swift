@@ -133,6 +133,12 @@ extension PrimerKlarnaCategoriesViewController {
     func hideLoader() {
         activityIndicator.stopAnimating()
     }
+    
+    func showLoadingState() {
+        klarnaCategoriesVM.isAuthorizing = true
+        klarnaCategoriesVM.showBackButton = false
+        showLoader()
+    }
 }
 
 
@@ -141,7 +147,10 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
                                                 PrimerHeadlessValidatableDelegate,
                                                 PrimerHeadlessSteppableDelegate {
     // MARK: - PrimerHeadlessErrorableDelegate
-    func didReceiveError(error: PrimerSDK.PrimerError) { }
+    func didReceiveError(error: PrimerSDK.PrimerError) {
+        showLoadingState()
+        delegate.primerKlarnaPaymentSessionFailed(error: error)
+    }
 
     // MARK: - PrimerHeadlessValidatableDelegate
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
@@ -153,10 +162,12 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
         case .invalid(errors: let errors):
             hideLoader()
             if let error = errors.first {
+                showLoadingState()
                 delegate.primerKlarnaPaymentSessionFailed(error: error)
             }
         case .error(error: let error):
             hideLoader()
+            showLoadingState()
             delegate.primerKlarnaPaymentSessionFailed(error: error)
         }
     }
@@ -196,9 +207,7 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
 @available(iOS 13.0, *)
 extension PrimerKlarnaCategoriesViewController {
     func sessionFinished(with authToken: String) {
-        klarnaCategoriesVM.isAuthorizing = true
-        klarnaCategoriesVM.showBackButton = false
-        showLoader()
+        showLoadingState()
         delegate.primerKlarnaPaymentSessionCompleted(authorizationToken: authToken)
     }
     

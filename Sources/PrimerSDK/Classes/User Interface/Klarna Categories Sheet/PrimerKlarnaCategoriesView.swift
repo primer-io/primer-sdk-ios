@@ -12,9 +12,7 @@ import SwiftUI
 struct PrimerKlarnaCategoriesView: View {
     @ObservedObject var viewModel = PrimerKlarnaCategoriesViewModel()
     @ObservedObject var sharedWrapper: SharedUIViewWrapper
-
     @State private var selectedCategory: KlarnaPaymentCategory?
-    @State private var shouldDisableKlarnaViews: Bool = false
     @State private var isButtonActive: Bool = false
 
     var onBackPressed: () -> Void
@@ -61,7 +59,7 @@ struct PrimerKlarnaCategoriesView: View {
         }
         .frame(height: 450)
         .padding()
-        .disabled(shouldDisableKlarnaViews)
+        .disabled(viewModel.shouldDisableKlarnaViews)
         .opacity(viewModel.isAuthorizing ? 0 : 1)
 
         Spacer()
@@ -69,11 +67,11 @@ struct PrimerKlarnaCategoriesView: View {
         HStack {
             ContinueButton(isActive: $isButtonActive, title: "Continue") {
                 onContinuePressed()
-                shouldDisableKlarnaViews = true
+                viewModel.shouldDisableKlarnaViews = true
             }
         }
         .padding(.horizontal, 15)
-        .disabled(shouldDisableKlarnaViews)
+        .disabled(viewModel.shouldDisableKlarnaViews)
         .opacity(viewModel.showBackButton ? 1 : 0)
     }
 }
