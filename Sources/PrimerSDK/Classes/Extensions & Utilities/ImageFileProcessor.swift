@@ -8,6 +8,7 @@
 import Foundation
 
 // swiftlint:disable cyclomatic_complexity
+// swiftlint:disable function_body_length
 class ImageFileProcessor {
 
     init() {}
@@ -125,3 +126,4 @@ class ImageFileProcessor {
     }
 }
 // swiftlint:enable cyclomatic_complexity
+// swiftlint:enable function_body_length

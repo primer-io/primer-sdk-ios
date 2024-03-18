@@ -6,6 +6,7 @@
 //
 
 // swiftlint:disable cyclomatic_complexity
+// swiftlint:disable function_body_length
 
 import Foundation
 #if canImport(PrimerNolPaySDK)
@@ -309,3 +310,4 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     }
 }
 // swiftlint:enable cyclomatic_complexity
+// swiftlint:enable function_body_length

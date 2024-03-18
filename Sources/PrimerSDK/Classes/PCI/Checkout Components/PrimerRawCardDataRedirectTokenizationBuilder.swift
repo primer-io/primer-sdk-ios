@@ -9,6 +9,7 @@ import Foundation
 
 // swiftlint:disable type_name
 // swiftlint:disable cyclomatic_complexity
+// swiftlint:disable function_body_length
 
 class PrimerRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
@@ -263,3 +264,4 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
 
 // swiftlint:enable type_name
 // swiftlint:enable cyclomatic_complexity
+// swiftlint:enable function_body_length

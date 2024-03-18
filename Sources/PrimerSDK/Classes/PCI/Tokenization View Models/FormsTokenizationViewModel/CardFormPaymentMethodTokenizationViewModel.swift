@@ -6,6 +6,7 @@
 //
 
 // swiftlint:disable file_length
+// swiftlint:disable function_body_length
 
 import Foundation
 import SafariServices
@@ -1024,4 +1025,5 @@ private extension String {
                 locale: nil)
     }
 }
+// swiftlint:enable function_body_length
 // swiftlint:enable file_length

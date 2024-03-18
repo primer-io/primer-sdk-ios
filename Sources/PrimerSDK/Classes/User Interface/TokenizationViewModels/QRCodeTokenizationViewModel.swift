@@ -5,6 +5,8 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
+// swiftlint:disable function_body_length
+
 import SafariServices
 import UIKit
 
@@ -366,3 +368,4 @@ No events will be sent to your delegate instance.
         }
     }
 }
+// swiftlint:enable function_body_length

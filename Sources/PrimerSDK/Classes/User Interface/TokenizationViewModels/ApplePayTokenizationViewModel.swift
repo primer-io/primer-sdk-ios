@@ -1,4 +1,5 @@
 // swiftlint:disable file_length
+// swiftlint:disable function_body_length
 
 import Foundation
 import PassKit
@@ -616,4 +617,5 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
         }
     }
 }
+// swiftlint:enable function_body_length
 // swiftlint:enable file_length

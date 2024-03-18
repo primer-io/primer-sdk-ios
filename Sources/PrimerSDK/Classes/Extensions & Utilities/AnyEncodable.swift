@@ -12,6 +12,7 @@ import Foundation
 
 // swiftlint:disable type_name
 // swiftlint:disable cyclomatic_complexity
+// swiftlint:disable function_body_length
 
 /**
  A type-erased `Encodable` value.
@@ -297,3 +298,4 @@ extension AnyEncodable: Hashable {
 }
 // swiftlint:enable cyclomatic_complexity
 // swiftlint:enable type_name
+// swiftlint:enable function_body_length

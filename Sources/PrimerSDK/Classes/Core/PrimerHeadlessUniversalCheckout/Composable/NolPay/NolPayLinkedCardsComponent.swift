@@ -5,6 +5,8 @@
 //  Created by Boris on 15.9.23..
 //
 
+// swiftlint:disable function_body_length
+
 import Foundation
 #if canImport(PrimerNolPaySDK)
 import PrimerNolPaySDK
@@ -209,5 +211,5 @@ public class NolPayLinkedCardsComponent {
         }
     }
 }
-
 #endif
+// swiftlint:enable function_body_length

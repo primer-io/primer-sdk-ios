@@ -5,9 +5,11 @@
 //  Created by Dario Carlomagno on 17/08/22.
 //
 
+// swiftlint:disable function_body_length
+// swiftlint:disable type_name
+
 import Foundation
 
-// swiftlint:disable:next type_name
 class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var rawData: PrimerRawData? {
@@ -151,3 +153,5 @@ class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuil
         }
     }
 }
+// swiftlint:enable type_name
+// swiftlint:enable function_body_length

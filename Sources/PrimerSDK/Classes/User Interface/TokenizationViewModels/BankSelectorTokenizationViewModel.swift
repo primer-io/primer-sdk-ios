@@ -5,6 +5,8 @@
 //  Created by Admin on 8/11/21.
 //
 
+// swiftlint:disable function_body_length
+
 import SafariServices
 import UIKit
 
@@ -380,3 +382,4 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
 }
 
 extension BankSelectorTokenizationViewModel: WebRedirectTokenizationDelegate {}
+// swiftlint:enable function_body_length

@@ -6,6 +6,7 @@
 //
 
 // swiftlint:disable file_length
+// swiftlint:disable function_body_length
 
 import Foundation
 import UIKit
@@ -707,4 +708,5 @@ internal class MockPrimer3DSCompletion: Primer3DSCompletion {
     var transactionStatus: String = "transactionStatus"
 }
 #endif
+// swiftlint:enable function_body_length
 // swiftlint:enable file_length

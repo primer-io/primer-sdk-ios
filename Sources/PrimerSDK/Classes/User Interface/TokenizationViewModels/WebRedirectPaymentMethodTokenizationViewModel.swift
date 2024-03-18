@@ -5,6 +5,7 @@
 //  Created by Evangelos Pittas on 11/10/21.
 //
 
+// swiftlint:disable function_body_length
 // swiftlint:disable file_length
 
 import Foundation
@@ -456,4 +457,5 @@ struct PollingResponse: Decodable {
 
     }
 }
+// swiftlint:enable function_body_length
 // swiftlint:enable file_length

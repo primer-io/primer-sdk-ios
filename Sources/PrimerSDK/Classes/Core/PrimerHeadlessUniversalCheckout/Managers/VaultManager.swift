@@ -7,6 +7,7 @@
 
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable file_length
+// swiftlint:disable function_body_length
 
 import SafariServices
 import UIKit
@@ -1046,4 +1047,5 @@ extension PrimerPaymentMethodTokenData {
 
 extension PrimerHeadlessUniversalCheckout.VaultManager: PaymentMethodTypeViaPaymentMethodTokenDataProviding {}
 // swiftlint:enable cyclomatic_complexity
+// swiftlint:enable function_body_length
 // swiftlint:enable file_length
