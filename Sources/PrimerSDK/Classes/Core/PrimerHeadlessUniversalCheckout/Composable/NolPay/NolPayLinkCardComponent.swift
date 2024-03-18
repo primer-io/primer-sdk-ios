@@ -5,6 +5,8 @@
 //  Created by Boris on 13.9.23..
 //
 
+// swiftlint:disable cyclomatic_complexity
+
 import Foundation
 #if canImport(PrimerNolPaySDK)
 import PrimerNolPaySDK
@@ -330,3 +332,4 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         #endif
     }
 }
+// swiftlint:enable cyclomatic_complexity

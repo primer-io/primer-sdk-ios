@@ -5,6 +5,9 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
+// swiftlint:disable identifier_name
+// swiftlint:disable cyclomatic_complexity
+
 import Foundation
 import UIKit
 
@@ -397,7 +400,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         billingAddressFields.flatMap { $0.filter { $0.isFieldHidden == false } }.map { $0.fieldView }
     }
 
-    // swiftlint:disable:next identifier_name
     internal var allVisibleBillingAddressFieldContainerViews: [[PrimerCustomFieldView]] {
         let allVisibleBillingAddressFields = billingAddressFields.map { $0.filter { $0.isFieldHidden == false } }
         return allVisibleBillingAddressFields.map { $0.map { $0.containerFieldView } }
@@ -433,7 +435,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
 
     /// Dictionary containing the payment method types expecting to show a view with the Payment Logo and a message
     /// informing the user to complete the payment outside of the current Application context
-    // swiftlint:disable:next identifier_name
     let needingExternalCompletionPaymentMethodDictionary: [PrimerPaymentMethodType: String] = [.adyenMBWay: Strings.MBWay.completeYourPayment,
                                                                                                .adyenBlik: Strings.Blik.completeYourPayment]
 
@@ -454,35 +455,45 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
 
         guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "clientToken.pciUrl", value: decodedJWTToken.pciUrl, userInfo: ["file": #file,
-                                                                                                                    "class": "\(Self.self)",
-                                                                                                                    "function": #function,
-                                                                                                                    "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidValue(key: "clientToken.pciUrl",
+                                               value: decodedJWTToken.pciUrl,
+                                               userInfo: ["file": #file,
+                                                          "class": "\(Self.self)",
+                                                          "function": #function,
+                                                          "line": "\(#line)"],
+                                               diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
 
         if PrimerInternal.shared.intent == .checkout {
             if AppState.current.amount == nil {
-                let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file,
-                                                                                            "class": "\(Self.self)",
-                                                                                            "function": #function,
-                                                                                            "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidSetting(name: "amount",
+                                                     value: nil,
+                                                     userInfo: ["file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
 
             if AppState.current.currency == nil {
-                let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file,
-                                                                                              "class": "\(Self.self)",
-                                                                                              "function": #function,
-                                                                                              "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidSetting(name: "currency",
+                                                     value: nil,
+                                                     userInfo: ["file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
@@ -604,7 +615,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     let error = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                           "class": "\(Self.self)",
                                                                           "function": #function,
-                                                                          "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                          "line": "\(#line)"],
+                                                               diagnosticsId: UUID().uuidString)
                     seal.reject(error)
                 }
             } else if decodedJWTToken.intent == RequiredActionName.paymentMethodVoucher.rawValue {
@@ -1024,3 +1036,5 @@ extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
         return true
     }
 }
+// swiftlint:enable identifier_name
+// swiftlint:enable cyclomatic_complexity

@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 5/7/21.
 //
 
+// swiftlint:disable cyclomatic_complexity
+
 import UIKit
 
 public final class PrimerCVVFieldView: PrimerTextFieldView {
@@ -28,7 +30,9 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
         }
     }
 
-    public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    public override func textField(_ textField: UITextField,
+                                   shouldChangeCharactersIn range: NSRange,
+                                   replacementString string: String) -> Bool {
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField.internalText ?? ""
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
@@ -90,5 +94,5 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
 
         return false
     }
-
 }
+// swiftlint:enable cyclomatic_complexity

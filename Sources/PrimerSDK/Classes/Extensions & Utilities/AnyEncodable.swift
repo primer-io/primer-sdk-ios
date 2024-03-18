@@ -11,6 +11,7 @@ import Foundation
 #endif
 
 // swiftlint:disable type_name
+// swiftlint:disable cyclomatic_complexity
 
 /**
  A type-erased `Encodable` value.
@@ -294,4 +295,5 @@ extension AnyEncodable: Hashable {
         }
     }
 }
+// swiftlint:enable cyclomatic_complexity
 // swiftlint:enable type_name

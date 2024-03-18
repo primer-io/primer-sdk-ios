@@ -5,6 +5,8 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
+// swiftlint:disable cyclomatic_complexity
+
 import UIKit
 
 internal class PrimerRootViewController: PrimerViewController {
@@ -447,3 +449,4 @@ extension PrimerRootViewController: UIGestureRecognizerDelegate {
         return true
     }
 }
+// swiftlint:enable cyclomatic_complexity

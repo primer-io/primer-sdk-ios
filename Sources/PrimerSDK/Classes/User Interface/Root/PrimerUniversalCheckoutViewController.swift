@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 31/7/21.
 //
 
+// swiftlint:disable cyclomatic_complexity
+
 import UIKit
 
 internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
@@ -331,3 +333,5 @@ extension PrimerUniversalCheckoutViewController: ReloadDelegate {
         renderSelectedPaymentInstrument(insertAt: 1)
     }
 }
+
+// swiftlint:enable cyclomatic_complexity

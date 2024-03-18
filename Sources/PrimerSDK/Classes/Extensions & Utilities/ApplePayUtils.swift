@@ -5,6 +5,8 @@
 //  Created by Jack Newcombe on 07/11/2023.
 //
 
+// swiftlint:disable cyclomatic_complexity
+
 import PassKit
 
 private let paymentOptionsSettings = PrimerSettings.current.paymentMethodOptions.cardPaymentOptions
@@ -60,3 +62,4 @@ final class ApplePayUtils {
         }
     }
 }
+// swiftlint:enable cyclomatic_complexity

@@ -5,6 +5,8 @@
 //  Created by Evangelos on 12/12/22.
 //
 
+// swiftlint:disable cyclomatic_complexity
+
 import Foundation
 import UIKit
 
@@ -57,7 +59,8 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -315,10 +318,13 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         return Promise { seal in
             #if canImport(PrimerIPay88MYSDK)
             guard let configId = config.id else {
-                let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file,
-                                                                                                         "class": "\(Self.self)",
-                                                                                                         "function": #function,
-                                                                                                         "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidValue(key: "configuration.id",
+                                                   value: config.id,
+                                                   userInfo: ["file": #file,
+                                                              "class": "\(Self.self)",
+                                                              "function": #function,
+                                                              "line": "\(#line)"],
+                                                   diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -709,3 +715,4 @@ extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
     }
 }
 #endif
+// swiftlint:enable cyclomatic_complexity

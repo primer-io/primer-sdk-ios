@@ -9,6 +9,7 @@ import Foundation
 import SafariServices
 
 // swiftlint:disable type_name
+// swiftlint:disable cyclomatic_complexity
 @objc
 public protocol PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
@@ -1062,3 +1063,6 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager {
         }
     }
 }
+
+// swiftlint:enable type_name
+// swiftlint:enable cyclomatic_complexity

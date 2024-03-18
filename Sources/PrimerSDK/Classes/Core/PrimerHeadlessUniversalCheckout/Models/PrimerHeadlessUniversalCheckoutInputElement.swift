@@ -5,6 +5,8 @@
 //  Created by Evangelos on 4/10/22.
 //
 
+// swiftlint:disable cyclomatic_complexity
+
 import UIKit
 
 @objc
@@ -191,3 +193,5 @@ public protocol PrimerHeadlessUniversalCheckoutInputElement {
     var type: PrimerInputElementType { get set }
     var isValid: Bool { get }
 }
+
+// swiftlint:enable cyclomatic_complexity

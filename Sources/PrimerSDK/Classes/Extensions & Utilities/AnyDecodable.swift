@@ -7,6 +7,7 @@
 //
 
 // swiftlint:disable type_name
+// swiftlint:disable cyclomatic_complexity
 #if canImport(Foundation)
 import Foundation
 #endif
@@ -192,3 +193,4 @@ extension AnyDecodable: Hashable {
     }
 }
 // swiftlint:enable type_name
+// swiftlint:enable cyclomatic_complexity
