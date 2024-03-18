@@ -384,7 +384,9 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     // MARK: All billing address fields
 
     internal var billingAddressCheckoutModuleOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions? {
-        return PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
+        return PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
+            .filter({ $0.type == "BILLING_ADDRESS" })
+            .first?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
     }
 
     internal var billingAddressFields: [[BillingAddressField]] {
@@ -518,7 +520,9 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         )
         Analytics.Service.record(event: event)
 
-        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+        let imageView = self.uiModule.makeIconImageView(withDimension: 24.0)
+        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView,
+                                                                            message: nil)
 
         return Promise { seal in
             firstly {
@@ -583,7 +587,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                    decodedJWTToken.intent != nil {
 
                     let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type)
-                    let isPaymentMethodNeedingExternalCompletion = (needingExternalCompletionPaymentMethodDictionary.first { $0.key == paymentMethodType } != nil) == true
+                    let isPaymentMethodNeedingExternalCompletion = (needingExternalCompletionPaymentMethodDictionary
+                                                                        .first { $0.key == paymentMethodType } != nil) == true
 
                     firstly {
                         self.presentPaymentMethodAppropriateViewController(shouldCompletePaymentExternally: isPaymentMethodNeedingExternalCompletion)
@@ -697,7 +702,8 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     fileprivate func enableSubmitButton(_ flag: Bool) {
         self.uiModule.submitButton?.isEnabled = flag
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        self.uiModule.submitButton?.backgroundColor = flag ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
+        let colorState: ColorState = flag ? .enabled : .disabled
+        self.uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: colorState)
     }
 
     override func submitButtonTapped() {
@@ -1023,9 +1029,12 @@ extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
 
         var countryResults: [CountryCode] = []
 
-        for country in countries where country.country.lowercased().folding(options: .diacriticInsensitive,
-                                                                            locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive,
-                                                                                                                             locale: nil)) == true {
+        for country in countries where country.country.lowercased()
+            .folding(options: .diacriticInsensitive,
+                     locale: nil)
+            .contains(query.lowercased()
+                        .folding(options: .diacriticInsensitive,
+                                 locale: nil)) == true {
             countryResults.append(country)
         }
 

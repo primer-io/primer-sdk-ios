@@ -35,7 +35,9 @@ class PrimerHeadlessKlarnaComponent {
     }
     /// Configures the Klarna provider and view handling component with necessary information for payment processing.
     func setProvider(with clientToken: String, paymentCategory: String) {
-        let provider: PrimerKlarnaProviding = PrimerKlarnaProvider(clientToken: clientToken, paymentCategory: paymentCategory, urlScheme: settings.paymentMethodOptions.urlScheme)
+        let provider: PrimerKlarnaProviding = PrimerKlarnaProvider(clientToken: clientToken,
+                                                                   paymentCategory: paymentCategory,
+                                                                   urlScheme: settings.paymentMethodOptions.urlScheme)
         klarnaProvider = provider
     }
     /// Validates the tokenization component, handling any errors that occur during the process.
@@ -78,13 +80,15 @@ extension PrimerHeadlessKlarnaComponent: KlarnaComponent {
                 return
             }
             guard !availableCategories.isEmpty else {
-                let error = PrimerValidationError.sessionNotCreated(userInfo: KlarnaHelpers.getErrorUserInfo(), diagnosticsId: UUID().uuidString)
+                let error = PrimerValidationError.sessionNotCreated(userInfo: KlarnaHelpers.getErrorUserInfo(),
+                                                                    diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
                 return
             }
             guard availableCategories.contains(where: { $0 == category }) else {
-                let error = PrimerValidationError.invalidPaymentCategory(userInfo: KlarnaHelpers.getErrorUserInfo(), diagnosticsId: UUID().uuidString)
+                let error = PrimerValidationError.invalidPaymentCategory(userInfo: KlarnaHelpers.getErrorUserInfo(),
+                                                                         diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
                 return
@@ -94,7 +98,8 @@ extension PrimerHeadlessKlarnaComponent: KlarnaComponent {
             validationDelegate?.didUpdate(validationStatus: .valid, for: data)
         case .finalizePayment:
             guard isFinalizationRequired else {
-                let error = PrimerValidationError.paymentAlreadyFinalized(userInfo: KlarnaHelpers.getErrorUserInfo(), diagnosticsId: UUID().uuidString)
+                let error = PrimerValidationError.paymentAlreadyFinalized(userInfo: KlarnaHelpers.getErrorUserInfo(),
+                                                                          diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
                 return

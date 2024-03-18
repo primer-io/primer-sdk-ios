@@ -313,12 +313,21 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     }
 
     var surcharge: Int? {
-        guard let options = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options, !options.isEmpty else { return nil }
+        guard let options = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options,
+              !options.isEmpty else { return nil }
 
         for paymentMethodOption in options {
-            guard let type = paymentMethodOption["type"] as? String, type == PrimerPaymentMethodType.paymentCard.rawValue else { continue }
-            guard let networks = paymentMethodOption["networks"] as? [[String: Any]] else { continue }
-            guard let tmpNetwork = networks.filter({ $0["type"] as? String == self.rawValue.uppercased() }).first else { continue }
+            guard let type = paymentMethodOption["type"] as? String,
+                  type == PrimerPaymentMethodType.paymentCard.rawValue
+            else { continue }
+
+            guard let networks = paymentMethodOption["networks"] as? [[String: Any]]
+            else { continue }
+
+            guard let tmpNetwork = networks
+                    .filter({ $0["type"] as? String == self.rawValue.uppercased() })
+                    .first
+            else { continue }
             guard let surcharge = tmpNetwork["surcharge"] as? Int else { continue }
             return surcharge
         }
@@ -359,11 +368,13 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     }
 }
 
-extension Array<CardNetwork>: LogReporter {
+extension [CardNetwork]: LogReporter {
 
     /// A list of card networks that the merchant supports
     static var allowedCardNetworks: Self {
-        guard let networkStrings = PrimerAPIConfiguration.current?.clientSession?.paymentMethod?.orderedAllowedCardNetworks else {
+        let session = PrimerAPIConfiguration.current?.clientSession
+        guard let networkStrings = session?.paymentMethod?.orderedAllowedCardNetworks
+        else {
             logger.warn(message: "Expected allowed networks to be present in client session")
             return []
         }

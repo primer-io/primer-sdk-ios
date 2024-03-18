@@ -8,6 +8,7 @@
 // swiftlint:disable file_length
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
+// swiftlint:disable large_tuple
 
 import Foundation
 import UIKit
@@ -297,7 +298,9 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
             var certs: [Primer3DSCertificate] = []
             for certificate in AppState.current.apiConfiguration?.keys?.threeDSecureIoCertificates ?? [] {
-                let cer = ThreeDS.Cer(cardScheme: certificate.cardNetwork, rootCertificate: certificate.rootCertificate, encryptionKey: certificate.encryptionKey)
+                let cer = ThreeDS.Cer(cardScheme: certificate.cardNetwork,
+                                      rootCertificate: certificate.rootCertificate,
+                                      encryptionKey: certificate.encryptionKey)
                 certs.append(cer)
             }
 
@@ -384,7 +387,8 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
                 return
             }
 
-            let cardNetwork = CardNetwork(cardNetworkStr: paymentMethodTokenData.paymentInstrumentData?.binData?.network ?? "")
+            let network = paymentMethodTokenData.paymentInstrumentData?.binData?.network
+            let cardNetwork = CardNetwork(cardNetworkStr: network ?? "")
 
             guard let directoryServerId = cardNetwork.directoryServerId else {
                 let uuid = UUID().uuidString
@@ -461,7 +465,6 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
     private func initialize3DSAuthorization(
         sdkAuthResult: SDKAuthResult,
         paymentMethodTokenData: PrimerPaymentMethodTokenData
-        // swiftlint:disable:next large_tuple
     ) -> Promise<(serverAuthData: ThreeDS.ServerAuthData,
                   resumeToken: String,
                   threeDsAppRequestorUrl: URL?)> {
@@ -514,11 +517,12 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
                         seal.reject(internalErr)
 
                     case .challenge:
-                        let serverAuthData = ThreeDS.ServerAuthData(acsReferenceNumber: beginAuthResponse.authentication.acsReferenceNumber,
-                                                                    acsSignedContent: beginAuthResponse.authentication.acsSignedContent,
-                                                                    acsTransactionId: beginAuthResponse.authentication.acsTransactionId,
-                                                                    responseCode: beginAuthResponse.authentication.responseCode.rawValue,
-                                                                    transactionId: beginAuthResponse.authentication.transactionId)
+                        let authentication = beginAuthResponse.authentication
+                        let serverAuthData = ThreeDS.ServerAuthData(acsReferenceNumber: authentication.acsReferenceNumber,
+                                                                    acsSignedContent: authentication.acsSignedContent,
+                                                                    acsTransactionId: authentication.acsTransactionId,
+                                                                    responseCode: authentication.responseCode.rawValue,
+                                                                    transactionId: authentication.transactionId)
 
                         seal.fulfill((serverAuthData, beginAuthResponse.resumeToken, threeDsAppRequestorUrl))
                     }
@@ -564,7 +568,9 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
                 return
             }
 
-            if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
+            if let windowScene = UIApplication.shared.connectedScenes
+                .filter({ $0.activationState == .foregroundActive })
+                .first as? UIWindowScene {
                 self.threeDSSDKWindow = UIWindow(windowScene: windowScene)
             } else {
                 // Not opted-in in UISceneDelegate
@@ -649,32 +655,35 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
         }
 
         let apiClient: PrimerAPIClientProtocol = ThreeDSService.apiClient ?? PrimerAPIClient()
-        apiClient.begin3DSAuth(clientToken: decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData, threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest, completion: { result in
-            switch result {
-            case .failure(let underlyingErr):
-                var primerErr: PrimerError
+        apiClient.begin3DSAuth(clientToken: decodedJWTToken,
+                               paymentMethodTokenData: paymentMethodTokenData,
+                               threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest,
+                               completion: { result in
+                                switch result {
+                                case .failure(let underlyingErr):
+                                    var primerErr: PrimerError
 
-                if let primerError = underlyingErr as? PrimerError {
-                    primerErr = primerError
-                } else {
-                    primerErr = PrimerError.underlyingErrors(
-                        errors: [underlyingErr],
-                        userInfo: ["file": #file,
-                                   "class": "\(Self.self)",
-                                   "function": #function,
-                                   "line": "\(#line)"],
-                        diagnosticsId: UUID().uuidString)
-                }
+                                    if let primerError = underlyingErr as? PrimerError {
+                                        primerErr = primerError
+                                    } else {
+                                        primerErr = PrimerError.underlyingErrors(
+                                            errors: [underlyingErr],
+                                            userInfo: ["file": #file,
+                                                       "class": "\(Self.self)",
+                                                       "function": #function,
+                                                       "line": "\(#line)"],
+                                            diagnosticsId: UUID().uuidString)
+                                    }
 
-                ErrorHandler.handle(error: primerErr)
+                                    ErrorHandler.handle(error: primerErr)
 
-                let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: primerErr)
-                completion(.failure(internalErr))
+                                    let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: primerErr)
+                                    completion(.failure(internalErr))
 
-            case .success(let res):
-                completion(.success(res))
-            }
-        })
+                                case .success(let res):
+                                    completion(.success(res))
+                                }
+                               })
     }
     #endif
 
@@ -739,4 +748,5 @@ internal class MockPrimer3DSCompletion: Primer3DSCompletion {
 #endif
 // swiftlint:enable function_body_length
 // swiftlint:enable type_body_length
+// swiftlint:enable large_tuple
 // swiftlint:enable file_length

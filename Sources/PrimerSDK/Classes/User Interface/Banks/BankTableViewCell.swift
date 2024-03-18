@@ -80,7 +80,9 @@ fileprivate extension UIImageView {
         } else {
             self.image = placeholder
             URLSession.shared.dataTask(with: request, completionHandler: { (data, response, _) in
-                if let data = data, let response = response, ((response as? HTTPURLResponse)?.statusCode ?? 500) < 300, let image = UIImage(data: data) {
+                if let data = data,
+                   let response = response, ((response as? HTTPURLResponse)?.statusCode ?? 500) < 300,
+                   let image = UIImage(data: data) {
                     let cachedData = CachedURLResponse(response: response, data: data)
                     URLCache.shared.storeCachedResponse(cachedData, for: request)
 

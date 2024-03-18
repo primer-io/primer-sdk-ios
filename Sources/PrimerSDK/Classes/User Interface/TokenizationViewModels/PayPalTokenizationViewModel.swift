@@ -100,7 +100,9 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         )
         Analytics.Service.record(event: event)
 
-        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+        let imageView = self.uiModule.makeIconImageView(withDimension: 24.0)
+        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView,
+                                                                            message: nil)
 
         return Promise { seal in
             firstly {

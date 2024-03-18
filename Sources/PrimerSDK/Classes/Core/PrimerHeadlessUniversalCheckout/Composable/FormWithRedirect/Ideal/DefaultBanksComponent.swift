@@ -21,7 +21,9 @@ final class DefaultBanksComponent: BanksComponent {
     private let onFinished: () -> WebRedirectComponent
     private let tokenizationProvidingModel: BankSelectorTokenizationProviding
 
-    init(paymentMethodType: PrimerPaymentMethodType, tokenizationProvidingModel: BankSelectorTokenizationProviding, onFinished: @escaping () -> WebRedirectComponent) {
+    init(paymentMethodType: PrimerPaymentMethodType,
+         tokenizationProvidingModel: BankSelectorTokenizationProviding,
+         onFinished: @escaping () -> WebRedirectComponent) {
         self.paymentMethodType = paymentMethodType
         self.tokenizationProvidingModel = tokenizationProvidingModel
         self.onFinished = onFinished
@@ -36,7 +38,8 @@ final class DefaultBanksComponent: BanksComponent {
             }
         case .bankFilterText(text: let text):
             let filteredBanks = tokenizationProvidingModel.filterBanks(query: text)
-            stepDelegate?.didReceiveStep(step: BanksStep.banksRetrieved(banks: filteredBanks.map { IssuingBank(bank: $0) }))
+            let banksStep = BanksStep.banksRetrieved(banks: filteredBanks.map { IssuingBank(bank: $0) })
+            stepDelegate?.didReceiveStep(step: banksStep)
         }
         validateData(for: collectableData)
     }

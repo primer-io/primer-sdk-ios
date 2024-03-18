@@ -22,7 +22,7 @@ internal class File: LogReporter {
 
         var tmpFilename: String = self.fileName
         if let fileExtension = self.fileExtension {
-            tmpFilename = tmpFilename + "." + fileExtension
+            tmpFilename += "." + fileExtension
         }
 
         let fileLocalUrl = documentDirectoryUrl.appendingPathComponent(tmpFilename)
@@ -52,7 +52,7 @@ internal class File: LogReporter {
             do {
                 var tmpFilename: String = self.fileName
                 if let fileExtension = self.fileExtension {
-                    tmpFilename = tmpFilename + "." + fileExtension
+                    tmpFilename += "." + fileExtension
                 }
 
                 let fileLocalUrl = documentDirectoryUrl

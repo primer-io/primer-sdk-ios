@@ -30,7 +30,8 @@ class KlarnaTokenizationComponent: KlarnaTokenizationManager, KlarnaTokenization
         self.paymentMethod = paymentMethod
         self.apiClient = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
         self.clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
-        self.recurringPaymentDescription = PrimerSettings.current.paymentMethodOptions.klarnaOptions?.recurringPaymentDescription
+        let klarnaOptions = PrimerSettings.current.paymentMethodOptions.klarnaOptions
+        self.recurringPaymentDescription = klarnaOptions?.recurringPaymentDescription
         super.init()
     }
 }
@@ -141,7 +142,9 @@ extension KlarnaTokenizationComponent {
                 }
             case .recurringPayment:
                 // Prepare the body for the Klarna Customer Token creation request
-                let body = prepareKlarnaCustomerTokenBody(paymentMethodConfigId: paymentMethodConfigId, sessionId: sessionId, authorizationToken: authorizationToken)
+                let body = prepareKlarnaCustomerTokenBody(paymentMethodConfigId: paymentMethodConfigId,
+                                                          sessionId: sessionId,
+                                                          authorizationToken: authorizationToken)
                 firstly {
                     // Create the Klarna Customer Token
                     createKlarnaCustomerToken(with: decodedJWTToken, body: body)
@@ -177,7 +180,8 @@ private extension KlarnaTokenizationComponent {
     /// - Sets the client session with updated primer configuration request data
     private func requestPrimerConfiguration(decodedJWTToken: DecodedJWTToken, request: ClientSessionUpdateRequest) -> Promise<Void> {
         return Promise { seal in
-            apiClient.requestPrimerConfigurationWithActions(clientToken: decodedJWTToken, request: request) { [weak self] result in
+            apiClient.requestPrimerConfigurationWithActions(clientToken: decodedJWTToken,
+                                                            request: request) { [weak self] result in
                 guard let self = self else { return }
                 switch result {
                 case .success(let configuration):
@@ -194,7 +198,8 @@ private extension KlarnaTokenizationComponent {
     /// - Sets the 'paymentSessionId'  with response's 'sessionId'
     private func createKlarnaSession(with body: Request.Body.Klarna.CreatePaymentSession, decodedJWTToken: DecodedJWTToken) -> Promise<Response.Body.Klarna.PaymentSession> {
         return Promise { seal in
-            apiClient.createKlarnaPaymentSession(clientToken: decodedJWTToken, klarnaCreatePaymentSessionAPIRequest: body) { [weak self] result in
+            apiClient.createKlarnaPaymentSession(clientToken: decodedJWTToken,
+                                                 klarnaCreatePaymentSessionAPIRequest: body) { [weak self] result in
                 guard let self = self else { return }
                 switch result {
                 case .success(let response):
@@ -219,7 +224,8 @@ extension KlarnaTokenizationComponent {
     /// - Request to finalize  Klarna Payment Session
     private func finalizeKlarnaPaymentSession(with clientToken: DecodedJWTToken, body: Request.Body.Klarna.FinalizePaymentSession) -> Promise<Response.Body.Klarna.CustomerToken> {
         return Promise { seal in
-            apiClient.finalizeKlarnaPaymentSession(clientToken: clientToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
+            apiClient.finalizeKlarnaPaymentSession(clientToken: clientToken,
+                                                   klarnaFinalizePaymentSessionRequest: body) { (result) in
                 switch result {
                 case .success(let response):
                     seal.fulfill(response)
@@ -240,7 +246,8 @@ extension KlarnaTokenizationComponent {
     /// - Request to create  Klarna Customer Token
     private func createKlarnaCustomerToken(with clientToken: DecodedJWTToken, body: Request.Body.Klarna.CreateCustomerToken) -> Promise<Response.Body.Klarna.CustomerToken> {
         return Promise { seal in
-            apiClient.createKlarnaCustomerToken(clientToken: clientToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
+            apiClient.createKlarnaCustomerToken(clientToken: clientToken,
+                                                klarnaCreateCustomerTokenAPIRequest: body) { (result) in
                 switch result {
                 case .success(let response):
                     seal.fulfill(response)

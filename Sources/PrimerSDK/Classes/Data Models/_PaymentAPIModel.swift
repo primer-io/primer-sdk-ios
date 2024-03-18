@@ -12,31 +12,37 @@ import Foundation
 extension PrimerClientSession {
 
     internal convenience init(from apiConfiguration: PrimerAPIConfiguration) {
-        let lineItems = apiConfiguration.clientSession?.order?.lineItems?.compactMap { PrimerLineItem(itemId: $0.itemId,
-                                                                                                      itemDescription: $0.description,
-                                                                                                      amount: $0.amount,
-                                                                                                      discountAmount: $0.discountAmount,
-                                                                                                      quantity: $0.quantity,
-                                                                                                      taxCode: apiConfiguration.clientSession?.customer?.taxId,
-                                                                                                      taxAmount: apiConfiguration.clientSession?.order?.totalTaxAmount) }
+        let lineItems = apiConfiguration.clientSession?.order?.lineItems?
+            .compactMap { PrimerLineItem(itemId: $0.itemId,
+                                         itemDescription: $0.description,
+                                         amount: $0.amount,
+                                         discountAmount: $0.discountAmount,
+                                         quantity: $0.quantity,
+                                         taxCode: apiConfiguration.clientSession?.customer?.taxId,
+                                         taxAmount: apiConfiguration.clientSession?.order?.totalTaxAmount) }
 
         let orderDetails = PrimerOrder(countryCode: apiConfiguration.clientSession?.order?.countryCode?.rawValue)
 
-        let billingAddress = PrimerAddress(firstName: apiConfiguration.clientSession?.customer?.billingAddress?.firstName,
-                                           lastName: apiConfiguration.clientSession?.customer?.billingAddress?.lastName,
-                                           addressLine1: apiConfiguration.clientSession?.customer?.billingAddress?.addressLine1,
-                                           addressLine2: apiConfiguration.clientSession?.customer?.billingAddress?.addressLine2,
-                                           postalCode: apiConfiguration.clientSession?.customer?.billingAddress?.postalCode, city: apiConfiguration.clientSession?.customer?.billingAddress?.city,
-                                           state: apiConfiguration.clientSession?.customer?.billingAddress?.state,
-                                           countryCode: apiConfiguration.clientSession?.customer?.billingAddress?.countryCode?.rawValue)
+        let billing = apiConfiguration.clientSession?.customer?.billingAddress
+        let shipping = apiConfiguration.clientSession?.customer?.shippingAddress
 
-        let shippingAddress = PrimerAddress(firstName: apiConfiguration.clientSession?.customer?.shippingAddress?.firstName,
-                                            lastName: apiConfiguration.clientSession?.customer?.shippingAddress?.lastName,
-                                            addressLine1: apiConfiguration.clientSession?.customer?.shippingAddress?.addressLine1,
-                                            addressLine2: apiConfiguration.clientSession?.customer?.shippingAddress?.addressLine2,
-                                            postalCode: apiConfiguration.clientSession?.customer?.shippingAddress?.postalCode, city: apiConfiguration.clientSession?.customer?.shippingAddress?.city,
-                                            state: apiConfiguration.clientSession?.customer?.shippingAddress?.state,
-                                            countryCode: apiConfiguration.clientSession?.customer?.shippingAddress?.countryCode?.rawValue)
+        let billingAddress = PrimerAddress(firstName: billing?.firstName,
+                                           lastName: billing?.lastName,
+                                           addressLine1: billing?.addressLine1,
+                                           addressLine2: billing?.addressLine2,
+                                           postalCode: billing?.postalCode,
+                                           city: billing?.city,
+                                           state: billing?.state,
+                                           countryCode: billing?.countryCode?.rawValue)
+
+        let shippingAddress = PrimerAddress(firstName: shipping?.firstName,
+                                            lastName: shipping?.lastName,
+                                            addressLine1: shipping?.addressLine1,
+                                            addressLine2: shipping?.addressLine2,
+                                            postalCode: shipping?.postalCode,
+                                            city: shipping?.city,
+                                            state: shipping?.state,
+                                            countryCode: shipping?.countryCode?.rawValue)
 
         let customer = PrimerCustomer(emailAddress: apiConfiguration.clientSession?.customer?.emailAddress,
                                       mobileNumber: apiConfiguration.clientSession?.customer?.mobileNumber,

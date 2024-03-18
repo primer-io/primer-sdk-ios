@@ -36,7 +36,8 @@ extension Request.URLParameters {
             self.requestDisplayMetadata = (try? container.decode(Bool?.self, forKey: .requestDisplayMetadata)) ?? nil
 
             if skipPaymentMethodTypes == nil && requestDisplayMetadata == nil {
-                throw InternalError.failedToDecode(message: "All values are nil", userInfo: nil, diagnosticsId: UUID().uuidString)
+                throw InternalError.failedToDecode(message: "All values are nil", userInfo: nil,
+                                                   diagnosticsId: UUID().uuidString)
             }
         }
 
@@ -44,7 +45,8 @@ extension Request.URLParameters {
             var container = encoder.container(keyedBy: CodingKeys.self)
 
             if skipPaymentMethodTypes == nil && requestDisplayMetadata == nil {
-                throw InternalError.failedToDecode(message: "All values are nil", userInfo: nil, diagnosticsId: UUID().uuidString)
+                throw InternalError.failedToDecode(message: "All values are nil", userInfo: nil,
+                                                   diagnosticsId: UUID().uuidString)
             }
 
             if let skipPaymentMethodTypes = skipPaymentMethodTypes {
@@ -89,10 +91,17 @@ extension Response.Body {
         }
 
         var hasSurchargeEnabled: Bool {
-            let pmSurcharge = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options?.first(where: { $0["surcharge"] as? Int != nil })
+            let pmSurcharge = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options?
+                .first(where: { $0["surcharge"] as? Int != nil })
 
             let options = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options
-            let cardSurcharge = options?.first(where: { (($0["networks"] as? [[String: Any]])?.first(where: { $0["surcharge"] as? Int != nil })) != nil  })
+            let cardSurcharge = options?
+                .first(where: {
+                    (($0["networks"] as? [[String: Any]])?
+                        .first(where: {
+                            $0["surcharge"] as? Int != nil
+                        })) != nil
+                })
             return pmSurcharge != nil || cardSurcharge != nil
         }
 
@@ -284,7 +293,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
             coreUrl: String?,
             pciUrl: String?,
             binDataUrl: String?,
-            assetsUrl: String?, /// poghledaj u responsu kako se zove
+            assetsUrl: String?,
             clientSession: ClientSession.APIResponse?,
             paymentMethods: [PrimerPaymentMethod]?,
             primerAccountId: String?,

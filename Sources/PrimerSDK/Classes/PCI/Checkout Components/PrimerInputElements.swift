@@ -21,7 +21,8 @@ public class PrimerInputElementDelegateContainer {
 public class PrimerInputTextField: UITextField, PrimerHeadlessUniversalCheckoutInputElement {
     public weak var inputElementDelegate: PrimerInputElementDelegate! {
         didSet {
-            self.checkoutModulesTextFieldDelegate = PrimerHeadlessUniversalCheckout.Delegate(inputElement: self, inputElementDelegate: inputElementDelegate)
+            self.checkoutModulesTextFieldDelegate = PrimerHeadlessUniversalCheckout.Delegate(inputElement: self,
+                                                                                             inputElementDelegate: inputElementDelegate)
             self.delegate = self.checkoutModulesTextFieldDelegate
         }
     }

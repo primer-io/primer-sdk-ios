@@ -63,7 +63,8 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                 if let error = err as? PrimerError {
                     primerErr = error
                 } else {
-                    primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: UUID().uuidString)
+                    primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil,
+                                                    diagnosticsId: UUID().uuidString)
                 }
 
                 firstly {
@@ -347,7 +348,9 @@ Make sure you call the decision handler otherwise the SDK will hang.
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)) { paymentResponse, error in
+            let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
+            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
+                                                                  paymentResumeRequest: resumeRequest) { paymentResponse, error in
 
                 if let error = error {
                     if let paymentResponse {
@@ -609,7 +612,8 @@ Make sure you call the decision handler otherwise the SDK will hang.
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-            createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
+            let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
+            createResumePaymentService.createPayment(paymentRequest: paymentRequest) { paymentResponse, error in
 
                 if let error = error {
                     if let paymentResponse {

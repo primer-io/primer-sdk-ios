@@ -134,7 +134,10 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
                 return
             }
 
-            guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == "NOL_PAY" }).first as? NolPayTokenizationViewModel else {
+            guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigViewModels
+                    .filter({ $0.config.type == "NOL_PAY" })
+                    .first as? NolPayTokenizationViewModel
+            else {
                 return
             }
             self.tokenizationViewModel = paymentMethod
@@ -195,7 +198,9 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
         )
         Analytics.Service.record(events: [sdkEvent])
 
-        guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,
+        guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?
+                .first(where: { $0.internalPaymentMethodType == .nolPay})?
+                .options as? MerchantOptions,
               let appId = nolPaymentMethodOption.appId
         else {
             makeAndHandleInvalidValueError(forKey: "Nol AppID")
@@ -206,7 +211,8 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             return
         }

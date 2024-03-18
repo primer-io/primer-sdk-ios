@@ -7,7 +7,8 @@
 
 import Foundation
 
-private let analyticsFileURL: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("analytics")
+private let analyticsFileURL: URL = FileManager.default.urls(for: .documentDirectory,
+                                                             in: .userDomainMask)[0].appendingPathComponent("analytics")
 
 protocol AnalyticsStorage {
 

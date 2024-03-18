@@ -149,23 +149,33 @@ internal extension String {
         let components = self.split(separator: ".")
         if components.count < 2 { return nil }
         let segment = String(components[1]).base64IOSFormat
-        guard !segment.isEmpty, let data = Data(base64Encoded: segment, options: .ignoreUnknownCharacters) else { return nil }
+        guard !segment.isEmpty, let data = Data(base64Encoded: segment,
+                                                options: .ignoreUnknownCharacters)
+        else { return nil }
         return try? JSONParser().parse(DecodedJWTToken.self, from: data)
     }
 
     private var base64IOSFormat: Self {
-        let str = self.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
+        let str = self.replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
         let offset = str.count % 4
         guard offset != 0 else { return str }
-        return str.padding(toLength: str.count + 4 - offset, withPad: "=", startingAt: 0)
+        return str.padding(toLength: str.count + 4 - offset,
+                           withPad: "=", startingAt: 0)
     }
 
     var base64RFC4648Format: Self {
-        let str = self.replacingOccurrences(of: "+", with: "-").replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: "=", with: "")
+        let str = self.replacingOccurrences(of: "+",
+                                            with: "-")
+            .replacingOccurrences(of: "/",
+                                  with: "_")
+            .replacingOccurrences(of: "=",
+                                  with: "")
         return str
     }
 
-    func toDate(withFormat format: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timeZone: TimeZone? = nil) -> Date? {
+    func toDate(withFormat format: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+                timeZone: TimeZone? = nil) -> Date? {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = format
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
@@ -278,7 +288,10 @@ internal extension String {
         let sanitizedInput = self.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "-", with: "")
         let pattern = "^\\d{7,15}$"
         let regex = try? NSRegularExpression(pattern: pattern, options: [])
-        let matches = regex?.matches(in: sanitizedInput, options: [], range: NSRange(location: 0, length: sanitizedInput.count))
+        let matches = regex?.matches(in: sanitizedInput,
+                                     options: [],
+                                     range: NSRange(location: 0,
+                                                    length: sanitizedInput.count))
         return matches?.count ?? 0 > 0
     }
 

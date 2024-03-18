@@ -286,7 +286,8 @@ internal class PrimerRootViewController: PrimerViewController {
                     cvc.mockedNavigationBar.hidesBackButton = true
                 } else if viewController is PrimerVoucherInfoPaymentViewController {
                     cvc.mockedNavigationBar.hidesBackButton = true
-                } else if let lastViewController = self.navController.viewControllers.last as? PrimerContainerViewController, lastViewController.children.first is PrimerLoadingViewController {
+                } else if let lastViewController = self.navController.viewControllers.last as? PrimerContainerViewController,
+                          lastViewController.children.first is PrimerLoadingViewController {
                     cvc.mockedNavigationBar.hidesBackButton = true
                 } else if viewController is PrimerLoadingViewController {
                     cvc.mockedNavigationBar.hidesBackButton = true
@@ -353,8 +354,10 @@ internal class PrimerRootViewController: PrimerViewController {
     }
 
     internal func popViewController() {
+        let index = navController.viewControllers.count-2
+
         guard navController.viewControllers.count > 1,
-              let viewController = (navController.viewControllers[navController.viewControllers.count-2] as? PrimerContainerViewController)?.childViewController
+              let viewController = (navController.viewControllers[index] as? PrimerContainerViewController)?.childViewController
         else {
             return
         }
@@ -363,7 +366,8 @@ internal class PrimerRootViewController: PrimerViewController {
             (self.navController.viewControllers.last as? PrimerContainerViewController)?.mockedNavigationBar.hidesBackButton = true
         }
 
-        let navigationControllerHeight: CGFloat = min(viewController.view.bounds.size.height + navController.navigationBar.bounds.height, availableScreenHeight)
+        let minX = viewController.view.bounds.size.height + navController.navigationBar.bounds.height
+        let navigationControllerHeight: CGFloat = min(minX, availableScreenHeight)
 
         childViewHeightConstraint.constant = navigationControllerHeight + bottomPadding
 
@@ -431,7 +435,8 @@ internal class PrimerRootViewController: PrimerViewController {
     }
 
     internal func resetConstraint(for viewController: UIViewController) {
-        let navigationControllerHeight: CGFloat = min(viewController.view.bounds.size.height + self.navController.navigationBar.bounds.height, self.availableScreenHeight)
+        let minX = viewController.view.bounds.size.height + self.navController.navigationBar.bounds.height
+        let navigationControllerHeight: CGFloat = min(minX, self.availableScreenHeight)
         self.childViewHeightConstraint.isActive = false
         self.childViewHeightConstraint?.constant = navigationControllerHeight + self.bottomPadding
         self.childViewHeightConstraint.isActive = true

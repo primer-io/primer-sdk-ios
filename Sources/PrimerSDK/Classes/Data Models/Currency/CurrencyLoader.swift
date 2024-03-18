@@ -5,6 +5,8 @@
 //  Created by Boris on 11.1.24..
 //
 
+// swiftlint:disable function_body_length
+
 import Foundation
 
 var inMemoryCurrencies: [Currency]? = []
@@ -86,7 +88,8 @@ public class CurrencyLoader: LogReporter {
                 inMemoryCurrencies = currencies
                 self?.logger.debug(message: "Successfully updated the list of currencies.")
 
-                let sdkEvent = Analytics.Event.sdk(name: #function, params: ["message": "Successfully updated the list of currencies."])
+                let sdkEvent = Analytics.Event.sdk(name: #function,
+                                                   params: ["message": "Successfully updated the list of currencies."])
                 Analytics.Service.record(events: [sdkEvent])
                 completion?(nil)
             } catch {
@@ -97,3 +100,4 @@ public class CurrencyLoader: LogReporter {
         }
     }
 }
+// swiftlint:enable function_body_length

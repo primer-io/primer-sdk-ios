@@ -62,7 +62,12 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         }
 
         if PrimerHeadlessUniversalCheckout.current.delegate == nil {
-            logger.warn(message: "PrimerHeadlessUniversalCheckout delegate has not been set, and you won't be able to receive the Payment Method Token data to create a payment.")
+            let message = """
+                PrimerHeadlessUniversalCheckout delegate has not been set, \
+                and you won't be able to receive the Payment Method Token \
+                data to create a payment."
+                """
+            logger.warn(message: message)
         }
 
         PrimerInternal.shared.checkoutSessionId = UUID().uuidString
@@ -114,7 +119,8 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
             } else {
                 DispatchQueue.main.async {
                     let availablePaymentMethods = PrimerHeadlessUniversalCheckout.PaymentMethod.availablePaymentMethods
-                    PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods?(availablePaymentMethods)
+                    let delegate = PrimerHeadlessUniversalCheckout.current.delegate
+                    delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods?(availablePaymentMethods)
                     completion(availablePaymentMethods, nil)
                 }
             }
@@ -167,7 +173,8 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
                 let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file,
                                                                             "class": "\(Self.self)",
                                                                             "function": #function,
-                                                                            "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                            "line": "\(#line)"],
+                                                                 diagnosticsId: UUID().uuidString)
                 seal.reject(err)
                 return
             }
@@ -176,7 +183,8 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
                 let err = PrimerError.misconfiguredPaymentMethods(userInfo: ["file": #file,
                                                                              "class": "\(Self.self)",
                                                                              "function": #function,
-                                                                             "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                             "line": "\(#line)"],
+                                                                  diagnosticsId: UUID().uuidString)
                 seal.reject(err)
                 return
             }

@@ -41,7 +41,8 @@ internal class CountrySelectorViewController: PrimerFormViewController {
 
         view.backgroundColor = theme.view.backgroundColor
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.heightAnchor.constraint(equalToConstant: 120+(CGFloat(countries.count)*viewModel.tableView.rowHeight)).isActive = true
+        let constant = 120 + (CGFloat(countries.count) * viewModel.tableView.rowHeight)
+        view.heightAnchor.constraint(equalToConstant: constant).isActive = true
         viewModel.tableView.isScrollEnabled = false
 
         verticalStackView.spacing = 5

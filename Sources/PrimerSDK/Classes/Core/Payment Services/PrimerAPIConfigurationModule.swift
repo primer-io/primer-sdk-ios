@@ -1,3 +1,4 @@
+// swiftlint:disable type_body_length
 import Foundation
 
 internal typealias JWTToken = String
@@ -105,7 +106,8 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                     "class": "\(Self.self)",
                                                                     "function": #function,
-                                                                    "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                    "line": "\(#line)"],
+                                                         diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -179,7 +181,8 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             let error = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                   "class": "\(Self.self)",
                                                                   "function": #function,
-                                                                  "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                  "line": "\(#line)"],
+                                                       diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: error)
             throw error
         }
@@ -249,7 +252,8 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                     "class": "\(Self.self)",
                                                                     "function": #function,
-                                                                    "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                    "line": "\(#line)"],
+                                                         diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -309,3 +313,4 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         Analytics.Service.record(event: event)
     }
 }
+// swiftlint:enable type_body_length

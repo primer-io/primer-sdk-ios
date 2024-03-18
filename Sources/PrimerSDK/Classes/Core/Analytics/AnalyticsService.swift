@@ -179,7 +179,9 @@ extension Analytics {
             let events = events.filter({ $0.analyticsUrl != nil })
 
             let urls = Set(events.compactMap { $0.analyticsUrl }).compactMap { URL(string: $0) }
-            let eventSets = urls.map { url in (url: url, events: events.filter { $0.analyticsUrl == url.absoluteString }) }
+            let eventSets = urls.map { url in
+                (url: url, events: events.filter { $0.analyticsUrl == url.absoluteString })
+            }
 
             let promises = eventSets.map { item in
                 sendSdkAnalyticsEvents(url: item.url, events: item.events)

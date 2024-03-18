@@ -9,9 +9,10 @@ import Foundation
 import UIKit
 
 // swiftlint:disable type_name
+// swiftlint:disable line_length
+
 @objc
 public protocol PrimerHeadlessUniversalCheckoutUIDelegate {
-    // swiftlint:enable type_name
     @objc optional func primerHeadlessUniversalCheckoutUIDidStartPreparation(for paymentMethodType: String)
     @objc optional func primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for paymentMethodType: String)
 }
@@ -45,3 +46,5 @@ public protocol PrimerInputElementDelegate: AnyObject {
     @objc optional func inputElementValueIsValid(_ sender: PrimerHeadlessUniversalCheckoutInputElement, isValid: Bool)
     @objc optional func inputElementDidDetectType(_ sender: PrimerHeadlessUniversalCheckoutInputElement, type: Any?)
 }
+// swiftlint:enable type_name
+// swiftlint:enable line_length

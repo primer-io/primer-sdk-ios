@@ -4,6 +4,9 @@
 //
 //  Created by Boris on 28.8.23..
 //
+
+// swiftlint:disable type_body_length
+
 import Foundation
 import SafariServices
 import UIKit
@@ -27,7 +30,8 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -36,7 +40,8 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl", value: nil, userInfo: ["file": #file,
                                                                                                         "class": "\(Self.self)",
                                                                                                         "function": #function,
-                                                                                                        "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                                        "line": "\(#line)"],
+                                               diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -45,7 +50,8 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file,
                                                                                                      "class": "\(Self.self)",
                                                                                                      "function": #function,
-                                                                                                     "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                                     "line": "\(#line)"],
+                                               diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -111,7 +117,8 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file,
                                                                                                          "class": "\(Self.self)",
                                                                                                          "function": #function,
-                                                                                                         "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                                         "line": "\(#line)"],
+                                                   diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -162,7 +169,8 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                             let error = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                                   "class": "\(Self.self)",
                                                                                   "function": #function,
-                                                                                  "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                  "line": "\(#line)"],
+                                                                       diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: error)
                             seal.reject(error)
                             return
@@ -172,7 +180,8 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                             let error = PrimerError.invalidUrl(url: self.redirectUrl?.absoluteString, userInfo: ["file": #file,
                                                                                                                  "class": "\(Self.self)",
                                                                                                                  "function": #function,
-                                                                                                                 "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                                                 "line": "\(#line)"],
+                                                               diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: error)
                             seal.reject(error)
                             return
@@ -205,7 +214,8 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 let error = PrimerError.invalidUrl(url: self.statusUrl?.absoluteString, userInfo: ["file": #file,
                                                                                                    "class": "\(Self.self)",
                                                                                                    "function": #function,
-                                                                                                   "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                                   "line": "\(#line)"],
+                                                   diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 seal.reject(error)
                 return
@@ -226,7 +236,8 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
             firstly { () -> Promise<String> in
                 if self.isCancelled {
-                    let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil,
+                                                    diagnosticsId: UUID().uuidString)
                     throw err
                 }
                 return pollingModule.start()
@@ -279,7 +290,8 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                         "class": "\(Self.self)",
                                                                         "function": #function,
-                                                                        "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                        "line": "\(#line)"],
+                                                             diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                 }
@@ -293,3 +305,4 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         // no-op
     }
 }
+// swiftlint:enable type_body_length

@@ -70,8 +70,14 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     }
 
     func setup() {
-        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.receivedUrlSchemeRedirect, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.receivedUrlSchemeCancellation, object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.receivedNotification(_:)),
+                                               name: Notification.Name.receivedUrlSchemeRedirect,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.receivedNotification(_:)),
+                                               name: Notification.Name.receivedUrlSchemeCancellation,
+                                               object: nil)
 
         self.didFinishPayment = { _ in
             self.willDismissPaymentMethodUI?()
@@ -108,7 +114,9 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         )
         Analytics.Service.record(event: event)
 
-        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+        let imageView = self.uiModule.makeIconImageView(withDimension: 24.0)
+        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView,
+                                                                            message: nil)
 
         return Promise { seal in
             firstly {
@@ -257,7 +265,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
             firstly { () -> Promise<String> in
                 if self.isCancelled {
-                    let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil,
+                                                    diagnosticsId: UUID().uuidString)
                     throw err
                 }
                 return pollingModule.start()
@@ -281,7 +290,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file,
                                                                                                          "class": "\(Self.self)",
                                                                                                          "function": #function,
-                                                                                                         "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                                         "line": "\(#line)"],
+                                                   diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -341,7 +351,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                     let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                         "class": "\(Self.self)",
                                                                         "function": #function,
-                                                                        "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                        "line": "\(#line)"],
+                                                             diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                 }
