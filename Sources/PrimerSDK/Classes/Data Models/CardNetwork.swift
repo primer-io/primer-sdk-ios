@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 29/6/21.
 //
 
+// swiftlint:disable type_body_length
+
 import Foundation
 import PassKit
 import UIKit
@@ -345,3 +347,4 @@ extension Array<CardNetwork>: LogReporter {
         return Element.allCases
     }
 }
+// swiftlint:enable type_body_length

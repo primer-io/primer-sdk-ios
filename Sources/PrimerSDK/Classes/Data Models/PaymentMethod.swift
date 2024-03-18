@@ -6,6 +6,7 @@
 //
 
 // swiftlint:disable file_length
+// swiftlint:disable type_body_length
 
 import Foundation
 import UIKit
@@ -565,4 +566,5 @@ extension PrimerTheme {
         }
     }
 }
+// swiftlint:enable type_body_length
 // swiftlint:enable file_length

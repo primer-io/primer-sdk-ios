@@ -5,6 +5,8 @@
 //  Created by Evangelos on 22/11/21.
 //
 
+// swiftlint:disable type_body_length
+
 import Foundation
 
 internal class ClientSession {
@@ -362,3 +364,4 @@ internal extension Encodable {
         return dictionary
     }
 }
+// swiftlint:enable type_body_length

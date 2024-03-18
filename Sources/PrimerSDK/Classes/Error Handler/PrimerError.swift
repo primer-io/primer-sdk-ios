@@ -6,6 +6,8 @@
 //
 
 // swiftlint:disable file_length
+// swiftlint:disable type_body_length
+
 import Foundation
 import UIKit
 
@@ -463,3 +465,6 @@ on your dashboard https://dashboard.primer.io/
         }
     }
 }
+
+// swiftlint:enable type_body_length
+// swiftlint:enable file_length

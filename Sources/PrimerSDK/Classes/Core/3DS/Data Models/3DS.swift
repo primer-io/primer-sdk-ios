@@ -5,6 +5,7 @@
 //  Created by Evangelos Pittas on 1/4/21.
 //
 
+// swiftlint:disable type_body_length
 // swiftlint:disable file_length
 
 import Foundation
@@ -637,4 +638,5 @@ public class ThreeDS {
         }
     }
 }
+// swiftlint:enable type_body_length
 // swiftlint:enable file_length

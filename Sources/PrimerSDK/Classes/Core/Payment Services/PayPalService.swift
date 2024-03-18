@@ -1,4 +1,5 @@
 // swiftlint:disable function_body_length
+// swiftlint:disable type_body_length
 
 import Foundation
 
@@ -307,3 +308,4 @@ internal class PayPalService: PayPalServiceProtocol {
     }
 }
 // swiftlint:enable function_body_length
+// swiftlint:enable type_body_length
