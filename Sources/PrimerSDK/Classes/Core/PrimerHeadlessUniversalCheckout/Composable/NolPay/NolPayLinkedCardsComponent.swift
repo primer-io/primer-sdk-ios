@@ -103,11 +103,11 @@ public class NolPayLinkedCardsComponent {
                     case .failure(let error):
                         continuation.resume(throwing: error)
                         let primerError = PrimerError.underlyingErrors(errors: [error],
-                                                                        userInfo: ["file": #file,
-                                                                                    "class": "\(Self.self)",
-                                                                                    "function": #function,
-                                                                                    "line": "\(#line)"],
-                                                                        diagnosticsId: UUID().uuidString)
+                                                                       userInfo: ["file": #file,
+                                                                                  "class": "\(Self.self)",
+                                                                                  "function": #function,
+                                                                                  "line": "\(#line)"],
+                                                                       diagnosticsId: UUID().uuidString)
                         completion(.failure(primerError))
                     }
                 }

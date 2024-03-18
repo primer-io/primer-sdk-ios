@@ -91,7 +91,6 @@ extension Analytics {
             delete(events)
         }
 
-
         func deleteAnalyticsFile() {
             logger.debug(message: "📚 Analytics: Deleting analytics file at \(fileURL.absoluteString)")
 

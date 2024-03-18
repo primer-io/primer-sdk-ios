@@ -344,7 +344,7 @@ internal extension URLSessionStack {
             return false
         }
         guard let baseURL = primerAPI.baseURL, let url = URL(string: baseURL),
-                !disallowedTrackingPaths.contains(url.path) else {
+              !disallowedTrackingPaths.contains(url.path) else {
             return false
         }
         return true

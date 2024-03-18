@@ -37,9 +37,9 @@ extension NativeUIValidateable {
 
         guard let cats = paymentMethod.paymentMethodManagerCategories, cats.contains(.nativeUI) else {
             let error = PrimerError.unsupportedPaymentMethodForManager(paymentMethodType: paymentMethod.type,
-                                                                     category: PrimerPaymentMethodManagerCategory.nativeUI.rawValue,
-                                                                     userInfo: nil,
-                                                                     diagnosticsId: UUID().uuidString)
+                                                                       category: PrimerPaymentMethodManagerCategory.nativeUI.rawValue,
+                                                                       userInfo: nil,
+                                                                       diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: error)
             throw error
         }
@@ -48,11 +48,11 @@ extension NativeUIValidateable {
             if (intent == .vault && !paymentMethod.isVaultingEnabled) ||
                 (intent == .checkout && !paymentMethod.isCheckoutEnabled) {
                 let error = PrimerError.unsupportedIntent(intent: intent,
-                                                        userInfo: ["file": #file,
-                                                                   "class": "\(Self.self)",
-                                                                   "function": #function,
-                                                                   "line": "\(#line)"],
-                                                        diagnosticsId: UUID().uuidString)
+                                                          userInfo: ["file": #file,
+                                                                     "class": "\(Self.self)",
+                                                                     "function": #function,
+                                                                     "line": "\(#line)"],
+                                                          diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 throw error
             }

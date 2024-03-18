@@ -51,7 +51,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         // Don't validate if the BIN (first eight digits) hasn't changed
         let bin = String(sanitizedCardNumber.prefix(Self.maximumBinLength))
         if let mostRecentCardNumber = mostRecentCardNumber,
-            mostRecentCardNumber.prefix(Self.maximumBinLength) == bin {
+           mostRecentCardNumber.prefix(Self.maximumBinLength) == bin {
             if let cachedMetadata = metadataCache[bin] {
                 handle(cardMetadata: cachedMetadata, forCardState: cardState)
             }

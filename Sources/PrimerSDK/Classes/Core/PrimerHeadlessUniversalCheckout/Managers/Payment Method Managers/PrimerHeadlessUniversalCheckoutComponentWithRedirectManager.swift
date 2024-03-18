@@ -11,11 +11,11 @@ extension PrimerHeadlessUniversalCheckout {
         @objc public func provideComponent(paymentMethodType: String) -> PrimerHeadlessBanksComponentWrapper {
             PrimerHeadlessBanksComponentWrapper(manager: self, paymentMethodType: paymentMethodType)
         }
-        public func provide<PrimerHeadlessMainComponent>(paymentMethodType: String) throws -> PrimerHeadlessMainComponent? 
-		where PrimerCollectableData: Any, PrimerHeadlessStep: Any {
+        public func provide<PrimerHeadlessMainComponent>(paymentMethodType: String) throws -> PrimerHeadlessMainComponent?
+        where PrimerCollectableData: Any, PrimerHeadlessStep: Any {
             try provideBanksComponent(paymentMethodType: paymentMethodType) as? PrimerHeadlessMainComponent
         }
-		
+
         public func provideBanksComponent(paymentMethodType: String) throws -> any PrimerHeadlessMainComponent {
             guard let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType),
                   paymentMethodType == .adyenIDeal else {
