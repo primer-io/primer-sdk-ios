@@ -6,6 +6,10 @@
 //
 
 // swiftlint:disable type_body_length
+// swiftlint:disable file_length
+// swiftlint:disable identifier_name
+// swiftlint:disable function_body_length
+
 
 import Foundation
 
@@ -24,8 +28,10 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
     case invalidPhoneNumber(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidRetailer(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidRawData(userInfo: [String: String]?, diagnosticsId: String)
-    // swiftlint:disable:next identifier_name
-    case vaultedPaymentMethodAdditionalDataMismatch(paymentMethodType: String, validVaultedPaymentMethodAdditionalDataType: String, userInfo: [String: String]?, diagnosticsId: String)
+    case vaultedPaymentMethodAdditionalDataMismatch(paymentMethodType: String,
+                                                    validVaultedPaymentMethodAdditionalDataType: String,
+                                                    userInfo: [String: String]?,
+                                                    diagnosticsId: String)
     case invalidOTPCode(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidCardType(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case banksNotLoaded(userInfo: [String: String]?, diagnosticsId: String)
@@ -155,7 +161,6 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "[\(errorId)] Raw data is not valid."
         case .invalidRetailer(let message, _, _):
             return "[\(errorId)] \(message)"
-        // swiftlint:disable:next identifier_name
         case .vaultedPaymentMethodAdditionalDataMismatch(let paymentMethodType, let validVaultedPaymentMethodAdditionalDataType, _, _):
             return "[\(errorId)] Vaulted payment method \(paymentMethodType) needs additional data of type \(validVaultedPaymentMethodAdditionalDataType)"
         case .invalidOTPCode(let message, _, _):
@@ -315,7 +320,8 @@ extension PrimerValidationError: Equatable {
         case (.vaultedPaymentMethodAdditionalDataMismatch(let type1, let validType1, let userInfo1, let id1),
               .vaultedPaymentMethodAdditionalDataMismatch(let type2, let validType2, let userInfo2, let id2)):
             return type1 == type2 && validType1 == validType2 && userInfo1 == userInfo2 && id1 == id2
-        case (.invalidBankId(let bankId1, userInfo: let userInfo1, diagnosticsId: let id1), .invalidBankId(let bankId2, userInfo: let userInfo2, diagnosticsId: let id2)):
+        case (.invalidBankId(let bankId1, userInfo: let userInfo1, diagnosticsId: let id1),
+              .invalidBankId(let bankId2, userInfo: let userInfo2, diagnosticsId: let id2)):
             return bankId1 == bankId2 && userInfo1 == userInfo2 && id1 == id2
         default:
             return false
@@ -323,3 +329,6 @@ extension PrimerValidationError: Equatable {
     }
 }
 // swiftlint:enable type_body_length
+// swiftlint:enable identifier_name
+// swiftlint:enable function_body_length
+// swiftlint:enable file_length

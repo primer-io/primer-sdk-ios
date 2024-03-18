@@ -1,3 +1,5 @@
+// swiftlint:disable function_body_length
+
 import Foundation
 
 extension Request.Body {
@@ -150,7 +152,8 @@ struct DecodedJWTToken: Codable {
         self.threeDSecureInitUrl = try? container.decode(String.self, forKey: .threeDSecureInitUrl)
         self.threeDSecureToken = try? container.decode(String.self, forKey: .threeDSecureToken)
         self.useThreeDsWeakValidation = try? container.decode(Bool.self, forKey: .useThreeDsWeakValidation)
-        self.supportedThreeDsProtocolVersions = try container.decodeIfPresent([String].self, forKey: .supportedThreeDsProtocolVersions)
+        self.supportedThreeDsProtocolVersions = try container.decodeIfPresent([String].self,
+                                                                              forKey: .supportedThreeDsProtocolVersions)
         self.coreUrl = try? container.decode(String.self, forKey: .coreUrl)
         self.pciUrl = try? container.decode(String.self, forKey: .pciUrl)
         self.env = try? container.decode(String.self, forKey: .env)
@@ -288,3 +291,4 @@ extension DecodedJWTToken {
         }
     }
 }
+// swiftlint:enable function_body_length

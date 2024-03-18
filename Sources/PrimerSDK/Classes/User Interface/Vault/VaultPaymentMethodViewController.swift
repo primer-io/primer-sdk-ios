@@ -112,7 +112,8 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
         cardNetworkImageView.image = paymentMethod.cardButtonViewModel?.imageName.image
         cardNetworkImageView.contentMode = .scaleAspectFit
 
-        checkmarkImageView.image = isDeleting ? ImageName.delete.image?.withRenderingMode(.alwaysTemplate) : ImageName.check2.image?.withRenderingMode(.alwaysTemplate)
+        checkmarkImageView.image = isDeleting ?
+            ImageName.delete.image?.withRenderingMode(.alwaysTemplate) : ImageName.check2.image?.withRenderingMode(.alwaysTemplate)
         checkmarkImageView.tintColor = theme.paymentMethodButton.border.color(for: .selected)
         checkmarkImageView.contentMode = .scaleAspectFit
         checkmarkImageView.isHidden = isDeleting ? false : !isEnabled
@@ -265,7 +266,8 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let viewModel: VaultPaymentMethodViewModelProtocol = VaultPaymentMethodViewModel()
         let paymentMethod = viewModel.paymentMethods[indexPath.row]
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "VaultedPaymentInstrumentCell", for: indexPath) as? VaultedPaymentInstrumentCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "VaultedPaymentInstrumentCell",
+                                                       for: indexPath) as? VaultedPaymentInstrumentCell
         else {
             fatalError()
         }

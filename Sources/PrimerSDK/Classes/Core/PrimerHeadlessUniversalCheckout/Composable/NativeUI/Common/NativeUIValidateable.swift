@@ -24,13 +24,15 @@ extension NativeUIValidateable {
         guard PrimerAPIConfigurationModule.decodedJWTToken != nil,
               PrimerAPIConfigurationModule.apiConfiguration != nil
         else {
-            let error = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: UUID().uuidString)
+            let error = PrimerError.uninitializedSDKSession(userInfo: nil,
+                                                            diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: error)
             throw error
         }
 
         guard let paymentMethod = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.first(where: { $0.type == paymentMethodType }) else {
-            let error = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil, diagnosticsId: UUID().uuidString)
+            let error = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil,
+                                                             diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: error)
             throw error
         }

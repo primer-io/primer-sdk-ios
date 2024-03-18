@@ -89,7 +89,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
             var cancelledError: PrimerError?
             self.didCancel = {
                 self.isCancelled = true
-                cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: UUID().uuidString)
+                cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil,
+                                                       diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: cancelledError!)
                 seal.reject(cancelledError!)
                 self.isCancelled = false

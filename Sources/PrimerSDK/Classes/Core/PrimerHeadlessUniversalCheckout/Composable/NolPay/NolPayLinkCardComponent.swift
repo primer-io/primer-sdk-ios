@@ -278,7 +278,9 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         )
         Analytics.Service.record(events: [sdkEvent])
 
-        guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,
+        guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?
+                .first(where: { $0.internalPaymentMethodType == .nolPay})?
+                .options as? MerchantOptions,
               let appId = nolPaymentMethodOption.appId
         else {
             makeAndHandleInvalidValueError(forKey: "Nol AppID")

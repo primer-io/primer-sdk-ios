@@ -103,7 +103,9 @@ internal class PrimerUIManager {
                 }
 
                 if PrimerUIManager.primerWindow == nil {
-                    if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
+                    if let windowScene = UIApplication.shared.connectedScenes
+                        .filter({ $0.activationState == .foregroundActive })
+                        .first as? UIWindowScene {
                         PrimerUIManager.primerWindow = UIWindow(windowScene: windowScene)
                     } else {
                         // Not opted-in in UISceneDelegate

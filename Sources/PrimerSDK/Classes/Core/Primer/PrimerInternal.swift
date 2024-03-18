@@ -42,8 +42,12 @@ internal class PrimerInternal: LogReporter {
     }
 
     fileprivate init() {
-        NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willTerminateNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onAppStateChange), name: UIApplication.willResignActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(onAppStateChange),
+                                               name: UIApplication.willTerminateNotification, object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(onAppStateChange),
+                                               name: UIApplication.willResignActiveNotification, object: nil)
     }
 
     internal func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
@@ -151,7 +155,9 @@ internal class PrimerInternal: LogReporter {
             if let err = err as? PrimerError {
                 primerErr = err
             } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: UUID().uuidString)
+                primerErr = PrimerError.underlyingErrors(errors: [err],
+                                                         userInfo: nil,
+                                                         diagnosticsId: UUID().uuidString)
             }
 
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
@@ -193,9 +199,10 @@ internal class PrimerInternal: LogReporter {
             if let err = err as? PrimerError {
                 primerErr = err
             } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: UUID().uuidString)
+                primerErr = PrimerError.underlyingErrors(errors: [err],
+                                                         userInfo: nil,
+                                                         diagnosticsId: UUID().uuidString)
             }
-
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
             completion?(err)
         }
@@ -234,7 +241,9 @@ internal class PrimerInternal: LogReporter {
             if let err = err as? PrimerError {
                 primerErr = err
             } else {
-                primerErr = PrimerError.underlyingErrors(errors: [err], userInfo: nil, diagnosticsId: UUID().uuidString)
+                primerErr = PrimerError.underlyingErrors(errors: [err],
+                                                         userInfo: nil,
+                                                         diagnosticsId: UUID().uuidString)
             }
 
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)

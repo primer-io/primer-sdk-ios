@@ -25,7 +25,8 @@ internal class AppState: AppStateProtocol {
     }
 
     var amount: Int? {
-        return PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount ?? PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.totalOrderAmount
+        return PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount ??
+            PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.totalOrderAmount
     }
 
     var currency: Currency? {

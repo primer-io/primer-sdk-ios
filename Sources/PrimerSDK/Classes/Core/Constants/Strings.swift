@@ -7,6 +7,7 @@
 
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
+// swiftlint:disable line_length
 
 import Foundation
 
@@ -1041,4 +1042,5 @@ extension Strings {
     }
 }
 // swiftlint:enable type_body_length
+// swiftlint:enable line_length
 // swiftlint:enable file_length

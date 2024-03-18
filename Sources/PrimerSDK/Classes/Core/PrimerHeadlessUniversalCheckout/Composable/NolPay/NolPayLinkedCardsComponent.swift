@@ -52,7 +52,9 @@ public class NolPayLinkedCardsComponent {
     }
 
     private func start(completion: @escaping (Result<Void, PrimerError>) -> Void) {
-        guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,
+        guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?
+                .first(where: { $0.internalPaymentMethodType == .nolPay})?
+                .options as? MerchantOptions,
               let appId = nolPaymentMethodOption.appId
         else {
             let error = PrimerError.invalidValue(key: "Nol AppID",

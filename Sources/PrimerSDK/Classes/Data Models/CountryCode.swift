@@ -311,7 +311,8 @@ extension CountryCode {
             self.locale = try container.decode(String.self, forKey: .locale)
             self.countries = [:]
 
-            if let countriesWithMultipleOptionNames = try container.decodeIfPresent([CountryCode.RawValue: AnyCodable].self, forKey: .countries) {
+            if let countriesWithMultipleOptionNames = try container.decodeIfPresent([CountryCode.RawValue: AnyCodable].self,
+                                                                                    forKey: .countries) {
                 var updatedCountries: [CountryCode.RawValue: String] = [:]
                 countriesWithMultipleOptionNames.forEach {
                     if let countryNames = $0.value.value as? [String] {
@@ -337,7 +338,9 @@ extension CountryCode {
     }
 
     private var localizedCountryName: String {
-        return LocalizedCountries.loadedCountriesBasedOnLocale?.countries.first { $0.key == self.rawValue }?.value ?? "N/A"
+        return LocalizedCountries.loadedCountriesBasedOnLocale?.countries
+            .first { $0.key == self.rawValue }?
+            .value ?? "N/A"
     }
 }
 

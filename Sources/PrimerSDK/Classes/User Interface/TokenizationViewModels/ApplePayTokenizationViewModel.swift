@@ -131,8 +131,8 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         )
         Analytics.Service.record(event: event)
 
-        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView:
-                                                                                self.uiModule.makeIconImageView(withDimension: 24.0),
+        let imageView = self.uiModule.makeIconImageView(withDimension: 24.0)
+        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView,
                                                                             message: nil)
 
         return Promise { seal in
@@ -153,7 +153,8 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return self.awaitUserInput()
             }
             .then { () -> Promise<Void> in
-                return self.updateBillingAddressViaClientSessionActionWithAddressIfNeeded(self.applePayPaymentResponse.billingAddress)
+                let address = self.applePayPaymentResponse.billingAddress
+                return self.updateBillingAddressViaClientSessionActionWithAddressIfNeeded(address)
             }
             .done {
                 seal.fulfill()
@@ -251,7 +252,8 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
                 if canMakePayment {
                     let request = PKPaymentRequest()
-                    let isBillingContactFieldsRequired = PrimerSettings.current.paymentMethodOptions.applePayOptions?.isCaptureBillingAddressEnabled == true
+                    let applePayOptions = PrimerSettings.current.paymentMethodOptions.applePayOptions
+                    let isBillingContactFieldsRequired = applePayOptions?.isCaptureBillingAddressEnabled == true
                     request.requiredBillingContactFields = isBillingContactFieldsRequired ? [.postalAddress] : []
                     request.currencyCode = applePayRequest.currency.code
                     request.countryCode = applePayRequest.countryCode.rawValue
@@ -279,7 +281,8 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                             seal.reject(err)
                             return
                         } else {
-                            PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
+                            let type = self.config.type
+                            PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: type)
                             self.didPresentPaymentMethodUI?()
                             seal.fulfill()
                         }
@@ -589,7 +592,8 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                         publicKeyHash: "apple-pay-mock-public-key-hash",
                         transactionId: "apple-pay-mock--transaction-id"))
             } else {
-                tokenPaymentData = try JSONParser().parse(ApplePayPaymentResponseTokenPaymentData.self, from: payment.token.paymentData)
+                tokenPaymentData = try JSONParser().parse(ApplePayPaymentResponseTokenPaymentData.self,
+                                                          from: payment.token.paymentData)
             }
 
             let billingAddress = clientSessionBillingAddressFromApplePayBillingContact(payment.billingContact)

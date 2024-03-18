@@ -53,7 +53,8 @@ extension PaymentMethodTokenizationViewModel {
                     if let error = err as? PrimerError {
                         primerErr = error
                     } else {
-                        primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: UUID().uuidString)
+                        primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil,
+                                                        diagnosticsId: UUID().uuidString)
                     }
 
                     return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
@@ -76,7 +77,9 @@ extension PaymentMethodTokenizationViewModel {
             self.didStartPayment?()
             self.didStartPayment = nil
 
-            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+            let imageView = self.uiModule.makeIconImageView(withDimension: 24.0)
+            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView,
+                                                                                message: nil)
 
             firstly {
                 self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
@@ -126,10 +129,12 @@ extension PaymentMethodTokenizationViewModel {
                         if let error = err as? PrimerError {
                             primerErr = error
                         } else {
-                            primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: UUID().uuidString)
+                            primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil,
+                                                            diagnosticsId: UUID().uuidString)
                         }
 
-                        return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
+                        return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr,
+                                                                               data: self.paymentCheckoutData)
                     }
                     .done { merchantErrorMessage in
                         self.handleFailureFlow(errorMessage: merchantErrorMessage)
@@ -146,7 +151,8 @@ extension PaymentMethodTokenizationViewModel {
             var cancelledError: PrimerError?
             self.didCancel = {
                 self.isCancelled = true
-                cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: UUID().uuidString)
+                cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil,
+                                                       diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: cancelledError!)
                 seal.reject(cancelledError!)
                 self.isCancelled = false
@@ -511,7 +517,8 @@ Make sure you call the decision handler otherwise the SDK will hang.
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-            createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
+            let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
+            createResumePaymentService.createPayment(paymentRequest: paymentRequest) { paymentResponse, error in
 
                 if let error = error {
                     if let paymentResponse {
@@ -577,7 +584,9 @@ Make sure you call the decision handler otherwise the SDK will hang.
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)) { paymentResponse, error in
+            let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
+            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
+                                                                  paymentResumeRequest: resumeRequest) { paymentResponse, error in
 
                 if let error = error {
                     if let paymentResponse {

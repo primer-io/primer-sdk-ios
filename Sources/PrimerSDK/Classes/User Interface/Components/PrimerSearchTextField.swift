@@ -83,7 +83,8 @@ internal class PrimerSearchTextField: UITextField, UITextFieldDelegate {
     }
 
     override func rightViewRect(forBounds bounds: CGRect) -> CGRect {
-        let rightViewSize = CGSize(width: bounds.size.height/2, height: bounds.size.height/2) // CGSize(width: bounds.size.height - 2*Padding.vertical, height: bounds.size.height - 2*Padding.vertical)
+        // CGSize(width: bounds.size.height - 2*Padding.vertical, height: bounds.size.height - 2*Padding.vertical)
+        let rightViewSize = CGSize(width: bounds.size.height/2, height: bounds.size.height/2)
         return CGRect(
             x: bounds.origin.x + bounds.size.width - Padding.horizontal - rightViewSize.width - spacing,
             y: bounds.origin.y + (bounds.size.height - rightViewSize.height)/2,

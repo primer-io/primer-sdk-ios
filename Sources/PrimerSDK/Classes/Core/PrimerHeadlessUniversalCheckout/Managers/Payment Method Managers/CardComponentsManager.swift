@@ -5,11 +5,11 @@
 //  Created by Evangelos on 9/2/22.
 //
 
-// swiftlint:disable type_name
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable file_length
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
+// swiftlint:disable type_name
 
 import Foundation
 import SafariServices
@@ -74,8 +74,9 @@ extension PrimerHeadlessUniversalCheckout {
                 var tmpInputElementsContainers: [Weak<PrimerInputElementDelegateContainer>] = []
                 inputElements.forEach { element in
                     if element.inputElementDelegate != nil {
-                        tmpInputElementsContainers.append(Weak(value: PrimerInputElementDelegateContainer(element: element,
-                                                                                                          delegate: element.inputElementDelegate)))
+                        let container = Weak(value: PrimerInputElementDelegateContainer(element: element,
+                                                                                        delegate: element.inputElementDelegate))
+                        tmpInputElementsContainers.append(container)
                     }
                 }
                 inputElements.forEach { element in
@@ -283,9 +284,15 @@ extension PrimerHeadlessUniversalCheckout {
         private func makeCardRedirectRequestBody() -> Promise<Request.Body.Tokenization> {
             return Promise { seal in
 
-                guard let cardnumberField = inputElements.filter({ $0.type == .cardNumber }).first as? PrimerInputTextField,
-                      let expiryDateField = inputElements.filter({ $0.type == .expiryDate }).first as? PrimerInputTextField,
-                      let cardholderNameField = inputElements.filter({ $0.type == .cardholderName }).first as? PrimerInputTextField
+                guard let cardnumberField = inputElements
+                        .filter({ $0.type == .cardNumber })
+                        .first as? PrimerInputTextField,
+                      let expiryDateField = inputElements
+                        .filter({ $0.type == .expiryDate })
+                        .first as? PrimerInputTextField,
+                      let cardholderNameField = inputElements
+                        .filter({ $0.type == .cardholderName })
+                        .first as? PrimerInputTextField
                 else {
                     let err = PrimerError.invalidValue(key: "input-element",
                                                        value: nil,
@@ -320,7 +327,8 @@ extension PrimerHeadlessUniversalCheckout {
 
                 let expiryArr = expiryDate.components(separatedBy: expiryDateField.type.delimiter!)
                 let currentYearAsString = Date().yearComponentAsString
-                let milleniumAndCenturyOfCurrentYearAsString = currentYearAsString.prefix(upTo: currentYearAsString.index(currentYearAsString.startIndex, offsetBy: 2))
+                let index = currentYearAsString.index(currentYearAsString.startIndex, offsetBy: 2)
+                let milleniumAndCenturyOfCurrentYearAsString = currentYearAsString.prefix(upTo: index)
 
                 let expiryMonth = expiryArr[0]
                 let expiryYear = "\(milleniumAndCenturyOfCurrentYearAsString)\(expiryArr[1])"
@@ -337,9 +345,10 @@ extension PrimerHeadlessUniversalCheckout {
                     return
                 }
 
+                let number = (PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as? String)
                 let cardOffSessionPaymentInstrument = CardOffSessionPaymentInstrument(paymentMethodConfigId: configId,
                                                                                       paymentMethodType: paymentMethodType,
-                                                                                      number: (PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as? String) ?? cardNumber,
+                                                                                      number: number  ?? cardNumber,
                                                                                       expirationMonth: expiryMonth,
                                                                                       expirationYear: expiryYear,
                                                                                       cardholderName: cardholderName)
@@ -351,9 +360,15 @@ extension PrimerHeadlessUniversalCheckout {
         private func makeCardRequestBody() -> Promise<Request.Body.Tokenization> {
             return Promise { seal in
 
-                guard let cardnumberField = inputElements.filter({ $0.type == .cardNumber }).first as? PrimerInputTextField,
-                      let expiryDateField = inputElements.filter({ $0.type == .expiryDate }).first as? PrimerInputTextField,
-                      let cvvField = inputElements.filter({ $0.type == .cvv }).first as? PrimerInputTextField
+                guard let cardnumberField = inputElements
+                        .filter({ $0.type == .cardNumber })
+                        .first as? PrimerInputTextField,
+                      let expiryDateField = inputElements
+                        .filter({ $0.type == .expiryDate })
+                        .first as? PrimerInputTextField,
+                      let cvvField = inputElements
+                        .filter({ $0.type == .cvv })
+                        .first as? PrimerInputTextField
                 else {
                     let err = PrimerError.invalidValue(key: "input-element",
                                                        value: nil,
@@ -388,13 +403,16 @@ extension PrimerHeadlessUniversalCheckout {
 
                 let expiryArr = expiryDate.components(separatedBy: expiryDateField.type.delimiter!)
                 let currentYearAsString = Date().yearComponentAsString
-                let milleniumAndCenturyOfCurrentYearAsString = currentYearAsString.prefix(upTo: currentYearAsString.index(currentYearAsString.startIndex, offsetBy: 2))
+                let index = currentYearAsString.index(currentYearAsString.startIndex, offsetBy: 2)
+                let milleniumAndCenturyOfCurrentYearAsString = currentYearAsString.prefix(upTo: index)
 
                 let expiryMonth = expiryArr[0]
                 let expiryYear = "\(milleniumAndCenturyOfCurrentYearAsString)\(expiryArr[1])"
 
                 var cardholderName: String?
-                if let cardholderNameField = inputElements.filter({ $0.type == .cardholderName }).first as? PrimerInputTextField {
+                if let cardholderNameField = inputElements
+                    .filter({ $0.type == .cardholderName })
+                    .first as? PrimerInputTextField {
                     if !cardholderNameField.isValid {
                         let err = PrimerError.invalidValue(key: "cardholder-name",
                                                            value: nil,
@@ -411,8 +429,9 @@ extension PrimerHeadlessUniversalCheckout {
                     cardholderName = cardholderNameField.internalText
                 }
 
+                let number = (PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as? String)
                 let paymentInstrument = CardPaymentInstrument(
-                    number: (PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as? String) ?? cardNumber,
+                    number: number ?? cardNumber,
                     cvv: cvv,
                     expirationMonth: expiryMonth,
                     expirationYear: expiryYear,
@@ -860,7 +879,8 @@ Make sure you call the decision handler otherwise the SDK will hang.
         private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
             return Promise { seal in
                 let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-                createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
+                let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
+                createResumePaymentService.createPayment(paymentRequest: paymentRequest) { paymentResponse, error in
 
                     if let error = error {
                         if let paymentResponse {
@@ -1010,7 +1030,9 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
             return Promise { seal in
                 let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-                createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)) { paymentResponse, error in
+                let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
+                createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
+                                                                      paymentResumeRequest: resumeRequest) { paymentResponse, error in
 
                     if let error = error {
                         if let paymentResponse {
@@ -1075,7 +1097,9 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
         public func inputElementShouldFocus(_ sender: PrimerHeadlessUniversalCheckoutInputElement) -> Bool {
             guard let senderTextField = sender as? PrimerInputTextField else { return true }
-            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return true }
+            guard let inputElementContainer = originalInputElementsContainers?
+                    .filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField })
+                    .first else { return true }
 
             if let shouldFocus = inputElementContainer.value?.delegate.inputElementShouldFocus?(sender) {
                 return shouldFocus
@@ -1086,13 +1110,17 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
         public func inputElementDidFocus(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
-            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return }
+            guard let inputElementContainer = originalInputElementsContainers?
+                    .filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField })
+                    .first else { return }
             inputElementContainer.value?.delegate.inputElementDidFocus?(sender)
         }
 
         public func inputElementShouldBlur(_ sender: PrimerHeadlessUniversalCheckoutInputElement) -> Bool {
             guard let senderTextField = sender as? PrimerInputTextField else { return true }
-            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return true }
+            guard let inputElementContainer = originalInputElementsContainers?
+                    .filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField })
+                    .first else { return true }
 
             if let shouldBlur = inputElementContainer.value?.delegate.inputElementShouldBlur?(sender) {
                 return shouldBlur
@@ -1103,19 +1131,25 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
         public func inputElementDidBlur(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
-            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return }
+            guard let inputElementContainer = originalInputElementsContainers?
+                    .filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField })
+                    .first else { return }
             inputElementContainer.value?.delegate.inputElementDidBlur?(sender)
         }
 
         public func inputElementValueDidChange(_ sender: PrimerHeadlessUniversalCheckoutInputElement) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
-            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return }
+            guard let inputElementContainer = originalInputElementsContainers?
+                    .filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField })
+                    .first else { return }
             inputElementContainer.value?.delegate.inputElementValueDidChange?(sender)
         }
 
         public func inputElementDidDetectType(_ sender: PrimerHeadlessUniversalCheckoutInputElement, type: Any?) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
-            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return }
+            guard let inputElementContainer = originalInputElementsContainers?
+                    .filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField })
+                    .first else { return }
 
             if let cvvTextField = self.inputElements.filter({ $0.type == .cvv }).first as? PrimerInputTextField {
                 cvvTextField.detectedValueType = type
@@ -1126,7 +1160,9 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
         public func inputElementValueIsValid(_ sender: PrimerHeadlessUniversalCheckoutInputElement, isValid: Bool) {
             guard let senderTextField = sender as? PrimerInputTextField else { return }
-            guard let inputElementContainer = originalInputElementsContainers?.filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField }).first else { return }
+            guard let inputElementContainer = originalInputElementsContainers?
+                    .filter({ ($0.value?.element as? PrimerInputTextField) == senderTextField })
+                    .first else { return }
             inputElementContainer.value?.delegate.inputElementValueIsValid?(sender, isValid: isValid)
 
             DispatchQueue.global(qos: .userInitiated).async {
@@ -1177,7 +1213,9 @@ extension PrimerHeadlessUniversalCheckout.CardComponentsManager {
                 if let err = err as? PrimerError {
                     primerErr = err
                 } else {
-                    primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: UUID().uuidString)
+                    primerErr = PrimerError.generic(message: err.localizedDescription,
+                                                    userInfo: nil,
+                                                    diagnosticsId: UUID().uuidString)
                 }
 
                 ErrorHandler.handle(error: primerErr)
@@ -1260,7 +1298,9 @@ extension PrimerHeadlessUniversalCheckout.CardComponentsManager {
             ErrorHandler.handle(error: err)
 
             DispatchQueue.main.async {
-                PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidFail?(withError: err, checkoutData: self.paymentCheckoutData)
+                PrimerHeadlessUniversalCheckout.current.delegate?
+                    .primerHeadlessUniversalCheckoutDidFail?(withError: err,
+                                                             checkoutData: self.paymentCheckoutData)
             }
         }
     }
@@ -1287,8 +1327,8 @@ extension PrimerHeadlessUniversalCheckout.CardComponentsManager: SFSafariViewCon
         webViewCompletion = nil
     }
 }
-// swiftlint:enable type_name
 // swiftlint:enable cyclomatic_complexity
 // swiftlint:enable function_body_length
 // swiftlint:enable type_body_length
+// swiftlint:enable type_name
 // swiftlint:enable file_length

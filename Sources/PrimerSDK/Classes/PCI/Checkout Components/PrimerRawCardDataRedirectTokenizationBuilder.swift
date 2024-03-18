@@ -104,7 +104,8 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
 
             guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType),
                   let configId = AppState.current.apiConfiguration?.getConfigId(for: paymentMethod.type) else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil, diagnosticsId: UUID().uuidString)
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil,
+                                                               diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -113,7 +114,9 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
             guard let rawData = data as? PrimerCardData,
                   (rawData.expiryDate.split(separator: "/")).count == 2
             else {
-                let err = PrimerError.invalidValue(key: "rawData", value: nil, userInfo: nil, diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidValue(key: "rawData", value: nil,
+                                                   userInfo: nil,
+                                                   diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -122,9 +125,10 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
             let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
             let expiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
 
+            let number = (PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as? String) ?? rawData.cardNumber
             let paymentInstrument = CardOffSessionPaymentInstrument(paymentMethodConfigId: configId,
                                                                     paymentMethodType: paymentMethodType,
-                                                                    number: (PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as? String) ?? rawData.cardNumber,
+                                                                    number: number,
                                                                     expirationMonth: expiryMonth,
                                                                     expirationYear: expiryYear,
                                                                     cardholderName: rawData.cardholderName ?? "")

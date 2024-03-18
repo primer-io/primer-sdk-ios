@@ -36,7 +36,9 @@ public enum PrimerError: PrimerErrorProtocol {
     case missingPrimerConfiguration(userInfo: [String: String]?, diagnosticsId: String)
     case missingPrimerDelegate(userInfo: [String: String]?, diagnosticsId: String)
     case misconfiguredPaymentMethods(userInfo: [String: String]?, diagnosticsId: String)
-    case missingPrimerInputElement(inputElementType: PrimerInputElementType, userInfo: [String: String]?, diagnosticsId: String)
+    case missingPrimerInputElement(inputElementType: PrimerInputElementType,
+                                   userInfo: [String: String]?,
+                                   diagnosticsId: String)
     case cancelled(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
     case failedToCreateSession(error: Error?, userInfo: [String: String]?, diagnosticsId: String)
     case failedToPerform3DS(paymentMethodType: String, error: Error?, userInfo: [String: String]?, diagnosticsId: String)
@@ -51,12 +53,22 @@ public enum PrimerError: PrimerErrorProtocol {
     case unableToPresentPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
     case unsupportedIntent(intent: PrimerSessionIntent, userInfo: [String: String]?, diagnosticsId: String)
     case unsupportedPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
-    case unsupportedPaymentMethodForManager(paymentMethodType: String, category: String, userInfo: [String: String]?, diagnosticsId: String)
+    case unsupportedPaymentMethodForManager(paymentMethodType: String,
+                                            category: String,
+                                            userInfo: [String: String]?,
+                                            diagnosticsId: String)
     case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String)
     case missingSDK(paymentMethodType: String, sdkName: String, userInfo: [String: String]?, diagnosticsId: String)
     case merchantError(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case paymentFailed(paymentMethodType: String, description: String, userInfo: [String: String]?, diagnosticsId: String)
-    case failedToProcessPayment(paymentMethodType: String?, paymentId: String, status: String, userInfo: [String: String]?, diagnosticsId: String)
+    case paymentFailed(paymentMethodType: String,
+                       description: String,
+                       userInfo: [String: String]?,
+                       diagnosticsId: String)
+    case failedToProcessPayment(paymentMethodType: String?,
+                                paymentId: String,
+                                status: String,
+                                userInfo: [String: String]?,
+                                diagnosticsId: String)
     case applePayTimedOut(userInfo: [String: String]?, diagnosticsId: String)
     case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, userInfo: [String: String]?, diagnosticsId: String)
     case nolError(code: String?, message: String?, userInfo: [String: String]?, diagnosticsId: String)
@@ -398,7 +410,11 @@ on your dashboard https://dashboard.primer.io/
         case .unableToMakePaymentsOnProvidedNetworks:
             return nil
         case .unableToPresentPaymentMethod:
-            return "Check if all necessary values have been provided on your client session. You can find the necessary values on our documentation (website)."
+            let message = """
+Check if all necessary values have been provided on your client session.\
+ You can find the necessary values on our documentation (website).
+"""
+            return message
         case .unsupportedIntent(let intent, _, _):
             if intent == .checkout {
                 return "Change the intent to .vault"
@@ -428,7 +444,11 @@ on your dashboard https://dashboard.primer.io/
         case .klarnaWrapperError:
             return nil
         case .unableToPresentApplePay:
-            return "PassKit was unable to present the Apple Pay UI. Check merchantIdentifier and other parameters are set correctly for the current environment."
+            let message = """
+PassKit was unable to present the Apple Pay UI. Check merchantIdentifier \
+and other parameters are set correctly for the current environment.
+"""
+            return message
         case .unknown:
             return "Contact Primer and provide them diagnostics id \(self.diagnosticsId)"
         }

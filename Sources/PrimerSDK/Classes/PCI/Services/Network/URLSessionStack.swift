@@ -124,7 +124,8 @@ internal class URLSessionStack: NetworkService, LogReporter {
                 let err = InternalError.underlyingErrors(errors: [error], userInfo: ["file": #file,
                                                                                      "class": "\(Self.self)",
                                                                                      "function": #function,
-                                                                                     "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                     "line": "\(#line)"],
+                                                         diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 DispatchQueue.main.async { completion(.failure(err)) }
                 return
@@ -165,7 +166,8 @@ internal class URLSessionStack: NetworkService, LogReporter {
                         logger.debug(message: "Analytics event sent")
                     } else if !data.isEmpty {
                         let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                        let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
+                        let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any,
+                                                                   options: .prettyPrinted)
                         var jsonStr: String?
                         if jsonData != nil {
                             jsonStr = String(data: jsonData!, encoding: .utf8 )
@@ -196,12 +198,16 @@ internal class URLSessionStack: NetworkService, LogReporter {
                     DispatchQueue.main.async { completion(.success(result)) }
                 }
             } catch {
-                if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments), let jsonDic = json as? [String: Any?],
+                if let json = try? JSONSerialization.jsonObject(with: data,
+                                                                options: .allowFragments),
+                   let jsonDic = json as? [String: Any?],
                    let primerErrorJSON = jsonDic["error"] as? [String: Any],
-                   let primerErrorObject = try? JSONSerialization.data(withJSONObject: primerErrorJSON, options: .fragmentsAllowed),
+                   let primerErrorObject = try? JSONSerialization.data(withJSONObject: primerErrorJSON,
+                                                                       options: .fragmentsAllowed),
                    let statusCode = (response as? HTTPURLResponse)?.statusCode {
 
-                    let primerErrorResponse = try? self.parser.parse(PrimerServerErrorResponse.self, from: primerErrorObject)
+                    let primerErrorResponse = try? self.parser.parse(PrimerServerErrorResponse.self,
+                                                                     from: primerErrorObject)
 
                     if self.shouldReportNetworkEvents(for: endpoint) {
                         resEventProperties?.errorBody = "\(primerErrorJSON)"

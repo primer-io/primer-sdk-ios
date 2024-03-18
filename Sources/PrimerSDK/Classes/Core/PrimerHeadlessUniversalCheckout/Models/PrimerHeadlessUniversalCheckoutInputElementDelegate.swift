@@ -47,7 +47,8 @@ extension PrimerHeadlessUniversalCheckout {
             guard let primerCheckoutComponentsTextField = textField as? PrimerInputTextField else { return false }
             if !string.isEmpty {
                 // Characters aren't in the allowed character set
-                if let allowedCharacterSet = self.inputElement.type.allowedCharacterSet, string.rangeOfCharacter(from: allowedCharacterSet.inverted) != nil {
+                if let allowedCharacterSet = self.inputElement.type.allowedCharacterSet,
+                   string.rangeOfCharacter(from: allowedCharacterSet.inverted) != nil {
                     return false
                 }
             }

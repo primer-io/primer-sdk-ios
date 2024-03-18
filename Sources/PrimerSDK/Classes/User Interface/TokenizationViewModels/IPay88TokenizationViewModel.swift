@@ -7,6 +7,7 @@
 
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable file_length
+// swiftlint:disable line_length
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
 
@@ -130,7 +131,9 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             errors.append(err)
 
         } else {
-            let productsDescription = PrimerAPIConfiguration.current?.clientSession?.order?.lineItems?.compactMap({ $0.name ?? $0.description }).joined(separator: ", ")
+            let productsDescription = PrimerAPIConfiguration.current?.clientSession?.order?.lineItems?
+                .compactMap({ $0.name ?? $0.description })
+                .joined(separator: ", ")
 
             if productsDescription == nil {
                 let err = PrimerError.invalidClientSessionValue(
@@ -221,7 +224,8 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func performPreTokenizationSteps() -> Promise<Void> {
-        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+        let imageView = self.uiModule.makeIconImageView(withDimension: 24.0)
+        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView, message: nil)
 
         return Promise { seal in
             #if canImport(PrimerIPay88MYSDK)
@@ -544,11 +548,12 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
 
                     self.willPresentPaymentMethodUI?()
 
+                    let delegate = PrimerHeadlessUniversalCheckout.current.uiDelegate
                     PrimerUIManager.primerRootViewController?.present(self.primerIPay88ViewController,
                                                                       animated: true,
                                                                       completion: {
                                                                         DispatchQueue.main.async {
-                                                                            PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod?(for: self.config.type)
+                                                                            delegate?.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod?(for: self.config.type)
                                                                             self.didPresentPaymentMethodUI?()
                                                                             seal.fulfill()
                                                                         }
@@ -721,4 +726,5 @@ extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
 // swiftlint:enable cyclomatic_complexity
 // swiftlint:enable function_body_length
 // swiftlint:enable type_body_length
+// swiftlint:enable line_length
 // swiftlint:enable file_length
