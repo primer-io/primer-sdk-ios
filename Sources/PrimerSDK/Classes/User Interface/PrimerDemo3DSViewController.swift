@@ -35,17 +35,10 @@ class PrimerDemo3DSViewController: UIViewController {
         self.view.addSubview(self.stackView)
 
         self.stackView.translatesAutoresizingMaskIntoConstraints = false
-        if #available(iOS 11.0, *) {
-            self.stackView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor).isActive = true
-            self.stackView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
-            self.stackView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor).isActive = true
-            self.stackView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        } else {
-            self.stackView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
-            self.stackView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
-            self.stackView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
-            self.stackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
-        }
+        self.stackView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor).isActive = true
+        self.stackView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
+        self.stackView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor).isActive = true
+        self.stackView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
 
         let titleLabel = UILabel()
         titleLabel.accessibilityIdentifier = "Demo 3DS Title Label"
@@ -105,17 +98,10 @@ class PrimerThirdPartySDKViewController: UIViewController {
         self.view.addSubview(self.stackView)
 
         self.stackView.translatesAutoresizingMaskIntoConstraints = false
-        if #available(iOS 11.0, *) {
-            self.stackView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor).isActive = true
-            self.stackView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
-            self.stackView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor).isActive = true
-            self.stackView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        } else {
-            self.stackView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
-            self.stackView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
-            self.stackView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
-            self.stackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
-        }
+        self.stackView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor).isActive = true
+        self.stackView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
+        self.stackView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor).isActive = true
+        self.stackView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
 
         let titleLabel = UILabel()
         titleLabel.accessibilityIdentifier = "3rd Party SDK Title Label"

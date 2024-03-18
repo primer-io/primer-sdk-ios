@@ -560,15 +560,10 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
                 return
             }
 
-            if #available(iOS 13.0, *) {
-                if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
-                    self.threeDSSDKWindow = UIWindow(windowScene: windowScene)
-                } else {
-                    // Not opted-in in UISceneDelegate
-                    self.threeDSSDKWindow = UIWindow(frame: UIScreen.main.bounds)
-                }
+            if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
+                self.threeDSSDKWindow = UIWindow(windowScene: windowScene)
             } else {
-                // Fallback on earlier versions
+                // Not opted-in in UISceneDelegate
                 self.threeDSSDKWindow = UIWindow(frame: UIScreen.main.bounds)
             }
 

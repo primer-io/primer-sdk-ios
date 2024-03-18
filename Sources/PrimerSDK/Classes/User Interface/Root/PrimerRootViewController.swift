@@ -124,18 +124,9 @@ internal class PrimerRootViewController: PrimerViewController {
     // MARK: Helpers
 
     private func setupChildViews() {
-        if #available(iOS 13.0, *) {
-            let window = PrimerUIManager.primerWindow ?? UIApplication.shared.windows[0]
-            topPadding = window.safeAreaInsets.top
-            bottomPadding = window.safeAreaInsets.bottom
-        } else if #available(iOS 11.0, *) {
-            let window = PrimerUIManager.primerWindow ?? UIApplication.shared.windows[0]
-            topPadding = window.safeAreaInsets.top
-            bottomPadding = window.safeAreaInsets.bottom
-        } else {
-            topPadding = 20.0
-            bottomPadding = 0.0
-        }
+        let window = PrimerUIManager.primerWindow ?? UIApplication.shared.windows[0]
+        topPadding = window.safeAreaInsets.top
+        bottomPadding = window.safeAreaInsets.bottom
 
         view.addSubview(backgroundView)
         backgroundView.backgroundColor = UIColor.black.withAlphaComponent(0.0)

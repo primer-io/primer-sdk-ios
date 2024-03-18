@@ -244,54 +244,36 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 urlScheme = urlScheme.components(separatedBy: "://").first!
             }
 
-            if #available(iOS 13, *) {
-                let webAuthSession =  ASWebAuthenticationSession(
-                    url: url,
-                    callbackURLScheme: urlScheme,
-                    completionHandler: { [weak self] (url, error) in
-                        guard let strongSelf = self else { return }
+            let webAuthSession =  ASWebAuthenticationSession(
+                url: url,
+                callbackURLScheme: urlScheme,
+                completionHandler: { [weak self] (url, error) in
+                    guard let strongSelf = self else { return }
 
-                        if let error = error {
-                            let nsError = (error as NSError)
-                            if nsError.domain == "com.apple.AuthenticationServices.WebAuthenticationSession" && nsError.code == 1 {
-                                let cancelErr = PrimerError.cancelled(
-                                    paymentMethodType: strongSelf.config.type,
-                                    userInfo: nil,
-                                    diagnosticsId: UUID().uuidString)
-                                seal.reject(cancelErr)
+                    if let error = error {
+                        let nsError = (error as NSError)
+                        if nsError.domain == "com.apple.AuthenticationServices.WebAuthenticationSession" && nsError.code == 1 {
+                            let cancelErr = PrimerError.cancelled(
+                                paymentMethodType: strongSelf.config.type,
+                                userInfo: nil,
+                                diagnosticsId: UUID().uuidString)
+                            seal.reject(cancelErr)
 
-                            } else {
-                                seal.reject(error)
-                            }
-
-                        } else if let url = url {
-                            seal.fulfill(url)
+                        } else {
+                            seal.reject(error)
                         }
 
-                        (strongSelf.session as? ASWebAuthenticationSession)?.cancel()
+                    } else if let url = url {
+                        seal.fulfill(url)
                     }
-                )
-                session = webAuthSession
 
-                webAuthSession.presentationContextProvider = self
-                webAuthSession.start()
+                    (strongSelf.session as? ASWebAuthenticationSession)?.cancel()
+                }
+            )
+            session = webAuthSession
 
-            } else if #available(iOS 11, *) {
-                session = SFAuthenticationSession(
-                    url: url,
-                    callbackURLScheme: urlScheme,
-                    completionHandler: { (url, err) in
-                        if let err = err {
-                            seal.reject(err)
-
-                        } else if let url = url {
-                            seal.fulfill(url)
-                        }
-                    }
-                )
-
-                (self.session as? SFAuthenticationSession)?.start()
-            }
+            webAuthSession.presentationContextProvider = self
+            webAuthSession.start()
         }
     }
 
