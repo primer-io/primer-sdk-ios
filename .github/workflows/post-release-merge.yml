@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
@@ -30,7 +30,7 @@ jobs:
       - name: Record changelog for current release
         run: cz changelog $FROM_VERSION..$RELEASE_VERSION --file-name="release.md"
       - name: Create release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@2c591bcc8ecdcd2db72b97d6147f871fcd833ba5 #v1.14.0
         with:
           name: "Release ${{ env.RELEASE_VERSION }}"
           tag: ${{ env.RELEASE_VERSION }}
@@ -42,11 +42,11 @@ jobs:
     name: "Build and upload app to Appetize"
     steps:
       - name: Cancel previous jobs
-        uses: styfle/cancel-workflow-action@0.12.0
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           ref: ${{ github.ref }}
       - name: Upload preview to Appetize
