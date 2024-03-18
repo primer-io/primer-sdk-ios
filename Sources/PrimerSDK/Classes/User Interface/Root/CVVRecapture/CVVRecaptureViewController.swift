@@ -54,16 +54,17 @@ class CVVRecaptureViewController: UIViewController {
     private let height: CGFloat = 48.0
     private let defaultElementDistance: CGFloat = 24.0
     private func setupViews() {
-        title = "Enter CVV"
+        title = Strings.CVVRecapture.title
         setupExplanationLabel()
         setupImageView()
         setupCardNumberLabel()
         setupCVVContainerView()
-        setupContinueButton(with: "Continue")
+        setupContinueButton(with: Strings.CVVRecapture.buttonTitle)
     }
 
     private func setupExplanationLabel() {
-        explanationLabel.text = "Input the \(viewModel.cvvLength) digit security code on your card for a secure payment."
+        let explanationText = String(format: Strings.CVVRecapture.explanation, viewModel.cvvLength)
+        explanationLabel.text = explanationText
         explanationLabel.numberOfLines = 0
         explanationLabel.textColor = theme.text.body.color
         explanationLabel.font = .systemFont(ofSize: CGFloat(theme.text.body.fontSize))
