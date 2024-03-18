@@ -976,7 +976,8 @@ extension CardFormPaymentMethodTokenizationViewModel: UITableViewDataSource, UIT
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let country = dataSource[indexPath.row]
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: CountryTableViewCell.className, for: indexPath) as? CountryTableViewCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: CountryTableViewCell.className,
+                                                       for: indexPath) as? CountryTableViewCell
         else {
             fatalError("Unexpected cell dequed in PrimerSDK.CardFormPaymentMethodTokenizationViewModel")
         }

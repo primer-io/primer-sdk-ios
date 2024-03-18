@@ -435,7 +435,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     return
                 }
 
-                if !(PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.lineItems ?? []).filter({ $0.amount == nil }).isEmpty {
+                if !(PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.lineItems ?? [])
+                    .filter({ $0.amount == nil }).isEmpty {
                     let err = PrimerError.invalidValue(key: "settings.orderItems.amount",
                                                        value: nil,
                                                        userInfo: ["file": #file,
@@ -481,7 +482,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
             let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
 
-            apiClient.createKlarnaPaymentSession(clientToken: decodedJWTToken, klarnaCreatePaymentSessionAPIRequest: body) { (result) in
+            apiClient.createKlarnaPaymentSession(clientToken: decodedJWTToken,
+                                                 klarnaCreatePaymentSessionAPIRequest: body) { (result) in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
@@ -530,7 +532,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
             let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
 
-            apiClient.createKlarnaCustomerToken(clientToken: decodedJWTToken, klarnaCreateCustomerTokenAPIRequest: body) { (result) in
+            apiClient.createKlarnaCustomerToken(clientToken: decodedJWTToken,
+                                                klarnaCreateCustomerTokenAPIRequest: body) { (result) in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
@@ -584,7 +587,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
         let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
 
-        apiClient.finalizeKlarnaPaymentSession(clientToken: decodedJWTToken, klarnaFinalizePaymentSessionRequest: body) { (result) in
+        apiClient.finalizeKlarnaPaymentSession(clientToken: decodedJWTToken,
+                                               klarnaFinalizePaymentSessionRequest: body) { (result) in
             switch result {
             case .failure(let err):
                 completion(.failure(err))
