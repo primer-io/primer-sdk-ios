@@ -11,7 +11,7 @@ import XCTest
 @testable import PrimerSDK
 
 final class KlarnaTokenizationManagerTests: XCTestCase {
-    
+
     var tokenizationManager: KlarnaTokenizationManagerProtocol!
     
     override func setUp() {
