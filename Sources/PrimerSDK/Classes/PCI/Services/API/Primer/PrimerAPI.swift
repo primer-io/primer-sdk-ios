@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 26/2/21.
 //
 
+// swiftlint:disable file_length
+
 import Foundation
 
 enum PrimerAPI: Endpoint, Equatable {
@@ -461,5 +463,5 @@ internal extension PrimerAPI {
     var configuration: PrimerAPIConfiguration? {
         PrimerAPIConfiguration.current
     }
-
 }
+// swiftlint:enable file_length

@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 6/7/21.
 //
 
+// swiftlint:disable file_length
+
 import UIKit
 
 @objc
@@ -450,5 +452,5 @@ internal class MockCardComponentsManager: InternalCardComponentsManagerProtocol 
     func tokenize() {
 
     }
-
 }
+// swiftlint:enable file_length

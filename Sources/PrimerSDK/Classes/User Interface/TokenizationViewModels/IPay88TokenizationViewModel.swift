@@ -6,6 +6,7 @@
 //
 
 // swiftlint:disable cyclomatic_complexity
+// swiftlint:disable file_length
 
 import Foundation
 import UIKit
@@ -716,3 +717,4 @@ extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
 }
 #endif
 // swiftlint:enable cyclomatic_complexity
+// swiftlint:enable file_length

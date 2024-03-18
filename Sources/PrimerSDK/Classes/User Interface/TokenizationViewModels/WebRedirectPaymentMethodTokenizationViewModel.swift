@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 11/10/21.
 //
 
+// swiftlint:disable file_length
+
 import Foundation
 import SafariServices
 import UIKit
@@ -454,3 +456,4 @@ struct PollingResponse: Decodable {
 
     }
 }
+// swiftlint:enable file_length

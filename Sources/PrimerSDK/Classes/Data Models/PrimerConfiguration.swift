@@ -5,6 +5,8 @@
 //  Created by Evangelos on 28/12/21.
 //
 
+// swiftlint:disable file_length
+
 import Foundation
 import PassKit
 
@@ -438,3 +440,4 @@ extension Response.Body.Configuration {
         }
     }
 }
+// swiftlint:enable file_length

@@ -1,3 +1,5 @@
+// swiftlint:disable file_length
+
 import UIKit
 import AuthenticationServices
 import SafariServices
@@ -456,3 +458,4 @@ extension PayPalTokenizationViewModel: ASWebAuthenticationPresentationContextPro
     }
 
 }
+// swiftlint:enable file_length

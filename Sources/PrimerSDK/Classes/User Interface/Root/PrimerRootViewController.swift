@@ -6,6 +6,7 @@
 //
 
 // swiftlint:disable cyclomatic_complexity
+// swiftlint:disable file_length
 
 import UIKit
 
@@ -450,3 +451,4 @@ extension PrimerRootViewController: UIGestureRecognizerDelegate {
     }
 }
 // swiftlint:enable cyclomatic_complexity
+// swiftlint:enable file_length

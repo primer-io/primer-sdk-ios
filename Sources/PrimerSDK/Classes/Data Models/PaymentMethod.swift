@@ -5,6 +5,8 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
+// swiftlint:disable file_length
+
 import Foundation
 import UIKit
 
@@ -563,3 +565,4 @@ extension PrimerTheme {
         }
     }
 }
+// swiftlint:enable file_length
