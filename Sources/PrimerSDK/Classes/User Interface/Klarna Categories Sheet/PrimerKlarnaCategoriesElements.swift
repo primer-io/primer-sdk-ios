@@ -98,12 +98,12 @@ struct ContinueButton: View {
     @Binding var isActive: Bool
 
     let title: String
-    let action: () -> Void
+    let continuePressed: () -> Void
 
     var body: some View {
-        Button(action: {
-            action()
-        }) {
+        Button {
+            continuePressed()
+        } label: {
             Text(title)
                 .font(.headline)
                 .foregroundColor(isActive ? .white : .black.opacity(0.2))
