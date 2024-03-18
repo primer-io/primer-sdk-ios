@@ -1,3 +1,5 @@
+// swiftlint:disable function_body_length
+
 import Foundation
 
 internal protocol TokenizationServiceProtocol {
@@ -102,3 +104,4 @@ internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
         }
     }
 }
+// swiftlint:enable function_body_length

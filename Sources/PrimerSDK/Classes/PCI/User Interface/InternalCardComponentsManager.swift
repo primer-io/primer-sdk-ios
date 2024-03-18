@@ -6,6 +6,7 @@
 //
 
 // swiftlint:disable file_length
+// swiftlint:disable function_body_length
 
 import UIKit
 
@@ -453,4 +454,5 @@ internal class MockCardComponentsManager: InternalCardComponentsManagerProtocol 
 
     }
 }
+// swiftlint:enable function_body_length
 // swiftlint:enable file_length

@@ -5,6 +5,8 @@
 //  Created by Evangelos on 9/9/22.
 //
 
+// swiftlint:disable function_body_length
+
 import UIKit
 
 internal class PrimerUIManager {
@@ -262,3 +264,4 @@ internal class PrimerUIManager {
         PrimerUIManager.primerRootViewController?.show(viewController: resultViewController)
     }
 }
+// swiftlint:enable function_body_length

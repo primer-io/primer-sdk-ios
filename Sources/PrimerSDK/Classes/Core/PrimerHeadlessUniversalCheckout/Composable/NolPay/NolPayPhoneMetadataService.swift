@@ -5,11 +5,12 @@
 //  Created by Boris on 27.10.23..
 //
 
+// swiftlint:disable function_body_length
+// swiftlint:disable large_tuple
+
 import Foundation
 
-// swiftlint:disable large_tuple
 typealias PhoneMetadataCompletion = (Result<(PrimerValidationStatus, String?, String?), PrimerError>) -> Void
-// swiftlint:enable large_tuple
 
 protocol NolPayPhoneMetadataProviding {
     func getPhoneMetadata(mobileNumber: String, completion: @escaping PhoneMetadataCompletion)
@@ -93,3 +94,5 @@ struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
         }
     }
 }
+// swiftlint:enable large_tuple
+// swiftlint:enable function_body_length

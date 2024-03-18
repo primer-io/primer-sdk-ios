@@ -5,6 +5,8 @@
 //  Created by Evangelos on 28/1/22.
 //
 
+// swiftlint:disable function_body_length
+
 import UIKit
 
 public class PrimerHeadlessUniversalCheckout: LogReporter {
@@ -281,3 +283,4 @@ Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in you
         return paymentMethods?.compactMap({ $0.type }).filter({ !unsupportedPaymentMethodTypes.contains($0) })
     }
 }
+// swiftlint:enable function_body_length

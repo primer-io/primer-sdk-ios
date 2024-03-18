@@ -1,3 +1,5 @@
+// swiftlint:disable function_body_length
+
 import Foundation
 
 internal protocol PayPalServiceProtocol {
@@ -184,13 +186,16 @@ internal class PayPalService: PayPalServiceProtocol {
         )
 
         let apiClient: PrimerAPIClientProtocol = PayPalService.apiClient ?? PrimerAPIClient()
-        apiClient.createPayPalBillingAgreementSession(clientToken: decodedJWTToken, payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
+        apiClient.createPayPalBillingAgreementSession(clientToken: decodedJWTToken,
+                                                      payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
             switch result {
             case .failure(let err):
-                let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file,
-                                                                                            "class": "\(Self.self)",
-                                                                                            "function": #function,
-                                                                                            "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let containerErr = PrimerError.failedToCreateSession(error: err,
+                                                                     userInfo: ["file": #file,
+                                                                                "class": "\(Self.self)",
+                                                                                "function": #function,
+                                                                                "line": "\(#line)"],
+                                                                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: containerErr)
                 completion(.failure(containerErr))
             case .success(let config):
@@ -207,7 +212,8 @@ internal class PayPalService: PayPalServiceProtocol {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -250,7 +256,8 @@ internal class PayPalService: PayPalServiceProtocol {
                 let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file,
                                                                                             "class": "\(Self.self)",
                                                                                             "function": #function,
-                                                                                            "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                            "line": "\(#line)"],
+                                                                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: containerErr)
                 completion(.failure(containerErr))
             case .success(let response):
@@ -299,3 +306,4 @@ internal class PayPalService: PayPalServiceProtocol {
         }
     }
 }
+// swiftlint:enable function_body_length

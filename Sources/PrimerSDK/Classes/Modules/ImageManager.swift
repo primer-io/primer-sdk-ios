@@ -5,6 +5,8 @@
 //  Created by Evangelos on 15/7/22.
 //
 
+// swiftlint:disable function_body_length
+
 import UIKit
 
 internal class ImageFile: File {
@@ -235,3 +237,4 @@ internal class ImageManager: LogReporter {
         }
     }
 }
+// swiftlint:enable function_body_length

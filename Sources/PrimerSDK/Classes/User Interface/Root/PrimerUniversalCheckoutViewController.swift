@@ -6,6 +6,7 @@
 //
 
 // swiftlint:disable cyclomatic_complexity
+// swiftlint:disable function_body_length
 
 import UIKit
 
@@ -335,3 +336,4 @@ extension PrimerUniversalCheckoutViewController: ReloadDelegate {
 }
 
 // swiftlint:enable cyclomatic_complexity
+// swiftlint:enable function_body_length

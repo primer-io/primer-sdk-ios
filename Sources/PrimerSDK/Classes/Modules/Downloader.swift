@@ -6,6 +6,7 @@
 //
 
 // swiftlint:disable cyclomatic_complexity
+// swiftlint:disable function_body_length
 
 import Foundation
 
@@ -298,3 +299,4 @@ extension Downloader: FileManagerDelegate {
     }
 }
 // swiftlint:enable cyclomatic_complexity
+// swiftlint:enable function_body_length

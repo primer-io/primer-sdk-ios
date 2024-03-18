@@ -5,6 +5,8 @@
 //  Created by Dario Carlomagno on 18/10/22.
 //
 
+// swiftlint:disable function_body_length
+
 import Foundation
 
 class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
@@ -149,3 +151,4 @@ class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationBuilder
         }
     }
 }
+// swiftlint:enable function_body_length

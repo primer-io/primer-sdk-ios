@@ -1,3 +1,5 @@
+// swiftlint:disable function_body_length
+
 import UIKit
 
 internal class VaultedPaymentInstrumentCell: UITableViewCell {
@@ -338,3 +340,4 @@ extension VaultedPaymentInstrumentsViewController: UITableViewDataSource, UITabl
         tableView.reloadData()
     }
 }
+// swiftlint:enable function_body_length

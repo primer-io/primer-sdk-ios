@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 27/7/21.
 //
 
+// swiftlint:disable function_body_length
+
 import UIKit
 
 class PrimerFormViewController: PrimerViewController {
@@ -114,3 +116,4 @@ class PrimerFormViewController: PrimerViewController {
         }
     }
 }
+// swiftlint:enable function_body_length
