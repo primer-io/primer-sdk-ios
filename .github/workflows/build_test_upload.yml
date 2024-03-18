@@ -16,9 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     name: "Run Danger"
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@b4ffde6 # v4.1.1 
       - name: Danger
-        uses: docker://ghcr.io/danger/danger-swift-with-swiftlint:3.15.0
+        uses: docker://ghcr.io/danger/danger-swift-with-swiftlint@sha256:ed07386a85f1328619b49e3cfd737ffce351fcd2620d858cfc997d7e3e401b59 #v3.15.0
         with:
             args: --failOnErrors --no-publish-check --remove-previous-comments
         env:
