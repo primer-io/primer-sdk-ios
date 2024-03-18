@@ -11,15 +11,10 @@ internal class AlertController: UIAlertController {
 
     private lazy var alertWindow: UIWindow = {
         var window: UIWindow!
-        if #available(iOS 13.0, *) {
-            if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
-                window = UIWindow(windowScene: windowScene)
-            } else {
-                // Not opted-in in UISceneDelegate
-                window = UIWindow(frame: UIScreen.main.bounds)
-            }
+        if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
+            window = UIWindow(windowScene: windowScene)
         } else {
-            // Fallback on earlier versions
+            // Not opted-in in UISceneDelegate
             window = UIWindow(frame: UIScreen.main.bounds)
         }
 
@@ -41,11 +36,12 @@ internal class AlertController: UIAlertController {
 internal class ClearViewController: UIViewController {
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        return UIApplication.shared.statusBarStyle
+        let statusBarManager = view.window?.windowScene?.statusBarManager
+        return statusBarManager?.statusBarStyle ?? .default
     }
 
     override var prefersStatusBarHidden: Bool {
-        return UIApplication.shared.isStatusBarHidden
+        let statusBarManager = view.window?.windowScene?.statusBarManager
+        return statusBarManager?.isStatusBarHidden ?? false
     }
-
 }

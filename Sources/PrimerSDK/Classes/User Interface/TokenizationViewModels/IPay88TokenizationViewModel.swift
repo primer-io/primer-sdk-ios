@@ -516,10 +516,8 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                     self.primerIPay88ViewController = PrimerIPay88ViewController(delegate: self,
                                                                                  payment: self.primerIPay88Payment!)
 
-                    if #available(iOS 13.0, *) {
-                        self.primerIPay88ViewController.isModalInPresentation = true
-                        self.primerIPay88ViewController.modalPresentationStyle = .fullScreen
-                    }
+                    self.primerIPay88ViewController.isModalInPresentation = true
+                    self.primerIPay88ViewController.modalPresentationStyle = .fullScreen
 
                     let iPay88PresentEvent = Analytics.Event.ui(
                         action: .present,
