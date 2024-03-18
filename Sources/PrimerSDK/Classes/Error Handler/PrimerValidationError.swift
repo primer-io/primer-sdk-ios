@@ -10,7 +10,6 @@
 // swiftlint:disable identifier_name
 // swiftlint:disable function_body_length
 
-
 import Foundation
 
 public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
