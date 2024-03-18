@@ -35,7 +35,9 @@ extension PrimerHeadlessUniversalCheckout {
         public private(set) var requiredInputDataClass: PrimerRawData.Type?
 
         init?(paymentMethodType: String) {
-            guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?.first(where: { $0.type == paymentMethodType }) else {
+            guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?
+                .first(where: { $0.type == paymentMethodType })
+            else {
                 return nil
             }
 
