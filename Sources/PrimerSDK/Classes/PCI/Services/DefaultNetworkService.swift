@@ -25,7 +25,7 @@ extension HTTPURLResponse: ResponseMetadata {
         return url?.absoluteString
     }
 
-    var headers: [String : String]? {
+    var headers: [String: String]? {
         return allHeaderFields.reduce(into: [:]) { result, item in
             if let key = item.key as? String, let value = item.value as? String {
                 result[key] = value
@@ -34,39 +34,15 @@ extension HTTPURLResponse: ResponseMetadata {
     }
 }
 
-// --
-
-enum NetworkEventType {
-    case requestStart
-    case requestEnd
-    case networkCall
-}
-
-protocol NetworkReportingService {
-    func report(eventType: NetworkEventType)
-}
-
-class DefaultNetworkReportingService: NetworkReportingService {
-    func report(eventType: NetworkEventType) {
-        // ... 
-    }
-}
-
-// --
-
 class DefaultNetworkService: NetworkService, LogReporter {
 
     let requestFactory: NetworkRequestFactory
 
-    let reportingService: NetworkReportingService
-
     let requestDispatcher: RequestDispatcher
 
     init(requestFactory: NetworkRequestFactory,
-         reportingService: NetworkReportingService,
          requestDispatcher: RequestDispatcher) {
         self.requestFactory = requestFactory
-        self.reportingService = reportingService
         self.requestDispatcher = requestDispatcher
     }
 

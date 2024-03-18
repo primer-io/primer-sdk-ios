@@ -791,7 +791,7 @@ extension Analytics.Event {
         )
     }
 
-    static func networkConnectivity(networkType: Connectivity.NetworkType) -> Self {
+    static func networkConnectivity(networkType: Connectivity.NetworkType = Connectivity.networkType) -> Self {
         return .init(
             eventType: .networkConnectivity,
             properties: NetworkConnectivityEventProperties(networkType: networkType)
