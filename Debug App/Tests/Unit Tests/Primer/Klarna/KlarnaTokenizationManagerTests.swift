@@ -13,7 +13,6 @@ import XCTest
 final class KlarnaTokenizationManagerTests: XCTestCase {
     
     var tokenizationManager: KlarnaTokenizationManagerProtocol!
-    var isTokenizationFailed: Bool = false
     
     override func setUp() {
         super.setUp()
