@@ -5,10 +5,12 @@
 //  Created by Evangelos on 9/5/22.
 //
 
-import Foundation
-
 // swiftlint:disable type_name
 // swiftlint:disable cyclomatic_complexity
+// swiftlint:disable file_length
+
+import Foundation
+
 class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
 
     static var apiClient: PrimerAPIClientProtocol?
@@ -680,3 +682,4 @@ Make sure you call the decision handler otherwise the SDK will hang.
 }
 // swiftlint:enable type_name
 // swiftlint:enable cyclomatic_complexity
+// swiftlint:enable file_length

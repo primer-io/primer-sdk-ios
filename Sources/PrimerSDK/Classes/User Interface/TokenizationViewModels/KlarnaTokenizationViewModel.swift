@@ -1,4 +1,5 @@
 // swiftlint:disable cyclomatic_complexity
+// swiftlint:disable file_length
 
 import Foundation
 import UIKit
@@ -591,3 +592,4 @@ extension KlarnaTokenizationViewModel: PrimerKlarnaViewControllerDelegate {
 }
 #endif
 // swiftlint:enable cyclomatic_complexity
+// swiftlint:enable file_length

@@ -5,12 +5,14 @@
 //  Created by Evangelos on 9/2/22.
 //
 
+// swiftlint:disable type_name
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable file_length
+
 import Foundation
 import SafariServices
 
 public protocol PrimerHeadlessUniversalCheckoutInputData {}
-// swiftlint:disable type_name
-// swiftlint:disable cyclomatic_complexity
 
 @available(*, deprecated, message: "CardComponentsManager is no longer supported, please use PrimerHeadlessUniversalCheckout instead")
 public protocol PrimerHeadlessUniversalCheckoutCardComponentsManagerDelegate: AnyObject {
@@ -1285,3 +1287,4 @@ extension PrimerHeadlessUniversalCheckout.CardComponentsManager: SFSafariViewCon
 }
 // swiftlint:enable type_name
 // swiftlint:enable cyclomatic_complexity
+// swiftlint:enable file_length

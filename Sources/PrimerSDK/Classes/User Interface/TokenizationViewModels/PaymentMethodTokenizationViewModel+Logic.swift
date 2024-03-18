@@ -6,6 +6,7 @@
 //
 
 // swiftlint:disable cyclomatic_complexity
+// swiftlint:disable file_length
 
 import Foundation
 import UIKit
@@ -655,3 +656,4 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
 extension PaymentMethodTokenizationViewModel: PaymentMethodTypeViaPaymentMethodTokenDataProviding {}
 // swiftlint:enable cyclomatic_complexity
+// swiftlint:enable file_length

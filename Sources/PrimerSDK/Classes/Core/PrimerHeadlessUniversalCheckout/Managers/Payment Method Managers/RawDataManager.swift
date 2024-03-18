@@ -5,11 +5,13 @@
 //  Created by Evangelos on 12/7/22.
 //
 
+// swiftlint:disable type_name
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable file_length
+
 import Foundation
 import SafariServices
 
-// swiftlint:disable type_name
-// swiftlint:disable cyclomatic_complexity
 @objc
 public protocol PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
@@ -1066,3 +1068,4 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager {
 
 // swiftlint:enable type_name
 // swiftlint:enable cyclomatic_complexity
+// swiftlint:enable file_length

@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 17/6/21.
 //
 
+// swiftlint:disable file_length
+
 import Foundation
 import UIKit
 
@@ -705,3 +707,4 @@ internal class MockPrimer3DSCompletion: Primer3DSCompletion {
     var transactionStatus: String = "transactionStatus"
 }
 #endif
+// swiftlint:enable file_length

@@ -5,6 +5,8 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
+// swiftlint:disable file_length
+
 protocol UserInterfaceModuleProtocol {
 
     var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol! { get }
@@ -1047,3 +1049,4 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         self.paymentMethodTokenizationViewModel.submitButtonTapped()
     }
 }
+// swiftlint:enable file_length

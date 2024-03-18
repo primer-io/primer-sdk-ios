@@ -5,11 +5,12 @@
 //  Created by Alexandra Lovin on 03.12.2023.
 //
 
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable file_length
+
 import Foundation
 import UIKit
 import SafariServices
-
-// swiftlint:disable cyclomatic_complexity
 
 final class BanksTokenizationComponent: NSObject, LogReporter {
     var config: PrimerPaymentMethod
@@ -1138,3 +1139,4 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
     }
 }
 // swiftlint:enable cyclomatic_complexity
+// swiftlint:enable file_length

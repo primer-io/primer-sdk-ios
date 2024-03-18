@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 1/4/21.
 //
 
+// swiftlint:disable file_length
+
 import Foundation
 #if canImport(Primer3DS)
 import Primer3DS
@@ -635,3 +637,4 @@ public class ThreeDS {
         }
     }
 }
+// swiftlint:enable file_length

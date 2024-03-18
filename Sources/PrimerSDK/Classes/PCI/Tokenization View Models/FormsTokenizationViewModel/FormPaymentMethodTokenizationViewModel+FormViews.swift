@@ -5,6 +5,8 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
+// swiftlint:disable file_length
+
 import UIKit
 
 extension FormPaymentMethodTokenizationViewModel {
@@ -423,3 +425,4 @@ extension FormPaymentMethodTokenizationViewModel {
         }
     }
 }
+// swiftlint:enable file_length

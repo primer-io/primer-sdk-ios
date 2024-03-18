@@ -5,6 +5,8 @@
 //  Created by Evangelos Pittas on 11/10/21.
 //
 
+// swiftlint:disable file_length
+
 import Foundation
 import SafariServices
 import UIKit
@@ -330,35 +332,45 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
 
         guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "clientToken.pciUrl", value: decodedJWTToken.pciUrl, userInfo: ["file": #file,
-                                                                                                                    "class": "\(Self.self)",
-                                                                                                                    "function": #function,
-                                                                                                                    "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidValue(key: "clientToken.pciUrl",
+                                               value: decodedJWTToken.pciUrl,
+                                               userInfo: ["file": #file,
+                                                          "class": "\(Self.self)",
+                                                          "function": #function,
+                                                          "line": "\(#line)"],
+                                               diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
 
         if PrimerInternal.shared.intent == .checkout {
             if AppState.current.amount == nil {
-                let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file,
-                                                                                            "class": "\(Self.self)",
-                                                                                            "function": #function,
-                                                                                            "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidSetting(name: "amount",
+                                                     value: nil,
+                                                     userInfo: ["file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
 
             if AppState.current.currency == nil {
-                let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file,
-                                                                                              "class": "\(Self.self)",
-                                                                                              "function": #function,
-                                                                                              "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidSetting(name: "currency",
+                                                     value: nil,
+                                                     userInfo: ["file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
@@ -505,16 +517,19 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     let error = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                           "class": "\(Self.self)",
                                                                           "function": #function,
-                                                                          "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                          "line": "\(#line)"],
+                                                               diagnosticsId: UUID().uuidString)
                     seal.reject(error)
                 }
 
             } else if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                 guard let paymentMethodTokenData = paymentMethodTokenData else {
-                    let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file,
-                                                                                                               "class": "\(Self.self)",
-                                                                                                               "function": #function,
-                                                                                                               "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = InternalError.failedToDecode(message: "Failed to find paymentMethod",
+                                                           userInfo: ["file": #file,
+                                                                      "class": "\(Self.self)",
+                                                                      "function": #function,
+                                                                      "line": "\(#line)"],
+                                                           diagnosticsId: UUID().uuidString)
                     let containerErr = PrimerError.failedToPerform3DS(paymentMethodType: self.paymentMethodType,
                                                                       error: err,
                                                                       userInfo: ["file": #file,
@@ -918,10 +933,12 @@ extension CardFormPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         if let webViewCompletion = webViewCompletion {
             // Cancelled
-            let err = PrimerError.cancelled(paymentMethodType: config.type, userInfo: ["file": #file,
-                                                                                       "class": "\(Self.self)",
-                                                                                       "function": #function,
-                                                                                       "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.cancelled(paymentMethodType: config.type,
+                                            userInfo: ["file": #file,
+                                                       "class": "\(Self.self)",
+                                                       "function": #function,
+                                                       "line": "\(#line)"],
+                                            diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             webViewCompletion(nil, err)
         }
@@ -1007,3 +1024,4 @@ private extension String {
                 locale: nil)
     }
 }
+// swiftlint:enable file_length
