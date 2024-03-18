@@ -33,7 +33,7 @@ struct PrimerKlarnaCategoriesView: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 25, height: 25)
                         .padding(.leading, 15)
-                    
+
                     Spacer()
                 }
                 .opacity(viewModel.showBackButton ? 1 : 0)

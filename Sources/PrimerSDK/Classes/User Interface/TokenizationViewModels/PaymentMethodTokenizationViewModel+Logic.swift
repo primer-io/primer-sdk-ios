@@ -74,12 +74,12 @@ extension PaymentMethodTokenizationViewModel {
             processCheckoutPaymentMethodTokenData()
         }
     }
-    
+
     func processVaultPaymentMethodTokenData() {
         PrimerDelegateProxy.primerDidTokenizePaymentMethod(self.paymentMethodTokenData!) { _ in }
         self.handleSuccessfulFlow()
     }
-    
+
     func processCheckoutPaymentMethodTokenData() {
         self.didStartPayment?()
         self.didStartPayment = nil

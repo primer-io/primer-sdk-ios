@@ -11,36 +11,36 @@ import SwiftUI
 import PrimerKlarnaSDK
 #endif
 
-protocol PrimerKlarnaCategoriesDelegate {
+protocol PrimerKlarnaCategoriesDelegate: AnyObject {
     func primerKlarnaPaymentSessionCompleted(authorizationToken: String)
     func primerKlarnaPaymentSessionFailed(error: Error)
 }
 
 @available(iOS 13.0, *)
 class PrimerKlarnaCategoriesViewController: UIViewController {
-    
+
     // MARK: - Subviews
     let activityIndicator = UIActivityIndicatorView()
-    
+
     // MARK: - Properties
     let klarnaCategoriesVM: PrimerKlarnaCategoriesViewModel = PrimerKlarnaCategoriesViewModel()
     var klarnaCategoriesView: PrimerKlarnaCategoriesView?
     let sharedWrapper = SharedUIViewWrapper()
     var renderedKlarnaView = UIView()
     var clientToken: String?
-    var klarnaComponent : PrimerHeadlessKlarnaComponent
-    var delegate: PrimerKlarnaCategoriesDelegate
+    var klarnaComponent: PrimerHeadlessKlarnaComponent
+    weak var delegate: PrimerKlarnaCategoriesDelegate?
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     init(tokenizationComponent: KlarnaTokenizationComponentProtocol, delegate: PrimerKlarnaCategoriesDelegate) {
         self.klarnaComponent = PrimerHeadlessKlarnaComponent(tokenizationComponent: tokenizationComponent)
         self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,13 +50,13 @@ class PrimerKlarnaCategoriesViewController: UIViewController {
         addKlarnaView()
         startPaymentSession()
     }
-    
+
     private func setKlarnaComponentDelegates() {
         klarnaComponent.stepDelegate = self
         klarnaComponent.errorDelegate = self
         klarnaComponent.validationDelegate = self
     }
-    
+
     private func addKlarnaView() {
         klarnaCategoriesView = PrimerKlarnaCategoriesView(viewModel: klarnaCategoriesVM, sharedWrapper: sharedWrapper) {
             self.navigationController?.popViewController(animated: false)
@@ -67,7 +67,7 @@ class PrimerKlarnaCategoriesViewController: UIViewController {
         } onContinuePressed: {
             self.authorizeSession()
         }
-        
+
         let hostingViewController = UIHostingController(rootView: klarnaCategoriesView)
         hostingViewController.view.translatesAutoresizingMaskIntoConstraints = false
         addChild(hostingViewController)
@@ -83,19 +83,19 @@ class PrimerKlarnaCategoriesViewController: UIViewController {
             )
         ])
     }
-    
+
     func passRenderedKlarnaView(_ renderedKlarnaView: UIView) {
         sharedWrapper.uiView = renderedKlarnaView
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         if let parentVC = self.parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = true
         }
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if let parentVC = self.parent as? PrimerContainerViewController {
@@ -112,7 +112,7 @@ extension PrimerKlarnaCategoriesViewController {
         activityIndicator.hidesWhenStopped = true
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
     }
-    
+
     func setupLayout() {
         view.addSubview(activityIndicator)
         NSLayoutConstraint.activate([
@@ -129,18 +129,17 @@ extension PrimerKlarnaCategoriesViewController {
         view.bringSubviewToFront(activityIndicator)
         activityIndicator.startAnimating()
     }
-    
+
     func hideLoader() {
         activityIndicator.stopAnimating()
     }
-    
+
     func showLoadingState() {
         klarnaCategoriesVM.isAuthorizing = true
         klarnaCategoriesVM.showBackButton = false
         showLoader()
     }
 }
-
 
 @available(iOS 13.0, *)
 extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
@@ -149,7 +148,7 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
     // MARK: - PrimerHeadlessErrorableDelegate
     func didReceiveError(error: PrimerSDK.PrimerError) {
         showLoadingState()
-        delegate.primerKlarnaPaymentSessionFailed(error: error)
+        delegate?.primerKlarnaPaymentSessionFailed(error: error)
     }
 
     // MARK: - PrimerHeadlessValidatableDelegate
@@ -163,15 +162,15 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
             hideLoader()
             if let error = errors.first {
                 showLoadingState()
-                delegate.primerKlarnaPaymentSessionFailed(error: error)
+                delegate?.primerKlarnaPaymentSessionFailed(error: error)
             }
         case .error(error: let error):
             hideLoader()
             showLoadingState()
-            delegate.primerKlarnaPaymentSessionFailed(error: error)
+            delegate?.primerKlarnaPaymentSessionFailed(error: error)
         }
     }
-    
+
     // MARK: - PrimerHeadlessSteppableDelegate
     func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
         if let step = step as? KlarnaStep {
@@ -208,18 +207,18 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
 extension PrimerKlarnaCategoriesViewController {
     func sessionFinished(with authToken: String) {
         showLoadingState()
-        delegate.primerKlarnaPaymentSessionCompleted(authorizationToken: authToken)
+        delegate?.primerKlarnaPaymentSessionCompleted(authorizationToken: authToken)
     }
-    
+
     func startPaymentSession() {
         showLoader()
         klarnaComponent.start()
     }
-    
+
     func authorizeSession() {
         klarnaComponent.submit()
     }
-    
+
     func finalizeSession() {
         showLoader()
         klarnaComponent.updateCollectedData(collectableData: KlarnaCollectableData.finalizePayment)

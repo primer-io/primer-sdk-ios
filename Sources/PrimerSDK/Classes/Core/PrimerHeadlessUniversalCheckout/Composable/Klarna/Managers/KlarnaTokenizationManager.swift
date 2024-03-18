@@ -22,7 +22,7 @@ protocol KlarnaTokenizationManagerProtocol {
 }
 
 class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
-    
+
     // MARK: - Properties
     private let tokenizationService: TokenizationServiceProtocol
     var mockedSuccessValue: Bool = false

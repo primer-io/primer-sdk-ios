@@ -26,7 +26,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var klarnaCustomerTokenAPIResponse: Response.Body.Klarna.CustomerToken?
     private var klarnaPaymentSessionCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var authorizationToken: String?
-    
+
     required init(config: PrimerPaymentMethod) {
         tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: config)
         super.init(config: config)
@@ -155,11 +155,11 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                         seal.reject(error)
                         return
                     }
-                    
-                    let vc = PrimerKlarnaCategoriesViewController(tokenizationComponent: self.tokenizationComponent, delegate: self)
+
+                    let categoriesViewController = PrimerKlarnaCategoriesViewController(tokenizationComponent: self.tokenizationComponent, delegate: self)
 
                     self.willPresentExternalView?()
-                    PrimerUIManager.primerRootViewController?.show(viewController: vc)
+                    PrimerUIManager.primerRootViewController?.show(viewController: categoriesViewController)
                     self.didPresentExternalView?()
                     seal.fulfill()
                     #else

@@ -10,17 +10,17 @@ import SwiftUI
 
 @available(iOS 13.0, *)
 class SharedUIViewWrapper: ObservableObject {
-    @Published var uiView: UIView? = nil
+    @Published var uiView: UIView?
 }
 
 @available(iOS 13.0, *)
 struct DynamicUIViewRepresentable: UIViewRepresentable {
     @ObservedObject var wrapper: SharedUIViewWrapper
-    
+
     func makeUIView(context: Context) -> UIView {
         return wrapper.uiView ?? UIView()
     }
-    
+
     func updateUIView(_ uiView: UIView, context: Context) {
         uiView.subviews.forEach { $0.removeFromSuperview() }
 
@@ -35,15 +35,15 @@ struct DynamicUIViewRepresentable: UIViewRepresentable {
 
 @available(iOS 13.0, *)
 struct KlarnaCategoryButton: View {
-    
+
     @ObservedObject var sharedWrapper: SharedUIViewWrapper
-    
+
     var isSelected: Bool
     let title: String
     let action: () -> Void
     let klarnaCategoryImage = UIImage(named: "klarna_payment_category", in: Bundle.primerResources, compatibleWith: nil) ?? UIImage()
     let checkmarkImage = UIImage(named: "check2", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate) ?? UIImage()
-    
+
     var body: some View {
         VStack {
             HStack {
@@ -74,7 +74,7 @@ struct KlarnaCategoryButton: View {
                         }
                     }
             })
-            
+
             if isSelected {
                 DynamicUIViewRepresentable(wrapper: sharedWrapper)
                     .frame(height: 240)
@@ -96,10 +96,10 @@ struct KlarnaCategoryButton: View {
 @available(iOS 13.0, *)
 struct ContinueButton: View {
     @Binding var isActive: Bool
-    
+
     let title: String
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: {
             action()
