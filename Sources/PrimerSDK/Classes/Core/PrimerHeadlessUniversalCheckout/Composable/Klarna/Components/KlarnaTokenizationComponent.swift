@@ -129,7 +129,8 @@ extension KlarnaTokenizationComponent {
             switch KlarnaHelpers.getSessionType() {
             case .oneOffPayment:
                 // Prepare the body for the Klarna Finalize Payment Session request
-                let body = prepareKlarnaFinalizePaymentSessionBody(paymentMethodConfigId: paymentMethodConfigId, sessionId: sessionId)
+                let body = prepareKlarnaFinalizePaymentSessionBody(paymentMethodConfigId: paymentMethodConfigId,
+                                                                   sessionId: sessionId)
                 firstly {
                     // Finalize Klarna Payment Session
                     finalizeKlarnaPaymentSession(with: decodedJWTToken, body: body)
