@@ -5,6 +5,8 @@
 //  Created by Evangelos on 14/7/22.
 //
 
+// swiftlint:disable cyclomatic_complexity
+
 import Foundation
 
 internal typealias FileName = String
@@ -295,3 +297,4 @@ extension Downloader: FileManagerDelegate {
         return true
     }
 }
+// swiftlint:enable cyclomatic_complexity

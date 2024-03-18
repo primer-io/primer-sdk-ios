@@ -5,6 +5,8 @@
 //  Created by Dario Carlomagno on 18/08/22.
 //
 
+// swiftlint:disable cyclomatic_complexity
+
 import Foundation
 
 class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
@@ -54,7 +56,8 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
             }
 
             DispatchQueue.main.async {
-                rawDataManager.delegate?.primerRawDataManager?(rawDataManager, metadataDidChange: ["cardNetwork": self.cardNetwork.rawValue])
+                rawDataManager.delegate?.primerRawDataManager?(rawDataManager,
+                                                               metadataDidChange: ["cardNetwork": self.cardNetwork.rawValue])
             }
         }
     }
@@ -293,3 +296,4 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
         }
     }
 }
+// swiftlint:enable cyclomatic_complexity

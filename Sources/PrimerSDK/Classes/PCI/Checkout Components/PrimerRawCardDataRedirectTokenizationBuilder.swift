@@ -7,7 +7,9 @@
 
 import Foundation
 
-// swiftlint:disable:next type_name
+// swiftlint:disable type_name
+// swiftlint:disable cyclomatic_complexity
+
 class PrimerRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var requiredInputElementTypes: [PrimerInputElementType]
@@ -37,7 +39,6 @@ class PrimerRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBui
     }
 }
 
-// swiftlint:disable:next type_name
 class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var rawData: PrimerRawData? {
@@ -259,3 +260,6 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
         }
     }
 }
+
+// swiftlint:enable type_name
+// swiftlint:enable cyclomatic_complexity

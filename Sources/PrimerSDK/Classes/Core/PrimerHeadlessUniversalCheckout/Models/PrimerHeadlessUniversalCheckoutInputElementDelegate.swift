@@ -5,6 +5,8 @@
 //  Created by Evangelos on 4/10/22.
 //
 
+// swiftlint:disable cyclomatic_complexity
+
 import UIKit
 
 extension PrimerHeadlessUniversalCheckout {
@@ -38,7 +40,9 @@ extension PrimerHeadlessUniversalCheckout {
             self.inputElementDelegate?.inputElementDidBlur?(self.inputElement)
         }
 
-        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        func textField(_ textField: UITextField,
+                       shouldChangeCharactersIn range: NSRange,
+                       replacementString string: String) -> Bool {
             guard let primerCheckoutComponentsTextField = textField as? PrimerInputTextField else { return false }
             if !string.isEmpty {
                 // Characters aren't in the allowed character set
@@ -103,3 +107,4 @@ extension PrimerHeadlessUniversalCheckout {
         }
     }
 }
+// swiftlint:enable cyclomatic_complexity

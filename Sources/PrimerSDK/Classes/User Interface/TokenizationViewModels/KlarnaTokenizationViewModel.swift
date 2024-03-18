@@ -1,3 +1,5 @@
+// swiftlint:disable cyclomatic_complexity
+
 import Foundation
 import UIKit
 
@@ -337,7 +339,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                     "class": "\(Self.self)",
                                                                     "function": #function,
-                                                                    "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                    "line": "\(#line)"],
+                                                         diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -347,7 +350,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 let err = PrimerError.missingPrimerConfiguration(userInfo: ["file": #file,
                                                                             "class": "\(Self.self)",
                                                                             "function": #function,
-                                                                            "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                            "line": "\(#line)"],
+                                                                 diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -357,10 +361,13 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
             var amount = AppState.current.amount
             if amount == nil && PrimerInternal.shared.intent == .checkout {
-                let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file,
-                                                                                            "class": "\(Self.self)",
-                                                                                            "function": #function,
-                                                                                            "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidSetting(name: "amount",
+                                                     value: nil,
+                                                     userInfo: ["file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -371,40 +378,52 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
             if case .oneOffPayment = klarnaSessionType {
                 if amount == nil {
-                    let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file,
-                                                                                                "class": "\(Self.self)",
-                                                                                                "function": #function,
-                                                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.invalidSetting(name: "amount",
+                                                         value: nil,
+                                                         userInfo: ["file": #file,
+                                                                    "class": "\(Self.self)",
+                                                                    "function": #function,
+                                                                    "line": "\(#line)"],
+                                                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
                 }
 
                 if AppState.current.currency == nil {
-                    let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file,
-                                                                                                  "class": "\(Self.self)",
-                                                                                                  "function": #function,
-                                                                                                  "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.invalidSetting(name: "currency",
+                                                         value: nil,
+                                                         userInfo: ["file": #file,
+                                                                    "class": "\(Self.self)",
+                                                                    "function": #function,
+                                                                    "line": "\(#line)"],
+                                                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
                 }
 
                 if (PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.lineItems ?? []).isEmpty {
-                    let err = PrimerError.invalidValue(key: "settings.orderItems", value: nil, userInfo: ["file": #file,
-                                                                                                          "class": "\(Self.self)",
-                                                                                                          "function": #function,
-                                                                                                          "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.invalidValue(key: "settings.orderItems",
+                                                       value: nil,
+                                                       userInfo: ["file": #file,
+                                                                  "class": "\(Self.self)",
+                                                                  "function": #function,
+                                                                  "line": "\(#line)"],
+                                                       diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
                 }
 
                 if !(PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.lineItems ?? []).filter({ $0.amount == nil }).isEmpty {
-                    let err = PrimerError.invalidValue(key: "settings.orderItems.amount", value: nil, userInfo: ["file": #file,
-                                                                                                                 "class": "\(Self.self)",
-                                                                                                                 "function": #function,
-                                                                                                                 "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.invalidValue(key: "settings.orderItems.amount",
+                                                       value: nil,
+                                                       userInfo: ["file": #file,
+                                                                  "class": "\(Self.self)",
+                                                                  "function": #function,
+                                                                  "line": "\(#line)"],
+                                                       diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -462,7 +481,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                     "class": "\(Self.self)",
                                                                     "function": #function,
-                                                                    "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                    "line": "\(#line)"],
+                                                         diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -520,7 +540,8 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -569,3 +590,4 @@ extension KlarnaTokenizationViewModel: PrimerKlarnaViewControllerDelegate {
     }
 }
 #endif
+// swiftlint:enable cyclomatic_complexity

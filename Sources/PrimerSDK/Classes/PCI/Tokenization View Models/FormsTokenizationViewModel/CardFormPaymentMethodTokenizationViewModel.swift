@@ -771,6 +771,7 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
         }
     }
 
+    // swiftlint:disable cyclomatic_complexity
     fileprivate func showTexfieldViewErrorIfNeeded(for primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
 
         if isValid == false {
@@ -829,6 +830,7 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
             }
         }
     }
+    // swiftlint:enable cyclomatic_complexity
 
     fileprivate func enableSubmitButtonIfNeeded() {
         var validations = [

@@ -9,6 +9,8 @@ import Foundation
 import UIKit
 import SafariServices
 
+// swiftlint:disable cyclomatic_complexity
+
 final class BanksTokenizationComponent: NSObject, LogReporter {
     var config: PrimerPaymentMethod
     var paymentMethodType: PrimerPaymentMethodType
@@ -470,7 +472,11 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                         seal.reject(err)
                     }
                 } else {
-                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                        "class": "\(Self.self)",
+                                                                        "function": #function,
+                                                                        "line": "\(#line)"],
+                                                             diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                 }
@@ -647,7 +653,11 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     }
     private func tokenize(bank: AdyenBank, completion: @escaping (_ paymentMethodTokenData: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
         guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(nil, err)
             return
@@ -1003,7 +1013,12 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
                         decisionHandlerHasBeenCalled = true
                         switch paymentCreationDecision.type {
                         case .abort(let errorMessage):
-                            let error = PrimerError.merchantError(message: errorMessage ?? "", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                            let error = PrimerError.merchantError(message: errorMessage ?? "",
+                                                                  userInfo: ["file": #file,
+                                                                             "class": "\(Self.self)",
+                                                                             "function": #function,
+                                                                             "line": "\(#line)"],
+                                                                  diagnosticsId: UUID().uuidString)
                             seal.reject(error)
                         case .continue:
                             seal.fulfill()
@@ -1092,7 +1107,10 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
             self.didCancel = {
                 let err = PrimerError.cancelled(
                     paymentMethodType: self.config.type,
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 pollingModule.cancel(withError: err)
@@ -1119,3 +1137,4 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
         }
     }
 }
+// swiftlint:enable cyclomatic_complexity
