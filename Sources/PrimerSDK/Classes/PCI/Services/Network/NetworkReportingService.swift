@@ -17,12 +17,18 @@ protocol NetworkReportingService {
     func report(eventType: NetworkEventType)
 }
 
+private let disallowedTrackingPaths: [String] = [
+    "/sdk-logs",
+    "/checkout/track"
+]
+
 class DefaultNetworkReportingService: NetworkReportingService {
     func report(eventType: NetworkEventType) {
         let event: Analytics.Event
 
         switch eventType {
         case .requestStart(let id, let endpoint, let request):
+            guard shouldReportNetworkEvents(for: endpoint) else { return }
             event = Analytics.Event.networkCall(
                 callType: .requestStart,
                 id: id,
@@ -31,6 +37,7 @@ class DefaultNetworkReportingService: NetworkReportingService {
                 errorBody: nil,
                 responseCode: nil)
         case .requestEnd(let id, let endpoint, let response):
+            guard shouldReportNetworkEvents(for: endpoint) else { return }
             event = Analytics.Event.networkCall(
                 callType: .requestEnd,
                 id: id,
@@ -45,5 +52,20 @@ class DefaultNetworkReportingService: NetworkReportingService {
         }
 
         Analytics.Service.record(event: event)
+    }
+
+    private func shouldReportNetworkEvents(for endpoint: Endpoint) -> Bool {
+        guard let primerAPI = endpoint as? PrimerAPI else {
+            return false
+        }
+        // Don't report events for polling requests
+        guard primerAPI != PrimerAPI.poll(clientToken: nil, url: "") else {
+            return false
+        }
+        guard let baseURL = primerAPI.baseURL, let url = URL(string: baseURL),
+                !disallowedTrackingPaths.contains(url.path) else {
+            return false
+        }
+        return true
     }
 }
