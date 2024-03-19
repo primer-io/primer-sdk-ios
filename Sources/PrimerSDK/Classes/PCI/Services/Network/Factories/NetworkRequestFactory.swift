@@ -17,11 +17,10 @@ class DefaultNetworkRequestFactory: NetworkRequestFactory {
         var request = try baseRequest(from: endpoint)
         
         request.httpMethod = endpoint.method.rawValue
-        guard let headers = endpoint.headers else {
-            // TODO: proper error
-            throw InternalError.invalidUrl(url: nil, userInfo: nil, diagnosticsId: nil)
+        
+        if let headers = endpoint.headers {
+            add(headers: headers, toRequest: &request)
         }
-        add(headers: headers, toRequest: &request)
 
         if endpoint.method != .get, let body = endpoint.body {
             request.httpBody = body
