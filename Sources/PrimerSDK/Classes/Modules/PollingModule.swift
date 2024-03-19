@@ -84,7 +84,7 @@ class PollingModule: Module {
             switch result {
             case .success(let res):
                 if res.status == .pending {
-                    Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                         self.startPolling(completion: completion)
                     }
                 } else if res.status == .complete {
@@ -99,7 +99,7 @@ class PollingModule: Module {
             case .failure(let err):
                 ErrorHandler.handle(error: err)
                 // Retry
-                Timer.scheduledTimer(withTimeInterval: self.retryInterval, repeats: false) { _ in
+                DispatchQueue.main.asyncAfter(deadline: .now() + self.retryInterval) { 
                     self.startPolling(completion: completion)
                 }
             }

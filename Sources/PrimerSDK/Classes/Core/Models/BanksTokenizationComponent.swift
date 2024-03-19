@@ -1010,7 +1010,7 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
                         }
                     })
 
-                Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
                     if !decisionHandlerHasBeenCalled {
                         self?.logger.warn(message: "The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. Make sure you call the decision handler otherwise the SDK will hang.")
                     }
