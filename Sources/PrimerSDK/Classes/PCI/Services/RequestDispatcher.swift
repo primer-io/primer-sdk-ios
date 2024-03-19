@@ -7,7 +7,7 @@
 
 import Foundation
 
-typealias DispatcherCompletion = (DispatcherResponse) throws -> Void
+typealias DispatcherCompletion = (Result<DispatcherResponse, Error>) -> Void
 
 protocol RequestDispatcher {
     func dispatch(request: URLRequest) async throws -> DispatcherResponse
@@ -42,28 +42,32 @@ class DefaultRequestDispatcher: RequestDispatcher {
 
     func dispatch(request: URLRequest) async throws -> DispatcherResponse {
         return try await withCheckedThrowingContinuation { continuation in
-            urlSession.dataTask(with: request) { data, urlResponse, error in
-                guard let httpResponse = urlResponse as? HTTPURLResponse else {
-                    let error = InternalError.invalidResponse(userInfo: .errorUserInfoDictionary(),
-                                                              diagnosticsId: UUID().uuidString)
-                    continuation.resume(throwing: error)
-                    return
-                }
-                let metadata = ResponseMetadataModel(responseUrl: httpResponse.responseUrl,
-                                                     statusCode: httpResponse.statusCode,
-                                                     headers: httpResponse.headers)
-                let responseModel = DispatcherResponseModel(metadata: metadata, data: data, error: error)
-                continuation.resume(returning: responseModel)
+            dispatch(request: request) { response in
+                continuation.resume(with: response)
             }
-            .resume()
         }
     }
 
-    func dispatch(request: URLRequest, completion: @escaping DispatcherCompletion) throws -> PrimerCancellable? {
-        return Task {
-            let response = try await dispatch(request: request)
-            try completion(response)
+    @discardableResult
+    func dispatch(request: URLRequest, completion: @escaping DispatcherCompletion) -> PrimerCancellable? {
+        let task = urlSession.dataTask(with: request) { data, urlResponse, error in
+            guard let httpResponse = urlResponse as? HTTPURLResponse else {
+                let error = InternalError.invalidResponse(userInfo: .errorUserInfoDictionary(),
+                                                          diagnosticsId: UUID().uuidString)
+                completion(.failure(error))
+                return
+            }
+
+            let metadata = ResponseMetadataModel(responseUrl: httpResponse.responseUrl,
+                                                 statusCode: httpResponse.statusCode,
+                                                 headers: httpResponse.headers)
+            let responseModel = DispatcherResponseModel(metadata: metadata, data: data, error: error)
+            completion(.success(responseModel))
         }
+
+        task.resume()
+
+        return task
     }
 }
 

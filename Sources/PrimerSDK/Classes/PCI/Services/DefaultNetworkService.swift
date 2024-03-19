@@ -62,10 +62,28 @@ class DefaultNetworkService: NetworkService, LogReporter {
                                                              endpoint: endpoint,
                                                              request: request))
 
-            return try requestDispatcher.dispatch(request: request) { [reportingService] response in
+            return try requestDispatcher.dispatch(request: request) { [reportingService] result in
+
+                let response: DispatcherResponse
+                switch result {
+                case .success(let theResponse):
+                    response = theResponse
+                case .failure(let error):
+                    // TODO: is this correct?
+                    completion(.failure(error))
+                    return
+                }
+
                 reportingService.report(eventType: .requestEnd(identifier: identifier,
                                                                endpoint: endpoint,
                                                                response: response.metadata))
+
+                if let error = response.error {
+                    completion(.failure(InternalError.underlyingErrors(errors: [error],
+                                                                       userInfo: .errorUserInfoDictionary(),
+                                                                       diagnosticsId: UUID().uuidString)))
+                    return
+                }
 
                 self.logger.debug(message: response.metadata.description)
                 guard let data = response.data else {
@@ -74,8 +92,12 @@ class DefaultNetworkService: NetworkService, LogReporter {
                     return
                 }
 
-                let response: T = try endpoint.responseFactory.model(for: data, forUrl: request.url?.absoluteString)
-                completion(.success(response))
+                do {
+                    let response: T = try endpoint.responseFactory.model(for: data, forUrl: request.url?.absoluteString)
+                    completion(.success(response))
+                } catch {
+                    completion(.failure(error))
+                }
             }
         } catch {
             ErrorHandler.handle(error: error)

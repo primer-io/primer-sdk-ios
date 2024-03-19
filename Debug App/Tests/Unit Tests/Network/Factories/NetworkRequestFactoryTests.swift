@@ -81,4 +81,16 @@ final class NetworkRequestFactoryTests: XCTestCase {
         XCTAssertEqual(request.allHTTPHeaderFields, defaultHeaders(jwt: "bla"))
     }
 
+    func testRequestCreation_resumePayment() throws {
+        let endpoint = PrimerAPI.resumePayment(clientToken: Mocks.decodedJWTToken,
+                                               paymentId: "payment_id",
+                                               paymentResumeRequest: Request.Body.Payment.Resume(token: "token"))
+        let request = try networkRequestFactory.request(for: endpoint)
+
+        XCTAssertEqual(request.httpMethod, "POST")
+        XCTAssertEqual(request.url?.absoluteString, "pci_url/payments/payment_id/resume")
+        XCTAssertEqual(request.allHTTPHeaderFields, defaultHeaders(isPost: true, jwt: "bla"))
+
+    }
+
 }

@@ -19,7 +19,7 @@ class DefaultNetworkRequestFactory: NetworkRequestFactory {
         request.httpMethod = endpoint.method.rawValue
 
         if let headers = endpoint.headers {
-            add(headers: headers, toRequest: &request)
+            request.allHTTPHeaderFields = headers
         }
 
         if endpoint.method != .get, let body = endpoint.body {
@@ -34,8 +34,7 @@ class DefaultNetworkRequestFactory: NetworkRequestFactory {
     }
 
     private func baseRequest(from endpoint: Endpoint) throws -> URLRequest {
-        guard let baseURL = endpoint.baseURL,
-              let url = URL(string: "\(baseURL)\(endpoint.path)")
+        guard let url = url(for: endpoint)
         else {
             // TODO: fix error
             throw InternalError.invalidUrl(url: nil, userInfo: nil, diagnosticsId: nil)
@@ -44,9 +43,32 @@ class DefaultNetworkRequestFactory: NetworkRequestFactory {
         return URLRequest(url: url)
     }
 
-    private func add(headers: [String: String], toRequest request: inout URLRequest) {
-        headers.forEach { key, value in
-            request.addValue(value, forHTTPHeaderField: key)
+    private func url(for endpoint: Endpoint) -> URL? {
+        guard let urlStr = endpoint.baseURL else { return nil }
+        guard let baseUrl = URL(string: urlStr) else { return nil }
+        var url = baseUrl
+
+        if endpoint.path != "" {
+            url = baseUrl.appendingPathComponent(endpoint.path)
         }
+
+        if let queryParameters = endpoint.queryParameters, !queryParameters.keys.isEmpty {
+            var urlComponents = URLComponents(string: url.absoluteString)!
+            var urlQueryItems: [URLQueryItem] = []
+
+            for (key, val) in queryParameters {
+                let urlQueryItem = URLQueryItem(name: key, value: val)
+                urlQueryItems.append(urlQueryItem)
+            }
+
+            if !urlQueryItems.isEmpty {
+                urlComponents.queryItems = urlQueryItems
+            }
+
+            let tmpUrl = urlComponents.url ?? url
+            return tmpUrl
+        }
+
+        return url
     }
 }
