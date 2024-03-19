@@ -9,7 +9,6 @@ import UIKit
 import SwiftUI
 #if canImport(PrimerKlarnaSDK)
 import PrimerKlarnaSDK
-#endif
 
 protocol PrimerKlarnaCategoriesDelegate: AnyObject {
     func primerKlarnaPaymentSessionCompleted(authorizationToken: String)
@@ -224,3 +223,4 @@ extension PrimerKlarnaCategoriesViewController {
         klarnaComponent.updateCollectedData(collectableData: KlarnaCollectableData.finalizePayment)
     }
 }
+#endif
