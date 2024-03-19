@@ -278,7 +278,6 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
     
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, 
                               willFetchMetadataForState state: PrimerValidationState) {
-        // TODO
         print("[MerchantHeadlessCheckoutRawDataViewController] willFetchCardMetadataForState")
         DispatchQueue.main.async {
             self.cardsStackView.removeAllArrangedSubviews()

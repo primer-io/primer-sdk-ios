@@ -17,7 +17,7 @@ class DefaultNetworkRequestFactory: NetworkRequestFactory {
         var request = try baseRequest(from: endpoint)
         
         request.httpMethod = endpoint.method.rawValue
-        
+
         if let headers = endpoint.headers {
             add(headers: headers, toRequest: &request)
         }
@@ -37,6 +37,7 @@ class DefaultNetworkRequestFactory: NetworkRequestFactory {
         guard let baseURL = endpoint.baseURL,
               let url = URL(string: "\(baseURL)\(endpoint.path)")
         else {
+            // TODO: fix error
             throw InternalError.invalidUrl(url: nil, userInfo: nil, diagnosticsId: nil)
         }
 

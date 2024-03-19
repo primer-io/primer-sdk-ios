@@ -15,7 +15,7 @@ protocol RequestDispatcher {
 }
 
 struct DispatcherResponseModel: DispatcherResponse {
-    let metadata: ResponseMetadata?
+    let metadata: ResponseMetadata
     let data: Data?
     let error: Error?
 }
@@ -27,7 +27,7 @@ struct ResponseMetadataModel: ResponseMetadata {
 }
 
 protocol DispatcherResponse {
-    var metadata: ResponseMetadata? { get }
+    var metadata: ResponseMetadata { get }
     var data: Data? { get }
     var error: Error? { get }
 }
@@ -44,8 +44,8 @@ class DefaultRequestDispatcher: RequestDispatcher {
         return try await withCheckedThrowingContinuation { continuation in
             urlSession.dataTask(with: request) { data, urlResponse, error in
                 guard let httpResponse = urlResponse as? HTTPURLResponse else {
-                    // TODO: error
-                    let error = InternalError.serverError(status: 0, response: nil, userInfo: nil, diagnosticsId: nil)
+                    let error = InternalError.invalidResponse(userInfo: .errorUserInfoDictionary(),
+                                                              diagnosticsId: UUID().uuidString)
                     continuation.resume(throwing: error)
                     return
                 }
@@ -59,11 +59,12 @@ class DefaultRequestDispatcher: RequestDispatcher {
         }
     }
 
-    func dispatch(request: URLRequest, completion: @escaping (DispatcherResponse) throws -> Void) throws -> PrimerCancellable? {
-        Task {
+    func dispatch(request: URLRequest, completion: @escaping DispatcherCompletion) throws -> PrimerCancellable? {
+        return Task {
             let response = try await dispatch(request: request)
             try completion(response)
         }
-        return nil // TODO
     }
 }
+
+extension Task: PrimerCancellable {}

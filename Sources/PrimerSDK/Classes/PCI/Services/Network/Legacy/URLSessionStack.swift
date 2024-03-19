@@ -109,10 +109,6 @@ internal class URLSessionStack: NetworkService, LogReporter {
             )
             var resEventProperties: NetworkCallEventProperties? = resEvent.properties as? NetworkCallEventProperties
 
-            #if DEBUG
-
-            #endif
-
             if let error = error {
                 if self.shouldReportNetworkEvents(for: endpoint) {
                     resEventProperties!.errorBody = "\(error)"

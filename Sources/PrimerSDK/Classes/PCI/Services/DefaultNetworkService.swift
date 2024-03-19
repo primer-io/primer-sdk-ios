@@ -63,27 +63,22 @@ class DefaultNetworkService: NetworkService, LogReporter {
                                                              request: request))
 
             return try requestDispatcher.dispatch(request: request) { [reportingService] response in
-                guard let metadata = response.metadata else {
-                    // TODO: new error - noResponse
-                    completion(.failure(InternalError.noData(userInfo: nil, diagnosticsId: nil)))
-                    return
-                }
-
                 reportingService.report(eventType: .requestEnd(identifier: identifier,
                                                                endpoint: endpoint,
-                                                               response: metadata))
+                                                               response: response.metadata))
 
-                self.logger.debug(message: metadata.description)
+                self.logger.debug(message: response.metadata.description)
                 guard let data = response.data else {
-                    // TODO: add context to error
-                    completion(.failure(InternalError.noData(userInfo: nil, diagnosticsId: nil)))
+                    completion(.failure(InternalError.noData(userInfo: .errorUserInfoDictionary(),
+                                                             diagnosticsId: UUID().uuidString)))
                     return
                 }
 
-                let response: T = try endpoint.responseFactory.model(for: data)
+                let response: T = try endpoint.responseFactory.model(for: data, forUrl: request.url?.absoluteString)
                 completion(.success(response))
             }
         } catch {
+            ErrorHandler.handle(error: error)
             completion(.failure(error))
         }
 
