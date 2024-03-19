@@ -295,7 +295,6 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
             return
         }
         
-        // JN TODO
         let printableNetworks = metadata.detectedCardNetworks.items.map { $0.network.rawValue }.joined(separator: ", ")
         print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveCardMetadata: \(printableNetworks) forCardValidationState: \(cardState.cardNumber)")
         

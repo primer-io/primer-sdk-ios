@@ -26,13 +26,11 @@ internal class URLSessionStack: NetworkService, LogReporter {
     func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResponseCompletion<T>) -> PrimerCancellable? {
 
         // Generate url string
-        // TODO: add helper method
         let urlStr: String = (endpoint.baseURL ?? "") + endpoint.path
         // Generate id - used as an identifier on events relating to the request
         let id = String.randomString(length: 32)
 
         // Send network requestStart event (if necessary)
-        // TODO: this happens too early. We should send this immediately before creating the data task
         if shouldReportNetworkEvents(for: endpoint) {
             let reqEvent = Analytics.Event.networkCall(
                 callType: .requestStart,
@@ -49,7 +47,6 @@ internal class URLSessionStack: NetworkService, LogReporter {
         }
 
         // Error if URL invalid
-        // TODO: Same url should be used for event and here ...
         guard let url = url(for: endpoint) else {
             let err = InternalError.invalidUrl(url: "Base URL: \(endpoint.baseURL ?? "nil") | Endpoint: \(endpoint.path)", userInfo: ["file": #file,
                                                                                                                                       "class": "\(Self.self)",
@@ -61,7 +58,6 @@ internal class URLSessionStack: NetworkService, LogReporter {
         }
 
         // Setup request
-        // TODO create factory for (endpoint -> request)
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method.rawValue
 
