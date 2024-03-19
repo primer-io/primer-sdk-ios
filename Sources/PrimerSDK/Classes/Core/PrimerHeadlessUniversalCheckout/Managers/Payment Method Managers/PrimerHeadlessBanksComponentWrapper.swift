@@ -5,8 +5,6 @@
 //  Created by Alexandra Lovin on 22.11.2023.
 //
 
-// swiftlint:disable type_name
-
 import Foundation
 @objc public protocol BanksComponentErrorable: AnyObject {
     @objc func didReceiveError(_ error: NSError)
@@ -28,6 +26,7 @@ import Foundation
     @objc func didReceiveValidationStatus(_ status: ValidStatus)
 }
 
+// swiftlint:disable type_name
 @objc public protocol PrimerHeadlessBanksComponentWrapperDelegate: AnyObject, PrimerHeadlessSubmitable, PrimerHeadlessStartable {
     @objc var stepDelegate: BanksComponentSteppable? { get set }
     @objc var errorDelegate: BanksComponentErrorable? { get set }

@@ -5,7 +5,6 @@
 //  Created by Evangelos on 12/7/22.
 //
 
-// swiftlint:disable type_name
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable file_length
 // swiftlint:disable function_body_length
@@ -14,6 +13,7 @@
 import Foundation
 import SafariServices
 
+// swiftlint:disable type_name
 @objc
 public protocol PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
@@ -732,7 +732,11 @@ Make sure you call the decision handler otherwise the SDK will hang."
                         }
 
                         guard let selectedRetailer = rawData as? PrimerRetailerData,
-                              let selectedRetailerName = (initializationData as? RetailOutletsList)?.result.first(where: { $0.id == selectedRetailer.id })?.name else {
+                              let selectedRetailerName = (initializationData as? RetailOutletsList)?
+                            .result
+                            .first(where: { $0.id == selectedRetailer.id })?
+                            .name
+                        else {
                             let err = PrimerError.invalidValue(key: "rawData.id",
                                                                value: "Invalid Retailer Identifier",
                                                                userInfo: ["file": #file,
