@@ -204,6 +204,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 }
 
+#if canImport(PrimerKlarnaSDK)
 @available(iOS 13.0, *)
 extension KlarnaTokenizationViewModel: PrimerKlarnaCategoriesDelegate {
     func primerKlarnaPaymentSessionCompleted(authorizationToken: String) {
@@ -214,3 +215,4 @@ extension KlarnaTokenizationViewModel: PrimerKlarnaCategoriesDelegate {
         klarnaPaymentSessionCompletion?(nil, error)
     }
 }
+#endif
