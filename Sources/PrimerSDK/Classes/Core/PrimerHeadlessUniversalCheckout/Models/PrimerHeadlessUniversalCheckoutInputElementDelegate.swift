@@ -6,7 +6,6 @@
 //
 
 // swiftlint:disable cyclomatic_complexity
-// swiftlint:disable function_body_length
 
 import UIKit
 
@@ -40,7 +39,7 @@ extension PrimerHeadlessUniversalCheckout {
         func textFieldDidEndEditing(_ textField: UITextField) {
             self.inputElementDelegate?.inputElementDidBlur?(self.inputElement)
         }
-
+        // swiftlint:disable function_body_length
         func textField(_ textField: UITextField,
                        shouldChangeCharactersIn range: NSRange,
                        replacementString string: String) -> Bool {

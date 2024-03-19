@@ -9,18 +9,18 @@
 // swiftlint:disable file_length
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
-// swiftlint:disable type_name
 
 import Foundation
 import SafariServices
 
 public protocol PrimerHeadlessUniversalCheckoutInputData {}
-
+// swiftlint:disable type_name
 @available(*, deprecated, message: "CardComponentsManager is no longer supported, please use PrimerHeadlessUniversalCheckout instead")
 public protocol PrimerHeadlessUniversalCheckoutCardComponentsManagerDelegate: AnyObject {
     func cardComponentsManager(_ cardComponentsManager: PrimerHeadlessUniversalCheckout.CardComponentsManager,
                                isCardFormValid: Bool)
 }
+// swiftlint:enable type_name
 
 extension PrimerHeadlessUniversalCheckout {
 
@@ -1330,5 +1330,4 @@ extension PrimerHeadlessUniversalCheckout.CardComponentsManager: SFSafariViewCon
 // swiftlint:enable cyclomatic_complexity
 // swiftlint:enable function_body_length
 // swiftlint:enable type_body_length
-// swiftlint:enable type_name
 // swiftlint:enable file_length
