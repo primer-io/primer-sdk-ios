@@ -36,12 +36,8 @@ class DefaultRequestDispatcher: RequestDispatcher {
 
     let urlSession: URLSession
 
-    let reportingService: NetworkReportingService
-
-    init(urlSession: URLSession = .shared,
-         reportingService: NetworkReportingService){
+    init(urlSession: URLSession = .shared) {
         self.urlSession = urlSession
-        self.reportingService = reportingService
     }
 
     func dispatch(request: URLRequest) async throws -> DispatcherResponse {

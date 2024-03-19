@@ -21,6 +21,9 @@
 		04769C152B1A680C0051581C /* Promises+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04769C142B1A680C0051581C /* Promises+Helper.swift */; };
 		0479FB192AF2599A00D0AFC9 /* StringTyper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0479FB172AF2599200D0AFC9 /* StringTyper.swift */; };
 		047D8E892ADEA4C700A5E7BD /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047D8E882ADEA4C700A5E7BD /* NetworkService.swift */; };
+		0488648B2BA88F63007BCDA6 /* NetworkRequestFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0488648A2BA88F63007BCDA6 /* NetworkRequestFactoryTests.swift */; };
+		0488648D2BA89402007BCDA6 /* CodingUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0488648C2BA89402007BCDA6 /* CodingUtilities.swift */; };
+		0488648F2BA89E04007BCDA6 /* NetworkResponseFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0488648E2BA89E04007BCDA6 /* NetworkResponseFactoryTests.swift */; };
 		0489E2BB2B68F71300FA0682 /* TapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0489E2BA2B68F71300FA0682 /* TapGestureRecognizer.swift */; };
 		049298012B1DD466002E04B8 /* AnalyticsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049298002B1DD466002E04B8 /* AnalyticsServiceTests.swift */; };
 		049298072B1E1F4D002E04B8 /* AnalyticsStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */; };
@@ -129,7 +132,7 @@
 		E6F85ECD80B64754E7A6D35E /* RawDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7C082270CF1C6B7810F9B3 /* RawDataManagerTests.swift */; };
 		EA7FAA4F8476BD3711D628CB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B18D7E7738BF86467B0F1465 /* Images.xcassets */; };
 		F02F496FD20B5291C044F62C /* MerchantResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */; };
-		F03699592AC2E63700E4179D /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		F03699592AC2E63700E4179D /* (null) in Sources */ = {isa = PBXBuildFile; };
 		F08F63D82B9B5A7C006EF9A9 /* SessionConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63D72B9B5A7C006EF9A9 /* SessionConfiguration.swift */; };
 		F08F63DA2B9B5BC5006EF9A9 /* AppetizeConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63D92B9B5BC5006EF9A9 /* AppetizeConfigProvider.swift */; };
 		F08F63DC2B9F27B0006EF9A9 /* MetadataParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63DB2B9F27B0006EF9A9 /* MetadataParser.swift */; };
@@ -192,6 +195,9 @@
 		04769C142B1A680C0051581C /* Promises+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Promises+Helper.swift"; sourceTree = "<group>"; };
 		0479FB172AF2599200D0AFC9 /* StringTyper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTyper.swift; sourceTree = "<group>"; };
 		047D8E882ADEA4C700A5E7BD /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		0488648A2BA88F63007BCDA6 /* NetworkRequestFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkRequestFactoryTests.swift; sourceTree = "<group>"; };
+		0488648C2BA89402007BCDA6 /* CodingUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodingUtilities.swift; sourceTree = "<group>"; };
+		0488648E2BA89E04007BCDA6 /* NetworkResponseFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkResponseFactoryTests.swift; sourceTree = "<group>"; };
 		0489E2BA2B68F71300FA0682 /* TapGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapGestureRecognizer.swift; sourceTree = "<group>"; };
 		049298002B1DD466002E04B8 /* AnalyticsServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsServiceTests.swift; sourceTree = "<group>"; };
 		049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsStorageTests.swift; sourceTree = "<group>"; };
@@ -395,8 +401,18 @@
 				0479FB172AF2599200D0AFC9 /* StringTyper.swift */,
 				04DAAED52B03EF0B002E2614 /* SDKSessionHelper.swift */,
 				04236A9A2B7D2EA50041EC11 /* JWTFactory.swift */,
+				0488648C2BA89402007BCDA6 /* CodingUtilities.swift */,
 			);
 			path = "Test Utilities";
+			sourceTree = "<group>";
+		};
+		048864892BA88F44007BCDA6 /* Factories */ = {
+			isa = PBXGroup;
+			children = (
+				0488648A2BA88F63007BCDA6 /* NetworkRequestFactoryTests.swift */,
+				0488648E2BA89E04007BCDA6 /* NetworkResponseFactoryTests.swift */,
+			);
+			path = Factories;
 			sourceTree = "<group>";
 		};
 		0489E2B92B68F70400FA0682 /* Utilities */ = {
@@ -466,6 +482,7 @@
 		2F23D3C9CC9CBC1B95329B1C /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				048864892BA88F44007BCDA6 /* Factories */,
 				E130C3D82AFD19FF00AC3E7C /* NetworkTests.swift */,
 				1F4E35F809D3FAF4354D5B05 /* URLSessionStackTests.swift */,
 				041F52082ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift */,
@@ -1070,10 +1087,12 @@
 				0442B6472B7BA4C7004DB054 /* MockPrimerAPIAnalyticsClient.swift in Sources */,
 				8064B65A8F83D5B004D081FD /* PaymentMethodConfigTests.swift in Sources */,
 				04DAAED62B03EF0B002E2614 /* SDKSessionHelper.swift in Sources */,
+				0488648D2BA89402007BCDA6 /* CodingUtilities.swift in Sources */,
 				4BD7794627267B40E9E10686 /* PrimerCheckoutTheme.swift in Sources */,
 				A12AC2552B505B6200C26999 /* CurrencyLoaderTests.swift in Sources */,
 				F99DAF50E86E6F8CCD127E5B /* ThemeTests.swift in Sources */,
 				A12AC2532B5046CF00C26999 /* CurrencyStorageTests.swift in Sources */,
+				0488648F2BA89E04007BCDA6 /* NetworkResponseFactoryTests.swift in Sources */,
 				04769C152B1A680C0051581C /* Promises+Helper.swift in Sources */,
 				049298072B1E1F4D002E04B8 /* AnalyticsStorageTests.swift in Sources */,
 				24C060A48D4A2670FFC3426F /* ThreeDSErrorTests.swift in Sources */,
@@ -1099,7 +1118,8 @@
 				583EBAA90902121CEA479416 /* VaultService.swift in Sources */,
 				961B5D18058EF4CFCD0185AE /* MockVaultCheckoutViewModel.swift in Sources */,
 				622A605DDEA98D981670B53F /* DropInUI_TokenizationViewModelTests.swift in Sources */,
-				F03699592AC2E63700E4179D /* BuildFile in Sources */,
+				0488648B2BA88F63007BCDA6 /* NetworkRequestFactoryTests.swift in Sources */,
+				F03699592AC2E63700E4179D /* (null) in Sources */,
 				208CA849F3187C2DA63CC17B /* HUC_TokenizationViewModelTests.swift in Sources */,
 				213196DEDF2A3A84037ED884 /* PollingModuleTests.swift in Sources */,
 				04F6EF742AE6A06200115D05 /* AnalyticsEventsTests.swift in Sources */,

@@ -9,7 +9,8 @@ import Foundation
 
 let defaultNetworkService = DefaultNetworkService(
     requestFactory: DefaultNetworkRequestFactory(),
-    requestDispatcher: DefaultRequestDispatcher(reportingService: DefaultNetworkReportingService())
+    requestDispatcher: DefaultRequestDispatcher(),
+    reportingService: DefaultNetworkReportingService()
 )
 
 internal class PrimerAPIClient: PrimerAPIClientProtocol {
