@@ -93,8 +93,8 @@ class DefaultNetworkService: NetworkService, LogReporter {
                 }
 
                 do {
-                    let response: T = try endpoint.responseFactory.model(for: data, forUrl: request.url?.absoluteString)
-                    completion(.success(response))
+                    let response: T = try endpoint.responseFactory.model(for: data, forMetadata: response.metadata)
+                        completion(.success(response))
                 } catch {
                     completion(.failure(error))
                 }

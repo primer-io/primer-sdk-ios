@@ -8,7 +8,7 @@
 import Foundation
 
 protocol NetworkResponseFactory: AnyObject {
-    func model<T>(for response: Data, forUrl url: String?) throws -> T where T: Decodable
+    func model<T>(for response: Data, forMetadata metadata: ResponseMetadata) throws -> T where T: Decodable
 }
 
 extension Endpoint {
@@ -20,17 +20,34 @@ extension Endpoint {
     }
 }
 
-class JSONNetworkResponseFactory: NetworkResponseFactory {
+class JSONNetworkResponseFactory: NetworkResponseFactory, LogReporter {
 
     let decoder = JSONDecoder()
 
-    func model<T>(for response: Data, forUrl url: String?) throws -> T where T: Decodable {
-        do {
-            return try decoder.decode(T.self, from: response)
-        } catch {
-            throw InternalError.failedToDecode(message: "Failed to decode response from URL: \(url ?? "Unknown")",
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
+    func model<T>(for response: Data, forMetadata metadata: ResponseMetadata) throws -> T where T: Decodable {
+        switch metadata.statusCode {
+        case 200:
+            do {
+                return try decoder.decode(T.self, from: response)
+            } catch {
+                throw InternalError.failedToDecode(message: "Failed to decode response of type '\(T.self)' from URL: \(metadata.responseUrl ?? "Unknown")",
+                                                   userInfo: .errorUserInfoDictionary(),
+                                                   diagnosticsId: UUID().uuidString)
+            }
+        case 400...599:
+            if let serverError = try? decoder.decode(PrimerServerErrorResponse.self, from: response) {
+                throw InternalError.serverError(status: metadata.statusCode,
+                                                response: serverError,
+                                                userInfo: .errorUserInfoDictionary(),
+                                                diagnosticsId: UUID().uuidString)
+            }
+        default:
+            break
         }
+
+        throw InternalError.failedToDecode(message: "Failed to decode response from URL: \(metadata.responseUrl ?? "Unknown")",
+                                           userInfo: .errorUserInfoDictionary(),
+                                           diagnosticsId: UUID().uuidString)
+
     }
 }

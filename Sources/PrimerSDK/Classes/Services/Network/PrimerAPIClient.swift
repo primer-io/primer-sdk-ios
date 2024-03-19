@@ -19,7 +19,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
 
     // MARK: - Object lifecycle
 
-    init(networkService: NetworkService = defaultNetworkService) {
+    init(networkService: NetworkService = URLSessionStack()) {
         self.networkService = networkService
     }
 
