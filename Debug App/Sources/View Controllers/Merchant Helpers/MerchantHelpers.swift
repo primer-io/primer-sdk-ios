@@ -10,7 +10,7 @@ import UIKit
 import PrimerSDK
 
 struct MerchantMockDataManager {
-    
+
     enum SessionType {
         case generic
         case oneTimePayment
@@ -78,26 +78,29 @@ struct MerchantMockDataManager {
         return sessionType == .generic ? genericPaymentMethod : klarnaPaymentMethod
     }
     
-    static var genericPaymentMethod = ClientSessionRequestBody.PaymentMethod(
-        vaultOnSuccess: false,
-        options: nil,
-        descriptor: nil,
-        paymentType: nil
-    )
-    
+    static var genericPaymentMethod:  ClientSessionRequestBody.PaymentMethod {
+        return ClientSessionRequestBody.PaymentMethod(
+            vaultOnSuccess: false,
+            options: nil,
+            descriptor: nil,
+            paymentType: nil
+        )
+    }
+
     static var klarnaPaymentMethod = ClientSessionRequestBody.PaymentMethod(
         vaultOnSuccess: nil,
-        options: paymentOptions,
+        options: klarnaPaymentOptions,
         descriptor: "test-descriptor",
         paymentType: nil
     )
     
-    static var paymentOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOptionGroup(
+    static var klarnaPaymentOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOptionGroup(
         KLARNA: ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(
             surcharge: ClientSessionRequestBody.PaymentMethod.SurchargeOption(amount: 140),
             instalmentDuration: "test",
-            extraMerchantData: extraMerchantData))
-    
+            extraMerchantData: extraMerchantData, 
+            captureVaultedCardCvv: false))
+
     static var extraMerchantData: [String: Any] = [
         "subscription": [
             [

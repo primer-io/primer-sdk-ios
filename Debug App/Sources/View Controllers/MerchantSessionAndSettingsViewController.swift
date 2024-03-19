@@ -69,7 +69,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var disableSuccessScreenSwitch: UISwitch!
     @IBOutlet weak var disableErrorScreenSwitch: UISwitch!
     @IBOutlet weak var disableInitScreenSwitch: UISwitch!
-
+    @IBOutlet weak var enableCVVRecaptureFlowSwitch: UISwitch!
+    
     // MARK: Order Inputs
 
     @IBOutlet weak var currencyTextField: UITextField!
@@ -135,7 +136,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var selectedPaymentHandling: PrimerPaymentHandling = .auto
     
     var clientSession = MerchantMockDataManager.getClientSession(sessionType: .generic)
-    
+
     var selectedTestScenario: Test.Scenario?
     var selectedTestFlow: Test.Flow?
     var selectedTest3DSScenario: Test.Params.ThreeDS.Scenario?
@@ -416,7 +417,15 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         }
         
         clientSession.paymentMethod = MerchantMockDataManager.getPaymentMethod(sessionType: paymentSessionType)
+        if paymentSessionType == .generic && enableCVVRecaptureFlowSwitch.isOn {
+            let option = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(surcharge: nil,
+                                                                                    instalmentDuration: nil,
+                                                                                    extraMerchantData: nil,
+                                                                                    captureVaultedCardCvv: enableCVVRecaptureFlowSwitch.isOn)
 
+            let optionGroup = ClientSessionRequestBody.PaymentMethod.PaymentMethodOptionGroup(PAYMENT_CARD: option)
+            clientSession.paymentMethod?.options = optionGroup
+        }
         if let metadata = metadataTextField.text, !metadata.isEmpty {
             clientSession.metadata = MetadataParser().parse(metadata)
         }
@@ -424,7 +433,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
     func populateSessionSettingsFields() {
         clientSession = MerchantMockDataManager.getClientSession(sessionType: paymentSessionType)
-        
+
+        enableCVVRecaptureFlowSwitch.isOn = clientSession.paymentMethod?.options?.PAYMENT_CARD?.captureVaultedCardCvv == true
+
         currencyTextField.text = clientSession.currencyCode?.code
         countryCodeTextField.text = clientSession.order?.countryCode?.rawValue
         orderIdTextField.text = clientSession.orderId

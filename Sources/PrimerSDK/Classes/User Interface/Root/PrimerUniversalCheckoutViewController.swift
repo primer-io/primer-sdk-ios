@@ -289,10 +289,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         )
         Analytics.Service.record(event: viewEvent)
 
-        // TODO: (BNI) ping @aladin
-        let backendFlag = true
-
-        if backendFlag {
+        if let captureVaultedCardCvv = (config.options as? CardOptions)?.captureVaultedCardCvv,
+           captureVaultedCardCvv == true {
             let cvvViewController = CVVRecaptureViewController(viewModel: CVVRecaptureViewModel())
             cvvViewController.viewModel.cardButtonViewModel = cardButtonViewModel
             cvvViewController.viewModel.didSubmitCvv = { cvv in

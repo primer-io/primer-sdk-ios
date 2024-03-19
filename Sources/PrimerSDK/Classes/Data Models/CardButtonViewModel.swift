@@ -23,8 +23,8 @@ struct CardButtonViewModel: CardButtonViewModelProtocol {
                 .first else { return nil }
         guard let networks = paymentCardOption["networks"] as? [[String: Any]] else { return nil }
         guard let tmpNetwork = networks
-            .filter({ ($0["type"] as? String)?.lowercased() == network.lowercased() })
-            .first else { return nil }
+                .filter({ ($0["type"] as? String)?.lowercased() == network.lowercased() })
+                .first else { return nil }
         return tmpNetwork["surcharge"] as? Int
     }
 }
