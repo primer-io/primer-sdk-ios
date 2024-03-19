@@ -102,7 +102,7 @@ internal enum InternalError: PrimerErrorProtocol {
             return "[\(errorId)] Invalid URL \(url ?? "nil") (diagnosticsId: \(self.diagnosticsId))"
         case .invalidValue(let key, let value, _, _):
             return "[\(errorId)] Invalid value \(value ?? "nil") for key \(key) (diagnosticsId: \(self.diagnosticsId))"
-        case .invalidResponse(_, _):
+        case .invalidResponse:
             return "[\(errorId)] Invalid response received. Expected HTTP response. (diagnosticsId: \(self.diagnosticsId)"
         case .noData:
             return "[\(errorId)] No data"
