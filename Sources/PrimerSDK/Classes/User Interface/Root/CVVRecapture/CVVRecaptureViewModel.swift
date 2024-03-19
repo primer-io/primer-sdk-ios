@@ -10,7 +10,7 @@ import Foundation
 class CVVRecaptureViewModel {
 
     var didSubmitCvv: ((String) -> Void)?
-    var cardButtonViewModel: CardButtonViewModel!
+    var cardButtonViewModel: CardButtonViewModelProtocol!
     var onContinueButtonStateChange: ((Bool) -> Void)?
 
     var isValidCvv: Bool = false {
