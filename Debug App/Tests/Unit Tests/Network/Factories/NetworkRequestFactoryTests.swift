@@ -32,6 +32,7 @@ final class NetworkRequestFactoryTests: XCTestCase {
 
     override func setUpWithError() throws {
         SDKSessionHelper.setUp()
+        PrimerInternal.shared.checkoutSessionId = nil
         networkRequestFactory = DefaultNetworkRequestFactory()
     }
 
