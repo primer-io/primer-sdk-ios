@@ -35,17 +35,16 @@ class JSONNetworkResponseFactory: NetworkResponseFactory, LogReporter {
                                                    diagnosticsId: UUID().uuidString)
             }
         case 400...599:
-            if let serverError = try? decoder.decode(PrimerServerErrorResponse.self, from: response) {
-                throw InternalError.serverError(status: metadata.statusCode,
-                                                response: serverError,
-                                                userInfo: .errorUserInfoDictionary(),
-                                                diagnosticsId: UUID().uuidString)
-            }
+            let serverError = try? decoder.decode(PrimerServerErrorResponse.self, from: response)
+            throw InternalError.serverError(status: metadata.statusCode,
+                                            response: serverError?.error,
+                                            userInfo: .errorUserInfoDictionary(),
+                                            diagnosticsId: UUID().uuidString)
         default:
             break
         }
 
-        throw InternalError.failedToDecode(message: "Failed to decode response from URL: \(metadata.responseUrl ?? "Unknown")",
+        throw InternalError.failedToDecode(message: "Failed to determine response from URL: \(metadata.responseUrl ?? "Unknown")",
                                            userInfo: .errorUserInfoDictionary(),
                                            diagnosticsId: UUID().uuidString)
 

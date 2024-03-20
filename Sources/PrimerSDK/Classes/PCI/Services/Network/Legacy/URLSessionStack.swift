@@ -199,7 +199,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
                    let primerErrorObject = try? JSONSerialization.data(withJSONObject: primerErrorJSON, options: .fragmentsAllowed),
                    let statusCode = (response as? HTTPURLResponse)?.statusCode {
 
-                    let primerErrorResponse = try? self.parser.parse(PrimerServerErrorResponse.self, from: primerErrorObject)
+                    let primerErrorResponse = try? self.parser.parse(PrimerServerError.self, from: primerErrorObject)
 
                     if self.shouldReportNetworkEvents(for: endpoint) {
                         resEventProperties?.errorBody = "\(primerErrorJSON)"
@@ -239,7 +239,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
                                                                                                                           "class": "\(Self.self)",
                                                                                                                           "function": #function,
                                                                                                                           "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
+                        ErrorHandler.handle(error: err) 
 
                         #if DEBUG
                         self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")

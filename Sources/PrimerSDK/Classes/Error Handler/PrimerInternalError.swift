@@ -17,7 +17,7 @@ internal enum InternalError: PrimerErrorProtocol {
     case invalidValue(key: String, value: Any?, userInfo: [String: String]?, diagnosticsId: String?)
     case invalidResponse(userInfo: [String: String]?, diagnosticsId: String?)
     case noData(userInfo: [String: String]?, diagnosticsId: String?)
-    case serverError(status: Int, response: PrimerServerErrorResponse?, userInfo: [String: String]?, diagnosticsId: String?)
+    case serverError(status: Int, response: PrimerServerError?, userInfo: [String: String]?, diagnosticsId: String?)
     case unauthorized(url: String, method: HTTPMethod, userInfo: [String: String]?, diagnosticsId: String?)
     case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String?)
     case failedToPerform3dsButShouldContinue(error: Primer3DSErrorContainer)
