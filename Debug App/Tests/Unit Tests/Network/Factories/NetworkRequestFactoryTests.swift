@@ -59,7 +59,7 @@ final class NetworkRequestFactoryTests: XCTestCase {
         let request = try networkRequestFactory.request(for: endpoint)
 
         XCTAssertEqual(request.httpMethod, "GET")
-        XCTAssertEqual(request.url?.absoluteString, Mocks.decodedJWTToken.configurationUrl)
+        XCTAssertEqual(request.url?.absoluteString, (Mocks.decodedJWTToken.configurationUrl ?? "") + "?withDisplayMetadata=true")
         XCTAssertEqual(request.allHTTPHeaderFields, defaultHeaders(jwt: "bla"))
     }
 
