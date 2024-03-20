@@ -71,7 +71,7 @@ if pr.assignees?.count == 0 {
 // Use a different path for SwiftLint
 
 let filesToLint = sdkEditedFiles.filter { $0.fileType == .swift }
-SwiftLint.lint(.files(filesToLint), inline: true, configFile: "Debug App/.swiftlint.yml")
+SwiftLint.lint(.files(filesToLint), inline: true)
 
 // MARK: Check Coverage
 
