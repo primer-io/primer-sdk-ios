@@ -18,17 +18,20 @@ final class NetworkResponseFactoryTests: XCTestCase {
     func testResponseCreation_SimpleJSON_Success() throws {
         let model = TestCodable(value: "TEST_VALUE")
         let data = try JSONEncoder().encode(model)
+        let metadata = ResponseMetadataModel(responseUrl: "a_url", statusCode: 200, headers: nil)
 
         let jsonNetworkResponseFactory = JSONNetworkResponseFactory()
-        let responseModel: TestCodable = try jsonNetworkResponseFactory.model(for: data, forUrl: "a_url")
+        let responseModel: TestCodable = try jsonNetworkResponseFactory.model(for: data, 
+                                                                              forMetadata: metadata)
 
         XCTAssertEqual(model, responseModel)
     }
 
     func testResponseCreation_Empty_Failure() throws {
         let jsonNetworkResponseFactory = JSONNetworkResponseFactory()
+        let metadata = ResponseMetadataModel(responseUrl: "a_url", statusCode: 200, headers: nil)
         do {
-            let _: TestCodable = try jsonNetworkResponseFactory.model(for: Data(), forUrl: "a_url")
+            let _: TestCodable = try jsonNetworkResponseFactory.model(for: Data(), forMetadata: metadata)
             XCTFail()
         } catch let error as InternalError {
             XCTAssertEqual(error.errorId, "failed-to-decode")
