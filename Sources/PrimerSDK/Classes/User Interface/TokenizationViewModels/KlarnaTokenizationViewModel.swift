@@ -147,9 +147,9 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     seal.reject(error)
                     return
                 }
-                
+
                 let categoriesViewController = PrimerKlarnaCategoriesViewController(tokenizationComponent: self.tokenizationComponent, delegate: self)
-                
+
                 self.willPresentExternalView?()
                 PrimerUIManager.primerRootViewController?.show(viewController: categoriesViewController)
                 self.didPresentExternalView?()
