@@ -8,6 +8,7 @@
 // swiftlint:disable type_body_length
 // swiftlint:disable file_length
 // swiftlint:disable identifier_name
+// swiftlint:disable function_body_length
 
 import Foundation
 
@@ -328,4 +329,5 @@ extension PrimerValidationError: Equatable {
 }
 // swiftlint:enable type_body_length
 // swiftlint:enable identifier_name
+// swiftlint:disable function_body_length
 // swiftlint:enable file_length

@@ -1,3 +1,4 @@
+// swiftlint:disable function_body_length
 import Foundation
 
 extension Request.Body {
@@ -289,3 +290,4 @@ extension DecodedJWTToken {
         }
     }
 }
+// swiftlint:enable function_body_length
