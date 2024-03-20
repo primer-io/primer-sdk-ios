@@ -36,7 +36,7 @@ final class CardValidationServiceTests: XCTestCase {
         self.debouncer = Debouncer(delay: 0.275)
         self.rawDataManager.delegate = delegate
         self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
-                                                    apiClient: apiClient)
+                                                           apiClient: apiClient)
     }
 
     override func tearDownWithError() throws {

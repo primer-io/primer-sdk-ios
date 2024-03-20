@@ -11,7 +11,6 @@ import XCTest
 
 final class MetadataParserTests: XCTestCase {
 
-
     private let metadataParser = MetadataParser()
 
     func testParseMetadataWithJSON() throws {

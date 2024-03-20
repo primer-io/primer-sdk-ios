@@ -93,6 +93,6 @@ final class ListCardNetworksEndpointTests: XCTestCase {
 extension Response.Body.Bin.Networks.Network: Equatable {
     public static func == (lhs: PrimerSDK.Response.Body.Bin.Networks.Network, rhs: PrimerSDK.Response.Body.Bin.Networks.Network) -> Bool {
         return lhs.displayName == rhs.displayName &&
-        lhs.value == rhs.value
+            lhs.value == rhs.value
     }
 }
