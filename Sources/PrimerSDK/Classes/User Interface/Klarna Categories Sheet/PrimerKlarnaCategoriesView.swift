@@ -69,6 +69,7 @@ struct PrimerKlarnaCategoriesView: View {
                 onContinuePressed()
                 viewModel.shouldDisableKlarnaViews = true
             }
+            .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.KlarnaComponent.authorize.rawValue)
         }
         .padding(.horizontal, 15)
         .disabled(viewModel.shouldDisableKlarnaViews)

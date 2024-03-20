@@ -27,7 +27,13 @@ extension PrimerHeadlessKlarnaComponent {
 #endif
         if isMocked {
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                self.finalizeSession(token: UUID().uuidString, fromAuthorization: true)
+                if PrimerInternal.shared.sdkIntegrationType == .headless {
+                    self.finalizeSession(token: UUID().uuidString, fromAuthorization: true)
+                } else {
+                    let checkoutData = PrimerCheckoutData(payment: nil)
+                    let step = KlarnaStep.paymentSessionAuthorized(authToken: UUID().uuidString, checkoutData: checkoutData)
+                    self.stepDelegate?.didReceiveStep(step: step)
+                }
             }
         } else {
             var extraMerchantDataString: String?

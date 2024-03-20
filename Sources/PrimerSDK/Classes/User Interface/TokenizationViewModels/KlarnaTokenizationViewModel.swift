@@ -140,50 +140,23 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
-                var isMockedBE = false
-                #if DEBUG
-                if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
-                    isMockedBE = true
+#if canImport(PrimerKlarnaSDK)
+                guard let urlSchemeStr = self.settings.paymentMethodOptions.urlScheme,
+                      URL(string: urlSchemeStr) != nil else {
+                    let error = KlarnaHelpers.getInvalidUrlSchemeError(settings: self.settings)
+                    seal.reject(error)
+                    return
                 }
-                #endif
-
-                if !isMockedBE {
-                    #if canImport(PrimerKlarnaSDK)
-                    guard let urlSchemeStr = self.settings.paymentMethodOptions.urlScheme,
-                          URL(string: urlSchemeStr) != nil else {
-                        let error = KlarnaHelpers.getInvalidUrlSchemeError(settings: self.settings)
-                        seal.reject(error)
-                        return
-                    }
-
-                    let categoriesViewController = PrimerKlarnaCategoriesViewController(tokenizationComponent: self.tokenizationComponent, delegate: self)
-
-                    self.willPresentExternalView?()
-                    PrimerUIManager.primerRootViewController?.show(viewController: categoriesViewController)
-                    self.didPresentExternalView?()
-                    seal.fulfill()
-                    #else
-                    seal.fulfill()
-                    #endif
-                } else {
-                    #if DEBUG
-                    firstly {
-                        PrimerUIManager.prepareRootViewController()
-                    }
-                    .done {
-                        self.demoThirdPartySDKViewController = PrimerThirdPartySDKViewController(paymentMethodType: self.config.type)
-                        self.demoThirdPartySDKViewController!.onSendCredentialsButtonTapped = {
-                            self.klarnaPaymentSessionCompletion?("mock_auth_token", nil)
-                        }
-                        PrimerUIManager.primerRootViewController?.present(self.demoThirdPartySDKViewController!, animated: true, completion: {
-                            seal.fulfill()
-                        })
-                    }
-                    .catch { _ in
-                        seal.fulfill()
-                    }
-                    #endif
-                }
+                
+                let categoriesViewController = PrimerKlarnaCategoriesViewController(tokenizationComponent: self.tokenizationComponent, delegate: self)
+                
+                self.willPresentExternalView?()
+                PrimerUIManager.primerRootViewController?.show(viewController: categoriesViewController)
+                self.didPresentExternalView?()
+                seal.fulfill()
+#else
+                seal.fulfill()
+#endif
             }
         }
     }
