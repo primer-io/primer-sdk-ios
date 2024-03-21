@@ -9,10 +9,7 @@ import Foundation
 
 internal enum InternalError: PrimerErrorProtocol {
 
-    case failedToEncode(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case failedToDecode(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case failedToSerialize(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
-    case connectivityErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String?)
     case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case invalidValue(key: String, value: Any?, userInfo: [String: String]?, diagnosticsId: String?)
     case noData(userInfo: [String: String]?, diagnosticsId: String?)
@@ -25,14 +22,8 @@ internal enum InternalError: PrimerErrorProtocol {
 
     var errorId: String {
         switch self {
-        case .failedToEncode:
-            return "failed-to-encode"
         case .failedToDecode:
             return "failed-to-decode"
-        case .failedToSerialize:
-            return "failed-to-serialize"
-        case .connectivityErrors:
-            return "connectivity-errors"
         case .invalidUrl:
             return "invalid-url"
         case .invalidValue:
@@ -56,13 +47,7 @@ internal enum InternalError: PrimerErrorProtocol {
 
     var diagnosticsId: String {
         switch self {
-        case .failedToEncode(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
         case .failedToDecode(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
-        case .failedToSerialize(_, _, let diagnosticsId):
-            return diagnosticsId ?? UUID().uuidString
-        case .connectivityErrors(_, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         case .invalidUrl(_, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
@@ -85,14 +70,8 @@ internal enum InternalError: PrimerErrorProtocol {
 
     var errorDescription: String? {
         switch self {
-        case .failedToEncode(let message, _, _):
-            return "[\(errorId)] Failed to encode\(message == nil ? "" : " (\(message!)") (diagnosticsId: \(self.diagnosticsId))"
         case .failedToDecode(let message, _, _):
             return "[\(errorId)] Failed to decode\(message == nil ? "" : " (\(message!)") (diagnosticsId: \(self.diagnosticsId))"
-        case .failedToSerialize(let message, _, _):
-            return "[\(errorId)] Failed to serialize\(message == nil ? "" : " (\(message!)") (diagnosticsId: \(self.diagnosticsId))"
-        case .connectivityErrors(let errors, _, _):
-            return "[\(errorId)] Connectivity failure | Errors: \(errors.combinedDescription) (diagnosticsId: \(self.diagnosticsId))"
         case .invalidUrl(let url, _, _):
             return "[\(errorId)] Invalid URL \(url ?? "nil") (diagnosticsId: \(self.diagnosticsId))"
         case .invalidValue(let key, let value, _, _):
@@ -124,10 +103,7 @@ internal enum InternalError: PrimerErrorProtocol {
         var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
 
         switch self {
-        case .failedToEncode(_, let userInfo, _),
-             .failedToDecode(_, let userInfo, _),
-             .failedToSerialize(_, let userInfo, _),
-             .connectivityErrors(_, let userInfo, _),
+        case .failedToDecode(_, let userInfo, _),
              .invalidUrl(_, let userInfo, _),
              .invalidValue(_, _, let userInfo, _),
              .noData(let userInfo, _),
@@ -151,14 +127,8 @@ internal enum InternalError: PrimerErrorProtocol {
 
     var recoverySuggestion: String? {
         switch self {
-        case .failedToEncode:
-            return "Check object's encode(to:) function for wrong CodingKeys, or unexpected values."
         case .failedToDecode:
             return "Check object's init(from:) function for wrong CodingKeys, or unexpected values."
-        case .failedToSerialize:
-            return "Check if all object's properties can be serialized."
-        case .connectivityErrors:
-            return "Check underlying conectivity errors for more information."
         case .invalidUrl:
             return "Provide a valid URL, meaning that it must include http(s):// at the begining and also follow URL formatting rules."
         case .invalidValue(let key, let value, _, _):
