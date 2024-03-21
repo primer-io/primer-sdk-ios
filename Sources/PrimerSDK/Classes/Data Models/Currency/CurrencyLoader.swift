@@ -99,4 +99,4 @@ public class CurrencyLoader: LogReporter {
         }
     }
 }
-// swiftlint:disable function_body_length
+// swiftlint:enable function_body_length

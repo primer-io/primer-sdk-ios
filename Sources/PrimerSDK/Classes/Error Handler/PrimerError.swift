@@ -371,7 +371,11 @@ public enum PrimerError: PrimerErrorProtocol {
         case .missingPrimerConfiguration:
             return "Check if you have an active internet connection."
         case .missingPrimerDelegate:
-            return "Primer's delegate has not been set. Ensure that you have added Primer.shared.delegate = self on the view controller you wish to present Primer's SDK."
+            let message = """
+Primer's delegate has not been set. Ensure that you have added Primer.shared.delegate = self \
+on the view controller you wish to present Primer's SDK.
+"""
+            return message
         case .missingPrimerInputElement(let inputElementtype, _, _):
             return "A PrimerInputElement for \(inputElementtype) has to be provided."
         case .misconfiguredPaymentMethods:

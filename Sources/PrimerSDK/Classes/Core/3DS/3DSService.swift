@@ -629,33 +629,32 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
         let apiClient: PrimerAPIClientProtocol = ThreeDSService.apiClient ?? PrimerAPIClient()
         apiClient.begin3DSAuth(clientToken: decodedJWTToken,
                                paymentMethodTokenData: paymentMethodTokenData,
-                               threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest,
-                               completion: { result in
-                                switch result {
-                                case .failure(let underlyingErr):
-                                    var primerErr: PrimerError
+                               threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest) { result in
+            switch result {
+            case .failure(let underlyingErr):
+                var primerErr: PrimerError
 
-                                    if let primerError = underlyingErr as? PrimerError {
-                                        primerErr = primerError
-                                    } else {
-                                        primerErr = PrimerError.underlyingErrors(
-                                            errors: [underlyingErr],
-                                            userInfo: ["file": #file,
-                                                       "class": "\(Self.self)",
-                                                       "function": #function,
-                                                       "line": "\(#line)"],
-                                            diagnosticsId: UUID().uuidString)
-                                    }
+                if let primerError = underlyingErr as? PrimerError {
+                    primerErr = primerError
+                } else {
+                    primerErr = PrimerError.underlyingErrors(
+                        errors: [underlyingErr],
+                        userInfo: ["file": #file,
+                                   "class": "\(Self.self)",
+                                   "function": #function,
+                                   "line": "\(#line)"],
+                        diagnosticsId: UUID().uuidString)
+                }
 
-                                    ErrorHandler.handle(error: primerErr)
+                ErrorHandler.handle(error: primerErr)
 
-                                    let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: primerErr)
-                                    completion(.failure(internalErr))
+                let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: primerErr)
+                completion(.failure(internalErr))
 
-                                case .success(let res):
-                                    completion(.success(res))
-                                }
-                               })
+            case .success(let res):
+                completion(.success(res))
+            }
+        }
     }
     #endif
 

@@ -293,4 +293,4 @@ Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in you
     }
 }
 // swiftlint:enable function_body_length
-// swiftlint:disable type_body_length
+// swiftlint:enable type_body_length

@@ -167,15 +167,15 @@ internal class ClientSession {
 
         // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
-            case id = "orderId",
-                 merchantAmount,
-                 totalOrderAmount,
-                 totalTaxAmount,
-                 countryCode,
-                 currencyCode,
-                 fees,
-                 lineItems,
-                 shippingAmount
+            case id = "orderId"
+            case merchantAmount
+            case totalOrderAmount
+            case totalTaxAmount
+            case countryCode
+            case currencyCode
+            case fees
+            case lineItems
+            case shippingAmount
         }
 
         internal init(

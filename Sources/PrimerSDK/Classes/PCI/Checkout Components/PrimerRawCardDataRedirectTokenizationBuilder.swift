@@ -125,10 +125,10 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
             let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
             let expiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
 
-            let number = (PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as? String) ?? rawData.cardNumber
+            let sanatizedCardNumber = (PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as? String) ?? rawData.cardNumber
             let paymentInstrument = CardOffSessionPaymentInstrument(paymentMethodConfigId: configId,
                                                                     paymentMethodType: paymentMethodType,
-                                                                    number: number,
+                                                                    number: sanatizedCardNumber,
                                                                     expirationMonth: expiryMonth,
                                                                     expirationYear: expiryYear,
                                                                     cardholderName: rawData.cardholderName ?? "")
