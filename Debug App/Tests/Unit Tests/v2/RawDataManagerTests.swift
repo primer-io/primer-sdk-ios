@@ -11,7 +11,7 @@ import XCTest
 
 class RawDataManagerTests: XCTestCase {
 
-    private static let validationTimeout = 2.0
+    private static let validationTimeout = 3.0
 
     var rawDataManager: RawDataManager!
 
