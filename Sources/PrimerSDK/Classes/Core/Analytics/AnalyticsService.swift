@@ -140,9 +140,12 @@ extension Analytics {
                             let remainingEvents = self.storage.loadEvents()
                             self.logger.debug(message: "📚 Analytics: \(syncType.capitalized) completed. \(remainingEvents.count) events remain")
                             self.isSyncing = false
-                            seal.fulfill()
                             if remainingEvents.count >= self.batchSize {
-                                self.sync(events: remainingEvents)
+                                _ = self.sync(events: remainingEvents).ensure {
+                                    seal.fulfill()
+                                }
+                            } else {
+                                seal.fulfill()
                             }
                         }
                         .catch { err in
@@ -244,7 +247,7 @@ extension Analytics {
             ) { result in
                 switch result {
                 case .success:
-                    Analytics.queue.async {
+                    Analytics.queue.async(flags: .barrier) {
                         let urlString = url.absoluteString
                         self.storage.delete(events)
                         let message = "📚 Analytics: Finished sending \(events.count) events on URL: \(urlString). Deleted \(events.count) sent events from store"
@@ -252,7 +255,7 @@ extension Analytics {
                         completion(nil)
                     }
                 case .failure(let err):
-                    Analytics.queue.async {
+                    Analytics.queue.async(flags: .barrier) {
                         // Log failure
                         let urlString = url.absoluteString
                         let count = events.count
