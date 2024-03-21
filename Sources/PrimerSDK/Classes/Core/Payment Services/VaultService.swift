@@ -24,12 +24,11 @@ internal class VaultService: VaultServiceProtocol {
                 return
             }
 
-            let apiClient: PrimerAPIClientProtocol = VaultService.apiClient ?? PrimerAPIClient()
-
             firstly {
-                apiClient.fetchVaultedPaymentMethods(clientToken: clientToken)
+                fetchVaultedPaymentMethods(clientToken: clientToken)
             }
             .done { paymentMethods in
+                AppState.current.selectedPaymentMethodId = paymentMethods.data.first?.id
                 state.paymentMethods = paymentMethods.data
 
                 if state.selectedPaymentMethodId == nil && !state.paymentMethods.isEmpty {
@@ -45,6 +44,20 @@ internal class VaultService: VaultServiceProtocol {
             .catch { err in
                 seal.reject(err)
             }
+        }
+    }
+
+    func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) -> Promise<Response.Body.VaultedPaymentMethods> {
+        return Promise { seal in
+            let apiClient: PrimerAPIClientProtocol = VaultService.apiClient ?? PrimerAPIClient()
+            apiClient.fetchVaultedPaymentMethods(clientToken: clientToken, completion: { result in
+                switch result {
+                case .success(let response):
+                    seal.fulfill(response)
+                case .failure(let err):
+                    seal.reject(err)
+                }
+            })
         }
     }
 

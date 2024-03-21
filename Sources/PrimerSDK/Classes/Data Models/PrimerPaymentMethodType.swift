@@ -22,7 +22,6 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     case adyenTrustly           = "ADYEN_TRUSTLY"
     case adyenTwint             = "ADYEN_TWINT"
     case adyenVipps             = "ADYEN_VIPPS"
-    case apaya                  = "APAYA"
     case applePay               = "APPLE_PAY"
     case atome                  = "ATOME"
     case buckarooBancontact     = "BUCKAROO_BANCONTACT"
@@ -90,8 +89,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
              .adyenVipps:
             return "ADYEN"
 
-        case .apaya,
-             .applePay,
+        case .applePay,
              .atome,
              .coinbase,
              .goCardless,

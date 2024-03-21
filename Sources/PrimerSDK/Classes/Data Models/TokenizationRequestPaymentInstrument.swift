@@ -9,16 +9,6 @@ import Foundation
 
 protocol TokenizationRequestBodyPaymentInstrument: Encodable {}
 
-struct ApayaPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
-    // swiftlint:disable:next identifier_name
-    var mx: String
-    var mnc: String
-    var mcc: String
-    var hashedIdentifier: String
-    var productId: String
-    var currencyCode: String
-}
-
 struct ApplePayPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
 
     var paymentMethodConfigId: String
@@ -58,7 +48,12 @@ struct CardOffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument
 }
 
 struct KlarnaCustomerTokenPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
-    var klarnaCustomerToken: String
+    var klarnaCustomerToken: String?
+    var sessionData: Response.Body.Klarna.SessionData
+}
+
+struct KlarnaAuthorizationPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
+    var klarnaAuthorizationToken: String?
     var sessionData: Response.Body.Klarna.SessionData
 }
 
@@ -169,7 +164,6 @@ public enum PaymentInstrumentType: String, Codable {
     case klarna                 = "KLARNA_AUTHORIZATION_TOKEN"
     case klarnaPaymentSession   = "KLARNA_PAYMENT_SESSION"
     case klarnaCustomerToken    = "KLARNA_CUSTOMER_TOKEN"
-    case apayaToken             = "APAYA"
     case hoolah                 = "HOOLAH"
     case unknown                = "UNKNOWN"
 

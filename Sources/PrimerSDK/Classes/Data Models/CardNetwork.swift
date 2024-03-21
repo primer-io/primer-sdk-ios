@@ -295,26 +295,6 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
         return nil
     }
 
-    static func cardNumber(_ cardnumber: String, matchesPatterns patterns: [[Int]]) -> Bool {
-        for pattern in patterns {
-            if pattern.count == 1 || pattern.count == 2 {
-                let min = pattern.first!
-                let max = pattern.count == 2 ? pattern[1] : min
-
-                for num in min...max {
-                    let numStr = String(num)
-                    if cardnumber.withoutNonNumericCharacters.hasPrefix(numStr) {
-                        return true
-                    }
-                }
-            } else {
-                logger.debug(message: "Card network patterns array must contain one or two Ints")
-            }
-        }
-
-        return false
-    }
-
     var assetName: String {
         rawValue.lowercased().filter { $0.isLetter }
     }
@@ -324,16 +304,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     }
 
     public init(cardNumber: String) {
-        self = .unknown
-
-        for cardNetwork in CardNetwork.allCases {
-            if let patterns = cardNetwork.validation?.patterns,
-               CardNetwork.cardNumber(cardNumber.withoutNonNumericCharacters, matchesPatterns: patterns),
-               cardNetwork != .unknown {
-                self = cardNetwork
-                break
-            }
-        }
+        self = CardNetworkParser.shared.cardNetwork(from: cardNumber) ?? .unknown
     }
 
     public init(cardNetworkStr: String) {

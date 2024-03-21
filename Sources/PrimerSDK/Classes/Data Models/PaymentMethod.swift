@@ -102,13 +102,8 @@ class PrimerPaymentMethod: Codable, LogReporter {
                  PrimerPaymentMethodType.adyenIDeal:
                 return BankSelectorTokenizationViewModel(config: self)
 
-            case PrimerPaymentMethodType.apaya:
-                return ApayaTokenizationViewModel(config: self)
-
             case PrimerPaymentMethodType.applePay:
-                if #available(iOS 11.0, *) {
-                    return ApplePayTokenizationViewModel(config: self)
-                }
+                return ApplePayTokenizationViewModel(config: self)
 
             case PrimerPaymentMethodType.klarna:
                 return KlarnaTokenizationViewModel(config: self)
@@ -142,7 +137,6 @@ class PrimerPaymentMethod: Codable, LogReporter {
 
         return nil
     }()
-
     lazy var tokenizationModel: PaymentMethodTokenizationModelProtocol? = {
         switch internalPaymentMethodType {
         case .adyenIDeal:
@@ -161,8 +155,7 @@ class PrimerPaymentMethod: Codable, LogReporter {
         }
 
         switch internalPaymentMethodType {
-        case PrimerPaymentMethodType.apaya,
-             PrimerPaymentMethodType.goCardless,
+        case PrimerPaymentMethodType.goCardless,
              PrimerPaymentMethodType.googlePay,
              PrimerPaymentMethodType.nolPay:
             return false
@@ -300,14 +293,13 @@ class PrimerPaymentMethod: Codable, LogReporter {
         surcharge = (try? container.decode(Int?.self, forKey: .surcharge)) ?? nil
         displayMetadata = (try? container.decode(PrimerPaymentMethod.DisplayMetadata?.self, forKey: .displayMetadata)) ?? nil
 
-        if let cardOptions = try? container.decode(CardOptions.self, forKey: .options) {
-            options = cardOptions
-        } else if let payPalOptions = try? container.decode(PayPalOptions.self, forKey: .options) {
-            options = payPalOptions
-        } else if let merchantOptions = try? container.decode(MerchantOptions.self, forKey: .options) {
-            options = merchantOptions
-        } else {
-            options = nil
+        switch type {
+        case "PAYMENT_CARD":
+            options = try? container.decode(CardOptions.self, forKey: .options)
+        case "PAYPAL":
+            options = try? container.decode(PayPalOptions.self, forKey: .options)
+        default:
+            options = try? container.decode(MerchantOptions.self, forKey: .options)
         }
     }
 

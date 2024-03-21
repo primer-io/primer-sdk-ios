@@ -1,3 +1,27 @@
+## 2.24.0 (2024-03-18)
+
+### Feat
+
+- Bump the minimum version and remove all #available statements (#758)
+
+### Fix
+
+- Start loading spinner earlier in Drop-in Card Form (#817)
+
+### Refactor
+
+- card network parsing (#815)
+
+## 2.23.0 (2024-03-07)
+
+### Feat
+
+- Klarna Headless (#789)
+
+### Refactor
+
+- NativeUIManager Composable Architecture (#810)
+
 ## 2.22.1 (2024-02-22)
 
 ### Fix

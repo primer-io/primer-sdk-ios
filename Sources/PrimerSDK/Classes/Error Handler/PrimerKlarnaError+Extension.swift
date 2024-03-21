@@ -10,11 +10,12 @@ import Foundation
 #if canImport(PrimerKlarnaSDK)
 import PrimerKlarnaSDK
 extension PrimerKlarnaError: PrimerErrorProtocol {
+    typealias InfoType = [String: String]
     var exposedError: Error {
         self
     }
 
-    var info: [String: Any]? {
+    var info: InfoType? {
         var tmpUserInfo: [String: String] = ["createdAt": Date().toString()]
 
         switch self {

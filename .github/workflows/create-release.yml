@@ -19,7 +19,7 @@ jobs:
     name: "Bump release version and create changelog"
     steps:
       - name: Check out repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
@@ -44,7 +44,7 @@ jobs:
         run: |
           echo "TO_VERSION=$(cz version --project)" >> $GITHUB_ENV
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@70a41aba780001da0a30141984ae2a0c95d8704e #v6.0.2
         with:
           token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
           base: master

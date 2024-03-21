@@ -43,11 +43,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         tableView.showsVerticalScrollIndicator = false
         tableView.showsHorizontalScrollIndicator = false
         tableView.backgroundColor = theme.view.backgroundColor
-
-        if #available(iOS 11.0, *) {
-            tableView.contentInsetAdjustmentBehavior = .never
-        }
-
+        tableView.contentInsetAdjustmentBehavior = .never
         tableView.rowHeight = 41
         tableView.register(BankTableViewCell.self, forCellReuseIdentifier: BankTableViewCell.identifier)
         tableView.dataSource = self
@@ -234,7 +230,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
                     seal.reject(err)
 
                 case .success(let banks):
-                    seal.fulfill(banks)
+                    seal.fulfill(banks.result)
                 }
             }
         }

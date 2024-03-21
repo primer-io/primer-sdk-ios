@@ -9,7 +9,7 @@ import Foundation
 #if canImport(PrimerNolPaySDK)
 import PrimerNolPaySDK
 
-public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
+public class NolPayLinkedCardsComponent {
 
     var nolPay: PrimerNolPayProtocol?
 
@@ -94,28 +94,23 @@ public class NolPayLinkedCardsComponent: PrimerHeadlessComponent {
                                                                                 phoneVendor: "Apple",
                                                                                 phoneModel: UIDevice.modelIdentifier!)
 
-            if #available(iOS 13, *) {
-                return try await withCheckedThrowingContinuation { continuation in
-                    self.apiClient?.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
-                        switch result {
-                        case .success(let appSecret):
-                            continuation.resume(returning: appSecret.sdkSecret)
-                            completion(.success(()))
-                        case .failure(let error):
-                            continuation.resume(throwing: error)
-                            let primerError = PrimerError.underlyingErrors(errors: [error],
-                                                                           userInfo: ["file": #file,
-                                                                                      "class": "\(Self.self)",
-                                                                                      "function": #function,
-                                                                                      "line": "\(#line)"],
-                                                                           diagnosticsId: UUID().uuidString)
-                            completion(.failure(primerError))
-                        }
+            return try await withCheckedThrowingContinuation { continuation in
+                self.apiClient?.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
+                    switch result {
+                    case .success(let appSecret):
+                        continuation.resume(returning: appSecret.sdkSecret)
+                        completion(.success(()))
+                    case .failure(let error):
+                        continuation.resume(throwing: error)
+                        let primerError = PrimerError.underlyingErrors(errors: [error],
+                                                                        userInfo: ["file": #file,
+                                                                                    "class": "\(Self.self)",
+                                                                                    "function": #function,
+                                                                                    "line": "\(#line)"],
+                                                                        diagnosticsId: UUID().uuidString)
+                        completion(.failure(primerError))
                     }
                 }
-            } else {
-                assertionFailure("Nol pay SDK requires iOS 13")
-                return ""
             }
         }
         phoneMetadataService = phoneMetadataService ?? NolPayPhoneMetadataService()

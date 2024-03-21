@@ -13,6 +13,7 @@ var environment: Environment = .sandbox
 var customDefinedApiKey: String?
 var performPaymentAfterVaulting: Bool = false
 var useNewWorkflows = true
+var paymentSessionType: MerchantMockDataManager.SessionType = .generic
 
 class MerchantSessionAndSettingsViewController: UIViewController {
 
@@ -28,6 +29,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var testParamsGroupStackView: UIStackView!
     @IBOutlet weak var apiKeyStackView: UIStackView!
     @IBOutlet weak var useNewWorkflowsStackView: UIStackView!
+    @IBOutlet weak var oneTimePaymentStackView: UIStackView!
     @IBOutlet weak var clientTokenStackView: UIStackView!
     @IBOutlet weak var sdkSettingsStackView: UIStackView!
     @IBOutlet weak var orderStackView: UIStackView!
@@ -43,6 +45,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var environmentSegmentedControl: UISegmentedControl!
     @IBOutlet weak var apiKeyTextField: UITextField!
     @IBOutlet weak var clientTokenTextField: UITextField!
+    @IBOutlet weak var metadataTextField: UITextField!
 
     // MARK: Test Inputs
 
@@ -58,7 +61,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var test3DSScenarioTextField: UITextField!
 
     // MARK: SDK Settings Inputs
-
+    @IBOutlet weak var useNewWorkflowsSwitch: UISwitch!
     @IBOutlet weak var checkoutFlowSegmentedControl: UISegmentedControl!
     @IBOutlet weak var merchantNameTextField: UITextField!
     @IBOutlet weak var applyThemingSwitch: UISwitch!
@@ -130,68 +133,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var renderMode: RenderMode = .createClientSession
 
     var selectedPaymentHandling: PrimerPaymentHandling = .auto
-
-    static let customerIdStorageKey = "io.primer.debug.customer-id"
-
-    static var customerId: String {
-
-        if let customerId = UserDefaults.standard.string(forKey: customerIdStorageKey) {
-            return customerId
-        }
-
-        let customerId = "ios-customer-\(String.randomString(length: 8))"
-        UserDefaults.standard.set(customerId, forKey: customerIdStorageKey)
-        return customerId
-    }
-
-    var clientSession = ClientSessionRequestBody(
-        customerId: customerId,
-        orderId: "ios-order-\(String.randomString(length: 8))",
-        currencyCode: CurrencyLoader().getCurrency("EUR"),
-        amount: nil,
-        metadata: nil,
-        customer: ClientSessionRequestBody.Customer(
-            firstName: "John",
-            lastName: "Smith",
-            emailAddress: "john@primer.io",
-            mobileNumber: "+4478888888888",
-            billingAddress: Address(
-                firstName: "John",
-                lastName: "Smith",
-                addressLine1: "65 York Road",
-                addressLine2: nil,
-                city: "London",
-                state: "Greater London",
-                countryCode: "GB",
-                postalCode: "NW06 4OM"),
-            shippingAddress: Address(
-                firstName: "John",
-                lastName: "Smith",
-                addressLine1: "9446 Richmond Road",
-                addressLine2: nil,
-                city: "London",
-                state: "Greater London",
-                countryCode: "GB",
-                postalCode: "EC53 8BT")
-        ),
-        order: ClientSessionRequestBody.Order(
-            countryCode: .de,
-            lineItems: [
-                ClientSessionRequestBody.Order.LineItem(
-                    itemId: "fancy-shoes-\(String.randomString(length: 4))",
-                    description: "Fancy Shoes",
-                    amount: 600,
-                    quantity: 1,
-                    discountAmount: nil,
-                    taxAmount: nil)
-            ]),
-        paymentMethod: ClientSessionRequestBody.PaymentMethod(
-            vaultOnSuccess: false,
-            options: nil,
-            paymentType: nil
-        ),
-        testParams: nil)
-
+    
+    var clientSession = MerchantMockDataManager.getClientSession(sessionType: .generic)
+    
     var selectedTestScenario: Test.Scenario?
     var selectedTestFlow: Test.Flow?
     var selectedTest3DSScenario: Test.Params.ThreeDS.Scenario?
@@ -242,38 +186,14 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         view.addGestureRecognizer(viewTap)
 
         merchantNameTextField.text = "Primer Merchant"
-
-        currencyTextField.text = clientSession.currencyCode?.code
-        countryCodeTextField.text = clientSession.order?.countryCode?.rawValue
-        orderIdTextField.text = clientSession.orderId
-
-        customerIdTextField.text = clientSession.customerId
-        customerFirstNameTextField.text = clientSession.customer?.firstName
-        customerLastNameTextField.text = clientSession.customer?.lastName
-        customerEmailTextField.text = clientSession.customer?.emailAddress
-        customerMobileNumberTextField.text = clientSession.customer?.mobileNumber
-
-        billingAddressSwitch.isOn = true
-        billingAddressFirstNameTextField.text = clientSession.customer?.billingAddress?.firstName
-        billingAddressLastNameTextField.text = clientSession.customer?.billingAddress?.lastName
-        billingAddressLine1TextField.text = clientSession.customer?.billingAddress?.addressLine1
-        billingAddressLine2TextField.text = clientSession.customer?.billingAddress?.addressLine2
-        billingAddressCityTextField.text = clientSession.customer?.billingAddress?.city
-        billingAddressStateTextField.text = clientSession.customer?.billingAddress?.state
-        billingAddressPostalCodeTextField.text = clientSession.customer?.billingAddress?.postalCode
-        billingAddressCountryTextField.text = clientSession.customer?.billingAddress?.countryCode
-
-        shippingAddressSwitch.isOn = true
-        shippinAddressFirstNameTextField.text = clientSession.customer?.shippingAddress?.firstName
-        shippinAddressLastNameTextField.text = clientSession.customer?.shippingAddress?.lastName
-        shippinAddressLine1TextField.text = clientSession.customer?.shippingAddress?.addressLine1
-        shippinAddressLine2TextField.text = clientSession.customer?.shippingAddress?.addressLine2
-        shippinAddressCityTextField.text = clientSession.customer?.shippingAddress?.city
-        shippinAddressStateTextField.text = clientSession.customer?.shippingAddress?.state
-        shippinAddressPostalCodeTextField.text = clientSession.customer?.shippingAddress?.postalCode
-        shippinAddressCountryTextField.text = clientSession.customer?.shippingAddress?.countryCode
-
+        populateSessionSettingsFields()
+        
         customerIdTextField.addTarget(self, action: #selector(customerIdChanged(_:)), for: .editingDidEnd)
+
+        let configProvider = AppetizeConfigProvider()
+        if let config = configProvider.fetchConfig() {
+            updateUI(for: config)
+        }
 
         render()
     }
@@ -294,7 +214,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             customerStackView.isHidden = false
             surchargeGroupStackView.isHidden = false
             useNewWorkflowsStackView.isHidden = false
-
+            oneTimePaymentStackView.isHidden = false
+            
         case .clientToken:
             environmentStackView.isHidden = false
             testParamsGroupStackView.isHidden = true
@@ -305,7 +226,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             customerStackView.isHidden = true
             surchargeGroupStackView.isHidden = true
             useNewWorkflowsStackView.isHidden = true
-
+            oneTimePaymentStackView.isHidden = true
+            
         case .testScenario:
             environmentStackView.isHidden = true
             testParamsGroupStackView.isHidden = false
@@ -316,7 +238,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             customerStackView.isHidden = false
             surchargeGroupStackView.isHidden = false
             useNewWorkflowsStackView.isHidden = true
-
+            oneTimePaymentStackView.isHidden = true
+            
             testParamsStackView.isHidden = (selectedTestScenario == nil)
 
             if testResultSegmentedControl.selectedSegmentIndex == 0 {
@@ -450,7 +373,12 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBAction func useNewWorkflowsSwitchValueChanged(_ sender: UISwitch) {
         useNewWorkflows = sender.isOn
     }
-
+    
+    @IBAction func oneTimePaymentValueChanged(_ sender: UISwitch) {
+        paymentSessionType = sender.isOn ? .oneTimePayment : .generic
+        populateSessionSettingsFields()
+    }
+    
     func configureClientSession() {
         clientSession.currencyCode = CurrencyLoader().getCurrency(currencyTextField.text ?? "")
         clientSession.order?.countryCode = CountryCode(rawValue: countryCodeTextField.text ?? "")
@@ -486,8 +414,46 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         } else {
             clientSession.customer?.shippingAddress = nil
         }
+        
+        clientSession.paymentMethod = MerchantMockDataManager.getPaymentMethod(sessionType: paymentSessionType)
 
-        clientSession.paymentMethod = .init(vaultOnSuccess: vaultPaymentsSwitch.isOn, options: nil, paymentType: nil)
+        if let metadata = metadataTextField.text, !metadata.isEmpty {
+            clientSession.metadata = MetadataParser().parse(metadata)
+        }
+    }
+
+    func populateSessionSettingsFields() {
+        clientSession = MerchantMockDataManager.getClientSession(sessionType: paymentSessionType)
+        
+        currencyTextField.text = clientSession.currencyCode?.code
+        countryCodeTextField.text = clientSession.order?.countryCode?.rawValue
+        orderIdTextField.text = clientSession.orderId
+        
+        customerIdTextField.text = clientSession.customerId
+        customerFirstNameTextField.text = clientSession.customer?.firstName
+        customerLastNameTextField.text = clientSession.customer?.lastName
+        customerEmailTextField.text = clientSession.customer?.emailAddress
+        customerMobileNumberTextField.text = clientSession.customer?.mobileNumber
+        
+        billingAddressSwitch.isOn = true
+        billingAddressFirstNameTextField.text = clientSession.customer?.billingAddress?.firstName
+        billingAddressLastNameTextField.text = clientSession.customer?.billingAddress?.lastName
+        billingAddressLine1TextField.text = clientSession.customer?.billingAddress?.addressLine1
+        billingAddressLine2TextField.text = clientSession.customer?.billingAddress?.addressLine2
+        billingAddressCityTextField.text = clientSession.customer?.billingAddress?.city
+        billingAddressStateTextField.text = clientSession.customer?.billingAddress?.state
+        billingAddressPostalCodeTextField.text = clientSession.customer?.billingAddress?.postalCode
+        billingAddressCountryTextField.text = clientSession.customer?.billingAddress?.countryCode
+        
+        shippingAddressSwitch.isOn = true
+        shippinAddressFirstNameTextField.text = clientSession.customer?.shippingAddress?.firstName
+        shippinAddressLastNameTextField.text = clientSession.customer?.shippingAddress?.lastName
+        shippinAddressLine1TextField.text = clientSession.customer?.shippingAddress?.addressLine1
+        shippinAddressLine2TextField.text = clientSession.customer?.shippingAddress?.addressLine2
+        shippinAddressCityTextField.text = clientSession.customer?.shippingAddress?.city
+        shippinAddressStateTextField.text = clientSession.customer?.shippingAddress?.state
+        shippinAddressPostalCodeTextField.text = clientSession.customer?.shippingAddress?.postalCode
+        shippinAddressCountryTextField.text = clientSession.customer?.shippingAddress?.countryCode
     }
 
     func configureTestScenario() {
@@ -609,7 +575,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
     @objc func customerIdChanged(_ textField: UITextField!) {
         guard let text = customerIdTextField.text else { return }
-        UserDefaults.standard.set(text, forKey: Self.customerIdStorageKey)
+        UserDefaults.standard.set(text, forKey: MerchantMockDataManager.customerIdStorageKey)
     }
 }
 
@@ -675,5 +641,49 @@ extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPi
         }
 
         render()
+    }
+}
+
+extension MerchantSessionAndSettingsViewController {
+    private func updateUI(for config: SessionConfiguration) {
+        apiKeyTextField.text = config.customApiKey
+        customerIdTextField.text = config.customerId.isEmpty ? "ios-customer-id" : config.customerId
+
+        switch config.env {
+        case .dev:
+            environmentSegmentedControl.selectedSegmentIndex = 0
+        case .sandbox:
+            environmentSegmentedControl.selectedSegmentIndex = 2
+        case .staging:
+            environmentSegmentedControl.selectedSegmentIndex = 1
+        case .production:
+            environmentSegmentedControl.selectedSegmentIndex = 3
+        case .local:
+            environmentSegmentedControl.selectedSegmentIndex = 2
+        }
+        environment = config.env
+
+        switch config.paymentHandling {
+        case .auto:
+            checkoutFlowSegmentedControl.selectedSegmentIndex = 0
+        case .manual:
+            checkoutFlowSegmentedControl.selectedSegmentIndex = 1
+        }
+
+        currencyTextField.text = config.currency
+        countryCodeTextField.text = config.countryCode
+
+        let lineItem = ClientSessionRequestBody.Order.LineItem(itemId: "ld-lineitem",
+                                                               description: "Fancy Shoes",
+                                                               amount: Int(config.value) ?? 100,
+                                                               quantity: 1,
+                                                               discountAmount: nil,
+                                                               taxAmount: nil)
+
+        self.lineItems = [lineItem]
+
+        metadataTextField.text = config.metadata
+        useNewWorkflows = config.newWorkflows
+        useNewWorkflowsSwitch.isOn = config.newWorkflows
     }
 }

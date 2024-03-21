@@ -42,11 +42,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         tableView.showsVerticalScrollIndicator = false
         tableView.showsHorizontalScrollIndicator = false
         tableView.backgroundColor = theme.view.backgroundColor
-
-        if #available(iOS 11.0, *) {
-            tableView.contentInsetAdjustmentBehavior = .never
-        }
-
+        tableView.contentInsetAdjustmentBehavior = .never
         tableView.rowHeight = 41
         tableView.register(CountryTableViewCell.self, forCellReuseIdentifier: CountryTableViewCell.className)
         tableView.dataSource = self
@@ -651,6 +647,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
 
     override func submitButtonTapped() {
+        self.uiModule.submitButton?.startAnimating()
         let viewEvent = Analytics.Event.ui(
             action: .click,
             context: Analytics.Event.Property.Context(

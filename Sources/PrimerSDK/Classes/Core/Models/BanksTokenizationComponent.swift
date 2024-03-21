@@ -85,7 +85,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                     seal.reject(err)
 
                 case .success(let banks):
-                    seal.fulfill(banks)
+                    seal.fulfill(banks.result)
                 }
             }
         }
@@ -838,8 +838,7 @@ extension BanksTokenizationComponent: BankSelectorTokenizationProviding {
     }
 }
 
-extension BanksTokenizationComponent: WebRedirectTokenizationDelegate {
-}
+extension BanksTokenizationComponent: WebRedirectTokenizationDelegate {}
 
 extension BanksTokenizationComponent: PaymentMethodTypeViaPaymentMethodTokenDataProviding {}
 
