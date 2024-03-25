@@ -5,6 +5,10 @@
 //  Created by Evangelos Pittas on 11/10/21.
 //
 
+// swiftlint:disable file_length
+// swiftlint:disable function_body_length
+// swiftlint:disable type_body_length
+
 import Foundation
 import SafariServices
 import UIKit
@@ -70,8 +74,11 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
 
     var isShowingBillingAddressFieldsRequired: Bool {
-        guard let billingAddressModule = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first else { return false }
-        return (billingAddressModule.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions)?.postalCode == true
+        guard let billingAddressModule = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
+                .filter({ $0.type == "BILLING_ADDRESS" })
+                .first else { return false }
+        let options = (billingAddressModule.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions)
+        return options?.postalCode == true
     }
 
     internal lazy var countrySelectorViewController: CountrySelectorViewController = {
@@ -241,7 +248,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     // MARK: All billing address fields
 
     internal var billingAddressCheckoutModuleOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions? {
-        return PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.filter({ $0.type == "BILLING_ADDRESS" }).first?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
+        return PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
+            .filter({ $0.type == "BILLING_ADDRESS" })
+            .first?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
     }
 
     internal var billingAddressFields: [[BillingAddressField]] {
@@ -330,35 +339,45 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
 
         guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "clientToken.pciUrl", value: decodedJWTToken.pciUrl, userInfo: ["file": #file,
-                                                                                                                    "class": "\(Self.self)",
-                                                                                                                    "function": #function,
-                                                                                                                    "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidValue(key: "clientToken.pciUrl",
+                                               value: decodedJWTToken.pciUrl,
+                                               userInfo: ["file": #file,
+                                                          "class": "\(Self.self)",
+                                                          "function": #function,
+                                                          "line": "\(#line)"],
+                                               diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
 
         if PrimerInternal.shared.intent == .checkout {
             if AppState.current.amount == nil {
-                let err = PrimerError.invalidSetting(name: "amount", value: nil, userInfo: ["file": #file,
-                                                                                            "class": "\(Self.self)",
-                                                                                            "function": #function,
-                                                                                            "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidSetting(name: "amount",
+                                                     value: nil,
+                                                     userInfo: ["file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
 
             if AppState.current.currency == nil {
-                let err = PrimerError.invalidSetting(name: "currency", value: nil, userInfo: ["file": #file,
-                                                                                              "class": "\(Self.self)",
-                                                                                              "function": #function,
-                                                                                              "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidSetting(name: "currency",
+                                                     value: nil,
+                                                     userInfo: ["file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
@@ -505,16 +524,19 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     let error = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                           "class": "\(Self.self)",
                                                                           "function": #function,
-                                                                          "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                          "line": "\(#line)"],
+                                                               diagnosticsId: UUID().uuidString)
                     seal.reject(error)
                 }
 
             } else if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
                 guard let paymentMethodTokenData = paymentMethodTokenData else {
-                    let err = InternalError.failedToDecode(message: "Failed to find paymentMethod", userInfo: ["file": #file,
-                                                                                                               "class": "\(Self.self)",
-                                                                                                               "function": #function,
-                                                                                                               "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = InternalError.failedToDecode(message: "Failed to find paymentMethod",
+                                                           userInfo: ["file": #file,
+                                                                      "class": "\(Self.self)",
+                                                                      "function": #function,
+                                                                      "line": "\(#line)"],
+                                                           diagnosticsId: UUID().uuidString)
                     let containerErr = PrimerError.failedToPerform3DS(paymentMethodType: self.paymentMethodType,
                                                                       error: err,
                                                                       userInfo: ["file": #file,
@@ -587,7 +609,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                         "class": "\(Self.self)",
                                                                         "function": #function,
-                                                                        "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                        "line": "\(#line)"],
+                                                             diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                 }
@@ -595,7 +618,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 let err = PrimerError.invalidValue(key: "resumeToken", value: nil, userInfo: ["file": #file,
                                                                                               "class": "\(Self.self)",
                                                                                               "function": #function,
-                                                                                              "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                              "line": "\(#line)"],
+                                                   diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
             }
@@ -734,7 +758,8 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(nil, err)
         }
@@ -744,7 +769,8 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
         let err = PrimerError.underlyingErrors(errors: errors, userInfo: ["file": #file,
                                                                           "class": "\(Self.self)",
                                                                           "function": #function,
-                                                                          "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                          "line": "\(#line)"],
+                                               diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: err)
         self.cardComponentsManagerTokenizationCompletion?(nil, err)
         self.cardComponentsManagerTokenizationCompletion = nil
@@ -771,6 +797,7 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
         }
     }
 
+    // swiftlint:disable cyclomatic_complexity
     fileprivate func showTexfieldViewErrorIfNeeded(for primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
 
         if isValid == false {
@@ -784,21 +811,29 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
             } else if primerTextFieldView is PrimerCardholderNameFieldView, !primerTextFieldView.isEmpty {
                 cardholderNameContainerView?.errorText = Strings.CardFormView.Cardholder.invalidErrorMessage
             } else if primerTextFieldView is PrimerPostalCodeFieldView {
-                postalCodeContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.PostalCode.isRequiredErrorMessage : Strings.CardFormView.PostalCode.invalidErrorMessage
+                postalCodeContainerView.errorText = primerTextFieldView.isEmpty ?
+                    Strings.CardFormView.PostalCode.isRequiredErrorMessage : Strings.CardFormView.PostalCode.invalidErrorMessage
             } else if primerTextFieldView is PrimerCountryFieldView {
-                countryFieldContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.CountryCode.isRequiredErrorMessage : Strings.CardFormView.CountryCode.invalidErrorMessage
+                countryFieldContainerView.errorText = primerTextFieldView.isEmpty ?
+                    Strings.CardFormView.CountryCode.isRequiredErrorMessage : Strings.CardFormView.CountryCode.invalidErrorMessage
             } else if primerTextFieldView is PrimerFirstNameFieldView {
-                firstNameContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.FirstName.isRequiredErrorMessage :  Strings.CardFormView.FirstName.invalidErrorMessage
+                firstNameContainerView.errorText = primerTextFieldView.isEmpty ?
+                    Strings.CardFormView.FirstName.isRequiredErrorMessage : Strings.CardFormView.FirstName.invalidErrorMessage
             } else if primerTextFieldView is PrimerLastNameFieldView {
-                lastNameContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.LastName.isRequiredErrorMessage :  Strings.CardFormView.LastName.invalidErrorMessage
+                lastNameContainerView.errorText = primerTextFieldView.isEmpty ?
+                    Strings.CardFormView.LastName.isRequiredErrorMessage : Strings.CardFormView.LastName.invalidErrorMessage
             } else if primerTextFieldView is PrimerCityFieldView {
-                cityContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.City.isRequiredErrorMessage :  Strings.CardFormView.City.invalidErrorMessage
+                cityContainerView.errorText = primerTextFieldView.isEmpty ?
+                    Strings.CardFormView.City.isRequiredErrorMessage : Strings.CardFormView.City.invalidErrorMessage
             } else if primerTextFieldView is PrimerStateFieldView {
-                stateContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.State.isRequiredErrorMessage :  Strings.CardFormView.State.invalidErrorMessage
+                stateContainerView.errorText = primerTextFieldView.isEmpty ?
+                    Strings.CardFormView.State.isRequiredErrorMessage : Strings.CardFormView.State.invalidErrorMessage
             } else if primerTextFieldView is PrimerAddressLine1FieldView {
-                addressLine1ContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.AddressLine1.isRequiredErrorMessage :  Strings.CardFormView.AddressLine1.invalidErrorMessage
+                addressLine1ContainerView.errorText = primerTextFieldView.isEmpty ?
+                    Strings.CardFormView.AddressLine1.isRequiredErrorMessage : Strings.CardFormView.AddressLine1.invalidErrorMessage
             } else if primerTextFieldView is PrimerAddressLine2FieldView {
-                addressLine2ContainerView.errorText = primerTextFieldView.isEmpty ? Strings.CardFormView.AddressLine2.isRequiredErrorMessage :  Strings.CardFormView.AddressLine2.invalidErrorMessage
+                addressLine2ContainerView.errorText = primerTextFieldView.isEmpty ?
+                    Strings.CardFormView.AddressLine2.isRequiredErrorMessage : Strings.CardFormView.AddressLine2.invalidErrorMessage
             }
         } else {
             // We don't know for sure if the text is valid
@@ -829,6 +864,7 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
             }
         }
     }
+    // swiftlint:enable cyclomatic_complexity
 
     fileprivate func enableSubmitButtonIfNeeded() {
         var validations = [
@@ -874,7 +910,9 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         var network = self.cardNetwork?.rawValue.uppercased()
         let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
 
-        if let cardNetwork = cardNetwork, cardNetwork != .unknown, cardNumberContainerView.rightImage2 != cardNetwork.icon {
+        if let cardNetwork = cardNetwork,
+           cardNetwork != .unknown,
+           cardNumberContainerView.rightImage2 != cardNetwork.icon {
             if network == nil || network == "UNKNOWN" {
                 network = "OTHER"
             }
@@ -916,10 +954,12 @@ extension CardFormPaymentMethodTokenizationViewModel: SFSafariViewControllerDele
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         if let webViewCompletion = webViewCompletion {
             // Cancelled
-            let err = PrimerError.cancelled(paymentMethodType: config.type, userInfo: ["file": #file,
-                                                                                       "class": "\(Self.self)",
-                                                                                       "function": #function,
-                                                                                       "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.cancelled(paymentMethodType: config.type,
+                                            userInfo: ["file": #file,
+                                                       "class": "\(Self.self)",
+                                                       "function": #function,
+                                                       "line": "\(#line)"],
+                                            diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             webViewCompletion(nil, err)
         }
@@ -936,7 +976,8 @@ extension CardFormPaymentMethodTokenizationViewModel: UITableViewDataSource, UIT
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let country = dataSource[indexPath.row]
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: CountryTableViewCell.className, for: indexPath) as? CountryTableViewCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: CountryTableViewCell.className,
+                                                       for: indexPath) as? CountryTableViewCell
         else {
             fatalError("Unexpected cell dequed in PrimerSDK.CardFormPaymentMethodTokenizationViewModel")
         }
@@ -1005,3 +1046,6 @@ private extension String {
                 locale: nil)
     }
 }
+// swiftlint:enable function_body_length
+// swiftlint:enable type_body_length
+// swiftlint:enable file_length

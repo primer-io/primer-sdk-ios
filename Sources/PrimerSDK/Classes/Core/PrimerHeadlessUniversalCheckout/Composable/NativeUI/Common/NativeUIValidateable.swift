@@ -24,22 +24,24 @@ extension NativeUIValidateable {
         guard PrimerAPIConfigurationModule.decodedJWTToken != nil,
               PrimerAPIConfigurationModule.apiConfiguration != nil
         else {
-            let error = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: UUID().uuidString)
+            let error = PrimerError.uninitializedSDKSession(userInfo: nil,
+                                                            diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: error)
             throw error
         }
 
         guard let paymentMethod = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.first(where: { $0.type == paymentMethodType }) else {
-            let error = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil, diagnosticsId: UUID().uuidString)
+            let error = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil,
+                                                             diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: error)
             throw error
         }
 
         guard let cats = paymentMethod.paymentMethodManagerCategories, cats.contains(.nativeUI) else {
             let error = PrimerError.unsupportedPaymentMethodForManager(paymentMethodType: paymentMethod.type,
-                                                                     category: PrimerPaymentMethodManagerCategory.nativeUI.rawValue,
-                                                                     userInfo: nil,
-                                                                     diagnosticsId: UUID().uuidString)
+                                                                       category: PrimerPaymentMethodManagerCategory.nativeUI.rawValue,
+                                                                       userInfo: nil,
+                                                                       diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: error)
             throw error
         }
@@ -48,11 +50,11 @@ extension NativeUIValidateable {
             if (intent == .vault && !paymentMethod.isVaultingEnabled) ||
                 (intent == .checkout && !paymentMethod.isCheckoutEnabled) {
                 let error = PrimerError.unsupportedIntent(intent: intent,
-                                                        userInfo: ["file": #file,
-                                                                   "class": "\(Self.self)",
-                                                                   "function": #function,
-                                                                   "line": "\(#line)"],
-                                                        diagnosticsId: UUID().uuidString)
+                                                          userInfo: ["file": #file,
+                                                                     "class": "\(Self.self)",
+                                                                     "function": #function,
+                                                                     "line": "\(#line)"],
+                                                          diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 throw error
             }

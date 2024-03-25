@@ -5,6 +5,9 @@
 //  Created by Evangelos Pittas on 5/7/21.
 //
 
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable function_body_length
+
 import UIKit
 
 public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
@@ -26,7 +29,9 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
         }
     }
 
-    public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    public override func textField(_ textField: UITextField,
+                                   shouldChangeCharactersIn range: NSRange,
+                                   replacementString string: String) -> Bool {
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField.internalText ?? ""
         var newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
@@ -37,8 +42,12 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
         if self.isValid?(newText) ?? false {
             validation = .valid
         } else {
+            let message = """
+Expiry date is not valid. Valid expiry date format is 2 characters for \
+expiry month and 4 characters for expiry year separated by '/'.
+"""
             let err = PrimerValidationError.invalidExpiryDate(
-                message: "Expiry date is not valid. Valid expiry date format is 2 characters for expiry month and 4 characters for expiry year separated by '/'.",
+                message: message,
                 userInfo: [
                     "file": #file,
                     "class": "\(Self.self)",
@@ -88,3 +97,5 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
         return false
     }
 }
+// swiftlint:enable cyclomatic_complexity
+// swiftlint:enable function_body_length

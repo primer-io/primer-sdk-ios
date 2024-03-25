@@ -24,9 +24,16 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
     typealias K = AnalyticsContextKeys
 
     case missingSdkDependency(userInfo: [String: String]?, diagnosticsId: String)
-    case invalid3DSSdkVersion(userInfo: [String: String]?, diagnosticsId: String, invalidVersion: String?, validVersion: String)
+    case invalid3DSSdkVersion(userInfo: [String: String]?,
+                              diagnosticsId: String,
+                              invalidVersion: String?,
+                              validVersion: String)
     case missing3DSConfiguration(userInfo: [String: String]?, diagnosticsId: String, missingKey: String)
-    case primer3DSSdkError(paymentMethodType: String?, userInfo: [String: String]?, diagnosticsId: String, initProtocolVersion: String?, errorInfo: Primer3DSErrorInfo)
+    case primer3DSSdkError(paymentMethodType: String?,
+                           userInfo: [String: String]?,
+                           diagnosticsId: String,
+                           initProtocolVersion: String?,
+                           errorInfo: Primer3DSErrorInfo)
     case underlyingError(userInfo: [String: String]?, diagnosticsId: String, error: Error)
 
     public var errorId: String {

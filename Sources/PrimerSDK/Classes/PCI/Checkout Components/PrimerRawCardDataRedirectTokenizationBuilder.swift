@@ -7,7 +7,10 @@
 
 import Foundation
 
-// swiftlint:disable:next type_name
+// swiftlint:disable type_name
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable function_body_length
+
 class PrimerRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var requiredInputElementTypes: [PrimerInputElementType]
@@ -37,7 +40,6 @@ class PrimerRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBui
     }
 }
 
-// swiftlint:disable:next type_name
 class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var rawData: PrimerRawData? {
@@ -102,7 +104,8 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
 
             guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType),
                   let configId = AppState.current.apiConfiguration?.getConfigId(for: paymentMethod.type) else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil, diagnosticsId: UUID().uuidString)
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil,
+                                                               diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -111,7 +114,9 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
             guard let rawData = data as? PrimerCardData,
                   (rawData.expiryDate.split(separator: "/")).count == 2
             else {
-                let err = PrimerError.invalidValue(key: "rawData", value: nil, userInfo: nil, diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidValue(key: "rawData", value: nil,
+                                                   userInfo: nil,
+                                                   diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -120,9 +125,10 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
             let expiryMonth = String((rawData.expiryDate.split(separator: "/"))[0])
             let expiryYear = String((rawData.expiryDate.split(separator: "/"))[1])
 
+            let sanatizedCardNumber = (PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as? String) ?? rawData.cardNumber
             let paymentInstrument = CardOffSessionPaymentInstrument(paymentMethodConfigId: configId,
                                                                     paymentMethodType: paymentMethodType,
-                                                                    number: (PrimerInputElementType.cardNumber.clearFormatting(value: rawData.cardNumber) as? String) ?? rawData.cardNumber,
+                                                                    number: sanatizedCardNumber,
                                                                     expirationMonth: expiryMonth,
                                                                     expirationYear: expiryYear,
                                                                     cardholderName: rawData.cardholderName ?? "")
@@ -259,3 +265,7 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
         }
     }
 }
+
+// swiftlint:enable type_name
+// swiftlint:enable cyclomatic_complexity
+// swiftlint:enable function_body_length

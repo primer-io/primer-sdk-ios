@@ -10,7 +10,7 @@
 import XCTest
 
 class MockPrimerAPIClient: PrimerAPIClientProtocol {
-    
+
     var mockedNetworkDelay: TimeInterval = 1
     var validateClientTokenResult: (SuccessResponse?, Error?)?
     var fetchConfigurationResult: (Response.Body.Configuration?, Error?)?
@@ -340,12 +340,11 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             }
         }
     }
-    
+
     func listAdyenBanks(
         clientToken: DecodedJWTToken,
         request: Request.Body.Adyen.BanksList,
-        completion: @escaping APICompletion<PrimerSDK.BanksListSessionResponse>)
-       {
+        completion: @escaping APICompletion<PrimerSDK.BanksListSessionResponse>) {
         guard let result = listAdyenBanksResult,
               result.0 != nil || result.1 != nil
         else {

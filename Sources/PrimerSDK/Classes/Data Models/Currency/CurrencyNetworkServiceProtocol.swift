@@ -5,6 +5,8 @@
 //  Created by Boris on 24.1.24..
 //
 
+// swiftlint:disable large_tuple
+
 import Foundation
 
 public protocol CurrencyNetworkServiceProtocol {
@@ -29,3 +31,4 @@ class MockCurrencyNetworkService: CurrencyNetworkServiceProtocol {
         completion(mockResponse?.0, mockResponse?.1, mockResponse?.2)
     }
 }
+// swiftlint:enable large_tuple

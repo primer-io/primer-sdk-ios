@@ -5,6 +5,9 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
+// swiftlint:disable file_length
+// swiftlint:disable type_body_length
+
 protocol UserInterfaceModuleProtocol {
 
     var paymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol! { get }
@@ -44,16 +47,22 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
         switch internaPaymentMethodType {
         case .adyenBlik:
-            return UIScreen.isDarkModeEnabled ? logo : UIImage(named: "blik-logo-light", in: Bundle.primerResources, compatibleWith: nil)
+            return UIScreen.isDarkModeEnabled ? logo : UIImage(named: "blik-logo-light",
+                                                               in: Bundle.primerResources,
+                                                               compatibleWith: nil)
         case .adyenMultibanco:
-            return UIScreen.isDarkModeEnabled ? logo : UIImage(named: "multibanco-logo-light", in: Bundle.primerResources, compatibleWith: nil)
+            return UIScreen.isDarkModeEnabled ? logo : UIImage(named: "multibanco-logo-light",
+                                                               in: Bundle.primerResources,
+                                                               compatibleWith: nil)
         default:
             return logo
         }
     }
 
     var icon: UIImage? {
-        var fileName = paymentMethodTokenizationViewModel.config.type.lowercased().replacingOccurrences(of: "_", with: "-")
+        var fileName = paymentMethodTokenizationViewModel.config.type
+            .lowercased().replacingOccurrences(of: "_",
+                                               with: "-")
         fileName += "-icon"
 
         switch self.themeMode {
@@ -97,7 +106,9 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }
 
     var localDisplayMetadata: PrimerPaymentMethod.DisplayMetadata? {
-        guard let internaPaymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodTokenizationViewModel.config.type) else { return nil }
+        let type = self.paymentMethodTokenizationViewModel.config.type
+        guard let internaPaymentMethodType = PrimerPaymentMethodType(rawValue: type)
+        else { return nil }
 
         switch internaPaymentMethodType {
         case .adyenAlipay:
@@ -755,8 +766,13 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return Strings.CardFormView.additionalFeesTitle
         default:
             guard let currency = AppState.current.currency else { return nil }
-            guard let availablePaymentMethods = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods, !availablePaymentMethods.isEmpty else { return nil }
-            guard let str = availablePaymentMethods.filter({ $0.type == paymentMethodTokenizationViewModel.config.type }).first?.surcharge?.toCurrencyString(currency: currency) else { return nil }
+            guard let availablePaymentMethods = PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods,
+                  !availablePaymentMethods.isEmpty
+            else { return nil }
+            guard let str = availablePaymentMethods
+                    .filter({ $0.type == paymentMethodTokenizationViewModel.config.type })
+                    .first?.surcharge?.toCurrencyString(currency: currency)
+            else { return nil }
             return "+\(str)"
         }
     }
@@ -779,7 +795,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             // for the a Payment Method Instrument object out of `/configuration` API response
             //
             // if let metadataButtonText = metadataButtonText { return metadataButtonText }
-            return PrimerInternal.shared.intent == .vault ? Strings.VaultPaymentMethodViewContent.addCard : Strings.PaymentButton.payWithCard
+            return PrimerInternal.shared.intent == .vault ?
+                Strings.VaultPaymentMethodViewContent.addCard : Strings.PaymentButton.payWithCard
 
         case PrimerPaymentMethodType.twoCtwoP.rawValue:
             return Strings.PaymentButton.payInInstallments
@@ -916,7 +933,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         paymentMethodButton.clipsToBounds = true
         let imagePadding: CGFloat = 20
         let leftPadding = UILocalizableUtil.isRightToLeftLocale ? imagePadding : 0
-        let defaultRightPadding = customPaddingSettingsCard.contains(paymentMethodTokenizationViewModel.config.type) ? imagePadding : 0
+        let type = paymentMethodTokenizationViewModel.config.type
+        let defaultRightPadding = customPaddingSettingsCard.contains(type) ? imagePadding : 0
         let rightPadding = UILocalizableUtil.isRightToLeftLocale ? 0 : defaultRightPadding
         paymentMethodButton.imageEdgeInsets = UIEdgeInsets(top: 8,
                                                            left: leftPadding,
@@ -1003,7 +1021,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         submitButton.accessibilityIdentifier = "submit_btn"
         submitButton.isEnabled = isEnabled
         submitButton.setTitle(titleText, for: .normal)
-        submitButton.backgroundColor = isEnabled ? theme.mainButton.color(for: .enabled) : theme.mainButton.color(for: .disabled)
+        let colorState: ColorState = isEnabled ? .enabled : .disabled
+        submitButton.backgroundColor = theme.mainButton.color(for: colorState)
         submitButton.setTitleColor(theme.mainButton.text.color, for: .normal)
         submitButton.layer.cornerRadius = 4
         submitButton.clipsToBounds = true
@@ -1047,3 +1066,5 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         self.paymentMethodTokenizationViewModel.submitButtonTapped()
     }
 }
+// swiftlint:enable type_body_length
+// swiftlint:enable file_length

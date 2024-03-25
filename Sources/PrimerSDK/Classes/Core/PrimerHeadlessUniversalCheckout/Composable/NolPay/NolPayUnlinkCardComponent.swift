@@ -5,6 +5,10 @@
 //  Created by Boris on 13.9.23..
 //
 
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable function_body_length
+// swiftlint:disable type_body_length
+
 import Foundation
 #if canImport(PrimerNolPaySDK)
 import PrimerNolPaySDK
@@ -249,7 +253,9 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         )
         Analytics.Service.record(events: [sdkEvent])
 
-        guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,
+        guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?
+                .first(where: { $0.internalPaymentMethodType == .nolPay})?
+                .options as? MerchantOptions,
               let appId = nolPaymentMethodOption.appId
         else {
             makeAndHandleInvalidValueError(forKey: "Nol AppID")
@@ -306,3 +312,6 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         #endif
     }
 }
+// swiftlint:enable cyclomatic_complexity
+// swiftlint:enable function_body_length
+// swiftlint:enable type_body_length

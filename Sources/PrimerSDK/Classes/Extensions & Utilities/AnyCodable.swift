@@ -6,6 +6,8 @@
 //  License: https://github.com/Flight-School/AnyCodable/blob/master/LICENSE.md
 //
 
+// swiftlint:disable cyclomatic_complexity
+
 import Foundation
 
 /**
@@ -143,3 +145,4 @@ extension AnyCodable: Hashable {
         }
     }
 }
+// swiftlint:enable cyclomatic_complexity

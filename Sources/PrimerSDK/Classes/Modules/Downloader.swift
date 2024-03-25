@@ -5,6 +5,9 @@
 //  Created by Evangelos on 14/7/22.
 //
 
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable function_body_length
+
 import Foundation
 
 internal typealias FileName = String
@@ -19,7 +22,7 @@ internal class File: LogReporter {
 
         var tmpFilename: String = self.fileName
         if let fileExtension = self.fileExtension {
-            tmpFilename = tmpFilename + "." + fileExtension
+            tmpFilename += "." + fileExtension
         }
 
         let fileLocalUrl = documentDirectoryUrl.appendingPathComponent(tmpFilename)
@@ -49,7 +52,7 @@ internal class File: LogReporter {
             do {
                 var tmpFilename: String = self.fileName
                 if let fileExtension = self.fileExtension {
-                    tmpFilename = tmpFilename + "." + fileExtension
+                    tmpFilename += "." + fileExtension
                 }
 
                 let fileLocalUrl = documentDirectoryUrl
@@ -295,3 +298,5 @@ extension Downloader: FileManagerDelegate {
         return true
     }
 }
+// swiftlint:enable cyclomatic_complexity
+// swiftlint:enable function_body_length

@@ -5,6 +5,12 @@
 //  Created by Evangelos on 12/12/22.
 //
 
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable file_length
+// swiftlint:disable line_length
+// swiftlint:disable function_body_length
+// swiftlint:disable type_body_length
+
 import Foundation
 import UIKit
 
@@ -57,7 +63,8 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -124,7 +131,9 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             errors.append(err)
 
         } else {
-            let productsDescription = PrimerAPIConfiguration.current?.clientSession?.order?.lineItems?.compactMap({ $0.name ?? $0.description }).joined(separator: ", ")
+            let productsDescription = PrimerAPIConfiguration.current?.clientSession?.order?.lineItems?
+                .compactMap({ $0.name ?? $0.description })
+                .joined(separator: ", ")
 
             if productsDescription == nil {
                 let err = PrimerError.invalidClientSessionValue(
@@ -215,7 +224,8 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func performPreTokenizationSteps() -> Promise<Void> {
-        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+        let imageView = self.uiModule.makeIconImageView(withDimension: 24.0)
+        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView, message: nil)
 
         return Promise { seal in
             #if canImport(PrimerIPay88MYSDK)
@@ -315,10 +325,13 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         return Promise { seal in
             #if canImport(PrimerIPay88MYSDK)
             guard let configId = config.id else {
-                let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file,
-                                                                                                         "class": "\(Self.self)",
-                                                                                                         "function": #function,
-                                                                                                         "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidValue(key: "configuration.id",
+                                                   value: config.id,
+                                                   userInfo: ["file": #file,
+                                                              "class": "\(Self.self)",
+                                                              "function": #function,
+                                                              "line": "\(#line)"],
+                                                   diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -535,11 +548,12 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
 
                     self.willPresentPaymentMethodUI?()
 
+                    let delegate = PrimerHeadlessUniversalCheckout.current.uiDelegate
                     PrimerUIManager.primerRootViewController?.present(self.primerIPay88ViewController,
                                                                       animated: true,
                                                                       completion: {
                                                                         DispatchQueue.main.async {
-                                                                            PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod?(for: self.config.type)
+                                                                            delegate?.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod?(for: self.config.type)
                                                                             self.didPresentPaymentMethodUI?()
                                                                             seal.fulfill()
                                                                         }
@@ -709,3 +723,8 @@ extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
     }
 }
 #endif
+// swiftlint:enable cyclomatic_complexity
+// swiftlint:enable function_body_length
+// swiftlint:enable type_body_length
+// swiftlint:enable line_length
+// swiftlint:enable file_length

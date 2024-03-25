@@ -87,9 +87,19 @@ extension Response.Body.Tokenization {
                 paymentMethodType: self.paymentInstrumentType)
         case .payPalBillingAgreement:
             guard let cardholder = self.paymentInstrumentData?.externalPayerInfo?.email else { return nil }
-            return CardButtonViewModel(network: "PayPal", cardholder: cardholder, last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
+            return CardButtonViewModel(network: "PayPal",
+                                       cardholder: cardholder,
+                                       last4: "",
+                                       expiry: "",
+                                       imageName: self.icon,
+                                       paymentMethodType: self.paymentInstrumentType)
         case .goCardlessMandate:
-            return CardButtonViewModel(network: "Bank account", cardholder: "", last4: "", expiry: "", imageName: self.icon, paymentMethodType: self.paymentInstrumentType)
+            return CardButtonViewModel(network: "Bank account",
+                                       cardholder: "",
+                                       last4: "",
+                                       expiry: "",
+                                       imageName: self.icon,
+                                       paymentMethodType: self.paymentInstrumentType)
         case .klarnaCustomerToken:
             return CardButtonViewModel(
                 network: paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna Customer Token",

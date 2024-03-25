@@ -5,6 +5,10 @@
 //  Created by Evangelos on 6/5/22.
 //
 
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable file_length
+// swiftlint:disable function_body_length
+
 import Foundation
 import UIKit
 
@@ -49,7 +53,8 @@ extension PaymentMethodTokenizationViewModel {
                     if let error = err as? PrimerError {
                         primerErr = error
                     } else {
-                        primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: UUID().uuidString)
+                        primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil,
+                                                        diagnosticsId: UUID().uuidString)
                     }
 
                     return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
@@ -72,7 +77,9 @@ extension PaymentMethodTokenizationViewModel {
             self.didStartPayment?()
             self.didStartPayment = nil
 
-            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+            let imageView = self.uiModule.makeIconImageView(withDimension: 24.0)
+            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView,
+                                                                                message: nil)
 
             firstly {
                 self.startPaymentFlow(withPaymentMethodTokenData: self.paymentMethodTokenData!)
@@ -122,10 +129,12 @@ extension PaymentMethodTokenizationViewModel {
                         if let error = err as? PrimerError {
                             primerErr = error
                         } else {
-                            primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: UUID().uuidString)
+                            primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil,
+                                                            diagnosticsId: UUID().uuidString)
                         }
 
-                        return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
+                        return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr,
+                                                                               data: self.paymentCheckoutData)
                     }
                     .done { merchantErrorMessage in
                         self.handleFailureFlow(errorMessage: merchantErrorMessage)
@@ -142,7 +151,8 @@ extension PaymentMethodTokenizationViewModel {
             var cancelledError: PrimerError?
             self.didCancel = {
                 self.isCancelled = true
-                cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: UUID().uuidString)
+                cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil,
+                                                       diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: cancelledError!)
                 seal.reject(cancelledError!)
                 self.isCancelled = false
@@ -248,7 +258,8 @@ extension PaymentMethodTokenizationViewModel {
                                     let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                                         "class": "\(Self.self)",
                                                                                         "function": #function,
-                                                                                        "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                        "line": "\(#line)"],
+                                                                             diagnosticsId: UUID().uuidString)
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }
@@ -262,10 +273,12 @@ extension PaymentMethodTokenizationViewModel {
                         case .fail(let message):
                             var merchantErr: Error!
                             if let message = message {
-                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file,
-                                                                                                 "class": "\(Self.self)",
-                                                                                                 "function": #function,
-                                                                                                 "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                let err = PrimerError.merchantError(message: message,
+                                                                    userInfo: ["file": #file,
+                                                                               "class": "\(Self.self)",
+                                                                               "function": #function,
+                                                                               "line": "\(#line)"],
+                                                                    diagnosticsId: UUID().uuidString)
                                 merchantErr = err
                             } else {
                                 merchantErr = NSError.emptyDescriptionError
@@ -286,7 +299,8 @@ extension PaymentMethodTokenizationViewModel {
                                     let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                                         "class": "\(Self.self)",
                                                                                         "function": #function,
-                                                                                        "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                        "line": "\(#line)"],
+                                                                             diagnosticsId: UUID().uuidString)
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }
@@ -324,10 +338,13 @@ extension PaymentMethodTokenizationViewModel {
                 }
                 .done { paymentResponse -> Void in
                     guard paymentResponse != nil else {
-                        let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file,
-                                                                                                          "class": "\(Self.self)",
-                                                                                                          "function": #function,
-                                                                                                          "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                        let err = PrimerError.invalidValue(key: "paymentResponse",
+                                                           value: nil,
+                                                           userInfo: ["file": #file,
+                                                                      "class": "\(Self.self)",
+                                                                      "function": #function,
+                                                                      "line": "\(#line)"],
+                                                           diagnosticsId: UUID().uuidString)
                         throw err
                     }
 
@@ -345,7 +362,8 @@ extension PaymentMethodTokenizationViewModel {
                                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                                     "class": "\(Self.self)",
                                                                                     "function": #function,
-                                                                                    "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                    "line": "\(#line)"],
+                                                                         diagnosticsId: UUID().uuidString)
                                 ErrorHandler.handle(error: err)
                                 throw err
                             }
@@ -376,10 +394,12 @@ extension PaymentMethodTokenizationViewModel {
                         case .fail(let message):
                             var merchantErr: Error!
                             if let message = message {
-                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file,
-                                                                                                 "class": "\(Self.self)",
-                                                                                                 "function": #function,
-                                                                                                 "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                let err = PrimerError.merchantError(message: message,
+                                                                    userInfo: ["file": #file,
+                                                                               "class": "\(Self.self)",
+                                                                               "function": #function,
+                                                                               "line": "\(#line)"],
+                                                                    diagnosticsId: UUID().uuidString)
                                 merchantErr = err
                             } else {
                                 merchantErr = NSError.emptyDescriptionError
@@ -408,10 +428,13 @@ extension PaymentMethodTokenizationViewModel {
 
             } else {
                 guard let resumePaymentId = self.resumePaymentId else {
-                    let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid", userInfo: ["file": #file,
-                                                                                                                                                 "class": "\(Self.self)",
-                                                                                                                                                 "function": #function,
-                                                                                                                                                 "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId",
+                                                                        value: "Resume Payment ID not valid",
+                                                                        userInfo: ["file": #file,
+                                                                                   "class": "\(Self.self)",
+                                                                                   "function": #function,
+                                                                                   "line": "\(#line)"],
+                                                                        diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: resumePaymentIdError)
                     seal.reject(resumePaymentIdError)
                     return
@@ -422,10 +445,13 @@ extension PaymentMethodTokenizationViewModel {
                 }
                 .done { paymentResponse -> Void in
                     guard let paymentResponse = paymentResponse else {
-                        let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file,
-                                                                                                          "class": "\(Self.self)",
-                                                                                                          "function": #function,
-                                                                                                          "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                        let err = PrimerError.invalidValue(key: "paymentResponse",
+                                                           value: nil,
+                                                           userInfo: ["file": #file,
+                                                                      "class": "\(Self.self)",
+                                                                      "function": #function,
+                                                                      "line": "\(#line)"],
+                                                           diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         throw err
                     }
@@ -491,7 +517,8 @@ Make sure you call the decision handler otherwise the SDK will hang.
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-            createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
+            let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
+            createResumePaymentService.createPayment(paymentRequest: paymentRequest) { paymentResponse, error in
 
                 if let error = error {
                     if let paymentResponse {
@@ -557,7 +584,9 @@ Make sure you call the decision handler otherwise the SDK will hang.
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)) { paymentResponse, error in
+            let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
+            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
+                                                                  paymentResumeRequest: resumeRequest) { paymentResponse, error in
 
                 if let error = error {
                     if let paymentResponse {
@@ -636,3 +665,6 @@ Make sure you call the decision handler otherwise the SDK will hang.
 }
 
 extension PaymentMethodTokenizationViewModel: PaymentMethodTypeViaPaymentMethodTokenDataProviding {}
+// swiftlint:enable cyclomatic_complexity
+// swiftlint:enable function_body_length
+// swiftlint:enable file_length

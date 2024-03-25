@@ -5,6 +5,9 @@
 //  Created by Evangelos Pittas on 27/7/21.
 //
 
+// swiftlint:disable function_body_length
+// swiftlint:disable line_length
+
 import UIKit
 
 class PrimerFormViewController: PrimerViewController {
@@ -57,11 +60,14 @@ class PrimerFormViewController: PrimerViewController {
 
         } else {
             // No surcharge fee
-            let noAdditionalFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels.filter({ $0.config.hasUnknownSurcharge == false && ($0.config.surcharge ?? 0) == 0 })
+            let noAdditionalFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels
+                .filter({ $0.config.hasUnknownSurcharge == false && ($0.config.surcharge ?? 0) == 0 })
             // With surcharge fee
-            let additionalFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels.filter({ $0.config.hasUnknownSurcharge == false && ($0.config.surcharge ?? 0) != 0 })
+            let additionalFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels
+                .filter({ $0.config.hasUnknownSurcharge == false && ($0.config.surcharge ?? 0) != 0 })
             // Unknown surcharge fee
-            let unknownFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels.filter({ $0.config.hasUnknownSurcharge == true })
+            let unknownFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels
+                .filter({ $0.config.hasUnknownSurcharge == true })
 
             if !noAdditionalFeePaymentMethodsViewModels.isEmpty,
                additionalFeePaymentMethodsViewModels.isEmpty,
@@ -92,7 +98,8 @@ class PrimerFormViewController: PrimerViewController {
             if !additionalFeePaymentMethodsViewModels.isEmpty {
                 for additionalFeePaymentMethodsViewModel in additionalFeePaymentMethodsViewModels {
                     let title = additionalFeePaymentMethodsViewModel.uiModule.surchargeSectionText
-                    let additionalFeesContainerView = PaymentMethodsGroupView(title: title, paymentMethodTokenizationViewModels: [additionalFeePaymentMethodsViewModel])
+                    let additionalFeesContainerView = PaymentMethodsGroupView(title: title,
+                                                                              paymentMethodTokenizationViewModels: [additionalFeePaymentMethodsViewModel])
                     additionalFeesContainerView.accessibilityIdentifier = "\(additionalFeePaymentMethodsViewModel.config.type.lowercased())_surcharge_group_view"
                     additionalFeesContainerView.titleLabel?.font = UIFont.systemFont(ofSize: 16.0, weight: .bold)
                     paymentMethodsStack.addArrangedSubview(additionalFeesContainerView)
@@ -114,3 +121,5 @@ class PrimerFormViewController: PrimerViewController {
         }
     }
 }
+// swiftlint:enable function_body_length
+// swiftlint:enable line_length

@@ -5,6 +5,9 @@
 //  Created by Dario Carlomagno on 18/08/22.
 //
 
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable function_body_length
+
 import Foundation
 
 class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
@@ -54,7 +57,8 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
             }
 
             DispatchQueue.main.async {
-                rawDataManager.delegate?.primerRawDataManager?(rawDataManager, metadataDidChange: ["cardNetwork": self.cardNetwork.rawValue])
+                rawDataManager.delegate?.primerRawDataManager?(rawDataManager,
+                                                               metadataDidChange: ["cardNetwork": self.cardNetwork.rawValue])
             }
         }
     }
@@ -173,7 +177,7 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                         cardNetworksMetadata.detectedCardNetworks.items.map { $0.network } != [.unknown]
 
                     if didDetectNetwork && cardNetworksMetadata.detectedCardNetworks.preferred == nil,
-                    let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
+                       let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
                         cardNetwork = network
                     } else {
                         return
@@ -235,14 +239,14 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
                 if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
                     if (rawData.cardholderName ?? "").isEmpty {
                         errors.append(PrimerValidationError.invalidCardholderName(
-                            message: "Cardholder name cannot be blank.",
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString))
+                                        message: "Cardholder name cannot be blank.",
+                                        userInfo: .errorUserInfoDictionary(),
+                                        diagnosticsId: UUID().uuidString))
                     } else if !(rawData.cardholderName ?? "").isValidNonDecimalString {
                         errors.append(PrimerValidationError.invalidCardholderName(
-                            message: "Cardholder name is not valid.",
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString))
+                                        message: "Cardholder name is not valid.",
+                                        userInfo: .errorUserInfoDictionary(),
+                                        diagnosticsId: UUID().uuidString))
                     }
                 }
 
@@ -293,3 +297,5 @@ class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProt
         }
     }
 }
+// swiftlint:enable cyclomatic_complexity
+// swiftlint:enable function_body_length

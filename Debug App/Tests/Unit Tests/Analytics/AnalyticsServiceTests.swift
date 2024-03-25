@@ -221,7 +221,7 @@ final class AnalyticsServiceTests: XCTestCase {
     static func createQueue() -> DispatchQueue {
         DispatchQueue(label: "AnalyticsServiceTestsQueue-\(UUID().uuidString)", qos: .background, attributes: .concurrent)
     }
-    
+
     @discardableResult
     func sendEvents(numberOfEvents: Int,
                     eventType: Analytics.Event.EventType = .message,

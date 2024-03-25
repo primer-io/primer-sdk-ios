@@ -28,7 +28,6 @@ import Foundation
 
 // swiftlint:disable type_name
 @objc public protocol PrimerHeadlessBanksComponentWrapperDelegate: AnyObject, PrimerHeadlessSubmitable, PrimerHeadlessStartable {
-    // swiftlint:enable type_name
     @objc var stepDelegate: BanksComponentSteppable? { get set }
     @objc var errorDelegate: BanksComponentErrorable? { get set }
     @objc var validationDelegate: BanksComponentValidatable? { get set }
@@ -46,9 +45,9 @@ import Foundation
         guard let banksComponent = try? manager.provideBanksComponent(paymentMethodType: paymentMethodType) as? (any BanksComponent) else {
             return
         }
-		banksComponent.stepDelegate = self
-		banksComponent.errorDelegate = self
-		banksComponent.validationDelegate = self
+        banksComponent.stepDelegate = self
+        banksComponent.errorDelegate = self
+        banksComponent.validationDelegate = self
         self.banksComponent = banksComponent
     }
     @objc public func submit() {
@@ -98,3 +97,4 @@ private extension PrimerValidationStatus {
         }
     }
 }
+// swiftlint:enable type_name

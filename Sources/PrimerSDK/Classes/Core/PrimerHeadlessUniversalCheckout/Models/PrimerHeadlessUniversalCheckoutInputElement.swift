@@ -5,6 +5,8 @@
 //  Created by Evangelos on 4/10/22.
 //
 
+// swiftlint:disable cyclomatic_complexity
+
 import UIKit
 
 @objc
@@ -186,8 +188,9 @@ public enum PrimerInputElementType: Int {
 // swiftlint:disable type_name
 @objc
 public protocol PrimerHeadlessUniversalCheckoutInputElement {
-    // swiftlint:enable type_name
     var inputElementDelegate: PrimerInputElementDelegate! { get set }
     var type: PrimerInputElementType { get set }
     var isValid: Bool { get }
 }
+// swiftlint:enable type_name
+// swiftlint:enable cyclomatic_complexity

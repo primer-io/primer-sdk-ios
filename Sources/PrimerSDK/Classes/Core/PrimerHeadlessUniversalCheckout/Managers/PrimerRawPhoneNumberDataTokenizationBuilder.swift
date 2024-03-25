@@ -5,9 +5,11 @@
 //  Created by Dario Carlomagno on 17/08/22.
 //
 
+// swiftlint:disable function_body_length
+// swiftlint:disable type_name
+
 import Foundation
 
-// swiftlint:disable:next type_name
 class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var rawData: PrimerRawData? {
@@ -45,14 +47,18 @@ class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuil
         return Promise { seal in
 
             guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType), let paymentMethodId = paymentMethod.id else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil, diagnosticsId: UUID().uuidString)
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil,
+                                                               diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
 
             guard let rawData = data as? PrimerPhoneNumberData else {
-                let err = PrimerError.invalidValue(key: "rawData", value: nil, userInfo: nil, diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidValue(key: "rawData",
+                                                   value: nil,
+                                                   userInfo: nil,
+                                                   diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -101,7 +107,8 @@ class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuil
                     return
                 }
 
-                if let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodType), !rawData.phoneNumber.isValidPhoneNumberForPaymentMethodType(paymentMethodType) {
+                if let paymentMethodType = PrimerPaymentMethodType(rawValue: self.paymentMethodType),
+                   !rawData.phoneNumber.isValidPhoneNumberForPaymentMethodType(paymentMethodType) {
                     errors.append(PrimerValidationError.invalidPhoneNumber(
                                     message: "Phone number is not valid.",
                                     userInfo: [
@@ -151,3 +158,5 @@ class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuil
         }
     }
 }
+// swiftlint:enable type_name
+// swiftlint:enable function_body_length
