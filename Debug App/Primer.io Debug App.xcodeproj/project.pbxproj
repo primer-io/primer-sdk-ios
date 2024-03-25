@@ -82,6 +82,7 @@
 		876141082B8346650058CA8C /* MerchantHeadlessKlarnaInitializationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876141072B8346650058CA8C /* MerchantHeadlessKlarnaInitializationView.swift */; };
 		8761410A2B8355920058CA8C /* MerchantHeadlessKlarnaInitializationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876141092B8355920058CA8C /* MerchantHeadlessKlarnaInitializationViewModel.swift */; };
 		8761410C2B849A250058CA8C /* MerchantHeadlessKlarnaInitializationView+Elements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8761410B2B849A250058CA8C /* MerchantHeadlessKlarnaInitializationView+Elements.swift */; };
+		87DF3EC72BA871BD00162100 /* PrimerKlarnaCategoriesViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87DF3EC62BA871BD00162100 /* PrimerKlarnaCategoriesViewControllerTests.swift */; };
 		8B5CB0C992DBAB293D378FAD /* MockModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EA7D2BB0AC0A1877DB2E6CE /* MockModule.swift */; };
 		91FAC91E687B6981268E677E /* DateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0B2BEE5C389FD13E210847 /* DateTests.swift */; };
 		9263BD762EC26F6AA986F0C9 /* MockAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17476BFBED51F389FCE82F16 /* MockAPIClient.swift */; };
@@ -263,6 +264,7 @@
 		876141072B8346650058CA8C /* MerchantHeadlessKlarnaInitializationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessKlarnaInitializationView.swift; sourceTree = "<group>"; };
 		876141092B8355920058CA8C /* MerchantHeadlessKlarnaInitializationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessKlarnaInitializationViewModel.swift; sourceTree = "<group>"; };
 		8761410B2B849A250058CA8C /* MerchantHeadlessKlarnaInitializationView+Elements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MerchantHeadlessKlarnaInitializationView+Elements.swift"; sourceTree = "<group>"; };
+		87DF3EC62BA871BD00162100 /* PrimerKlarnaCategoriesViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimerKlarnaCategoriesViewControllerTests.swift; sourceTree = "<group>"; };
 		8A23886804B13FA754E775D0 /* MockPaymentMethodTokenizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPaymentMethodTokenizationViewModel.swift; sourceTree = "<group>"; };
 		8A3FDC6FE0EB5AB5828D4D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		8C7C082270CF1C6B7810F9B3 /* RawDataManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawDataManagerTests.swift; sourceTree = "<group>"; };
@@ -589,6 +591,7 @@
 				876140E12B66F89D0058CA8C /* KlarnaHeadlessManagerTests.swift */,
 				876140F32B70FBFE0058CA8C /* KlarnaTokenizationComponentTests.swift */,
 				876140F52B716E060058CA8C /* KlarnaTokenizationManagerTests.swift */,
+				87DF3EC62BA871BD00162100 /* PrimerKlarnaCategoriesViewControllerTests.swift */,
 			);
 			path = Klarna;
 			sourceTree = "<group>";
@@ -1097,6 +1100,7 @@
 				042ED1622AF0F5600027833F /* MockBINDataAPIClient.swift in Sources */,
 				5976CCA261F0811F5D7707DA /* TokenizationService.swift in Sources */,
 				583EBAA90902121CEA479416 /* VaultService.swift in Sources */,
+				87DF3EC72BA871BD00162100 /* PrimerKlarnaCategoriesViewControllerTests.swift in Sources */,
 				961B5D18058EF4CFCD0185AE /* MockVaultCheckoutViewModel.swift in Sources */,
 				622A605DDEA98D981670B53F /* DropInUI_TokenizationViewModelTests.swift in Sources */,
 				F03699592AC2E63700E4179D /* BuildFile in Sources */,

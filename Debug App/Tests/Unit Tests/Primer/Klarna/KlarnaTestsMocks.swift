@@ -26,7 +26,20 @@ class KlarnaTestsMocks {
         userInfo: [:],
         diagnosticsId: UUID().uuidString
     )
-    
+
+    static let primerPaymentMethodTokenData = PrimerPaymentMethodTokenData(
+        analyticsId: "mock_analytics_id",
+        id: "mock_payment_method_token_data_id",
+        isVaulted: false,
+        isAlreadyVaulted: false,
+        paymentInstrumentType: .klarnaCustomerToken,
+        paymentMethodType: "KLARNA",
+        paymentInstrumentData: nil,
+        threeDSecureAuthentication: nil,
+        token: "mock_payment_method_token",
+        tokenType: .singleUse,
+        vaultData: nil)
+
     static var extraMerchantData: [String: Any] = [
         "subscription": [
             [
@@ -73,9 +86,9 @@ class KlarnaTestsMocks {
             
     static func getMockPrimerApiConfiguration(clientSession: ClientSession.APIResponse) -> Response.Body.Configuration {
         return Response.Body.Configuration(
-            coreUrl: "https://primer.io/core",
-            pciUrl: "https://primer.io/pci",
-            binDataUrl: "https://bindata.url",
+            coreUrl: "https://core.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://primer.io/bindata",
             assetsUrl: "https://assets.staging.core.primer.io",
             clientSession: clientSession,
             paymentMethods: [
