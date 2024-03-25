@@ -12,8 +12,6 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
     case invalidCardholderName(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidCardnumber(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidCvv(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidExpiryMonth(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidExpiryYear(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidExpiryDate(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidPostalCode(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidFirstName(message: String, userInfo: [String: String]?, diagnosticsId: String)
@@ -22,15 +20,11 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
     case invalidState(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidCountry(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidPhoneNumber(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidPhoneNumberCountryCode(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidRetailer(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidRawData(userInfo: [String: String]?, diagnosticsId: String)
     // swiftlint:disable:next identifier_name
     case vaultedPaymentMethodAdditionalDataMismatch(paymentMethodType: String, validVaultedPaymentMethodAdditionalDataType: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidOTPCode(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidAccountUniqueId(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidAccountRegistrationDate(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidAccountLastModified(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidCardType(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case banksNotLoaded(userInfo: [String: String]?, diagnosticsId: String)
     case invalidBankId(bankId: String?, userInfo: [String: String]?, diagnosticsId: String)
@@ -63,23 +57,11 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return diagnosticsId
         case .invalidRawData(_, let diagnosticsId):
             return diagnosticsId
-        case .invalidExpiryMonth(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidExpiryYear(_, _, let diagnosticsId):
-            return diagnosticsId
         case .invalidRetailer(_, _, let diagnosticsId):
             return diagnosticsId
         case .vaultedPaymentMethodAdditionalDataMismatch(_, _, _, let diagnosticsId):
             return diagnosticsId
-        case .invalidPhoneNumberCountryCode(_, _, let diagnosticsId):
-            return diagnosticsId
         case .invalidOTPCode(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidAccountUniqueId(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidAccountRegistrationDate(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidAccountLastModified(_, _, let diagnosticsId):
             return diagnosticsId
         case .invalidCardType(_, _, let diagnosticsId):
             return diagnosticsId
@@ -104,10 +86,6 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "invalid-card-number"
         case .invalidCvv:
             return "invalid-cvv"
-        case .invalidExpiryMonth:
-            return "invalid-expiry-month"
-        case .invalidExpiryYear:
-            return "invalid-expiry-year"
         case .invalidExpiryDate:
             return "invalid-expiry-date"
         case .invalidPostalCode:
@@ -130,16 +108,8 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "invalid-retailer"
         case .vaultedPaymentMethodAdditionalDataMismatch:
             return "vaulted-payment-method-additional-data-mismatch"
-        case .invalidPhoneNumberCountryCode:
-            return "invalid-phone-number-country-code"
         case .invalidOTPCode:
             return "invalid-otp-code"
-        case .invalidAccountUniqueId:
-            return "invalid-account-unique-id"
-        case .invalidAccountRegistrationDate:
-            return "invalid-account-registration-date"
-        case .invalidAccountLastModified:
-            return "invalid-account-last-modified-date"
         case .invalidCardType:
             return "unsupported-card-type"
         case .invalidBankId:
@@ -162,10 +132,6 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
         case .invalidCardnumber(let message, _, _):
             return "[\(errorId)] \(message)"
         case .invalidCvv(let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .invalidExpiryMonth(let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .invalidExpiryYear(let message, _, _):
             return "[\(errorId)] \(message)"
         case .invalidExpiryDate(let message, _, _):
             return "[\(errorId)] \(message)"
@@ -190,17 +156,9 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
         // swiftlint:disable:next identifier_name
         case .vaultedPaymentMethodAdditionalDataMismatch(let paymentMethodType, let validVaultedPaymentMethodAdditionalDataType, _, _):
             return "[\(errorId)] Vaulted payment method \(paymentMethodType) needs additional data of type \(validVaultedPaymentMethodAdditionalDataType)"
-        case .invalidPhoneNumberCountryCode(message: let message, _, _):
-            return "[\(errorId)] \(message)"
         case .invalidOTPCode(let message, _, _):
             return "[\(errorId)] \(message)"
         case .invalidCardType(let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .invalidAccountUniqueId(message: let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .invalidAccountRegistrationDate(message: let message, _, _):
-            return "[\(errorId)] \(message)"
-        case .invalidAccountLastModified(message: let message, _, _):
             return "[\(errorId)] \(message)"
         case .invalidBankId:
             return "Please provide a valid bank id"
@@ -222,8 +180,6 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
         case .invalidCardholderName(_, let userInfo, _),
              .invalidCardnumber(_, let userInfo, _),
              .invalidCvv(_, let userInfo, _),
-             .invalidExpiryMonth(_, let userInfo, _),
-             .invalidExpiryYear(_, let userInfo, _),
              .invalidExpiryDate(_, let userInfo, _),
              .invalidPostalCode(_, let userInfo, _),
              .invalidFirstName(_, let userInfo, _),
@@ -235,11 +191,7 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
              .invalidRawData(let userInfo, _),
              .invalidRetailer(_, let userInfo, _),
              .vaultedPaymentMethodAdditionalDataMismatch(_, _, let userInfo, _),
-             .invalidPhoneNumberCountryCode(_, let userInfo, _),
              .invalidOTPCode(_, let userInfo, _),
-             .invalidAccountUniqueId(_, let userInfo, _),
-             .invalidAccountRegistrationDate(message: _, let userInfo, _),
-             .invalidAccountLastModified(message: _, let userInfo, _),
              .invalidCardType(_, let userInfo, _),
              .invalidBankId(_, let userInfo, _),
              .banksNotLoaded(let userInfo, _),
@@ -281,10 +233,6 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "CARD_NUMBER"
         case .invalidCvv:
             return "CVV"
-        case .invalidExpiryMonth:
-            return "EXPIRY_MONTH"
-        case .invalidExpiryYear:
-            return "EXPIRY_YEAR"
         case .invalidExpiryDate:
             return "EXPIRY_DATE"
         case .invalidPostalCode:
@@ -307,16 +255,8 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return nil
         case .vaultedPaymentMethodAdditionalDataMismatch:
             return nil
-        case .invalidPhoneNumberCountryCode:
-            return "PHONE_NUMBER_COUNTRY_CODE"
         case .invalidOTPCode:
             return "OTP"
-        case .invalidAccountUniqueId:
-            return nil
-        case .invalidAccountRegistrationDate:
-            return nil
-        case .invalidAccountLastModified:
-            return nil
         case .invalidCardType:
             return "CARD_NUMBER"
         case .banksNotLoaded:
@@ -352,8 +292,6 @@ extension PrimerValidationError: Equatable {
         case (.invalidCardholderName(let message1, let userInfo1, let id1), .invalidCardholderName(let message2, let userInfo2, let id2)),
             (.invalidCardnumber(let message1, let userInfo1, let id1), .invalidCardnumber(let message2, let userInfo2, let id2)),
             (.invalidCvv(let message1, let userInfo1, let id1), .invalidCvv(let message2, let userInfo2, let id2)),
-            (.invalidExpiryMonth(let message1, let userInfo1, let id1), .invalidExpiryMonth(let message2, let userInfo2, let id2)),
-            (.invalidExpiryYear(let message1, let userInfo1, let id1), .invalidExpiryYear(let message2, let userInfo2, let id2)),
             (.invalidExpiryDate(let message1, let userInfo1, let id1), .invalidExpiryDate(let message2, let userInfo2, let id2)),
             (.invalidPostalCode(let message1, let userInfo1, let id1), .invalidPostalCode(let message2, let userInfo2, let id2)),
             (.invalidFirstName(let message1, let userInfo1, let id1), .invalidFirstName(let message2, let userInfo2, let id2)),
@@ -362,12 +300,8 @@ extension PrimerValidationError: Equatable {
             (.invalidState(let message1, let userInfo1, let id1), .invalidState(let message2, let userInfo2, let id2)),
             (.invalidCountry(let message1, let userInfo1, let id1), .invalidCountry(let message2, let userInfo2, let id2)),
             (.invalidPhoneNumber(let message1, let userInfo1, let id1), .invalidPhoneNumber(let message2, let userInfo2, let id2)),
-            (.invalidPhoneNumberCountryCode(let message1, let userInfo1, let id1), .invalidPhoneNumberCountryCode(let message2, let userInfo2, let id2)),
             (.invalidRetailer(let message1, let userInfo1, let id1), .invalidRetailer(let message2, let userInfo2, let id2)),
             (.invalidOTPCode(let message1, let userInfo1, let id1), .invalidOTPCode(let message2, let userInfo2, let id2)),
-            (.invalidAccountUniqueId(let message1, let userInfo1, let id1), .invalidAccountUniqueId(let message2, let userInfo2, let id2)),
-            (.invalidAccountRegistrationDate(let message1, let userInfo1, let id1), .invalidAccountRegistrationDate(let message2, let userInfo2, let id2)),
-            (.invalidAccountLastModified(let message1, let userInfo1, let id1), .invalidAccountLastModified(let message2, let userInfo2, let id2)),
             (.invalidCardType(let message1, let userInfo1, let id1), .invalidCardType(let message2, let userInfo2, let id2)):
             return message1 == message2 && userInfo1 == userInfo2 && id1 == id2
         case (.invalidRawData(let userInfo1, let id1), .invalidRawData(let userInfo2, let id2)),

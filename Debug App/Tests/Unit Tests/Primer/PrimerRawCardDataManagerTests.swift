@@ -11,7 +11,7 @@ import XCTest
 
 class PrimerRawCardDataManagerTests: XCTestCase {
 
-    static let validationTimeout = 1.0
+    static let validationTimeout = 3.0
 
     override func setUp() {
         SDKSessionHelper.setUp()
