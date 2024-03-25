@@ -76,19 +76,16 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
         primerTextField.internalText = newText
         primerTextField.text = newText
 
+        let isValidCVVLength: Bool?
+        if let cvvLength = cardNetwork.validation?.code.length {
+            isValidCVVLength = newText.count == cvvLength
+        } else {
+            isValidCVVLength = nil
+        }
+
         switch validation {
-        case .valid:
-            if let cvvLength = cardNetwork.validation?.code.length, newText.count == cvvLength {
-                delegate?.primerTextFieldView(self, isValid: true)
-            } else {
-                delegate?.primerTextFieldView(self, isValid: nil)
-            }
-        case .invalid:
-            if let cvvLength = cardNetwork.validation?.code.length, newText.count == cvvLength {
-                delegate?.primerTextFieldView(self, isValid: false)
-            } else {
-                delegate?.primerTextFieldView(self, isValid: nil)
-            }
+        case .valid, .invalid:
+            delegate?.primerTextFieldView(self, isValid: isValidCVVLength)
         default:
             delegate?.primerTextFieldView(self, isValid: nil)
         }

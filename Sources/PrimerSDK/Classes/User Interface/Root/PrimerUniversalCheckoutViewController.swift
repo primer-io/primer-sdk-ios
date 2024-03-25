@@ -23,6 +23,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var onClientSessionActionUpdateCompletion: ((Error?) -> Void)?
     private var singleUsePaymentMethod: PrimerPaymentMethodTokenData?
     private var resumePaymentId: String?
+    private var cardButtonViewModel: CardButtonViewModel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -108,6 +109,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 
         if let selectedPaymentMethod = universalCheckoutViewModel.selectedPaymentMethod,
            let cardButtonViewModel = selectedPaymentMethod.cardButtonViewModel {
+            self.cardButtonViewModel = cardButtonViewModel
             self.selectedPaymentMethod = selectedPaymentMethod
 
             if savedPaymentMethodStackView == nil {
@@ -288,20 +290,37 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         )
         Analytics.Service.record(event: viewEvent)
 
-        enableView(false)
-        payButton.startAnimating()
+        if let captureVaultedCardCvv = (config.options as? CardOptions)?.captureVaultedCardCvv,
+           captureVaultedCardCvv == true {
+            let cvvViewController = CVVRecaptureViewController(viewModel: CVVRecaptureViewModel())
+            cvvViewController.viewModel.cardButtonViewModel = cardButtonViewModel
+            cvvViewController.viewModel.didSubmitCvv = { cvv in
+                let cvvData = PrimerVaultedCardAdditionalData(cvv: cvv)
+                startCheckout(withAdditionalData: cvvData)
+            }
+            PrimerUIManager.primerRootViewController?.show(viewController: cvvViewController, animated: true)
+        } else {
+            startCheckout(withAdditionalData: nil)
+        }
 
-        let checkoutWithVaultedPaymentMethodVM = CheckoutWithVaultedPaymentMethodViewModel(configuration: config,
-                                                                                           selectedPaymentMethodTokenData: selectedPaymentMethod)
-        firstly {
-            checkoutWithVaultedPaymentMethodVM.start()
+        // Common functionality to start the checkout process
+        func startCheckout(withAdditionalData additionalData: PrimerVaultedCardAdditionalData?) {
+            payButton.startAnimating()
+            enableView(false)
+
+            let checkoutWithVaultedPaymentMethodVM = CheckoutWithVaultedPaymentMethodViewModel(configuration: config,
+                                                                                               selectedPaymentMethodTokenData: selectedPaymentMethod,
+                                                                                               additionalData: additionalData)
+            firstly {
+                checkoutWithVaultedPaymentMethodVM.start()
+            }
+            .ensure {
+                self.payButton.stopAnimating()
+                self.enableView(true)
+            }
+            .catch { _ in }
         }
-        .ensure {
-            self.enableView(true)
-        }
-        .catch { _ in }
     }
-
 }
 
 extension PrimerUniversalCheckoutViewController {

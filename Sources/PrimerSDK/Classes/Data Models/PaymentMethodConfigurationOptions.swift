@@ -21,6 +21,7 @@ struct CardOptions: PaymentMethodOptions {
     let threeDSecureInitUrl: String?
     let threeDSecureProvider: String
     let processorConfigId: String?
+    let captureVaultedCardCvv: Bool?
 }
 
 struct MerchantOptions: PaymentMethodOptions {
