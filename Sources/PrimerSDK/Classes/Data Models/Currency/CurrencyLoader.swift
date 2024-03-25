@@ -5,6 +5,7 @@
 //  Created by Boris on 11.1.24..
 //
 
+// swiftlint:disable function_body_length
 import Foundation
 
 var inMemoryCurrencies: [Currency]? = []
@@ -98,3 +99,4 @@ public class CurrencyLoader: LogReporter {
         }
     }
 }
+// swiftlint:enable function_body_length

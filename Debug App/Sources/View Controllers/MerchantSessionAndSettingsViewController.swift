@@ -134,7 +134,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var renderMode: RenderMode = .createClientSession
 
     var selectedPaymentHandling: PrimerPaymentHandling = .auto
-    
+
     var clientSession = MerchantMockDataManager.getClientSession(sessionType: .generic)
 
     var selectedTestScenario: Test.Scenario?
@@ -188,7 +188,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
         merchantNameTextField.text = "Primer Merchant"
         populateSessionSettingsFields()
-        
+
         customerIdTextField.addTarget(self, action: #selector(customerIdChanged(_:)), for: .editingDidEnd)
 
         let configProvider = AppetizeConfigProvider()
@@ -216,7 +216,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             surchargeGroupStackView.isHidden = false
             useNewWorkflowsStackView.isHidden = false
             oneTimePaymentStackView.isHidden = false
-            
+
         case .clientToken:
             environmentStackView.isHidden = false
             testParamsGroupStackView.isHidden = true
@@ -228,7 +228,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             surchargeGroupStackView.isHidden = true
             useNewWorkflowsStackView.isHidden = true
             oneTimePaymentStackView.isHidden = true
-            
+
         case .testScenario:
             environmentStackView.isHidden = true
             testParamsGroupStackView.isHidden = false
@@ -240,7 +240,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             surchargeGroupStackView.isHidden = false
             useNewWorkflowsStackView.isHidden = true
             oneTimePaymentStackView.isHidden = true
-            
+
             testParamsStackView.isHidden = (selectedTestScenario == nil)
 
             if testResultSegmentedControl.selectedSegmentIndex == 0 {
@@ -374,12 +374,12 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBAction func useNewWorkflowsSwitchValueChanged(_ sender: UISwitch) {
         useNewWorkflows = sender.isOn
     }
-    
+
     @IBAction func oneTimePaymentValueChanged(_ sender: UISwitch) {
         paymentSessionType = sender.isOn ? .oneTimePayment : .generic
         populateSessionSettingsFields()
     }
-    
+
     func configureClientSession() {
         clientSession.currencyCode = CurrencyLoader().getCurrency(currencyTextField.text ?? "")
         clientSession.order?.countryCode = CountryCode(rawValue: countryCodeTextField.text ?? "")
@@ -415,7 +415,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         } else {
             clientSession.customer?.shippingAddress = nil
         }
-        
+
         clientSession.paymentMethod = MerchantMockDataManager.getPaymentMethod(sessionType: paymentSessionType)
         if paymentSessionType == .generic && enableCVVRecaptureFlowSwitch.isOn {
             let option = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(surcharge: nil,
@@ -439,13 +439,13 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         currencyTextField.text = clientSession.currencyCode?.code
         countryCodeTextField.text = clientSession.order?.countryCode?.rawValue
         orderIdTextField.text = clientSession.orderId
-        
+
         customerIdTextField.text = clientSession.customerId
         customerFirstNameTextField.text = clientSession.customer?.firstName
         customerLastNameTextField.text = clientSession.customer?.lastName
         customerEmailTextField.text = clientSession.customer?.emailAddress
         customerMobileNumberTextField.text = clientSession.customer?.mobileNumber
-        
+
         billingAddressSwitch.isOn = true
         billingAddressFirstNameTextField.text = clientSession.customer?.billingAddress?.firstName
         billingAddressLastNameTextField.text = clientSession.customer?.billingAddress?.lastName
@@ -455,7 +455,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         billingAddressStateTextField.text = clientSession.customer?.billingAddress?.state
         billingAddressPostalCodeTextField.text = clientSession.customer?.billingAddress?.postalCode
         billingAddressCountryTextField.text = clientSession.customer?.billingAddress?.countryCode
-        
+
         shippingAddressSwitch.isOn = true
         shippinAddressFirstNameTextField.text = clientSession.customer?.shippingAddress?.firstName
         shippinAddressLastNameTextField.text = clientSession.customer?.shippingAddress?.lastName

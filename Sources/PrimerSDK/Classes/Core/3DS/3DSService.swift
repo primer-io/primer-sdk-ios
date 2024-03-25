@@ -390,41 +390,13 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             let network = paymentMethodTokenData.paymentInstrumentData?.binData?.network
             let cardNetwork = CardNetwork(cardNetworkStr: network ?? "")
 
-            guard let directoryServerId = cardNetwork.directoryServerId else {
-                let uuid = UUID().uuidString
-
-                let primer3DSError = Primer3DSError.missingDsRid(
-                    cardNetwork: paymentMethodTokenData.paymentInstrumentData?.binData?.network ?? "n/a")
-
-                let err = Primer3DSErrorContainer.primer3DSSdkError(
-                    paymentMethodType: paymentMethodType,
-                    userInfo: ["file": #file,
-                               "class": "\(Self.self)",
-                               "function": #function,
-                               "line": "\(#line)"],
-                    diagnosticsId: uuid,
-                    initProtocolVersion: self.initProtocolVersion?.rawValue,
-                    errorInfo: Primer3DSErrorInfo(
-                        errorId: primer3DSError.errorId,
-                        errorDescription: primer3DSError.errorDescription,
-                        recoverySuggestion: primer3DSError.recoverySuggestion,
-                        threeDsErrorCode: primer3DSError.threeDsErrorCode,
-                        threeDsErrorType: primer3DSError.threeDsErrorType,
-                        threeDsErrorComponent: primer3DSError.threeDsErrorComponent,
-                        threeDsSdkTranscationId: primer3DSError.threeDsSdkTranscationId,
-                        threeDsSErrorVersion: primer3DSError.threeDsSErrorVersion,
-                        threeDsErrorDetail: primer3DSError.threeDsErrorDetail))
-
-                let internalErr = InternalError.failedToPerform3dsButShouldContinue(error: err)
-                seal.reject(internalErr)
-                return
-            }
+            let directoryServerNetwork = DirectoryServerNetwork.from(cardNetworkIdentifier: cardNetwork.rawValue)
 
             let supportedThreeDsProtocolVersions = decodedJWTToken.supportedThreeDsProtocolVersions ?? []
 
             do {
                 let result = try self.primer3DS.createTransaction(
-                    directoryServerId: directoryServerId,
+                    directoryServerNetwork: directoryServerNetwork,
                     supportedThreeDsProtocolVersions: supportedThreeDsProtocolVersions)
                 seal.fulfill(result)
 
@@ -657,33 +629,32 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
         let apiClient: PrimerAPIClientProtocol = ThreeDSService.apiClient ?? PrimerAPIClient()
         apiClient.begin3DSAuth(clientToken: decodedJWTToken,
                                paymentMethodTokenData: paymentMethodTokenData,
-                               threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest,
-                               completion: { result in
-                                switch result {
-                                case .failure(let underlyingErr):
-                                    var primerErr: PrimerError
+                               threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest) { result in
+            switch result {
+            case .failure(let underlyingErr):
+                var primerErr: PrimerError
 
-                                    if let primerError = underlyingErr as? PrimerError {
-                                        primerErr = primerError
-                                    } else {
-                                        primerErr = PrimerError.underlyingErrors(
-                                            errors: [underlyingErr],
-                                            userInfo: ["file": #file,
-                                                       "class": "\(Self.self)",
-                                                       "function": #function,
-                                                       "line": "\(#line)"],
-                                            diagnosticsId: UUID().uuidString)
-                                    }
+                if let primerError = underlyingErr as? PrimerError {
+                    primerErr = primerError
+                } else {
+                    primerErr = PrimerError.underlyingErrors(
+                        errors: [underlyingErr],
+                        userInfo: ["file": #file,
+                                   "class": "\(Self.self)",
+                                   "function": #function,
+                                   "line": "\(#line)"],
+                        diagnosticsId: UUID().uuidString)
+                }
 
-                                    ErrorHandler.handle(error: primerErr)
+                ErrorHandler.handle(error: primerErr)
 
-                                    let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: primerErr)
-                                    completion(.failure(internalErr))
+                let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: primerErr)
+                completion(.failure(internalErr))
 
-                                case .success(let res):
-                                    completion(.success(res))
-                                }
-                               })
+            case .success(let res):
+                completion(.success(res))
+            }
+        }
     }
     #endif
 

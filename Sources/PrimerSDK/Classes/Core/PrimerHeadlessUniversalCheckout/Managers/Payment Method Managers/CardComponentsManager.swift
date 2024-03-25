@@ -345,10 +345,10 @@ extension PrimerHeadlessUniversalCheckout {
                     return
                 }
 
-                let number = (PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as? String)
+                let sanatizedCardNumber = (PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as? String)
                 let cardOffSessionPaymentInstrument = CardOffSessionPaymentInstrument(paymentMethodConfigId: configId,
                                                                                       paymentMethodType: paymentMethodType,
-                                                                                      number: number  ?? cardNumber,
+                                                                                      number: sanatizedCardNumber  ?? cardNumber,
                                                                                       expirationMonth: expiryMonth,
                                                                                       expirationYear: expiryYear,
                                                                                       cardholderName: cardholderName)
@@ -429,9 +429,9 @@ extension PrimerHeadlessUniversalCheckout {
                     cardholderName = cardholderNameField.internalText
                 }
 
-                let number = (PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as? String)
+                let sanatizedCardNumber = (PrimerInputElementType.cardNumber.clearFormatting(value: cardNumber) as? String)
                 let paymentInstrument = CardPaymentInstrument(
-                    number: number ?? cardNumber,
+                    number: sanatizedCardNumber ?? cardNumber,
                     cvv: cvv,
                     expirationMonth: expiryMonth,
                     expirationYear: expiryYear,

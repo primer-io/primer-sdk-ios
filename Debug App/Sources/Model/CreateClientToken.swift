@@ -281,7 +281,7 @@ struct ClientSessionRequestBody {
             var discountAmount: Int?
             var taxAmount: Int?
             var productType: String?
-            
+
             var dictionaryValue: [String: Any]? {
                 var dic: [String: Any] = [:]
 
@@ -308,16 +308,16 @@ struct ClientSessionRequestBody {
                 if let discountAmount = discountAmount {
                     dic["discountAmount"] = discountAmount
                 }
-                
+
                 if let productType = productType {
                     dic["productType"] = productType
                 }
-                
+
                 return dic.keys.count == 0 ? nil : dic
             }
         }
     }
-    
+
     struct PaymentMethod: Codable {
         let vaultOnSuccess: Bool?
         var options: PaymentMethodOptionGroup?
@@ -334,7 +334,7 @@ struct ClientSessionRequestBody {
             if let options = options {
                 dic["options"] = options.dictionaryValue
             }
-            
+
             if let descriptor = descriptor {
                 dic["descriptor"] = descriptor
             }
@@ -345,14 +345,14 @@ struct ClientSessionRequestBody {
 
             return dic.keys.count == 0 ? nil : dic
         }
-        
+
         struct PaymentMethodOptionGroup: Codable {
             var KLARNA: PaymentMethodOption?
             var PAYMENT_CARD: PaymentMethodOption?
 
             var dictionaryValue: [String: Any]? {
                 var dic: [String: Any] = [:]
-                
+
                 if let KLARNA = KLARNA {
                     dic["KLARNA"] = KLARNA.dictionaryValue
                 }
@@ -364,7 +364,7 @@ struct ClientSessionRequestBody {
                 return dic.keys.count == 0 ? nil : dic
             }
         }
-        
+
         struct PaymentMethodOption: Codable {
             var surcharge: SurchargeOption?
             var instalmentDuration: String?
@@ -387,27 +387,27 @@ struct ClientSessionRequestBody {
 
             func encode(to encoder: Encoder) throws {
                 var container = encoder.container(keyedBy: CodingKeys.self)
-                
+
                 if let surcharge = surcharge {
                     try container.encode(surcharge, forKey: .surcharge)
                 }
-                
+
                 if let instalmentDuration = instalmentDuration {
                     try container.encode(instalmentDuration, forKey: .instalmentDuration)
                 }
-                
+
                 if let extraMerchantData = extraMerchantData {
                     let jsonData = try JSONSerialization.data(withJSONObject: extraMerchantData, options: [])
                     let jsonString = String(data: jsonData, encoding: .utf8)
                     try container.encode(jsonString, forKey: .extraMerchantData)
                 }
             }
-            
+
             init(from decoder: Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
                 surcharge = try container.decodeIfPresent(SurchargeOption.self, forKey: .surcharge)
                 instalmentDuration = try container.decodeIfPresent(String.self, forKey: .instalmentDuration)
-                
+
                 let jsonString = try container.decodeIfPresent(String.self, forKey: .extraMerchantData)
                 if let jsonData = jsonString?.data(using: .utf8) {
                     extraMerchantData = try JSONSerialization.jsonObject(with: jsonData) as? [String: Any]
@@ -417,18 +417,18 @@ struct ClientSessionRequestBody {
 
                 captureVaultedCardCvv = try container.decodeIfPresent(Bool.self, forKey: .captureVaultedCardCvv) ?? false
             }
-            
+
             var dictionaryValue: [String: Any]? {
                 var dic: [String: Any] = [:]
-                
+
                 if let surcharge = surcharge {
                     dic["surcharge"] = surcharge.dictionaryValue
                 }
-                
+
                 if let instalmentDuration = instalmentDuration {
                     dic["instalmentDuration"] = instalmentDuration
                 }
-                
+
                 if let extraMerchantData = extraMerchantData {
                     dic["extraMerchantData"] = extraMerchantData
                 }
@@ -440,17 +440,17 @@ struct ClientSessionRequestBody {
                 return dic.keys.count == 0 ? nil : dic
             }
         }
-        
+
         struct  SurchargeOption: Codable {
             var amount: Int?
-            
+
             var dictionaryValue: [String: Any]? {
                 var dic: [String: Any] = [:]
-                
+
                 if let amount = amount {
                     dic["amount"] = amount
                 }
-                
+
                 return dic.keys.count == 0 ? nil : dic
             }
         }

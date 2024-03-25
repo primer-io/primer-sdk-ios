@@ -236,7 +236,7 @@ class MockPrimerDelegate: PrimerDelegate {
                                                                                         "class": "\(Self.self)",
                                                                                         "function": #function,
                                                                                         "line": "\(#line)"],
-                                diagnosticsId: UUID().uuidString)) }
+                                                                             diagnosticsId: UUID().uuidString)) }
     }
 
     func onTokenizeSuccess(_ paymentMethodToken: PrimerPaymentMethodTokenData, _ completion: @escaping (Error?) -> Void) {
@@ -245,7 +245,7 @@ class MockPrimerDelegate: PrimerDelegate {
                                                                                         "class": "\(Self.self)",
                                                                                         "function": #function,
                                                                                         "line": "\(#line)"],
-                                diagnosticsId: UUID().uuidString)) }
+                                                                             diagnosticsId: UUID().uuidString)) }
     }
 
     func primerDidDismiss() {

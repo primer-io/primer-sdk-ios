@@ -214,7 +214,7 @@ would have been preferred (max BIN length exceeded).
                 cancellable.cancel()
             }
 
-            let apiClient = (Self.apiClient ?? apiClient)
+            let apiClient = Self.apiClient ?? apiClient
             validateCardNetworksCancellable = apiClient.listCardNetworks(clientToken: decodedJWTToken,
                                                                          bin: cardNumber) { result in
                 switch result {

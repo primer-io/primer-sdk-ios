@@ -253,7 +253,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
                     switch paymentCreationDecision.type {
                     case .abort(let errorMessage):
                         let error = PrimerError.merchantError(message: errorMessage ?? "", userInfo: nil,
-        diagnosticsId: UUID().uuidString)
+                                                              diagnosticsId: UUID().uuidString)
                         seal.reject(error)
                     case .continue:
                         seal.fulfill()

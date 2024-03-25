@@ -283,35 +283,6 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
         }
     }
 
-    var directoryServerId: String? {
-        switch self {
-        case .visa:
-            return "A000000003"
-        case .masterCard:
-            return "A000000004"
-        case .amex:
-            return "A000000025"
-        case .jcb:
-            return "A000000065"
-        case .diners,
-             .discover:
-            return "A000000152"
-        case .unionpay:
-            return "A000000333"
-        default:
-            if let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
-               let env = decodedJWTToken.env {
-                if env.uppercased() == "PRODUCTION" {
-                    return nil
-                } else {
-                    return "A999999999"
-                }
-            } else {
-                return nil
-            }
-        }
-    }
-
     var surcharge: Int? {
         guard let options = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options,
               !options.isEmpty else { return nil }

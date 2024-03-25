@@ -35,30 +35,16 @@ public enum PrimerError: PrimerErrorProtocol {
     case invalidClientToken(userInfo: [String: String]?, diagnosticsId: String)
     case missingPrimerConfiguration(userInfo: [String: String]?, diagnosticsId: String)
     case missingPrimerDelegate(userInfo: [String: String]?, diagnosticsId: String)
-    case missingPrimerCheckoutComponentsDelegate(userInfo: [String: String]?, diagnosticsId: String)
     case misconfiguredPaymentMethods(userInfo: [String: String]?, diagnosticsId: String)
     case missingPrimerInputElement(inputElementType: PrimerInputElementType,
                                    userInfo: [String: String]?,
                                    diagnosticsId: String)
     case cancelled(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
     case failedToCreateSession(error: Error?, userInfo: [String: String]?, diagnosticsId: String)
-    case failedOnWebViewFlow(error: Error?, userInfo: [String: String]?, diagnosticsId: String)
-    case failedToImport3DS(userInfo: [String: String]?, diagnosticsId: String)
-    case failedToPerform3DS(paymentMethodType: String,
-                            error: Error?,
-                            userInfo: [String: String]?,
-                            diagnosticsId: String)
+    case failedToPerform3DS(paymentMethodType: String, error: Error?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case invalid3DSKey(userInfo: [String: String]?, diagnosticsId: String)
-    case invalidArchitecture(description: String,
-                             recoverSuggestion: String?,
-                             userInfo: [String: String]?,
-                             diagnosticsId: String)
-    case invalidClientSessionValue(name: String,
-                                   value: String?,
-                                   allowedValue: String?,
-                                   userInfo: [String: String]?,
-                                   diagnosticsId: String)
+    case invalidArchitecture(description: String, recoverSuggestion: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidClientSessionValue(name: String, value: String?, allowedValue: String?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidMerchantIdentifier(merchantIdentifier: String?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidUrlScheme(urlScheme: String?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidSetting(name: String, value: String?, userInfo: [String: String]?, diagnosticsId: String)
@@ -84,10 +70,7 @@ public enum PrimerError: PrimerErrorProtocol {
                                 userInfo: [String: String]?,
                                 diagnosticsId: String)
     case applePayTimedOut(userInfo: [String: String]?, diagnosticsId: String)
-    case sdkDismissed
-    case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String,
-                                       userInfo: [String: String]?,
-                                       diagnosticsId: String)
+    case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, userInfo: [String: String]?, diagnosticsId: String)
     case nolError(code: String?, message: String?, userInfo: [String: String]?, diagnosticsId: String)
     case klarnaWrapperError(message: String?, userInfo: [String: String]?, diagnosticsId: String)
     case unableToPresentApplePay(userInfo: [String: String]?, diagnosticsId: String)
@@ -105,8 +88,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "missing-configuration"
         case .missingPrimerDelegate:
             return "missing-primer-delegate"
-        case .missingPrimerCheckoutComponentsDelegate:
-            return "missing-primer-checkout-components-delegate"
         case .misconfiguredPaymentMethods:
             return "misconfigured-payment-methods"
         case .missingPrimerInputElement:
@@ -115,14 +96,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "payment-cancelled"
         case .failedToCreateSession:
             return "failed-to-create-session"
-        case .failedOnWebViewFlow:
-            return "failed-on-webview"
-        case .failedToImport3DS:
-            return "failed-to-import-3ds"
         case .failedToPerform3DS:
             return "failed-to-perform-3ds"
-        case .invalid3DSKey:
-            return "invalid-3ds-key"
         case .invalidArchitecture:
             return "invalid-architecture"
         case .invalidClientSessionValue:
@@ -157,8 +132,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return PrimerPaymentErrorCode.failed.rawValue
         case .applePayTimedOut:
             return "apple-pay-timed-out"
-        case .sdkDismissed:
-            return "sdk-dismissed"
         case .failedToProcessPayment:
             return "failed-to-process-payment"
         case .invalidVaultedPaymentMethodId:
@@ -195,8 +168,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .missingPrimerDelegate(_, let diagnosticsId):
             return diagnosticsId
-        case .missingPrimerCheckoutComponentsDelegate(_, let diagnosticsId):
-            return diagnosticsId
         case .misconfiguredPaymentMethods(_, let diagnosticsId):
             return diagnosticsId
         case .missingPrimerInputElement(_, _, let diagnosticsId):
@@ -205,15 +176,9 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .failedToCreateSession(_, _, let diagnosticsId):
             return diagnosticsId
-        case .failedOnWebViewFlow(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .failedToImport3DS(_, let diagnosticsId):
-            return diagnosticsId
         case .failedToPerform3DS(_, _, _, let diagnosticsId):
             return diagnosticsId
         case .invalidUrl(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalid3DSKey(_, let diagnosticsId):
             return diagnosticsId
         case .invalidArchitecture(_, _, _, let diagnosticsId):
             return diagnosticsId
@@ -249,8 +214,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .applePayTimedOut(_, let diagnosticsId):
             return diagnosticsId
-        case .sdkDismissed:
-            return UUID().uuidString
         case .failedToProcessPayment(_, _, _, _, let diagnosticsId):
             return diagnosticsId
         case .invalidVaultedPaymentMethodId(_, _, let diagnosticsId):
@@ -282,8 +245,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Missing SDK configuration"
         case .missingPrimerDelegate:
             return "Primer delegate has not been set"
-        case .missingPrimerCheckoutComponentsDelegate:
-            return "Primer Checkout Components delegate has not been set"
         case .missingPrimerInputElement(let inputElementType, _, _):
             return "Missing primer input element for \(inputElementType)"
         case .missingSDK(let paymentMethodType, let sdkName, _, _):
@@ -294,14 +255,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Payment method \(paymentMethodType) cancelled"
         case .failedToCreateSession(error: let error, _, _):
             return "Failed to create session with error: \(error?.localizedDescription ?? "nil")"
-        case .failedOnWebViewFlow(error: let error, _, _):
-            return "Failed on webview flow with error: \(error?.localizedDescription ?? "nil")"
-        case .failedToImport3DS:
-            return "Failed on import Primer3DS"
         case .failedToPerform3DS(_, let error, _, _):
             return "Failed on perform 3DS with error: \(error?.localizedDescription ?? "nil")"
-        case .invalid3DSKey:
-            return "Invalid 3DS key"
         case .invalidArchitecture(let description, _, _, _):
             return "\(description)"
         case .invalidClientSessionValue(let name, let value, _, _, _):
@@ -334,8 +289,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "\(description)"
         case .applePayTimedOut:
             return "Apple Pay timed out"
-        case .sdkDismissed:
-            return "SDK has been dismissed"
         case .failedToProcessPayment(_, let paymentId, let status, _, _):
             return "The payment with id \(paymentId) was created but ended up in a \(status) status."
         case .invalidVaultedPaymentMethodId(let vaultedPaymentMethodId, _, _):
@@ -364,16 +317,12 @@ public enum PrimerError: PrimerErrorProtocol {
              .invalidClientToken(let userInfo, _),
              .missingPrimerConfiguration(let userInfo, _),
              .missingPrimerDelegate(let userInfo, _),
-             .missingPrimerCheckoutComponentsDelegate(let userInfo, _),
              .missingPrimerInputElement(_, let userInfo, _),
              .misconfiguredPaymentMethods(let userInfo, _),
              .cancelled(_, let userInfo, _),
              .failedToCreateSession(_, let userInfo, _),
-             .failedOnWebViewFlow(_, let userInfo, _),
-             .failedToImport3DS(let userInfo, _),
              .failedToPerform3DS(_, _, let userInfo, _),
              .invalidUrl(_, let userInfo, _),
-             .invalid3DSKey(let userInfo, _),
              .invalidArchitecture(_, _, let userInfo, _),
              .invalidClientSessionValue(_, _, _, let userInfo, _),
              .invalidMerchantIdentifier(_, let userInfo, _),
@@ -397,9 +346,6 @@ public enum PrimerError: PrimerErrorProtocol {
              .unableToPresentApplePay(let userInfo, _),
              .unknown(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-
-        case .sdkDismissed:
-            break
         }
 
         return tmpUserInfo
@@ -425,18 +371,9 @@ public enum PrimerError: PrimerErrorProtocol {
         case .missingPrimerConfiguration:
             return "Check if you have an active internet connection."
         case .missingPrimerDelegate:
-            let message =
-                """
-            Primer's delegate has not been set. Ensure that you have added Primer.shared.delegate = self \
-            on the view controller you wish to present Primer's SDK.
-"""
-            return message
-        case .missingPrimerCheckoutComponentsDelegate:
-            let message =
-                """
-Primer Checkout Components' delegate has not been set. \
-Ensure that you have added PrimerCheckoutComponents.delegate = self, \
-on the view controller you wish to implement the components.
+            let message = """
+Primer's delegate has not been set. Ensure that you have added Primer.shared.delegate = self \
+on the view controller you wish to present Primer's SDK.
 """
             return message
         case .missingPrimerInputElement(let inputElementtype, _, _):
@@ -454,17 +391,10 @@ on your dashboard https://dashboard.primer.io/
             return nil
         case .failedToCreateSession:
             return nil
-        case .failedOnWebViewFlow:
-            return nil
-        case .failedToImport3DS:
-            // We need to check all the possibilities of underlying errors, and provide a suggestion that makes sense
-            return nil
         case .failedToPerform3DS:
             return nil
         case .invalidUrl:
             return nil
-        case .invalid3DSKey:
-            return "Contact Primer to enable 3DS on your account."
         case .invalidArchitecture(_, let recoverySuggestion, _, _):
             return recoverySuggestion
         case .invalidClientSessionValue(let name, _, let allowedValue, _, _):
@@ -509,8 +439,6 @@ Check if all necessary values have been provided on your client session.\
             return nil
         case .applePayTimedOut:
             return "Make sure you have an active internet connection and your Apple Pay configuration is correct."
-        case .sdkDismissed:
-            return nil
         case .failedToProcessPayment:
             return nil
         case .invalidVaultedPaymentMethodId:

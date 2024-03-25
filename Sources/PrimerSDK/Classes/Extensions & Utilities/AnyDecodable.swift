@@ -8,9 +8,7 @@
 
 // swiftlint:disable type_name
 // swiftlint:disable cyclomatic_complexity
-#if canImport(Foundation)
 import Foundation
-#endif
 
 /**
  A type-erased `Decodable` value.
@@ -58,11 +56,7 @@ extension _AnyDecodable {
         let container = try decoder.singleValueContainer()
 
         if container.decodeNil() {
-            #if canImport(Foundation)
-            self.init(NSNull())
-            #else
-            self.init(Optional<Self>.none)
-            #endif
+            self.init(Self?.none)
         } else if let bool = try? container.decode(Bool.self) {
             self.init(bool)
         } else if let int = try? container.decode(Int.self) {

@@ -5,20 +5,20 @@ project 'Primer.io Debug App.xcodeproj'
 target 'Debug App' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
-  
+
   # Pods for Debug App
   pod 'PrimerSDK', :path => '../'
-  pod 'Primer3DS', "2.2.0"
+  pod 'Primer3DS'
   pod 'PrimerKlarnaSDK'
   pod 'PrimerIPay88MYSDK'
   pod 'PrimerNolPaySDK'
   pod 'IQKeyboardManagerSwift'
-  
+
   target 'Debug App Tests' do
     inherit! :search_paths
     # Pods for testing
   end
-  
+
   post_install do |installer|
     fix_code_signing(installer)
     fix_linking(installer)
@@ -27,7 +27,7 @@ end
 
 
 def fix_code_signing(installer)
-  
+
   installer.generated_projects.each do |project|
     project.targets.each do |target|
       if target.respond_to?(:product_type) and target.product_type == "com.apple.product-type.bundle"
@@ -42,7 +42,7 @@ end
 
 
 def fix_linking(installer)
-  
+
   installer.generated_projects.each do |project|
     primer_target_names = project.targets.filter { |target|
       !target.name.start_with?("PrimerSDK") && target.name.start_with?("Primer")

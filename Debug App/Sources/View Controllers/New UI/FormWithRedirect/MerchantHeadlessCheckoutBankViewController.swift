@@ -66,8 +66,8 @@ final class MerchantHeadlessCheckoutBankViewController: UIViewController {
 
 // MARK: - PrimerHeadlessErrorableDelegate, PrimerHeadlessValidatableDelegate, PrimerHeadlessStepableDelegate
 extension MerchantHeadlessCheckoutBankViewController: PrimerHeadlessErrorableDelegate,
-                                                        PrimerHeadlessValidatableDelegate,
-                                                        PrimerHeadlessSteppableDelegate {
+                                                      PrimerHeadlessValidatableDelegate,
+                                                      PrimerHeadlessSteppableDelegate {
 
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
         switch validationStatus {

@@ -938,11 +938,6 @@ extension Strings {
     }
 
     struct CVVRecapture {
-//        "primer-cvv-recapture-title" = "Enter CVV";
-//
-//        /* CVV recapture explanation */
-//        "primer-cvv-recapture-explanation" = "Input the %d digit security code on your card for a secure payment.";
-
         static let title = NSLocalizedString(
             "primer-cvv-recapture-title",
             tableName: nil,

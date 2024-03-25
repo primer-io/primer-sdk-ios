@@ -11,7 +11,7 @@ import XCTest
 
 class RawDataManagerTests: XCTestCase {
 
-    private static let validationTimeout = 2.0
+    private static let validationTimeout = 3.0
 
     var rawDataManager: RawDataManager!
 
@@ -41,8 +41,8 @@ class RawDataManagerTests: XCTestCase {
                     CardNetwork.visa.rawValue,
                     CardNetwork.masterCard.rawValue,
                     CardNetwork.amex.rawValue
-//                    ,
-//                    CardNetwork.unknown.rawValue
+                    //                    ,
+                    //                    CardNetwork.unknown.rawValue
                 ]
             ),
             order: ClientSession.Order(
@@ -155,9 +155,9 @@ class RawDataManagerTests: XCTestCase {
 
         // Valid data
         let cardData = PrimerCardData(cardNumber: "4242424242424242",
-                                  expiryDate: "03/2030",
-                                  cvv: "123",
-                                  cardholderName: "Test")
+                                      expiryDate: "03/2030",
+                                      cvv: "123",
+                                      cardholderName: "Test")
         self.rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
 

@@ -15,9 +15,9 @@ struct MerchantMockDataManager {
         case generic
         case oneTimePayment
     }
-    
+
     static let customerIdStorageKey = "io.primer.debug.customer-id"
-    
+
     static var customerId: String {
         if let customerId = UserDefaults.standard.string(forKey: customerIdStorageKey) {
             return customerId
@@ -27,7 +27,7 @@ struct MerchantMockDataManager {
         UserDefaults.standard.set(customerId, forKey: customerIdStorageKey)
         return customerId
     }
-    
+
     static func getClientSession(sessionType: SessionType) -> ClientSessionRequestBody {
         return ClientSessionRequestBody(
             customerId: customerId,
@@ -73,19 +73,17 @@ struct MerchantMockDataManager {
             paymentMethod: sessionType == .generic ? genericPaymentMethod : klarnaPaymentMethod,
             testParams: nil)
     }
-    
+
     static func getPaymentMethod(sessionType: SessionType) -> ClientSessionRequestBody.PaymentMethod {
         return sessionType == .generic ? genericPaymentMethod : klarnaPaymentMethod
     }
-    
-    static var genericPaymentMethod:  ClientSessionRequestBody.PaymentMethod {
-        return ClientSessionRequestBody.PaymentMethod(
-            vaultOnSuccess: false,
-            options: nil,
-            descriptor: nil,
-            paymentType: nil
-        )
-    }
+
+    static var genericPaymentMethod = ClientSessionRequestBody.PaymentMethod(
+        vaultOnSuccess: false,
+        options: nil,
+        descriptor: nil,
+        paymentType: nil
+    )
 
     static var klarnaPaymentMethod = ClientSessionRequestBody.PaymentMethod(
         vaultOnSuccess: nil,
@@ -107,15 +105,15 @@ struct MerchantMockDataManager {
                 "subscription_name": "Implant_lenses",
                 "start_time": "2020-11-24T15:00",
                 "end_time": "2021-11-24T15:00",
-                "auto_renewal_of_subscription": false,
-            ],
+                "auto_renewal_of_subscription": false
+            ]
         ],
         "customer_account_info": [
             [
                 "unique_account_identifier": "Owen Owenson",
                 "account_registration_date": "2020-11-24T15:00",
-                "account_last_modified": "2020-11-24T15:00",
-            ],
+                "account_last_modified": "2020-11-24T15:00"
+            ]
         ]
     ]
 }

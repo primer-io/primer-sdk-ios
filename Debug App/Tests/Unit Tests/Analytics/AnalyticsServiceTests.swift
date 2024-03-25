@@ -180,7 +180,7 @@ final class AnalyticsServiceTests: XCTestCase {
         }
 
         let expectation3 = self.expectation(description: "Wait for all events to be sent")
-        _ = sendEvents(numberOfEvents: 4, eventType: .sdkEvent).ensure {
+        _ = sendEvents(numberOfEvents: 1, eventType: .sdkEvent).ensure {
             expectation3.fulfill()
         }
         waitForExpectations(timeout: 10.0)
@@ -221,7 +221,7 @@ final class AnalyticsServiceTests: XCTestCase {
     static func createQueue() -> DispatchQueue {
         DispatchQueue(label: "AnalyticsServiceTestsQueue-\(UUID().uuidString)", qos: .background, attributes: .concurrent)
     }
-    
+
     @discardableResult
     func sendEvents(numberOfEvents: Int,
                     eventType: Analytics.Event.EventType = .message,

@@ -11,18 +11,16 @@ import SwiftUI
 import PrimerSDK
 
 class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
-    
+
     // MARK: - Subviews
     let activityIndicator = UIActivityIndicatorView(style: .large)
-    
+
     // MARK: - Properties
     var logs: [String] = []
     var clientToken: String?
     var autoFinalize: Bool = false
     var finalizePayment: Bool = false
-    
-    
-    
+
     // MARK: - Klarna
     lazy var manager: PrimerHeadlessUniversalCheckout.KlarnaManager = PrimerHeadlessUniversalCheckout.KlarnaManager()
     let klarnaInitializationViewModel: MerchantHeadlessKlarnaInitializationViewModel = MerchantHeadlessKlarnaInitializationViewModel()
@@ -30,10 +28,10 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     let sharedWrapper = SharedUIViewWrapper()
     var renderedKlarnaView = UIView()
     var klarnaComponent: (any KlarnaComponent)?
-    
+
     init(sessionIntent: PrimerSessionIntent) {
         super.init(nibName: nil, bundle: nil)
-        
+
         do {
             klarnaComponent = try manager.provideKlarnaComponent(with: sessionIntent)
             klarnaComponent?.stepDelegate = self
@@ -45,19 +43,19 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
                 showAlert(title: "Error", message: message)
             case .unsupportedIntent(let intent, _, _):
                 showAlert(title: "Error", message: "Unsupported intent: \(intent.rawValue)")
-            default: 
+            default:
                 return
             }
         } catch {
             showAlert(title: "Error", message: "Klarna component provider not found.")
         }
-        
+
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,7 +64,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
         addKlarnaView()
         startPaymentSession()
     }
-    
+
     private func addKlarnaView() {
         klarnaInitializationView = MerchantHeadlessKlarnaInitializationView(viewModel: klarnaInitializationViewModel, sharedWrapper: sharedWrapper) { paymentCategory in
             guard let paymentCategory = paymentCategory else { return }
@@ -75,7 +73,7 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
         } onContinuePressed: {
             self.authorizeSession()
         }
-        
+
         let hostingViewController = UIHostingController(rootView: klarnaInitializationView)
         hostingViewController.view.translatesAutoresizingMaskIntoConstraints = false
         addChild(hostingViewController)
@@ -91,13 +89,9 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
             )
         ])
     }
-    
+
     func passRenderedKlarnaView(_ renderedKlarnaView: UIView) {
         sharedWrapper.uiView = renderedKlarnaView
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
     }
 }
 
@@ -108,7 +102,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
         activityIndicator.hidesWhenStopped = true
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
     }
-    
+
     func setupLayout() {
         view.addSubview(activityIndicator)
         NSLayoutConstraint.activate([
@@ -120,18 +114,18 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
 
 // MARK: - Helpers
 extension MerchantHeadlessCheckoutKlarnaViewController {
-    func showAlert(title: String, message: String, handler: (() -> ())? = nil) {
+    func showAlert(title: String, message: String, handler: (() -> Void)? = nil) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: "OK", style: .default) { _ in handler?() }
         alert.addAction(okAction)
         present(alert, animated: true, completion: nil)
     }
-    
+
     func showLoader() {
         view.bringSubviewToFront(activityIndicator)
         activityIndicator.startAnimating()
     }
-    
+
     func hideLoader() {
         activityIndicator.stopAnimating()
     }

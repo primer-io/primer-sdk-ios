@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 struct MetadataParser {
 
     func parse(_ metadata: String?) -> [String: Any] {
@@ -39,7 +38,7 @@ struct MetadataParser {
 
         if let int = Int(value) { return int }
         if let number = Double(value) { return number }
-        
+
         // String
         if value.hasPrefix("\"") && value.hasSuffix("\"") {
             return String(value.dropFirst().dropLast())
