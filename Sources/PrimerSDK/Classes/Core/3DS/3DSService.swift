@@ -382,41 +382,13 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
             let cardNetwork = CardNetwork(cardNetworkStr: paymentMethodTokenData.paymentInstrumentData?.binData?.network ?? "")
 
-            guard let directoryServerId = cardNetwork.directoryServerId else {
-                let uuid = UUID().uuidString
-
-                let primer3DSError = Primer3DSError.missingDsRid(
-                    cardNetwork: paymentMethodTokenData.paymentInstrumentData?.binData?.network ?? "n/a")
-
-                let err = Primer3DSErrorContainer.primer3DSSdkError(
-                    paymentMethodType: paymentMethodType,
-                    userInfo: ["file": #file,
-                               "class": "\(Self.self)",
-                               "function": #function,
-                               "line": "\(#line)"],
-                    diagnosticsId: uuid,
-                    initProtocolVersion: self.initProtocolVersion?.rawValue,
-                    errorInfo: Primer3DSErrorInfo(
-                        errorId: primer3DSError.errorId,
-                        errorDescription: primer3DSError.errorDescription,
-                        recoverySuggestion: primer3DSError.recoverySuggestion,
-                        threeDsErrorCode: primer3DSError.threeDsErrorCode,
-                        threeDsErrorType: primer3DSError.threeDsErrorType,
-                        threeDsErrorComponent: primer3DSError.threeDsErrorComponent,
-                        threeDsSdkTranscationId: primer3DSError.threeDsSdkTranscationId,
-                        threeDsSErrorVersion: primer3DSError.threeDsSErrorVersion,
-                        threeDsErrorDetail: primer3DSError.threeDsErrorDetail))
-
-                let internalErr = InternalError.failedToPerform3dsButShouldContinue(error: err)
-                seal.reject(internalErr)
-                return
-            }
+            let directoryServerNetwork = DirectoryServerNetwork.from(cardNetworkIdentifier: cardNetwork.rawValue)
 
             let supportedThreeDsProtocolVersions = decodedJWTToken.supportedThreeDsProtocolVersions ?? []
 
             do {
                 let result = try self.primer3DS.createTransaction(
-                    directoryServerId: directoryServerId,
+                    directoryServerNetwork: directoryServerNetwork,
                     supportedThreeDsProtocolVersions: supportedThreeDsProtocolVersions)
                 seal.fulfill(result)
 

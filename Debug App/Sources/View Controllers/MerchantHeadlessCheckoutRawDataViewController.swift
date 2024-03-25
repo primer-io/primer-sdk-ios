@@ -56,7 +56,12 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
         
         self.cardnumberTextField?.becomeFirstResponder()
     }
-    
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.hideLoadingOverlay()
+    }
+
     // 4111 1234 1234 1234
     // 5522 1234 1234 1234
 
@@ -199,9 +204,11 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
 
     private func hideLoadingOverlay() {
         DispatchQueue.main.async {
-            self.activityIndicator?.stopAnimating()
-            self.activityIndicator?.removeFromSuperview()
-            self.activityIndicator = nil
+            if let activityIndicator = self.activityIndicator, activityIndicator.isAnimating {
+                activityIndicator.stopAnimating()
+                activityIndicator.removeFromSuperview()
+                self.activityIndicator = nil
+            }
         }
     }
 }
