@@ -11,7 +11,7 @@ protocol NetworkRequestFactory {
     func request(for endpoint: Endpoint) throws -> URLRequest
 }
 
-class DefaultNetworkRequestFactory: NetworkRequestFactory {
+class DefaultNetworkRequestFactory: NetworkRequestFactory, LogReporter {
 
     func request(for endpoint: Endpoint) throws -> URLRequest {
         var request = try baseRequest(from: endpoint)
@@ -29,6 +29,8 @@ class DefaultNetworkRequestFactory: NetworkRequestFactory {
         if let timeout = endpoint.timeout {
             request.timeoutInterval = timeout
         }
+
+        log(request: request)
 
         return request
     }
@@ -70,5 +72,26 @@ class DefaultNetworkRequestFactory: NetworkRequestFactory {
         }
 
         return url
+    }
+
+    private func log(request: URLRequest) {
+        let method = request.httpMethod?.uppercased() ?? "Unknown Method"
+        let url = request.url?.absoluteString ?? "Unknown URL"
+        let headersDescription = request.allHTTPHeaderFields?.map { (key, value) in
+            "  ► \(key): \(value)"
+        } ?? ["No headers found"]
+        let body = {
+            guard let body = request.httpBody else { return "N/A" }
+            return String(data: body, encoding: .utf8) ?? "N/A"
+        }()
+
+        logger.debug(message: """
+
+🌎 [Request: \(method)] 👉 \(url)
+Headers:
+\(headersDescription.joined(separator: "\n"))
+Body:
+\(body)
+""")
     }
 }

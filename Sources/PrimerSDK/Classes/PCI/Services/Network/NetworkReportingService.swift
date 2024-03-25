@@ -48,7 +48,6 @@ class DefaultNetworkReportingService: NetworkReportingService {
             )
         case .networkConnectivity:
             event = Analytics.Event.networkConnectivity()
-            break
         }
 
         Analytics.Service.record(event: event)

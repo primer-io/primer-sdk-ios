@@ -25,6 +25,9 @@ class JSONNetworkResponseFactory: NetworkResponseFactory, LogReporter {
     let decoder = JSONDecoder()
 
     func model<T>(for response: Data, forMetadata metadata: ResponseMetadata) throws -> T where T: Decodable {
+
+        log(data: response, metadata: metadata)
+
         switch metadata.statusCode {
         case 200:
             do {
@@ -48,5 +51,22 @@ class JSONNetworkResponseFactory: NetworkResponseFactory, LogReporter {
                                            userInfo: .errorUserInfoDictionary(),
                                            diagnosticsId: UUID().uuidString)
 
+    }
+
+    func log(data: Data, metadata: ResponseMetadata) {
+        let url = metadata.responseUrl ?? "Unknown URL"
+        let headersDescription = metadata.headers?.map { (key, value) in
+            "  ► \(key): \(value)"
+        } ?? ["No headers found"]
+        let body = String(data: data, encoding: .utf8) ?? "N/A"
+
+        logger.debug(message: """
+
+🌎 [Response] 👉 \(url)
+Headers:
+\(headersDescription.joined(separator: "\n"))
+Body:
+\(body)
+""")
     }
 }
