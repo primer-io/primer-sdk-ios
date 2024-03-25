@@ -51,7 +51,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
         // Don't validate if the BIN (first eight digits) hasn't changed
         let bin = String(sanitizedCardNumber.prefix(Self.maximumBinLength))
         if let mostRecentCardNumber = mostRecentCardNumber,
-            mostRecentCardNumber.prefix(Self.maximumBinLength) == bin {
+           mostRecentCardNumber.prefix(Self.maximumBinLength) == bin {
             if let cachedMetadata = metadataCache[bin] {
                 handle(cardMetadata: cachedMetadata, forCardState: cardState)
             }
@@ -96,7 +96,8 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
                 return
             }
 
-            let cardMetadata = self.createValidationMetadata(networks: result.networks.map { CardNetwork(cardNetworkStr: $0.value) },
+            let networks = result.networks.map { CardNetwork(cardNetworkStr: $0.value) }
+            let cardMetadata = self.createValidationMetadata(networks: networks,
                                                              source: .remote)
 
             self.handle(cardMetadata: cardMetadata, forCardState: cardState)
@@ -113,7 +114,10 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
                                                 source: isFallback ? .localFallback : .local)
 
         if cardState.cardNumber.count >= Self.maximumBinLength {
-            let logMessage = "Local validation was used where remote validation would have been preferred (max BIN length exceeded)."
+            let logMessage = """
+Local validation was used where remote validation \
+would have been preferred (max BIN length exceeded).
+"""
 
             logger.warn(message: logMessage)
             let event = Analytics.Event.message(
@@ -210,7 +214,9 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
                 cancellable.cancel()
             }
 
-            validateCardNetworksCancellable = (Self.apiClient ?? apiClient).listCardNetworks(clientToken: decodedJWTToken, bin: cardNumber) { result in
+            let apiClient = Self.apiClient ?? apiClient
+            validateCardNetworksCancellable = apiClient.listCardNetworks(clientToken: decodedJWTToken,
+                                                                         bin: cardNumber) { result in
                 switch result {
                 case .success(let networks):
                     resolver.fulfill(networks)

@@ -11,7 +11,9 @@ internal class AlertController: UIAlertController {
 
     private lazy var alertWindow: UIWindow = {
         var window: UIWindow!
-        if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
+        if let windowScene = UIApplication.shared.connectedScenes
+            .filter({ $0.activationState == .foregroundActive })
+            .first as? UIWindowScene {
             window = UIWindow(windowScene: windowScene)
         } else {
             // Not opted-in in UISceneDelegate

@@ -7,7 +7,8 @@
 
 import Foundation
 
-private let analyticsFileURL: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("analytics")
+private let analyticsFileURL: URL = FileManager.default.urls(for: .documentDirectory,
+                                                             in: .userDomainMask)[0].appendingPathComponent("analytics")
 
 protocol AnalyticsStorage {
 
@@ -90,7 +91,6 @@ extension Analytics {
             let events = loadEvents().filter { $0.analyticsUrl == url.absoluteString }
             delete(events)
         }
-
 
         func deleteAnalyticsFile() {
             logger.debug(message: "📚 Analytics: Deleting analytics file at \(fileURL.absoluteString)")

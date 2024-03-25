@@ -13,8 +13,9 @@ protocol KlarnaTokenizationManagerProtocol {
      - Parameters:
      - customerToken: An optional `Response.Body.Klarna.CustomerToken` object containing the customer's token and session data.
      - `offSessionAuthorizationId`: An optional `String` representing an off-session authorization ID. This is used when the session `intent` is `checkout`.
-     
-     - Returns: A `Promise<PrimerPaymentMethodTokenData>` which resolves to a `PrimerPaymentMethodTokenData` object on successful tokenization or rejects with an `Error` if the tokenization process fails.
+
+     - Returns: A `Promise<PrimerPaymentMethodTokenData>` which resolves to a `PrimerPaymentMethodTokenData`
+     object on successful tokenization or rejects with an `Error` if the tokenization process fails.
      */
     func tokenize(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerCheckoutData>
 }
@@ -38,9 +39,13 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
                 seal.reject(error)
                 return
             }
-            // Checks if the session type is for recurring payments. If so, it attempts to extract the customer token ID and sets 'KlarnaCustomerTokenPaymentInstrument' as a payment instrument.
-            // Otherwise it sets the 'customerTokenId' with 'offSessionAuthorizationId' value which is 'authToken' returned from 'primerKlarnaWrapperFinalized' KlarnaProvider delegate method and sets 'KlarnaAuthorizationPaymentInstrument' as a payment instrument.
-            // If the token ID is not found, it generates an error indicating an invalid value for `tokenization.customerToken`
+            // Checks if the session type is for recurring payments. If so, it attempts to extract the
+            // customer token ID and sets 'KlarnaCustomerTokenPaymentInstrument' as a payment instrument.
+            // Otherwise it sets the 'customerTokenId' with 'offSessionAuthorizationId' value
+            // which is 'authToken' returned from 'primerKlarnaWrapperFinalized' KlarnaProvider
+            // delegate method and sets 'KlarnaAuthorizationPaymentInstrument' as a payment instrument.
+            // If the token ID is not found, it generates an error indicating an invalid value
+            // for `tokenization.customerToken`
             if KlarnaHelpers.getSessionType() == .recurringPayment {
                 guard let klarnaCustomerToken = customerToken?.customerTokenId else {
                     let error = KlarnaHelpers.getInvalidValueError(key: "tokenization.customerToken", value: nil)

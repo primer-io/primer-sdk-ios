@@ -11,6 +11,8 @@ import Foundation
 #endif
 
 // swiftlint:disable type_name
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable function_body_length
 
 /**
  A type-erased `Encodable` value.
@@ -106,7 +108,8 @@ extension _AnyEncodable {
         case let encodable as Encodable:
             try encodable.encode(to: encoder)
         default:
-            let context = EncodingError.Context(codingPath: container.codingPath, debugDescription: "AnyEncodable value cannot be encoded")
+            let context = EncodingError.Context(codingPath: container.codingPath,
+                                                debugDescription: "AnyEncodable value cannot be encoded")
             throw EncodingError.invalidValue(value, context)
         }
     }
@@ -137,7 +140,9 @@ extension _AnyEncodable {
         case "d":
             try container.encode(nsnumber.doubleValue)
         default:
-            let context = EncodingError.Context(codingPath: container.codingPath, debugDescription: "NSNumber cannot be encoded because its type is not handled")
+            let message = "NSNumber cannot be encoded because its type is not handled"
+            let context = EncodingError.Context(codingPath: container.codingPath,
+                                                debugDescription: message)
             throw EncodingError.invalidValue(nsnumber, context)
         }
     }
@@ -294,4 +299,6 @@ extension AnyEncodable: Hashable {
         }
     }
 }
+// swiftlint:enable cyclomatic_complexity
 // swiftlint:enable type_name
+// swiftlint:enable function_body_length

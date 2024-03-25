@@ -92,8 +92,20 @@ import UIKit
         activityIndicator.color = theme?.colorStates.color(for: .selected) ?? .white
         self.addSubview(activityIndicator)
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        let xCenterConstraint = NSLayoutConstraint(item: self, attribute: .centerX, relatedBy: .equal, toItem: activityIndicator, attribute: .centerX, multiplier: 1, constant: 0)
-        let yCenterConstraint = NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: activityIndicator, attribute: .centerY, multiplier: 1, constant: 0)
+        let xCenterConstraint = NSLayoutConstraint(item: self,
+                                                   attribute: .centerX,
+                                                   relatedBy: .equal,
+                                                   toItem: activityIndicator,
+                                                   attribute: .centerX,
+                                                   multiplier: 1,
+                                                   constant: 0)
+        let yCenterConstraint = NSLayoutConstraint(item: self,
+                                                   attribute: .centerY,
+                                                   relatedBy: .equal,
+                                                   toItem: activityIndicator,
+                                                   attribute: .centerY,
+                                                   multiplier: 1,
+                                                   constant: 0)
         self.addConstraints([xCenterConstraint, yCenterConstraint])
         return activityIndicator
     }()

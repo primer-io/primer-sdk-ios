@@ -36,7 +36,9 @@ extension PrimerHeadlessUniversalCheckout {
         public static func getPaymentMethodAsset(for paymentMethodType: String) throws -> PrimerPaymentMethodAsset? {
             try verifyAPIConfig()
 
-            guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?.first(where: { $0.type == paymentMethodType }) else {
+            guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?
+                    .first(where: { $0.type == paymentMethodType })
+            else {
                 return nil
             }
 
@@ -47,9 +49,9 @@ extension PrimerHeadlessUniversalCheckout {
             }
 
             guard let paymentMethodLogo = PrimerInternalAsset(
-                colored: baseLogoImage.colored,
-                light: baseLogoImage.light,
-                dark: baseLogoImage.dark) else {
+                    colored: baseLogoImage.colored,
+                    light: baseLogoImage.light,
+                    dark: baseLogoImage.dark) else {
                 return nil
             }
 
@@ -70,7 +72,8 @@ extension PrimerHeadlessUniversalCheckout {
         public static func getPaymentMethodAssets() throws -> [PrimerPaymentMethodAsset] {
             try verifyAPIConfig()
 
-            let hucAvailablePaymentMethods = PrimerHeadlessUniversalCheckout.PaymentMethod.availablePaymentMethods.compactMap({ $0.paymentMethodType })
+            let hucAvailablePaymentMethods = PrimerHeadlessUniversalCheckout.PaymentMethod.availablePaymentMethods
+                .compactMap({ $0.paymentMethodType })
 
             var paymentMethodAssets: [PrimerPaymentMethodAsset] = []
 
@@ -84,9 +87,9 @@ extension PrimerHeadlessUniversalCheckout {
                 }
 
                 guard let paymentMethodLogo = PrimerInternalAsset(
-                    colored: baseLogoImage.colored,
-                    light: baseLogoImage.light,
-                    dark: baseLogoImage.dark)
+                        colored: baseLogoImage.colored,
+                        light: baseLogoImage.light,
+                        dark: baseLogoImage.dark)
                 else {
                     continue
                 }
@@ -113,7 +116,8 @@ extension PrimerHeadlessUniversalCheckout {
 
         private static func verifyAPIConfig() throws {
             if AppState.current.apiConfiguration == nil {
-                let err = PrimerError.uninitializedSDKSession(userInfo: nil, diagnosticsId: UUID().uuidString)
+                let err = PrimerError.uninitializedSDKSession(userInfo: nil,
+                                                              diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }

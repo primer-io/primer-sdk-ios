@@ -5,6 +5,8 @@
 //  Created by Evangelos on 9/9/22.
 //
 
+// swiftlint:disable function_body_length
+
 import UIKit
 
 internal class PrimerUIManager {
@@ -101,7 +103,9 @@ internal class PrimerUIManager {
                 }
 
                 if PrimerUIManager.primerWindow == nil {
-                    if let windowScene = UIApplication.shared.connectedScenes.filter({ $0.activationState == .foregroundActive }).first as? UIWindowScene {
+                    if let windowScene = UIApplication.shared.connectedScenes
+                        .filter({ $0.activationState == .foregroundActive })
+                        .first as? UIWindowScene {
                         PrimerUIManager.primerWindow = UIWindow(windowScene: windowScene)
                     } else {
                         // Not opted-in in UISceneDelegate
@@ -262,3 +266,4 @@ internal class PrimerUIManager {
         PrimerUIManager.primerRootViewController?.show(viewController: resultViewController)
     }
 }
+// swiftlint:enable function_body_length

@@ -5,6 +5,9 @@
 //  Created by Evangelos Pittas on 29/6/21.
 //
 
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable function_body_length
+
 import UIKit
 
 public final class PrimerCardNumberFieldView: PrimerTextFieldView {
@@ -96,5 +99,6 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         primerTextField.text = newText.withoutWhiteSpace.separate(every: 4, with: " ")
         return false
     }
-
 }
+// swiftlint:enable cyclomatic_complexity
+// swiftlint:enable function_body_length

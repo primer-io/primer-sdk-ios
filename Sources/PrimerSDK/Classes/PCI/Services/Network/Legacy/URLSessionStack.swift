@@ -6,6 +6,9 @@
 //
 
 import Foundation
+// swiftlint:disable function_body_length
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable type_body_length
 
 internal class URLSessionStack: NetworkService, LogReporter {
 
@@ -20,8 +23,6 @@ internal class URLSessionStack: NetworkService, LogReporter {
     }
 
     // MARK: - Network Stack logic
-
-    // swiftlint:disable function_body_length
     @discardableResult
     func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResponseCompletion<T>) -> PrimerCancellable? {
 
@@ -48,10 +49,12 @@ internal class URLSessionStack: NetworkService, LogReporter {
 
         // Error if URL invalid
         guard let url = url(for: endpoint) else {
-            let err = InternalError.invalidUrl(url: "Base URL: \(endpoint.baseURL ?? "nil") | Endpoint: \(endpoint.path)", userInfo: ["file": #file,
-                                                                                                                                      "class": "\(Self.self)",
-                                                                                                                                      "function": #function,
-                                                                                                                                      "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = InternalError.invalidUrl(url: "Base URL: \(endpoint.baseURL ?? "nil") | Endpoint: \(endpoint.path)",
+                                               userInfo: ["file": #file,
+                                                          "class": "\(Self.self)",
+                                                          "function": #function,
+                                                          "line": "\(#line)"],
+                                               diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return nil
@@ -123,7 +126,8 @@ internal class URLSessionStack: NetworkService, LogReporter {
                 let err = InternalError.underlyingErrors(errors: [error], userInfo: ["file": #file,
                                                                                      "class": "\(Self.self)",
                                                                                      "function": #function,
-                                                                                     "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                     "line": "\(#line)"],
+                                                         diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 DispatchQueue.main.async { completion(.failure(err)) }
                 return
@@ -144,7 +148,8 @@ internal class URLSessionStack: NetworkService, LogReporter {
                 let err = InternalError.noData(userInfo: ["file": #file,
                                                           "class": "\(Self.self)",
                                                           "function": #function,
-                                                          "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                          "line": "\(#line)"],
+                                               diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 DispatchQueue.main.async { completion(.failure(err)) }
                 return
@@ -163,7 +168,8 @@ internal class URLSessionStack: NetworkService, LogReporter {
                         logger.debug(message: "Analytics event sent")
                     } else if !data.isEmpty {
                         let jsonObject = try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                        let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any, options: .prettyPrinted)
+                        let jsonData = try? JSONSerialization.data(withJSONObject: jsonObject as Any,
+                                                                   options: .prettyPrinted)
                         var jsonStr: String?
                         if jsonData != nil {
                             jsonStr = String(data: jsonData!, encoding: .utf8 )
@@ -194,9 +200,12 @@ internal class URLSessionStack: NetworkService, LogReporter {
                     DispatchQueue.main.async { completion(.success(result)) }
                 }
             } catch {
-                if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments), let jsonDic = json as? [String: Any?],
+                if let json = try? JSONSerialization.jsonObject(with: data,
+                                                                options: .allowFragments),
+                   let jsonDic = json as? [String: Any?],
                    let primerErrorJSON = jsonDic["error"] as? [String: Any],
-                   let primerErrorObject = try? JSONSerialization.data(withJSONObject: primerErrorJSON, options: .fragmentsAllowed),
+                   let primerErrorObject = try? JSONSerialization.data(withJSONObject: primerErrorJSON,
+                                                                       options: .fragmentsAllowed),
                    let statusCode = (response as? HTTPURLResponse)?.statusCode {
 
                     let primerErrorResponse = try? self.parser.parse(PrimerServerError.self, from: primerErrorObject)
@@ -207,10 +216,13 @@ internal class URLSessionStack: NetworkService, LogReporter {
                     }
 
                     if statusCode == 401 {
-                        let err = InternalError.unauthorized(url: urlStr, method: endpoint.method, userInfo: ["file": #file,
-                                                                                                              "class": "\(Self.self)",
-                                                                                                              "function": #function,
-                                                                                                              "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                        let err = InternalError.unauthorized(url: urlStr,
+                                                             method: endpoint.method,
+                                                             userInfo: ["file": #file,
+                                                                        "class": "\(Self.self)",
+                                                                        "function": #function,
+                                                                        "line": "\(#line)"],
+                                                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
 
                         #if DEBUG
@@ -221,10 +233,13 @@ internal class URLSessionStack: NetworkService, LogReporter {
                         DispatchQueue.main.async { completion(.failure(err)) }
 
                     } else if (400...499).contains(statusCode) {
-                        let err = InternalError.serverError(status: statusCode, response: primerErrorResponse, userInfo: ["file": #file,
-                                                                                                                          "class": "\(Self.self)",
-                                                                                                                          "function": #function,
-                                                                                                                          "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                        let err = InternalError.serverError(status: statusCode,
+                                                            response: primerErrorResponse,
+                                                            userInfo: ["file": #file,
+                                                                       "class": "\(Self.self)",
+                                                                       "function": #function,
+                                                                       "line": "\(#line)"],
+                                                            diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
 
                         #if DEBUG
@@ -235,11 +250,14 @@ internal class URLSessionStack: NetworkService, LogReporter {
                         DispatchQueue.main.async { completion(.failure(err)) }
 
                     } else if (500...599).contains(statusCode) {
-                        let err = InternalError.serverError(status: statusCode, response: primerErrorResponse, userInfo: ["file": #file,
-                                                                                                                          "class": "\(Self.self)",
-                                                                                                                          "function": #function,
-                                                                                                                          "line": "\(#line)"], diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err) 
+                        let err = InternalError.serverError(status: statusCode,
+                                                            response: primerErrorResponse,
+                                                            userInfo: ["file": #file,
+                                                                       "class": "\(Self.self)",
+                                                                       "function": #function,
+                                                                       "line": "\(#line)"],
+                                                            diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: err)
 
                         #if DEBUG
                         self.logger.error(message: "🌎 Network Response [\(request.httpMethod!)] \(request.url!)")
@@ -249,10 +267,13 @@ internal class URLSessionStack: NetworkService, LogReporter {
                         DispatchQueue.main.async { completion(.failure(err)) }
 
                     } else {
-                        let err = InternalError.serverError(status: statusCode, response: primerErrorResponse, userInfo: ["file": #file,
-                                                                                                                          "class": "\(Self.self)",
-                                                                                                                          "function": #function,
-                                                                                                                          "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                        let err = InternalError.serverError(status: statusCode,
+                                                            response: primerErrorResponse,
+                                                            userInfo: ["file": #file,
+                                                                       "class": "\(Self.self)",
+                                                                       "function": #function,
+                                                                       "line": "\(#line)"],
+                                                            diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
 
                         resEventProperties?.errorBody = err.localizedDescription
@@ -267,10 +288,12 @@ internal class URLSessionStack: NetworkService, LogReporter {
                     }
 
                 } else {
-                    let err = InternalError.failedToDecode(message: "Failed to decode response from URL: \(urlStr)", userInfo: ["file": #file,
-                                                                                                                                "class": "\(Self.self)",
-                                                                                                                                "function": #function,
-                                                                                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = InternalError.failedToDecode(message: "Failed to decode response from URL: \(urlStr)",
+                                                           userInfo: ["file": #file,
+                                                                      "class": "\(Self.self)",
+                                                                      "function": #function,
+                                                                      "line": "\(#line)"],
+                                                           diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
 
                     resEventProperties?.errorBody = err.localizedDescription
@@ -346,9 +369,12 @@ internal extension URLSessionStack {
             return false
         }
         guard let baseURL = primerAPI.baseURL, let url = URL(string: baseURL),
-                !disallowedTrackingPaths.contains(url.path) else {
+              !disallowedTrackingPaths.contains(url.path) else {
             return false
         }
         return true
     }
 }
+// swiftlint:enable function_body_length
+// swiftlint:enable cyclomatic_complexity
+// swiftlint:enable type_body_length

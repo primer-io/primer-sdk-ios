@@ -5,6 +5,8 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
+// swiftlint:disable file_length
+
 import UIKit
 
 extension FormPaymentMethodTokenizationViewModel {
@@ -12,7 +14,8 @@ extension FormPaymentMethodTokenizationViewModel {
     // MARK: Input view
 
     func makeInputViews() -> [Input] {
-        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), inputPaymentMethodTypes.contains(paymentMethodType) else { return [] }
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
+              inputPaymentMethodTypes.contains(paymentMethodType) else { return [] }
 
         switch paymentMethodType {
         case .adyenBlik:
@@ -63,7 +66,9 @@ extension FormPaymentMethodTokenizationViewModel {
         dueAtContainerStackView.axis = .horizontal
         dueAtContainerStackView.spacing = 8.0
 
-        let calendarImage = UIImage(named: "calendar", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        let calendarImage = UIImage(named: "calendar",
+                                    in: Bundle.primerResources,
+                                    compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         let calendarImageView = UIImageView(image: calendarImage)
         calendarImageView.tintColor = .gray600
         calendarImageView.clipsToBounds = true
@@ -90,15 +95,16 @@ extension FormPaymentMethodTokenizationViewModel {
         }
 
         // Account number
+        let spacing = PrimerDimensions.StackViewSpacing.default
 
         let accountNumberInfoContainerStackView = PrimerStackView()
         accountNumberInfoContainerStackView.axis = .vertical
         accountNumberInfoContainerStackView.spacing = 12.0
         accountNumberInfoContainerStackView.addBackground(color: .gray100)
-        accountNumberInfoContainerStackView.layoutMargins = UIEdgeInsets(top: PrimerDimensions.StackViewSpacing.default,
-                                                                         left: PrimerDimensions.StackViewSpacing.default,
-                                                                         bottom: PrimerDimensions.StackViewSpacing.default,
-                                                                         right: PrimerDimensions.StackViewSpacing.default)
+        accountNumberInfoContainerStackView.layoutMargins = UIEdgeInsets(top: spacing,
+                                                                         left: spacing,
+                                                                         bottom: spacing,
+                                                                         right: spacing)
         accountNumberInfoContainerStackView.isLayoutMarginsRelativeArrangement = true
         accountNumberInfoContainerStackView.layer.cornerRadius = PrimerDimensions.cornerRadius
 
@@ -114,10 +120,10 @@ extension FormPaymentMethodTokenizationViewModel {
         accountNumberStackView.spacing = 12.0
         accountNumberStackView.heightAnchor.constraint(equalToConstant: 56.0).isActive = true
         accountNumberStackView.addBackground(color: .white)
-        accountNumberStackView.layoutMargins = UIEdgeInsets(top: PrimerDimensions.StackViewSpacing.default,
-                                                            left: PrimerDimensions.StackViewSpacing.default,
-                                                            bottom: PrimerDimensions.StackViewSpacing.default,
-                                                            right: PrimerDimensions.StackViewSpacing.default)
+        accountNumberStackView.layoutMargins = UIEdgeInsets(top: spacing,
+                                                            left: spacing,
+                                                            bottom: spacing,
+                                                            right: spacing)
         accountNumberStackView.layer.cornerRadius = PrimerDimensions.cornerRadius / 2
         accountNumberStackView.layer.borderColor = UIColor.gray200.cgColor
         accountNumberStackView.layer.borderWidth = 2.0
@@ -216,7 +222,9 @@ extension FormPaymentMethodTokenizationViewModel {
         expiresAtContainerStackView.axis = .horizontal
         expiresAtContainerStackView.spacing = 8.0
 
-        let calendarImage = UIImage(named: "calendar", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        let calendarImage = UIImage(named: "calendar",
+                                    in: Bundle.primerResources,
+                                    compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         let calendarImageView = UIImageView(image: calendarImage)
         calendarImageView.tintColor = .gray600
         calendarImageView.clipsToBounds = true
@@ -367,21 +375,27 @@ extension FormPaymentMethodTokenizationViewModel {
 
         if shouldCompletePaymentExternally {
             guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
-                  let message = needingExternalCompletionPaymentMethodDictionary.first(where: { $0.key == paymentMethodType })?.value else {
+                  let message = needingExternalCompletionPaymentMethodDictionary
+                    .first(where: { $0.key == paymentMethodType })?
+                    .value
+            else {
                 return Promise()
             }
 
             let infoView = makePaymentPendingInfoView(message: message)
-            let paymentPendingInfoView = PrimerPaymentPendingInfoViewController(formPaymentMethodTokenizationViewModel: self, infoView: infoView)
+            let paymentPendingInfoView = PrimerPaymentPendingInfoViewController(formPaymentMethodTokenizationViewModel: self,
+                                                                                infoView: infoView)
             PrimerUIManager.primerRootViewController?.show(viewController: paymentPendingInfoView)
             return Promise()
         }
 
-        if let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), inputPaymentMethodTypes.contains(paymentMethodType) {
+        if let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
+           inputPaymentMethodTypes.contains(paymentMethodType) {
             return presentInputViewController()
         }
 
-        if let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type), voucherPaymentMethodTypes.contains(paymentMethodType) {
+        if let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
+           voucherPaymentMethodTypes.contains(paymentMethodType) {
             return presentVoucherInfoConfirmationStepViewController()
         }
 
@@ -390,7 +404,8 @@ extension FormPaymentMethodTokenizationViewModel {
 
     func presentVoucherInfoConfirmationStepViewController() -> Promise<Void> {
         return Promise { seal in
-            let pcfvc = PrimerAccountInfoPaymentViewController(navigationBarLogo: uiModule.navigationBarLogo, formPaymentMethodTokenizationViewModel: self)
+            let pcfvc = PrimerAccountInfoPaymentViewController(navigationBarLogo: uiModule.navigationBarLogo,
+                                                               formPaymentMethodTokenizationViewModel: self)
             infoView = voucherConfirmationInfoView
             PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
             seal.fulfill()
@@ -398,25 +413,30 @@ extension FormPaymentMethodTokenizationViewModel {
     }
 
     func presentVoucherInfoViewController() {
+        let voucherText = VoucherValue.sharableVoucherValuesText
         let pcfvc = PrimerVoucherInfoPaymentViewController(navigationBarLogo: uiModule.navigationBarLogo,
                                                            formPaymentMethodTokenizationViewModel: self,
-                                                           shouldShareVoucherInfoWithText: VoucherValue.sharableVoucherValuesText)
+                                                           shouldShareVoucherInfoWithText: voucherText)
         infoView = voucherInfoView
         PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
     }
 
     func presentAccountInfoViewController() {
-        let pcfvc = PrimerAccountInfoPaymentViewController(navigationBarLogo: uiModule.navigationBarLogo, formPaymentMethodTokenizationViewModel: self)
+        let pcfvc = PrimerAccountInfoPaymentViewController(navigationBarLogo: uiModule.navigationBarLogo,
+                                                           formPaymentMethodTokenizationViewModel: self)
         infoView = makeAccountInfoPaymentView()
         PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
     }
 
     func presentInputViewController() -> Promise<Void> {
         return Promise { seal in
-            let pcfvc = PrimerInputViewController(navigationBarLogo: uiModule.navigationBarLogo, formPaymentMethodTokenizationViewModel: self, inputsDistribution: .horizontal)
+            let pcfvc = PrimerInputViewController(navigationBarLogo: uiModule.navigationBarLogo,
+                                                  formPaymentMethodTokenizationViewModel: self,
+                                                  inputsDistribution: .horizontal)
             inputs.append(contentsOf: makeInputViews())
             PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
             seal.fulfill()
         }
     }
 }
+// swiftlint:enable file_length

@@ -18,26 +18,26 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
     }
 
     var primerRawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
-        
+
     var selectedCardIndex: Int = 0
-    
+
     var stackView: UIStackView!
     var paymentMethodType: String!
     var paymentId: String?
     var activityIndicator: UIActivityIndicatorView?
-    var rawCardData = PrimerCardData(cardNumber: "", 
+    var rawCardData = PrimerCardData(cardNumber: "",
                                      expiryDate: "",
                                      cvv: "",
                                      cardholderName: "")
-    
+
     var cardnumberTextField: UITextField?
     var expiryDateTextField: UITextField?
     var cvvTextField: UITextField?
     var cardholderNameTextField: UITextField?
     var payButton: UIButton!
-    
+
     var cardsStackView: UIStackView!
-    
+
     var logs: [String] = []
 
     override func viewDidLoad() {
@@ -53,7 +53,7 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
         self.stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
 
         self.renderInputs()
-        
+
         self.cardnumberTextField?.becomeFirstResponder()
     }
 
@@ -65,16 +65,15 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
     // 4111 1234 1234 1234
     // 5522 1234 1234 1234
 
-    
     func renderAutoInputUI() {
         let stack = UIStackView()
         stack.axis = .horizontal
-        
+
         let updateCardData = { [self] in
             rawCardData.cardNumber = cardnumberTextField!.text!.replacingOccurrences(of: " ", with: "")
             primerRawDataManager?.rawData = rawCardData
         }
-        
+
         let visaButton = UIButton(primaryAction: UIAction(title: "VISA", handler: { _ in
             self.cardnumberTextField?.text = "4111 1234 1234 1234"
             updateCardData()
@@ -83,17 +82,17 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
             self.cardnumberTextField?.text = "5522 1234 1234 1234"
             updateCardData()
         }))
-        
+
         stack.addArrangedSubview(visaButton)
         stack.addArrangedSubview(mcButton)
         stack.distribution = .fillEqually
-        
+
         self.stackView.addArrangedSubview(stack)
     }
 
     func renderInputs() {
         renderAutoInputUI()
-        
+
         do {
             self.primerRawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: self.paymentMethodType, delegate: self)
             let inputElementTypes = self.primerRawDataManager!.listRequiredInputElementTypes(for: self.paymentMethodType)
@@ -141,7 +140,7 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
             self.payButton.setTitleColor(.white, for: .normal)
             self.payButton.isEnabled = false
             self.payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
-            
+
             self.cardsStackView = UIStackView()
             self.cardsStackView.axis = .horizontal
             self.stackView.addArrangedSubview(cardsStackView)
@@ -155,7 +154,7 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
             print("[MerchantHeadlessCheckoutRawDataViewController] ERROR: Failed to set up card entry fields")
         }
     }
-    
+
     private func styledTextField(forAccessibilityId accessibilityId: String,
                                  withPlaceholderText placeholderText: String) -> UITextField {
         let textField = UITextField(frame: .zero)
@@ -166,12 +165,12 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
         textField.heightAnchor.constraint(equalToConstant: 50).isActive = true
         textField.delegate = self
         textField.placeholder = placeholderText
-        
+
         self.stackView.addArrangedSubview(textField)
-        
+
         return textField
     }
-    
+
     @IBAction func payButtonTapped(_ sender: UIButton) {
         guard expiryDateTextField?.text?.count == 7,
               let expiryComponents = expiryDateTextField?.text?.split(separator: "/") else {
@@ -233,7 +232,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 cvv: self.cvvTextField?.text ?? "",
                 cardholderName: self.cardholderNameTextField?.text ?? "",
                 cardNetwork: self.rawCardData.cardNetwork)
-            
+
         } else if textField == self.expiryDateTextField {
             self.rawCardData = PrimerCardData(
                 cardNumber: self.cardnumberTextField?.text ?? "",
@@ -241,7 +240,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 cvv: self.cvvTextField?.text ?? "",
                 cardholderName: self.cardholderNameTextField?.text ?? "",
                 cardNetwork: self.rawCardData.cardNetwork)
-            
+
         } else if textField == self.cvvTextField {
             self.rawCardData = PrimerCardData(
                 cardNumber: self.cardnumberTextField?.text ?? "",
@@ -249,7 +248,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
                 cvv: newText,
                 cardholderName: self.cardholderNameTextField?.text ?? "",
                 cardNetwork: self.rawCardData.cardNetwork)
-            
+
         } else if textField == self.cardholderNameTextField {
             self.rawCardData = PrimerCardData(
                 cardNumber: self.cardnumberTextField?.text ?? "",
@@ -267,8 +266,8 @@ extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
 }
 
 extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
-    
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, 
+
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               dataIsValid isValid: Bool,
                               errors: [Error]?) {
         print("\n\nMERCHANT APP\n\(#function)\ndataIsValid: \(isValid)")
@@ -276,14 +275,14 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
         self.payButton.backgroundColor = isValid ? .black : .lightGray
         self.payButton.isEnabled = isValid
     }
-    
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, 
+
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               metadataDidChange metadata: [String: Any]?) {
         print("\n\nMERCHANT APP\n\(#function)\nmetadataDidChange: \(String(describing: metadata))")
         self.logs.append(#function)
     }
-    
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, 
+
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               willFetchMetadataForState state: PrimerValidationState) {
         print("[MerchantHeadlessCheckoutRawDataViewController] willFetchCardMetadataForState")
         DispatchQueue.main.async {
@@ -292,21 +291,21 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
             self.cardsStackView.addArrangedSubview(progressView)
         }
     }
-    
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, 
+
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               didReceiveMetadata metadata: PrimerPaymentMethodMetadata, forState state: PrimerValidationState) {
         guard let metadata = metadata as? PrimerCardNumberEntryMetadata,
-        let cardState = state as? PrimerCardNumberEntryState else {
+              let cardState = state as? PrimerCardNumberEntryState else {
             print("[MerchantHeadlessCheckoutRawDataViewController] ERROR: Failed to cast metadata and state to card entry models")
             return
         }
         
         let printableNetworks = metadata.detectedCardNetworks.items.map { $0.network.rawValue }.joined(separator: ", ")
         print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveCardMetadata: \(printableNetworks) forCardValidationState: \(cardState.cardNumber)")
-        
+
         DispatchQueue.main.async {
             self.cardsStackView.removeAllArrangedSubviews()
-            
+
             (metadata.selectableCardNetworks ?? metadata.detectedCardNetworks).items.enumerated().forEach { (index, detectedNetwork) in
                 let image = PrimerHeadlessUniversalCheckout.AssetsManager.getCardNetworkAsset(for: detectedNetwork.network)
                 let imageView = UIImageView(image: image?.cardImage)
@@ -331,19 +330,19 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
                 }
                 imageView.addGestureRecognizer(tapGestureRecognizer)
             }
-            
+
             let emptyView = UIView()
             emptyView.translatesAutoresizingMaskIntoConstraints = false
             emptyView.heightAnchor.constraint(equalToConstant: 1).isActive = true
             emptyView.widthAnchor.constraint(greaterThanOrEqualToConstant: 1).isActive = true
             self.cardsStackView.addArrangedSubview(emptyView)
-            
+
             self.updateCardImages()
 
             self.rawCardData.cardNetwork = metadata.detectedCardNetworks.preferred?.network
         }
     }
-    
+
     private func updateCardImages() {
         cardsStackView.arrangedSubviews.filter { $0 is UIImageView }.enumerated().forEach { (index, imageView) in
             imageView.layer.opacity = (index == self.selectedCardIndex) ? 1 : 0.5

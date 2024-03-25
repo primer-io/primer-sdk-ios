@@ -93,14 +93,16 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
                                              payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement,
                                              completion: @escaping APICompletion<Response.Body.PayPal.CreateBillingAgreement>) {
 
-        let endpoint = PrimerAPI.createPayPalBillingAgreementSession(clientToken: clientToken, payPalCreateBillingAgreementRequest: payPalCreateBillingAgreementRequest)
+        let endpoint = PrimerAPI.createPayPalBillingAgreementSession(clientToken: clientToken,
+                                                                     payPalCreateBillingAgreementRequest: payPalCreateBillingAgreementRequest)
         execute(endpoint, completion: completion)
     }
 
     func confirmPayPalBillingAgreement(clientToken: DecodedJWTToken,
                                        payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement,
                                        completion: @escaping APICompletion<Response.Body.PayPal.ConfirmBillingAgreement>) {
-        let endpoint = PrimerAPI.confirmPayPalBillingAgreement(clientToken: clientToken, payPalConfirmBillingAgreementRequest: payPalConfirmBillingAgreementRequest)
+        let endpoint = PrimerAPI.confirmPayPalBillingAgreement(clientToken: clientToken,
+                                                               payPalConfirmBillingAgreementRequest: payPalConfirmBillingAgreementRequest)
         execute(endpoint, completion: completion)
     }
 
@@ -108,7 +110,8 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         klarnaCreatePaymentSessionAPIRequest: Request.Body.Klarna.CreatePaymentSession,
         completion: @escaping APICompletion<Response.Body.Klarna.PaymentSession>) {
-        let endpoint = PrimerAPI.createKlarnaPaymentSession(clientToken: clientToken, klarnaCreatePaymentSessionAPIRequest: klarnaCreatePaymentSessionAPIRequest)
+        let endpoint = PrimerAPI.createKlarnaPaymentSession(clientToken: clientToken,
+                                                            klarnaCreatePaymentSessionAPIRequest: klarnaCreatePaymentSessionAPIRequest)
         execute(endpoint, completion: completion)
     }
 
@@ -116,7 +119,8 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
                                    klarnaCreateCustomerTokenAPIRequest: Request.Body.Klarna.CreateCustomerToken,
                                    completion: @escaping APICompletion<Response.Body.Klarna.CustomerToken>) {
 
-        let endpoint = PrimerAPI.createKlarnaCustomerToken(clientToken: clientToken, klarnaCreateCustomerTokenAPIRequest: klarnaCreateCustomerTokenAPIRequest)
+        let endpoint = PrimerAPI.createKlarnaCustomerToken(clientToken: clientToken,
+                                                           klarnaCreateCustomerTokenAPIRequest: klarnaCreateCustomerTokenAPIRequest)
         execute(endpoint, completion: completion)
     }
 
@@ -124,7 +128,8 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
                                       klarnaFinalizePaymentSessionRequest: Request.Body.Klarna.FinalizePaymentSession,
                                       completion: @escaping APICompletion<Response.Body.Klarna.CustomerToken>) {
 
-        let endpoint = PrimerAPI.finalizeKlarnaPaymentSession(clientToken: clientToken, klarnaFinalizePaymentSessionRequest: klarnaFinalizePaymentSessionRequest)
+        let endpoint = PrimerAPI.finalizeKlarnaPaymentSession(clientToken: clientToken,
+                                                              klarnaFinalizePaymentSessionRequest: klarnaFinalizePaymentSessionRequest)
         execute(endpoint, completion: completion)
     }
 

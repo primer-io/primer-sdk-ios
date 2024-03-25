@@ -5,6 +5,10 @@
 //  Created by Evangelos Pittas on 31/7/21.
 //
 
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable function_body_length
+// swiftlint:disable type_body_length
+
 import UIKit
 
 internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
@@ -57,7 +61,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             if let error = err as? PrimerError {
                 primerErr = error
             } else {
-                primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: UUID().uuidString)
+                primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil,
+                                                diagnosticsId: UUID().uuidString)
             }
 
             PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { errorDecision in
@@ -156,7 +161,9 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             guard var amount = AppState.current.amount,
                   let currency = AppState.current.currency
             else {
-                let err = PrimerError.invalidValue(key: "amount or currency", value: nil, userInfo: nil, diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidValue(key: "amount or currency", value: nil,
+                                                   userInfo: nil,
+                                                   diagnosticsId: UUID().uuidString)
                 firstly {
                     PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
                 }
@@ -331,3 +338,7 @@ extension PrimerUniversalCheckoutViewController: ReloadDelegate {
         renderSelectedPaymentInstrument(insertAt: 1)
     }
 }
+
+// swiftlint:enable cyclomatic_complexity
+// swiftlint:enable function_body_length
+// swiftlint:enable type_body_length

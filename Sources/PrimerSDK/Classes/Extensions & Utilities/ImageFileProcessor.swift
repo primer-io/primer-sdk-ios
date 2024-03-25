@@ -7,6 +7,8 @@
 
 import Foundation
 
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable function_body_length
 class ImageFileProcessor {
 
     init() {}
@@ -102,7 +104,10 @@ class ImageFileProcessor {
         }
         .done { imageFiles in
             for (index, paymentMethod) in (apiConfiguration.paymentMethods ?? []).enumerated() {
-                let paymentMethodImageFiles = imageFiles.filter { $0.fileName.contains(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-")) }
+                let paymentMethodImageFiles = imageFiles.filter {
+                    $0.fileName.contains(paymentMethod.type.lowercased().replacingOccurrences(of: "_",
+                                                                                              with: "-"))
+                }
                 if paymentMethodImageFiles.isEmpty {
                     continue
                 }
@@ -123,3 +128,5 @@ class ImageFileProcessor {
         }
     }
 }
+// swiftlint:enable cyclomatic_complexity
+// swiftlint:enable function_body_length
