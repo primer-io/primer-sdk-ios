@@ -18,14 +18,12 @@ protocol KlarnaTokenizationManagerProtocol {
      */
     func tokenizeHeadless(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerCheckoutData>
     func tokenizeDropIn(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerPaymentMethodTokenData>
-    var mockedSuccessValue: Bool { get set }
 }
 
 class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
 
     // MARK: - Properties
     private let tokenizationService: TokenizationServiceProtocol
-    var mockedSuccessValue: Bool = false
 
     // MARK: - Init
     init() {

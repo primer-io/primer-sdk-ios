@@ -5,7 +5,6 @@ import UIKit
 import PrimerKlarnaSDK
 #endif
 
-@available(iOS 13.0, *)
 class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     var willPresentExternalView: (() -> Void)?
@@ -178,7 +177,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
 }
 
 #if canImport(PrimerKlarnaSDK)
-@available(iOS 13.0, *)
 extension KlarnaTokenizationViewModel: PrimerKlarnaCategoriesDelegate {
     func primerKlarnaPaymentSessionCompleted(authorizationToken: String) {
         klarnaPaymentSessionCompletion?(authorizationToken, nil)

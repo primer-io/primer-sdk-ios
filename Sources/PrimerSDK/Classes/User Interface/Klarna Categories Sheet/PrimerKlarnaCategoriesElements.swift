@@ -8,12 +8,10 @@
 import UIKit
 import SwiftUI
 
-@available(iOS 13.0, *)
 class SharedUIViewWrapper: ObservableObject {
     @Published var uiView: UIView?
 }
 
-@available(iOS 13.0, *)
 struct DynamicUIViewRepresentable: UIViewRepresentable {
     @ObservedObject var wrapper: SharedUIViewWrapper
 
@@ -33,7 +31,6 @@ struct DynamicUIViewRepresentable: UIViewRepresentable {
     }
 }
 
-@available(iOS 13.0, *)
 struct KlarnaCategoryButton: View {
 
     @ObservedObject var sharedWrapper: SharedUIViewWrapper
@@ -93,7 +90,6 @@ struct KlarnaCategoryButton: View {
     }
 }
 
-@available(iOS 13.0, *)
 struct ContinueButton: View {
     @Binding var isActive: Bool
 
@@ -116,7 +112,6 @@ struct ContinueButton: View {
     }
 }
 
-@available(iOS 13.0, *)
 extension View {
     @ViewBuilder func addAccessibilityIdentifier(identifier: String) -> some View {
         if #available(iOS 14.0, *) {

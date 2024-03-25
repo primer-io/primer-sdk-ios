@@ -15,7 +15,6 @@ protocol PrimerKlarnaCategoriesDelegate: AnyObject {
     func primerKlarnaPaymentSessionFailed(error: Error)
 }
 
-@available(iOS 13.0, *)
 class PrimerKlarnaCategoriesViewController: UIViewController {
 
     // MARK: - Subviews
@@ -104,7 +103,6 @@ class PrimerKlarnaCategoriesViewController: UIViewController {
 }
 
 // MARK: - Setup UI
-@available(iOS 13.0, *)
 extension PrimerKlarnaCategoriesViewController {
     func setupUI() {
         view.backgroundColor = .white
@@ -122,7 +120,6 @@ extension PrimerKlarnaCategoriesViewController {
 }
 
 // MARK: - Helpers
-@available(iOS 13.0, *)
 extension PrimerKlarnaCategoriesViewController {
     func showLoader() {
         view.bringSubviewToFront(activityIndicator)
@@ -140,7 +137,6 @@ extension PrimerKlarnaCategoriesViewController {
     }
 }
 
-@available(iOS 13.0, *)
 extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
                                                 PrimerHeadlessValidatableDelegate,
                                                 PrimerHeadlessSteppableDelegate {
@@ -202,7 +198,6 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
 }
 
 // MARK: - Payment
-@available(iOS 13.0, *)
 extension PrimerKlarnaCategoriesViewController {
     func sessionFinished(with authToken: String) {
         showLoadingState()

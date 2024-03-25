@@ -8,7 +8,6 @@
 import Foundation
 import SwiftUI
 
-@available(iOS 13.0, *)
 struct PrimerKlarnaCategoriesView: View {
     @ObservedObject var viewModel = PrimerKlarnaCategoriesViewModel()
     @ObservedObject var sharedWrapper: SharedUIViewWrapper
