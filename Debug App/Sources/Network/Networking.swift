@@ -92,7 +92,6 @@ class Networking {
         if let apiVersion = apiVersion {
             request.addValue(apiVersion.rawValue, forHTTPHeaderField: "x-api-version")
             request.addValue("IOS", forHTTPHeaderField: "Client")
-            request.addValue("chkt-2307-cvv-recapture-flag", forHTTPHeaderField: "x-primer-branch")
         }
 
         let headerDescriptions = request.allHTTPHeaderFields?.map { key, value in

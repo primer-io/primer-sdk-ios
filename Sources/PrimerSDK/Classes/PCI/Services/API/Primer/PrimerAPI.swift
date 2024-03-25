@@ -98,8 +98,7 @@ internal extension PrimerAPI {
     static let headers: [String: String] = [
         "Content-Type": "application/json",
         "Primer-SDK-Version": VersionUtils.releaseVersionNumber ?? "n/a",
-        "Primer-SDK-Client": PrimerSource.sdkSourceType.sourceType,
-        "x-primer-branch": "chkt-2307-cvv-recapture-flag"
+        "Primer-SDK-Client": PrimerSource.sdkSourceType.sourceType
     ]
 
     var headers: [String: String]? {
