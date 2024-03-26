@@ -38,8 +38,9 @@ class DefaultNetworkRequestFactory: NetworkRequestFactory, LogReporter {
     private func baseRequest(from endpoint: Endpoint) throws -> URLRequest {
         guard let url = url(for: endpoint)
         else {
-            // TODO: fix error
-            throw InternalError.invalidUrl(url: nil, userInfo: nil, diagnosticsId: nil)
+            throw InternalError.invalidUrl(url: "\(endpoint.baseURL ?? "Unknown Host")/\(endpoint.path)",
+                                           userInfo: .errorUserInfoDictionary(),
+                                           diagnosticsId: UUID().uuidString)
         }
 
         return URLRequest(url: url)

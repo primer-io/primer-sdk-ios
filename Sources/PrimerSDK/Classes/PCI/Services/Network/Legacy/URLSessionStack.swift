@@ -76,7 +76,6 @@ internal class URLSessionStack: NetworkService, LogReporter {
             request.timeoutInterval = timeout
         }
 
-        // TODO All of this debug logging needs to be condensed. We can log out the whole request in one place
         #if DEBUG
         if let queryParams = endpoint.queryParameters {
             var urlQueryItems: [URLQueryItem] = []

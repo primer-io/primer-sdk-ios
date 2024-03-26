@@ -100,7 +100,7 @@ class PollingModule: Module {
             case .failure(let err):
                 ErrorHandler.handle(error: err)
                 // Retry
-                DispatchQueue.main.asyncAfter(deadline: .now() + self.retryInterval) { 
+                DispatchQueue.main.asyncAfter(deadline: .now() + self.retryInterval) {
                     self.startPolling(completion: completion)
                 }
             }

@@ -69,7 +69,6 @@ class DefaultNetworkService: NetworkService, LogReporter {
                 case .success(let theResponse):
                     response = theResponse
                 case .failure(let error):
-                    // TODO: is this correct?
                     completion(.failure(error))
                     return
                 }
