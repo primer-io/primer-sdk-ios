@@ -101,10 +101,7 @@ class DefaultNetworkService: NetworkService, LogReporter {
         } catch {
             ErrorHandler.handle(error: error)
             completion(.failure(error))
+            return nil
         }
-
-        // TODO: log / error
-
-        return nil
     }
 }
