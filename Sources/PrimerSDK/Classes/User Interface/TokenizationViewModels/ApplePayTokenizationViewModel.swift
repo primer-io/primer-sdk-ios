@@ -563,7 +563,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(PKPaymentAuthorizationResult(status: .failure, errors: [err]))
-            Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 controller.dismiss(completion: nil)
             }
             applePayReceiveDataCompletion?(.failure(err))

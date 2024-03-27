@@ -216,7 +216,7 @@ internal class PrimerUIManager {
                     PrimerUIManager.dismissPrimerWindow(completion: completion)
                 }
             } else if #available(iOS 16.0, *) {
-                Timer.scheduledTimer(withTimeInterval: 0.8, repeats: false) { _ in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                     primerRootViewController.dismissPrimerRootViewController(animated: flag) {
                         PrimerUIManager.dismissPrimerWindow(completion: completion)
                     }

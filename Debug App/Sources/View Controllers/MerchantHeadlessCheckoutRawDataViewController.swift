@@ -284,7 +284,6 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
 
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               willFetchMetadataForState state: PrimerValidationState) {
-        // TODO
         print("[MerchantHeadlessCheckoutRawDataViewController] willFetchCardMetadataForState")
         DispatchQueue.main.async {
             self.cardsStackView.removeAllArrangedSubviews()
@@ -300,8 +299,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
             print("[MerchantHeadlessCheckoutRawDataViewController] ERROR: Failed to cast metadata and state to card entry models")
             return
         }
-
-        // JN TODO
+        
         let printableNetworks = metadata.detectedCardNetworks.items.map { $0.network.rawValue }.joined(separator: ", ")
         print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveCardMetadata: \(printableNetworks) forCardValidationState: \(cardState.cardNumber)")
 

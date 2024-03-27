@@ -509,7 +509,7 @@ extension PrimerHeadlessUniversalCheckout {
                             }
                         })
 
-                    Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                         if !decisionHandlerHasBeenCalled {
                             let message =
                                 """

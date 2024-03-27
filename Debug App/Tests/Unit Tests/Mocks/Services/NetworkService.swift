@@ -20,7 +20,7 @@ class MockNetworkService: NetworkService {
     var onReceiveEndpoint: ((Endpoint) -> Void)?
 
     func request<T>(_ endpoint: PrimerSDK.Endpoint,
-                    completion: @escaping PrimerSDK.ResultCallback<T>) -> PrimerCancellable? where T: Decodable {
+                    completion: @escaping PrimerSDK.ResponseCompletion<T>) -> PrimerCancellable? where T: Decodable {
 
         onReceiveEndpoint?(endpoint)
 

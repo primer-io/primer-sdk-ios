@@ -7,9 +7,20 @@
 
 import Foundation
 
+protocol AnalyticsServiceProtocol {
+    func record(events: [Analytics.Event]) -> Promise<Void>
+}
+
+extension AnalyticsServiceProtocol {
+    @discardableResult
+    internal func record(event: Analytics.Event) -> Promise<Void> {
+        self.record(events: [event])
+    }
+}
+
 extension Analytics {
 
-    internal class Service: LogReporter {
+    internal class Service: AnalyticsServiceProtocol, LogReporter {
 
         static let defaultSdkLogsUrl = URL(string: "https://analytics.production.data.primer.io/sdk-logs")!
 
@@ -42,11 +53,6 @@ extension Analytics {
             self.batchSize = batchSize
             self.storage = storage
             self.apiClient = apiClient
-        }
-
-        @discardableResult
-        internal func record(event: Analytics.Event) -> Promise<Void> {
-            self.record(events: [event])
         }
 
         @discardableResult

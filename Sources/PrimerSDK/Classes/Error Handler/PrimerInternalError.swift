@@ -12,8 +12,9 @@ internal enum InternalError: PrimerErrorProtocol {
     case failedToDecode(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case invalidValue(key: String, value: Any?, userInfo: [String: String]?, diagnosticsId: String?)
+    case invalidResponse(userInfo: [String: String]?, diagnosticsId: String?)
     case noData(userInfo: [String: String]?, diagnosticsId: String?)
-    case serverError(status: Int, response: PrimerServerErrorResponse?, userInfo: [String: String]?, diagnosticsId: String?)
+    case serverError(status: Int, response: PrimerServerError?, userInfo: [String: String]?, diagnosticsId: String?)
     case unauthorized(url: String, method: HTTPMethod, userInfo: [String: String]?, diagnosticsId: String?)
     case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String?)
     case failedToPerform3dsButShouldContinue(error: Primer3DSErrorContainer)
@@ -28,6 +29,8 @@ internal enum InternalError: PrimerErrorProtocol {
             return "invalid-url"
         case .invalidValue:
             return "invalid-value"
+        case .invalidResponse:
+            return "invalid-response"
         case .noData:
             return "no-data"
         case .serverError:
@@ -53,6 +56,8 @@ internal enum InternalError: PrimerErrorProtocol {
             return diagnosticsId ?? UUID().uuidString
         case .invalidValue(_, _, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
+        case .invalidResponse(_, let diagnosticsId):
+            return diagnosticsId ?? UUID().uuidString
         case .noData(_, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         case .serverError(_, _, _, let diagnosticsId):
@@ -76,6 +81,8 @@ internal enum InternalError: PrimerErrorProtocol {
             return "[\(errorId)] Invalid URL \(url ?? "nil") (diagnosticsId: \(self.diagnosticsId))"
         case .invalidValue(let key, let value, _, _):
             return "[\(errorId)] Invalid value \(value ?? "nil") for key \(key) (diagnosticsId: \(self.diagnosticsId))"
+        case .invalidResponse:
+            return "[\(errorId)] Invalid response received. Expected HTTP response. (diagnosticsId: \(self.diagnosticsId)"
         case .noData:
             return "[\(errorId)] No data"
         case .serverError(let status, let response, _, _):
@@ -106,6 +113,7 @@ internal enum InternalError: PrimerErrorProtocol {
         case .failedToDecode(_, let userInfo, _),
              .invalidUrl(_, let userInfo, _),
              .invalidValue(_, _, let userInfo, _),
+             .invalidResponse(let userInfo, _),
              .noData(let userInfo, _),
              .serverError(_, _, let userInfo, _),
              .unauthorized(_, _, let userInfo, _),
@@ -135,7 +143,7 @@ internal enum InternalError: PrimerErrorProtocol {
             return "Check if value \(value ?? "nil") is valid for key \(key)"
         case .noData:
             return "If you were expecting data on this response, check that your backend has sent the appropriate data."
-        case .serverError:
+        case .serverError, .invalidResponse:
             return "Check the server's response to debug this error further."
         case .unauthorized:
             return "Check that the you have provided the SDK with a client token."

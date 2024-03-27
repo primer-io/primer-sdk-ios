@@ -361,11 +361,8 @@ extension FormPaymentMethodTokenizationViewModel {
         DispatchQueue.main.async {
             sender.isSelected = true
         }
-        Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { timer in
-            DispatchQueue.main.async {
-                sender.isSelected = false
-            }
-            timer.invalidate()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            sender.isSelected = false
         }
     }
 }
