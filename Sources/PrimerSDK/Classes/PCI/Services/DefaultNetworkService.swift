@@ -55,7 +55,7 @@ class DefaultNetworkService: NetworkService, LogReporter {
         do {
             let request = try requestFactory.request(for: endpoint)
 
-            reportingService.report(eventType: .networkConnectivity)
+            reportingService.report(eventType: .networkConnectivity(endpoint: endpoint))
 
             let identifier = String.randomString(length: 32)
             reportingService.report(eventType: .requestStart(identifier: identifier,

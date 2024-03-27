@@ -10,7 +10,16 @@ import Foundation
 enum NetworkEventType {
     case requestStart(identifier: String, endpoint: Endpoint, request: URLRequest)
     case requestEnd(identifier: String, endpoint: Endpoint, response: ResponseMetadata)
-    case networkConnectivity
+    case networkConnectivity(endpoint: Endpoint)
+
+    var endpoint: Endpoint {
+        switch self {
+        case .requestStart(_, let endpoint, _),
+                .requestEnd(_, let endpoint, _),
+                .networkConnectivity(let endpoint):
+            return endpoint
+        }
+    }
 }
 
 protocol NetworkReportingService {
@@ -26,9 +35,10 @@ class DefaultNetworkReportingService: NetworkReportingService {
     func report(eventType: NetworkEventType) {
         let event: Analytics.Event
 
+        guard shouldReportNetworkEvents(for: eventType.endpoint) else { return }
+
         switch eventType {
         case .requestStart(let id, let endpoint, let request):
-            guard shouldReportNetworkEvents(for: endpoint) else { return }
             event = Analytics.Event.networkCall(
                 callType: .requestStart,
                 id: id,
@@ -37,7 +47,6 @@ class DefaultNetworkReportingService: NetworkReportingService {
                 errorBody: nil,
                 responseCode: nil)
         case .requestEnd(let id, let endpoint, let response):
-            guard shouldReportNetworkEvents(for: endpoint) else { return }
             event = Analytics.Event.networkCall(
                 callType: .requestEnd,
                 id: id,
