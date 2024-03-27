@@ -227,14 +227,14 @@ extension Analytics {
             completion: @escaping (Error?) -> Void
         ) {
             if events.isEmpty {
-                completion(nil)
+                completion(AnalyticsSyncError.noEvents)
                 return
             }
 
             if url.absoluteString != self.sdkLogsUrl.absoluteString,
                PrimerAPIConfigurationModule.clientToken?.decodedJWTToken == nil {
                 // Sync another time
-                completion(nil)
+                completion(AnalyticsSyncError.jwtNotAvailable)
                 return
             }
 
@@ -307,5 +307,19 @@ extension Analytics.Service {
 
     static func clear() {
         shared.clear()
+    }
+}
+
+enum AnalyticsSyncError: LocalizedError {
+    case noEvents
+    case jwtNotAvailable
+
+    var errorDescription: String? {
+        switch self {
+        case .noEvents:
+            return "No events were provided to send"
+        case .jwtNotAvailable:
+            return "SDK analytics event could not be sent as JWT containing URL is not available"
+        }
     }
 }
