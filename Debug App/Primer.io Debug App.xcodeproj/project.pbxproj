@@ -21,6 +21,7 @@
 		04769C152B1A680C0051581C /* Promises+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04769C142B1A680C0051581C /* Promises+Helper.swift */; };
 		0479FB192AF2599A00D0AFC9 /* StringTyper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0479FB172AF2599200D0AFC9 /* StringTyper.swift */; };
 		047D8E892ADEA4C700A5E7BD /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047D8E882ADEA4C700A5E7BD /* NetworkService.swift */; };
+		047EE2022BB47B1B006C775C /* NetworkingReportingServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047EE2012BB47B1B006C775C /* NetworkingReportingServiceTests.swift */; };
 		0488648B2BA88F63007BCDA6 /* NetworkRequestFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0488648A2BA88F63007BCDA6 /* NetworkRequestFactoryTests.swift */; };
 		0488648D2BA89402007BCDA6 /* CodingUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0488648C2BA89402007BCDA6 /* CodingUtilities.swift */; };
 		0488648F2BA89E04007BCDA6 /* NetworkResponseFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0488648E2BA89E04007BCDA6 /* NetworkResponseFactoryTests.swift */; };
@@ -131,7 +132,7 @@
 		E6F85ECD80B64754E7A6D35E /* RawDataManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C7C082270CF1C6B7810F9B3 /* RawDataManagerTests.swift */; };
 		EA7FAA4F8476BD3711D628CB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B18D7E7738BF86467B0F1465 /* Images.xcassets */; };
 		F02F496FD20B5291C044F62C /* MerchantResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */; };
-		F03699592AC2E63700E4179D /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		F03699592AC2E63700E4179D /* (null) in Sources */ = {isa = PBXBuildFile; };
 		F08F63D82B9B5A7C006EF9A9 /* SessionConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63D72B9B5A7C006EF9A9 /* SessionConfiguration.swift */; };
 		F08F63DA2B9B5BC5006EF9A9 /* AppetizeConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63D92B9B5BC5006EF9A9 /* AppetizeConfigProvider.swift */; };
 		F08F63DC2B9F27B0006EF9A9 /* MetadataParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63DB2B9F27B0006EF9A9 /* MetadataParser.swift */; };
@@ -195,6 +196,7 @@
 		04769C142B1A680C0051581C /* Promises+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Promises+Helper.swift"; sourceTree = "<group>"; };
 		0479FB172AF2599200D0AFC9 /* StringTyper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTyper.swift; sourceTree = "<group>"; };
 		047D8E882ADEA4C700A5E7BD /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		047EE2012BB47B1B006C775C /* NetworkingReportingServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingReportingServiceTests.swift; sourceTree = "<group>"; };
 		0488648A2BA88F63007BCDA6 /* NetworkRequestFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkRequestFactoryTests.swift; sourceTree = "<group>"; };
 		0488648C2BA89402007BCDA6 /* CodingUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodingUtilities.swift; sourceTree = "<group>"; };
 		0488648E2BA89E04007BCDA6 /* NetworkResponseFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkResponseFactoryTests.swift; sourceTree = "<group>"; };
@@ -406,6 +408,31 @@
 			path = "Test Utilities";
 			sourceTree = "<group>";
 		};
+		047EE1FE2BB47A97006C775C /* Legacy */ = {
+			isa = PBXGroup;
+			children = (
+				E130C3D82AFD19FF00AC3E7C /* NetworkTests.swift */,
+				1F4E35F809D3FAF4354D5B05 /* URLSessionStackTests.swift */,
+			);
+			path = Legacy;
+			sourceTree = "<group>";
+		};
+		047EE1FF2BB47AA5006C775C /* Endpoints */ = {
+			isa = PBXGroup;
+			children = (
+				041F52082ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift */,
+			);
+			path = Endpoints;
+			sourceTree = "<group>";
+		};
+		047EE2002BB47B04006C775C /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				047EE2012BB47B1B006C775C /* NetworkingReportingServiceTests.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		048864892BA88F44007BCDA6 /* Factories */ = {
 			isa = PBXGroup;
 			children = (
@@ -482,10 +509,10 @@
 		2F23D3C9CC9CBC1B95329B1C /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				047EE1FF2BB47AA5006C775C /* Endpoints */,
+				047EE1FE2BB47A97006C775C /* Legacy */,
 				048864892BA88F44007BCDA6 /* Factories */,
-				E130C3D82AFD19FF00AC3E7C /* NetworkTests.swift */,
-				1F4E35F809D3FAF4354D5B05 /* URLSessionStackTests.swift */,
-				041F52082ADE92A300A1D702 /* ListCardNetworksEndpointTests.swift */,
+				047EE2002BB47B04006C775C /* Services */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -1083,6 +1110,7 @@
 				F08F63E62BA0BF0C006EF9A9 /* AppetizeConfigTests.swift in Sources */,
 				A1536BAF2AEC0A6D0087DDC0 /* NolTestsMocks.swift in Sources */,
 				A61B9E61EDCE18D34438352E /* PayPalConfirmBillingAgreementTests.swift in Sources */,
+				047EE2022BB47B1B006C775C /* NetworkingReportingServiceTests.swift in Sources */,
 				E13E72452AFE653000911866 /* IdealPaymentMethodTests.swift in Sources */,
 				0442B6472B7BA4C7004DB054 /* MockPrimerAPIAnalyticsClient.swift in Sources */,
 				8064B65A8F83D5B004D081FD /* PaymentMethodConfigTests.swift in Sources */,
@@ -1119,7 +1147,7 @@
 				961B5D18058EF4CFCD0185AE /* MockVaultCheckoutViewModel.swift in Sources */,
 				622A605DDEA98D981670B53F /* DropInUI_TokenizationViewModelTests.swift in Sources */,
 				0488648B2BA88F63007BCDA6 /* NetworkRequestFactoryTests.swift in Sources */,
-				F03699592AC2E63700E4179D /* BuildFile in Sources */,
+				F03699592AC2E63700E4179D /* (null) in Sources */,
 				208CA849F3187C2DA63CC17B /* HUC_TokenizationViewModelTests.swift in Sources */,
 				213196DEDF2A3A84037ED884 /* PollingModuleTests.swift in Sources */,
 				04F6EF742AE6A06200115D05 /* AnalyticsEventsTests.swift in Sources */,
