@@ -949,8 +949,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/primer-io/primer-sdk-3ds-ios";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
+				branch = "jn/xcode-14.3.1-fix";
+				kind = branch;
 			};
 		};
 		F04510E42ACD990A00A0A48C /* XCRemoteSwiftPackageReference "primer-klarna-sdk-ios" */ = {
