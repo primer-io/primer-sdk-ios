@@ -5,6 +5,11 @@
 //  Created by Evangelos Pittas on 6/7/21.
 //
 
+// swiftlint:disable file_length
+// swiftlint:disable function_body_length
+// swiftlint:disable type_body_length
+// swiftlint:disable large_tuple
+
 import UIKit
 
 @objc
@@ -45,11 +50,9 @@ protocol InternalCardComponentsManagerProtocol {
     func tokenize()
 }
 
-// swiftlint:disable large_tuple
 typealias BillingAddressField = (fieldView: PrimerTextFieldView,
                                  containerFieldView: PrimerCustomFieldView,
                                  isFieldHidden: Bool)
-// swiftlint:enable large_tuple
 
 @objc
 internal class InternalCardComponentsManager: NSObject, InternalCardComponentsManagerProtocol, LogReporter {
@@ -229,8 +232,12 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
         }
 
         if expiryDateField.expiryMonth == nil || expiryDateField.expiryYear == nil {
+            let message = """
+Expiry date is not valid. Valid expiry date format is 2 characters for expiry month\
+and 4 characters for expiry year separated by '/'.
+"""
             errors.append(PrimerValidationError.invalidExpiryDate(
-                            message: "Expiry date is not valid. Valid expiry date format is 2 characters for expiry month and 4 characters for expiry year separated by '/'.",
+                            message: message,
                             userInfo: [
                                 "file": #file,
                                 "class": "\(Self.self)",
@@ -295,7 +302,8 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
         guard let expiryYear = self.expiryDateField.expiryYear
         else { return nil }
         let currentYearAsString = Date().yearComponentAsString
-        let milleniumAndCenturyOfCurrentYearAsString = currentYearAsString.prefix(upTo: currentYearAsString.index(currentYearAsString.startIndex, offsetBy: 2))
+        let index = currentYearAsString.index(currentYearAsString.startIndex, offsetBy: 2)
+        let milleniumAndCenturyOfCurrentYearAsString = currentYearAsString.prefix(upTo: index)
         return "\(milleniumAndCenturyOfCurrentYearAsString)\(expiryYear)"
     }
 
@@ -368,7 +376,8 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
                     let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: ["file": #file,
                                                                                               "class": "\(Self.self)",
                                                                                               "function": #function,
-                                                                                              "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                              "line": "\(#line)"],
+                                                                    diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: containerErr)
                     self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                 }
@@ -380,7 +389,8 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
         } catch PrimerError.underlyingErrors(errors: let errors, userInfo: ["file": #file,
                                                                             "class": "\(Self.self)",
                                                                             "function": #function,
-                                                                            "line": "\(#line)"], diagnosticsId: UUID().uuidString) {
+                                                                            "line": "\(#line)"],
+                                             diagnosticsId: UUID().uuidString) {
             delegate?.cardComponentsManager?(self, tokenizationFailedWith: errors)
             setIsLoading(false)
         } catch {
@@ -450,5 +460,8 @@ internal class MockCardComponentsManager: InternalCardComponentsManagerProtocol 
     func tokenize() {
 
     }
-
 }
+// swiftlint:enable function_body_length
+// swiftlint:enable type_body_length
+// swiftlint:enable large_tuple
+// swiftlint:enable file_length

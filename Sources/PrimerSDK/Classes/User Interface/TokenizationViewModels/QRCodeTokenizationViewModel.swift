@@ -5,6 +5,8 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
+// swiftlint:disable function_body_length
+
 import SafariServices
 import UIKit
 
@@ -26,7 +28,8 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -142,7 +145,8 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
                 let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file,
                                                                                                          "class": "\(Self.self)",
                                                                                                          "function": #function,
-                                                                                                         "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                                         "line": "\(#line)"],
+                                                   diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -198,7 +202,8 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
                 let error = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                       "class": "\(Self.self)",
                                                                       "function": #function,
-                                                                      "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                      "line": "\(#line)"],
+                                                           diagnosticsId: UUID().uuidString)
                 seal.reject(error)
             }
         }
@@ -258,14 +263,15 @@ extension QRCodeTokenizationViewModel {
                 return
             }
 
+            let delegate = PrimerHeadlessUniversalCheckout.current.delegate
             // swiftlint:disable:next identifier_name
-            let isHeadlessDidReceiveAdditionalInfoImplemented = PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo != nil
+            let isHeadlessDidReceiveAdditionalInfoImplemented = delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo != nil
 
             guard isHeadlessDidReceiveAdditionalInfoImplemented else {
                 let message =
                     """
-Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)' hasn't been implemented. \
-No events will be sent to your delegate instance.
+Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)'\
+ hasn't been implemented. No events will be sent to your delegate instance.
 """
                 let err = PrimerError.generic(message: message,
                                               userInfo: ["file": #file,
@@ -366,3 +372,4 @@ No events will be sent to your delegate instance.
         }
     }
 }
+// swiftlint:enable function_body_length

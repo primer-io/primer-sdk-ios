@@ -5,6 +5,11 @@
 //  Created by Alexandra Lovin on 03.12.2023.
 //
 
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable file_length
+// swiftlint:disable function_body_length
+// swiftlint:disable type_body_length
+
 import Foundation
 import UIKit
 import SafariServices
@@ -49,7 +54,11 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
     func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -57,7 +66,11 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     private func fetchBanks() -> Promise<[AdyenBank]> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                    "class": "\(Self.self)",
+                                                                    "function": #function,
+                                                                    "line": "\(#line)"],
+                                                         diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -149,10 +162,13 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                         if let error = err as? PrimerError {
                             primerErr = error
                         } else {
-                            primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: nil, diagnosticsId: UUID().uuidString)
+                            primerErr = PrimerError.generic(message: err.localizedDescription,
+                                                            userInfo: nil,
+                                                            diagnosticsId: UUID().uuidString)
                         }
 
-                        return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
+                        return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr,
+                                                                               data: self.paymentCheckoutData)
                     }
                     .done { merchantErrorMessage in
                         self.handleFailureFlow(errorMessage: merchantErrorMessage)
@@ -169,7 +185,9 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             var cancelledError: PrimerError?
             self.didCancel = {
                 self.isCancelled = true
-                cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: UUID().uuidString)
+                cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type,
+                                                       userInfo: nil,
+                                                       diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: cancelledError!)
                 seal.reject(cancelledError!)
                 self.isCancelled = false
@@ -272,7 +290,11 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                             }
                             .done {
                                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                                        "class": "\(Self.self)",
+                                                                                        "function": #function,
+                                                                                        "line": "\(#line)"],
+                                                                             diagnosticsId: UUID().uuidString)
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }
@@ -286,7 +308,12 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                         case .fail(let message):
                             var merchantErr: Error!
                             if let message = message {
-                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                let err = PrimerError.merchantError(message: message,
+                                                                    userInfo: ["file": #file,
+                                                                               "class": "\(Self.self)",
+                                                                               "function": #function,
+                                                                               "line": "\(#line)"],
+                                                                    diagnosticsId: UUID().uuidString)
                                 merchantErr = err
                             } else {
                                 merchantErr = NSError.emptyDescriptionError
@@ -304,7 +331,11 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                             }
                             .done {
                                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                                        "class": "\(Self.self)",
+                                                                                        "function": #function,
+                                                                                        "line": "\(#line)"],
+                                                                             diagnosticsId: UUID().uuidString)
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }
@@ -327,7 +358,10 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             } else {
                 guard let token = paymentMethodTokenData.token else {
                     let err = PrimerError.invalidClientToken(
-                        userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                        userInfo: ["file": #file,
+                                   "class": "\(Self.self)",
+                                   "function": #function,
+                                   "line": "\(#line)"],
                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -339,7 +373,13 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 }
                 .done { paymentResponse -> Void in
                     guard paymentResponse != nil else {
-                        let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                        let err = PrimerError.invalidValue(key: "paymentResponse",
+                                                           value: nil,
+                                                           userInfo: ["file": #file,
+                                                                      "class": "\(Self.self)",
+                                                                      "function": #function,
+                                                                      "line": "\(#line)"],
+                                                           diagnosticsId: UUID().uuidString)
                         throw err
                     }
 
@@ -354,7 +394,11 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                         }
                         .done {
                             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                                    "class": "\(Self.self)",
+                                                                                    "function": #function,
+                                                                                    "line": "\(#line)"],
+                                                                         diagnosticsId: UUID().uuidString)
                                 ErrorHandler.handle(error: err)
                                 throw err
                             }
@@ -380,7 +424,8 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-            createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
+            let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
+            createResumePaymentService.createPayment(paymentRequest: paymentRequest) { paymentResponse, error in
 
                 if let error = error {
                     if let paymentResponse {
@@ -470,7 +515,11 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                         seal.reject(err)
                     }
                 } else {
-                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                        "class": "\(Self.self)",
+                                                                        "function": #function,
+                                                                        "line": "\(#line)"],
+                                                             diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                 }
@@ -520,21 +569,25 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                         PrimerUIManager.prepareRootViewController()
                     }
                     .done {
-                        PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
-                            DispatchQueue.main.async {
-                                self.handleWebViewControlllerPresentedCompletion()
-                                seal.fulfill()
-                            }
-                        })
+                        PrimerUIManager.primerRootViewController?.present(self.webViewController!,
+                                                                          animated: true,
+                                                                          completion: {
+                                                                            DispatchQueue.main.async {
+                                                                                self.handleWebViewControlllerPresentedCompletion()
+                                                                                seal.fulfill()
+                                                                            }
+                                                                          })
                     }
                     .catch { _ in }
                 } else {
-                    PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
-                        DispatchQueue.main.async {
-                            self.handleWebViewControlllerPresentedCompletion()
-                            seal.fulfill()
-                        }
-                    })
+                    PrimerUIManager.primerRootViewController?.present(self.webViewController!,
+                                                                      animated: true,
+                                                                      completion: {
+                                                                        DispatchQueue.main.async {
+                                                                            self.handleWebViewControlllerPresentedCompletion()
+                                                                            seal.fulfill()
+                                                                        }
+                                                                      })
                 }
             }
         }
@@ -569,7 +622,12 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                         case .fail(let message):
                             var merchantErr: Error!
                             if let message = message {
-                                let err = PrimerError.merchantError(message: message, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                let err = PrimerError.merchantError(message: message,
+                                                                    userInfo: ["file": #file,
+                                                                               "class": "\(Self.self)",
+                                                                               "function": #function,
+                                                                               "line": "\(#line)"],
+                                                                    diagnosticsId: UUID().uuidString)
                                 merchantErr = err
                             } else {
                                 merchantErr = NSError.emptyDescriptionError
@@ -598,7 +656,13 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
             } else {
                 guard let resumePaymentId = self.resumePaymentId else {
-                    let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId",
+                                                                        value: "Resume Payment ID not valid",
+                                                                        userInfo: ["file": #file,
+                                                                                   "class": "\(Self.self)",
+                                                                                   "function": #function,
+                                                                                   "line": "\(#line)"],
+                                                                        diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: resumePaymentIdError)
                     seal.reject(resumePaymentIdError)
                     return
@@ -609,7 +673,13 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 }
                 .done { paymentResponse -> Void in
                     guard let paymentResponse = paymentResponse else {
-                        let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                        let err = PrimerError.invalidValue(key: "paymentResponse",
+                                                           value: nil,
+                                                           userInfo: ["file": #file,
+                                                                      "class": "\(Self.self)",
+                                                                      "function": #function,
+                                                                      "line": "\(#line)"],
+                                                           diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         throw err
                     }
@@ -647,7 +717,11 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     }
     private func tokenize(bank: AdyenBank, completion: @escaping (_ paymentMethodTokenData: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
         guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
+                                                                "class": "\(Self.self)",
+                                                                "function": #function,
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(nil, err)
             return
@@ -711,7 +785,9 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)) { paymentResponse, error in
+            let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
+            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
+                                                                  paymentResumeRequest: resumeRequest) { paymentResponse, error in
 
                 if let error = error {
                     if let paymentResponse {
@@ -808,7 +884,9 @@ extension BanksTokenizationComponent: BankSelectorTokenizationProviding {
             return banks
         }
         return banks.filter {
-            $0.name.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil))
+            $0.name.lowercased()
+                .folding(options: .diacriticInsensitive, locale: nil)
+                .contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil))
         }
     }
 
@@ -928,8 +1006,14 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
     }
 
     func setup() {
-        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.receivedUrlSchemeRedirect, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.receivedNotification(_:)), name: Notification.Name.receivedUrlSchemeCancellation, object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.receivedNotification(_:)),
+                                               name: Notification.Name.receivedUrlSchemeRedirect,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.receivedNotification(_:)),
+                                               name: Notification.Name.receivedUrlSchemeCancellation,
+                                               object: nil)
 
         self.didFinishPayment = { _ in
             self.willDismissPaymentMethodUI?()
@@ -1003,7 +1087,12 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
                         decisionHandlerHasBeenCalled = true
                         switch paymentCreationDecision.type {
                         case .abort(let errorMessage):
-                            let error = PrimerError.merchantError(message: errorMessage ?? "", userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                            let error = PrimerError.merchantError(message: errorMessage ?? "",
+                                                                  userInfo: ["file": #file,
+                                                                             "class": "\(Self.self)",
+                                                                             "function": #function,
+                                                                             "line": "\(#line)"],
+                                                                  diagnosticsId: UUID().uuidString)
                             seal.reject(error)
                         case .continue:
                             seal.fulfill()
@@ -1012,7 +1101,12 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
 
                 Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
                     if !decisionHandlerHasBeenCalled {
-                        self?.logger.warn(message: "The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. Make sure you call the decision handler otherwise the SDK will hang.")
+                        let message =
+                            """
+                        The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' \
+                        hasn't been called. Make sure you call the decision handler otherwise the SDK will hang."
+"""
+                        self?.logger.warn(message: message)
                     }
                 }
             }
@@ -1046,7 +1140,9 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
             var cancelledError: PrimerError?
             self.didCancel = {
                 self.isCancelled = true
-                cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: UUID().uuidString)
+                cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type,
+                                                       userInfo: nil,
+                                                       diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: cancelledError!)
                 seal.reject(cancelledError!)
                 self.isCancelled = false
@@ -1092,7 +1188,10 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
             self.didCancel = {
                 let err = PrimerError.cancelled(
                     paymentMethodType: self.config.type,
-                    userInfo: ["file": #file, "class": "\(Self.self)", "function": #function, "line": "\(#line)"],
+                    userInfo: ["file": #file,
+                               "class": "\(Self.self)",
+                               "function": #function,
+                               "line": "\(#line)"],
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 pollingModule.cancel(withError: err)
@@ -1101,7 +1200,9 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
 
             firstly { () -> Promise<String> in
                 if self.isCancelled {
-                    let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: nil, diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.cancelled(paymentMethodType: self.config.type,
+                                                    userInfo: nil,
+                                                    diagnosticsId: UUID().uuidString)
                     throw err
                 }
                 return pollingModule.start()
@@ -1119,3 +1220,7 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
         }
     }
 }
+// swiftlint:enable cyclomatic_complexity
+// swiftlint:enable function_body_length
+// swiftlint:enable type_body_length
+// swiftlint:enable file_length

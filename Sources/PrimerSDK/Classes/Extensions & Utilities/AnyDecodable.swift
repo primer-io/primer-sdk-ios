@@ -7,9 +7,8 @@
 //
 
 // swiftlint:disable type_name
-#if canImport(Foundation)
+// swiftlint:disable cyclomatic_complexity
 import Foundation
-#endif
 
 /**
  A type-erased `Decodable` value.
@@ -57,11 +56,7 @@ extension _AnyDecodable {
         let container = try decoder.singleValueContainer()
 
         if container.decodeNil() {
-            #if canImport(Foundation)
-            self.init(NSNull())
-            #else
-            self.init(Optional<Self>.none)
-            #endif
+            self.init(Self?.none)
         } else if let bool = try? container.decode(Bool.self) {
             self.init(bool)
         } else if let int = try? container.decode(Int.self) {
@@ -77,7 +72,8 @@ extension _AnyDecodable {
         } else if let dictionary = try? container.decode([String: AnyDecodable].self) {
             self.init(dictionary.mapValues { $0.value })
         } else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "AnyDecodable value cannot be decoded")
+            throw DecodingError.dataCorruptedError(in: container,
+                                                   debugDescription: "AnyDecodable value cannot be decoded")
         }
     }
 }
@@ -192,3 +188,4 @@ extension AnyDecodable: Hashable {
     }
 }
 // swiftlint:enable type_name
+// swiftlint:enable cyclomatic_complexity

@@ -17,20 +17,20 @@ struct PaymentMethodModel {
 struct BanksListView: View {
     let paymentMethodModel: PaymentMethodModel
     private let metrics = Metrics()
-    
+
     @ObservedObject var banksModel: BanksListModel
-    
+
     private var didSelectBank: ((String) -> Void)
     private var didFilterByText: ((String) -> Void)
     @State private var filterText = ""
-    
+
     init(paymentMethodModel: PaymentMethodModel, banksModel: BanksListModel, didSelectBank: @escaping ((String) -> Void), didFilterByText: @escaping ((String) -> Void)) {
         self.paymentMethodModel = paymentMethodModel
         self.banksModel = banksModel
         self.didSelectBank = didSelectBank
         self.didFilterByText = didFilterByText
     }
-    
+
     var body: some View {
         Spacer()
         HStack {
@@ -43,20 +43,20 @@ struct BanksListView: View {
             }
         }
         Divider()
-        
+
         VStack(alignment: .leading) {
             Text("Choose your bank")
                 .multilineTextAlignment(.leading)
                 .padding(.leading, metrics.textLeftPadding)
                 .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.BanksComponent.title.rawValue)
-            
+
             SearchBar(text: $filterText.didSet { text in
                 didFilterByText(text)
             })
         }
-        
+
         Divider()
-        
+
         List(banksModel.banks, id: \.id) { bank in
             Button {
                 didSelectBank(bank.id)
@@ -82,7 +82,7 @@ struct BanksListView: View {
         .padding(.leading, 0)
         .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.BanksComponent.banksList.rawValue)
     }
-    
+
     private func image(url: URL) -> some View {
         ImageViewWithUrl(
             url: url,
@@ -127,10 +127,10 @@ extension BanksListView {
         private let metrics = SearchBar.Metrics()
         @Binding var text: String
         @State private var isEditing = false
-        
+
         var body: some View {
             HStack {
-                
+
                 TextField("Search bank", text: $text)
                     .padding(.horizontal, metrics.textLeftPadding)
                     .padding(.horizontal, metrics.hPadding)

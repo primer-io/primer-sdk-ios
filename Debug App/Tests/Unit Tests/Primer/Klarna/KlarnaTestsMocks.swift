@@ -21,7 +21,7 @@ class KlarnaTestsMocks {
         clientToken: clientToken,
         paymentCategory: paymentMethod
     )
-    
+
     static let invalidTokenError = PrimerError.invalidClientToken(
         userInfo: [:],
         diagnosticsId: UUID().uuidString
@@ -46,18 +46,18 @@ class KlarnaTestsMocks {
                 "subscription_name": "Implant_lenses",
                 "start_time": "2020-11-24T15:00",
                 "end_time": "2021-11-24T15:00",
-                "auto_renewal_of_subscription": false,
-            ],
+                "auto_renewal_of_subscription": false
+            ]
         ],
         "customer_account_info": [
             [
                 "unique_account_identifier": "Owen Owenson",
                 "account_registration_date": "2020-11-24T15:00",
-                "account_last_modified": "2020-11-24T15:00",
-            ],
+                "account_last_modified": "2020-11-24T15:00"
+            ]
         ]
     ]
-    
+
     static func getClientSession(
         hasLineItemAmout: Bool = true,
         hasAmount: Bool = true,
@@ -83,7 +83,7 @@ class KlarnaTestsMocks {
             customer: nil,
             testId: nil)
     }
-            
+
     static func getMockPrimerApiConfiguration(clientSession: ClientSession.APIResponse) -> Response.Body.Configuration {
         return Response.Body.Configuration(
             coreUrl: "https://core.primer.io",
@@ -109,7 +109,7 @@ class KlarnaTestsMocks {
             keys: nil,
             checkoutModules: nil)
     }
-    
+
     static func getLineItem(hasAmount: Bool) -> ClientSession.Order.LineItem {
         return ClientSession.Order.LineItem(
             itemId: "mock-item-id-1",
@@ -122,7 +122,7 @@ class KlarnaTestsMocks {
             taxCode: nil,
             productType: nil)
     }
-    
+
     static func getMockFinalizeKlarnaPaymentSession(isValid: Bool) -> Response.Body.Klarna.CustomerToken {
         return Response.Body.Klarna.CustomerToken(
             customerTokenId: isValid ? "mock-customer-token-id" : nil,

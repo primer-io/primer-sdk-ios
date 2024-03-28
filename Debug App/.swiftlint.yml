@@ -1,10 +1,13 @@
 disabled_rules:
-    - line_length
-    - type_body_length
-    - function_body_length
-    - file_length
-    - cyclomatic_complexity
+    - superfluous_disable_command
 
+line_length:
+  warning: 150
+  ignores_function_declarations: true
+  ignores_comments: true
+  ignores_interpolated_strings: true
+  ignores_urls: true
+  
 included:
   - ../Sources
 

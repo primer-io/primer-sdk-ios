@@ -29,14 +29,18 @@ public class Primer {
 
     fileprivate init() {}
 
-    public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+    public func application(_ app: UIApplication,
+                            open url: URL,
+                            options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         return PrimerInternal.shared.application(app, open: url, options: options)
     }
 
     public func application(_ application: UIApplication,
                             continue userActivity: NSUserActivity,
                             restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        return PrimerInternal.shared.application(application, continue: userActivity, restorationHandler: restorationHandler)
+        return PrimerInternal.shared.application(application,
+                                                 continue: userActivity,
+                                                 restorationHandler: restorationHandler)
     }
 
     // MARK: - CONFIGURATION
@@ -69,9 +73,15 @@ public class Primer {
     /**
      Show a payment method with the speicified intent (if applicable)
      */
-    public func showPaymentMethod(_ paymentMethodType: String, intent: PrimerSessionIntent, clientToken: String, completion: ((Error?) -> Void)? = nil) {
+    public func showPaymentMethod(_ paymentMethodType: String,
+                                  intent: PrimerSessionIntent,
+                                  clientToken: String,
+                                  completion: ((Error?) -> Void)? = nil) {
         PrimerInternal.shared.sdkIntegrationType = .dropIn
-        PrimerInternal.shared.showPaymentMethod(paymentMethodType, withIntent: intent, andClientToken: clientToken, completion: completion)
+        PrimerInternal.shared.showPaymentMethod(paymentMethodType,
+                                                withIntent: intent,
+                                                andClientToken: clientToken,
+                                                completion: completion)
     }
 
     /**

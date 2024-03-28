@@ -5,6 +5,8 @@
 //  Created by Admin on 8/11/21.
 //
 
+// swiftlint:disable function_body_length
+
 import SafariServices
 import UIKit
 
@@ -30,7 +32,8 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -202,7 +205,8 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                     "class": "\(Self.self)",
                                                                     "function": #function,
-                                                                    "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                    "line": "\(#line)"],
+                                                         diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -255,7 +259,8 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(nil, err)
             return
@@ -290,7 +295,8 @@ extension BankSelectorTokenizationViewModel: UITableViewDataSource, UITableViewD
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let bank = dataSource[indexPath.row]
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "BankTableViewCell", for: indexPath) as? BankTableViewCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "BankTableViewCell",
+                                                       for: indexPath) as? BankTableViewCell
         else {
             fatalError("Unexpected cell dequed in BankSelectorTokenizationViewModel")
         }
@@ -358,7 +364,10 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
             return banks
         }
         return banks.filter {
-            $0.name.lowercased().folding(options: .diacriticInsensitive, locale: nil).contains(query.lowercased().folding(options: .diacriticInsensitive, locale: nil))
+            $0.name.lowercased()
+                .folding(options: .diacriticInsensitive, locale: nil)
+                .contains(query.lowercased()
+                            .folding(options: .diacriticInsensitive, locale: nil))
         }
     }
     func tokenize(bankId: String) -> Promise<Void> {
@@ -380,3 +389,4 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
 }
 
 extension BankSelectorTokenizationViewModel: WebRedirectTokenizationDelegate {}
+// swiftlint:enable function_body_length

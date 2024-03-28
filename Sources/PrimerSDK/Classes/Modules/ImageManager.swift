@@ -5,6 +5,8 @@
 //  Created by Evangelos on 15/7/22.
 //
 
+// swiftlint:disable function_body_length
+
 import UIKit
 
 internal class ImageFile: File {
@@ -41,12 +43,14 @@ internal class ImageFile: File {
         } else if supportedPaymentMethodType.provider == paymentMethodType {
             tmpPaymentMethodFileNameFirstComponent = paymentMethodType
         } else if paymentMethodType.starts(with: "\(supportedPaymentMethodType.provider)_") {
-            tmpPaymentMethodFileNameFirstComponent = paymentMethodType.replacingOccurrences(of: "\(supportedPaymentMethodType.provider)_", with: "")
+            tmpPaymentMethodFileNameFirstComponent = paymentMethodType.replacingOccurrences(of: "\(supportedPaymentMethodType.provider)_",
+                                                                                            with: "")
         } else {
             return nil
         }
 
-        tmpPaymentMethodFileNameFirstComponent = tmpPaymentMethodFileNameFirstComponent!.lowercased().replacingOccurrences(of: "_", with: "-")
+        tmpPaymentMethodFileNameFirstComponent = tmpPaymentMethodFileNameFirstComponent!.lowercased().replacingOccurrences(of: "_",
+                                                                                                                           with: "-")
 
         switch assetType {
         case .logo:
@@ -65,24 +69,42 @@ internal class ImageFile: File {
         let paymentMethodType = ImageFile.getPaymentMethodType(fromFileName: self.fileName) ?? self.fileName
 
         if self.fileName.contains("dark") == true {
-            if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType, themeMode: .dark, assetType: .logo),
-               let image = UIImage(named: paymentMethodLogoFileName, in: Bundle.primerResources, compatibleWith: nil) {
+            if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType,
+                                                                                 themeMode: .dark,
+                                                                                 assetType: .logo),
+               let image = UIImage(named: paymentMethodLogoFileName,
+                                   in: Bundle.primerResources,
+                                   compatibleWith: nil) {
                 return image
-            } else if let image = UIImage(named: self.fileName, in: Bundle.primerResources, compatibleWith: nil) {
+            } else if let image = UIImage(named: self.fileName,
+                                          in: Bundle.primerResources,
+                                          compatibleWith: nil) {
                 return image
             }
         } else if self.fileName.contains("light") == true {
-            if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType, themeMode: .light, assetType: .logo),
-               let image = UIImage(named: paymentMethodLogoFileName, in: Bundle.primerResources, compatibleWith: nil) {
+            if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType,
+                                                                                 themeMode: .light,
+                                                                                 assetType: .logo),
+               let image = UIImage(named: paymentMethodLogoFileName,
+                                   in: Bundle.primerResources,
+                                   compatibleWith: nil) {
                 return image
-            } else if let image = UIImage(named: self.fileName, in: Bundle.primerResources, compatibleWith: nil) {
+            } else if let image = UIImage(named: self.fileName,
+                                          in: Bundle.primerResources,
+                                          compatibleWith: nil) {
                 return image
             }
         } else if self.fileName.contains("colored") == true {
-            if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType, themeMode: .colored, assetType: .logo),
-               let image = UIImage(named: paymentMethodLogoFileName, in: Bundle.primerResources, compatibleWith: nil) {
+            if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType,
+                                                                                 themeMode: .colored,
+                                                                                 assetType: .logo),
+               let image = UIImage(named: paymentMethodLogoFileName,
+                                   in: Bundle.primerResources,
+                                   compatibleWith: nil) {
                 return image
-            } else if let image = UIImage(named: self.fileName, in: Bundle.primerResources, compatibleWith: nil) {
+            } else if let image = UIImage(named: self.fileName,
+                                          in: Bundle.primerResources,
+                                          compatibleWith: nil) {
                 return image
             }
         }
@@ -129,7 +151,9 @@ internal class ImageManager: LogReporter {
                 }
 
                 if !errors.isEmpty, errors.count == responses.count {
-                    let err = InternalError.underlyingErrors(errors: errors, userInfo: nil, diagnosticsId: UUID().uuidString)
+                    let err = InternalError.underlyingErrors(errors: errors,
+                                                             userInfo: nil,
+                                                             diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     throw err
                 } else {
@@ -160,11 +184,10 @@ internal class ImageManager: LogReporter {
                 id: timingEventId
             )
 
-            /// First try to download the image with the relevant caching policy.
-            /// Therefore, if the image is cached, it will be returned.
-            /// If the image download fails, check for a bundled image with the filename,
-            /// if it exists continue.
-
+            // First try to download the image with the relevant caching policy.
+            // Therefore, if the image is cached, it will be returned.
+            // If the image download fails, check for a bundled image with the filename,
+            // if it exists continue.
             firstly {
                 downloader.download(file: file)
             }
@@ -174,7 +197,8 @@ internal class ImageManager: LogReporter {
                     seal.fulfill(imageFile)
 
                 } else {
-                    let err = InternalError.failedToDecode(message: "image", userInfo: nil, diagnosticsId: UUID().uuidString)
+                    let err = InternalError.failedToDecode(message: "image", userInfo: nil,
+                                                           diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     throw err
                 }
@@ -218,7 +242,9 @@ internal class ImageManager: LogReporter {
     }
 
     static func clean() {
-        guard let documentDirectoryUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+        guard let documentDirectoryUrl = FileManager.default.urls(for: .documentDirectory,
+                                                                  in: .userDomainMask).first
+        else { return }
         let documentsPath = documentDirectoryUrl.path
 
         do {
@@ -235,3 +261,4 @@ internal class ImageManager: LogReporter {
         }
     }
 }
+// swiftlint:enable function_body_length

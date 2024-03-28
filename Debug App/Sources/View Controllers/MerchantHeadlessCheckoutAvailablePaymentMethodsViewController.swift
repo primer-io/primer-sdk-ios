@@ -122,7 +122,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
                 self.navigationController?.pushViewController(vc, animated: true)
             })
             rawDataAlertAction.accessibilityIdentifier = "raw_data_huc_alert_action_\(paymentMethodType)"
-            
+
             let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
             cancelAction.accessibilityIdentifier = "cancel_huc_alert_action"
 
@@ -141,14 +141,14 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
             self.navigationController?.pushViewController(vc, animated: true)
             #else
             break
-#endif
+            #endif
         case "KLARNA":
-#if canImport(PrimerKlarnaSDK)
+            #if canImport(PrimerKlarnaSDK)
             let vc = MerchantHeadlessCheckoutKlarnaViewController(sessionIntent: sessionIntent)
             self.navigationController?.pushViewController(vc, animated: true)
-#else
+            #else
             break
-#endif
+            #endif
         case "ADYEN_IDEAL":
             let vc = MerchantHeadlessCheckoutBankViewController()
             self.navigationController?.pushViewController(vc, animated: true)
@@ -315,52 +315,52 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: PrimerH
 }
 
 extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
-    
-    private func setupSessionLogic() {        
+
+    private func setupSessionLogic() {
         if let clientToken = clientToken {
             PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: self.settings, completion: { (pms, _) in
                 self.hideLoadingOverlay()
-                
+
                 DispatchQueue.main.async {
                     self.availablePaymentMethods = pms ?? []
                     self.tableView.reloadData()
                 }
             })
-            
+
         } else if let clientSession = clientSession {
             Networking.requestClientSession(requestBody: clientSession) { (clientToken, err) in
                 self.hideLoadingOverlay()
-                
+
                 if let err = err {
                     print(err)
                     let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
                     print(merchantErr)
-                    
+
                 } else if let clientToken = clientToken {
-//                    self.clientToken = clientToken
-//
-//                    var newClientSession = clientSession
-//                    newClientSession.order = ClientSessionRequestBody.Order(
-//                        countryCode: .fr,
-//                        lineItems: [
-//                            ClientSessionRequestBody.Order.LineItem(
-//                                itemId: "new-fancy-shoes-\(String.randomString(length: 4))",
-//                                description: "Fancy Shoes (updated)",
-//                                amount: 10000,
-//                                quantity: 1,
-//                                discountAmount: 1999,
-//                                taxAmount: 4600),
-//                            ClientSessionRequestBody.Order.LineItem(
-//                                itemId: "cool-hat-\(String.randomString(length: 4))",
-//                                description: "Cool Hat (added)",
-//                                amount: 2000,
-//                                quantity: 2,
-//                                discountAmount: nil,
-//                                taxAmount: nil)
-//                        ]
-//                    )
-//
-//                    Networking.patchClientSession(clientToken: clientToken, requestBody: newClientSession) { newClientToken, err in
+                    //                    self.clientToken = clientToken
+                    //
+                    //                    var newClientSession = clientSession
+                    //                    newClientSession.order = ClientSessionRequestBody.Order(
+                    //                        countryCode: .fr,
+                    //                        lineItems: [
+                    //                            ClientSessionRequestBody.Order.LineItem(
+                    //                                itemId: "new-fancy-shoes-\(String.randomString(length: 4))",
+                    //                                description: "Fancy Shoes (updated)",
+                    //                                amount: 10000,
+                    //                                quantity: 1,
+                    //                                discountAmount: 1999,
+                    //                                taxAmount: 4600),
+                    //                            ClientSessionRequestBody.Order.LineItem(
+                    //                                itemId: "cool-hat-\(String.randomString(length: 4))",
+                    //                                description: "Cool Hat (added)",
+                    //                                amount: 2000,
+                    //                                quantity: 2,
+                    //                                discountAmount: nil,
+                    //                                taxAmount: nil)
+                    //                        ]
+                    //                    )
+                    //
+                    //                    Networking.patchClientSession(clientToken: clientToken, requestBody: newClientSession) { newClientToken, err in
 
                     PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: self.settings, completion: { (pms, _) in
                         DispatchQueue.main.async {
@@ -374,9 +374,8 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
             fatalError()
         }
     }
-    
-}
 
+}
 
 class MerchantPaymentMethodCell: UITableViewCell {
 
@@ -410,4 +409,3 @@ class MerchantPaymentMethodCell: UITableViewCell {
         }
     }
 }
-

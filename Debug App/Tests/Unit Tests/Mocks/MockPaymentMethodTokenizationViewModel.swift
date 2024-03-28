@@ -252,7 +252,8 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
                 Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
                     switch paymentCreationDecision.type {
                     case .abort(let errorMessage):
-                        let error = PrimerError.merchantError(message: errorMessage ?? "", userInfo: nil, diagnosticsId: UUID().uuidString)
+                        let error = PrimerError.merchantError(message: errorMessage ?? "", userInfo: nil,
+                                                              diagnosticsId: UUID().uuidString)
                         seal.reject(error)
                     case .continue:
                         seal.fulfill()

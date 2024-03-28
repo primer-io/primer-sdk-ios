@@ -20,6 +20,7 @@ internal protocol PrimerAPIConfigurationModuleProtocol {
     func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void>
 }
 
+// swiftlint:disable type_body_length
 internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
 
     static var apiClient: PrimerAPIClientProtocol?
@@ -105,14 +106,16 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                     "class": "\(Self.self)",
                                                                     "function": #function,
-                                                                    "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                    "line": "\(#line)"],
+                                                         diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
             }
 
             let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
-            apiClient.requestPrimerConfigurationWithActions(clientToken: decodedJWTToken, request: actionsRequest) { result in
+            apiClient.requestPrimerConfigurationWithActions(clientToken: decodedJWTToken,
+                                                            request: actionsRequest) { result in
                 switch result {
                 case .success(let configuration):
                     PrimerAPIConfigurationModule.apiConfiguration?.clientSession = configuration.clientSession
@@ -179,16 +182,20 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             let error = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                   "class": "\(Self.self)",
                                                                   "function": #function,
-                                                                  "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                  "line": "\(#line)"],
+                                                       diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: error)
             throw error
         }
 
         let previousDecodedToken = PrimerAPIConfigurationModule.decodedJWTToken
 
-        currentDecodedToken.configurationUrl = currentDecodedToken.configurationUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
-        currentDecodedToken.coreUrl = currentDecodedToken.coreUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
-        currentDecodedToken.pciUrl = currentDecodedToken.pciUrl?.replacingOccurrences(of: "10.0.2.2:8080", with: "localhost:8080")
+        currentDecodedToken.configurationUrl = currentDecodedToken.configurationUrl?.replacingOccurrences(of: "10.0.2.2:8080",
+                                                                                                          with: "localhost:8080")
+        currentDecodedToken.coreUrl = currentDecodedToken.coreUrl?.replacingOccurrences(of: "10.0.2.2:8080",
+                                                                                        with: "localhost:8080")
+        currentDecodedToken.pciUrl = currentDecodedToken.pciUrl?.replacingOccurrences(of: "10.0.2.2:8080",
+                                                                                      with: "localhost:8080")
 
         if currentDecodedToken.env == nil {
             currentDecodedToken.env = previousDecodedToken?.env
@@ -249,7 +256,8 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                     "class": "\(Self.self)",
                                                                     "function": #function,
-                                                                    "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                    "line": "\(#line)"],
+                                                         diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -309,3 +317,4 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         Analytics.Service.record(event: event)
     }
 }
+// swiftlint:enable type_body_length

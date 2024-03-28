@@ -1,3 +1,6 @@
+// swiftlint:disable function_body_length
+// swiftlint:disable type_body_length
+
 import Foundation
 
 internal protocol PayPalServiceProtocol {
@@ -20,15 +23,18 @@ internal class PayPalService: PayPalServiceProtocol {
             return nil
         }
 
-        guard let configId = PrimerAPIConfigurationModule.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+        guard let configId = PrimerAPIConfigurationModule.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue)
+        else {
             return nil
         }
 
-        guard let coreURL = decodedJWTToken.coreUrl else {
+        guard let coreURL = decodedJWTToken.coreUrl
+        else {
             return nil
         }
 
-        guard let url = URL(string: "\(coreURL)\(path)") else {
+        guard let url = URL(string: "\(coreURL)\(path)")
+        else {
             return nil
         }
 
@@ -48,10 +54,11 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
 
-        guard let configId = PrimerAPIConfigurationModule.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
+        let apiConfig = PrimerAPIConfigurationModule.apiConfiguration
+        guard let configId = apiConfig?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue) else {
             let err = PrimerError.invalidValue(
                 key: "configuration.paypal.id",
-                value: PrimerAPIConfigurationModule.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue),
+                value: apiConfig?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue),
                 userInfo: ["file": #file,
                            "class": "\(Self.self)",
                            "function": #function,
@@ -123,7 +130,8 @@ internal class PayPalService: PayPalServiceProtocol {
                 let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file,
                                                                                             "class": "\(Self.self)",
                                                                                             "function": #function,
-                                                                                            "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                            "line": "\(#line)"],
+                                                                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: containerErr)
                 completion(.failure(containerErr))
             case .success(let res):
@@ -139,7 +147,8 @@ internal class PayPalService: PayPalServiceProtocol {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -184,13 +193,16 @@ internal class PayPalService: PayPalServiceProtocol {
         )
 
         let apiClient: PrimerAPIClientProtocol = PayPalService.apiClient ?? PrimerAPIClient()
-        apiClient.createPayPalBillingAgreementSession(clientToken: decodedJWTToken, payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
+        apiClient.createPayPalBillingAgreementSession(clientToken: decodedJWTToken,
+                                                      payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
             switch result {
             case .failure(let err):
-                let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file,
-                                                                                            "class": "\(Self.self)",
-                                                                                            "function": #function,
-                                                                                            "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                let containerErr = PrimerError.failedToCreateSession(error: err,
+                                                                     userInfo: ["file": #file,
+                                                                                "class": "\(Self.self)",
+                                                                                "function": #function,
+                                                                                "line": "\(#line)"],
+                                                                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: containerErr)
                 completion(.failure(containerErr))
             case .success(let config):
@@ -207,7 +219,8 @@ internal class PayPalService: PayPalServiceProtocol {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -244,13 +257,15 @@ internal class PayPalService: PayPalServiceProtocol {
         let body = Request.Body.PayPal.ConfirmBillingAgreement(paymentMethodConfigId: configId, tokenId: tokenId)
 
         let apiClient: PrimerAPIClientProtocol = PayPalService.apiClient ?? PrimerAPIClient()
-        apiClient.confirmPayPalBillingAgreement(clientToken: decodedJWTToken, payPalConfirmBillingAgreementRequest: body) { result in
+        apiClient.confirmPayPalBillingAgreement(clientToken: decodedJWTToken,
+                                                payPalConfirmBillingAgreementRequest: body) { result in
             switch result {
             case .failure(let err):
                 let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: ["file": #file,
                                                                                             "class": "\(Self.self)",
                                                                                             "function": #function,
-                                                                                            "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                            "line": "\(#line)"],
+                                                                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: containerErr)
                 completion(.failure(containerErr))
             case .success(let response):
@@ -266,7 +281,8 @@ internal class PayPalService: PayPalServiceProtocol {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -299,3 +315,5 @@ internal class PayPalService: PayPalServiceProtocol {
         }
     }
 }
+// swiftlint:enable function_body_length
+// swiftlint:enable type_body_length

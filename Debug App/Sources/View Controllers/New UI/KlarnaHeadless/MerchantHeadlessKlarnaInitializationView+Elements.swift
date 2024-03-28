@@ -10,16 +10,16 @@ import UIKit
 import SwiftUI
 
 class SharedUIViewWrapper: ObservableObject {
-    @Published var uiView: UIView? = nil
+    @Published var uiView: UIView?
 }
 
 struct DynamicUIViewRepresentable: UIViewRepresentable {
     @ObservedObject var wrapper: SharedUIViewWrapper
-    
+
     func makeUIView(context: Context) -> UIView {
         return wrapper.uiView ?? UIView()
     }
-    
+
     func updateUIView(_ uiView: UIView, context: Context) {
         if let newView = wrapper.uiView {
             uiView.addSubview(newView)
@@ -32,7 +32,7 @@ struct RadioButtonView: View {
     var isSelected: Bool
     let title: String
     let action: () -> Void
-    
+
     var body: some View {
         HStack {
             Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
@@ -47,7 +47,7 @@ struct RadioButtonView: View {
 struct KlarnaButton: View {
     let title: String
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: {
             action()

@@ -13,11 +13,11 @@ class MerchantHeadlessKlarnaInitializationViewModel: ObservableObject {
     @Published var paymentCategories: [KlarnaPaymentCategory] = []
     @Published var snackBarMessage: String = ""
     @Published var showMessage: Bool = false
-    
+
     func updatePaymentCategories(_ paymentCategories: [KlarnaPaymentCategory]) {
         self.paymentCategories = paymentCategories
     }
-    
+
     func updatSnackBar(with message: String) {
         snackBarMessage = message
         showMessage = true

@@ -5,6 +5,8 @@
 //  Created by Boris on 15.9.23..
 //
 
+// swiftlint:disable function_body_length
+
 import Foundation
 #if canImport(PrimerNolPaySDK)
 import PrimerNolPaySDK
@@ -50,7 +52,9 @@ public class NolPayLinkedCardsComponent {
     }
 
     private func start(completion: @escaping (Result<Void, PrimerError>) -> Void) {
-        guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?.first(where: { $0.internalPaymentMethodType == .nolPay})?.options as? MerchantOptions,
+        guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?
+                .first(where: { $0.internalPaymentMethodType == .nolPay})?
+                .options as? MerchantOptions,
               let appId = nolPaymentMethodOption.appId
         else {
             let error = PrimerError.invalidValue(key: "Nol AppID",
@@ -103,11 +107,11 @@ public class NolPayLinkedCardsComponent {
                     case .failure(let error):
                         continuation.resume(throwing: error)
                         let primerError = PrimerError.underlyingErrors(errors: [error],
-                                                                        userInfo: ["file": #file,
-                                                                                    "class": "\(Self.self)",
-                                                                                    "function": #function,
-                                                                                    "line": "\(#line)"],
-                                                                        diagnosticsId: UUID().uuidString)
+                                                                       userInfo: ["file": #file,
+                                                                                  "class": "\(Self.self)",
+                                                                                  "function": #function,
+                                                                                  "line": "\(#line)"],
+                                                                       diagnosticsId: UUID().uuidString)
                         completion(.failure(primerError))
                     }
                 }
@@ -209,5 +213,5 @@ public class NolPayLinkedCardsComponent {
         }
     }
 }
-
 #endif
+// swiftlint:enable function_body_length

@@ -5,6 +5,10 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
+// swiftlint:disable file_length
+// swiftlint:disable type_body_length
+// swiftlint:disable line_length
+
 import Foundation
 
 // MARK: - Strings
@@ -1037,3 +1041,6 @@ extension Strings {
             comment: "The title of the mocked failed flow for a Test Payment Method")
     }
 }
+// swiftlint:enable type_body_length
+// swiftlint:enable line_length
+// swiftlint:enable file_length

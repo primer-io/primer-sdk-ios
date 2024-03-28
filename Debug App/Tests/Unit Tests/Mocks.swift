@@ -215,7 +215,8 @@ class MockPrimerDelegate: PrimerDelegate {
             completion(nil, PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                       "class": "\(Self.self)",
                                                                       "function": #function,
-                                                                      "line": "\(#line)"], diagnosticsId: UUID().uuidString))
+                                                                      "line": "\(#line)"],
+                                                           diagnosticsId: UUID().uuidString))
             return
         }
         completion(token, nil)
@@ -234,7 +235,8 @@ class MockPrimerDelegate: PrimerDelegate {
         if authorizePaymentFails { completion(PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                                         "class": "\(Self.self)",
                                                                                         "function": #function,
-                                                                                        "line": "\(#line)"], diagnosticsId: UUID().uuidString)) }
+                                                                                        "line": "\(#line)"],
+                                                                             diagnosticsId: UUID().uuidString)) }
     }
 
     func onTokenizeSuccess(_ paymentMethodToken: PrimerPaymentMethodTokenData, _ completion: @escaping (Error?) -> Void) {
@@ -242,7 +244,8 @@ class MockPrimerDelegate: PrimerDelegate {
         if authorizePaymentFails { completion(PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                                         "class": "\(Self.self)",
                                                                                         "function": #function,
-                                                                                        "line": "\(#line)"], diagnosticsId: UUID().uuidString)) }
+                                                                                        "line": "\(#line)"],
+                                                                             diagnosticsId: UUID().uuidString)) }
     }
 
     func primerDidDismiss() {

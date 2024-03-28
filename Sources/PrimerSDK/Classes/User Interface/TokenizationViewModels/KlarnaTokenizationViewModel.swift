@@ -12,13 +12,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     var willDismissExternalView: (() -> Void)?
     var didDismissExternalView: (() -> Void)?
 
-    #if canImport(PrimerKlarnaSDK)
-    private var klarnaViewController: PrimerKlarnaViewController?
-    #endif
-
-    #if DEBUG
-    private var demoThirdPartySDKViewController: PrimerThirdPartySDKViewController?
-    #endif
     private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
     private var tokenizationComponent: KlarnaTokenizationComponentProtocol
     private var klarnaPaymentSession: Response.Body.Klarna.PaymentSession?
@@ -87,15 +80,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
             .ensure {
                 self.willDismissExternalView?()
-                self.klarnaViewController?.dismiss(animated: true, completion: {
-                    self.didDismissExternalView?()
-                })
-
-                #if DEBUG
-                self.demoThirdPartySDKViewController?.dismiss(animated: true, completion: {
-                    self.didDismissExternalView?()
-                })
-                #endif
             }
             .catch { err in
                 seal.reject(err)

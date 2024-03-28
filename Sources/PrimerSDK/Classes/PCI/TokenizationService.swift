@@ -1,3 +1,5 @@
+// swiftlint:disable function_body_length
+
 import Foundation
 
 internal protocol TokenizationServiceProtocol {
@@ -80,7 +82,8 @@ internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
                     userInfo: ["file": #file,
                                "class": "\(Self.self)",
                                "function": #function,
-                               "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                               "line": "\(#line)"],
+                    diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -102,3 +105,4 @@ internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
         }
     }
 }
+// swiftlint:enable function_body_length

@@ -52,7 +52,8 @@ internal struct OrderItem: Codable {
             let err = PrimerError.generic(message: "amount should be null for pending items", userInfo: ["file": #file,
                                                                                                          "class": "\(Self.self)",
                                                                                                          "function": #function,
-                                                                                                         "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                                         "line": "\(#line)"],
+                                          diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -61,7 +62,8 @@ internal struct OrderItem: Codable {
             let err = PrimerError.generic(message: "amount cannot be null for non-pending items", userInfo: ["file": #file,
                                                                                                              "class": "\(Self.self)",
                                                                                                              "function": #function,
-                                                                                                             "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                                                             "line": "\(#line)"],
+                                          diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }

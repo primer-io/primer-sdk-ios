@@ -13,22 +13,22 @@ import XCTest
 final class KlarnaTokenizationManagerTests: XCTestCase {
 
     var tokenizationManager: MockKlarnaTokenizationManager!
-    
+
     override func setUp() {
         super.setUp()
         prepareConfigurations()
     }
-    
+
     override func tearDown() {
         restartPrimerConfiguration()
         super.tearDown()
     }
-    
+
     func test_tokenizeHeadless_success() {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: true)
         let expectation = XCTestExpectation(description: "Successful Tokenize Klarna Payment Session")
         tokenizationManager.mockedSuccessValue = true
-        
+
         firstly {
             tokenizationManager.tokenizeHeadless(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId)
         }
@@ -40,15 +40,15 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
             XCTFail("Result should be nil")
             expectation.fulfill()
         }
-        
+
         wait(for: [expectation], timeout: 10.0)
     }
-    
+
     func test_tokenizeHeadless_failure() {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: false)
         let expectation = XCTestExpectation(description: "Failure Tokenize Klarna Payment Session")
         tokenizationManager.mockedSuccessValue = false
-        
+
         firstly {
             tokenizationManager.tokenizeHeadless(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId)
         }
@@ -60,10 +60,10 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
             XCTAssertNotNil(error, "Error should not be nil")
             expectation.fulfill()
         }
-        
+
         wait(for: [expectation], timeout: 10.0)
     }
-    
+
     func test_tokenizeDropIn_success() {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: true)
         let expectation = XCTestExpectation(description: "Successful Tokenize Klarna Payment Session")
@@ -83,12 +83,12 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         
         wait(for: [expectation], timeout: 10.0)
     }
-    
+
     func test_tokenizeDropIn_failure() {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: false)
         let expectation = XCTestExpectation(description: "Failure Tokenize Klarna Payment Session")
         tokenizationManager.mockedSuccessValue = false
-        
+
         firstly {
             tokenizationManager.tokenizeDropIn(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId)
         }
@@ -100,10 +100,10 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
             XCTAssertNotNil(error, "Error should not be nil")
             expectation.fulfill()
         }
-        
+
         wait(for: [expectation], timeout: 10.0)
     }
-    
+
 }
 
 extension KlarnaTokenizationManagerTests {
@@ -111,15 +111,15 @@ extension KlarnaTokenizationManagerTests {
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.fetchConfigurationWithActionsResult = (apiConfiguration, nil)
         mockApiClient.mockSuccessfulResponses()
-        
+
         AppState.current.clientToken = KlarnaTestsMocks.clientToken
         PrimerAPIConfigurationModule.apiClient = mockApiClient
         PrimerAPIConfigurationModule.clientToken = KlarnaTestsMocks.clientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
-        
+
         tokenizationManager = MockKlarnaTokenizationManager()
     }
-    
+
     private func prepareConfigurations() {
         PrimerInternal.shared.intent = .checkout
         let clientSession = KlarnaTestsMocks.getClientSession()
@@ -127,7 +127,7 @@ extension KlarnaTokenizationManagerTests {
         successApiConfiguration.paymentMethods?[0].baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
         setupPrimerConfiguration(paymentMethod: Mocks.PaymentMethods.klarnaPaymentMethod, apiConfiguration: successApiConfiguration)
     }
-    
+
     private func restartPrimerConfiguration() {
         AppState.current.clientToken = nil
         PrimerAPIConfigurationModule.clientToken = nil
@@ -135,7 +135,7 @@ extension KlarnaTokenizationManagerTests {
         PrimerAPIConfigurationModule.apiClient = nil
         tokenizationManager = nil
     }
-    
+
     private func getInvalidTokenError() -> PrimerError {
         let error = PrimerError.invalidClientToken(
             userInfo: self.getErrorUserInfo(),
@@ -144,7 +144,7 @@ extension KlarnaTokenizationManagerTests {
         ErrorHandler.handle(error: error)
         return error
     }
-    
+
     private func getErrorUserInfo() -> [String: String] {
         return [
             "file": #file,
@@ -157,7 +157,7 @@ extension KlarnaTokenizationManagerTests {
 
 class MockKlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
     var mockedSuccessValue: Bool = false
-    
+
     let primerError = PrimerError.paymentFailed(paymentMethodType: "KLARNA", description: "payment_failed", userInfo: nil, diagnosticsId: UUID().uuidString)
 
     func tokenizeHeadless(customerToken: PrimerSDK.Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> PrimerSDK.Promise<PrimerSDK.PrimerCheckoutData> {
@@ -176,8 +176,6 @@ class MockKlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
             mockedSuccessValue ? seal.fulfill(tokenData) : seal.reject(primerError)
         }
     }
-    
-    
 }
 
 #endif

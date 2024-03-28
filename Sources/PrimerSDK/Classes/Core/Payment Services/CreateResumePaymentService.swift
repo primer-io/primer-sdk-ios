@@ -22,7 +22,8 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(nil, err)
             return
@@ -44,14 +45,17 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
                                                                 "class": "\(Self.self)",
                                                                 "function": #function,
-                                                                "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                                                                "line": "\(#line)"],
+                                                     diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(nil, err)
             return
         }
 
         let apiClient: PrimerAPIClientProtocol = CreateResumePaymentService.apiClient ?? PrimerAPIClient()
-        apiClient.resumePayment(clientToken: clientToken, paymentId: paymentId, paymentResumeRequest: paymentResumeRequest) { result in
+        apiClient.resumePayment(clientToken: clientToken,
+                                paymentId: paymentId,
+                                paymentResumeRequest: paymentResumeRequest) { result in
             switch result {
             case .failure(let error):
                 completion(nil, error)

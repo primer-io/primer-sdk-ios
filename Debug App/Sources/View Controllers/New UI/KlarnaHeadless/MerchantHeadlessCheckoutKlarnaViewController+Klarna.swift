@@ -23,7 +23,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessErrorableD
             presentResultsVC(checkoutData: nil, error: error)
         }
     }
-    
+
     // MARK: - PrimerHeadlessValidatableDelegate
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
         switch validationStatus {
@@ -43,7 +43,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessErrorableD
             showAlert(title: error.errorId, message: error.recoverySuggestion ?? error.localizedDescription)
         }
     }
-    
+
     // MARK: - PrimerHeadlessSteppableDelegate
     func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
         if let step = step as? KlarnaStep {
@@ -55,30 +55,30 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessErrorableD
                     self.clientToken = clientToken
                     self.klarnaInitializationViewModel.updatePaymentCategories(paymentCategories)
                 }
-                
+
             case .paymentSessionAuthorized( _, let checkoutData):
                 presentResultsVC(checkoutData: checkoutData, error: nil)
-                
+
             case .paymentSessionFinalizationRequired:
                 klarnaInitializationViewModel.updatSnackBar(with: "Finalizing in 2 seconds")
                 finalizeSession()
-                
+
             case .paymentSessionFinalized( _, let checkoutData):
                 presentResultsVC(checkoutData: checkoutData, error: nil)
-                
+
             case .viewLoaded(let view):
                 hideLoader()
                 logs.append("Loaded klarna view")
                 if let view {
                     passRenderedKlarnaView(view)
                 }
-                
+
             default:
                 break
             }
         }
     }
-    
+
     private func presentResultsVC(checkoutData: PrimerCheckoutData?, error: Error?) {
         let rvc = MerchantResultViewController.instantiate(checkoutData: checkoutData, error: error, logs: logs)
         navigationController?.popToRootViewController(animated: true)
@@ -93,12 +93,12 @@ extension MerchantHeadlessCheckoutKlarnaViewController {
         showLoader()
         klarnaComponent?.start()
     }
-    
+
     func authorizeSession() {
         logs.append(#function)
         klarnaComponent?.submit()
     }
-    
+
     func finalizeSession() {
         logs.append(#function)
         showLoader()
