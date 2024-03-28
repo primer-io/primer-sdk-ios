@@ -17,18 +17,104 @@ protocol KlarnaTokenizationManagerProtocol {
      - Returns: A `Promise<PrimerPaymentMethodTokenData>` which resolves to a `PrimerPaymentMethodTokenData`
      object on successful tokenization or rejects with an `Error` if the tokenization process fails.
      */
-    func tokenize(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerCheckoutData>
+    func tokenizeHeadless(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerCheckoutData>
+    func tokenizeDropIn(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerPaymentMethodTokenData>
 }
 
 class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
+
     // MARK: - Properties
     private let tokenizationService: TokenizationServiceProtocol
+
     // MARK: - Init
     init() {
         self.tokenizationService = TokenizationService()
     }
-    // MARK: - Tokenize
-    func tokenize(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerCheckoutData> {
+
+    // MARK: - Tokenize Headless
+    func tokenizeHeadless(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerCheckoutData> {
+        return Promise { seal in
+            firstly {
+                getRequestBody(customerToken: customerToken, offSessionAuthorizationId: offSessionAuthorizationId)
+            }
+            .then { requestBody in
+                self.tokenizationService.tokenize(requestBody: requestBody)
+            }
+            .then { paymentMethodTokenData in
+                self.startPaymentFlow(with: paymentMethodTokenData)
+            }
+            .done { checkoutData in
+                seal.fulfill(checkoutData)
+            }
+            .catch { error in
+                seal.reject(error)
+            }
+        }
+    }
+
+    // MARK: - Tokenize DropIn
+    func tokenizeDropIn(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerPaymentMethodTokenData> {
+        return Promise { seal in
+            firstly {
+                getRequestBody(customerToken: customerToken, offSessionAuthorizationId: offSessionAuthorizationId)
+            }
+            .then { requestBody in
+                self.tokenizationService.tokenize(requestBody: requestBody)
+            }
+            .done { paymentMethodTokenData in
+                seal.fulfill(paymentMethodTokenData)
+            }
+            .catch { error in
+                seal.reject(error)
+            }
+        }
+    }
+}
+
+extension KlarnaTokenizationManager {
+    func startPaymentFlow(with paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData> {
+        return Promise { seal in
+            guard let token = paymentMethodTokenData.token else {
+                seal.reject(KlarnaHelpers.getInvalidTokenError())
+                return
+            }
+            firstly {
+                self.createPaymentEvent(token)
+            }
+            .done { paymentResponse -> Void in
+                let paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
+                seal.fulfill(paymentCheckoutData)
+            }
+            .catch { error in
+                seal.reject(error)
+            }
+        }
+    }
+
+    // Create payment with Payment method token
+    private func createPaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
+        return Promise { seal in
+            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
+            let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
+            createResumePaymentService.createPayment(paymentRequest: paymentRequest) { paymentResponse, error in
+                if let error {
+                    seal.reject(error)
+                } else if let paymentResponse {
+                    if paymentResponse.id == nil {
+                        seal.reject(KlarnaHelpers.getPaymentFailedError())
+                    } else if paymentResponse.status == .failed {
+                        seal.reject(KlarnaHelpers.getFailedToProcessPaymentError(paymentResponse: paymentResponse))
+                    } else {
+                        seal.fulfill(paymentResponse)
+                    }
+                } else {
+                    seal.reject(KlarnaHelpers.getPaymentFailedError())
+                }
+            }
+        }
+    }
+
+    private func getRequestBody(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<Request.Body.Tokenization> {
         return Promise { seal in
             var customerTokenId: String?
             var paymentInstrument: TokenizationRequestBodyPaymentInstrument
@@ -62,61 +148,7 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
             }
             // Constructs a request body with the payment instrument and initiates a tokenization request through the `tokenizationService`.
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
-            firstly {
-                tokenizationService.tokenize(requestBody: requestBody)
-            }
-            .then { paymentMethodTokenData in
-                self.startPaymentFlow(with: paymentMethodTokenData)
-            }
-            .done { checkoutData in
-                seal.fulfill(checkoutData)
-            }
-            .catch { error in
-                seal.reject(error)
-            }
-        }
-    }
-}
-
-extension KlarnaTokenizationManager {
-    func startPaymentFlow(with paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData> {
-        return Promise { seal in
-            guard let token = paymentMethodTokenData.token else {
-                seal.reject(KlarnaHelpers.getInvalidTokenError())
-                return
-            }
-            firstly {
-                self.createPaymentEvent(token)
-            }
-            .done { paymentResponse -> Void in
-                let paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
-                seal.fulfill(paymentCheckoutData)
-            }
-            .catch { error in
-                seal.reject(error)
-            }
-        }
-    }
-    // Create payment with Payment method token
-    private func createPaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
-        return Promise { seal in
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-            let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
-            createResumePaymentService.createPayment(paymentRequest: paymentRequest) { paymentResponse, error in
-                if let error {
-                    seal.reject(error)
-                } else if let paymentResponse {
-                    if paymentResponse.id == nil {
-                        seal.reject(KlarnaHelpers.getPaymentFailedError())
-                    } else if paymentResponse.status == .failed {
-                        seal.reject(KlarnaHelpers.getFailedToProcessPaymentError(paymentResponse: paymentResponse))
-                    } else {
-                        seal.fulfill(paymentResponse)
-                    }
-                } else {
-                    seal.reject(KlarnaHelpers.getPaymentFailedError())
-                }
-            }
+            seal.fulfill(requestBody)
         }
     }
 }

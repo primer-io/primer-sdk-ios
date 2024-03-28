@@ -27,7 +27,13 @@ extension PrimerHeadlessKlarnaComponent {
         #endif
         if isMocked {
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                self.finalizeSession(token: UUID().uuidString, fromAuthorization: true)
+                if PrimerInternal.shared.sdkIntegrationType == .headless {
+                    self.finalizeSession(token: UUID().uuidString, fromAuthorization: true)
+                } else {
+                    let checkoutData = PrimerCheckoutData(payment: nil)
+                    let step = KlarnaStep.paymentSessionAuthorized(authToken: UUID().uuidString, checkoutData: checkoutData)
+                    self.stepDelegate?.didReceiveStep(step: step)
+                }
             }
         } else {
             var extraMerchantDataString: String?
@@ -66,7 +72,13 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderAuthorizationDelega
             }
         }
         if let authToken = authToken, approved == true {
-            finalizeSession(token: authToken, fromAuthorization: true)
+            if PrimerInternal.shared.sdkIntegrationType == .headless {
+                finalizeSession(token: authToken, fromAuthorization: true)
+            } else {
+                let checkoutData = PrimerCheckoutData(payment: nil)
+                let step = KlarnaStep.paymentSessionAuthorized(authToken: authToken, checkoutData: checkoutData)
+                self.stepDelegate?.didReceiveStep(step: step)
+            }
         }
         if finalizeRequired == true {
             let step = KlarnaStep.paymentSessionFinalizationRequired
