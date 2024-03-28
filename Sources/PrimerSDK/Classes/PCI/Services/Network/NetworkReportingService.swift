@@ -33,9 +33,9 @@ private let disallowedTrackingPaths: [String] = [
 
 class DefaultNetworkReportingService: NetworkReportingService {
 
-    let analyticsService: AnalyticsServiceProtocol
+    let analyticsService: AnalyticsServiceProtocol?
 
-    init(analyticsService: AnalyticsServiceProtocol = Analytics.Service.shared) {
+    init(analyticsService: AnalyticsServiceProtocol? = nil) {
         self.analyticsService = analyticsService
     }
 
@@ -66,7 +66,7 @@ class DefaultNetworkReportingService: NetworkReportingService {
             event = Analytics.Event.networkConnectivity()
         }
 
-        analyticsService.record(event: event)
+        (analyticsService ?? Analytics.Service.shared).record(event: event)
     }
 
     private func shouldReportNetworkEvents(for endpoint: Endpoint) -> Bool {

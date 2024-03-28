@@ -18,6 +18,7 @@
 		042ED1652AF0F5FD0027833F /* MockRawDataManagerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042ED1642AF0F5FD0027833F /* MockRawDataManagerDelegate.swift */; };
 		0442B6472B7BA4C7004DB054 /* MockPrimerAPIAnalyticsClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0442B6452B7BA498004DB054 /* MockPrimerAPIAnalyticsClient.swift */; };
 		0442B6492B7BA4CD004DB054 /* MockAnalyticsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0442B6432B7BA477004DB054 /* MockAnalyticsStorage.swift */; };
+		044348DE2BB5B3D80072D97C /* DefaultNetworkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044348DD2BB5B3D80072D97C /* DefaultNetworkServiceTests.swift */; };
 		04769C152B1A680C0051581C /* Promises+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04769C142B1A680C0051581C /* Promises+Helper.swift */; };
 		0479FB192AF2599A00D0AFC9 /* StringTyper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0479FB172AF2599200D0AFC9 /* StringTyper.swift */; };
 		047D8E892ADEA4C700A5E7BD /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047D8E882ADEA4C700A5E7BD /* NetworkService.swift */; };
@@ -194,6 +195,7 @@
 		042ED1642AF0F5FD0027833F /* MockRawDataManagerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockRawDataManagerDelegate.swift; sourceTree = "<group>"; };
 		0442B6432B7BA477004DB054 /* MockAnalyticsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAnalyticsStorage.swift; sourceTree = "<group>"; };
 		0442B6452B7BA498004DB054 /* MockPrimerAPIAnalyticsClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPrimerAPIAnalyticsClient.swift; sourceTree = "<group>"; };
+		044348DD2BB5B3D80072D97C /* DefaultNetworkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultNetworkServiceTests.swift; sourceTree = "<group>"; };
 		04769C142B1A680C0051581C /* Promises+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Promises+Helper.swift"; sourceTree = "<group>"; };
 		0479FB172AF2599200D0AFC9 /* StringTyper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTyper.swift; sourceTree = "<group>"; };
 		047D8E882ADEA4C700A5E7BD /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
@@ -431,6 +433,7 @@
 			isa = PBXGroup;
 			children = (
 				047EE2012BB47B1B006C775C /* NetworkingReportingServiceTests.swift */,
+				044348DD2BB5B3D80072D97C /* DefaultNetworkServiceTests.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1177,6 +1180,7 @@
 				042ED1652AF0F5FD0027833F /* MockRawDataManagerDelegate.swift in Sources */,
 				041295AD2AB9E2C100A4F243 /* PrimerHeadlessNolPayManagerTests.swift in Sources */,
 				DC98712939835FB79A20BD63 /* IntExtensionTests.swift in Sources */,
+				044348DE2BB5B3D80072D97C /* DefaultNetworkServiceTests.swift in Sources */,
 				049A05602B4C191D002CEEBA /* NativeUIManagerTests.swift in Sources */,
 				6B2212601374387CB004DA86 /* MaskTests.swift in Sources */,
 				C8A64A69AD55D9BF82F0D876 /* StringTests.swift in Sources */,
