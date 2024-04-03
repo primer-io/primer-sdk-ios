@@ -9,15 +9,18 @@ import Foundation
 
 // KlarnaHelpers: A utility structure to facilitate various operations related to Klarna payment sessions.
 struct KlarnaHelpers {
+
     enum AddressType {
         case shipping
         case billing
     }
+
     struct KlarnaPaymentSessionParams {
         var paymentMethodConfigId: String
         var sessionId: String
         var decodedJWTToken: DecodedJWTToken
     }
+
     /// - Returns the session type based on the current payment intent (vault or checkout).
     static func getSessionType() -> KlarnaSessionType {
         if PrimerInternal.shared.intent == .vault {
@@ -26,6 +29,7 @@ struct KlarnaHelpers {
             return .oneOffPayment
         }
     }
+
     /// - Constructs the request body for finalize a Klarna payment session
     /// - Returns: An instance of Request.Body.Klarna.FinalizePaymentSession
     static func getKlarnaFinalizePaymentBody(
@@ -36,6 +40,7 @@ struct KlarnaHelpers {
             paymentMethodConfigId: paymentMethodConfigId,
             sessionId: sessionId)
     }
+
     /// - Constructs the request body for creating a Klarna customer token.
     /// - Returns: An instance of Request.Body.Klarna.CreateCustomerToken
     static func getKlarnaCustomerTokenBody(
@@ -51,6 +56,7 @@ struct KlarnaHelpers {
             description: recurringPaymentDescription,
             localeData: PrimerSettings.current.localeData)
     }
+
     /// - Prepares the request body for creating a Klarna payment session.
     /// - Returns: An instance of Request.Body.Klarna.CreatePaymentSession
     static func getKlarnaPaymentSessionBody(
@@ -80,6 +86,7 @@ struct KlarnaHelpers {
             description = recurringPaymentDescription
             redUrl = redirectUrl
         }
+
         return Request.Body.Klarna.CreatePaymentSession(
             paymentMethodConfigId: paymentMethodConfigId,
             sessionType: sessionType,
@@ -91,6 +98,7 @@ struct KlarnaHelpers {
             billingAddress: billingAddress,
             shippingAddress: shippingAddress)
     }
+
     /// - Returns a customer's address, either billing or shipping, based on the specified type.
     static func getCustomerAddress(of type: AddressType, clientSession: ClientSession.APIResponse?) -> Response.Body.Klarna.BillingAddress {
         let billingAddress = clientSession?.customer?.billingAddress
@@ -111,6 +119,7 @@ struct KlarnaHelpers {
             state: type == .billing ? billingAddress?.state : shippingAddress?.state,
             title: nil)
     }
+
     /// - Converts a 'ClientSession.Order.LineItem' from the client session into a 'Request.Body.Klarna.OrderItem'.
     /// - Returns: An instance of Request.Body.Klarna.OrderItem
     static func getOrderItem(from item: ClientSession.Order.LineItem) -> Request.Body.Klarna.OrderItem {
@@ -123,6 +132,7 @@ struct KlarnaHelpers {
             productType: item.productType,
             taxAmount: item.taxAmount ?? 0)
     }
+
     /// - Adds a surcharge item to the list of order items if applicable.
     /// - Returns an array of Request.Body.Klarna.OrderItem
     static func addedSurchargeItem(to list: [Request.Body.Klarna.OrderItem], surcharge: Int?) -> [Request.Body.Klarna.OrderItem] {
@@ -139,6 +149,7 @@ struct KlarnaHelpers {
         orderList.append(surchargeItem)
         return orderList
     }
+
     /// - Returns the surcharge value from the order fees if any
     static func getSurcharge(fees: [ClientSession.Order.Fee]?) -> Int? {
         if let fees {
@@ -146,6 +157,7 @@ struct KlarnaHelpers {
         }
         return nil
     }
+
     /// - Returns the serialized string value of the attachment data
     static func getSerializedAttachmentString(from extraMerchantData: [String: Any]) -> String? {
         let dict = ["contentType": "application/vnd.klarna.internal.emd-v2+json",
@@ -157,6 +169,7 @@ struct KlarnaHelpers {
             return nil
         }
     }
+
     /// - Helper function to construct locale data.
     private static func constructLocaleData(using clientSession: ClientSession.APIResponse?) -> Request.Body.Klarna.KlarnaLocaleData {
         let countryCode = clientSession?.order?.countryCode?.rawValue ?? ""
@@ -167,6 +180,7 @@ struct KlarnaHelpers {
             currencyCode: currencyCode,
             localeCode: localeCode)
     }
+
     // MARK: - Error helpers
     static func getInvalidTokenError() -> PrimerError {
         let error = PrimerError.invalidClientToken(
@@ -176,6 +190,7 @@ struct KlarnaHelpers {
         ErrorHandler.handle(error: error)
         return error
     }
+
     static func getInvalidSettingError(
         name: String
     ) -> PrimerError {
@@ -188,6 +203,7 @@ struct KlarnaHelpers {
         ErrorHandler.handle(error: error)
         return error
     }
+
     static func getInvalidValueError(
         key: String,
         value: Any? = nil
@@ -201,6 +217,7 @@ struct KlarnaHelpers {
         ErrorHandler.handle(error: error)
         return error
     }
+
     static func getPaymentFailedError() -> PrimerError {
         let error = PrimerError.paymentFailed(
             paymentMethodType: "KLARNA",
@@ -210,6 +227,7 @@ struct KlarnaHelpers {
         ErrorHandler.handle(error: error)
         return error
     }
+
     static func getFailedToProcessPaymentError(paymentResponse: Response.Body.Payment) -> PrimerError {
         let error = PrimerError.failedToProcessPayment(
             paymentMethodType: "KLARNA",
@@ -225,6 +243,32 @@ struct KlarnaHelpers {
         ErrorHandler.handle(error: error)
         return error
     }
+
+    static func getInvalidUrlSchemeError(settings: PrimerSettingsProtocol) -> PrimerError {
+        let error = PrimerError.invalidUrlScheme(
+            urlScheme: settings.paymentMethodOptions.urlScheme,
+            userInfo: ["file": #file,
+                       "class": "\(Self.self)",
+                       "function": #function,
+                       "line": "\(#line)"],
+            diagnosticsId: UUID().uuidString)
+        ErrorHandler.handle(error: error)
+        return error
+    }
+
+    static func getMissingSDKError() -> PrimerError {
+        let error = PrimerError.missingSDK(
+            paymentMethodType: PrimerPaymentMethodType.klarna.rawValue,
+            sdkName: "KlarnaSDK",
+            userInfo: ["file": #file,
+                       "class": "\(Self.self)",
+                       "function": #function,
+                       "line": "\(#line)"],
+            diagnosticsId: UUID().uuidString)
+        ErrorHandler.handle(error: error)
+        return error
+    }
+
     static func getErrorUserInfo() -> [String: String] {
         return [
             "file": #file,

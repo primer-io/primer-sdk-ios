@@ -24,8 +24,6 @@ class CVVRecaptureViewModel {
         return network.validation?.code.length ?? 3
     }
 
-    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-
     // Logic to handle continue button tap
     func continueButtonTapped(with cvv: String) {
         if isValidCvv {

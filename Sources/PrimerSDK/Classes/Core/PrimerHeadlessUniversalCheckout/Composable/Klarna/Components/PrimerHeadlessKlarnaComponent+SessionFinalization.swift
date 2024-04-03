@@ -29,7 +29,13 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderFinalizationDelegat
             createSessionError(.klarnaFinalizationFailed)
         }
         if let authToken = authToken, approved == true {
-            finalizeSession(token: authToken, fromAuthorization: false)
+            if PrimerInternal.shared.sdkIntegrationType == .headless {
+                finalizeSession(token: authToken, fromAuthorization: false)
+            } else {
+                let checkoutData = PrimerCheckoutData(payment: nil)
+                let step = KlarnaStep.paymentSessionFinalized(authToken: authToken, checkoutData: checkoutData)
+                self.stepDelegate?.didReceiveStep(step: step)
+            }
         }
     }
 }
