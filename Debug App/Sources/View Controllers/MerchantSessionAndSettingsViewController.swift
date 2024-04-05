@@ -190,12 +190,23 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
         customerIdTextField.addTarget(self, action: #selector(customerIdChanged(_:)), for: .editingDidEnd)
 
-        let configProvider = AppetizeConfigProvider()
+        handleAppetizeIfNeeded(AppetizeConfigProvider())
+
+        render()
+
+        NotificationCenter.default.addObserver(self, selector: #selector(handleAppetizeConfig), name: NSNotification.Name.appetizeURLHandled, object: nil)
+    }
+
+    @objc func handleAppetizeConfig(_ notification: NSNotification) {
+        if let payloadProvider = notification.object as? DeeplinkConfigProvider {
+            handleAppetizeIfNeeded(AppetizeConfigProvider(payloadProvider: payloadProvider))
+        }
+    }
+
+    private func handleAppetizeIfNeeded(_ configProvider: AppetizeConfigProvider) {
         if let config = configProvider.fetchConfig() {
             updateUI(for: config)
         }
-
-        render()
     }
 
     @objc func viewTapped() {
