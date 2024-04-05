@@ -23,7 +23,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
     private var onClientSessionActionUpdateCompletion: ((Error?) -> Void)?
     private var singleUsePaymentMethod: PrimerPaymentMethodTokenData?
     private var resumePaymentId: String?
-    private var cardButtonViewModel: CardButtonViewModel!
+    private var cardButtonViewModel: CardButtonViewModel?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -291,7 +291,8 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         Analytics.Service.record(event: viewEvent)
 
         if let captureVaultedCardCvv = (config.options as? CardOptions)?.captureVaultedCardCvv,
-           captureVaultedCardCvv == true {
+           captureVaultedCardCvv == true,
+           config.internalPaymentMethodType == .paymentCard {
             let cvvViewController = CVVRecaptureViewController(viewModel: CVVRecaptureViewModel())
             cvvViewController.viewModel.cardButtonViewModel = cardButtonViewModel
             cvvViewController.viewModel.didSubmitCvv = { cvv in
