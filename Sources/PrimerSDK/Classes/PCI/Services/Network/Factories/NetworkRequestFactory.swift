@@ -15,7 +15,6 @@ class DefaultNetworkRequestFactory: NetworkRequestFactory, LogReporter {
 
     func request(for endpoint: Endpoint) throws -> URLRequest {
         var request = try baseRequest(from: endpoint)
-        
         request.httpMethod = endpoint.method.rawValue
 
         if let headers = endpoint.headers {
