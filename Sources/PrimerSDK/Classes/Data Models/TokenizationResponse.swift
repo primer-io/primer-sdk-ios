@@ -74,7 +74,7 @@ extension Response.Body.Tokenization {
     var cardButtonViewModel: CardButtonViewModel? {
         switch self.paymentInstrumentType {
         case .paymentCard:
-            guard let ntwrk = self.paymentInstrumentData?.network else { return nil }
+            guard let ntwrk = self.paymentInstrumentData?.binData?.network else { return nil }
             guard let last4 = self.paymentInstrumentData?.last4Digits else { return nil }
             guard let expMonth = self.paymentInstrumentData?.expirationMonth else { return nil }
             guard let expYear = self.paymentInstrumentData?.expirationYear else { return nil }
