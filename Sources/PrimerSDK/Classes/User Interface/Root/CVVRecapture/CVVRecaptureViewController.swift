@@ -114,6 +114,7 @@ class CVVRecaptureViewController: UIViewController {
         continueButton.heightAnchor.constraint(equalToConstant: 48).isActive = true
         continueButton.isEnabled = false
         continueButton.backgroundColor = theme.mainButton.color(for: .disabled)
+        continueButton.accessibilityIdentifier = "vaulted_payment_method_cvv_btn_submit"
         view.addSubview(continueButton)
         continueButton.translatesAutoresizingMaskIntoConstraints = false
         activateContinueButtonConstraints()
@@ -164,7 +165,6 @@ class CVVRecaptureViewController: UIViewController {
 
     @objc private func continueButtonTapped() {
         continueButton.startAnimating()
-        continueButton.isEnabled = false
         viewModel.continueButtonTapped(with: cvvField.cvv)
     }
 }

@@ -212,6 +212,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             payButton.backgroundColor = theme.mainButton.color(for: .enabled)
             payButton.addTarget(self, action: #selector(payButtonTapped), for: .touchUpInside)
             payButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+            payButton.accessibilityIdentifier = "payAllButton"
             paymentMethodStackView.addArrangedSubview(payButton)
 
             if !paymentMethodStackView.arrangedSubviews.isEmpty {
