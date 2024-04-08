@@ -31,6 +31,7 @@
 		049298072B1E1F4D002E04B8 /* AnalyticsStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */; };
 		049A055E2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
 		049A05602B4C191D002CEEBA /* NativeUIManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055F2B4C191D002CEEBA /* NativeUIManagerTests.swift */; };
+		04A153CF2BC40CE10018D805 /* RequestDispatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A153CE2BC40CE10018D805 /* RequestDispatcherTests.swift */; };
 		04DAAED42B03EED1002E2614 /* AssetsManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DAAED32B03EED1002E2614 /* AssetsManagerTests.swift */; };
 		04DAAED62B03EF0B002E2614 /* SDKSessionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DAAED52B03EF0B002E2614 /* SDKSessionHelper.swift */; };
 		04DFAADC2AAA01E60030FECE /* Debug App Tests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */; };
@@ -208,6 +209,7 @@
 		049298062B1E1F4D002E04B8 /* AnalyticsStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsStorageTests.swift; sourceTree = "<group>"; };
 		049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessVaultManagerViewController.swift; sourceTree = "<group>"; };
 		049A055F2B4C191D002CEEBA /* NativeUIManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeUIManagerTests.swift; sourceTree = "<group>"; };
+		04A153CE2BC40CE10018D805 /* RequestDispatcherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestDispatcherTests.swift; sourceTree = "<group>"; };
 		04DAAED32B03EED1002E2614 /* AssetsManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsManagerTests.swift; sourceTree = "<group>"; };
 		04DAAED52B03EF0B002E2614 /* SDKSessionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKSessionHelper.swift; sourceTree = "<group>"; };
 		04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Debug App Tests-Info.plist"; sourceTree = "<group>"; };
@@ -434,6 +436,7 @@
 			children = (
 				047EE2012BB47B1B006C775C /* NetworkingReportingServiceTests.swift */,
 				044348DD2BB5B3D80072D97C /* DefaultNetworkServiceTests.swift */,
+				04A153CE2BC40CE10018D805 /* RequestDispatcherTests.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1142,6 +1145,7 @@
 				800B92A57CAAC6471D01A89D /* CardData.swift in Sources */,
 				A1A3D0F32AD5585A00F7D8C9 /* NolPayUnlinkCardComponentTest.swift in Sources */,
 				3BB02CA24B6B3EF458326B7D /* Networking.swift in Sources */,
+				04A153CF2BC40CE10018D805 /* RequestDispatcherTests.swift in Sources */,
 				25FA73D4BBA89962663B5378 /* Mocks.swift in Sources */,
 				2E0D85B7343377F1319902AD /* MockPaymentMethodTokenizationViewModel.swift in Sources */,
 				E11F473D2B0694C50091C31F /* PrimerHeadlessFormWithRedirectManagerTests.swift in Sources */,

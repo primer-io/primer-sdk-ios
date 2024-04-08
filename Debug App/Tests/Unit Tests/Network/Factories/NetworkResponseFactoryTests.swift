@@ -11,6 +11,9 @@ import XCTest
 
 final class NetworkResponseFactoryTests: XCTestCase {
 
+    struct EmptyCodable: Codable, Equatable {
+    }
+
     struct TestCodable: Codable, Equatable {
         let value: String
     }
@@ -32,6 +35,32 @@ final class NetworkResponseFactoryTests: XCTestCase {
         let metadata = ResponseMetadataModel(responseUrl: "a_url", statusCode: 200, headers: nil)
         do {
             let _: TestCodable = try jsonNetworkResponseFactory.model(for: Data(), forMetadata: metadata)
+            XCTFail()
+        } catch let error as InternalError {
+            XCTAssertEqual(error.errorId, "failed-to-decode")
+        } catch {
+            XCTFail() // should be failed-to-decode only
+        }
+    }
+
+    func testResponseCreation_errorStatus_Failure() throws {
+        let jsonNetworkResponseFactory = JSONNetworkResponseFactory()
+        let metadata = ResponseMetadataModel(responseUrl: "a_url", statusCode: 400, headers: nil)
+        do {
+            let _: EmptyCodable = try jsonNetworkResponseFactory.model(for: Data(), forMetadata: metadata)
+            XCTFail()
+        } catch let error as InternalError {
+            XCTAssertEqual(error.errorId, "server-error")
+        } catch {
+            XCTFail() // should be failed-to-decode only
+        }
+    }
+
+    func testResponseCreation_unknownStatus_Failure() throws {
+        let jsonNetworkResponseFactory = JSONNetworkResponseFactory()
+        let metadata = ResponseMetadataModel(responseUrl: "a_url", statusCode: 0, headers: nil)
+        do {
+            let _: EmptyCodable = try jsonNetworkResponseFactory.model(for: Data(), forMetadata: metadata)
             XCTFail()
         } catch let error as InternalError {
             XCTAssertEqual(error.errorId, "failed-to-decode")
