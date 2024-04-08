@@ -93,4 +93,24 @@ final class NetworkRequestFactoryTests: XCTestCase {
 
     }
 
+    func testRequestCreation_failedBaseUrlNil() throws {
+        SDKSessionHelper.tearDown()
+
+        let endpoint = PrimerAPI.listCardNetworks(clientToken: Mocks.decodedJWTToken, bin: "1234")
+
+        XCTAssertThrowsError(try networkRequestFactory.request(for: endpoint)) { error in
+            guard let error = error as? InternalError else {
+                XCTFail()
+                return
+            }
+            switch error {
+            case .invalidUrl(let url, let userInfo, _):
+                XCTAssertTrue(url?.hasPrefix("Unknown Host") ?? false)
+                XCTAssertEqual(userInfo?["function"], "baseRequest(from:)")
+            default:
+                XCTFail()
+            }
+        }
+    }
+
 }
