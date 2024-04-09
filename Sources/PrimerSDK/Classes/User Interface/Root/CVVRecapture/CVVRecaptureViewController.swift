@@ -40,6 +40,41 @@ class CVVRecaptureViewController: UIViewController {
         _ = cvvField.becomeFirstResponder()
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if self.isMovingFromParent {
+            let viewEvent = Analytics.Event.ui(
+                action: .click,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType:viewModel.cardButtonViewModel.paymentMethodType.rawValue,
+                    url: nil),
+                extra: nil,
+                objectType: .button,
+                objectId: .back,
+                objectClass: "\(Self.self)",
+                place: .cvvRecapture
+            )
+            Analytics.Service.record(event: viewEvent)
+        }
+
+        let viewEvent = Analytics.Event.ui(
+            action: .dismiss,
+            context: Analytics.Event.Property.Context(
+                issuerId: nil,
+                paymentMethodType:viewModel.cardButtonViewModel.paymentMethodType.rawValue,
+                url: nil),
+            extra: nil,
+            objectType: .view,
+            objectId: nil,
+            objectClass: "\(Self.self)",
+            place: .cvvRecapture
+        )
+        Analytics.Service.record(event: viewEvent)
+
+    }
+
     private func bindViewModel() {
         viewModel.onContinueButtonStateChange = { [weak self] isEnabled in
             if self?.continueButton.isAnimating == true { return }

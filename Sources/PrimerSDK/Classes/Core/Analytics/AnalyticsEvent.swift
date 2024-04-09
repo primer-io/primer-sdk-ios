@@ -309,6 +309,7 @@ extension Analytics.Event {
             case universalCheckout      = "UNIVERSAL_CHECKOUT"
             case threeDSScreen          = "3DS_VIEW"
             case iPay88View             = "IPAY88_VIEW"
+            case cvvRecapture           = "CVV_RECAPTURE"
         }
 
         enum Severity: String, Codable {

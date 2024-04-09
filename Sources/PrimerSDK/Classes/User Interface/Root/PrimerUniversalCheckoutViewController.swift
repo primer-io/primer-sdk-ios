@@ -299,8 +299,39 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             cvvViewController.viewModel.didSubmitCvv = { cvv in
                 let cvvData = PrimerVaultedCardAdditionalData(cvv: cvv)
                 startCheckout(withAdditionalData: cvvData)
+
+                let viewEvent = Analytics.Event.ui(
+                    action: .click,
+                    context: Analytics.Event.Property.Context(
+                        issuerId: nil,
+                        paymentMethodType: config.type,
+                        url: nil),
+                    extra: nil,
+                    objectType: .button,
+                    objectId: .submit,
+                    objectClass: "\(Self.self)",
+                    place: .cvvRecapture
+                )
+                Analytics.Service.record(event: viewEvent)
+
             }
+
             PrimerUIManager.primerRootViewController?.show(viewController: cvvViewController, animated: true)
+
+            let viewEvent = Analytics.Event.ui(
+                action: .present,
+                context: Analytics.Event.Property.Context(
+                    issuerId: nil,
+                    paymentMethodType: config.type,
+                    url: nil),
+                extra: nil,
+                objectType: .view,
+                objectId: nil,
+                objectClass: "\(Self.self)",
+                place: .cvvRecapture
+            )
+            Analytics.Service.record(event: viewEvent)
+            
         } else {
             startCheckout(withAdditionalData: nil)
         }
