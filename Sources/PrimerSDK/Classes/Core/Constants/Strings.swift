@@ -936,6 +936,29 @@ extension Strings {
                 comment: "An error message displayed when the Last Name is not correct")
         }
     }
+
+    struct CVVRecapture {
+        static let title = NSLocalizedString(
+            "primer-cvv-recapture-title",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Enter CVV",
+            comment: "Enter CVV - CVV recapture screen title")
+
+        static let explanation = NSLocalizedString(
+            "primer-cvv-recapture-explanation",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Input the %d digit security code on your card for a secure payment.",
+            comment: "Some cards have 3 or 4 digits for their CVV card")
+
+        static let buttonTitle = NSLocalizedString(
+            "continue",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Continue",
+            comment: "Continue")
+    }
 }
 
 // MARK: - Apple Pay

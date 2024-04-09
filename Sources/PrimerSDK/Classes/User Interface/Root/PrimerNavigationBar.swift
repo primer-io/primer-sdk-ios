@@ -84,7 +84,7 @@ class PrimerNavigationBar: PrimerView {
             objectType: .button,
             objectId: .back,
             objectClass: "\(UIButton.self)",
-            place: .vaultManager
+            place: .navigationBar
         )
         Analytics.Service.record(event: uiEvent)
 

@@ -43,7 +43,7 @@ final class PrimerKlarnaCategoriesViewControllerTests: XCTestCase {
         sut.didReceiveError(error: error)
 
         let errorReceived = mockDelegate.errorReceived as? PrimerError
-        
+
         XCTAssertEqual(mockDelegate.sessionFailed, true)
         XCTAssertEqual(errorReceived?.diagnosticsId, error.diagnosticsId)
     }
@@ -66,4 +66,3 @@ class MockPrimerKlarnaCategoriesDelegate: PrimerKlarnaCategoriesDelegate {
     }
 }
 #endif
-
