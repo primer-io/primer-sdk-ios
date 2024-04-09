@@ -128,7 +128,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
-#if canImport(PrimerKlarnaSDK)
+                #if canImport(PrimerKlarnaSDK)
                 guard let urlSchemeStr = self.settings.paymentMethodOptions.urlScheme,
                       URL(string: urlSchemeStr) != nil else {
                     let error = KlarnaHelpers.getInvalidUrlSchemeError(settings: self.settings)
@@ -142,9 +142,9 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 PrimerUIManager.primerRootViewController?.show(viewController: categoriesViewController)
                 self.didPresentExternalView?()
                 seal.fulfill()
-#else
+                #else
                 seal.fulfill()
-#endif
+                #endif
             }
         }
     }

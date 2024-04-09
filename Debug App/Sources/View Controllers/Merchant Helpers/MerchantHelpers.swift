@@ -87,16 +87,17 @@ struct MerchantMockDataManager {
 
     static var klarnaPaymentMethod = ClientSessionRequestBody.PaymentMethod(
         vaultOnSuccess: nil,
-        options: paymentOptions,
+        options: klarnaPaymentOptions,
         descriptor: "test-descriptor",
         paymentType: nil
     )
 
-    static var paymentOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOptionGroup(
+    static var klarnaPaymentOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOptionGroup(
         KLARNA: ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(
             surcharge: ClientSessionRequestBody.PaymentMethod.SurchargeOption(amount: 140),
             instalmentDuration: "test",
-            extraMerchantData: extraMerchantData))
+            extraMerchantData: extraMerchantData,
+            captureVaultedCardCvv: false))
 
     static var extraMerchantData: [String: Any] = [
         "subscription": [
@@ -115,5 +116,4 @@ struct MerchantMockDataManager {
             ]
         ]
     ]
-
 }

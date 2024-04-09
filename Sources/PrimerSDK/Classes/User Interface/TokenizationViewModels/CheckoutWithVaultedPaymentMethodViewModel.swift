@@ -22,8 +22,8 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
     var paymentMethodTokenData: PrimerPaymentMethodTokenData!
     var paymentCheckoutData: PrimerCheckoutData?
     var successMessage: String?
-
     var resumePaymentId: String?
+    var additionalData: PrimerVaultedCardAdditionalData?
 
     // Events
     var didStartTokenization: (() -> Void)?
@@ -35,9 +35,12 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
     var willDismissPaymentMethodUI: (() -> Void)?
     var didDismissPaymentMethodUI: (() -> Void)?
 
-    init(configuration: PrimerPaymentMethod, selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData) {
+    init(configuration: PrimerPaymentMethod,
+         selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData,
+         additionalData: PrimerVaultedCardAdditionalData?) {
         self.config = configuration
         self.selectedPaymentMethodTokenData = selectedPaymentMethodTokenData
+        self.additionalData = additionalData
     }
 
     func start() -> Promise<Void> {
@@ -116,7 +119,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                 }
 
                 let tokenizationService = TokenizationService()
-                return tokenizationService.exchangePaymentMethodToken(paymentMethodTokenId, vaultedPaymentMethodAdditionalData: nil)
+                return tokenizationService.exchangePaymentMethodToken(paymentMethodTokenId, vaultedPaymentMethodAdditionalData: self.additionalData)
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData

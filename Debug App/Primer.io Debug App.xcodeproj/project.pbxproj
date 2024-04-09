@@ -102,6 +102,7 @@
 		A1536BAD2AEBEC3A0087DDC0 /* NolPayPhoneMetadataServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1536BAC2AEBEC3A0087DDC0 /* NolPayPhoneMetadataServiceTests.swift */; };
 		A1536BAF2AEC0A6D0087DDC0 /* NolTestsMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1536BAE2AEC0A6D0087DDC0 /* NolTestsMocks.swift */; };
 		A1585C752ACDAA700014F0B9 /* NolPayLinkedCardsComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1585C742ACDAA700014F0B9 /* NolPayLinkedCardsComponentTests.swift */; };
+		A19CB17B2BAA129900DB4326 /* CVVRecaptureViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19CB17A2BAA129900DB4326 /* CVVRecaptureViewModelTests.swift */; };
 		A19EF5632B20E22E00A72F60 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = A19EF5622B20E22E00A72F60 /* .swiftlint.yml */; };
 		A1A3D0F32AD5585A00F7D8C9 /* NolPayUnlinkCardComponentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A3D0F22AD5585A00F7D8C9 /* NolPayUnlinkCardComponentTest.swift */; };
 		A1A3D0F52AD56BE300F7D8C9 /* NolPayPaymentComponentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A3D0F42AD56BE300F7D8C9 /* NolPayPaymentComponentTests.swift */; };
@@ -301,6 +302,7 @@
 		A1536BAE2AEC0A6D0087DDC0 /* NolTestsMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NolTestsMocks.swift; sourceTree = "<group>"; };
 		A1585C742ACDAA700014F0B9 /* NolPayLinkedCardsComponentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NolPayLinkedCardsComponentTests.swift; sourceTree = "<group>"; };
 		A1604A656AF654D7422A2A5E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main.strings; sourceTree = "<group>"; };
+		A19CB17A2BAA129900DB4326 /* CVVRecaptureViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVVRecaptureViewModelTests.swift; sourceTree = "<group>"; };
 		A19EF5622B20E22E00A72F60 /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		A1A3D0F22AD5585A00F7D8C9 /* NolPayUnlinkCardComponentTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NolPayUnlinkCardComponentTest.swift; sourceTree = "<group>"; };
 		A1A3D0F42AD56BE300F7D8C9 /* NolPayPaymentComponentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NolPayPaymentComponentTests.swift; sourceTree = "<group>"; };
@@ -561,6 +563,7 @@
 				EEB1E1B37192BF739461AFF1 /* PrimerRawCardDataManagerTests.swift */,
 				B266F9E1651BD20E45DCCF68 /* PrimerRawRetailerDataTests.swift */,
 				049A055F2B4C191D002CEEBA /* NativeUIManagerTests.swift */,
+				A19CB17A2BAA129900DB4326 /* CVVRecaptureViewModelTests.swift */,
 			);
 			path = Primer;
 			sourceTree = "<group>";
@@ -1148,6 +1151,7 @@
 				04A153CF2BC40CE10018D805 /* RequestDispatcherTests.swift in Sources */,
 				25FA73D4BBA89962663B5378 /* Mocks.swift in Sources */,
 				2E0D85B7343377F1319902AD /* MockPaymentMethodTokenizationViewModel.swift in Sources */,
+				A19CB17B2BAA129900DB4326 /* CVVRecaptureViewModelTests.swift in Sources */,
 				E11F473D2B0694C50091C31F /* PrimerHeadlessFormWithRedirectManagerTests.swift in Sources */,
 				161D4BE3FFD5E4A60F4461F0 /* CreateResumePaymentService.swift in Sources */,
 				C6D7F7ECFD35B3DC3AFD6CB2 /* PayPalService.swift in Sources */,
