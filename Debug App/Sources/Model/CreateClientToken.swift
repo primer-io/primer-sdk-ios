@@ -374,8 +374,8 @@ struct ClientSessionRequestBody {
             enum CodingKeys: CodingKey {
                 case surcharge, instalmentDuration, extraMerchantData, captureVaultedCardCvv
             }
-            
-            init(surcharge: SurchargeOption?, 
+
+            init(surcharge: SurchargeOption?,
                  instalmentDuration: String?,
                  extraMerchantData: [String: Any]?,
                  captureVaultedCardCvv: Bool?) {

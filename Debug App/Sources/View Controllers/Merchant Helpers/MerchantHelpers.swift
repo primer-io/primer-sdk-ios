@@ -91,12 +91,12 @@ struct MerchantMockDataManager {
         descriptor: "test-descriptor",
         paymentType: nil
     )
-    
+
     static var klarnaPaymentOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOptionGroup(
         KLARNA: ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(
             surcharge: ClientSessionRequestBody.PaymentMethod.SurchargeOption(amount: 140),
             instalmentDuration: "test",
-            extraMerchantData: extraMerchantData, 
+            extraMerchantData: extraMerchantData,
             captureVaultedCardCvv: false))
 
     static var extraMerchantData: [String: Any] = [

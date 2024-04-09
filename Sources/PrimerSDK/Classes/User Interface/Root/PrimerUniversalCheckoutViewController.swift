@@ -331,7 +331,6 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 place: .cvvRecapture
             )
             Analytics.Service.record(event: viewEvent)
-            
         } else {
             startCheckout(withAdditionalData: nil)
         }

@@ -52,7 +52,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         firstly {
             tokenizationManager.tokenizeHeadless(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId)
         }
-        .done { tokenData in
+        .done { _ in
             XCTFail("Result should be nil")
             expectation.fulfill()
         }
@@ -68,7 +68,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: true)
         let expectation = XCTestExpectation(description: "Successful Tokenize Klarna Payment Session")
         tokenizationManager.mockedSuccessValue = true
-        
+
         firstly {
             tokenizationManager.tokenizeDropIn(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId)
         }
@@ -80,7 +80,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
             XCTFail("Result should be nil")
             expectation.fulfill()
         }
-        
+
         wait(for: [expectation], timeout: 10.0)
     }
 
@@ -92,7 +92,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         firstly {
             tokenizationManager.tokenizeDropIn(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId)
         }
-        .done { tokenData in
+        .done { _ in
             XCTFail("Result should be nil")
             expectation.fulfill()
         }

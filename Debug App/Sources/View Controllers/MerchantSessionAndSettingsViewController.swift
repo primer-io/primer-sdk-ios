@@ -70,7 +70,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var disableErrorScreenSwitch: UISwitch!
     @IBOutlet weak var disableInitScreenSwitch: UISwitch!
     @IBOutlet weak var enableCVVRecaptureFlowSwitch: UISwitch!
-    
+
     // MARK: Order Inputs
 
     @IBOutlet weak var currencyTextField: UITextField!

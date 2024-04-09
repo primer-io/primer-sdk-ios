@@ -34,11 +34,11 @@ class CVVRecaptureViewModelTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        mockCardButtonViewModel = MockCardButtonViewModel(cardholder: "John Doe", 
+        mockCardButtonViewModel = MockCardButtonViewModel(cardholder: "John Doe",
                                                           last4: "4444",
                                                           expiry: "13/05",
                                                           imageName: ImageName.genericCard,
-                                                          paymentMethodType: PaymentInstrumentType.paymentCard, 
+                                                          paymentMethodType: PaymentInstrumentType.paymentCard,
                                                           network: "VISA")
         viewModel = CVVRecaptureViewModel()
         viewModel.cardButtonViewModel = mockCardButtonViewModel

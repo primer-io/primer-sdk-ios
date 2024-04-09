@@ -216,7 +216,7 @@ class MockPrimerDelegate: PrimerDelegate {
                                                                       "class": "\(Self.self)",
                                                                       "function": #function,
                                                                       "line": "\(#line)"],
-                                diagnosticsId: UUID().uuidString))
+                                                           diagnosticsId: UUID().uuidString))
             return
         }
         completion(token, nil)

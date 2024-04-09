@@ -43,28 +43,11 @@ class CVVRecaptureViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        // Back button tap
-        if self.isMovingFromParent {
-            let backButtonTapEvent = Analytics.Event.ui(
-                action: .click,
-                context: Analytics.Event.Property.Context(
-                    issuerId: nil,
-                    paymentMethodType:viewModel.cardButtonViewModel.paymentMethodType.rawValue,
-                    url: nil),
-                extra: nil,
-                objectType: .button,
-                objectId: .back,
-                objectClass: "\(Self.self)",
-                place: .cvvRecapture
-            )
-            Analytics.Service.record(event: backButtonTapEvent)
-        }
-
         let dismissEvent = Analytics.Event.ui(
             action: .dismiss,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType:viewModel.cardButtonViewModel.paymentMethodType.rawValue,
+                paymentMethodType: viewModel.cardButtonViewModel.paymentMethodType.rawValue,
                 url: nil),
             extra: nil,
             objectType: .view,
@@ -90,6 +73,7 @@ class CVVRecaptureViewController: UIViewController {
     private let defaultElementDistance: CGFloat = 24.0
     private func setupViews() {
         title = Strings.CVVRecapture.title
+
         setupExplanationLabel()
         setupImageView()
         setupCardNumberLabel()
