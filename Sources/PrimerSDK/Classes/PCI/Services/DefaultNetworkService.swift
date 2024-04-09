@@ -22,11 +22,11 @@ extension ResponseMetadata {
 extension HTTPURLResponse: ResponseMetadata {
 
     var responseUrl: String? {
-        return url?.absoluteString
+        url?.absoluteString
     }
 
     var headers: [String: String]? {
-        return allHeaderFields.reduce(into: [:]) { result, item in
+        allHeaderFields.reduce(into: [:]) { result, item in
             if let key = item.key as? String, let value = item.value as? String {
                 result[key] = value
             }
