@@ -13,7 +13,7 @@ struct MerchantMockDataManager {
 
     enum SessionType {
         case generic
-        case oneTimePayment
+        case klarnaWithEMD
     }
 
     static let customerIdStorageKey = "io.primer.debug.customer-id"

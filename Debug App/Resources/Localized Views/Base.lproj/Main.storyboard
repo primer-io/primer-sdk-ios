@@ -180,7 +180,7 @@
                                         <rect key="frame" x="20" y="20" width="374" height="3737"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="oCT-9e-d89" userLabel="Environment Stack View">
-                                                <rect key="frame" x="0.0" y="0.0" width="374" height="420.5"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="374" height="369.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Environment" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yLn-q9-pMX">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="33.5"/>
@@ -265,27 +265,10 @@
                                                             </switch>
                                                         </subviews>
                                                     </stackView>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="t9m-wr-w9Y" userLabel="One time payment">
-                                                        <rect key="frame" x="0.0" y="389.5" width="374" height="31"/>
-                                                        <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="One time payment" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eSy-Oz-Hfs" userLabel="Apply theming">
-                                                                <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
-                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
-                                                                <nil key="textColor"/>
-                                                                <nil key="highlightedColor"/>
-                                                            </label>
-                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="wXY-Ga-dcF">
-                                                                <rect key="frame" x="325" y="0.0" width="51" height="31"/>
-                                                                <connections>
-                                                                    <action selector="oneTimePaymentValueChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="576-Aq-wld"/>
-                                                                </connections>
-                                                            </switch>
-                                                        </subviews>
-                                                    </stackView>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="n1R-Ky-ifJ" userLabel="Test Params Stack View">
-                                                <rect key="frame" x="0.0" y="460.5" width="374" height="424.5"/>
+                                                <rect key="frame" x="0.0" y="409.5" width="374" height="424.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Test" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5m9-J2-Vfy">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="33.5"/>
@@ -380,7 +363,7 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="f7f-4e-ZPN" userLabel="SDK Settings Stack View">
-                                                <rect key="frame" x="0.0" y="925" width="374" height="556.5"/>
+                                                <rect key="frame" x="0.0" y="874" width="374" height="607.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SDK Settings" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HZ9-hO-miI">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="33.5"/>
@@ -516,6 +499,23 @@
                                                             </label>
                                                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="XZa-6j-T8o">
                                                                 <rect key="frame" x="325" y="0.0" width="51" height="31"/>
+                                                            </switch>
+                                                        </subviews>
+                                                    </stackView>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="t9m-wr-w9Y" userLabel="One time payment">
+                                                        <rect key="frame" x="0.0" y="576.5" width="374" height="31"/>
+                                                        <subviews>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable Klarna EMD" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eSy-Oz-Hfs" userLabel="Apply theming">
+                                                                <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
+                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                                <nil key="textColor"/>
+                                                                <nil key="highlightedColor"/>
+                                                            </label>
+                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="wXY-Ga-dcF">
+                                                                <rect key="frame" x="325" y="0.0" width="51" height="31"/>
+                                                                <connections>
+                                                                    <action selector="oneTimePaymentValueChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="576-Aq-wld"/>
+                                                                </connections>
                                                             </switch>
                                                         </subviews>
                                                     </stackView>
@@ -1171,10 +1171,10 @@
                         <outlet property="enableCVVRecaptureFlowSwitch" destination="XZa-6j-T8o" id="M4Q-x4-pMw"/>
                         <outlet property="environmentSegmentedControl" destination="ekZ-3s-TxK" id="SsX-7s-JaH"/>
                         <outlet property="environmentStackView" destination="oCT-9e-d89" id="JnB-93-2Gv"/>
+                        <outlet property="klarnaEMDStackView" destination="t9m-wr-w9Y" id="42W-PH-dBF"/>
                         <outlet property="lineItemsStackView" destination="KMj-Qp-rNj" id="gVb-8g-WNx"/>
                         <outlet property="merchantNameTextField" destination="PHb-NY-wz8" id="59v-8M-bqS"/>
                         <outlet property="metadataTextField" destination="P7i-Zx-VF4" id="OA2-uc-tMJ"/>
-                        <outlet property="oneTimePaymentStackView" destination="t9m-wr-w9Y" id="42W-PH-dBF"/>
                         <outlet property="orderIdTextField" destination="1XS-HX-uUR" id="H3x-3f-S4P"/>
                         <outlet property="orderStackView" destination="Wmb-0A-wCB" id="Pbr-Sp-L9J"/>
                         <outlet property="primerHeadlessSDKButton" destination="0FS-cB-H3t" id="j9d-hB-VMw"/>
@@ -1723,13 +1723,13 @@
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="placeholderTextColor">
-            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.29803921570000003" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.29803921568627451" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
