@@ -300,7 +300,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 let cvvData = PrimerVaultedCardAdditionalData(cvv: cvv)
                 startCheckout(withAdditionalData: cvvData)
 
-                let viewEvent = Analytics.Event.ui(
+                let submitEvent = Analytics.Event.ui(
                     action: .click,
                     context: Analytics.Event.Property.Context(
                         issuerId: nil,
@@ -312,7 +312,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     objectClass: "\(Self.self)",
                     place: .cvvRecapture
                 )
-                Analytics.Service.record(event: viewEvent)
+                Analytics.Service.record(event: submitEvent)
 
             }
 

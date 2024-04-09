@@ -43,8 +43,9 @@ class CVVRecaptureViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
+        // Back button tap
         if self.isMovingFromParent {
-            let viewEvent = Analytics.Event.ui(
+            let backButtonTapEvent = Analytics.Event.ui(
                 action: .click,
                 context: Analytics.Event.Property.Context(
                     issuerId: nil,
@@ -56,10 +57,10 @@ class CVVRecaptureViewController: UIViewController {
                 objectClass: "\(Self.self)",
                 place: .cvvRecapture
             )
-            Analytics.Service.record(event: viewEvent)
+            Analytics.Service.record(event: backButtonTapEvent)
         }
 
-        let viewEvent = Analytics.Event.ui(
+        let dismissEvent = Analytics.Event.ui(
             action: .dismiss,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
@@ -71,8 +72,7 @@ class CVVRecaptureViewController: UIViewController {
             objectClass: "\(Self.self)",
             place: .cvvRecapture
         )
-        Analytics.Service.record(event: viewEvent)
-
+        Analytics.Service.record(event: dismissEvent)
     }
 
     private func bindViewModel() {
