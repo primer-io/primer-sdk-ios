@@ -27,6 +27,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      continue userActivity: NSUserActivity,
                      restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        if let url = userActivity.webpageURL {
+            let handled = AppetizeUrlHandler.handleUrl(url)
+            if handled == true {
+                return handled
+            }
+        }
         return Primer.shared.application(application, continue: userActivity, restorationHandler: restorationHandler)
     }
 
