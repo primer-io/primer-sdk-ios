@@ -10,7 +10,6 @@ import UIKit
 import PrimerSDK
 import IQKeyboardManagerSwift
 
-#if canImport(PrimerNolPaySDK)
 class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
 
     private var nolPayManager: PrimerHeadlessUniversalCheckout.PrimerHeadlessNolPayManager!
@@ -19,7 +18,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     private var getLinkedCardsComponent: NolPayLinkedCardsComponent!
     private var paymentComponent: NolPayPaymentComponent!
 
-    // data
+    // Data
     private var linkedCards: [PrimerNolPaymentCard] = []
     private var selectedCardForPayment: PrimerNolPaymentCard?
     private var selectedCardForUnlinking: PrimerNolPaymentCard?
@@ -420,4 +419,3 @@ extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableD
         }
     }
 }
-#endif
