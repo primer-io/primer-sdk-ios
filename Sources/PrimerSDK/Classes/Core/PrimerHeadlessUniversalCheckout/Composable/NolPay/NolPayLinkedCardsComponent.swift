@@ -10,11 +10,13 @@
 import Foundation
 #if canImport(PrimerNolPaySDK)
 import PrimerNolPaySDK
+#endif
 
 public class NolPayLinkedCardsComponent {
 
+    #if canImport(PrimerNolPaySDK)
     var nolPay: PrimerNolPayProtocol?
-
+    #endif
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     var mobileNumber: String?
@@ -85,6 +87,8 @@ public class NolPayLinkedCardsComponent {
         isDebug =  PrimerLogging.shared.logger.logLevel == .debug
         #endif
 
+        #if canImport(PrimerNolPaySDK)
+
         guard nolPay == nil
         else {
             completion(.success(()))
@@ -118,6 +122,8 @@ public class NolPayLinkedCardsComponent {
             }
         }
         phoneMetadataService = phoneMetadataService ?? NolPayPhoneMetadataService()
+        #endif
+
     }
 
     private func continueWithLinkedCardsFetch(mobileNumber: String,
@@ -128,6 +134,8 @@ public class NolPayLinkedCardsComponent {
             params: [ "category": "NOL_PAY" ]
         )
         Analytics.Service.record(events: [sdkEvent])
+        #if canImport(PrimerNolPaySDK)
+
         guard let nolPay = nolPay else {
             let error = PrimerError.nolError(code: "unknown",
                                              message: "error.description",
@@ -143,6 +151,7 @@ public class NolPayLinkedCardsComponent {
             completion(.failure(error))
             return
         }
+        #endif
 
         phoneMetadataService?.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
             switch result {
@@ -181,7 +190,7 @@ public class NolPayLinkedCardsComponent {
                         self?.errorDelegate?.didReceiveError(error: error)
                         return
                     }
-
+                    #if canImport(PrimerNolPaySDK)
                     nolPay.getAvailableCards(for: parsedMobileNumber, with: countryCode) { result in
                         switch result {
 
@@ -202,6 +211,7 @@ public class NolPayLinkedCardsComponent {
                             completion(.failure(error))
                         }
                     }
+                    #endif
 
                 case .invalid(errors: let validationErrors):
                     self?.validationDelegate?.didUpdate(validationStatus: .invalid(errors: validationErrors), for: nil)
@@ -213,5 +223,4 @@ public class NolPayLinkedCardsComponent {
         }
     }
 }
-#endif
 // swiftlint:enable function_body_length

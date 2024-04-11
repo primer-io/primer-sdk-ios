@@ -89,7 +89,9 @@ extension PaymentMethodTokenizationViewModel {
         self.didStartPayment = nil
 
         if config.internalPaymentMethodType != .klarna {
-            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
+            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(
+                imageView: self.uiModule.makeIconImageView(withDimension: 24.0),
+                message: nil)
         }
 
         firstly {
@@ -425,10 +427,13 @@ extension PaymentMethodTokenizationViewModel {
 
             } else {
                 guard let resumePaymentId = self.resumePaymentId else {
-                    let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId", value: "Resume Payment ID not valid", userInfo: ["file": #file,
-                                                                                                                                                 "class": "\(Self.self)",
-                                                                                                                                                 "function": #function,
-                                                                                                                                                 "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                    let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId",
+                                                                        value: "Resume Payment ID not valid",
+                                                                        userInfo: ["file": #file,
+                                                                                   "class": "\(Self.self)",
+                                                                                   "function": #function,
+                                                                                   "line": "\(#line)"],
+                                                                        diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: resumePaymentIdError)
                     seal.reject(resumePaymentIdError)
                     return
@@ -439,10 +444,13 @@ extension PaymentMethodTokenizationViewModel {
                 }
                 .done { paymentResponse -> Void in
                     guard let paymentResponse = paymentResponse else {
-                        let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file,
-                                                                                                          "class": "\(Self.self)",
-                                                                                                          "function": #function,
-                                                                                                          "line": "\(#line)"], diagnosticsId: UUID().uuidString)
+                        let err = PrimerError.invalidValue(key: "paymentResponse",
+                                                           value: nil,
+                                                           userInfo: ["file": #file,
+                                                                      "class": "\(Self.self)",
+                                                                      "function": #function,
+                                                                      "line": "\(#line)"],
+                                                           diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         throw err
                     }
@@ -508,8 +516,8 @@ Make sure you call the decision handler otherwise the SDK will hang.
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-            createResumePaymentService.createPayment(paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
-
+            createResumePaymentService.createPayment(
+                paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
                 if let error = error {
                     if let paymentResponse {
                         self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
@@ -574,7 +582,9 @@ Make sure you call the decision handler otherwise the SDK will hang.
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: Request.Body.Payment.Resume(token: resumeToken)) { paymentResponse, error in
+            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
+                                                                  paymentResumeRequest: Request.Body.Payment.Resume(
+                                                                    token: resumeToken)) { paymentResponse, error in
 
                 if let error = error {
                     if let paymentResponse {
