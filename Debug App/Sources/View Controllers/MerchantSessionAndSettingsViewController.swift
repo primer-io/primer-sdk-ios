@@ -29,7 +29,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var testParamsGroupStackView: UIStackView!
     @IBOutlet weak var apiKeyStackView: UIStackView!
     @IBOutlet weak var useNewWorkflowsStackView: UIStackView!
-    @IBOutlet weak var oneTimePaymentStackView: UIStackView!
+    @IBOutlet weak var klarnaEMDStackView: UIStackView!
     @IBOutlet weak var clientTokenStackView: UIStackView!
     @IBOutlet weak var sdkSettingsStackView: UIStackView!
     @IBOutlet weak var orderStackView: UIStackView!
@@ -226,7 +226,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             customerStackView.isHidden = false
             surchargeGroupStackView.isHidden = false
             useNewWorkflowsStackView.isHidden = false
-            oneTimePaymentStackView.isHidden = false
+            klarnaEMDStackView.isHidden = false
 
         case .clientToken:
             environmentStackView.isHidden = false
@@ -238,7 +238,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             customerStackView.isHidden = true
             surchargeGroupStackView.isHidden = true
             useNewWorkflowsStackView.isHidden = true
-            oneTimePaymentStackView.isHidden = true
+            klarnaEMDStackView.isHidden = true
 
         case .testScenario:
             environmentStackView.isHidden = true
@@ -250,7 +250,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             customerStackView.isHidden = false
             surchargeGroupStackView.isHidden = false
             useNewWorkflowsStackView.isHidden = true
-            oneTimePaymentStackView.isHidden = true
+            klarnaEMDStackView.isHidden = true
 
             testParamsStackView.isHidden = (selectedTestScenario == nil)
 
@@ -387,7 +387,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     }
 
     @IBAction func oneTimePaymentValueChanged(_ sender: UISwitch) {
-        paymentSessionType = sender.isOn ? .oneTimePayment : .generic
+        paymentSessionType = sender.isOn ? .klarnaWithEMD : .generic
         populateSessionSettingsFields()
     }
 
