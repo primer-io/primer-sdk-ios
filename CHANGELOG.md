@@ -1,3 +1,15 @@
+## 2.26.1 (2024-04-11)
+
+### Fix
+
+- Fix Nol pay Xcode errors (#837)
+
+## 2.26.0 (2024-04-09)
+
+### Feat
+
+- CVV Recapture on Drop-in (#823)
+
 ## 2.25.0 (2024-03-28)
 
 ### Feat

@@ -5,10 +5,11 @@
 //  Created by Boris on 4.10.23..
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
 //
-#if canImport(PrimerNolPaySDK)
-import Foundation
-import PrimerNolPaySDK
 
+import Foundation
+
+#if canImport(PrimerNolPaySDK)
+import PrimerNolPaySDK
 extension PrimerNolPay: PrimerNolPayProtocol {}
 
 protocol PrimerNolPayProtocol {

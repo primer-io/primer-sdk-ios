@@ -433,7 +433,7 @@ struct ClientSessionRequestBody {
                     dic["extraMerchantData"] = extraMerchantData
                 }
 
-                if let captureVaultedCardCvv = captureVaultedCardCvv {
+                if let captureVaultedCardCvv = captureVaultedCardCvv, captureVaultedCardCvv == true {
                     dic["captureVaultedCardCvv"] = captureVaultedCardCvv
                 }
 

@@ -88,9 +88,10 @@ extension PaymentMethodTokenizationViewModel {
         self.didStartPayment?()
         self.didStartPayment = nil
 
-        if config.internalPaymentMethodType != .klarna, let viewController = PrimerUIManager.primerRootViewController {
-            let imageView = self.uiModule.makeIconImageView(withDimension: 24.0)
-            viewController.showLoadingScreenIfNeeded(imageView: imageView, message: nil)
+        if config.internalPaymentMethodType != .klarna {
+            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(
+                imageView: self.uiModule.makeIconImageView(withDimension: 24.0),
+                message: nil)
         }
 
         firstly {
