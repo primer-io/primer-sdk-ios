@@ -34,7 +34,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     }
 
     #if canImport(PrimerNolPaySDK)
-    private var nolPay: PrimerNolPay!
+    private var nolPay: PrimerNolPayProtocol!
     #endif
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?

@@ -27,7 +27,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     public typealias CardStepType = NolPayPaymentStep
 
     #if canImport(PrimerNolPaySDK)
-    private var nolPay: PrimerNolPay!
+    private var nolPay: PrimerNolPayProtocol!
     #endif
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
