@@ -15,12 +15,7 @@ public final class PrimerFirstNameFieldView: PrimerSimpleCardFormTextFieldView {
         editingAnalyticsObjectId = .billingAddressFirstName
         validationError = .invalidFirstName(
             message: "First name is not valid.",
-            userInfo: [
-                "file": #file,
-                "class": "\(Self.self)",
-                "function": #function,
-                "line": "\(#line)"
-            ],
+            userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
         isValid = { text in
             return text.isValidNonDecimalString

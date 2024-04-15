@@ -209,10 +209,7 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
                 ? PrimerTextField.Validation.valid
                 : PrimerTextField.Validation.invalid(PrimerError.invalidValue(key: "primerTextField.text",
                                                                               value: textField.text,
-                                                                              userInfo: ["file": #file,
-                                                                                         "class": "\(Self.self)",
-                                                                                         "function": #function,
-                                                                                         "line": "\(#line)"],
+                                                                              userInfo: .errorUserInfoDictionary(),
                                                                               diagnosticsId: UUID().uuidString))
         }
 

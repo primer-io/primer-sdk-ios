@@ -349,10 +349,7 @@ public class ThreeDS {
                 authentication = methodResponse
             } else {
                 let err = InternalError.failedToDecode(message: "ThreeDS.BeginAuthResponse",
-                                                       userInfo: ["file": #file,
-                                                                  "class": "\(Self.self)",
-                                                                  "function": #function,
-                                                                  "line": "\(#line)"],
+                                                       userInfo: .errorUserInfoDictionary(),
                                                        diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err

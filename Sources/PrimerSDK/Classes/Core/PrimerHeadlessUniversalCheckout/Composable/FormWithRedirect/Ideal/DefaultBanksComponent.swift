@@ -53,18 +53,12 @@ final class DefaultBanksComponent: BanksComponent {
         switch data {
         case .bankId(bankId: let bankId):
             if !isBankIdValid(bankId: bankId) {
-                let userInfo = [
-                    "file": #file,
-                    "class": "\(Self.self)",
-                    "function": #function,
-                    "line": "\(#line)"
-                ]
                 let error = banks.isEmpty ? PrimerValidationError.banksNotLoaded(
-                    userInfo: userInfo,
+                    userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString) :
                     PrimerValidationError.invalidBankId(
                         bankId: bankId,
-                        userInfo: userInfo,
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
@@ -74,13 +68,7 @@ final class DefaultBanksComponent: BanksComponent {
         case .bankFilterText(text: let text):
             if banks.isEmpty {
                 let error = PrimerValidationError.banksNotLoaded(
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)",
-                        "text": text
-                    ],
+                    userInfo: .errorUserInfoDictionary(additionalInfo: ["text": text]),
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)

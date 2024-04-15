@@ -12,13 +12,20 @@ extension Dictionary<String, String> {
         file: StaticString = #file,
         function: StaticString = #function,
         line: Int = #line,
-        type: T.Type = Self.self
+        type: T.Type = Self.self,
+        additionalInfo: [String: String] = [:]
     ) -> [String: String] {
-        return [
+        var dict = [
             "file": "\(file)",
             "class": "\(type)",
             "function": "\(function)",
             "line": "\(line)"
         ]
+
+        for (key, value) in additionalInfo {
+            dict[key] = value
+        }
+
+        return dict
     }
 }

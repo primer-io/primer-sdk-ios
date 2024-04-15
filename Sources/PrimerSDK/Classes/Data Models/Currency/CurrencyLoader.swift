@@ -45,10 +45,7 @@ public class CurrencyLoader: LogReporter {
 
         guard let configuration = PrimerAPIConfigurationModule.apiConfiguration else {
             let error = PrimerError.missingPrimerConfiguration(
-                userInfo: ["file": #file,
-                           "class": "\(Self.self)",
-                           "function": #function,
-                           "line": "\(#line)"],
+                userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString)
 
             ErrorHandler.handle(error: error)
@@ -61,10 +58,7 @@ public class CurrencyLoader: LogReporter {
         guard let url = URL(string: urlString) else {
             logger.error(message: "Can't make URL from string: \(urlString)")
             let err = PrimerError.invalidUrl(url: urlString,
-                                             userInfo: ["file": #file,
-                                                        "class": "\(Self.self)",
-                                                        "function": #function,
-                                                        "line": "\(#line)"],
+                                             userInfo: .errorUserInfoDictionary(),
                                              diagnosticsId: UUID().uuidString)
             completion?(err)
             return

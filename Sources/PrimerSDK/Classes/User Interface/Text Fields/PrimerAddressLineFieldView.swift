@@ -12,12 +12,7 @@ public class PrimerAddressLineFieldView: PrimerSimpleCardFormTextFieldView {
         }
         validationError = .invalidAddress(
             message: "Address is not valid.",
-            userInfo: [
-                "file": #file,
-                "class": "\(Self.self)",
-                "function": #function,
-                "line": "\(#line)"
-            ],
+            userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
     }
 }

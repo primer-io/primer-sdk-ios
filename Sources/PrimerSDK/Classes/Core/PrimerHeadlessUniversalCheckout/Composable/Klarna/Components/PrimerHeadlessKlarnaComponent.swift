@@ -86,14 +86,14 @@ extension PrimerHeadlessKlarnaComponent: KlarnaComponent {
                 return
             }
             guard !availableCategories.isEmpty else {
-                let error = PrimerValidationError.sessionNotCreated(userInfo: KlarnaHelpers.getErrorUserInfo(),
+                let error = PrimerValidationError.sessionNotCreated(userInfo: .errorUserInfoDictionary(),
                                                                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
                 return
             }
             guard availableCategories.contains(where: { $0 == category }) else {
-                let error = PrimerValidationError.invalidPaymentCategory(userInfo: KlarnaHelpers.getErrorUserInfo(),
+                let error = PrimerValidationError.invalidPaymentCategory(userInfo: .errorUserInfoDictionary(),
                                                                          diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)
@@ -104,7 +104,7 @@ extension PrimerHeadlessKlarnaComponent: KlarnaComponent {
             validationDelegate?.didUpdate(validationStatus: .valid, for: data)
         case .finalizePayment:
             guard isFinalizationRequired else {
-                let error = PrimerValidationError.paymentAlreadyFinalized(userInfo: KlarnaHelpers.getErrorUserInfo(),
+                let error = PrimerValidationError.paymentAlreadyFinalized(userInfo: .errorUserInfoDictionary(),
                                                                           diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: [error]), for: data)

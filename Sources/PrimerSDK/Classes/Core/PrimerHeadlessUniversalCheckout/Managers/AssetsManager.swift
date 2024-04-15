@@ -116,7 +116,7 @@ extension PrimerHeadlessUniversalCheckout {
 
         private static func verifyAPIConfig() throws {
             if AppState.current.apiConfiguration == nil {
-                let err = PrimerError.uninitializedSDKSession(userInfo: nil,
+                let err = PrimerError.uninitializedSDKSession(userInfo: .errorUserInfoDictionary(),
                                                               diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err

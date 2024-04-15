@@ -16,12 +16,7 @@ internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
+                    userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString
                 )
                 ErrorHandler.handle(error: err)
@@ -33,12 +28,7 @@ internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
                 let err = PrimerError.invalidValue(
                     key: "decodedClientToken.pciUrl",
                     value: decodedJWTToken.pciUrl,
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
+                    userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString
                 )
                 ErrorHandler.handle(error: err)
@@ -50,12 +40,7 @@ internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
                 let err = PrimerError.invalidValue(
                     key: "decodedClientToken.pciUrl",
                     value: decodedJWTToken.pciUrl,
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
+                    userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString
                 )
                 ErrorHandler.handle(error: err)
@@ -79,10 +64,7 @@ internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(
-                    userInfo: ["file": #file,
-                               "class": "\(Self.self)",
-                               "function": #function,
-                               "line": "\(#line)"],
+                    userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)

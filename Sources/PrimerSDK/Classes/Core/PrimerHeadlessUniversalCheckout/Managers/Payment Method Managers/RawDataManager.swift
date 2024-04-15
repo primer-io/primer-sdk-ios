@@ -102,7 +102,7 @@ extension PrimerHeadlessUniversalCheckout {
             self.delegate = delegate
 
             guard PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) != nil else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil,
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
                                                                diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
@@ -130,7 +130,7 @@ extension PrimerHeadlessUniversalCheckout {
                 self.rawDataTokenizationBuilder = PrimerRawRetailerDataTokenizationBuilder(paymentMethodType: paymentMethodType)
 
             default:
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil,
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
                                                                diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
@@ -161,7 +161,7 @@ extension PrimerHeadlessUniversalCheckout {
             Analytics.Service.record(events: [sdkEvent])
 
             guard let paymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType) else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil,
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
                                                                diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 completion(nil, err)
@@ -194,7 +194,7 @@ extension PrimerHeadlessUniversalCheckout {
 
             guard let rawData = rawData else {
                 let err = PrimerError.invalidValue(key: "rawData", value: nil,
-                                                   userInfo: nil,
+                                                   userInfo: .errorUserInfoDictionary(),
                                                    diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
 
@@ -277,10 +277,7 @@ extension PrimerHeadlessUniversalCheckout {
                             switch paymentCreationDecision.type {
                             case .abort(let errorMessage):
                                 let error = PrimerError.merchantError(message: errorMessage ?? "",
-                                                                      userInfo: ["file": #file,
-                                                                                 "class": "\(Self.self)",
-                                                                                 "function": #function,
-                                                                                 "line": "\(#line)"],
+                                                                      userInfo: .errorUserInfoDictionary(),
                                                                       diagnosticsId: UUID().uuidString)
                                 seal.reject(error)
                             case .continue:
@@ -307,12 +304,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
             return Promise { seal in
                 guard let rawData = self.rawData else {
                     let err = PrimerValidationError.invalidRawData(
-                        userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     seal.reject(err)
                     return
@@ -399,10 +391,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                                 }
                                 .done {
                                     guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                        let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                                            "class": "\(Self.self)",
-                                                                                            "function": #function,
-                                                                                            "line": "\(#line)"],
+                                        let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                                                  diagnosticsId: UUID().uuidString)
                                         ErrorHandler.handle(error: err)
                                         throw err
@@ -417,10 +406,8 @@ Make sure you call the decision handler otherwise the SDK will hang."
                             case .fail(let message):
                                 var merchantErr: Error!
                                 if let message = message {
-                                    let err = PrimerError.merchantError(message: message, userInfo: ["file": #file,
-                                                                                                     "class": "\(Self.self)",
-                                                                                                     "function": #function,
-                                                                                                     "line": "\(#line)"],
+                                    let err = PrimerError.merchantError(message: message,
+                                                                        userInfo: .errorUserInfoDictionary(),
                                                                         diagnosticsId: UUID().uuidString)
                                     merchantErr = err
                                 } else {
@@ -439,10 +426,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                                 }
                                 .done {
                                     guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                        let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                                            "class": "\(Self.self)",
-                                                                                            "function": #function,
-                                                                                            "line": "\(#line)"],
+                                        let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                                                  diagnosticsId: UUID().uuidString)
                                         ErrorHandler.handle(error: err)
                                         throw err
@@ -466,10 +450,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                 } else {
                     guard let token = paymentMethodTokenData.token else {
                         let err = PrimerError.invalidClientToken(
-                            userInfo: ["file": #file,
-                                       "class": "\(Self.self)",
-                                       "function": #function,
-                                       "line": "\(#line)"],
+                            userInfo: .errorUserInfoDictionary(),
                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
@@ -481,10 +462,9 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     }
                     .done { paymentResponse -> Void in
                         guard paymentResponse != nil else {
-                            let err = PrimerError.invalidValue(key: "paymentResponse", value: nil, userInfo: ["file": #file,
-                                                                                                              "class": "\(Self.self)",
-                                                                                                              "function": #function,
-                                                                                                              "line": "\(#line)"],
+                            let err = PrimerError.invalidValue(key: "paymentResponse",
+                                                               value: nil,
+                                                               userInfo: .errorUserInfoDictionary(),
                                                                diagnosticsId: UUID().uuidString)
                             throw err
                         }
@@ -500,10 +480,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                             }
                             .done {
                                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                                        "class": "\(Self.self)",
-                                                                                        "function": #function,
-                                                                                        "line": "\(#line)"],
+                                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                                              diagnosticsId: UUID().uuidString)
                                     ErrorHandler.handle(error: err)
                                     throw err
@@ -532,17 +509,11 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     guard let paymentMethodTokenData = paymentMethodTokenData
                     else {
                         let err = InternalError.failedToDecode(message: "Failed to find paymentMethod",
-                                                               userInfo: ["file": #file,
-                                                                          "class": "\(Self.self)",
-                                                                          "function": #function,
-                                                                          "line": "\(#line)"],
+                                                               userInfo: .errorUserInfoDictionary(),
                                                                diagnosticsId: UUID().uuidString)
                         let containerErr = PrimerError.failedToPerform3DS(paymentMethodType: self.paymentMethodType,
                                                                           error: err,
-                                                                          userInfo: ["file": #file,
-                                                                                     "class": "\(Self.self)",
-                                                                                     "function": #function,
-                                                                                     "line": "\(#line)"],
+                                                                          userInfo: .errorUserInfoDictionary(),
                                                                           diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: containerErr)
                         seal.reject(containerErr)
@@ -608,7 +579,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                                 pollingModule?.cancel(withError: primerErr)
                             } else {
                                 let err = PrimerError.underlyingErrors(errors: [err],
-                                                                       userInfo: nil,
+                                                                       userInfo: .errorUserInfoDictionary(),
                                                                        diagnosticsId: UUID().uuidString)
                                 ErrorHandler.handle(error: err)
                                 pollingModule?.cancel(withError: err)
@@ -620,10 +591,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                         }
 
                     } else {
-                        let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                            "class": "\(Self.self)",
-                                                                            "function": #function,
-                                                                            "line": "\(#line)"],
+                        let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                                  diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
@@ -662,7 +630,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                                     pollingModule?.cancel(withError: primerErr)
                                 } else {
                                     let err = PrimerError.underlyingErrors(errors: [err],
-                                                                           userInfo: nil,
+                                                                           userInfo: .errorUserInfoDictionary(),
                                                                            diagnosticsId: UUID().uuidString)
                                     ErrorHandler.handle(error: err)
                                     pollingModule?.cancel(withError: err)
@@ -689,10 +657,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                         }
 
                     } else {
-                        let error = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                              "class": "\(Self.self)",
-                                                                              "function": #function,
-                                                                              "line": "\(#line)"],
+                        let error = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                                    diagnosticsId: UUID().uuidString)
                         seal.reject(error)
                     }
@@ -708,10 +673,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                         guard let decodedExpiresAt = decodedJWTToken.expiresAt else {
                             let err = PrimerError.invalidValue(key: "decodedJWTToken.expiresAt",
                                                                value: nil,
-                                                               userInfo: ["file": #file,
-                                                                          "class": "\(Self.self)",
-                                                                          "function": #function,
-                                                                          "line": "\(#line)"],
+                                                               userInfo: .errorUserInfoDictionary(),
                                                                diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             seal.reject(err)
@@ -721,10 +683,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                         guard let decodedVoucherReference = decodedJWTToken.reference else {
                             let err = PrimerError.invalidValue(key: "decodedJWTToken.reference",
                                                                value: nil,
-                                                               userInfo: ["file": #file,
-                                                                          "class": "\(Self.self)",
-                                                                          "function": #function,
-                                                                          "line": "\(#line)"],
+                                                               userInfo: .errorUserInfoDictionary(),
                                                                diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             seal.reject(err)
@@ -739,10 +698,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                         else {
                             let err = PrimerError.invalidValue(key: "rawData.id",
                                                                value: "Invalid Retailer Identifier",
-                                                               userInfo: ["file": #file,
-                                                                          "class": "\(Self.self)",
-                                                                          "function": #function,
-                                                                          "line": "\(#line)"],
+                                                               userInfo: .errorUserInfoDictionary(),
                                                                diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             seal.reject(err)
@@ -770,10 +726,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                 } else {
                     let err = PrimerError.invalidValue(key: "resumeToken",
                                                        value: nil,
-                                                       userInfo: ["file": #file,
-                                                                  "class": "\(Self.self)",
-                                                                  "function": #function,
-                                                                  "line": "\(#line)"],
+                                                       userInfo: .errorUserInfoDictionary(),
                                                        diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -791,10 +744,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                                 var merchantErr: Error!
                                 if let message = message {
                                     let err = PrimerError.merchantError(message: message,
-                                                                        userInfo: ["file": #file,
-                                                                                   "class": "\(Self.self)",
-                                                                                   "function": #function,
-                                                                                   "line": "\(#line)"],
+                                                                        userInfo: .errorUserInfoDictionary(),
                                                                         diagnosticsId: UUID().uuidString)
                                     merchantErr = err
                                 } else {
@@ -827,10 +777,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     guard let resumePaymentId = self.resumePaymentId else {
                         let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId",
                                                                             value: "Resume Payment ID not valid",
-                                                                            userInfo: ["file": #file,
-                                                                                       "class": "\(Self.self)",
-                                                                                       "function": #function,
-                                                                                       "line": "\(#line)"],
+                                                                            userInfo: .errorUserInfoDictionary(),
                                                                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: resumePaymentIdError)
                         seal.reject(resumePaymentIdError)
@@ -844,10 +791,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                         guard let paymentResponse = paymentResponse else {
                             let err = PrimerError.invalidValue(key: "paymentResponse",
                                                                value: nil,
-                                                               userInfo: ["file": #file,
-                                                                          "class": "\(Self.self)",
-                                                                          "function": #function,
-                                                                          "line": "\(#line)"],
+                                                               userInfo: .errorUserInfoDictionary(),
                                                                diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             throw err
@@ -881,12 +825,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                             let err = PrimerError.paymentFailed(
                                 paymentMethodType: self.paymentMethodType,
                                 description: "Failed to create payment",
-                                userInfo: [
-                                    "file": #file,
-                                    "class": "\(Self.self)",
-                                    "function": #function,
-                                    "line": "\(#line)"
-                                ],
+                                userInfo: .errorUserInfoDictionary(),
                                 diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             seal.reject(err)
@@ -896,12 +835,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                                 paymentMethodType: self.paymentMethodType,
                                 paymentId: paymentResponse.id ?? "nil",
                                 status: paymentResponse.status.rawValue,
-                                userInfo: [
-                                    "file": #file,
-                                    "class": "\(Self.self)",
-                                    "function": #function,
-                                    "line": "\(#line)"
-                                ],
+                                userInfo: .errorUserInfoDictionary(),
                                 diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             seal.reject(err)
@@ -914,12 +848,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                         let err = PrimerError.paymentFailed(
                             paymentMethodType: self.paymentMethodType,
                             description: "Failed to create payment",
-                            userInfo: [
-                                "file": #file,
-                                "class": "\(Self.self)",
-                                "function": #function,
-                                "line": "\(#line)"
-                            ],
+                            userInfo: .errorUserInfoDictionary(),
                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
@@ -947,12 +876,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                             let err = PrimerError.paymentFailed(
                                 paymentMethodType: self.paymentMethodType,
                                 description: "Failed to resume payment",
-                                userInfo: [
-                                    "file": #file,
-                                    "class": "\(Self.self)",
-                                    "function": #function,
-                                    "line": "\(#line)"
-                                ],
+                                userInfo: .errorUserInfoDictionary(),
                                 diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             seal.reject(err)
@@ -962,12 +886,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                                 paymentMethodType: self.paymentMethodType,
                                 paymentId: paymentResponse.id ?? "nil",
                                 status: paymentResponse.status.rawValue,
-                                userInfo: [
-                                    "file": #file,
-                                    "class": "\(Self.self)",
-                                    "function": #function,
-                                    "line": "\(#line)"
-                                ],
+                                userInfo: .errorUserInfoDictionary(),
                                 diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             seal.reject(err)
@@ -980,12 +899,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                         let err = PrimerError.paymentFailed(
                             paymentMethodType: self.paymentMethodType,
                             description: "Failed to resume payment",
-                            userInfo: [
-                                "file": #file,
-                                "class": "\(Self.self)",
-                                "function": #function,
-                                "line": "\(#line)"
-                            ],
+                            userInfo: .errorUserInfoDictionary(),
                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
@@ -1038,10 +952,7 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager: SFSafariViewController
         if let webViewCompletion = webViewCompletion {
             // Cancelled
             let err = PrimerError.cancelled(paymentMethodType: self.paymentMethodType,
-                                            userInfo: ["file": #file,
-                                                       "class": "\(Self.self)",
-                                                       "function": #function,
-                                                       "line": "\(#line)"],
+                                            userInfo: .errorUserInfoDictionary(),
                                             diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             webViewCompletion(nil, err)
@@ -1065,7 +976,7 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager {
         guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType),
               let paymentMethodId = paymentMethod.id else {
             let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType,
-                                                           userInfo: nil,
+                                                           userInfo: .errorUserInfoDictionary(),
                                                            diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(nil, err)
@@ -1073,10 +984,7 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager {
         }
 
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"],
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                      diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             completion(nil, err)

@@ -69,12 +69,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
             if cardNumber.isEmpty {
                 errors.append(PrimerValidationError.invalidCardnumber(
                                 message: "Card number is not valid.",
-                                userInfo: [
-                                    "file": #file,
-                                    "class": "\(Self.self)",
-                                    "function": #function,
-                                    "line": "\(#line)"
-                                ],
+                                userInfo: .errorUserInfoDictionary(),
                                 diagnosticsId: UUID().uuidString))
                 ErrorHandler.handle(error: errors.last!)
             }
@@ -158,12 +153,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
                         } else {
                             let error = PrimerError.nolError(code: "unknown",
                                                              message: "Payment failed from unknown reason",
-                                                             userInfo: [
-                                                                "file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"
-                                                             ],
+                                                             userInfo: .errorUserInfoDictionary(),
                                                              diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: error)
                             completion?(.failure(error))
@@ -171,12 +161,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
                     case .failure(let error):
                         let error = PrimerError.nolError(code: error.errorCode,
                                                          message: error.description,
-                                                         userInfo: [
-                                                            "file": #file,
-                                                            "class": "\(Self.self)",
-                                                            "function": #function,
-                                                            "line": "\(#line)"
-                                                         ],
+                                                         userInfo: .errorUserInfoDictionary(),
                                                          diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: error)
                         completion?(.failure(error))
@@ -208,10 +193,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
         }
 
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"],
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                      diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             return
@@ -248,10 +230,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
         let error = PrimerError.missingSDK(
             paymentMethodType: PrimerPaymentMethodType.nolPay.rawValue,
             sdkName: "PrimerNolPaySDK",
-            userInfo: ["file": #file,
-                       "class": "\(Self.self)",
-                       "function": #function,
-                       "line": "\(#line)"],
+            userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: error)
         errorDelegate?.didReceiveError(error: error)

@@ -184,7 +184,7 @@ struct KlarnaHelpers {
     // MARK: - Error helpers
     static func getInvalidTokenError() -> PrimerError {
         let error = PrimerError.invalidClientToken(
-            userInfo: self.getErrorUserInfo(),
+            userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString
         )
         ErrorHandler.handle(error: error)
@@ -197,7 +197,7 @@ struct KlarnaHelpers {
         let error = PrimerError.invalidSetting(
             name: name,
             value: nil,
-            userInfo: self.getErrorUserInfo(),
+            userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString
         )
         ErrorHandler.handle(error: error)
@@ -211,7 +211,7 @@ struct KlarnaHelpers {
         let error = PrimerError.invalidValue(
             key: key,
             value: value,
-            userInfo: self.getErrorUserInfo(),
+            userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString
         )
         ErrorHandler.handle(error: error)
@@ -222,7 +222,7 @@ struct KlarnaHelpers {
         let error = PrimerError.paymentFailed(
             paymentMethodType: "KLARNA",
             description: "Failed to create payment",
-            userInfo: self.getErrorUserInfo(),
+            userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: error)
         return error
@@ -233,12 +233,7 @@ struct KlarnaHelpers {
             paymentMethodType: "KLARNA",
             paymentId: paymentResponse.id ?? "nil",
             status: paymentResponse.status.rawValue,
-            userInfo: [
-                "file": #file,
-                "class": "\(Self.self)",
-                "function": #function,
-                "line": "\(#line)"
-            ],
+            userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: error)
         return error
@@ -247,10 +242,7 @@ struct KlarnaHelpers {
     static func getInvalidUrlSchemeError(settings: PrimerSettingsProtocol) -> PrimerError {
         let error = PrimerError.invalidUrlScheme(
             urlScheme: settings.paymentMethodOptions.urlScheme,
-            userInfo: ["file": #file,
-                       "class": "\(Self.self)",
-                       "function": #function,
-                       "line": "\(#line)"],
+            userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: error)
         return error
@@ -260,21 +252,9 @@ struct KlarnaHelpers {
         let error = PrimerError.missingSDK(
             paymentMethodType: PrimerPaymentMethodType.klarna.rawValue,
             sdkName: "KlarnaSDK",
-            userInfo: ["file": #file,
-                       "class": "\(Self.self)",
-                       "function": #function,
-                       "line": "\(#line)"],
+            userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: error)
         return error
-    }
-
-    static func getErrorUserInfo() -> [String: String] {
-        return [
-            "file": #file,
-            "class": "\(Self.self)",
-            "function": #function,
-            "line": "\(#line)"
-        ]
     }
 }

@@ -48,12 +48,7 @@ expiry month and 4 characters for expiry year separated by '/'.
 """
             let err = PrimerValidationError.invalidExpiryDate(
                 message: message,
-                userInfo: [
-                    "file": #file,
-                    "class": "\(Self.self)",
-                    "function": #function,
-                    "line": "\(#line)"
-                ],
+                userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString)
             validation = .invalid(err)
         }

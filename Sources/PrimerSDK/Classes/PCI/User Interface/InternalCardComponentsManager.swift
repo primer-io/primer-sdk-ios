@@ -120,10 +120,7 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
         return Promise { seal in
             guard let delegate = delegate else {
                 logger.warn(message: "Delegate has not been set for InternalCardComponentsManager")
-                let err = PrimerError.missingPrimerDelegate(userInfo: ["file": #file,
-                                                                       "class": "\(Self.self)",
-                                                                       "function": #function,
-                                                                       "line": "\(#line)"],
+                let err = PrimerError.missingPrimerDelegate(userInfo: .errorUserInfoDictionary(),
                                                             diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -152,7 +149,7 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
                         precondition(false, preconditionMessage)
                         let err = PrimerError.invalidValue(key: "self.decodedClientToken",
                                                            value: nil,
-                                                           userInfo: nil,
+                                                           userInfo: .errorUserInfoDictionary(),
                                                            diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
@@ -209,24 +206,14 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
         if cardnumberField.cardnumber.isEmpty {
             let err = PrimerValidationError.invalidCardnumber(
                 message: "Card number can not be blank.",
-                userInfo: [
-                    "file": #file,
-                    "class": "\(Self.self)",
-                    "function": #function,
-                    "line": "\(#line)"
-                ],
+                userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString)
             errors.append(err)
 
         } else if !cardnumberField.cardnumber.isValidCardNumber {
             let err = PrimerValidationError.invalidCardnumber(
                 message: "Card number is not valid.",
-                userInfo: [
-                    "file": #file,
-                    "class": "\(Self.self)",
-                    "function": #function,
-                    "line": "\(#line)"
-                ],
+                userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString)
             errors.append(err)
         }
@@ -238,12 +225,7 @@ and 4 characters for expiry year separated by '/'.
 """
             errors.append(PrimerValidationError.invalidExpiryDate(
                             message: message,
-                            userInfo: [
-                                "file": #file,
-                                "class": "\(Self.self)",
-                                "function": #function,
-                                "line": "\(#line)"
-                            ],
+                            userInfo: .errorUserInfoDictionary(),
                             diagnosticsId: UUID().uuidString))
         }
 
@@ -251,24 +233,14 @@ and 4 characters for expiry year separated by '/'.
             if cvvField.cvv.isEmpty {
                 let err = PrimerValidationError.invalidCvv(
                     message: "CVV cannot be blank.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
+                    userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString)
                 errors.append(err)
 
             } else if !cvvField.cvv.isValidCVV(cardNetwork: CardNetwork(cardNumber: cardnumberField.cardnumber)) {
                 let err = PrimerValidationError.invalidCvv(
                     message: "CVV is not valid.",
-                    userInfo: [
-                        "file": #file,
-                        "class": "\(Self.self)",
-                        "function": #function,
-                        "line": "\(#line)"
-                    ],
+                    userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString)
                 errors.append(err)
             }
@@ -284,10 +256,7 @@ and 4 characters for expiry year separated by '/'.
 
         if !errors.isEmpty {
             let err = PrimerError.underlyingErrors(errors: errors,
-                                                   userInfo: ["file": #file,
-                                                              "class": "\(Self.self)",
-                                                              "function": #function,
-                                                              "line": "\(#line)"],
+                                                   userInfo: .errorUserInfoDictionary(),
                                                    diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
@@ -352,10 +321,7 @@ and 4 characters for expiry year separated by '/'.
                 guard let tokenizationPaymentInstrument = self.tokenizationPaymentInstrument else {
                     let err = PrimerError.invalidValue(key: "Payment Instrument",
                                                        value: self.tokenizationPaymentInstrument,
-                                                       userInfo: ["file": #file,
-                                                                  "class": "\(Self.self)",
-                                                                  "function": #function,
-                                                                  "line": "\(#line)"],
+                                                       userInfo: .errorUserInfoDictionary(),
                                                        diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
@@ -373,10 +339,7 @@ and 4 characters for expiry year separated by '/'.
                     self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
                 }
                 .catch { err in
-                    let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: ["file": #file,
-                                                                                              "class": "\(Self.self)",
-                                                                                              "function": #function,
-                                                                                              "line": "\(#line)"],
+                    let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: .errorUserInfoDictionary(),
                                                                     diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: containerErr)
                     self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
@@ -386,10 +349,7 @@ and 4 characters for expiry year separated by '/'.
                 self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                 self.setIsLoading(false)
             }
-        } catch PrimerError.underlyingErrors(errors: let errors, userInfo: ["file": #file,
-                                                                            "class": "\(Self.self)",
-                                                                            "function": #function,
-                                                                            "line": "\(#line)"],
+        } catch PrimerError.underlyingErrors(errors: let errors, userInfo: .errorUserInfoDictionary(),
                                              diagnosticsId: UUID().uuidString) {
             delegate?.cardComponentsManager?(self, tokenizationFailedWith: errors)
             setIsLoading(false)

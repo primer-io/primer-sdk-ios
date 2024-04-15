@@ -457,10 +457,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
 
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"],
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                      diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
@@ -469,10 +466,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         guard decodedJWTToken.pciUrl != nil else {
             let err = PrimerError.invalidValue(key: "clientToken.pciUrl",
                                                value: decodedJWTToken.pciUrl,
-                                               userInfo: ["file": #file,
-                                                          "class": "\(Self.self)",
-                                                          "function": #function,
-                                                          "line": "\(#line)"],
+                                               userInfo: .errorUserInfoDictionary(),
                                                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
@@ -482,10 +476,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             if AppState.current.amount == nil {
                 let err = PrimerError.invalidSetting(name: "amount",
                                                      value: nil,
-                                                     userInfo: ["file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"],
+                                                     userInfo: .errorUserInfoDictionary(),
                                                      diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
@@ -494,10 +485,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             if AppState.current.currency == nil {
                 let err = PrimerError.invalidSetting(name: "currency",
                                                      value: nil,
-                                                     userInfo: ["file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"],
+                                                     userInfo: .errorUserInfoDictionary(),
                                                      diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
@@ -598,10 +586,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                         self.didCancel = {
                             let err = PrimerError.cancelled(
                                 paymentMethodType: self.config.type,
-                                userInfo: ["file": #file,
-                                           "class": "\(Self.self)",
-                                           "function": #function,
-                                           "line": "\(#line)"],
+                                userInfo: .errorUserInfoDictionary(),
                                 diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             pollingModule.cancel(withError: err)
@@ -620,10 +605,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                         seal.reject(err)
                     }
                 } else {
-                    let error = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                          "class": "\(Self.self)",
-                                                                          "function": #function,
-                                                                          "line": "\(#line)"],
+                    let error = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                                diagnosticsId: UUID().uuidString)
                     seal.reject(error)
                 }
@@ -742,10 +724,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 guard let configId = config.id else {
                     let err = PrimerError.invalidValue(key: "configuration.id",
                                                        value: config.id,
-                                                       userInfo: ["file": #file,
-                                                                  "class": "\(Self.self)",
-                                                                  "function": #function,
-                                                                  "line": "\(#line)"],
+                                                       userInfo: .errorUserInfoDictionary(),
                                                        diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -755,10 +734,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 guard let blikCode = inputs.first?.text else {
                     let err = PrimerError.invalidValue(key: "blikCode",
                                                        value: nil,
-                                                       userInfo: ["file": #file,
-                                                                  "class": "\(Self.self)",
-                                                                  "function": #function,
-                                                                  "line": "\(#line)"],
+                                                       userInfo: .errorUserInfoDictionary(),
                                                        diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -793,10 +769,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 guard let configId = config.id else {
                     let err = PrimerError.invalidValue(key: "configuration.id",
                                                        value: config.id,
-                                                       userInfo: ["file": #file,
-                                                                  "class": "\(Self.self)",
-                                                                  "function": #function,
-                                                                  "line": "\(#line)"],
+                                                       userInfo: .errorUserInfoDictionary(),
                                                        diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -830,10 +803,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 guard let configId = config.id else {
                     let err = PrimerError.invalidValue(key: "configuration.id",
                                                        value: config.id,
-                                                       userInfo: ["file": #file,
-                                                                  "class": "\(Self.self)",
-                                                                  "function": #function,
-                                                                  "line": "\(#line)"],
+                                                       userInfo: .errorUserInfoDictionary(),
                                                        diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -843,10 +813,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 guard let phoneNumber = inputs.first?.text else {
                     let err = PrimerError.invalidValue(key: "phoneNumber",
                                                        value: nil,
-                                                       userInfo: ["file": #file,
-                                                                  "class": "\(Self.self)",
-                                                                  "function": #function,
-                                                                  "line": "\(#line)"],
+                                                       userInfo: .errorUserInfoDictionary(),
                                                        diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -880,10 +847,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                 guard let configId = config.id else {
                     let err = PrimerError.invalidValue(key: "configuration.id",
                                                        value: config.id,
-                                                       userInfo: ["file": #file,
-                                                                  "class": "\(Self.self)",
-                                                                  "function": #function,
-                                                                  "line": "\(#line)"],
+                                                       userInfo: .errorUserInfoDictionary(),
                                                        diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -941,10 +905,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         inputs = []
 
         let err = PrimerError.cancelled(paymentMethodType: self.config.type,
-                                        userInfo: ["file": #file,
-                                                   "class": "\(Self.self)",
-                                                   "function": #function,
-                                                   "line": "\(#line)"],
+                                        userInfo: .errorUserInfoDictionary(),
                                         diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: err)
     }
