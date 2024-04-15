@@ -429,10 +429,7 @@ extension PaymentMethodTokenizationViewModel {
                 guard let resumePaymentId = self.resumePaymentId else {
                     let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId",
                                                                         value: "Resume Payment ID not valid",
-                                                                        userInfo: ["file": #file,
-                                                                                   "class": "\(Self.self)",
-                                                                                   "function": #function,
-                                                                                   "line": "\(#line)"],
+                                                                        userInfo: .errorUserInfoDictionary(),
                                                                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: resumePaymentIdError)
                     seal.reject(resumePaymentIdError)
@@ -446,10 +443,7 @@ extension PaymentMethodTokenizationViewModel {
                     guard let paymentResponse = paymentResponse else {
                         let err = PrimerError.invalidValue(key: "paymentResponse",
                                                            value: nil,
-                                                           userInfo: ["file": #file,
-                                                                      "class": "\(Self.self)",
-                                                                      "function": #function,
-                                                                      "line": "\(#line)"],
+                                                           userInfo: .errorUserInfoDictionary(),
                                                            diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         throw err
@@ -497,7 +491,7 @@ extension PaymentMethodTokenizationViewModel {
                         }
                     })
 
-                Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
                     if !decisionHandlerHasBeenCalled {
                         let message =
                             """
@@ -516,8 +510,9 @@ Make sure you call the decision handler otherwise the SDK will hang.
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-            createResumePaymentService.createPayment(
-                paymentRequest: Request.Body.Payment.Create(token: paymentMethodData)) { paymentResponse, error in
+            let body = Request.Body.Payment.Create(token: paymentMethodData)
+            createResumePaymentService.createPayment(paymentRequest: body) { paymentResponse, error in
+
                 if let error = error {
                     if let paymentResponse {
                         self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
@@ -582,9 +577,8 @@ Make sure you call the decision handler otherwise the SDK will hang.
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
-                                                                  paymentResumeRequest: Request.Body.Payment.Resume(
-                                                                    token: resumeToken)) { paymentResponse, error in
+            let body = Request.Body.Payment.Resume(token: resumeToken)
+            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: body) { paymentResponse, error in
 
                 if let error = error {
                     if let paymentResponse {

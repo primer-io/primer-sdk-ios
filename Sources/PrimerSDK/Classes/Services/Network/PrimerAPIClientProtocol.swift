@@ -7,10 +7,10 @@
 
 import Foundation
 
-protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPIClientBINDataProtocol {
+typealias APIResult<T> = Result<T, Error>
+typealias APICompletion<T> = (APIResult<T>) -> Void
 
-    typealias APIResult<T> = Result<T, Error>
-    typealias APICompletion<T> = (APIResult<T>) -> Void
+protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPIClientBINDataProtocol {
 
     // MARK: Configuration
 

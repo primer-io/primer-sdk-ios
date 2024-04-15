@@ -24,11 +24,14 @@ internal class URLSessionStack: NetworkService, LogReporter {
 
     // MARK: - Network Stack logic
     @discardableResult
-    func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResultCallback<T>) -> PrimerCancellable? {
+    func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResponseCompletion<T>) -> PrimerCancellable? {
 
+        // Generate url string
         let urlStr: String = (endpoint.baseURL ?? "") + endpoint.path
+        // Generate id - used as an identifier on events relating to the request
         let id = String.randomString(length: 32)
 
+        // Send network requestStart event (if necessary)
         if shouldReportNetworkEvents(for: endpoint) {
             let reqEvent = Analytics.Event.networkCall(
                 callType: .requestStart,
@@ -44,6 +47,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
             Analytics.Service.record(event: connectivityEvent)
         }
 
+        // Error if URL invalid
         guard let url = url(for: endpoint) else {
             let err = InternalError.invalidUrl(url: "Base URL: \(endpoint.baseURL ?? "nil") | Endpoint: \(endpoint.path)",
                                                userInfo: ["file": #file,
@@ -56,6 +60,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
             return nil
         }
 
+        // Setup request
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method.rawValue
 
@@ -105,10 +110,6 @@ internal class URLSessionStack: NetworkService, LogReporter {
                 responseCode: (response as? HTTPURLResponse)?.statusCode
             )
             var resEventProperties: NetworkCallEventProperties? = resEvent.properties as? NetworkCallEventProperties
-
-            #if DEBUG
-
-            #endif
 
             if let error = error {
                 if self.shouldReportNetworkEvents(for: endpoint) {
@@ -206,8 +207,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
                                                                        options: .fragmentsAllowed),
                    let statusCode = (response as? HTTPURLResponse)?.statusCode {
 
-                    let primerErrorResponse = try? self.parser.parse(PrimerServerErrorResponse.self,
-                                                                     from: primerErrorObject)
+                    let primerErrorResponse = try? self.parser.parse(PrimerServerError.self, from: primerErrorObject)
 
                     if self.shouldReportNetworkEvents(for: endpoint) {
                         resEventProperties?.errorBody = "\(primerErrorJSON)"
