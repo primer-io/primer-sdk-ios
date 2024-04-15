@@ -349,8 +349,7 @@ and 4 characters for expiry year separated by '/'.
                 self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
                 self.setIsLoading(false)
             }
-        } catch PrimerError.underlyingErrors(errors: let errors, userInfo: .errorUserInfoDictionary(),
-                                             diagnosticsId: UUID().uuidString) {
+        } catch PrimerError.underlyingErrors(let errors, _, _) {
             delegate?.cardComponentsManager?(self, tokenizationFailedWith: errors)
             setIsLoading(false)
         } catch {
