@@ -1,3 +1,10 @@
+## 2.26.2 (2024-04-15)
+
+### Fix
+
+- Fix reported CI/CD issues for nol Pay (#840)
+- Replace URLSessionStack with new async/await compatible network service (#819)
+
 ## 2.26.1 (2024-04-11)
 
 ### Fix
