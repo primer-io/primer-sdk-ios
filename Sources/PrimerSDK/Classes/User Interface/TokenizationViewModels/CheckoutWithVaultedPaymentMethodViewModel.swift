@@ -212,7 +212,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                         }
                     })
 
-                Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
                     if !decisionHandlerHasBeenCalled {
                         let message =
                             """
