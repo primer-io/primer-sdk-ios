@@ -41,12 +41,8 @@ final class MerchantResultViewController: UIViewController {
 
         if logs.count > 0 {
             if let data = try? JSONSerialization.data(withJSONObject: logs) {
-                if let prettyNSStr = data.prettyPrintedJSONString {
-                    if let prettyStr = prettyNSStr as? String {
-                        logsTextView.text = prettyStr
-                    } else {
-                        logsTextView.text = "[\"Failed to case NSString to String [WebDriverIO]\"]"
-                    }
+                if let prettyStr = data.prettyPrintedJSONString as? String {
+                    logsTextView.text = prettyStr
                 } else {
                     logsTextView.text = "[\"Failed to create pretty string from logs\"]"
                 }
@@ -59,12 +55,8 @@ final class MerchantResultViewController: UIViewController {
 
         if let checkoutData {
             if let data = try? JSONEncoder().encode(checkoutData) {
-                if let prettyNSStr = data.prettyPrintedJSONString {
-                    if let prettyStr = prettyNSStr as? String {
-                        responseTextView.text = prettyStr
-                    } else {
-                        responseTextView.text = "[\"Failed to case NSString to String [WebDriverIO]\"]"
-                    }
+                if let prettyStr = data.prettyPrintedJSONString as? String {
+                    responseTextView.text = prettyStr
                 } else {
                     responseTextView.text = "[\"Failed to create pretty string from checkout data\"]"
                 }
