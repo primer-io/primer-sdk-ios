@@ -53,7 +53,9 @@ extension PaymentMethodTokenizationViewModel {
                     if let error = err as? PrimerError {
                         primerErr = error
                     } else {
-                        primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
+                        primerErr = PrimerError.generic(message: err.localizedDescription,
+                                                        userInfo: .errorUserInfoDictionary(),
+                                                        diagnosticsId: UUID().uuidString)
                     }
 
                     return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
@@ -142,7 +144,9 @@ extension PaymentMethodTokenizationViewModel {
                     if let error = err as? PrimerError {
                         primerErr = error
                     } else {
-                        primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
+                        primerErr = PrimerError.generic(message: err.localizedDescription,
+                                                        userInfo: .errorUserInfoDictionary(),
+                                                        diagnosticsId: UUID().uuidString)
                     }
 
                     return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
@@ -161,7 +165,9 @@ extension PaymentMethodTokenizationViewModel {
             var cancelledError: PrimerError?
             self.didCancel = {
                 self.isCancelled = true
-                cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
+                cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type,
+                                                       userInfo: .errorUserInfoDictionary(),
+                                                       diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: cancelledError!)
                 seal.reject(cancelledError!)
                 self.isCancelled = false

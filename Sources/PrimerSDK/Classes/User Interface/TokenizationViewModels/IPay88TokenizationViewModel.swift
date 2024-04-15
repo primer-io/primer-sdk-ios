@@ -180,7 +180,7 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         } else if errors.count > 1 {
             let err = PrimerError.underlyingErrors(
                 errors: errors,
-                userInfo:.errorUserInfoDictionary(),
+                userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err

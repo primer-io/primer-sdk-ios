@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Optional<Dictionary<String, String>> {
+extension Dictionary<String, String>? {
     static func errorUserInfoDictionary<T>(
         file: StaticString = #file,
         function: StaticString = #function,

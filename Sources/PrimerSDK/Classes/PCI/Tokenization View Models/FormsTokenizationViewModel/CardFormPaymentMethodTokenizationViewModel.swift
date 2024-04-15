@@ -588,7 +588,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     seal.reject(err)
                 }
             } else {
-                let err = PrimerError.invalidValue(key: "resumeToken", 
+                let err = PrimerError.invalidValue(key: "resumeToken",
                                                    value: nil,
                                                    userInfo: .errorUserInfoDictionary(),
                                                    diagnosticsId: UUID().uuidString)
