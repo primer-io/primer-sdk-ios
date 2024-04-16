@@ -15,12 +15,7 @@ public final class PrimerStateFieldView: PrimerSimpleCardFormTextFieldView {
         editingAnalyticsObjectId = .billingAddressState
         validationError = .invalidState(
             message: "State is not valid.",
-            userInfo: [
-                "file": #file,
-                "class": "\(Self.self)",
-                "function": #function,
-                "line": "\(#line)"
-            ],
+            userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
         isValid = { text in
             return text.isValidNonDecimalString

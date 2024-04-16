@@ -206,7 +206,8 @@ would have been preferred (max BIN length exceeded).
         let cardNumber = String(cardNumber.prefix(Self.maximumBinLength))
 
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            return rejectedPromise(withError: PrimerError.invalidClientToken(userInfo: nil, diagnosticsId: ""))
+            return rejectedPromise(withError: PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                                             diagnosticsId: ""))
         }
 
         return Promise { resolver in

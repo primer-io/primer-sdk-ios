@@ -81,37 +81,37 @@ extension PrimerHeadlessKlarnaComponent {
         switch error {
         case .missingConfiguration:
             primerError = PrimerError.missingPrimerConfiguration(
-                userInfo: KlarnaHelpers.getErrorUserInfo(),
+                userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString
             )
         case .invalidClientToken:
             primerError = PrimerError.invalidClientToken(
-                userInfo: KlarnaHelpers.getErrorUserInfo(),
+                userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString
             )
         case .sessionCreationFailed(let error):
             primerError = PrimerError.failedToCreateSession(
                 error: error,
-                userInfo: KlarnaHelpers.getErrorUserInfo(),
+                userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString
             )
         case .sessionAuthorizationFailed(error: let error):
             primerError = PrimerError.paymentFailed(
                 paymentMethodType: "KLARNA",
                 description: error.localizedDescription,
-                userInfo: KlarnaHelpers.getErrorUserInfo(),
+                userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString
             )
         case .klarnaAuthorizationFailed:
             primerError = PrimerError.klarnaWrapperError(
                 message: "PrimerKlarnaWrapperAuthorization failed",
-                userInfo: KlarnaHelpers.getErrorUserInfo(),
+                userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString
             )
         case .klarnaFinalizationFailed:
             primerError = PrimerError.klarnaWrapperError(
                 message: "PrimerKlarnaWrapperFinalization failed",
-                userInfo: KlarnaHelpers.getErrorUserInfo(),
+                userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString
             )
         }

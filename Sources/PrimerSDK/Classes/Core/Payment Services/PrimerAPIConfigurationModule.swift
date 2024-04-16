@@ -103,10 +103,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                    "class": "\(Self.self)",
-                                                                    "function": #function,
-                                                                    "line": "\(#line)"],
+                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                          diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -179,10 +176,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         guard var currentDecodedToken = tokenToValidate.decodedJWTToken,
               let expDate = currentDecodedToken.expDate,
               expDate > Date() else {
-            let error = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                  "class": "\(Self.self)",
-                                                                  "function": #function,
-                                                                  "line": "\(#line)"],
+            let error = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                        diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: error)
             throw error
@@ -253,10 +247,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
     private func fetchConfiguration(requestDisplayMetadata: Bool) -> Promise<PrimerAPIConfiguration> {
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                    "class": "\(Self.self)",
-                                                                    "function": #function,
-                                                                    "line": "\(#line)"],
+                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                          diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)

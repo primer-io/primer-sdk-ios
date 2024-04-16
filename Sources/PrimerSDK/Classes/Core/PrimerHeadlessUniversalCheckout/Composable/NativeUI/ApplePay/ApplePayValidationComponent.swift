@@ -14,10 +14,7 @@ struct ApplePayValidationComponent: NativeUIValidateable {
         if PrimerSettings.current.paymentMethodOptions.applePayOptions == nil {
             let error = PrimerError.invalidValue(key: "settings.paymentMethodOptions.applePayOptions",
                                                  value: nil,
-                                                 userInfo: ["file": #file,
-                                                            "class": "\(Self.self)",
-                                                            "function": #function,
-                                                            "line": "\(#line)"],
+                                                 userInfo: .errorUserInfoDictionary(),
                                                  diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: error)
             throw error

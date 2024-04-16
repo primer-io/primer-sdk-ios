@@ -157,7 +157,7 @@ internal class PrimerInternal: LogReporter {
                 primerErr = err
             } else {
                 primerErr = PrimerError.underlyingErrors(errors: [err],
-                                                         userInfo: nil,
+                                                         userInfo: .errorUserInfoDictionary(),
                                                          diagnosticsId: UUID().uuidString)
             }
 
@@ -201,7 +201,7 @@ internal class PrimerInternal: LogReporter {
                 primerErr = err
             } else {
                 primerErr = PrimerError.underlyingErrors(errors: [err],
-                                                         userInfo: nil,
+                                                         userInfo: .errorUserInfoDictionary(),
                                                          diagnosticsId: UUID().uuidString)
             }
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
@@ -243,7 +243,7 @@ internal class PrimerInternal: LogReporter {
                 primerErr = err
             } else {
                 primerErr = PrimerError.underlyingErrors(errors: [err],
-                                                         userInfo: nil,
+                                                         userInfo: .errorUserInfoDictionary(),
                                                          diagnosticsId: UUID().uuidString)
             }
 

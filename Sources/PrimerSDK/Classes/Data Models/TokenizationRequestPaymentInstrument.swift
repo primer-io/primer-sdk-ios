@@ -100,10 +100,7 @@ class OffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
             let err = InternalError.invalidValue(
                 key: "SessionInfo",
                 value: self.sessionInfo,
-                userInfo: ["file": #file,
-                           "class": "\(Self.self)",
-                           "function": #function,
-                           "line": "\(#line)"],
+                userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err

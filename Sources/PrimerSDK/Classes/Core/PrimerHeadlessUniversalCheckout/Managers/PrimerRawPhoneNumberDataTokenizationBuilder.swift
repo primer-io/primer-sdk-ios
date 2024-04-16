@@ -47,7 +47,7 @@ class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuil
         return Promise { seal in
 
             guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType), let paymentMethodId = paymentMethod.id else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil,
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
                                                                diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -57,7 +57,7 @@ class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuil
             guard let rawData = data as? PrimerPhoneNumberData else {
                 let err = PrimerError.invalidValue(key: "rawData",
                                                    value: nil,
-                                                   userInfo: nil,
+                                                   userInfo: .errorUserInfoDictionary(),
                                                    diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -83,12 +83,7 @@ class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuil
 
                 guard let rawData = data as? PrimerPhoneNumberData else {
                     let err = PrimerValidationError.invalidRawData(
-                        userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     errors.append(err)
                     ErrorHandler.handle(error: err)
@@ -111,22 +106,14 @@ class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizationBuil
                    !rawData.phoneNumber.isValidPhoneNumberForPaymentMethodType(paymentMethodType) {
                     errors.append(PrimerValidationError.invalidPhoneNumber(
                                     message: "Phone number is not valid.",
-                                    userInfo: [
-                                        "file": #file,
-                                        "class": "\(Self.self)",
-                                        "function": #function,
-                                        "line": "\(#line)"
-                                    ],
+                                    userInfo: .errorUserInfoDictionary(),
                                     diagnosticsId: UUID().uuidString))
                 }
 
                 if !errors.isEmpty {
                     let err = PrimerError.underlyingErrors(
                         errors: errors,
-                        userInfo: ["file": #file,
-                                   "class": "\(Self.self)",
-                                   "function": #function,
-                                   "line": "\(#line)"],
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
 

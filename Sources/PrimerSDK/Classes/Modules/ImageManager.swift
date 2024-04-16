@@ -152,7 +152,7 @@ internal class ImageManager: LogReporter {
 
                 if !errors.isEmpty, errors.count == responses.count {
                     let err = InternalError.underlyingErrors(errors: errors,
-                                                             userInfo: nil,
+                                                             userInfo: .errorUserInfoDictionary(),
                                                              diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     throw err
@@ -197,7 +197,7 @@ internal class ImageManager: LogReporter {
                     seal.fulfill(imageFile)
 
                 } else {
-                    let err = InternalError.failedToDecode(message: "image", userInfo: nil,
+                    let err = InternalError.failedToDecode(message: "image", userInfo: .errorUserInfoDictionary(),
                                                            diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     throw err

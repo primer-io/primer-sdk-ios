@@ -44,7 +44,7 @@ extension Request.Body {
             } else {
                 let err = InternalError.invalidValue(key: "PaymentInstrument",
                                                      value: self.paymentInstrument,
-                                                     userInfo: nil,
+                                                     userInfo: .errorUserInfoDictionary(),
                                                      diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err

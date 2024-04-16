@@ -104,7 +104,7 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
 
             guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType),
                   let configId = AppState.current.apiConfiguration?.getConfigId(for: paymentMethod.type) else {
-                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: nil,
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
                                                                diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -115,7 +115,7 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
                   (rawData.expiryDate.split(separator: "/")).count == 2
             else {
                 let err = PrimerError.invalidValue(key: "rawData", value: nil,
-                                                   userInfo: nil,
+                                                   userInfo: .errorUserInfoDictionary(),
                                                    diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -145,12 +145,7 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
 
                 guard let rawData = data as? PrimerBancontactCardData else {
                     let err = PrimerValidationError.invalidRawData(
-                        userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     errors.append(err)
                     ErrorHandler.handle(error: err)
@@ -172,24 +167,14 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
                 if rawData.cardNumber.isEmpty {
                     let err = PrimerValidationError.invalidCardnumber(
                         message: "Card number can not be blank.",
-                        userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     errors.append(err)
 
                 } else if !rawData.cardNumber.isValidCardNumber {
                     let err = PrimerValidationError.invalidCardnumber(
                         message: "Card number is not valid.",
-                        userInfo: [
-                            "file": #file,
-                            "class": "\(Self.self)",
-                            "function": #function,
-                            "line": "\(#line)"
-                        ],
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     errors.append(err)
                 }
@@ -206,23 +191,13 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
                     if rawData.cardholderName.isEmpty {
                         errors.append(PrimerValidationError.invalidCardholderName(
                                         message: "Cardholder name cannot be blank.",
-                                        userInfo: [
-                                            "file": #file,
-                                            "class": "\(Self.self)",
-                                            "function": #function,
-                                            "line": "\(#line)"
-                                        ],
+                                        userInfo: .errorUserInfoDictionary(),
                                         diagnosticsId: UUID().uuidString))
 
                     } else if !(rawData.cardholderName).isValidNonDecimalString {
                         errors.append(PrimerValidationError.invalidCardholderName(
                                         message: "Cardholder name is not valid.",
-                                        userInfo: [
-                                            "file": #file,
-                                            "class": "\(Self.self)",
-                                            "function": #function,
-                                            "line": "\(#line)"
-                                        ],
+                                        userInfo: .errorUserInfoDictionary(),
                                         diagnosticsId: UUID().uuidString))
                     }
                 }
@@ -230,10 +205,7 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
                 if !errors.isEmpty {
                     let err = PrimerError.underlyingErrors(
                         errors: errors,
-                        userInfo: ["file": #file,
-                                   "class": "\(Self.self)",
-                                   "function": #function,
-                                   "line": "\(#line)"],
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
 
                     self.isDataValid = false
