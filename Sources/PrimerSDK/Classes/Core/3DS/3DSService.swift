@@ -282,8 +282,8 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
             // ⚠️  Property version doesn't exist on version before 1.1.0, so PrimerSDK won't build
             //     if Primer3DS is not equal or above 1.1.0
-            if Primer3DS.hardcodedVersion.compareWithVersion("1.1.1") == .orderedDescending ||
-                Primer3DS.hardcodedVersion.compareWithVersion("1.1.1") == .orderedSame {
+            if Primer3DS.version.compareWithVersion("1.1.1") == .orderedDescending ||
+                Primer3DS.version.compareWithVersion("1.1.1") == .orderedSame {
                 do {
                     primer3DS.is3DSSanityCheckEnabled = PrimerSettings.current.debugOptions.is3DSSanityCheckEnabled
                     try primer3DS.initializeSDK(apiKey: apiKey, certificates: certs)

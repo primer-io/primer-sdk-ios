@@ -22,8 +22,10 @@ extension PrimerKlarnaError: PrimerErrorProtocol {
         case .userNotApproved(let userInfo),
              .klarnaSdkError(_, let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-            tmpUserInfo["diagnosticsId"] = self.diagnosticsId
+        default: break
         }
+
+        tmpUserInfo["diagnosticsId"] = self.diagnosticsId
 
         return tmpUserInfo
     }
@@ -34,6 +36,8 @@ extension PrimerKlarnaError: PrimerErrorProtocol {
             return "klarna-user-not-approved"
         case .klarnaSdkError:
             return "klarna-sdk-error"
+        default:
+            return ""
         }
     }
 

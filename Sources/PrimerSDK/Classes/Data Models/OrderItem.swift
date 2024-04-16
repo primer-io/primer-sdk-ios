@@ -8,7 +8,6 @@
 import Foundation
 import PassKit
 
-@available(*, deprecated, message: "Set the order items in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
 internal struct OrderItem: Codable {
 
     public let name: String
