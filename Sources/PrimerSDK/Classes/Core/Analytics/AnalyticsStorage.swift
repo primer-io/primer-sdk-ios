@@ -102,7 +102,7 @@ extension Analytics {
                 } catch {
                     let err = PrimerError.underlyingErrors(
                         errors: [error],
-                        userInfo: nil,
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                 }

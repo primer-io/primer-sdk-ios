@@ -16,10 +16,7 @@ extension PrimerHeadlessUniversalCheckout {
                     .first(where: { $0.type == "KLARNA" })
             else {
                 let err = PrimerError.generic(message: "Unable to locate a valid payment method configuration.",
-                                              userInfo: ["file": #file,
-                                                         "class": "\(Self.self)",
-                                                         "function": #function,
-                                                         "line": "\(#line)"],
+                                              userInfo: .errorUserInfoDictionary(),
                                               diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
@@ -28,10 +25,7 @@ extension PrimerHeadlessUniversalCheckout {
             if (intent == .vault && !paymentMethod.isVaultingEnabled) ||
                 (intent == .checkout && !paymentMethod.isCheckoutEnabled) {
                 let err = PrimerError.unsupportedIntent(intent: intent,
-                                                        userInfo: ["file": #file,
-                                                                   "class": "\(Self.self)",
-                                                                   "function": #function,
-                                                                   "line": "\(#line)"],
+                                                        userInfo: .errorUserInfoDictionary(),
                                                         diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err

@@ -102,10 +102,7 @@ internal class Downloader: NSObject, DownloaderModule {
 
                 if !errors.isEmpty, errors.count == responses.count {
                     let err = InternalError.underlyingErrors(errors: errors,
-                                                             userInfo: ["file": #file,
-                                                                        "class": "\(Self.self)",
-                                                                        "function": #function,
-                                                                        "line": "\(#line)"],
+                                                             userInfo: .errorUserInfoDictionary(),
                                                              diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     throw err
@@ -124,10 +121,7 @@ internal class Downloader: NSObject, DownloaderModule {
             guard let fileRemoteUrl = file.remoteUrl else {
                 let err = InternalError.invalidValue(key: "remoteUrl",
                                                      value: nil,
-                                                     userInfo: ["file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"],
+                                                     userInfo: .errorUserInfoDictionary(),
                                                      diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -137,10 +131,7 @@ internal class Downloader: NSObject, DownloaderModule {
             guard let fileLocalUrl = file.localUrl else {
                 let err = InternalError.invalidValue(key: "localUrl",
                                                      value: nil,
-                                                     userInfo: ["file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"],
+                                                     userInfo: .errorUserInfoDictionary(),
                                                      diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -204,10 +195,7 @@ internal class Downloader: NSObject, DownloaderModule {
 
                     } catch {
                         let primerErr = PrimerError.underlyingErrors(errors: [error],
-                                                                     userInfo: ["file": #file,
-                                                                                "class": "\(Self.self)",
-                                                                                "function": #function,
-                                                                                "line": "\(#line)"],
+                                                                     userInfo: .errorUserInfoDictionary(),
                                                                      diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: primerErr)
                     }
@@ -217,10 +205,7 @@ internal class Downloader: NSObject, DownloaderModule {
             let task = session.downloadTask(with: request) { (tempLocalUrl, response, error) in
                 if let error = error {
                     let primerErr = PrimerError.underlyingErrors(errors: [error],
-                                                                 userInfo: ["file": #file,
-                                                                            "class": "\(Self.self)",
-                                                                            "function": #function,
-                                                                            "line": "\(#line)"],
+                                                                 userInfo: .errorUserInfoDictionary(),
                                                                  diagnosticsId: UUID().uuidString)
                     seal.reject(primerErr)
 
@@ -229,10 +214,7 @@ internal class Downloader: NSObject, DownloaderModule {
                     guard let statusCode = (response as? HTTPURLResponse)?.statusCode else {
                         let err = InternalError.invalidValue(key: "URL status code",
                                                              value: nil,
-                                                             userInfo: ["file": #file,
-                                                                        "class": "\(Self.self)",
-                                                                        "function": #function,
-                                                                        "line": "\(#line)"],
+                                                             userInfo: .errorUserInfoDictionary(),
                                                              diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
@@ -253,10 +235,7 @@ internal class Downloader: NSObject, DownloaderModule {
 
                         } catch {
                             let primerErr = PrimerError.underlyingErrors(errors: [error],
-                                                                         userInfo: ["file": #file,
-                                                                                    "class": "\(Self.self)",
-                                                                                    "function": #function,
-                                                                                    "line": "\(#line)"],
+                                                                         userInfo: .errorUserInfoDictionary(),
                                                                          diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: primerErr)
                             seal.reject(primerErr)
@@ -264,10 +243,7 @@ internal class Downloader: NSObject, DownloaderModule {
                     } else {
                         let err = InternalError.serverError(status: statusCode,
                                                             response: nil,
-                                                            userInfo: ["file": #file,
-                                                                       "class": "\(Self.self)",
-                                                                       "function": #function,
-                                                                       "line": "\(#line)"],
+                                                            userInfo: .errorUserInfoDictionary(),
                                                             diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: err)
                         seal.reject(err)
@@ -276,10 +252,7 @@ internal class Downloader: NSObject, DownloaderModule {
                 } else {
                     let err = InternalError.invalidValue(key: "Failed to receive both error and response",
                                                          value: nil,
-                                                         userInfo: ["file": #file,
-                                                                    "class": "\(Self.self)",
-                                                                    "function": #function,
-                                                                    "line": "\(#line)"],
+                                                         userInfo: .errorUserInfoDictionary(),
                                                          diagnosticsId: UUID().uuidString)
                     precondition(true, err.localizedDescription)
                     ErrorHandler.handle(error: err)

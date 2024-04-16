@@ -161,8 +161,7 @@ class PrimerPaymentMethod: Codable, LogReporter {
 
         switch internalPaymentMethodType {
         case PrimerPaymentMethodType.goCardless,
-             PrimerPaymentMethodType.googlePay,
-             PrimerPaymentMethodType.nolPay:
+             PrimerPaymentMethodType.googlePay:
             return false
         default:
             return true
@@ -414,7 +413,7 @@ extension PrimerPaymentMethod {
                    borderColor == nil,
                    text == nil,
                    textColor == nil {
-                    let err = InternalError.failedToDecode(message: "BaseColors", userInfo: nil,
+                    let err = InternalError.failedToDecode(message: "BaseColors", userInfo: .errorUserInfoDictionary(),
                                                            diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     throw err
@@ -474,7 +473,7 @@ extension PrimerTheme {
             darkUrlStr = (try? container.decode(String?.self, forKey: .darkUrlStr)) ?? nil
 
             if coloredUrlStr == nil && lightUrlStr == nil && darkUrlStr == nil {
-                let err = InternalError.failedToDecode(message: "BaseColoredURLs", userInfo: nil,
+                let err = InternalError.failedToDecode(message: "BaseColoredURLs", userInfo: .errorUserInfoDictionary(),
                                                        diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
@@ -520,7 +519,7 @@ extension PrimerTheme {
             lightHex = (try? container.decode(String?.self, forKey: .lightHex)) ?? nil
 
             if coloredHex == nil && lightHex == nil && darkHex == nil {
-                let err = InternalError.failedToDecode(message: "BaseColors", userInfo: nil,
+                let err = InternalError.failedToDecode(message: "BaseColors", userInfo: .errorUserInfoDictionary(),
                                                        diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err

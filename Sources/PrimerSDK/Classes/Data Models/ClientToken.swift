@@ -257,33 +257,24 @@ extension DecodedJWTToken {
 
     func validate() throws {
         if accessToken == nil {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)",
-                                                                "reason": "Access token is nil"],
+            let info = ["reason": "Access token is nil"]
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info),
                                                      diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
 
         guard let expDate = expDate else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)",
-                                                                "reason": "Expiry date missing"],
+            let info = ["reason": "Expiry date missing"]
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info),
                                                      diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
 
         if expDate < Date() {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)",
-                                                                "reason": "Expiry datetime has passed."],
+            let info = ["reason": "Expiry datetime has passed."]
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info),
                                                      diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err

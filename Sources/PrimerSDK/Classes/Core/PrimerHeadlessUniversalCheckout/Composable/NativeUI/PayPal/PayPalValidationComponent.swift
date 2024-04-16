@@ -13,10 +13,7 @@ struct PayPalValidationComponent: NativeUIValidateable {
     func validatePaymentMethod() throws {
         if PrimerSettings.current.paymentMethodOptions.urlScheme == nil {
             let error = PrimerError.invalidUrlScheme(urlScheme: nil,
-                                                     userInfo: ["file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"],
+                                                     userInfo: .errorUserInfoDictionary(),
                                                      diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: error)
             throw error

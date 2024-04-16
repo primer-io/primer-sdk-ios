@@ -61,10 +61,7 @@ public class NolPayLinkedCardsComponent {
         else {
             let error = PrimerError.invalidValue(key: "Nol AppID",
                                                  value: nil,
-                                                 userInfo: ["file": #file,
-                                                            "class": "\(Self.self)",
-                                                            "function": #function,
-                                                            "line": "\(#line)"],
+                                                 userInfo: .errorUserInfoDictionary(),
                                                  diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: error)
             self.errorDelegate?.didReceiveError(error: error)
@@ -72,10 +69,7 @@ public class NolPayLinkedCardsComponent {
         }
 
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"],
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                      diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             return
@@ -111,10 +105,7 @@ public class NolPayLinkedCardsComponent {
                     case .failure(let error):
                         continuation.resume(throwing: error)
                         let primerError = PrimerError.underlyingErrors(errors: [error],
-                                                                       userInfo: ["file": #file,
-                                                                                  "class": "\(Self.self)",
-                                                                                  "function": #function,
-                                                                                  "line": "\(#line)"],
+                                                                       userInfo: .errorUserInfoDictionary(),
                                                                        diagnosticsId: UUID().uuidString)
                         completion(.failure(primerError))
                     }
@@ -139,12 +130,7 @@ public class NolPayLinkedCardsComponent {
         guard let nolPay = nolPay else {
             let error = PrimerError.nolError(code: "unknown",
                                              message: "error.description",
-                                             userInfo: [
-                                                "file": #file,
-                                                "class": "\(Self.self)",
-                                                "function": #function,
-                                                "line": "\(#line)"
-                                             ],
+                                             userInfo: .errorUserInfoDictionary(),
                                              diagnosticsId: UUID().uuidString)
             self.errorDelegate?.didReceiveError(error: error)
             ErrorHandler.handle(error: error)
@@ -164,12 +150,7 @@ public class NolPayLinkedCardsComponent {
                     guard let parsedMobileNumber = mobileNumber else {
                         let error = PrimerError.invalidValue(key: "mobileNumber",
                                                              value: nil,
-                                                             userInfo: [
-                                                                "file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"
-                                                             ],
+                                                             userInfo: .errorUserInfoDictionary(),
                                                              diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: error)
                         self?.errorDelegate?.didReceiveError(error: error)
@@ -179,12 +160,7 @@ public class NolPayLinkedCardsComponent {
                     guard let countryCode = countryCode else {
                         let error = PrimerError.invalidValue(key: "countryCode",
                                                              value: nil,
-                                                             userInfo: [
-                                                                "file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"
-                                                             ],
+                                                             userInfo: .errorUserInfoDictionary(),
                                                              diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: error)
                         self?.errorDelegate?.didReceiveError(error: error)
@@ -199,12 +175,7 @@ public class NolPayLinkedCardsComponent {
                         case .failure(let error):
                             let error = PrimerError.nolError(code: error.errorCode,
                                                              message: error.description,
-                                                             userInfo: [
-                                                                "file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"
-                                                             ],
+                                                             userInfo: .errorUserInfoDictionary(),
                                                              diagnosticsId: UUID().uuidString)
                             self?.errorDelegate?.didReceiveError(error: error)
                             ErrorHandler.handle(error: error)

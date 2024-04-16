@@ -49,12 +49,7 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
         case false:
             let err = PrimerValidationError.invalidPostalCode(
                 message: "Postal code is not valid.",
-                userInfo: [
-                    "file": #file,
-                    "class": "\(Self.self)",
-                    "function": #function,
-                    "line": "\(#line)"
-                ],
+                userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             validation = .invalid(err)

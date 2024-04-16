@@ -129,10 +129,7 @@ internal class PrimerUIManager {
                 guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) else {
                     let err = PrimerError.unableToPresentPaymentMethod(
                         paymentMethodType: paymentMethodType,
-                        userInfo: ["file": #file,
-                                   "class": "\(Self.self)",
-                                   "function": #function,
-                                   "line": "\(#line)"],
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -142,10 +139,7 @@ internal class PrimerUIManager {
                 guard PrimerAPIConfiguration.paymentMethodConfigViewModels.first(where: { $0.config.type == paymentMethodType }) != nil else {
                     let err = PrimerError.unableToPresentPaymentMethod(
                         paymentMethodType: paymentMethodType,
-                        userInfo: ["file": #file,
-                                   "class": "\(Self.self)",
-                                   "function": #function,
-                                   "line": "\(#line)"],
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -155,10 +149,7 @@ internal class PrimerUIManager {
                 if case .checkout = PrimerInternal.shared.intent, paymentMethod.isCheckoutEnabled == false {
                     let err = PrimerError.unsupportedIntent(
                         intent: .checkout,
-                        userInfo: ["file": #file,
-                                   "class": "\(Self.self)",
-                                   "function": #function,
-                                   "line": "\(#line)"],
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     seal.reject(err)
                     return
@@ -166,10 +157,7 @@ internal class PrimerUIManager {
                 } else if case .vault = PrimerInternal.shared.intent, paymentMethod.isVaultingEnabled == false {
                     let err = PrimerError.unsupportedIntent(
                         intent: .vault,
-                        userInfo: ["file": #file,
-                                   "class": "\(Self.self)",
-                                   "function": #function,
-                                   "line": "\(#line)"],
+                        userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
                     seal.reject(err)
                     return

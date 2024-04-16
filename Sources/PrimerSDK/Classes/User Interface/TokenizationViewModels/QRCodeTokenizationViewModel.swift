@@ -25,10 +25,7 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
 
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
-            let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                "class": "\(Self.self)",
-                                                                "function": #function,
-                                                                "line": "\(#line)"],
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                      diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
@@ -113,10 +110,7 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
             self.didCancel = {
                 let err = PrimerError.cancelled(
                     paymentMethodType: self.config.type,
-                    userInfo: ["file": #file,
-                               "class": "\(Self.self)",
-                               "function": #function,
-                               "line": "\(#line)"],
+                    userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 pollingModule.cancel(withError: err)
@@ -142,10 +136,9 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let configId = config.id else {
-                let err = PrimerError.invalidValue(key: "configuration.id", value: config.id, userInfo: ["file": #file,
-                                                                                                         "class": "\(Self.self)",
-                                                                                                         "function": #function,
-                                                                                                         "line": "\(#line)"],
+                let err = PrimerError.invalidValue(key: "configuration.id",
+                                                   value: config.id,
+                                                   userInfo: .errorUserInfoDictionary(),
                                                    diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -199,10 +192,7 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
                     seal.reject(err)
                 }
             } else {
-                let error = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                      "class": "\(Self.self)",
-                                                                      "function": #function,
-                                                                      "line": "\(#line)"],
+                let error = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                            diagnosticsId: UUID().uuidString)
                 seal.reject(error)
             }
@@ -274,10 +264,7 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
  hasn't been implemented. No events will be sent to your delegate instance.
 """
                 let err = PrimerError.generic(message: message,
-                                              userInfo: ["file": #file,
-                                                         "class": "\(Self.self)",
-                                                         "function": #function,
-                                                         "line": "\(#line)"],
+                                              userInfo: .errorUserInfoDictionary(),
                                               diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
@@ -300,10 +287,7 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
                  PrimerPaymentMethodType.omisePromptPay.rawValue:
 
                 guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                    let err = PrimerError.invalidClientToken(userInfo: ["file": #file,
-                                                                        "class": "\(Self.self)",
-                                                                        "function": #function,
-                                                                        "line": "\(#line)"],
+                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                              diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -313,10 +297,7 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
                 guard let expiresAt = decodedJWTToken.expDate else {
                     let err = PrimerError.invalidValue(key: "decodedClientToken.expiresAt",
                                                        value: decodedJWTToken.expiresAt,
-                                                       userInfo: ["file": #file,
-                                                                  "class": "\(Self.self)",
-                                                                  "function": #function,
-                                                                  "line": "\(#line)"],
+                                                       userInfo: .errorUserInfoDictionary(),
                                                        diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -326,10 +307,7 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
                 guard let qrCodeString = decodedJWTToken.qrCode else {
                     let err = PrimerError.invalidValue(key: "decodedClientToken.qrCode",
                                                        value: decodedJWTToken.qrCode,
-                                                       userInfo: ["file": #file,
-                                                                  "class": "\(Self.self)",
-                                                                  "function": #function,
-                                                                  "line": "\(#line)"],
+                                                       userInfo: .errorUserInfoDictionary(),
                                                        diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
@@ -361,10 +339,7 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
             } else {
                 let err = PrimerError.invalidValue(key: "additionalInfo",
                                                    value: additionalInfo,
-                                                   userInfo: ["file": #file,
-                                                              "class": "\(Self.self)",
-                                                              "function": #function,
-                                                              "line": "\(#line)"],
+                                                   userInfo: .errorUserInfoDictionary(),
                                                    diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)

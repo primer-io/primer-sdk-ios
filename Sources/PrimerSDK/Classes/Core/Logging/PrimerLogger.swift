@@ -52,7 +52,7 @@ extension PrimerLogger {
                       line: Int = #line,
                       function: String = #function) {
         let metadata = PrimerLogMetadata(file: file, line: line, function: function)
-        logProxy(level: .debug, message: message, userInfo: nil, metadata: metadata)
+        logProxy(level: .debug, message: message, userInfo: userInfo, metadata: metadata)
     }
 
     public func info(message: String,
