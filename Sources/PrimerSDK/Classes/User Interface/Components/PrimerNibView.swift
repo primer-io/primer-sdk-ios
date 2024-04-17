@@ -9,7 +9,7 @@ import UIKit
 
 public class PrimerNibView: UIView {
 
-    internal var view: UIView!
+    internal var view: UIView?
 
     override internal init(frame: CGRect) {
         super.init(frame: frame)
@@ -23,7 +23,11 @@ public class PrimerNibView: UIView {
 
     internal func xibSetup() {
         backgroundColor = UIColor.clear
-        view = loadNib()
+        guard let view = loadNib() else {
+            return
+        }
+        self.view = view
+
         // use bounds not frame or it'll be offset
         view.frame = bounds
         // Adding custom subview on top of our view

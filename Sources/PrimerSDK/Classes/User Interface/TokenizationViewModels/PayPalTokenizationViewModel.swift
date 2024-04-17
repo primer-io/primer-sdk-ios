@@ -455,7 +455,8 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
 extension PayPalTokenizationViewModel: ASWebAuthenticationPresentationContextProviding {
     @available(iOS 12.0, *)
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-        return UIApplication.shared.keyWindow ?? ASPresentationAnchor()
+        return UIApplication.shared.windows.filter {$0.isKeyWindow}.first ??
+            ASPresentationAnchor()
     }
 
 }

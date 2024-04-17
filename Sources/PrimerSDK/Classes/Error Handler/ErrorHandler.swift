@@ -16,7 +16,6 @@ internal class ErrorHandler: LogReporter {
 
     static var shared = ErrorHandler()
 
-    @discardableResult
     func handle(error: Error) {
         self.logger.error(message: error.localizedDescription)
 
