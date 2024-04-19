@@ -22,6 +22,7 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
     private var abortPayment = false
 
     var onCreatePaymentWithData: ((PrimerCheckoutPaymentMethodData) -> Void)?
+    var onUpdateClientSession: ((PrimerClientSession) -> Void?)?
 
     override func tearDown() {
         VaultService.apiClient = nil
@@ -406,12 +407,13 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
         }
 
         if self.abortPayment {
-            onCreatePaymentWithData = { _ in
+
 
                 print(self.eventsCalled)
 
+            onUpdateClientSession = { _ in
+                guard self.eventsCalled.count == 6 else { return }
                 if isSurchargeIncluded {
-                    XCTAssert(self.eventsCalled.count == 6, "6 events should have been called.")
                     XCTAssert(self.eventsCalled[0] == "primerHeadlessUniversalCheckoutPreparationDidStart", "'\(self.eventsCalled[0])' called instead if 'primerHeadlessUniversalCheckoutPreparationDidStart'.")
                     XCTAssert(self.eventsCalled[1] == "primerHeadlessUniversalCheckoutClientSessionWillUpdate", "'\(self.eventsCalled[1])' called instead if 'primerHeadlessUniversalCheckoutClientSessionWillUpdate'.")
                     XCTAssert(self.eventsCalled[2] == "primerHeadlessUniversalCheckoutClientSessionDidUpdate", "'\(self.eventsCalled[2])' called instead if 'primerHeadlessUniversalCheckoutClientSessionDidUpdate'.")
@@ -419,7 +421,12 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
                     XCTAssert(self.eventsCalled[4] == "primerHeadlessUniversalCheckoutClientSessionWillUpdate", "'\(self.eventsCalled[4])' called instead if 'primerHeadlessUniversalCheckoutClientSessionWillUpdate'.")
                     XCTAssert(self.eventsCalled[5] == "primerHeadlessUniversalCheckoutClientSessionDidUpdate", "'\(self.eventsCalled[5])' called instead if 'primerHeadlessUniversalCheckoutClientSessionDidUpdate'.")
 
-                } else {
+                }
+                expectation.fulfill()
+            }
+
+            onCreatePaymentWithData = { _ in
+                if !isSurchargeIncluded {
                     XCTAssert(self.eventsCalled.count == 2, "2 events should have been called but got \(self.eventsCalled.count).")
                     XCTAssert(self.eventsCalled[0] == "primerHeadlessUniversalCheckoutPreparationDidStart", "'\(self.eventsCalled[0])' called instead if 'primerHeadlessUniversalCheckoutPreparationDidStart'.")
                     XCTAssert(self.eventsCalled[1] == "primerHeadlessUniversalCheckoutWillCreatePaymentWithData", "'\(self.eventsCalled[1])' called instead if 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData'.")
@@ -478,6 +485,7 @@ extension HUC_TokenizationViewModelTests: PrimerHeadlessUniversalCheckoutDelegat
 
     func primerHeadlessUniversalCheckoutDidUpdateClientSession(_ clientSession: PrimerClientSession) {
         eventsCalled.append("primerHeadlessUniversalCheckoutClientSessionDidUpdate")
+        onUpdateClientSession?(clientSession)
     }
 
     func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
