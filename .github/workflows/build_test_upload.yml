@@ -62,7 +62,7 @@ jobs:
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           SOURCE_BRANCH: ${{ github.head_ref }}
-  spm-build:
+  spm-test:
     needs: unit-test
     runs-on: macos-13
     timeout-minutes: 20
@@ -95,7 +95,7 @@ jobs:
           bundler-cache: true
       - name: Build SPM App
         run: |
-          bundle exec fastlane build_spm
+          bundle exec fastlane test_spm
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
