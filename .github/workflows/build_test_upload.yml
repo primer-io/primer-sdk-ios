@@ -62,9 +62,9 @@ jobs:
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           SOURCE_BRANCH: ${{ github.head_ref }}
   spm-test:
-    runs-on: macos-13
+    runs-on: macos-13-large
     timeout-minutes: 20
-    name: "Build app with SPM Integration"
+    name: "Run unit tests (SPM)"
     steps:
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
