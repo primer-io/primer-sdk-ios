@@ -47,6 +47,8 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
         self.isImplementingPaymentMethodWithRequiredAction = false
         self.abortPayment = false
         self.eventsCalled = []
+        self.onUpdateClientSession = nil
+        self.onCreatePaymentWithData = nil
     }
 
     // MARK: - HEADLESS UNIVERSAL CHECKOUT
@@ -376,7 +378,7 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
                     }
 
                 } else {
-                    XCTAssert(false, "SDK should have returned an error or resume token.")
+                    XCTFail("SDK should have returned an error or resume token.")
                 }
 
                 expectation.fulfill()
@@ -407,9 +409,7 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
         }
 
         if self.abortPayment {
-
-
-                print(self.eventsCalled)
+            print(self.eventsCalled)
 
             onUpdateClientSession = { _ in
                 guard self.eventsCalled.count == 6 else { return }
@@ -466,7 +466,7 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
             }
         }
 
-        wait(for: [expectation], timeout: 60)
+        wait(for: [expectation], timeout: 10)
     }
 }
 
@@ -577,5 +577,7 @@ extension HUC_TokenizationViewModelTests: TokenizationTestDelegate {
         self.isImplementingPaymentMethodWithRequiredAction = false
         self.abortPayment = false
         self.eventsCalled = []
+
+
     }
 }
