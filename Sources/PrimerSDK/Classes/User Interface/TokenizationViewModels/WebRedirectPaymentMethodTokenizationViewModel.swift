@@ -198,7 +198,15 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                     responseCode: nil
                 )
 
+
                 Analytics.Service.record(events: [presentEvent, networkEvent])
+
+                guard UIApplication.shared.windows.count > 0 else {
+                    self.handleWebViewControllerPresentedCompletion()
+                    seal.fulfill()
+                    return
+                }
+
                 if PrimerUIManager.primerRootViewController == nil {
                     firstly {
                         PrimerUIManager.prepareRootViewController()
@@ -206,7 +214,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                     .done {
                         PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
                             DispatchQueue.main.async {
-                                self.handleWebViewControlllerPresentedCompletion()
+                                self.handleWebViewControllerPresentedCompletion()
                                 seal.fulfill()
                             }
                         })
@@ -215,7 +223,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 } else {
                     PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
                         DispatchQueue.main.async {
-                            self.handleWebViewControlllerPresentedCompletion()
+                            self.handleWebViewControllerPresentedCompletion()
                             seal.fulfill()
                         }
                     })
@@ -224,7 +232,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         }
     }
 
-    private func handleWebViewControlllerPresentedCompletion() {
+    private func handleWebViewControllerPresentedCompletion() {
         DispatchQueue.main.async {
             let viewEvent = Analytics.Event.ui(
                 action: .view,
