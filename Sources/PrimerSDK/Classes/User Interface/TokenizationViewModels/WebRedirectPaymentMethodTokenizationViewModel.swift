@@ -198,7 +198,6 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                     responseCode: nil
                 )
 
-
                 Analytics.Service.record(events: [presentEvent, networkEvent])
 
                 guard UIApplication.shared.windows.count > 0 else {
