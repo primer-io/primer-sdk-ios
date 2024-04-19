@@ -111,6 +111,7 @@ private extension CardNetwork {
         case .amex:
             return ["1234", "4567", "8901"]
         case .bancontact,
+             .cartesBancaires,
              .diners,
              .discover,
              .elo,
