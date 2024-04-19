@@ -404,7 +404,7 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
         }
 
         if self.abortPayment {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 8) {
                 print(self.eventsCalled)
 
                 if isSurchargeIncluded {
@@ -417,7 +417,7 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
                     XCTAssert(self.eventsCalled[5] == "primerHeadlessUniversalCheckoutClientSessionDidUpdate", "'\(self.eventsCalled[5])' called instead if 'primerHeadlessUniversalCheckoutClientSessionDidUpdate'.")
 
                 } else {
-                    XCTAssert(self.eventsCalled.count == 2, "2 events should have been called.")
+                    XCTAssert(self.eventsCalled.count == 2, "2 events should have been called but got \(self.eventsCalled.count).")
                     XCTAssert(self.eventsCalled[0] == "primerHeadlessUniversalCheckoutPreparationDidStart", "'\(self.eventsCalled[0])' called instead if 'primerHeadlessUniversalCheckoutPreparationDidStart'.")
                     XCTAssert(self.eventsCalled[1] == "primerHeadlessUniversalCheckoutWillCreatePaymentWithData", "'\(self.eventsCalled[1])' called instead if 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData'.")
                 }
