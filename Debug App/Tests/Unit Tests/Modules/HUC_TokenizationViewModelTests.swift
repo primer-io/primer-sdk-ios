@@ -345,7 +345,7 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
 
             self.resumeCompletion = { resumeToken, err in
                 if let err = err {
-                    XCTAssert(false, "SDK failed with error \(err.localizedDescription) while it should have succeeded.")
+                    XCTFail("SDK failed with error \(err.localizedDescription) while it should have succeeded.")
 
                 } else if let resumeToken = resumeToken {
                     XCTAssert(resumeToken == "resume_token", "Successfully called the resume handler")
@@ -404,7 +404,7 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
         }
 
         if self.abortPayment {
-            Timer.scheduledTimer(withTimeInterval: 8, repeats: false) { _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 print(self.eventsCalled)
 
                 if isSurchargeIncluded {
