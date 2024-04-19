@@ -21,6 +21,8 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
     private var isImplementingPaymentMethodWithRequiredAction = false
     private var abortPayment = false
 
+    var onCreatePaymentWithData: ((PrimerCheckoutPaymentMethodData) -> Void)?
+
     override func tearDown() {
         VaultService.apiClient = nil
         PrimerAPIConfigurationModule.apiClient = nil
@@ -404,7 +406,8 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
         }
 
         if self.abortPayment {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 8) {
+            onCreatePaymentWithData = { _ in
+
                 print(self.eventsCalled)
 
                 if isSurchargeIncluded {
@@ -483,6 +486,7 @@ extension HUC_TokenizationViewModelTests: PrimerHeadlessUniversalCheckoutDelegat
 
     func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
         eventsCalled.append("primerHeadlessUniversalCheckoutWillCreatePaymentWithData")
+        onCreatePaymentWithData?(data)
 
         if self.abortPayment {
             decisionHandler(.abortPaymentCreation())
