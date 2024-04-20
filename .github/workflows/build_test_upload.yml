@@ -26,7 +26,7 @@ jobs:
   unit-test:
     runs-on: macos-13-large
     timeout-minutes: 30
-    name: "Unit Tests"
+    name: "Debug App - Unit Tests"
     steps:
       - name: Git - Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -64,7 +64,7 @@ jobs:
   spm-test:
     runs-on: macos-13-large
     timeout-minutes: 20
-    name: "Run unit tests (SPM)"
+    name: "SDK - Unit Tests"
     steps:
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
@@ -103,7 +103,9 @@ jobs:
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           SOURCE_BRANCH: ${{ github.head_ref }}
   build-and-upload-to-appetize:
-    needs: unit-test
+    needs: 
+      - unit-test
+      - spm-test
     runs-on: macos-13
     timeout-minutes: 45
     name: "Build and upload app to Appetize"

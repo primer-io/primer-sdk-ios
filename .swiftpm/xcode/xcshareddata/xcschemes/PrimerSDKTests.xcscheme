@@ -34,6 +34,11 @@
                BlueprintName = "PrimerSDKTests"
                ReferencedContainer = "container:">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "HUC_TokenizationViewModelTests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>

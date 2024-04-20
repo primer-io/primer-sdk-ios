@@ -28,7 +28,7 @@ let package = Package(
             dependencies: [
                 .byName(name: "PrimerSDK")
             ],
-            path: "Debug App/Tests/Unit Tests"
+            path: "Tests/Unit Tests"
         )
     ],
     swiftLanguageVersions: [.v5]
