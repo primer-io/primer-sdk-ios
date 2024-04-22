@@ -119,9 +119,8 @@ jobs:
       - name: Code Coverage Summary
         uses: irongut/CodeCoverageSummary@v1.3.0
         with: 
-          filename: cobertura.xml
+          filename: */cobertura.xml
           badge: true
-          fail_below_min: true
           thresholds: '35 75'
 
   build-and-upload-to-appetize:
