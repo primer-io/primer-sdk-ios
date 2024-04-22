@@ -200,11 +200,14 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
                 Analytics.Service.record(events: [presentEvent, networkEvent])
 
+                #if DEBUG
+                // This ensures that the presentation completion is correctly handled in headless unit tests
                 guard UIApplication.shared.windows.count > 0 else {
                     self.handleWebViewControllerPresentedCompletion()
                     seal.fulfill()
                     return
                 }
+                #endif
 
                 if PrimerUIManager.primerRootViewController == nil {
                     firstly {
