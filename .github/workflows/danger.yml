@@ -8,7 +8,7 @@ on:
       - synchronize
 
 concurrency: 
-  group: ${{ github.ref }}
+  group: ${{ github.ref }}-danger
   cancel-in-progress: true
 
 jobs:

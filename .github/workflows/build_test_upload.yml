@@ -7,7 +7,7 @@ on:
       - synchronize
 
 concurrency: 
-  group: ${{ github.ref }}
+  group: ${{ github.ref }}-tests
   cancel-in-progress: true
 
 jobs:
