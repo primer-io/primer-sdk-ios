@@ -22,6 +22,13 @@ let package = Package(
                 .process("Resources"),
                 .copy("Classes/Third Party/PromiseKit/LICENSE")
             ]
+        ),
+        .testTarget(
+            name: "PrimerSDKTests",
+            dependencies: [
+                .byName(name: "PrimerSDK")
+            ],
+            path: "Tests/Unit Tests"
         )
     ],
     swiftLanguageVersions: [.v5]

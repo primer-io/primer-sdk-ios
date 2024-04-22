@@ -1,0 +1,25 @@
+name: Danger
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+concurrency: 
+  group: ${{ github.ref }}-danger
+  cancel-in-progress: true
+
+jobs:
+  danger:
+    runs-on: ubuntu-latest
+    name: "Run Danger"
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1 
+      - name: Danger
+        uses: docker://ghcr.io/danger/danger-swift-with-swiftlint@sha256:ed07386a85f1328619b49e3cfd737ffce351fcd2620d858cfc997d7e3e401b59 #v3.15.0
+        with:
+            args: --failOnErrors --no-publish-check --remove-previous-comments
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

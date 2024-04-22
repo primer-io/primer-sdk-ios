@@ -58,6 +58,7 @@ extension Analytics {
         func save(_ events: [Analytics.Event]) throws {
             do {
                 let eventsData = try JSONEncoder().encode(events)
+                try FileManager.default.createDirectory(at: fileURL.deletingLastPathComponent(), withIntermediateDirectories: true)
                 try eventsData.write(to: fileURL)
             } catch {
                 logger.error(message: "📚 Analytics: Failed to save file \(error.localizedDescription)")

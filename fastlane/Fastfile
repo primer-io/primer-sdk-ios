@@ -52,7 +52,7 @@ platform :ios do
       podfile: podfile_path
     )
 
-    run_tests(workspace: app_workspace, 
+    run_tests(workspace: app_workspace,
               scheme: "Debug App Tests",
               destination: "platform=iOS Simulator,name=iPhone 14 Pro",
               xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
@@ -112,18 +112,16 @@ platform :ios do
   end
 
   desc 'This action builds the app using the SPM integration'
-  lane :build_spm do
+  lane :test_spm do
     common_pre_build_action
-    build_app(workspace: app_workspace,
-              scheme: spm_app_scheme,
-              sdk: "iphonesimulator",
-              configuration: "Debug",
-              destination: "generic/platform=iOS Simulator",
-              xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
-              export_method: "development",
-              skip_package_ipa: true,
-              skip_package_pkg: true
-              )
+    run_tests(
+      package_path: ".",
+      scheme: "PrimerSDKTests",
+      sdk: "iphonesimulator17.2",
+      destination: "OS=17.2,name=iPhone 15 Pro",
+      result_bundle: true,
+      output_directory: Dir.pwd + "/test_output"
+    )
   end
 
   lane :build_cocoapods do |options|
@@ -153,7 +151,7 @@ platform :ios do
       skip_package_dependencies_resolution: true
     )
   end
-  
+
   desc 'This action runs Unit Tests, builds the app and uploads it to Appetize'
   lane :appetize_build_and_upload do |options|
 
@@ -184,7 +182,7 @@ platform :ios do
       public_key: public_key,
       note: sdk_version_name_source_branch
     )
-    
+
     update_deployment_url(lane_context[SharedValues::APPETIZE_APP_URL])
     update_livedemostore_url("https://livedemostore.common.primer.io/ios/#{url_end}")
 
@@ -244,7 +242,7 @@ platform :ios do
     # The build is identified by the contents of CFBundleVersion in Info.plist
 
     version_name = get_appetize_version_name(build_type, pr_number)
-    
+
     set_info_plist_value(path: info_plist_path, key: "CFBundleVersion", value: version_name)
     set_info_plist_value(path: info_plist_path, key: "CFBundleShortVersionString", value: "#{version_name}")
   end
@@ -267,7 +265,7 @@ platform :ios do
       return "preview_#{pr_number}"
     end
   end
-  
+
   def update_deployment_url(pub_url)
     sh("echo APPETIZE_APP_URL=#{pub_url} >> $GITHUB_ENV")
   end

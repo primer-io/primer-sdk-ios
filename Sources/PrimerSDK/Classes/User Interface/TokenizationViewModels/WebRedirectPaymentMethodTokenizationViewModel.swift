@@ -199,6 +199,16 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 )
 
                 Analytics.Service.record(events: [presentEvent, networkEvent])
+
+                #if DEBUG
+                // This ensures that the presentation completion is correctly handled in headless unit tests
+                guard UIApplication.shared.windows.count > 0 else {
+                    self.handleWebViewControllerPresentedCompletion()
+                    seal.fulfill()
+                    return
+                }
+                #endif
+
                 if PrimerUIManager.primerRootViewController == nil {
                     firstly {
                         PrimerUIManager.prepareRootViewController()
@@ -206,7 +216,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                     .done {
                         PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
                             DispatchQueue.main.async {
-                                self.handleWebViewControlllerPresentedCompletion()
+                                self.handleWebViewControllerPresentedCompletion()
                                 seal.fulfill()
                             }
                         })
@@ -215,7 +225,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 } else {
                     PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
                         DispatchQueue.main.async {
-                            self.handleWebViewControlllerPresentedCompletion()
+                            self.handleWebViewControllerPresentedCompletion()
                             seal.fulfill()
                         }
                     })
@@ -224,7 +234,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         }
     }
 
-    private func handleWebViewControlllerPresentedCompletion() {
+    private func handleWebViewControllerPresentedCompletion() {
         DispatchQueue.main.async {
             let viewEvent = Analytics.Event.ui(
                 action: .view,

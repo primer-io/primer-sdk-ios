@@ -371,7 +371,7 @@ class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
 
     // MARK: - MOCKED PROPERTIES
 
-    var mockedNetworkDelay: TimeInterval = 2
+    var mockedNetworkDelay: TimeInterval = 0.5
     var mockedAPIConfiguration: PrimerAPIConfiguration?
 
     func setupSession(
