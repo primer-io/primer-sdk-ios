@@ -92,8 +92,8 @@ jobs:
           SOURCE_BRANCH: ${{ github.head_ref }}
   build-and-upload-to-appetize:
     needs: 
-      - unit-test
-      - spm-test
+      - debug-app-unit-tests
+      - sdk-unit-tests
     runs-on: macos-13
     timeout-minutes: 45
     name: "Build and upload app to Appetize"
