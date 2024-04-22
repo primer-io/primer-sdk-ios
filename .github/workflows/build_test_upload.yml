@@ -99,8 +99,8 @@ jobs:
           brew install xcresultparser
       - name: Create cobertura code coverage file
         run: |
-          ls ./test_output/
-          xcresultparser -o cobertura ./test_output/test.xcresult > cobertura.xml
+          ls ./fastlane/test_output/
+          xcresultparser -o cobertura ./fastlane/test_output/PrimerSDKTests.xcresult > cobertura.xml
       - name: Code Coverage Summary
         uses: irongut/CodeCoverageSummary@v1.3.0
         with: 
