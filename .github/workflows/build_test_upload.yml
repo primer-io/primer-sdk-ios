@@ -4,7 +4,6 @@ on:
   pull_request:
     types:
       - opened
-      - edited
       - synchronize
 
 concurrency: 
@@ -12,18 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  danger:
-    runs-on: ubuntu-latest
-    name: "Run Danger"
-    steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1 
-      - name: Danger
-        uses: docker://ghcr.io/danger/danger-swift-with-swiftlint@sha256:ed07386a85f1328619b49e3cfd737ffce351fcd2620d858cfc997d7e3e401b59 #v3.15.0
-        with:
-            args: --failOnErrors --no-publish-check --remove-previous-comments
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-  unit-test:
+  debug-app-unit-tests:
     runs-on: macos-13-large
     timeout-minutes: 30
     name: "Debug App - Unit Tests"
@@ -61,7 +49,7 @@ jobs:
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           SOURCE_BRANCH: ${{ github.head_ref }}
-  spm-test:
+  sdk-unit-tests:
     runs-on: macos-13-large
     timeout-minutes: 20
     name: "SDK - Unit Tests"
