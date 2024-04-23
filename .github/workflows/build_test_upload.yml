@@ -6,7 +6,7 @@ on:
       - opened
       - synchronize
 
-concurrency: 
+concurrency:
   group: ${{ github.ref }}-tests
   cancel-in-progress: true
 
@@ -21,7 +21,7 @@ jobs:
         with:
           ref: ${{ github.ref }}
       - name: Select Xcode Version
-        uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0 
+        uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
         with:
           xcode-version: '15.2'
       - name: Install SSH key
@@ -37,7 +37,7 @@ jobs:
         with:
           ruby-version: "3.2"
           bundler-cache: true
-      - name: Run Unit Tests 
+      - name: Run Unit Tests
         shell: bash
         run: |
           bundle exec fastlane tests
@@ -49,7 +49,6 @@ jobs:
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           SOURCE_BRANCH: ${{ github.head_ref }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   sdk-unit-tests:
     runs-on: macos-13-large
     timeout-minutes: 20
@@ -91,8 +90,20 @@ jobs:
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           SOURCE_BRANCH: ${{ github.head_ref }}
+      - name: Prepare coverage reports
+        run: |
+          bash Scripts/xccov-to-sonarqube-generic.sh fastlane/test_output/PrimerSDKTests.xcresult/ > coverage.xml
+      - name:  Install Sonar-Scanner
+        run: |
+          brew install sonar-scanner
+      - name:  Run Sonar scanner
+        run: |
+         git fetch --unshallow --no-tags
+         sonar-scanner -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.coverageReportPaths=coverage.xml -Dsonar.verbose=true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build-and-upload-to-appetize:
-    needs: 
+    needs:
       - debug-app-unit-tests
       - sdk-unit-tests
     runs-on: macos-13

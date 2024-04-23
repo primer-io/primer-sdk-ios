@@ -36,7 +36,6 @@ GEM
     babosa (1.0.4)
     base64 (0.2.0)
     claide (1.1.0)
-    clamp (1.3.2)
     cocoapods (1.15.2)
       addressable (~> 2.8)
       claide (>= 1.0.2, < 2.0)
@@ -225,7 +224,6 @@ GEM
     mime-types-data (3.2024.0305)
     mini_magick (4.12.0)
     mini_mime (1.1.5)
-    mini_portile2 (2.8.6)
     minitest (5.22.3)
     molinillo (0.8.0)
     multi_json (1.15.0)
@@ -235,15 +233,10 @@ GEM
     naturally (2.2.1)
     netrc (0.11.0)
     nkf (0.2.0)
-    nokogiri (1.15.6)
-      mini_portile2 (~> 2.8.2)
-      racc (~> 1.4)
     optparse (0.5.0)
     os (1.1.4)
     plist (3.7.1)
     public_suffix (4.0.7)
-    racc (1.7.3)
-    rack (1.6.13)
     rake (13.2.1)
     representable (3.2.0)
       declarative (< 0.1.0)
@@ -269,14 +262,6 @@ GEM
     simctl (1.6.10)
       CFPropertyList
       naturally
-    slather (2.8.0)
-      CFPropertyList (>= 2.2, < 4)
-      activesupport
-      clamp (~> 1.3)
-      nokogiri (>= 1.14.3)
-      xcodeproj (~> 1.21)
-    sonar (0.2.1)
-      rack (~> 1.5)
     terminal-notifier (2.0.0)
     terminal-table (3.0.2)
       unicode-display_width (>= 1.1.1, < 3)
@@ -314,8 +299,6 @@ DEPENDENCIES
   fastlane-plugin-browserstack
   fastlane-plugin-firebase_app_distribution
   fastlane-plugin-versioning
-  slather
-  sonar
 
 BUNDLED WITH
    2.1.4
