@@ -15,6 +15,12 @@ jobs:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Update sonar-project.properties
+        run: |
+          echo "sonar.pullrequest.key=${{github.event.pull_request.number}}" >> sonar-project.properties
+          echo "sonar.pullrequest.branch=${{github.head_ref}}" >> sonar-project.properties 
+          echo "sonar.pullrequest.base=${{github.base_ref}}" >> sonar-project.properties 
+          cat sonar-project.properties
       - name: SonarCloud Scan
         uses: sonarsource/sonarqube-scan-action@master
         env:
