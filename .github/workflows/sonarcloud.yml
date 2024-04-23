@@ -29,6 +29,8 @@ jobs:
           GIT_URL: "https://api.github.com"
           GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_URL: https://sonarcloud.io
+          SONAR_PROJECT_KEY: primer-sdk-ios
         with:
           login:  ${{ secrets.SONAR_TOKEN }}
       # - name: SonarCloud Scan
