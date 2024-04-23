@@ -266,7 +266,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     // MARK: - Billing address
 
     private var countryField: BillingAddressField {
-        (countryFieldView, countryFieldContainerView, billingAddressCheckoutModuleOptions?.countryCode == false)
+        (countryFieldView, countryFieldContainerView, billingAddressCheckoutModuleOptions?.countryCode ?? true)
     }
 
     // MARK: First name
@@ -280,7 +280,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }()
 
     private var firstNameField: BillingAddressField {
-        (firstNameFieldView, firstNameContainerView, billingAddressCheckoutModuleOptions?.firstName == false)
+        (firstNameFieldView, firstNameContainerView, billingAddressCheckoutModuleOptions?.firstName ?? true)
     }
 
     // MARK: Last name
@@ -294,7 +294,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }()
 
     private var lastNameField: BillingAddressField {
-        (lastNameFieldView, lastNameContainerView, billingAddressCheckoutModuleOptions?.lastName == false)
+        (lastNameFieldView, lastNameContainerView, billingAddressCheckoutModuleOptions?.lastName ?? true)
     }
 
     // MARK: Address Line 1
@@ -308,7 +308,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }()
 
     private var addressLine1Field: BillingAddressField {
-        (addressLine1FieldView, addressLine1ContainerView, billingAddressCheckoutModuleOptions?.addressLine1 == false)
+        (addressLine1FieldView, addressLine1ContainerView, billingAddressCheckoutModuleOptions?.addressLine1 ?? true)
     }
 
     // MARK: Address Line 2
@@ -322,7 +322,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }()
 
     private var addressLine2Field: BillingAddressField {
-        (addressLine2FieldView, addressLine2ContainerView, billingAddressCheckoutModuleOptions?.addressLine2 == false)
+        (addressLine2FieldView, addressLine2ContainerView, billingAddressCheckoutModuleOptions?.addressLine2 ?? true)
     }
 
     // MARK: Postal code
@@ -336,7 +336,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }()
 
     private var postalCodeField: BillingAddressField {
-        (postalCodeFieldView, postalCodeContainerView, billingAddressCheckoutModuleOptions?.postalCode == false)
+        (postalCodeFieldView, postalCodeContainerView, billingAddressCheckoutModuleOptions?.postalCode ?? true)
     }
 
     // MARK: City
@@ -350,7 +350,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }()
 
     private var cityField: BillingAddressField {
-        (cityFieldView, cityContainerView, billingAddressCheckoutModuleOptions?.city == false)
+        (cityFieldView, cityContainerView, billingAddressCheckoutModuleOptions?.city ?? true)
     }
 
     // MARK: State
@@ -364,7 +364,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }()
 
     private var stateField: BillingAddressField {
-        (stateFieldView, stateContainerView, billingAddressCheckoutModuleOptions?.state == false)
+        (stateFieldView, stateContainerView, billingAddressCheckoutModuleOptions?.state ?? true)
     }
 
     // MARK: Country
@@ -402,11 +402,11 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
 
     internal var allVisibleBillingAddressFieldViews: [PrimerTextFieldView] {
-        billingAddressFields.flatMap { $0.filter { $0.isFieldHidden == false } }.map { $0.fieldView }
+        billingAddressFields.flatMap { $0.filter { $0.isFieldHidden  } }.map { $0.fieldView }
     }
 
     internal var allVisibleBillingAddressFieldContainerViews: [[PrimerCustomFieldView]] {
-        let allVisibleBillingAddressFields = billingAddressFields.map { $0.filter { $0.isFieldHidden == false } }
+        let allVisibleBillingAddressFields = billingAddressFields.map { $0.filter { $0.isFieldHidden  } }
         return allVisibleBillingAddressFields.map { $0.map { $0.containerFieldView } }
     }
 

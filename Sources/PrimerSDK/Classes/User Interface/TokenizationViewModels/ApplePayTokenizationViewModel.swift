@@ -245,7 +245,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     self.isCancelled = true
 
                     paymentController.present { success in
-                        if success == false {
+                        if success  {
                             let err = PrimerError.unableToPresentApplePay(userInfo: .errorUserInfoDictionary(),
                                                                           diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)

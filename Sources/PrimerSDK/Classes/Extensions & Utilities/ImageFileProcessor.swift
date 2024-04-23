@@ -113,7 +113,7 @@ class ImageFileProcessor {
                 }
 
                 let coloredImageFile = paymentMethodImageFiles
-                    .filter({ $0.fileName.contains("dark") == false && $0.fileName.contains("light") == false }).first
+                    .filter({ $0.fileName.contains("dark")  && $0.fileName.contains("light")  }).first
                 let darkImageFile = paymentMethodImageFiles
                     .filter({ $0.fileName.contains("dark") }).first
                 let lightImageFile = paymentMethodImageFiles

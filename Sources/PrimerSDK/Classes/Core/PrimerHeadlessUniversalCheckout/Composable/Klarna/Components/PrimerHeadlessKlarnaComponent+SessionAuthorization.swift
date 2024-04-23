@@ -63,7 +63,7 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderAuthorizationDelega
      */
     public func primerKlarnaWrapperAuthorized(approved: Bool, authToken: String?, finalizeRequired: Bool) {
         isFinalizationRequired = finalizeRequired
-        if approved == false {
+        if approved  {
             if finalizeRequired {
                 let step = KlarnaStep.paymentSessionFinalizationRequired
                 stepDelegate?.didReceiveStep(step: step)

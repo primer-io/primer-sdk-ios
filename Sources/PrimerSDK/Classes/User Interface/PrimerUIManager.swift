@@ -146,7 +146,7 @@ internal class PrimerUIManager {
                     return
                 }
 
-                if case .checkout = PrimerInternal.shared.intent, paymentMethod.isCheckoutEnabled == false {
+                if case .checkout = PrimerInternal.shared.intent, paymentMethod.isCheckoutEnabled  {
                     let err = PrimerError.unsupportedIntent(
                         intent: .checkout,
                         userInfo: .errorUserInfoDictionary(),
@@ -154,7 +154,7 @@ internal class PrimerUIManager {
                     seal.reject(err)
                     return
 
-                } else if case .vault = PrimerInternal.shared.intent, paymentMethod.isVaultingEnabled == false {
+                } else if case .vault = PrimerInternal.shared.intent, paymentMethod.isVaultingEnabled  {
                     let err = PrimerError.unsupportedIntent(
                         intent: .vault,
                         userInfo: .errorUserInfoDictionary(),

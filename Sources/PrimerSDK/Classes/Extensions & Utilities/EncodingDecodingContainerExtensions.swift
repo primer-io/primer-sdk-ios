@@ -70,7 +70,7 @@ extension KeyedDecodingContainer {
         guard contains(key) else {
             return nil
         }
-        guard try decodeNil(forKey: key) == false else {
+        guard try decodeNil(forKey: key)  else {
             return nil
         }
         return try decode(type, forKey: key)
@@ -85,7 +85,7 @@ extension KeyedDecodingContainer {
         guard contains(key) else {
             return nil
         }
-        guard try decodeNil(forKey: key) == false else {
+        guard try decodeNil(forKey: key)  else {
             return nil
         }
         return try decode(type, forKey: key)
@@ -117,7 +117,7 @@ extension UnkeyedDecodingContainer {
 
     mutating func decode(_ type: Array<Any>.Type) throws -> [Any] {
         var array: [Any] = []
-        while isAtEnd == false {
+        while isAtEnd  {
             // See if the current value in the JSON array is `null` first and prevent infite recursion with nested arrays.
             if try decodeNil() {
                 continue

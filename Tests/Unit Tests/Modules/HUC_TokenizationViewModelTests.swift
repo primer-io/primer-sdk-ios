@@ -426,34 +426,40 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
             }
         }
 
-        if paymentMethod.paymentMethodManagerCategories?.contains(.nativeUI) {
-            do {
-                let paymentMethodNativeUIManager = try PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethod.type)
-                try paymentMethodNativeUIManager.showPaymentMethod(intent: .checkout)
+        if let cats = paymentMethod.paymentMethodManagerCategories {
+            if cats.contains(.nativeUI) {
+                do {
+                    let paymentMethodNativeUIManager = try PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethod.type)
+                    try paymentMethodNativeUIManager.showPaymentMethod(intent: .checkout)
 
-            } catch {
-                XCTAssert(false, error.localizedDescription)
-                expectation.fulfill()
+                } catch {
+                    XCTAssert(false, error.localizedDescription)
+                    expectation.fulfill()
+                }
+
+            } else if cats.contains(.rawData) {
+                do {
+                    let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: paymentMethod.type, delegate: self)
+
+                    let rawCardData = PrimerCardData(
+                        cardNumber: "4111 1111 1111 1111",
+                        expiryDate: "03/2030",
+                        cvv: "123",
+                        cardholderName: "John Smith")
+
+                    rawDataManager.rawData = rawCardData
+
+                    rawDataManager.submit()
+
+                } catch {
+                    XCTAssert(false, error.localizedDescription)
+                    expectation.fulfill()
+                }
+            } else {
+                XCTFail()
             }
-
-        } else if paymentMethod.paymentMethodManagerCategories?.contains(.rawData) {
-            do {
-                let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: paymentMethod.type, delegate: self)
-
-                let rawCardData = PrimerCardData(
-                    cardNumber: "4111 1111 1111 1111",
-                    expiryDate: "03/2030",
-                    cvv: "123",
-                    cardholderName: "John Smith")
-
-                rawDataManager.rawData = rawCardData
-
-                rawDataManager.submit()
-
-            } catch {
-                XCTAssert(false, error.localizedDescription)
-                expectation.fulfill()
-            }
+        } else {
+            XCTFail()
         }
 
         wait(for: [expectation], timeout: 60)

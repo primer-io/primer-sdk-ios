@@ -246,7 +246,7 @@ and 4 characters for expiry year separated by '/'.
             }
         }
 
-        billingAddressFieldViews?.filter { $0.isTextValid == false }.forEach {
+        billingAddressFieldViews?.filter { $0.isTextValid  }.forEach {
             if let simpleCardFormTextFieldView = $0 as? PrimerSimpleCardFormTextFieldView,
                let validationError = simpleCardFormTextFieldView.validationError {
                 ErrorHandler.handle(error: validationError)

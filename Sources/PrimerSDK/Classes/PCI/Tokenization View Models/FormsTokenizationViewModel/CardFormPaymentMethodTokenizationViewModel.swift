@@ -130,7 +130,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     // MARK: - Billing address
 
     private var countryField: BillingAddressField {
-        (countryFieldView, countryFieldContainerView, billingAddressCheckoutModuleOptions?.countryCode == false)
+        (countryFieldView, countryFieldContainerView, billingAddressCheckoutModuleOptions?.countryCode ?? true)
     }
 
     // MARK: First name
@@ -144,7 +144,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }()
 
     private var firstNameField: BillingAddressField {
-        (firstNameFieldView, firstNameContainerView, billingAddressCheckoutModuleOptions?.firstName == false)
+        (firstNameFieldView, firstNameContainerView, billingAddressCheckoutModuleOptions?.firstName ?? true)
     }
 
     // MARK: Last name
@@ -158,7 +158,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }()
 
     private var lastNameField: BillingAddressField {
-        (lastNameFieldView, lastNameContainerView, billingAddressCheckoutModuleOptions?.lastName == false)
+        (lastNameFieldView, lastNameContainerView, billingAddressCheckoutModuleOptions?.lastName ?? true)
     }
 
     // MARK: Address Line 1
@@ -172,7 +172,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }()
 
     private var addressLine1Field: BillingAddressField {
-        (addressLine1FieldView, addressLine1ContainerView, billingAddressCheckoutModuleOptions?.addressLine1 == false)
+        (addressLine1FieldView, addressLine1ContainerView, billingAddressCheckoutModuleOptions?.addressLine1 ?? true)
     }
 
     // MARK: Address Line 2
@@ -186,7 +186,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }()
 
     private var addressLine2Field: BillingAddressField {
-        (addressLine2FieldView, addressLine2ContainerView, billingAddressCheckoutModuleOptions?.addressLine2 == false)
+        (addressLine2FieldView, addressLine2ContainerView, billingAddressCheckoutModuleOptions?.addressLine2 ?? true)
     }
 
     // MARK: Postal code
@@ -200,7 +200,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }()
 
     private var postalCodeField: BillingAddressField {
-        (postalCodeFieldView, postalCodeContainerView, billingAddressCheckoutModuleOptions?.postalCode == false)
+        (postalCodeFieldView, postalCodeContainerView, billingAddressCheckoutModuleOptions?.postalCode ?? true)
     }
 
     // MARK: City
@@ -214,7 +214,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }()
 
     private var cityField: BillingAddressField {
-        (cityFieldView, cityContainerView, billingAddressCheckoutModuleOptions?.city == false)
+        (cityFieldView, cityContainerView, billingAddressCheckoutModuleOptions?.city ?? true)
     }
 
     // MARK: State
@@ -228,7 +228,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }()
 
     private var stateField: BillingAddressField {
-        (stateFieldView, stateContainerView, billingAddressCheckoutModuleOptions?.state == false)
+        (stateFieldView, stateContainerView, billingAddressCheckoutModuleOptions?.state ?? true)
     }
 
     // MARK: Country
@@ -266,12 +266,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
 
     internal var allVisibleBillingAddressFieldViews: [PrimerTextFieldView] {
-        billingAddressFields.flatMap { $0.filter { $0.isFieldHidden == false } }.map { $0.fieldView }
+        billingAddressFields.flatMap { $0.filter { $0.isFieldHidden  } }.map { $0.fieldView }
     }
 
     // swiftlint:disable:next identifier_name
     internal var allVisibleBillingAddressFieldContainerViews: [[PrimerCustomFieldView]] {
-        let allVisibleBillingAddressFields = billingAddressFields.map { $0.filter { $0.isFieldHidden == false } }
+        let allVisibleBillingAddressFields = billingAddressFields.map { $0.filter { $0.isFieldHidden  } }
         return allVisibleBillingAddressFields.map { $0.map { $0.containerFieldView } }
     }
 
@@ -765,8 +765,8 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
 
     // swiftlint:disable cyclomatic_complexity
     fileprivate func showTexfieldViewErrorIfNeeded(for primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-
-        if isValid == false {
+        
+        if let isValid = isValid, !isValid {
             // We know for sure that the text is not valid, even if the user hasn't finished typing.
             if primerTextFieldView is PrimerCardNumberFieldView, !primerTextFieldView.isEmpty {
                 cardNumberContainerView.errorText = Strings.CardFormView.CardNumber.invalidErrorMessage
@@ -909,7 +909,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
 extension CardFormPaymentMethodTokenizationViewModel {
 
     private func updateButtonUI() {
-        if let amount = AppState.current.amount, self.uiModule.isSubmitButtonAnimating == false {
+        if let amount = AppState.current.amount, self.uiModule.isSubmitButtonAnimating  {
             self.configurePayButton(amount: amount)
         }
     }

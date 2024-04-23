@@ -25,7 +25,7 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderFinalizationDelegat
      *  - `authToken` - An optional `String` containing the authorization token, which is returned only if `approved` is `true`.
      */
     public func primerKlarnaWrapperFinalized(approved: Bool, authToken: String?) {
-        if approved == false {
+        if approved  {
             createSessionError(.klarnaFinalizationFailed)
         }
         if let authToken = authToken, approved {

@@ -179,7 +179,7 @@ internal class URLSessionStack: NetworkService, LogReporter {
                 }
                 #endif
 
-                if endpoint.shouldParseResponseBody == false, httpResponse?.statusCode == 200 {
+                if endpoint.shouldParseResponseBody , httpResponse?.statusCode == 200 {
                     guard let dummyRes: T = DummySuccess(success: true) as? T
                     else {
                         fatalError()

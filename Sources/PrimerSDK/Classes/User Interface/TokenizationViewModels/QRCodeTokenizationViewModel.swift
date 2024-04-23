@@ -217,7 +217,7 @@ extension QRCodeTokenizationViewModel {
             /// PrimerHeadlessUniversalCheckout's private constant `unsupportedPaymentMethodTypes`
             /// Xfers is among them so it won't be loaded
 
-            guard isHeadlessCheckoutDelegateImplemented == false else {
+            guard isHeadlessCheckoutDelegateImplemented  else {
                 seal.fulfill()
                 return
             }

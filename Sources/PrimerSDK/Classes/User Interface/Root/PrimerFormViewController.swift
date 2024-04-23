@@ -61,10 +61,10 @@ class PrimerFormViewController: PrimerViewController {
         } else {
             // No surcharge fee
             let noAdditionalFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels
-                .filter({ $0.config.hasUnknownSurcharge == false && ($0.config.surcharge ?? 0) == 0 })
+                .filter({ $0.config.hasUnknownSurcharge  && ($0.config.surcharge ?? 0) == 0 })
             // With surcharge fee
             let additionalFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels
-                .filter({ $0.config.hasUnknownSurcharge == false && ($0.config.surcharge ?? 0) != 0 })
+                .filter({ $0.config.hasUnknownSurcharge  && ($0.config.surcharge ?? 0) != 0 })
             // Unknown surcharge fee
             let unknownFeePaymentMethodsViewModels = paymentMethodTokenizationViewModels
                 .filter({ $0.config.hasUnknownSurcharge })

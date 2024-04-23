@@ -29,6 +29,6 @@ class WebViewUtilTests: XCTestCase {
             WebViewUtil.allowedHostsContain("primer.i"),
             WebViewUtil.allowedHostsContain("pprimer.io")
         ]
-        XCTAssertTrue(allowedPatterns.allSatisfy { $0 == false })
+        XCTAssertTrue(allowedPatterns.allSatisfy { $0  })
     }
 }

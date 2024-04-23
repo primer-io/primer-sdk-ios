@@ -23,7 +23,7 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
                 return
             }
 
-            if (PrimerAPIConfigurationModule.apiConfiguration?.hasSurchargeEnabled ?? false) == false {
+            if (PrimerAPIConfigurationModule.apiConfiguration?.hasSurchargeEnabled ?? false)  {
                 seal.fulfill()
                 return
             }
@@ -65,7 +65,7 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
                 return
             }
 
-            if (PrimerAPIConfigurationModule.apiConfiguration?.hasSurchargeEnabled ?? false) == false {
+            if (PrimerAPIConfigurationModule.apiConfiguration?.hasSurchargeEnabled ?? false)  {
                 seal.fulfill()
                 return
             }
