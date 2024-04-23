@@ -9,6 +9,9 @@ appetize_api_token = ENV['APPETIZE_API_TOKEN']
 github_run_id = ENV["GITHUB_RUN_ID"]
 github_run_number = ENV["GITHUB_RUN_NUMBER"]
 
+# Sonar
+sonar_token = ENV["SONAR_TOKEN"]
+
 # Xcode
 app_workspace = "Debug App/Primer.io Debug App.xcworkspace"
 
@@ -120,7 +123,19 @@ platform :ios do
       sdk: "iphonesimulator17.2",
       destination: "OS=17.2,name=iPhone 15 Pro",
       result_bundle: true,
+      code_coverage: true,
       output_directory: Dir.pwd + "/test_output"
+    )
+    slather(
+      scheme: "PrimerSDKTests",
+      workspace: app_workspace,
+      output_directory: "reports",
+      proj: app_xcode_proj,
+      cobertura_xml: "true"
+    )
+    sonar(
+        sonar_login: sonar_token,
+        sonar_url: "https://sonarcloud.io"
     )
   end
 
