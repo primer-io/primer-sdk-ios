@@ -121,7 +121,18 @@ jobs:
         with: 
           filename: "*/cobertura.xml"
           badge: true
+          format: markdown
+          hide_branch_rate: false
+          indicators: true
+          fail_below_min: true
           thresholds: '35 75'
+          output: both
+      - name: Add Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          recreate: true
+          path: code-coverage-results.md
 
   build-and-upload-to-appetize:
     needs: 
