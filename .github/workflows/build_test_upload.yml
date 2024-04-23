@@ -101,10 +101,15 @@ jobs:
         run: |
           ls ./fastlane/test_output/
           xcresultparser -o cobertura ./fastlane/test_output/PrimerSDKTests.xcresult > cobertura.xml
+          xcresultparser -o md ./fastlane/test_output/PrimerSDKTests.xcresult > results.md
       - uses: actions/upload-artifact@master
         with:
           name: cobertura-coverage-file
           path: ./cobertura.xml
+      - uses: actions/upload-artifact@master
+        with:
+          name: results-markdown
+          path: ./results.md
 
   test-coverage:
     needs: 
