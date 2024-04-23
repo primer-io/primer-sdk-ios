@@ -39,7 +39,7 @@ internal class Connectivity {
         if needsConnection { return .none }
         if !isReachable { return .none }
 
-        if flags.contains(.isWWAN) == true {
+        if flags.contains(.isWWAN) {
             return .cellular
         } else {
             return .wifi

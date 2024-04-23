@@ -114,7 +114,7 @@ extension Response.Body {
 
             let supportedNetworks = ApplePayUtils.supportedPKPaymentNetworks()
             var canMakePayment: Bool
-            if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
+            if let options = PrimerSettings.current.paymentMethodOptions.applePayOptions, options.checkProvidedNetworks {
                 canMakePayment = PKPaymentAuthorizationController.canMakePayments(usingNetworks: supportedNetworks)
             } else {
                 canMakePayment = PKPaymentAuthorizationController.canMakePayments()

@@ -60,10 +60,11 @@ class CVVRecaptureViewController: UIViewController {
 
     private func bindViewModel() {
         viewModel.onContinueButtonStateChange = { [weak self] isEnabled in
-            if self?.continueButton.isAnimating == true { return }
-            self?.continueButton.isEnabled = isEnabled
-            let continueButtonColor = self?.theme.mainButton.color(for: isEnabled ? .enabled : .disabled)
-            self?.continueButton.backgroundColor = continueButtonColor
+            guard let self = self else { return }
+            if self.continueButton.isAnimating { return }
+            self.continueButton.isEnabled = isEnabled
+            let continueButtonColor = self.theme.mainButton.color(for: isEnabled ? .enabled : .disabled)
+            self.continueButton.backgroundColor = continueButtonColor
         }
     }
 

@@ -28,7 +28,7 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderFinalizationDelegat
         if approved == false {
             createSessionError(.klarnaFinalizationFailed)
         }
-        if let authToken = authToken, approved == true {
+        if let authToken = authToken, approved {
             if PrimerInternal.shared.sdkIntegrationType == .headless {
                 finalizeSession(token: authToken, fromAuthorization: false)
             } else {

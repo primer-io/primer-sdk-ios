@@ -68,7 +68,7 @@ internal class ImageFile: File {
     var bundledImage: UIImage? {
         let paymentMethodType = ImageFile.getPaymentMethodType(fromFileName: self.fileName) ?? self.fileName
 
-        if self.fileName.contains("dark") == true {
+        if self.fileName.contains("dark") {
             if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType,
                                                                                  themeMode: .dark,
                                                                                  assetType: .logo),
@@ -81,7 +81,7 @@ internal class ImageFile: File {
                                           compatibleWith: nil) {
                 return image
             }
-        } else if self.fileName.contains("light") == true {
+        } else if self.fileName.contains("light") {
             if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType,
                                                                                  themeMode: .light,
                                                                                  assetType: .logo),
@@ -94,7 +94,7 @@ internal class ImageFile: File {
                                           compatibleWith: nil) {
                 return image
             }
-        } else if self.fileName.contains("colored") == true {
+        } else if self.fileName.contains("colored") {
             if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType,
                                                                                  themeMode: .colored,
                                                                                  assetType: .logo),

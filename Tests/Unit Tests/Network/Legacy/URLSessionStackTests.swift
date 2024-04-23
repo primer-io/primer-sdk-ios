@@ -53,8 +53,8 @@ final class URLSessionStackTests: XCTestCase {
     func testQueryParameters() {
         let endpoint = DummyEndpoint(baseURL: "https://www.example.com", queryParameters: ["key1": "value1", "key2": "value2"])
         let url = sut.url(for: endpoint)
-        XCTAssertTrue(url?.absoluteString.contains("key1=value1") == true)
-        XCTAssertTrue(url?.absoluteString.contains("key2=value2") == true)
+        XCTAssertTrue(url?.absoluteString.contains("key1=value1"))
+        XCTAssertTrue(url?.absoluteString.contains("key2=value2"))
     }
 
     // Test for nil base URL
@@ -75,8 +75,8 @@ final class URLSessionStackTests: XCTestCase {
     func testQueryParametersWithEmptyPath() {
         let endpoint = DummyEndpoint(baseURL: "https://www.example.com", path: "", queryParameters: ["key1": "value1", "key2": "value2"])
         let url = sut.url(for: endpoint)
-        XCTAssertTrue(url?.absoluteString.contains("key1=value1") == true)
-        XCTAssertTrue(url?.absoluteString.contains("key2=value2") == true)
+        XCTAssertTrue(url?.absoluteString.contains("key1=value1"))
+        XCTAssertTrue(url?.absoluteString.contains("key2=value2"))
     }
 
     // Test that /sdk-logs and polling endpoints are omitted from network analytics reporting

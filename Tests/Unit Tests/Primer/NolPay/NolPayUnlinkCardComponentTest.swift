@@ -48,7 +48,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
 
         XCTAssertNotNil(mockValidationDelegate.validationsReceived, "No validations received.")
         if case let .invalid(errors: errors) = mockValidationDelegate.validationsReceived {
-            XCTAssertTrue(errors.contains(where: { $0.errorId == "invalid-phone-number" }) == true, "Expected invalid phone number validation error.")
+            XCTAssertTrue(errors.contains(where: { $0.errorId == "invalid-phone-number" }), "Expected invalid phone number validation error.")
         } else {
             XCTFail("Expected validation error")
         }

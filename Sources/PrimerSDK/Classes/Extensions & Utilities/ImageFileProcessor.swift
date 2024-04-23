@@ -115,9 +115,9 @@ class ImageFileProcessor {
                 let coloredImageFile = paymentMethodImageFiles
                     .filter({ $0.fileName.contains("dark") == false && $0.fileName.contains("light") == false }).first
                 let darkImageFile = paymentMethodImageFiles
-                    .filter({ $0.fileName.contains("dark") == true }).first
+                    .filter({ $0.fileName.contains("dark") }).first
                 let lightImageFile = paymentMethodImageFiles
-                    .filter({ $0.fileName.contains("light") == true }).first
+                    .filter({ $0.fileName.contains("light") }).first
 
                 let baseImage = PrimerTheme.BaseImage(
                     colored: coloredImageFile?.image,

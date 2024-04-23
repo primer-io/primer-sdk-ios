@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                      restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         if let url = userActivity.webpageURL {
             let handled = AppetizeUrlHandler.handleUrl(url)
-            if handled == true {
+            if handled {
                 return handled
             }
         }

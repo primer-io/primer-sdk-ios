@@ -445,7 +445,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     func populateSessionSettingsFields() {
         clientSession = MerchantMockDataManager.getClientSession(sessionType: paymentSessionType)
 
-        enableCVVRecaptureFlowSwitch.isOn = clientSession.paymentMethod?.options?.PAYMENT_CARD?.captureVaultedCardCvv == true
+        enableCVVRecaptureFlowSwitch.isOn = clientSession.paymentMethod?.options?.PAYMENT_CARD?.captureVaultedCardCvv ?? false
 
         currencyTextField.text = clientSession.currencyCode?.code
         countryCodeTextField.text = clientSession.order?.countryCode?.rawValue

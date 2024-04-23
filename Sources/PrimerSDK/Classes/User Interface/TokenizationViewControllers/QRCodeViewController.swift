@@ -100,7 +100,7 @@ internal class QRCodeViewController: PrimerFormViewController {
         separatorView.heightAnchor.constraint(equalToConstant: 10).isActive = true
 
         var qrCodeImageView = PrimerImageView()
-        if qrCodeStr.isHttpOrHttpsURL == true, let qrCodeURL = URL(string: qrCodeStr) {
+        if qrCodeStr.isHttpOrHttpsURL, let qrCodeURL = URL(string: qrCodeStr) {
             qrCodeImageView = PrimerImageView(from: qrCodeURL)
         } else if let qrCodeImg = convertBase64StringToImage(qrCodeStr) {
             qrCodeImageView.image = qrCodeImg

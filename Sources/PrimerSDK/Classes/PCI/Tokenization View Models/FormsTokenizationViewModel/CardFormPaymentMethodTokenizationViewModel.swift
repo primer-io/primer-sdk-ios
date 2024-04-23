@@ -78,7 +78,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 .filter({ $0.type == "BILLING_ADDRESS" })
                 .first else { return false }
         let options = (billingAddressModule.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions)
-        return options?.postalCode == true
+        return options?.postalCode ?? false
     }
 
     internal lazy var countrySelectorViewController: CountrySelectorViewController = {
@@ -485,7 +485,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
 
-            if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
+            if let intent = decodedJWTToken.intent, intent.contains("_REDIRECTION") {
                 if let redirectUrlStr = decodedJWTToken.redirectUrl,
                    let redirectUrl = URL(string: redirectUrlStr),
                    let statusUrlStr = decodedJWTToken.statusUrl,
@@ -753,14 +753,13 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
     }
 
     fileprivate func autofocusToNextFieldIfNeeded(for primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        if isValid == true {
-            if primerTextFieldView is PrimerCardNumberFieldView {
-                _ = expiryDateField.becomeFirstResponder()
-            } else if primerTextFieldView is PrimerExpiryDateFieldView {
-                _ = cvvField.becomeFirstResponder()
-            } else if primerTextFieldView is PrimerCVVFieldView {
-                _ = cardholderNameField?.becomeFirstResponder()
-            }
+        guard let isValid = isValid, isValid else { return }
+        if primerTextFieldView is PrimerCardNumberFieldView {
+            _ = expiryDateField.becomeFirstResponder()
+        } else if primerTextFieldView is PrimerExpiryDateFieldView {
+            _ = cvvField.becomeFirstResponder()
+        } else if primerTextFieldView is PrimerCVVFieldView {
+            _ = cardholderNameField?.becomeFirstResponder()
         }
     }
 
@@ -849,7 +848,7 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
 
         if cardholderNameField != nil { validations.append(cardholderNameField!.isTextValid) }
 
-        if validations.allSatisfy({ $0 == true }) {
+        if validations.allSatisfy({ $0 }) {
             self.uiModule.submitButton?.isEnabled = true
             self.uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .enabled)
         } else {
@@ -986,7 +985,7 @@ extension CardFormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
         var countryResults: [CountryCode] = []
 
         for country in countries where
-            country.country.lowercasedAndFolded().contains(query.lowercasedAndFolded()) == true {
+            country.country.lowercasedAndFolded().contains(query.lowercasedAndFolded()) {
             countryResults.append(country)
         }
 

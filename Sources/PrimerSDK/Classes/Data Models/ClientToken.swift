@@ -229,7 +229,7 @@ struct DecodedJWTToken: Codable {
         try? container.encode(expDate?.timeIntervalSince1970, forKey: .expiration)
         try? container.encode(expDate?.timeIntervalSince1970, forKey: .exp)
 
-        if qrCode?.isHttpOrHttpsURL == true {
+        if let qrCode = qrCode, qrCode.isHttpOrHttpsURL {
             try? container.encode(qrCode, forKey: .qrCodeUrl)
         } else {
             try? container.encode(qrCode, forKey: .qrCode)

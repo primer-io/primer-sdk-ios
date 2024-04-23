@@ -1002,7 +1002,7 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     }()
 
     var isSubmitButtonAnimating: Bool {
-        submitButton?.isAnimating == true
+        submitButton?.isAnimating ?? false
     }
 
     // MARK: - INITIALIZATION

@@ -449,7 +449,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
     func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
-            if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
+            if let intent = decodedJWTToken.intent, intent.contains("_REDIRECTION") {
                 if let redirectUrlStr = decodedJWTToken.redirectUrl,
                    let redirectUrl = URL(string: redirectUrlStr),
                    let statusUrlStr = decodedJWTToken.statusUrl,

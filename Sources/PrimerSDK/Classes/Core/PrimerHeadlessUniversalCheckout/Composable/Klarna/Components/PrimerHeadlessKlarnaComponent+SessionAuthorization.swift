@@ -64,14 +64,14 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderAuthorizationDelega
     public func primerKlarnaWrapperAuthorized(approved: Bool, authToken: String?, finalizeRequired: Bool) {
         isFinalizationRequired = finalizeRequired
         if approved == false {
-            if finalizeRequired == true {
+            if finalizeRequired {
                 let step = KlarnaStep.paymentSessionFinalizationRequired
                 stepDelegate?.didReceiveStep(step: step)
             } else {
                 createSessionError(.klarnaAuthorizationFailed)
             }
         }
-        if let authToken = authToken, approved == true {
+        if let authToken = authToken, approved {
             if PrimerInternal.shared.sdkIntegrationType == .headless {
                 finalizeSession(token: authToken, fromAuthorization: true)
             } else {
@@ -80,7 +80,7 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderAuthorizationDelega
                 self.stepDelegate?.didReceiveStep(step: step)
             }
         }
-        if finalizeRequired == true {
+        if finalizeRequired {
             let step = KlarnaStep.paymentSessionFinalizationRequired
             stepDelegate?.didReceiveStep(step: step)
         }

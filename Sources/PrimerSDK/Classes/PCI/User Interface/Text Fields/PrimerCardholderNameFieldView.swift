@@ -30,7 +30,7 @@ public final class PrimerCardholderNameFieldView: PrimerSimpleCardFormTextFieldV
     }
 
     public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        guard string.isValidNonDecimalString == true || string.isEmpty else { return false }
+        guard string.isValidNonDecimalString || string.isEmpty else { return false }
         return super.textField(textField, shouldChangeCharactersIn: range, replacementString: string)
     }
 }

@@ -242,7 +242,7 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
 
-            if decodedJWTToken.intent?.contains("NOL_PAY_REDIRECTION") == true {
+            if let intent = decodedJWTToken.intent, intent.contains("NOL_PAY_REDIRECTION") {
                 if let transactionNo = decodedJWTToken.nolPayTransactionNo,
                    let redirectUrlStr = decodedJWTToken.redirectUrl,
                    let redirectUrl = URL(string: redirectUrlStr),

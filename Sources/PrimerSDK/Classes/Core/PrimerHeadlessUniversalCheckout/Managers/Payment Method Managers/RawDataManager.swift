@@ -597,7 +597,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                         seal.reject(err)
                     }
 
-                } else if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
+                } else if let intent = decodedJWTToken.intent, intent.contains("_REDIRECTION") {
                     if let statusUrlStr = decodedJWTToken.statusUrl,
                        let statusUrl = URL(string: statusUrlStr),
                        decodedJWTToken.intent != nil {

@@ -569,14 +569,14 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
 
     override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
-            if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
+            if let intent = decodedJWTToken.intent, intent.contains("_REDIRECTION") {
                 if let statusUrlStr = decodedJWTToken.statusUrl,
                    let statusUrl = URL(string: statusUrlStr),
                    decodedJWTToken.intent != nil {
 
                     let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type)
                     let isPaymentMethodNeedingExternalCompletion = (needingExternalCompletionPaymentMethodDictionary
-                                                                        .first { $0.key == paymentMethodType } != nil) == true
+                                                                        .first { $0.key == paymentMethodType } != nil)
 
                     firstly {
                         self.presentPaymentMethodAppropriateViewController(shouldCompletePaymentExternally: isPaymentMethodNeedingExternalCompletion)
@@ -916,7 +916,7 @@ extension FormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegate {
     func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {}
 
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        let isTextsValid = inputs.allSatisfy { $0.primerTextFieldView?.isTextValid == true }
+        let isTextsValid = inputs.allSatisfy { $0.primerTextFieldView?.isTextValid ?? false }
         if isTextsValid {
             enableSubmitButton(true)
         } else {
@@ -995,7 +995,7 @@ extension FormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
                      locale: nil)
             .contains(query.lowercased()
                         .folding(options: .diacriticInsensitive,
-                                 locale: nil)) == true {
+                                 locale: nil)) {
             countryResults.append(country)
         }
 

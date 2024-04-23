@@ -24,7 +24,7 @@ class AppetizeConfigProvider {
     }
 
     func fetchConfig() -> SessionConfiguration? {
-        guard payloadProvider.isAppetize == true,
+        guard let isAppetize = payloadProvider.isAppetize, isAppetize,
               let jwt = payloadProvider.configJwt,
               let config = getConfig(from: jwt) else {
             return nil

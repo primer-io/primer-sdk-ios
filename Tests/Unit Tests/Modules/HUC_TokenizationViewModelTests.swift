@@ -426,7 +426,7 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
             }
         }
 
-        if paymentMethod.paymentMethodManagerCategories?.contains(.nativeUI) == true {
+        if paymentMethod.paymentMethodManagerCategories?.contains(.nativeUI) {
             do {
                 let paymentMethodNativeUIManager = try PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethod.type)
                 try paymentMethodNativeUIManager.showPaymentMethod(intent: .checkout)
@@ -436,7 +436,7 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
                 expectation.fulfill()
             }
 
-        } else if paymentMethod.paymentMethodManagerCategories?.contains(.rawData) == true {
+        } else if paymentMethod.paymentMethodManagerCategories?.contains(.rawData) {
             do {
                 let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: paymentMethod.type, delegate: self)
 

@@ -29,7 +29,7 @@ internal struct OrderItem: Codable {
         let tmpTaxAmount = taxAmount ?? 0
         let tmpTotalOrderItemAmount = tmpAmount - tmpDiscountAmount + tmpTaxAmount
 
-        if AppState.current.currency?.isZeroDecimal == true {
+        if let currency = AppState.current.currency, currency.isZeroDecimal {
             applePayItemAmount = NSDecimalNumber(value: tmpTotalOrderItemAmount)
         } else {
             applePayItemAmount = NSDecimalNumber(value: tmpTotalOrderItemAmount).dividing(by: 100)

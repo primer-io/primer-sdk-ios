@@ -220,7 +220,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
                 let supportedNetworks = ApplePayUtils.supportedPKPaymentNetworks()
                 var canMakePayment: Bool
-                if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
+                if let options = PrimerSettings.current.paymentMethodOptions.applePayOptions, options.checkProvidedNetworks {
                     canMakePayment = PKPaymentAuthorizationController.canMakePayments(usingNetworks: supportedNetworks)
                 } else {
                     canMakePayment = PKPaymentAuthorizationController.canMakePayments()
@@ -229,7 +229,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 if canMakePayment {
                     let request = PKPaymentRequest()
                     let applePayOptions = PrimerSettings.current.paymentMethodOptions.applePayOptions
-                    let isBillingContactFieldsRequired = applePayOptions?.isCaptureBillingAddressEnabled == true
+                    let isBillingContactFieldsRequired = applePayOptions?.isCaptureBillingAddressEnabled ?? false
                     request.requiredBillingContactFields = isBillingContactFieldsRequired ? [.postalAddress] : []
                     request.currencyCode = applePayRequest.currency.code
                     request.countryCode = applePayRequest.countryCode.rawValue
@@ -263,7 +263,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 } else {
                     let errorMessage = "Cannot run ApplePay on this device"
 
-                    if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
+                    if let options = PrimerSettings.current.paymentMethodOptions.applePayOptions, options.checkProvidedNetworks {
                         self.logger.error(message: "APPLE PAY")
                         self.logger.error(message: errorMessage)
                         let err = PrimerError.unableToMakePaymentsOnProvidedNetworks(userInfo: .errorUserInfoDictionary(),

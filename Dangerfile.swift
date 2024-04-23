@@ -54,7 +54,7 @@ if additions + deletions > bigPRThreshold {
 
 // MARK: - PR WIP
 
-if pr.title.contains("WIP") || pr.draft == true {
+if pr.title.contains("WIP") || pr.draft {
     warn("PR is classed as Work in Progress")
 }
 

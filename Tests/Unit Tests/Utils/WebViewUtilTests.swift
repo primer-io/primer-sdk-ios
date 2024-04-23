@@ -17,7 +17,7 @@ class WebViewUtilTests: XCTestCase {
             WebViewUtil.allowedHostsContain("app.primer.io"),
             WebViewUtil.allowedHostsContain("livedemostore.primer.io")
         ]
-        XCTAssertTrue(allowedPatterns.allSatisfy { $0 == true })
+        XCTAssertTrue(allowedPatterns.allSatisfy { $0 })
     }
 
     func test_disallowed_patterns_return_false() throws {

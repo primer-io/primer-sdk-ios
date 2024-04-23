@@ -292,7 +292,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         Analytics.Service.record(event: viewEvent)
 
         if let captureVaultedCardCvv = (config.options as? CardOptions)?.captureVaultedCardCvv,
-           captureVaultedCardCvv == true,
+           captureVaultedCardCvv,
            config.internalPaymentMethodType == .paymentCard {
             let cvvViewController = CVVRecaptureViewController(viewModel: CVVRecaptureViewModel())
             cvvViewController.viewModel.cardButtonViewModel = cardButtonViewModel
