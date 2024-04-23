@@ -22,16 +22,25 @@ jobs:
           echo "sonar.pullrequest.base=${{github.base_ref}}" >> sonar-project.properties 
           echo "sonar.scm.revision=${{ github.event.pull_request.head.sha }}" >> sonar-project.properties
           cat sonar-project.properties
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarqube-scan-action@master
+      - name: Set up Sonar Quality Gate
+        uses: dieuhd/sonar-quality-gate@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GIT_URL: "https://api.github.com"
+          GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: https://sonarcloud.io./
-      - name: SonarQube Quality Gate check
-        id: sonarqube-quality-gate-check
-        uses: sonarsource/sonarqube-quality-gate-action@master
-        timeout-minutes: 5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: https://sonarcloud.io./
+        with:
+          login:  ${{ secrets.SONAR_TOKEN }}
+      # - name: SonarCloud Scan
+      #   uses: sonarsource/sonarqube-scan-action@master
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #     SONAR_HOST_URL: https://sonarcloud.io./
+      # - name: SonarQube Quality Gate check
+      #   id: sonarqube-quality-gate-check
+      #   uses: sonarsource/sonarqube-quality-gate-action@master
+      #   timeout-minutes: 5
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #     SONAR_HOST_URL: https://sonarcloud.io./
