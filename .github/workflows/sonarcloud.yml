@@ -24,7 +24,7 @@ jobs:
           cat sonar-project.properties
       - name: Convert coverage to Sonar format
         run: |
-          sh xccov-to-sonarqube-generic.sh fastlane/test_output > sonar-coverage.xml
+          sh Reports\ Scripts/xccov-to-sonarqube-generic.sh fastlane/test_output > sonar-coverage.xml
       - name: SonarCloud Scan
         uses: sonarsource/sonarqube-scan-action@master
         env:
