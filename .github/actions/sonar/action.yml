@@ -44,7 +44,6 @@ runs:
         echo "sonar.pullrequest.base=${{ inputs.base-branch }}" >> sonar-project.properties
         echo "sonar.scm.revision=${{ inputs.pull-request-sha }}" >> sonar-project.properties
         echo "sonar.coverageReportPaths=${{ inputs.coverage-file-name }}" >> sonar-project.properties
-        cat sonar-project.properties
     - name: Run Sonar
       shell: bash
       run: |
