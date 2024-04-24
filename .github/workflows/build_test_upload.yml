@@ -101,7 +101,7 @@ jobs:
           echo "sonar.scm.revision=${{ github.event.pull_request.head.sha }}" >> sonar-project.properties
           cat sonar-project.properties
       - name: SonarCloud Scan
-        uses: sonarsource/sonarqube-scan-action@master
+        uses: sonarsource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
