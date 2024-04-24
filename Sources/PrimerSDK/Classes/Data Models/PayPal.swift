@@ -75,7 +75,10 @@ extension Response.Body.Tokenization {
 
         // swiftlint:disable:next nesting
         public struct ExternalPayerInfo: Codable {
-            public var externalPayerId, externalPayerIdSnakeCase, email, firstName, lastName: String?
+            public var externalPayerId, externalPayerIdSnakeCase, 
+                       email,
+                       firstName, firstNameSnakeCase,
+                       lastName, lastNameSnakeCase: String?
 
             public init(from decoder: Decoder) throws {
                 let container: KeyedDecodingContainer<Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys> =
@@ -97,9 +100,17 @@ extension Response.Body.Tokenization {
                     String.self,
                     forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.firstName)
 
+                self.firstNameSnakeCase = try container.decodeIfPresent(
+                    String.self,
+                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.firstNameSnakeCase)
+
                 self.lastName = try container.decodeIfPresent(
                     String.self,
                     forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.lastName)
+
+                self.lastNameSnakeCase = try container.decodeIfPresent(
+                    String.self,
+                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.lastNameSnakeCase)
 
                 // This logic ensures we mirror externalPayerId to external_payer_id and vice versa
                 if self.externalPayerId == nil && self.externalPayerIdSnakeCase != nil {
@@ -107,12 +118,26 @@ extension Response.Body.Tokenization {
                 } else if self.externalPayerIdSnakeCase == nil && self.externalPayerId != nil {
                     self.externalPayerIdSnakeCase = self.externalPayerId
                 }
+
+                if firstName == nil && firstNameSnakeCase != nil {
+                    firstName = firstNameSnakeCase
+                } else if firstNameSnakeCase == nil && firstName != nil {
+                    firstNameSnakeCase = firstName
+                }
+
+                if lastName == nil && lastNameSnakeCase != nil {
+                    lastName = lastNameSnakeCase
+                } else if lastNameSnakeCase == nil && lastName != nil {
+                    lastNameSnakeCase = lastName
+                }
             }
 
             // swiftlint:disable:next nesting
             enum CodingKeys: String, CodingKey {
                 case externalPayerId
                 case externalPayerIdSnakeCase = "external_payer_id"
+                case firstNameSnakeCase = "first_name"
+                case lastNameSnakeCase = "last_name"
                 case email, firstName, lastName
             }
         }
