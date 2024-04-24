@@ -120,10 +120,11 @@ platform :ios do
       sdk: "iphonesimulator17.2",
       destination: "OS=17.2,name=iPhone 15 Pro",
       result_bundle: true,
+      code_coverage: true,
       output_directory: Dir.pwd + "/test_output"
     )
   end
-
+  
   lane :build_cocoapods do |options|
     common_pre_build_action
 
