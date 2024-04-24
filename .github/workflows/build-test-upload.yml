@@ -93,7 +93,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           sonar-host: https://sonarcloud.io.
-          coverage-file-path=
           pull-request-number: ${{ github.event.pull_request.number }}
           branch: ${{ github.head_ref }}
           base-branch: ${{ github.base_ref }}
