@@ -33,6 +33,7 @@ runs:
       with:
         name: coverage-file
     - name: Install Sonar
+      shell: bash
       run: |
         brew install sonar-scanner
     - name: Update sonar-project.properties
@@ -45,5 +46,6 @@ runs:
         echo "sonar.coverageReportPaths=${{ inputs.coverage-file-name }}" >> sonar-project.properties
         cat sonar-project.properties
     - name: Run Sonar
+      shell: bash
       run: |
         sonar-scanner -Dsonar.token=${{ inputs.sonar-token }}
