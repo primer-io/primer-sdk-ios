@@ -93,11 +93,12 @@ jobs:
       - name: Prepare coverage reports
         run: |
           bash Scripts/xccov-to-sonarqube-generic.sh fastlane/test_output/PrimerSDKTests.xcresult/ > coverage.xml
-          cat coverage.xml
+          sed "s#$PWD/##g" coverage.xml > coverage_cleaned.xml
+          cat coverage_cleaned.xml
       - uses: actions/upload-artifact@master
         with:
           name: coverage-file
-          path: coverage.xml
+          path: coverage_cleaned.xml
 
   sonarcloud:
     needs:
