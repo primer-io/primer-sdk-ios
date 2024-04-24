@@ -93,18 +93,30 @@ jobs:
       - name: Prepare coverage reports
         run: |
           bash Scripts/xccov-to-sonarqube-generic.sh fastlane/test_output/PrimerSDKTests.xcresult/ > coverage.xml
-      - name: Update sonar-project.properties
-        run: |
-          echo "sonar.pullrequest.key=${{github.event.pull_request.number}}" >> sonar-project.properties
-          echo "sonar.pullrequest.branch=${{github.head_ref}}" >> sonar-project.properties
-          echo "sonar.pullrequest.base=${{github.base_ref}}" >> sonar-project.properties
-          echo "sonar.scm.revision=${{ github.event.pull_request.head.sha }}" >> sonar-project.properties
-          cat sonar-project.properties
+      - uses: actions/upload-artifact@master
+        with:
+          name: coverage-file
+          path: coverage.xml
+
+  sonarcloud:
+    needs:
+      - sdk-unit-tests
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@master
+        with:
+          name: coverage-file
+          path: coverage.xml
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
       - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
+        uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          
   build-and-upload-to-appetize:
     needs:
       - debug-app-unit-tests
