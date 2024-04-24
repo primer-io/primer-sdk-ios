@@ -75,10 +75,26 @@ extension Response.Body.Tokenization {
 
         // swiftlint:disable:next nesting
         public struct ExternalPayerInfo: Codable {
-            public var externalPayerId, externalPayerIdSnakeCase, 
+            public var externalPayerId, externalPayerIdSnakeCase,
                        email,
                        firstName, firstNameSnakeCase,
                        lastName, lastNameSnakeCase: String?
+
+            public init(externalPayerId: String?,
+                        externalPayerIdSnakeCase: String?,
+                        email: String?,
+                        firstName: String?,
+                        firstNameSnakeCase: String?,
+                        lastName: String?,
+                        lastNameSnakeCase: String?) {
+                self.externalPayerId = externalPayerId
+                self.externalPayerIdSnakeCase = externalPayerIdSnakeCase
+                self.email = email
+                self.firstName = firstName
+                self.firstNameSnakeCase = firstNameSnakeCase
+                self.lastName = lastName
+                self.lastNameSnakeCase = lastNameSnakeCase
+            }
 
             public init(from decoder: Decoder) throws {
                 let container: KeyedDecodingContainer<Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys> =
