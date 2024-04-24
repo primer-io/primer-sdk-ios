@@ -71,4 +71,4 @@ runs:
     - uses: actions/upload-artifact@master
       with:
         name: coverage-file
-        path: coverage_cleaned.xml
+        path: ${{ inputs.coverage-file-name }}
