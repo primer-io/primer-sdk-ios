@@ -10,16 +10,19 @@ inputs:
   sonar-host:
     description: Sonar host URL
     required: true
+  coverage-file-name:
+    description: Name of the generic coverage file
+    required: true
   branch:
     description: Branch
     required: true
   pull-request-number:
     description: PR number
-    required: true
- base-branch:
+    required: false
+  base-branch:
     description: PR target branch
     required: false
- pull-request-sha:
+  pull-request-sha:
     description: PR commit SHA
     required: false
 
@@ -36,6 +39,8 @@ runs:
         echo "sonar.pullrequest.branch=${{ inputs.branch }}" >> sonar-project.properties
         echo "sonar.pullrequest.base=${{ inputs.base-branch }}" >> sonar-project.properties
         echo "sonar.scm.revision=${{ inputs.pull-request-sha }}" >> sonar-project.properties
+        echo "sonar.coverageReportPaths=${{ inputs.coverage-file-name }}" >> sonar-project.properties
+        cat sonar-project.properties
     - name: SonarCloud Scan
       uses: sonarsource/sonarqube-scan-action@master
       env:

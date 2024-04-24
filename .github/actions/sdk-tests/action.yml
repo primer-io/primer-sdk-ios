@@ -28,6 +28,9 @@ inputs:
   source-branch:
     description: Source branch
     required: true
+  coverage-file-name:
+    description: Name of the generic coverage file
+    required: true
 runs:
   using: "composite"
   steps:
@@ -64,7 +67,7 @@ runs:
       shell: bash
       run: |
         bash Scripts/xccov-to-sonarqube-generic.sh fastlane/test_output/PrimerSDKTests.xcresult/ > coverage.xml
-        sed "s#$PWD/##g" coverage.xml > coverage_cleaned.xml
+        sed "s#$PWD/##g" coverage.xml > ${{ inputs.coverage-file-name }}
     - uses: actions/upload-artifact@master
       with:
         name: coverage-file

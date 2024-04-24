@@ -34,6 +34,7 @@ jobs:
           fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
           match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          coverage-file-name: sonar-coverage.xml
 
   sonarcloud:
     needs:
@@ -54,3 +55,4 @@ jobs:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           sonar-host: https://sonarcloud.io./
           branch: ${{ github.head_ref }}
+          coverage-file-name: sonar-coverage.xml

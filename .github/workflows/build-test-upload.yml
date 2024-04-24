@@ -73,6 +73,7 @@ jobs:
           fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
           match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          coverage-file-name: sonar-coverage.xml
 
   sonarcloud:
     needs:
@@ -91,11 +92,13 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           sonar-token: ${{ secrets.SONAR_TOKEN }}
-          sonar-host: https://sonarcloud.io./
+          sonar-host: https://sonarcloud.io.
+          coverage-file-path=
           pull-request-number: ${{ github.event.pull_request.number }}
           branch: ${{ github.head_ref }}
           base-branch: ${{ github.base_ref }}
           pull-request-sha: ${{ github.event.pull_request.head.sha }}
+          coverage-file-name: sonar-coverage.xml
           
   build-and-upload-to-appetize:
     needs:
