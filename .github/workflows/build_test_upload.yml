@@ -93,6 +93,7 @@ jobs:
       - name: Prepare coverage reports
         run: |
           bash Scripts/xccov-to-sonarqube-generic.sh fastlane/test_output/PrimerSDKTests.xcresult/ > coverage.xml
+          cat coverage.xml
       - uses: actions/upload-artifact@master
         with:
           name: coverage-file
