@@ -93,15 +93,18 @@ jobs:
       - name: Prepare coverage reports
         run: |
           bash Scripts/xccov-to-sonarqube-generic.sh fastlane/test_output/PrimerSDKTests.xcresult/ > coverage.xml
-      - name:  Install Sonar-Scanner
+      - name: Update sonar-project.properties
         run: |
-          brew install sonar-scanner
-      - name:  Run Sonar scanner
-        run: |
-         git fetch --unshallow --no-tags
-         sonar-scanner -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.coverageReportPaths=coverage.xml -Dsonar.verbose=true
+          echo "sonar.pullrequest.key=${{github.event.pull_request.number}}" >> sonar-project.properties
+          echo "sonar.pullrequest.branch=${{github.head_ref}}" >> sonar-project.properties
+          echo "sonar.pullrequest.base=${{github.base_ref}}" >> sonar-project.properties
+          echo "sonar.scm.revision=${{ github.event.pull_request.head.sha }}" >> sonar-project.properties
+          cat sonar-project.properties
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarqube-scan-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   build-and-upload-to-appetize:
     needs:
       - debug-app-unit-tests
