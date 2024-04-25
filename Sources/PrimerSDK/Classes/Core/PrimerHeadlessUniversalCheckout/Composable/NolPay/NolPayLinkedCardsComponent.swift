@@ -24,7 +24,9 @@ public class NolPayLinkedCardsComponent {
     var phoneMetadataService: NolPayPhoneMetadataProviding?
     var apiClient: PrimerAPIClientProtocol?
 
-    public init() {}
+    public init() {
+        self.apiClient = PrimerAPIClient()
+    }
 
     public func getLinkedCardsFor(mobileNumber: String, completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
 
