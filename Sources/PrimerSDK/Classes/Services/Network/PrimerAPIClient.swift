@@ -25,7 +25,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
 
     func genericAPICall(clientToken: DecodedJWTToken, url: URL, completion: @escaping APICompletion<Bool>) {
         let endpoint = PrimerAPI.redirect(clientToken: clientToken, url: url)
-        networkService.request(endpoint) { (result: Result<SuccessResponse, Error>) in
+        networkService.request(endpoint) { (result: Result<String, Error>) in
             switch result {
             case .success:
                 completion(.success(true))
