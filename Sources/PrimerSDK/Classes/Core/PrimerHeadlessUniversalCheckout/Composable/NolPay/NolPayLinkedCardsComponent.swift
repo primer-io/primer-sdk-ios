@@ -23,8 +23,7 @@ public class NolPayLinkedCardsComponent {
     var countryCode: String?
     var phoneMetadataService: NolPayPhoneMetadataProviding?
 
-    public init() {
-    }
+    public init() {}
 
     public func getLinkedCardsFor(mobileNumber: String, completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
 
