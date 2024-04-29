@@ -121,7 +121,7 @@ platform :ios do
       package_path: ".",
       scheme: "PrimerSDKTests",
       sdk: "iphonesimulator#{sim_version}",
-      destination: "OS=#{sim_version},name=iPhone 15 Pro",
+      destination: "OS=#{sim_version},name=iPhone 14 Pro",
       result_bundle: true,
       code_coverage: true,
       output_directory: Dir.pwd + "/test_output"
