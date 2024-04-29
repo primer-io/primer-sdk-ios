@@ -12,8 +12,7 @@ class StripeAchHeadlessComponent {
     var tokenizationComponent: StripeAchTokenizationComponentProtocol
     /// Global settings for the payment process, injected as a dependency.
     let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-    var availableCategories: [KlarnaPaymentCategory] = []
-    var isFinalizationRequired: Bool = false
+    
     // MARK: - Delegates
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
@@ -53,7 +52,8 @@ extension StripeAchHeadlessComponent: StripeAchUserDetailsComponent {
         case .collectUserDetails(let details):
             
             do {
-                try StripeAchUserDetails.validate(userDetails: stripeach)
+                try StripeAchUserDetails.validate(userDetails: details)
+                validationDelegate?.didUpdate(validationStatus: .valid, for: collectableData)
                 
             } catch StripeAchUserDetailsError.validationErrors(let errors) {
                 var validationErrors: [PrimerValidationError] = []
@@ -68,22 +68,21 @@ extension StripeAchHeadlessComponent: StripeAchUserDetailsComponent {
                 }
                 validationDelegate?.didUpdate(validationStatus: .invalid(errors: validationErrors), for: collectableData)
             } catch {
+                // It will never get in here.
                 print("An unexpected error occurred")
             }
-            
-            validationDelegate?.didUpdate(validationStatus: .valid, for: collectableData)
         }
     }
 
-    // Submit the
-    public func submit() {
-        trackSubmit()
-    }
-
-    /// Initiates the creation of a Klarna payment session.
+    /// Get client session user details.
     public func start() {
         validate()
         trackStart()
+    }
+    
+    /// Submit the user details and patch the client if needed
+    public func submit() {
+        trackSubmit()
     }
 }
 
@@ -93,7 +92,7 @@ extension StripeAchHeadlessComponent {
 }
 
 // MARK: - PrimerStripeCollectorViewControllerDelegate
-extension StripeAchHeadlessComponent { // PrimerStripeCollectorViewControllerDelegate
+extension StripeAchHeadlessComponent: PrimerStripeCollectorViewControllerDelegate {
     /// Handles statuses from the PrimerStripeSDK, forwarding them to the next steps.
     public func primerStripeCollected(_ stripeStatus: PrimerStripeStatus) {
         switch stripeStatus {
@@ -125,7 +124,7 @@ extension StripeAchHeadlessComponent: PrimerHeadlessAnalyticsRecordable {
     func trackStart() {
         recordEvent(
             type: .sdkEvent,
-            name: KlarnaAnalyticsEvents.createSessionMethod,
+            name: StripeAnalyticsEvents.startMethod,
             params: [:]
         )
     }
@@ -133,7 +132,7 @@ extension StripeAchHeadlessComponent: PrimerHeadlessAnalyticsRecordable {
     func trackSubmit() {
         recordEvent(
             type: .sdkEvent,
-            name: KlarnaAnalyticsEvents.authorizeSessionMethod,
+            name: StripeAnalyticsEvents.submitMethod,
             params: [:]
         )
     }
@@ -141,7 +140,7 @@ extension StripeAchHeadlessComponent: PrimerHeadlessAnalyticsRecordable {
     func trackCollectableData() {
         recordEvent(
             type: .sdkEvent,
-            name: KlarnaAnalyticsEvents.updateCollectedData,
+            name: StripeAnalyticsEvents.updateCollectedData,
             params: [:]
         )
     }

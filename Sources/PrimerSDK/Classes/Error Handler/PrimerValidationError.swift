@@ -134,7 +134,7 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
         case .paymentAlreadyFinalized:
             return "payment-already-finalized"
         case .invalidValue(let field, _, _):
-            return "invalid-\(field)"
+            return "invalid-customer-\(field)"
         }
     }
 

@@ -8,7 +8,7 @@
 import Foundation
 
 struct StripeAnalyticsEvents {
-    static let createSessionMethod = "StripeAchUserDetailsComponent.start()"
-    static let authorizeSessionMethod = "StripeAchUserDetailsComponent.submit"
+    static let startMethod = "StripeAchUserDetailsComponent.start()"
+    static let submitMethod = "StripeAchUserDetailsComponent.submit()"
     static let updateCollectedData = "StripeAchUserDetailsComponent.updateCollectedData()"
 }
