@@ -9,6 +9,5 @@ import Foundation
 
 typealias DummySuccess = SuccessResponse
 
-internal struct SuccessResponse: Codable {
-    let success: Bool
+internal struct SuccessResponse: Codable, Equatable {
 }

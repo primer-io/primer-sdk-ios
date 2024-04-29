@@ -92,19 +92,8 @@ class DefaultNetworkService: NetworkService, LogReporter {
                 }
 
                 do {
-                    let modelResponse: T
-                    if T.self == String.self {
-                        guard let stringResponse = try endpoint.responseFactory.responseAsString(for: data,
-                                                                                                 forMetadata: response.metadata) as? T else {
-                            throw InternalError.failedToDecode(message: "Unexpected data type. Expected a String.",
-                                                               userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                        }
-                        modelResponse = stringResponse
-                    } else {
-                        modelResponse = try endpoint.responseFactory.model(for: data, forMetadata: response.metadata)
-                    }
-                    completion(.success(modelResponse))
+                    let response: T = try endpoint.responseFactory.model(for: data, forMetadata: response.metadata)
+                    completion(.success(response))
                 } catch {
                     completion(.failure(error))
                 }

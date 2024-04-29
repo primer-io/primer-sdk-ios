@@ -614,7 +614,7 @@ extension MockPrimerAPIClient {
 
     class Samples {
 
-        static let mockValidateClientToken: SuccessResponse = SuccessResponse(success: true)
+        static let mockValidateClientToken: SuccessResponse = SuccessResponse()
         static let mockPrimerAPIConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
