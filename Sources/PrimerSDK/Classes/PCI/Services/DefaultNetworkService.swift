@@ -97,6 +97,7 @@ class DefaultNetworkService: NetworkService, LogReporter {
                 } catch {
                     completion(.failure(error))
                 }
+
             }
         } catch {
             ErrorHandler.handle(error: error)

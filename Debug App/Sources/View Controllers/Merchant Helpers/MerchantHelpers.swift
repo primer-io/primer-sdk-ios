@@ -81,7 +81,7 @@ struct MerchantMockDataManager {
     static var genericPaymentMethod = ClientSessionRequestBody.PaymentMethod(
         vaultOnSuccess: false,
         options: nil,
-        descriptor: nil,
+        descriptor: "Random descriptor",
         paymentType: nil
     )
 

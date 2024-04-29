@@ -76,7 +76,7 @@ extension PrimerHeadlessCollectDataComponent {
         let error = PrimerError.invalidValue(key: key,
                                              value: nil,
                                              userInfo: .errorUserInfoDictionary(),
-        diagnosticsId: UUID().uuidString)
+                                             diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: error)
         self.errorDelegate?.didReceiveError(error: error)
     }

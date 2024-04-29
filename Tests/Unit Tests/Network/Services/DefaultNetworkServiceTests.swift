@@ -50,7 +50,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
         requestDispatcher = nil
     }
 
-    func testBasicRequest_success_sync() throws {
+    func testBasicRequest_jsonDecodingSuccess_sync() throws {
 
         let expectation = self.expectation(description: "Successful response")
 
@@ -92,7 +92,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
         waitForExpectations(timeout: 2.0)
     }
 
-    func testBasicRequest_decodingFailure_sync() throws {
+    func testBasicRequest_jsonDecodingFailure_sync() throws {
 
         let expectation = self.expectation(description: "Fails with decoding error")
 
@@ -120,6 +120,50 @@ final class DefaultNetworkServiceTests: XCTestCase {
 
         waitForExpectations(timeout: 2.0)
 
+    }
+
+    func testRedirectRequest_successWithEmptyResponse_sync() {
+        let expectation = self.expectation(description: "Fails with decoding error")
+
+        let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
+        let data = Data()
+        requestDispatcher.responseModel = DispatcherResponseModel(metadata: metadata, data: data, error: nil)
+
+        let endpoint = PrimerAPI.redirect(clientToken: Mocks.decodedJWTToken, url: URL(string: metadata.responseUrl!)!)
+        let cancellable = defaultNetworkService.request(endpoint) { (result: APIResult<SuccessResponse>) in
+            switch result {
+            case .success(_):
+                expectation.fulfill()
+            case .failure(let error):
+                XCTFail(); return
+            }
+        }
+
+        XCTAssertNil(cancellable)
+
+        waitForExpectations(timeout: 2.0)
+    }
+
+    func testRedirectRequest_successWithNonJsonResponse_sync() {
+        let expectation = self.expectation(description: "Fails with decoding error")
+
+        let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
+        let data = "<html><head></head><body><a>test</a></body></html>".data(using: .utf8)
+        requestDispatcher.responseModel = DispatcherResponseModel(metadata: metadata, data: data, error: nil)
+
+        let endpoint = PrimerAPI.redirect(clientToken: Mocks.decodedJWTToken, url: URL(string: metadata.responseUrl!)!)
+        let cancellable = defaultNetworkService.request(endpoint) { (result: APIResult<SuccessResponse>) in
+            switch result {
+            case .success(_):
+                expectation.fulfill()
+            case .failure(let error):
+                XCTFail(); return
+            }
+        }
+
+        XCTAssertNil(cancellable)
+
+        waitForExpectations(timeout: 2.0)
     }
 
 }
