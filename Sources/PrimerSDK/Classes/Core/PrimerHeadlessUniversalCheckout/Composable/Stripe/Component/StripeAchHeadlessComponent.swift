@@ -12,6 +12,8 @@ class StripeAchHeadlessComponent {
     var tokenizationComponent: StripeAchTokenizationComponentProtocol
     /// Global settings for the payment process, injected as a dependency.
     let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+    var inputUserDetails: StripeAchUserDetails?
+    var clientSessionUserDetails: StripeAchUserDetails?
     
     // MARK: - Delegates
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
@@ -28,7 +30,10 @@ class StripeAchHeadlessComponent {
     func setNeededDelegates() {}
     
     /// Reset some variables if needed
-    func resetVariables() {}
+    func resetVariables() {
+        inputUserDetails = nil
+        clientSessionUserDetails = nil
+    }
 
     /// Validates the tokenization component, handling any errors that occur during the process.
     func validate() {
@@ -53,6 +58,7 @@ extension StripeAchHeadlessComponent: StripeAchUserDetailsComponent {
             
             do {
                 try StripeAchUserDetails.validate(userDetails: details)
+                inputUserDetails = details
                 validationDelegate?.didUpdate(validationStatus: .valid, for: collectableData)
                 
             } catch StripeAchUserDetailsError.validationErrors(let errors) {
@@ -78,17 +84,14 @@ extension StripeAchHeadlessComponent: StripeAchUserDetailsComponent {
     public func start() {
         validate()
         trackStart()
+        getClientSessionUserDetails()
     }
     
     /// Submit the user details and patch the client if needed
     public func submit() {
         trackSubmit()
+        patchClientSessionIfNeeded()
     }
-}
-
-// TODO: - Some API calls that will be made before starting the Tokenization and maybe after
-extension StripeAchHeadlessComponent {
-    
 }
 
 // MARK: - PrimerStripeCollectorViewControllerDelegate
@@ -112,11 +115,6 @@ extension StripeAchHeadlessComponent: PrimerStripeCollectorViewControllerDelegat
             errorDelegate?.didReceiveError(error: primerError)
         }
     }
-}
-
-// MARK: - Helper methods
-extension StripeAchHeadlessComponent {
-    
 }
 
 // MARK: Recording Analytics

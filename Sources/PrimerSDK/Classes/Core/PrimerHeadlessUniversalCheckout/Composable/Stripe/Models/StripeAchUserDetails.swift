@@ -22,6 +22,9 @@ public enum StripeAchUserDetailsError: Error {
             return "lastname"
         case .invalidEmailAddress:
             return "email"
+            
+        default:
+            return ""
         }
     }
 }
@@ -68,5 +71,27 @@ public struct StripeAchUserDetails: Codable {
         let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
         
         return emailPred.evaluate(with: email) ? nil : StripeAchUserDetailsError.invalidEmailAddress
+    }
+}
+
+extension StripeAchUserDetails: Equatable {
+    public static func isEqual(lhs: StripeAchUserDetails,
+                               rhs: StripeAchUserDetails) -> (areEqual: Bool, differingFields: [StripeAchUserDetailsError]) {
+        var unequalFields: [StripeAchUserDetailsError] = []
+        var areEqual = true
+        if lhs.firstName != rhs.firstName {
+            unequalFields.append(StripeAchUserDetailsError.invalidFirstName)
+            areEqual = false
+        }
+        if lhs.lastName != rhs.lastName {
+            unequalFields.append(StripeAchUserDetailsError.invalidLastName)
+            areEqual = false
+        }
+        if lhs.emailAddress != rhs.emailAddress {
+            unequalFields.append(StripeAchUserDetailsError.invalidEmailAddress)
+            areEqual = false
+        }
+        
+        return (areEqual, unequalFields)
     }
 }
