@@ -112,19 +112,22 @@ platform :ios do
   end
 
   desc 'This action builds the app using the SPM integration'
-  lane :test_spm do
+  lane :test_spm do |options|
     common_pre_build_action
+
+    sim_version = options[:sim_version] || "17.2"
+
     run_tests(
       package_path: ".",
       scheme: "PrimerSDKTests",
-      sdk: "iphonesimulator17.2",
-      destination: "OS=17.2,name=iPhone 15 Pro",
+      sdk: "iphonesimulator#{sim_version}",
+      destination: "OS=#{sim_version},name=iPhone 14 Pro",
       result_bundle: true,
       code_coverage: true,
       output_directory: Dir.pwd + "/test_output"
     )
   end
-  
+
   lane :build_cocoapods do |options|
     common_pre_build_action
 
