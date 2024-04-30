@@ -93,12 +93,12 @@ extension StripeAchHeadlessComponent {
     /**
      * Initiates the tokenization process for the selected payment method configuration.
      *
-     * This method filters the available payment method configurations to find the specific configuration for STRIPE-ACH.
+     * This method filters the available payment method configurations to find the specific configuration for STRIPE_ACH.
      * If found, it triggers the start of the tokenization process in the corresponding view model and notifies the step delegate.
      */
     private func startVMTokenization() {
         guard let paymentMethodViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels
-            .filter({ $0.config.type == "STRIPE-ACH" })
+            .filter({ $0.config.type == "STRIPE_ACH" })
             .first as? StripeTokenizationViewModel else { return }
         
         paymentMethodViewModel.start()

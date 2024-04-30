@@ -49,7 +49,7 @@ struct StripeHelpers {
     
     static func getPaymentFailedError() -> PrimerError {
         let error = PrimerError.paymentFailed(
-            paymentMethodType: "STRIPE-ACH",
+            paymentMethodType: "STRIPE_ACH",
             description: "Failed to create payment",
             userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
@@ -59,7 +59,7 @@ struct StripeHelpers {
     
     static func getFailedToProcessPaymentError(paymentResponse: Response.Body.Payment) -> PrimerError {
         let error = PrimerError.failedToProcessPayment(
-            paymentMethodType: "STRIPE-ACH",
+            paymentMethodType: "STRIPE_ACH",
             paymentId: paymentResponse.id ?? "nil",
             status: paymentResponse.status.rawValue,
             userInfo: .errorUserInfoDictionary(),
@@ -79,7 +79,7 @@ struct StripeHelpers {
     
     static func getMissingSDKError() -> PrimerError {
         let error = PrimerError.missingSDK(
-            paymentMethodType: PrimerPaymentMethodType.klarna.rawValue, // Replace this with stripe
+            paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue,
             sdkName: "StripeSDK",
             userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)

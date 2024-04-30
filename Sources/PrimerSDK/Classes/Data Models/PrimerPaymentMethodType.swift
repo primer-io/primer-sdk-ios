@@ -58,6 +58,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     case xenditRetailOutlets    = "XENDIT_RETAIL_OUTLETS"
     case xfersPayNow            = "XFERS_PAYNOW"
     case nolPay                 = "NOL_PAY"
+    case stripeAch              = "STRIPE_ACH"
 
     var isEnabled: Bool {
         switch self {
@@ -145,6 +146,8 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
             return "XFERS"
         case .nolPay:
             return "NOL_PAY"
+        case .stripeAch:
+            return "STRIPE"
         }
     }
 
