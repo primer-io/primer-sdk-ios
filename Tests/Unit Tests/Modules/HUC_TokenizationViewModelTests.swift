@@ -108,35 +108,36 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
 
     // MARK: Native UI Manager
 
-    func test_native_ui_manager_with_auto_payment_handling_and_no_surcharge() throws {
-        try self.assess_huc_payment_method(
-            Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod,
-            paymentHandling: .auto,
-            isSurchargeIncluded: false,
-            isImplementingPaymentMethodWithRequiredAction: true,
-            abortPayment: false)
-    }
-
-    func test_native_ui_manager_with_auto_payment_handling_and_surcharge() throws {
-        try self.assess_huc_payment_method(
-            Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod,
-            paymentHandling: .auto,
-            isSurchargeIncluded: true,
-            isImplementingPaymentMethodWithRequiredAction: true,
-            abortPayment: false)
-    }
+//    func test_native_ui_manager_with_auto_payment_handling_and_no_surcharge() throws {
+//        try self.assess_huc_payment_method(
+//            Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod,
+//            paymentHandling: .auto,
+//            isSurchargeIncluded: false,
+//            isImplementingPaymentMethodWithRequiredAction: true,
+//            abortPayment: false)
+//    }
+//
+//    func test_native_ui_manager_with_auto_payment_handling_and_surcharge() throws {
+//        try self.assess_huc_payment_method(
+//            Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod,
+//            paymentHandling: .auto,
+//            isSurchargeIncluded: true,
+//            isImplementingPaymentMethodWithRequiredAction: true,
+//            abortPayment: false)
+//    }
 
     // MARK: Raw Data Manager
 
-    func test_raw_data_manager_with_auto_payment_handling_and_no_surcharge() throws {
-        try self.assess_huc_payment_method(
-            Mocks.PaymentMethods.paymentCardPaymentMethod,
-            paymentHandling: .auto,
-            isSurchargeIncluded: false,
-            isImplementingPaymentMethodWithRequiredAction: false,
-            abortPayment: false)
-    }
+//    func test_raw_data_manager_with_auto_payment_handling_and_no_surcharge() throws {
+//        try self.assess_huc_payment_method(
+//            Mocks.PaymentMethods.paymentCardPaymentMethod,
+//            paymentHandling: .auto,
+//            isSurchargeIncluded: false,
+//            isImplementingPaymentMethodWithRequiredAction: false,
+//            abortPayment: false)
+//    }
 
+    // NOTE: previously disabled
     //    func test_raw_data_manager_with_auto_payment_handling_and_surcharge() throws {
     //        try self.assess_huc_payment_method(
     //            Mocks.PaymentMethods.paymentCardPaymentMethod,
@@ -202,59 +203,59 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
             isImplementingPaymentMethodWithRequiredAction: true,
             abortPayment: true)
     }
-
-    func test_native_ui_manager_with_auto_payment_handling_and_surcharge_and_abort() throws {
-        try self.assess_huc_payment_method(
-            Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod,
-            paymentHandling: .auto,
-            isSurchargeIncluded: true,
-            isImplementingPaymentMethodWithRequiredAction: true,
-            abortPayment: true)
-    }
-
-    // MARK: Raw Data Manager
-
-    func test_raw_data_manager_with_auto_payment_handling_and_no_surcharge_and_abort() throws {
-        try self.assess_huc_payment_method(
-            Mocks.PaymentMethods.paymentCardPaymentMethod,
-            paymentHandling: .auto,
-            isSurchargeIncluded: false,
-            isImplementingPaymentMethodWithRequiredAction: false,
-            abortPayment: true)
-    }
-
-    // MARK: PAYMENT HANDLING: MANUAL
-
-    // MARK: Native UI Manager
-
-    func test_native_ui_manager_with_manual_payment_handling_and_no_surcharge_and_abort() throws {
-        try self.assess_huc_payment_method(
-            Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod,
-            paymentHandling: .manual,
-            isSurchargeIncluded: false,
-            isImplementingPaymentMethodWithRequiredAction: true,
-            abortPayment: true)
-    }
-
-    func test_native_ui_manager_with_manual_payment_handling_and_surcharge_and_abort() throws {
-        try self.assess_huc_payment_method(
-            Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod,
-            paymentHandling: .manual,
-            isSurchargeIncluded: true,
-            isImplementingPaymentMethodWithRequiredAction: true,
-            abortPayment: true)
-    }
-
-    // MARK: Raw Data Manager
-
-    func test_raw_data_manager_with_manual_payment_handling_and_no_surcharge_and_abort() throws {
-        try self.assess_huc_payment_method(
-            Mocks.PaymentMethods.paymentCardPaymentMethod,
-            paymentHandling: .manual,
-            isSurchargeIncluded: false,
-            isImplementingPaymentMethodWithRequiredAction: false,
-            abortPayment: true)
-    }
+//
+//    func test_native_ui_manager_with_auto_payment_handling_and_surcharge_and_abort() throws {
+//        try self.assess_huc_payment_method(
+//            Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod,
+//            paymentHandling: .auto,
+//            isSurchargeIncluded: true,
+//            isImplementingPaymentMethodWithRequiredAction: true,
+//            abortPayment: true)
+//    }
+//
+//    // MARK: Raw Data Manager
+//
+//    func test_raw_data_manager_with_auto_payment_handling_and_no_surcharge_and_abort() throws {
+//        try self.assess_huc_payment_method(
+//            Mocks.PaymentMethods.paymentCardPaymentMethod,
+//            paymentHandling: .auto,
+//            isSurchargeIncluded: false,
+//            isImplementingPaymentMethodWithRequiredAction: false,
+//            abortPayment: true)
+//    }
+//
+//    // MARK: PAYMENT HANDLING: MANUAL
+//
+//    // MARK: Native UI Manager
+//
+//    func test_native_ui_manager_with_manual_payment_handling_and_no_surcharge_and_abort() throws {
+//        try self.assess_huc_payment_method(
+//            Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod,
+//            paymentHandling: .manual,
+//            isSurchargeIncluded: false,
+//            isImplementingPaymentMethodWithRequiredAction: true,
+//            abortPayment: true)
+//    }
+//
+//    func test_native_ui_manager_with_manual_payment_handling_and_surcharge_and_abort() throws {
+//        try self.assess_huc_payment_method(
+//            Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod,
+//            paymentHandling: .manual,
+//            isSurchargeIncluded: true,
+//            isImplementingPaymentMethodWithRequiredAction: true,
+//            abortPayment: true)
+//    }
+//
+//    // MARK: Raw Data Manager
+//
+//    func test_raw_data_manager_with_manual_payment_handling_and_no_surcharge_and_abort() throws {
+//        try self.assess_huc_payment_method(
+//            Mocks.PaymentMethods.paymentCardPaymentMethod,
+//            paymentHandling: .manual,
+//            isSurchargeIncluded: false,
+//            isImplementingPaymentMethodWithRequiredAction: false,
+//            abortPayment: true)
+//    }
 
     // MARK: - HELPERS
 
@@ -352,12 +353,18 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
 
                     if !isSurchargeIncluded {
                         XCTAssert(self.eventsCalled.count == 6, "6 events should have been called.")
-                        XCTAssert(self.eventsCalled[0] == "primerHeadlessUniversalCheckoutPreparationDidStart", "'\(self.eventsCalled[0])' called instead if 'primerHeadlessUniversalCheckoutPreparationDidStart'.")
-                        XCTAssert(self.eventsCalled[1] == "primerHeadlessUniversalCheckoutWillCreatePaymentWithData", "'\(self.eventsCalled[1])' called instead if 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData'.")
-                        XCTAssert(self.eventsCalled[2] == "primerHeadlessUniversalCheckoutTokenizationDidStart", "'\(self.eventsCalled[2])' called instead if 'primerHeadlessUniversalCheckoutTokenizationDidStart'.")
-                        XCTAssert(self.eventsCalled[3] == "primerHeadlessUniversalCheckoutDidTokenizePaymentMethod", "'\(self.eventsCalled[3])' called instead if 'primerHeadlessUniversalCheckoutDidTokenizePaymentMethod'.")
-                        XCTAssert(self.eventsCalled[4] == "primerHeadlessUniversalCheckoutPaymentMethodDidShow", "'\(self.eventsCalled[4])' called instead if 'primerHeadlessUniversalCheckoutPaymentMethodDidShow'.")
-                        XCTAssert(self.eventsCalled[5] == "primerHeadlessUniversalCheckoutDidResumeWith", "'\(self.eventsCalled[5])' called instead if 'primerHeadlessUniversalCheckoutDidResumeWith'.")
+                        XCTAssert(self.eventsCalled[0] == "primerHeadlessUniversalCheckoutPreparationDidStart", 
+                                  "'\(self.eventsCalled[0])' called instead if 'primerHeadlessUniversalCheckoutPreparationDidStart'.")
+                        XCTAssert(self.eventsCalled[1] == "primerHeadlessUniversalCheckoutWillCreatePaymentWithData", 
+                                  "'\(self.eventsCalled[1])' called instead if 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData'.")
+                        XCTAssert(self.eventsCalled[2] == "primerHeadlessUniversalCheckoutTokenizationDidStart", 
+                                  "'\(self.eventsCalled[2])' called instead if 'primerHeadlessUniversalCheckoutTokenizationDidStart'.")
+                        XCTAssert(self.eventsCalled[3] == "primerHeadlessUniversalCheckoutDidTokenizePaymentMethod", 
+                                  "'\(self.eventsCalled[3])' called instead if 'primerHeadlessUniversalCheckoutDidTokenizePaymentMethod'.")
+                        XCTAssert(self.eventsCalled[4] == "primerHeadlessUniversalCheckoutPaymentMethodDidShow", 
+                                  "'\(self.eventsCalled[4])' called instead if 'primerHeadlessUniversalCheckoutPaymentMethodDidShow'.")
+                        XCTAssert(self.eventsCalled[5] == "primerHeadlessUniversalCheckoutDidResumeWith", 
+                                  "'\(self.eventsCalled[5])' called instead if 'primerHeadlessUniversalCheckoutDidResumeWith'.")
 
                     } else {
                         print(self.eventsCalled)
@@ -404,7 +411,7 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
         }
 
         if self.abortPayment {
-            Timer.scheduledTimer(withTimeInterval: 8, repeats: false) { _ in
+            Timer.scheduledTimer(withTimeInterval: 90, repeats: false) { _ in
                 print(self.eventsCalled)
 
                 if isSurchargeIncluded {

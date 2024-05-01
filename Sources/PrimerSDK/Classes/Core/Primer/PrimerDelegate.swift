@@ -90,10 +90,13 @@ internal class PrimerDelegateProxy: LogReporter {
         }
     }
 
-    static func primerDidDismiss() {
+    static func primerDidDismiss(paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory]) {
+        print(">> PRIMER DID DISMISS")
         DispatchQueue.main.async {
             if PrimerInternal.shared.sdkIntegrationType == .dropIn {
                 Primer.shared.delegate?.primerDidDismiss?()
+            } else if paymentMethodManagerCategories.contains(.nativeUI) {
+                PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniveraslCheckoutUIDidDismissPaymentMethod?()
             }
         }
     }
@@ -138,6 +141,12 @@ internal class PrimerDelegateProxy: LogReporter {
             if PrimerInternal.shared.sdkIntegrationType == .headless {
                 PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo?(additionalInfo)
             }
+        }
+    }
+
+    static func primerDidAbortPayment(error: Error) {
+        DispatchQueue.main.async {
+            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidAbort?(withMerchantError: error)
         }
     }
 

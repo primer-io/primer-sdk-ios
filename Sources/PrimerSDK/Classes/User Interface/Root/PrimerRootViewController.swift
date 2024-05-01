@@ -423,6 +423,14 @@ internal class PrimerRootViewController: PrimerViewController {
             self.view.endEditing(true)
             self.childViewBottomConstraint.constant = self.childView.bounds.height
 
+            let scene: UIScene? = UIApplication.shared.connectedScenes
+                .filter({ $0.activationState == .foregroundActive }).first
+
+            guard let scene = scene as? UIWindowScene, !scene.windows.isEmpty else {
+                completion?()
+                return
+            }
+
             UIView.animate(withDuration: flag ? self.presentationDuration : 0, delay: 0, options: .curveEaseInOut) {
                 self.view.alpha = 0
                 self.view.layoutIfNeeded()

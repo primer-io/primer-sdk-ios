@@ -649,7 +649,10 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         self.didFinishPayment = nil
     }
     func handleFailureFlow(errorMessage: String?) {
-        PrimerUIManager.dismissOrShowResultScreen(type: .failure, withMessage: errorMessage)
+        let categories = self.config.paymentMethodManagerCategories
+        PrimerUIManager.dismissOrShowResultScreen(type: .failure,
+                                                  paymentMethodManagerCategories: categories ?? [],
+                                                  withMessage: errorMessage)
     }
     func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
