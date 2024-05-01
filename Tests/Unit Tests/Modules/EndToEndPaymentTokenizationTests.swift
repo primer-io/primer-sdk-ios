@@ -1,6 +1,6 @@
 //
-//  DropInPaymentTokenizationTests.swift
-//  
+//  EndToEndPaymentTokenizationTests.swift
+//
 //
 //  Created by Jack Newcombe on 01/05/2024.
 //
@@ -8,7 +8,7 @@
 import XCTest
 @testable import PrimerSDK
 
-final class DropInPaymentTokenizationTests: XCTestCase {
+final class EndToEndPaymentTokenizationTests: XCTestCase {
 
     var delegate: MockPrimerHeadlessUniversalCheckoutDelegate!
 
@@ -363,7 +363,7 @@ final class DropInPaymentTokenizationTests: XCTestCase {
 
 // MARK: SDK Helpers
 
-extension DropInPaymentTokenizationTests {
+extension EndToEndPaymentTokenizationTests {
 
 
     private func setupApiConfiguration(paymentMethod: PrimerPaymentMethod,
