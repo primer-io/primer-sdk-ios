@@ -35,9 +35,6 @@ extension StripeAchHeadlessComponent {
      * discrepancy, it updates the client session; otherwise, it continues with the tokenization process.
      */
     func patchClientSessionIfNeeded() {
-        guard let inputUserDetails,
-              let clientSessionUserDetails else { return }
-
         let shouldPatchUserDetails = StripeAchUserDetails.isEqual(lhs: inputUserDetails, rhs: clientSessionUserDetails)
         var clientSessionActions: [ClientSession.Action] = []
 
@@ -118,14 +115,11 @@ extension StripeAchHeadlessComponent {
     private func createAction(from validationError: StripeAchUserDetailsError) -> ClientSession.Action? {
         switch validationError {
         case .invalidFirstName:
-            return ClientSession.Action.setCustomerFirstName(inputUserDetails?.firstName ?? "")
+            return ClientSession.Action.setCustomerFirstName(inputUserDetails.firstName)
         case .invalidLastName:
-            return ClientSession.Action.setCustomerLastName(inputUserDetails?.lastName ?? "")
+            return ClientSession.Action.setCustomerLastName(inputUserDetails.lastName)
         case .invalidEmailAddress:
-            return ClientSession.Action.setCustomerEmailAddress(inputUserDetails?.emailAddress ?? "")
-            
-        default:
-            return nil
+            return ClientSession.Action.setCustomerEmailAddress(inputUserDetails.emailAddress)
         }
     }
 }

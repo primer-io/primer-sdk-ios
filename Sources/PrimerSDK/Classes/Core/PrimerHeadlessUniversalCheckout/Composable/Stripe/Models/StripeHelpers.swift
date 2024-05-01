@@ -10,6 +10,12 @@ import UIKit
 // StripeHelpers: A utility structure to facilitate various operations related to Stripe ACH payment sessions.
 struct StripeHelpers {
     
+    /// - Helper function to construct locale data.
+    static func constructLocaleData() -> Request.Body.Stripe.SessionData {
+        return Request.Body.Stripe.SessionData(locale: PrimerSettings.current.localeData.localeCode,
+                                               platform: "IOS")
+    }
+    
     // MARK: - Error helpers
     static func getInvalidTokenError() -> PrimerError {
         let error = PrimerError.invalidClientToken(

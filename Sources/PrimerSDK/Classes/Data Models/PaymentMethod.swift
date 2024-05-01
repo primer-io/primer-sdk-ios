@@ -131,6 +131,8 @@ class PrimerPaymentMethod: Codable, LogReporter {
                 return QRCodeTokenizationViewModel(config: self)
             case PrimerPaymentMethodType.nolPay:
                 return NolPayTokenizationViewModel(config: self)
+            case PrimerPaymentMethodType.stripeAch:
+                return StripeTokenizationViewModel(config: self)
 
             default:
                 break

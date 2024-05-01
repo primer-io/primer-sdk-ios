@@ -26,7 +26,7 @@ class StripeTokenizationManager: StripeTokenizationManagerProtocol {
         self.tokenizationService = TokenizationService()
     }
 
-    // MARK: - Tokenize DropIn
+    // MARK: - Tokenize
     func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             firstly {
@@ -45,12 +45,26 @@ class StripeTokenizationManager: StripeTokenizationManagerProtocol {
     }
 }
 
+/**
+ * Constructs a tokenization request body for a Stripe ACH tokenize method.
+ *
+ * This private function generates the necessary payload for tokenization by assembling data related to
+ * the payment method and additional session information.
+ *
+ * - Returns: A promise that resolves with a `Request.Body.Tokenization` containing the payment instrument data.
+ */
 extension StripeTokenizationManager {
     private func getRequestBody() -> Promise<Request.Body.Tokenization> {
         return Promise { seal in
-            let sessionInfo = BankSelectorSessionInfo()
-            let paymentInstrument = OffSessionPaymentInstrument(paymentMethodConfigId: "", paymentMethodType: "", sessionInfo: sessionInfo)
+            let sessionInfo = StripeHelpers.constructLocaleData()
+            let paymentInstrument = StripeAchPaymentInstrument(paymentMethodConfigId: "",
+                                                               paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue,
+                                                               authenticationProvider: PrimerPaymentMethodType.stripeAch.provider,
+                                                               type: PaymentInstrumentType.stripe.rawValue,
+                                                               sessionInfo: sessionInfo)
+            
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
+            seal.fulfill(requestBody)
         }
     }
 }

@@ -10,31 +10,32 @@ import UIKit
 class StripeAchHeadlessComponent {
     // MARK: - Tokenization
     var tokenizationComponent: StripeAchTokenizationComponentProtocol
+    
     /// Global settings for the payment process, injected as a dependency.
     let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-    var inputUserDetails: StripeAchUserDetails?
-    var clientSessionUserDetails: StripeAchUserDetails?
+    var inputUserDetails: StripeAchUserDetails = .emptyUserDetails()
+    var clientSessionUserDetails: StripeAchUserDetails = .emptyUserDetails()
     
     // MARK: - Delegates
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public internal(set) var nextDataStep: StripeAchStep = .notInitialized
-
+    
     // MARK: - Init
     init(tokenizationComponent: StripeAchTokenizationComponentProtocol) {
         self.tokenizationComponent = tokenizationComponent
     }
-
+    
     /// Delegation
-    func setNeededDelegates() {}
+    func setDelegate() {}
     
     /// Reset some variables if needed
     func resetVariables() {
-        inputUserDetails = nil
-        clientSessionUserDetails = nil
+        inputUserDetails = .emptyUserDetails()
+        clientSessionUserDetails = .emptyUserDetails()
     }
-
+    
     /// Validates the tokenization component, handling any errors that occur during the process.
     func validate() {
         do {
@@ -54,30 +55,18 @@ extension StripeAchHeadlessComponent: StripeAchUserDetailsComponent {
         trackCollectableData()
         validationDelegate?.didUpdate(validationStatus: .validating, for: collectableData)
         
-        switch collectableData {
-        case .collectUserDetails(let details):
+        if collectableData.isValid {
+            inputUserDetails.update(with: collectableData)
+            validationDelegate?.didUpdate(validationStatus: .valid, for: collectableData)
+        } else {
+            let error = collectableData.invalidFieldError
+            ErrorHandler.handle(error: error)
+            let validationError = PrimerValidationError.invalidValue(
+                field: error.fieldValue,
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString)
             
-            do {
-                try StripeAchUserDetails.validate(userDetails: details)
-                inputUserDetails = details
-                validationDelegate?.didUpdate(validationStatus: .valid, for: collectableData)
-                
-            } catch StripeAchUserDetailsError.validationErrors(let errors) {
-                var validationErrors: [PrimerValidationError] = []
-                for error in errors {
-                    ErrorHandler.handle(error: error)
-                    validationErrors.append(
-                        PrimerValidationError.invalidValue(
-                            field: error.fieldValue,
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString)
-                    )
-                }
-                validationDelegate?.didUpdate(validationStatus: .invalid(errors: validationErrors), for: collectableData)
-            } catch {
-                // It will never get in here.
-                print("An unexpected error occurred")
-            }
+            validationDelegate?.didUpdate(validationStatus: .invalid(errors: [validationError]), for: collectableData)
         }
     }
 
@@ -128,7 +117,7 @@ extension StripeAchHeadlessComponent: PrimerHeadlessAnalyticsRecordable {
             params: [:]
         )
     }
-
+    
     func trackSubmit() {
         recordEvent(
             type: .sdkEvent,
@@ -136,7 +125,7 @@ extension StripeAchHeadlessComponent: PrimerHeadlessAnalyticsRecordable {
             params: [:]
         )
     }
-
+    
     func trackCollectableData() {
         recordEvent(
             type: .sdkEvent,

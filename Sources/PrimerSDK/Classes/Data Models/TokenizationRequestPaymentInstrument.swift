@@ -57,6 +57,14 @@ struct KlarnaAuthorizationPaymentInstrument: TokenizationRequestBodyPaymentInstr
     var sessionData: Response.Body.Klarna.SessionData
 }
 
+struct StripeAchPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
+    var paymentMethodConfigId: String
+    var paymentMethodType: String
+    var authenticationProvider: String
+    var type: String
+    var sessionInfo: Request.Body.Stripe.SessionData
+}
+
 class OffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
 
     var paymentMethodConfigId: String
@@ -162,6 +170,7 @@ public enum PaymentInstrumentType: String, Codable {
     case klarnaPaymentSession   = "KLARNA_PAYMENT_SESSION"
     case klarnaCustomerToken    = "KLARNA_CUSTOMER_TOKEN"
     case hoolah                 = "HOOLAH"
+    case stripe                 = "AUTOMATED_CLEARING_HOUSE"
     case unknown                = "UNKNOWN"
 
     public init(from decoder: Decoder) throws {

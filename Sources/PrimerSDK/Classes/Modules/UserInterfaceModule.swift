@@ -757,6 +757,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     textColor: nil))
         case .nolPay:
             return nil
+        case .stripeAch:
+            return nil
         }
     }
 
