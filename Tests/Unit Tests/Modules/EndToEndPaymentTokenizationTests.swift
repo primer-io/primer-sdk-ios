@@ -34,6 +34,16 @@ final class EndToEndPaymentTokenizationTests: XCTestCase {
     override func tearDownWithError() throws {
         PrimerAPIConfigurationModule.clientToken = nil
         PrimerAPIConfigurationModule.apiConfiguration = nil
+
+        PrimerHeadlessUniversalCheckout.current.delegate = nil
+        PrimerHeadlessUniversalCheckout.current.uiDelegate = nil
+
+        PrimerAPIConfigurationModule.apiClient = nil
+        PaymentMethodTokenizationViewModel.apiClient = nil
+        TokenizationService.apiClient = nil
+        PollingModule.apiClient = nil
+        CreateResumePaymentService.apiClient = nil
+        DefaultCardValidationService.apiClient = nil
     }
 
     // MARK: NativeUIManager Tests
