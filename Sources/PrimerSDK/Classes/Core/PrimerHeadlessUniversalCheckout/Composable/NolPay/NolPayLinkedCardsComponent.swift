@@ -22,7 +22,6 @@ public class NolPayLinkedCardsComponent {
     var mobileNumber: String?
     var countryCode: String?
     var phoneMetadataService: NolPayPhoneMetadataProviding?
-    var apiClient: PrimerAPIClientProtocol?
 
     public init() {}
 
@@ -96,8 +95,9 @@ public class NolPayLinkedCardsComponent {
                                                                                 phoneVendor: "Apple",
                                                                                 phoneModel: UIDevice.modelIdentifier!)
 
+            let client = PrimerAPIClient()
             return try await withCheckedThrowingContinuation { continuation in
-                self.apiClient?.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
+                client.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
                     switch result {
                     case .success(let appSecret):
                         continuation.resume(returning: appSecret.sdkSecret)

@@ -13,10 +13,26 @@ protocol NetworkResponseFactory: AnyObject {
 
 extension Endpoint {
     var responseFactory: NetworkResponseFactory {
-        switch self {
-        default:
-            return JSONNetworkResponseFactory()
+        if let endpoint = self as? PrimerAPI {
+            switch endpoint {
+            case .redirect:
+                return SuccessResponseFactory()
+            default:
+                break
+            }
         }
+        return JSONNetworkResponseFactory()
+    }
+}
+
+class SuccessResponseFactory: NetworkResponseFactory {
+    func model<T>(for response: Data, forMetadata metadata: any ResponseMetadata) throws -> T where T: Decodable {
+        if let response = SuccessResponse() as? T {
+            return response
+        }
+        throw InternalError.failedToDecode(message: "SuccessResponse model must be used with this endpoint",
+                                           userInfo: .errorUserInfoDictionary(),
+                                           diagnosticsId: UUID().uuidString)
     }
 }
 
@@ -25,7 +41,6 @@ class JSONNetworkResponseFactory: NetworkResponseFactory, LogReporter {
     let decoder = JSONDecoder()
 
     func model<T>(for response: Data, forMetadata metadata: ResponseMetadata) throws -> T where T: Decodable {
-
         log(data: response, metadata: metadata)
 
         switch metadata.statusCode {
@@ -33,24 +48,27 @@ class JSONNetworkResponseFactory: NetworkResponseFactory, LogReporter {
             do {
                 return try decoder.decode(T.self, from: response)
             } catch {
-                throw InternalError.failedToDecode(message: "Failed to decode response of type '\(T.self)' from URL: \(metadata.responseUrl ?? "Unknown")",
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
+                throw InternalError.failedToDecode(
+                    message: "Failed to decode response of type '\(T.self)' from URL: \(metadata.responseUrl ?? "Unknown")",
+                    userInfo: .errorUserInfoDictionary(),
+                    diagnosticsId: UUID().uuidString
+                )
             }
         case 400...599:
             let serverError = try? decoder.decode(PrimerServerErrorResponse.self, from: response)
-            throw InternalError.serverError(status: metadata.statusCode,
-                                            response: serverError?.error,
-                                            userInfo: .errorUserInfoDictionary(),
-                                            diagnosticsId: UUID().uuidString)
+            throw InternalError.serverError(
+                status: metadata.statusCode,
+                response: serverError?.error,
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
         default:
-            break
+            throw InternalError.failedToDecode(
+                message: "Failed to determine response from URL: \(metadata.responseUrl ?? "Unknown")",
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
         }
-
-        throw InternalError.failedToDecode(message: "Failed to determine response from URL: \(metadata.responseUrl ?? "Unknown")",
-                                           userInfo: .errorUserInfoDictionary(),
-                                           diagnosticsId: UUID().uuidString)
-
     }
 
     func log(data: Data, metadata: ResponseMetadata) {

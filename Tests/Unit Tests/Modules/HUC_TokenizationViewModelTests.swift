@@ -295,7 +295,7 @@ final class HUC_TokenizationViewModelTests: XCTestCase {
         PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
 
         let mockApiClient = MockPrimerAPIClient()
-        mockApiClient.validateClientTokenResult = (SuccessResponse(success: true), nil)
+        mockApiClient.validateClientTokenResult = (SuccessResponse(), nil)
         mockApiClient.pollingResults = [
             (PollingResponse(status: .pending, id: "0", source: "src"), nil),
             (nil, NSError(domain: "dummy-network-error", code: 100)),

@@ -59,7 +59,7 @@ jobs:
       - name: Build and archive app via SPM
         if: ${{ matrix.variant == 'spm' }}
         run: |
-          bundle exec fastlane build_spm
+          bundle exec fastlane test_spm sim_version:16.4
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}

@@ -1,0 +1,50 @@
+name: 'Run Sonar tests'
+description: 'Upload code quality scans to Sonar'
+inputs:
+  github-token:
+    description: GitHub token
+    required: true
+  sonar-token:
+    description: Sonar token
+    required: true
+  sonar-host:
+    description: Sonar host URL
+    required: true
+  coverage-file-name:
+    description: Name of the generic coverage file
+    required: true
+  branch:
+    description: Branch
+    required: true
+  pull-request-number:
+    description: PR number
+    required: false
+  base-branch:
+    description: PR target branch
+    required: false
+  pull-request-sha:
+    description: PR commit SHA
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/download-artifact@master
+      with:
+        name: coverage-file
+    - name: Install Sonar
+      shell: bash
+      run: |
+        brew install sonar-scanner
+    - name: Update sonar-project.properties
+      shell: bash
+      run: |
+        echo "sonar.pullrequest.key=${{ inputs.pull-request-number }}" >> sonar-project.properties
+        echo "sonar.pullrequest.branch=${{ inputs.branch }}" >> sonar-project.properties
+        echo "sonar.pullrequest.base=${{ inputs.base-branch }}" >> sonar-project.properties
+        echo "sonar.scm.revision=${{ inputs.pull-request-sha }}" >> sonar-project.properties
+        echo "sonar.coverageReportPaths=${{ inputs.coverage-file-name }}" >> sonar-project.properties
+    - name: Run Sonar
+      shell: bash
+      run: |
+        sonar-scanner -Dsonar.token=${{ inputs.sonar-token }}

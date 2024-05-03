@@ -15,8 +15,8 @@ enum NetworkEventType {
     var endpoint: Endpoint {
         switch self {
         case .requestStart(_, let endpoint, _),
-                .requestEnd(_, let endpoint, _),
-                .networkConnectivity(let endpoint):
+             .requestEnd(_, let endpoint, _),
+             .networkConnectivity(let endpoint):
             return endpoint
         }
     }
@@ -78,7 +78,7 @@ class DefaultNetworkReportingService: NetworkReportingService {
             return false
         }
         guard let baseURL = primerAPI.baseURL, let url = URL(string: baseURL),
-                !disallowedTrackingPaths.contains(url.path) else {
+              !disallowedTrackingPaths.contains(url.path) else {
             return false
         }
         return true

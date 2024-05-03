@@ -1,3 +1,9 @@
+## 2.26.3 (2024-04-29)
+
+### Fix
+
+- Fix parsing of the API response (#850)
+
 ## 2.26.2 (2024-04-15)
 
 ### Fix
