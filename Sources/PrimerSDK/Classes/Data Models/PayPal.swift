@@ -80,20 +80,20 @@ extension Response.Body.Tokenization {
                        firstName, firstNameSnakeCase,
                        lastName, lastNameSnakeCase: String?
 
-            public init(externalPayerId: String?,
-                        externalPayerIdSnakeCase: String?,
-                        email: String?,
+            public init(externalPayerId: String,
+                        externalPayerIdSnakeCase: String? = nil,
+                        email: String,
                         firstName: String?,
-                        firstNameSnakeCase: String?,
-                        lastName: String?,
-                        lastNameSnakeCase: String?) {
+                        firstNameSnakeCase: String? = nil,
+                        lastName: String,
+                        lastNameSnakeCase: String? = nil) {
                 self.externalPayerId = externalPayerId
-                self.externalPayerIdSnakeCase = externalPayerIdSnakeCase
+                self.externalPayerIdSnakeCase = externalPayerIdSnakeCase ?? externalPayerId
                 self.email = email
                 self.firstName = firstName
-                self.firstNameSnakeCase = firstNameSnakeCase
+                self.firstNameSnakeCase = firstNameSnakeCase ?? firstName
                 self.lastName = lastName
-                self.lastNameSnakeCase = lastNameSnakeCase
+                self.lastNameSnakeCase = lastNameSnakeCase ?? lastName
             }
 
             public init(from decoder: Decoder) throws {
