@@ -75,7 +75,87 @@ extension Response.Body.Tokenization {
 
         // swiftlint:disable:next nesting
         public struct ExternalPayerInfo: Codable {
-            public var externalPayerId, email, firstName, lastName: String?
+            public var externalPayerId, externalPayerIdSnakeCase,
+                       email,
+                       firstName, firstNameSnakeCase,
+                       lastName, lastNameSnakeCase: String?
+
+            public init(externalPayerId: String,
+                        externalPayerIdSnakeCase: String? = nil,
+                        email: String,
+                        firstName: String?,
+                        firstNameSnakeCase: String? = nil,
+                        lastName: String,
+                        lastNameSnakeCase: String? = nil) {
+                self.externalPayerId = externalPayerId
+                self.externalPayerIdSnakeCase = externalPayerIdSnakeCase ?? externalPayerId
+                self.email = email
+                self.firstName = firstName
+                self.firstNameSnakeCase = firstNameSnakeCase ?? firstName
+                self.lastName = lastName
+                self.lastNameSnakeCase = lastNameSnakeCase ?? lastName
+            }
+
+            public init(from decoder: Decoder) throws {
+                let container: KeyedDecodingContainer<Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys> =
+                try decoder.container(keyedBy: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.self)
+
+                self.externalPayerId = try container.decodeIfPresent(
+                    String.self,
+                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.externalPayerId)
+
+                self.externalPayerIdSnakeCase = try container.decodeIfPresent(
+                    String.self,
+                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.externalPayerIdSnakeCase)
+
+                self.email = try container.decodeIfPresent(
+                    String.self,
+                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.email)
+
+                self.firstName = try container.decodeIfPresent(
+                    String.self,
+                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.firstName)
+
+                self.firstNameSnakeCase = try container.decodeIfPresent(
+                    String.self,
+                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.firstNameSnakeCase)
+
+                self.lastName = try container.decodeIfPresent(
+                    String.self,
+                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.lastName)
+
+                self.lastNameSnakeCase = try container.decodeIfPresent(
+                    String.self,
+                    forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.lastNameSnakeCase)
+
+                // This logic ensures we mirror externalPayerId to external_payer_id and vice versa
+                if self.externalPayerId == nil && self.externalPayerIdSnakeCase != nil {
+                    self.externalPayerId = self.externalPayerIdSnakeCase
+                } else if self.externalPayerIdSnakeCase == nil && self.externalPayerId != nil {
+                    self.externalPayerIdSnakeCase = self.externalPayerId
+                }
+
+                if firstName == nil && firstNameSnakeCase != nil {
+                    firstName = firstNameSnakeCase
+                } else if firstNameSnakeCase == nil && firstName != nil {
+                    firstNameSnakeCase = firstName
+                }
+
+                if lastName == nil && lastNameSnakeCase != nil {
+                    lastName = lastNameSnakeCase
+                } else if lastNameSnakeCase == nil && lastName != nil {
+                    lastNameSnakeCase = lastName
+                }
+            }
+
+            // swiftlint:disable:next nesting
+            enum CodingKeys: String, CodingKey {
+                case externalPayerId
+                case externalPayerIdSnakeCase = "external_payer_id"
+                case firstNameSnakeCase = "first_name"
+                case lastNameSnakeCase = "last_name"
+                case email, firstName, lastName
+            }
         }
     }
 }
