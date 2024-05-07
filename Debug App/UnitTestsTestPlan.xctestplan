@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "6BE680B2-32D3-4B46-A5C7-5EF20261F601",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "PrimerSDKTests",
+        "name" : "PrimerSDKTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Debug App\/Primer.io Debug App.xcodeproj",
+        "identifier" : "301F25EE1514F3AF2E4A7FBD",
+        "name" : "Debug App Tests"
+      }
+    }
+  ],
+  "version" : 1
+}

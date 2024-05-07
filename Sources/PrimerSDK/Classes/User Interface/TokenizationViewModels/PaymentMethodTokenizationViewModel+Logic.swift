@@ -484,7 +484,6 @@ extension PaymentMethodTokenizationViewModel {
                             let error = PrimerError.merchantError(message: errorMessage ?? "",
                                                                   userInfo: .errorUserInfoDictionary(),
                                                                   diagnosticsId: UUID().uuidString)
-                            PrimerDelegateProxy.primerDidAbortPayment(error: error)
                             seal.reject(error)
                         case .continue:
                             seal.fulfill()

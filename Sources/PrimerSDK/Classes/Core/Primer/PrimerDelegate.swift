@@ -143,19 +143,8 @@ internal class PrimerDelegateProxy: LogReporter {
         }
     }
 
-    static func primerDidAbortPayment(error: Error) {
-        DispatchQueue.main.async {
-            PrimerHeadlessUniversalCheckout.current.delegate?.primerHeadlessUniversalCheckoutDidAbort?(withMerchantError: error)
-        }
-    }
-
     static func primerDidFailWithError(_ error: any PrimerErrorProtocol, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
         DispatchQueue.main.async {
-
-            if case .merchantError = (error as? PrimerError) {
-                decisionHandler(.fail(withErrorMessage: error.errorDescription))
-                return
-            }
 
             let exposedError: Error = error.exposedError
 
