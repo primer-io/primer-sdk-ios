@@ -1,5 +1,5 @@
 //
-//  VaultedPaymentMethodTokenizationViewModel.swift
+//  CheckoutWithVaultedPaymentMethodViewModel.swift
 //  PrimerSDK
 //
 //  Created by Evangelos on 9/5/22.
