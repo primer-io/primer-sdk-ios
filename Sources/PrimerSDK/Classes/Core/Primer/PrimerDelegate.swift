@@ -91,7 +91,6 @@ internal class PrimerDelegateProxy: LogReporter {
     }
 
     static func primerDidDismiss(paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory]) {
-        print(">> PRIMER DID DISMISS")
         DispatchQueue.main.async {
             if PrimerInternal.shared.sdkIntegrationType == .dropIn {
                 Primer.shared.delegate?.primerDidDismiss?()
