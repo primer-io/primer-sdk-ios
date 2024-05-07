@@ -613,7 +613,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
     func handleFailureFlow(errorMessage: String?) {
         let categories = self.config.paymentMethodManagerCategories
-        PrimerUIManager.dismissOrShowResultScreen(type: .failure, 
+        PrimerUIManager.dismissOrShowResultScreen(type: .failure,
                                                   paymentMethodManagerCategories: categories ?? [],
                                                   withMessage: errorMessage)
     }
