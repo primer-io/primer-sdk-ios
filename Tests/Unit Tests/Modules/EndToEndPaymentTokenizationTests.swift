@@ -290,12 +290,12 @@ final class EndToEndPaymentTokenizationTests: XCTestCase {
         orderedExpectations.append(expectWillCreatePaymentWithData)
 
         if shouldAbort {
-            let expectDidAbortPayment = self.expectation(description: "Expected delegate method: didAbortPayment")
-            delegate.onDidAbort = { err in
+            let expectDidFail = self.expectation(description: "Expected delegate method: didFail")
+            delegate.onDidFail = { err in
                 XCTAssertNotNil(err)
-                expectDidAbortPayment.fulfill()
+                expectDidFail.fulfill()
             }
-            orderedExpectations.append(expectDidAbortPayment)
+            orderedExpectations.append(expectDidFail)
 
             if handling == .auto, paymentMethod.internalPaymentMethodType != .paymentCard  {
                 let expectOnDismiss = self.expectation(description: "Expected delegate method: onDimiss")
