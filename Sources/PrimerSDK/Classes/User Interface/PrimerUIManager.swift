@@ -228,7 +228,7 @@ internal class PrimerUIManager {
         }
     }
 
-    static func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType, 
+    static func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType,
                                           paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
                                           withMessage message: String? = nil) {
         if PrimerSettings.current.uiOptions.isSuccessScreenEnabled && type == .success {
@@ -246,7 +246,7 @@ internal class PrimerUIManager {
         PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { errorDecision in
             switch errorDecision.type {
             case .fail(let message):
-                PrimerUIManager.dismissOrShowResultScreen(type: .failure, 
+                PrimerUIManager.dismissOrShowResultScreen(type: .failure,
                                                           paymentMethodManagerCategories: [],
                                                           withMessage: message)
             }

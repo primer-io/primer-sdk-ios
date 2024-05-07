@@ -15,7 +15,7 @@ import UIKit
 import SafariServices
 
 final class BanksTokenizationComponent: NSObject, LogReporter {
-    var config: PrimerPaymentMethod
+
     var paymentMethodType: PrimerPaymentMethodType
     private(set) var banks: [AdyenBank] = []
     private var selectedBank: AdyenBank?
@@ -47,8 +47,19 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
     private var bankSelectionCompletion: ((AdyenBank) -> Void)?
 
-    required init(config: PrimerPaymentMethod) {
+    let config: PrimerPaymentMethod
+
+    let apiClient: PrimerAPIClientBanksProtocol
+
+    required convenience init(config: PrimerPaymentMethod) {
+        self.init(config: config,
+                  apiClient: PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient())
+    }
+
+    init(config: PrimerPaymentMethod,
+         apiClient: PrimerAPIClientBanksProtocol) {
         self.config = config
+        self.apiClient = apiClient
         self.paymentMethodType = config.internalPaymentMethodType!
     }
 
@@ -84,19 +95,17 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 paymentMethodConfigId: config.id!,
                 parameters: BankTokenizationSessionRequestParameters(paymentMethod: paymentMethodRequestValue))
 
-            let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
-
-            apiClient.listAdyenBanks(clientToken: decodedJWTToken, request: request) { result in
+            self.apiClient.listAdyenBanks(clientToken: decodedJWTToken, request: request) { result in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
-
                 case .success(let banks):
                     seal.fulfill(banks.result)
                 }
             }
         }
     }
+
     func processPaymentMethodTokenData() {
         if PrimerInternal.shared.intent == .vault {
             PrimerDelegateProxy.primerDidTokenizePaymentMethod(self.paymentMethodTokenData!) { _ in }

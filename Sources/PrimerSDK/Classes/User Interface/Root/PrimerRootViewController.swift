@@ -19,9 +19,9 @@ internal class PrimerRootViewController: PrimerViewController {
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
     // Child views
-    private var backgroundView = PrimerView()
-    private var childView: PrimerView = PrimerView()
-    private var navController = PrimerNavigationController()
+    let backgroundView = PrimerView()
+    let childView: PrimerView = PrimerView()
+    let navController = PrimerNavigationController()
 
     // Constraints
     private var childViewHeightConstraint: NSLayoutConstraint!
