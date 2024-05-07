@@ -8,7 +8,7 @@
 import XCTest
 @testable import PrimerSDK
 
-final class EndToEndPaymentTokenizationTests: XCTestCase {
+final class HeadlessUniversalCheckoutTests: XCTestCase {
 
     var delegate: MockPrimerHeadlessUniversalCheckoutDelegate!
 
@@ -373,7 +373,7 @@ final class EndToEndPaymentTokenizationTests: XCTestCase {
 
 // MARK: SDK Helpers
 
-extension EndToEndPaymentTokenizationTests {
+extension HeadlessUniversalCheckoutTests {
 
 
     private func setupApiConfiguration(paymentMethod: PrimerPaymentMethod,
