@@ -11,49 +11,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  debug-app-unit-tests:
-    runs-on: macos-13-large
-    timeout-minutes: 30
-    name: "Debug App - Unit Tests"
-    steps:
-      - name: Git - Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-        with:
-          ref: ${{ github.ref }}
-      - name: Select Xcode Version
-        uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
-        with:
-          xcode-version: '15.2'
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@d4fffb50872869abe2d9a9098a6d9c5aa7d16be4 #v2.7.0
-        with:
-          key: ${{ secrets.SSH_KEY }}
-          name: id_rsa_github_actions
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}
-      - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_KEY }}
-      - uses: ruby/setup-ruby@d4526a55538b775af234ba4af27118ed6f8f6677  # v1.172.0
-        with:
-          ruby-version: "3.2"
-          bundler-cache: true
-      - name: Run Unit Tests
-        shell: bash
-        run: |
-          bundle exec fastlane tests
-        env:
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
-          FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
-          MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
-          MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-          SOURCE_BRANCH: ${{ github.head_ref }}
-
-  sdk-unit-tests:
+  unit-tests:
     runs-on: macos-13-large
     timeout-minutes: 20
-    name: "SDK - Unit Tests"
+    name: "Unit Tests"
     steps:
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
