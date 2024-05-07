@@ -10,6 +10,7 @@ let sdkEditedFiles = allCreatedAndModifiedFiles
     .filter { $0.name != "Dangerfile.swift" }
     .filter { !$0.hasPrefix("Debug App/") }
     .filter { !$0.hasPrefix("Tests/") }
+    .filter { !$0.hasPrefix("Sources/PromiseKit/") }
 // You can use these functions to send feedback:
 // message("Highlight something in the table")
 // warn("Something pretty bad, but not important enough to fail the build")
