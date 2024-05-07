@@ -38,5 +38,11 @@ Pod::Spec.new do |s|
                 "${PODS_XCFRAMEWORKS_BUILD_DIR}/PrimerKlarnaSDK"
             ]
         }
+        ss.dependency "PrimerSDK/PromiseKit"
     end
+
+    s.subspec "PromiseKit" do |ss|
+        ss.ios.source_files = "Sources/PromiseKit/**/*.swift"
+    end
+
 end

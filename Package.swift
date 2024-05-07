@@ -11,16 +11,26 @@ let package = Package(
     products: [
         .library(
             name: "PrimerSDK",
-            targets: ["PrimerSDK"]
+            targets: [
+                "PrimerSDK",
+                "PromiseKit"
+            ]
         )
     ],
     targets: [
         .target(
             name: "PrimerSDK",
-            path: "Sources/PrimerSDK",
+            dependencies: [
+                .target(name: "PromiseKit")
+            ],
+            path: "Sources/PrimerSDK"
+        ),
+        .target(
+            name: "PromiseKit",
+            path: "Sources/PromiseKit",
             resources: [
                 .process("Resources"),
-                .copy("Classes/Third Party/PromiseKit/LICENSE")
+                .copy("PromiseKit/LICENSE")
             ]
         ),
         .testTarget(

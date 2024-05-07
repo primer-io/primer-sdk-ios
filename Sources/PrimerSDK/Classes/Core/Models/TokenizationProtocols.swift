@@ -6,6 +6,7 @@
 //
 
 import Foundation
+
 internal protocol PaymentMethodTokenizationModelProtocol: NSObject {
     static var apiClient: PrimerAPIClientProtocol? { get set }
 
