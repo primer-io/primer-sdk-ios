@@ -651,18 +651,21 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             }
         }
     }
-    func handleSuccessfulFlow() {
-    }
+
+    func handleSuccessfulFlow() {}
+
     func nullifyEventCallbacks() {
         self.didStartPayment = nil
         self.didFinishPayment = nil
     }
+    
     func handleFailureFlow(errorMessage: String?) {
         let categories = self.config.paymentMethodManagerCategories
         PrimerUIManager.dismissOrShowResultScreen(type: .failure,
                                                   paymentMethodManagerCategories: categories ?? [],
                                                   withMessage: errorMessage)
     }
+    
     func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             self.tokenize(bank: self.selectedBank!) { paymentMethodTokenData, err in
@@ -676,6 +679,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             }
         }
     }
+
     private func tokenize(bank: AdyenBank, completion: @escaping (_ paymentMethodTokenData: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
         guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
             let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
@@ -703,6 +707,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             completion(nil, err)
         }
     }
+
     func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             firstly {
@@ -734,11 +739,13 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             }
         }
     }
+
     func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
         }
     }
+
     // Resume payment with Resume payment ID
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
