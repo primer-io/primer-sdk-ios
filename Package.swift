@@ -36,7 +36,8 @@ let package = Package(
         .testTarget(
             name: "PrimerSDKTests",
             dependencies: [
-                .byName(name: "PrimerSDK")
+                .byName(name: "PrimerSDK"),
+                .byName(name: "PromiseKit")
             ],
             path: "Tests/Unit Tests"
         )
