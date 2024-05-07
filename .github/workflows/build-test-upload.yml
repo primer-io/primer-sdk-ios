@@ -39,7 +39,7 @@ jobs:
 
   sonarcloud:
     needs:
-      - sdk-unit-tests
+      - unit-tests
     name: SonarCloud
     runs-on: macos-13-large
     steps:
@@ -63,8 +63,7 @@ jobs:
           
   build-and-upload-to-appetize:
     needs:
-      - debug-app-unit-tests
-      - sdk-unit-tests
+      - unit-tests
     runs-on: macos-13
     timeout-minutes: 45
     name: "Build and upload app to Appetize"
