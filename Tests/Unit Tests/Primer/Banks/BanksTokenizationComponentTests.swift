@@ -73,6 +73,7 @@ final class BanksTokenizationComponentTests: XCTestCase {
         let expectation = self.expectation(description: "Results controller is displayed")
 
         _ = PrimerUIManager.prepareRootViewController().done { _ in
+            PrimerUIManager.primerRootViewController?.navController.setViewControllers([], animated: false)
             self.sut.handleSuccessfulFlow()
 
             let viewControllers = PrimerUIManager.primerRootViewController!.navController.viewControllers
@@ -90,6 +91,7 @@ final class BanksTokenizationComponentTests: XCTestCase {
         let expectation = self.expectation(description: "Results controller is displayed")
 
         _ = PrimerUIManager.prepareRootViewController().done { _ in
+            PrimerUIManager.primerRootViewController?.navController.setViewControllers([], animated: false)
             self.sut.handleFailureFlow(errorMessage: "Message")
 
             let viewControllers = PrimerUIManager.primerRootViewController!.navController.viewControllers
