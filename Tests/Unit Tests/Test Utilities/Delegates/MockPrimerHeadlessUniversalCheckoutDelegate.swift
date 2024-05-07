@@ -137,7 +137,7 @@ class MockPrimerHeadlessUniversalCheckoutDelegate: PrimerHeadlessUniversalChecko
 
     var onDidFail: ((Error) -> Void)?
 
-    func primerHeadlessUniversalCheckoutDidFail(withError err: Error) {
+    func primerHeadlessUniversalCheckoutDidFail(withError err: any Error, checkoutData: PrimerCheckoutData?) {
         if strictMode {
             XCTAssertNotNil(onDidFail)
         }
