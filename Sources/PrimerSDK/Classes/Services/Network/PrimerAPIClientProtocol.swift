@@ -10,7 +10,11 @@ import Foundation
 typealias APIResult<T> = Result<T, Error>
 typealias APICompletion<T> = (APIResult<T>) -> Void
 
-protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPIClientBINDataProtocol {
+protocol PrimerAPIClientProtocol: 
+    PrimerAPIClientAnalyticsProtocol,
+    PrimerAPIClientBINDataProtocol,
+    PrimerAPIClientBanksProtocol
+{
 
     // MARK: Configuration
 
@@ -101,13 +105,6 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPICli
         threeDSTokenId: String,
         continueInfo: ThreeDS.ContinueInfo,
         completion: @escaping APICompletion<ThreeDS.PostAuthResponse>)
-
-    // MARK: Adyen
-
-    func listAdyenBanks(
-        clientToken: DecodedJWTToken,
-        request: Request.Body.Adyen.BanksList,
-        completion: @escaping APICompletion<BanksListSessionResponse>)
 
     // MARK: Retail Outlets
 
