@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		006DF201DF0515017BDBA16A /* Pods_Debug_App_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FB97A1117530C18CF9FB5BE /* Pods_Debug_App_Tests.framework */; };
 		041295AA2AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041295A92AB9E25D00A4F243 /* MerchantHeadlessCheckoutNolPayViewController.swift */; };
 		0489E2BB2B68F71300FA0682 /* TapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0489E2BA2B68F71300FA0682 /* TapGestureRecognizer.swift */; };
 		049A055E2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
@@ -28,6 +27,7 @@
 		60F6C3AFA11A7EDB0687856A /* ViewController+PrimerUIHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4139D8F153BB399DA67F2EE /* ViewController+PrimerUIHelpers.swift */; };
 		60F7E716B34BE721651566DA /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1594BC5C96ECC3F46C811B2F /* Data+Extensions.swift */; };
 		72F8D6065334FCD5B726A52C /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404E173A513B986A36F835F7 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift */; };
+		74DF3EE1585C43944CB01E90 /* Pods_Debug_App_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FE68268528C460F8DB686D9 /* Pods_Debug_App_Tests.framework */; };
 		85605C241F1CD45BA676D4A7 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9023841AFCE8E3205CB713A /* String+Extensions.swift */; };
 		85EDC3F175D699BFF6BD48EF /* ViewController+Primer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39CCCB917D1881082ED75975 /* ViewController+Primer.swift */; };
 		876140D52B63F7DB0058CA8C /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876140D42B63F7DB0058CA8C /* MerchantHeadlessCheckoutKlarnaViewController.swift */; };
@@ -36,11 +36,11 @@
 		876141082B8346650058CA8C /* MerchantHeadlessKlarnaInitializationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876141072B8346650058CA8C /* MerchantHeadlessKlarnaInitializationView.swift */; };
 		8761410A2B8355920058CA8C /* MerchantHeadlessKlarnaInitializationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876141092B8355920058CA8C /* MerchantHeadlessKlarnaInitializationViewModel.swift */; };
 		8761410C2B849A250058CA8C /* MerchantHeadlessKlarnaInitializationView+Elements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8761410B2B849A250058CA8C /* MerchantHeadlessKlarnaInitializationView+Elements.swift */; };
+		909541CE84B4554F760AF6BD /* Pods_Debug_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65C7578EEA245F1ADD4CDF33 /* Pods_Debug_App.framework */; };
 		949864026D1CDE6F5C62C66E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE259612A00F85709107B872 /* Main.storyboard */; };
 		A19EF5632B20E22E00A72F60 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = A19EF5622B20E22E00A72F60 /* .swiftlint.yml */; };
 		AAE3B30B64B6822A20987FCA /* CreateClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229849A3DBE0858EE90673B9 /* CreateClientToken.swift */; };
 		AD9CF1073EE0676E6640481A /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B866FF13033A5CB8B4C3388E /* MerchantHeadlessCheckoutRawDataViewController.swift */; };
-		B486694F6BEC63908E55AE78 /* Pods_Debug_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50A45CB90365584893C0C2BF /* Pods_Debug_App.framework */; };
 		C0115AC7BC96FDF49EF8E530 /* PaymentMethodCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E79C93EA805E87E1137A513 /* PaymentMethodCell.swift */; };
 		C75A11E6AEEFC2B7A29BBC04 /* TestScenario.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6AEF11B151368BF993C3EA9 /* TestScenario.swift */; };
 		CE5E673A96BB5B96AE5EFC56 /* Range+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9128566126AA7F571FFECA3A /* Range+Extensions.swift */; };
@@ -114,14 +114,15 @@
 		33E18D5B5190C64631309D1B /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		39CCCB917D1881082ED75975 /* ViewController+Primer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+Primer.swift"; sourceTree = "<group>"; };
 		404E173A513B986A36F835F7 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift; sourceTree = "<group>"; };
+		47755B5ACCCFE173F39E2604 /* Pods-Debug App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App.release.xcconfig"; path = "Target Support Files/Pods-Debug App/Pods-Debug App.release.xcconfig"; sourceTree = "<group>"; };
 		483D2036DE3F89CA2C244C4F /* Debug App Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Debug App Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4ACFB17A73AB7240BED98585 /* ExampleApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ExampleApp.entitlements; sourceTree = "<group>"; };
 		4C353D84EABA4990DAB4DD28 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutRawRetailDataViewController.swift; sourceTree = "<group>"; };
 		4E79C93EA805E87E1137A513 /* PaymentMethodCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodCell.swift; sourceTree = "<group>"; };
-		50A45CB90365584893C0C2BF /* Pods_Debug_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Debug_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52F54EC3C1ACE19DF48BD6E2 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		5FB97A1117530C18CF9FB5BE /* Pods_Debug_App_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Debug_App_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5FE68268528C460F8DB686D9 /* Pods_Debug_App_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Debug_App_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6493EA8D95DDA066DE982B24 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Main.strings; sourceTree = "<group>"; };
+		65C7578EEA245F1ADD4CDF33 /* Pods_Debug_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Debug_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		68E2722188A5A2948DB31144 /* Debug App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Debug App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D2261DDEE5DC5D2ED518037 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		6D665EEA8106E51925C3CF2B /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Main.strings; sourceTree = "<group>"; };
@@ -131,7 +132,6 @@
 		72E691B9A6A8EBB9F6A6B266 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift; sourceTree = "<group>"; };
 		743E00065B4A8D6C95092A23 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		7480FE5F665CC66C092BC95A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		7DA08F4AF0BE95331B627A04 /* Pods-Debug App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App.release.xcconfig"; path = "Target Support Files/Pods-Debug App/Pods-Debug App.release.xcconfig"; sourceTree = "<group>"; };
 		876140D42B63F7DB0058CA8C /* MerchantHeadlessCheckoutKlarnaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutKlarnaViewController.swift; sourceTree = "<group>"; };
 		876140E52B67F3B30058CA8C /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift"; sourceTree = "<group>"; };
 		876140EE2B6BE8C20058CA8C /* MerchantHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHelpers.swift; sourceTree = "<group>"; };
@@ -147,9 +147,9 @@
 		9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantDropInUIViewController.swift; sourceTree = "<group>"; };
 		A1604A656AF654D7422A2A5E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main.strings; sourceTree = "<group>"; };
 		A19EF5622B20E22E00A72F60 /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
-		A4D6B99681FA97926F0198E7 /* Pods-Debug App Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App Tests.debug.xcconfig"; path = "Target Support Files/Pods-Debug App Tests/Pods-Debug App Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		A6AEF11B151368BF993C3EA9 /* TestScenario.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScenario.swift; sourceTree = "<group>"; };
-		A86141C4958EA552F36F40B0 /* Pods-Debug App Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App Tests.release.xcconfig"; path = "Target Support Files/Pods-Debug App Tests/Pods-Debug App Tests.release.xcconfig"; sourceTree = "<group>"; };
+		A8EDED247FC10BA6A4FFBD27 /* Pods-Debug App Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App Tests.debug.xcconfig"; path = "Target Support Files/Pods-Debug App Tests/Pods-Debug App Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		AA7C90876554008CD06D6A0B /* Pods-Debug App Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App Tests.release.xcconfig"; path = "Target Support Files/Pods-Debug App Tests/Pods-Debug App Tests.release.xcconfig"; sourceTree = "<group>"; };
 		B18D7E7738BF86467B0F1465 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B1FD8065D40A2D691F643F3B /* UIViewController+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+API.swift"; sourceTree = "<group>"; };
 		B866FF13033A5CB8B4C3388E /* MerchantHeadlessCheckoutRawDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutRawDataViewController.swift; sourceTree = "<group>"; };
@@ -160,7 +160,6 @@
 		D5C1B1F65A9382606A25CE77 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Main.strings; sourceTree = "<group>"; };
 		DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DBC8EA85D1CBC1EC4AB3EB8C /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		DDB59DD6595112ED26AE11D3 /* Pods-Debug App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App.debug.xcconfig"; path = "Target Support Files/Pods-Debug App/Pods-Debug App.debug.xcconfig"; sourceTree = "<group>"; };
 		DECCDC4079DC6471CEDDEA84 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		E11F47502B06C5030091C31F /* BanksListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BanksListView.swift; sourceTree = "<group>"; };
 		E11F47512B06C5030091C31F /* BanksListModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BanksListModel.swift; sourceTree = "<group>"; };
@@ -170,6 +169,7 @@
 		E1C3EF0BA039C0A50EDE13A5 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Main.strings; sourceTree = "<group>"; };
 		E7640DB186F9638C2F556F77 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/Main.strings; sourceTree = "<group>"; };
 		E8DE1E4FB055B60582977315 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
+		EE5A77E81327ED5FEC5610DE /* Pods-Debug App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App.debug.xcconfig"; path = "Target Support Files/Pods-Debug App/Pods-Debug App.debug.xcconfig"; sourceTree = "<group>"; };
 		F08F63D72B9B5A7C006EF9A9 /* SessionConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionConfiguration.swift; sourceTree = "<group>"; };
 		F08F63D92B9B5BC5006EF9A9 /* AppetizeConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppetizeConfigProvider.swift; sourceTree = "<group>"; };
 		F08F63DB2B9F27B0006EF9A9 /* MetadataParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataParser.swift; sourceTree = "<group>"; };
@@ -186,7 +186,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				006DF201DF0515017BDBA16A /* Pods_Debug_App_Tests.framework in Frameworks */,
+				74DF3EE1585C43944CB01E90 /* Pods_Debug_App_Tests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -194,22 +194,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B486694F6BEC63908E55AE78 /* Pods_Debug_App.framework in Frameworks */,
+				909541CE84B4554F760AF6BD /* Pods_Debug_App.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		016644440FF4E26662CF2CA9 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				50A45CB90365584893C0C2BF /* Pods_Debug_App.framework */,
-				5FB97A1117530C18CF9FB5BE /* Pods_Debug_App_Tests.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		0489E2B92B68F70400FA0682 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
@@ -263,7 +254,7 @@
 				FBDF3F8B5F93A0EC28048640 /* Project */,
 				DF30711EB149C64C364BB79A /* Products */,
 				61E8D69DF93462D748F446DF /* Pods */,
-				016644440FF4E26662CF2CA9 /* Frameworks */,
+				CD8A1F56362452DD1997B9D2 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -308,10 +299,10 @@
 		61E8D69DF93462D748F446DF /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				DDB59DD6595112ED26AE11D3 /* Pods-Debug App.debug.xcconfig */,
-				7DA08F4AF0BE95331B627A04 /* Pods-Debug App.release.xcconfig */,
-				A4D6B99681FA97926F0198E7 /* Pods-Debug App Tests.debug.xcconfig */,
-				A86141C4958EA552F36F40B0 /* Pods-Debug App Tests.release.xcconfig */,
+				EE5A77E81327ED5FEC5610DE /* Pods-Debug App.debug.xcconfig */,
+				47755B5ACCCFE173F39E2604 /* Pods-Debug App.release.xcconfig */,
+				A8EDED247FC10BA6A4FFBD27 /* Pods-Debug App Tests.debug.xcconfig */,
+				AA7C90876554008CD06D6A0B /* Pods-Debug App Tests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -343,6 +334,15 @@
 				876140EE2B6BE8C20058CA8C /* MerchantHelpers.swift */,
 			);
 			path = "Merchant Helpers";
+			sourceTree = "<group>";
+		};
+		CD8A1F56362452DD1997B9D2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				65C7578EEA245F1ADD4CDF33 /* Pods_Debug_App.framework */,
+				5FE68268528C460F8DB686D9 /* Pods_Debug_App_Tests.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		D9AC6F54A87D432982864A63 /* Model */ = {
@@ -415,7 +415,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4700FFD06E10F0EE123A7B8B /* Build configuration list for PBXNativeTarget "Debug App Tests" */;
 			buildPhases = (
-				5E073BE9798526455528BAFA /* [CP] Check Pods Manifest.lock */,
+				9C99AEADA9812C222AEDC583 /* [CP] Check Pods Manifest.lock */,
 				1E0FCAD905F5F8F13B6A164B /* Sources */,
 				9CED4C4EFACB340F3C55B1F0 /* Resources */,
 				D11E367C3560C383BC4CA0A7 /* Embed Frameworks */,
@@ -435,13 +435,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CA98A6B11506835A81F6391A /* Build configuration list for PBXNativeTarget "Debug App" */;
 			buildPhases = (
-				539DA898480767FDB138074C /* [CP] Check Pods Manifest.lock */,
+				349C0EF38ADFECFAB5140E45 /* [CP] Check Pods Manifest.lock */,
 				66BB6A7BADD3A9CDD6412CE2 /* Sources */,
 				10FBAAC827CE0E3983CD7597 /* Resources */,
 				73B416AD9A0CB3B0EA16AF79 /* Embed Frameworks */,
 				CB612F7DF16CD3190025327F /* Frameworks */,
 				A18BD8BD2AFE4B0900923C87 /* SwiftLint */,
-				1B8C44E5C17D43CCD01FD96A /* [CP] Embed Pods Frameworks */,
+				1FB5EBC9940B4378C78738FC /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -522,7 +522,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		1B8C44E5C17D43CCD01FD96A /* [CP] Embed Pods Frameworks */ = {
+		1FB5EBC9940B4378C78738FC /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -539,7 +539,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Debug App/Pods-Debug App-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		539DA898480767FDB138074C /* [CP] Check Pods Manifest.lock */ = {
+		349C0EF38ADFECFAB5140E45 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -561,7 +561,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		5E073BE9798526455528BAFA /* [CP] Check Pods Manifest.lock */ = {
+		9C99AEADA9812C222AEDC583 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -724,7 +724,7 @@
 /* Begin XCBuildConfiguration section */
 		313E094F25A94116E340B043 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DDB59DD6595112ED26AE11D3 /* Pods-Debug App.debug.xcconfig */;
+			baseConfigurationReference = EE5A77E81327ED5FEC5610DE /* Pods-Debug App.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/ExampleApp.entitlements";
@@ -759,7 +759,7 @@
 		};
 		44381669975E0C07E78FA641 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7DA08F4AF0BE95331B627A04 /* Pods-Debug App.release.xcconfig */;
+			baseConfigurationReference = 47755B5ACCCFE173F39E2604 /* Pods-Debug App.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/ExampleApp.entitlements";
@@ -793,7 +793,7 @@
 		};
 		5434DA74E34D2EBEBD3D74C7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A4D6B99681FA97926F0198E7 /* Pods-Debug App Tests.debug.xcconfig */;
+			baseConfigurationReference = A8EDED247FC10BA6A4FFBD27 /* Pods-Debug App Tests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -876,7 +876,7 @@
 		};
 		F10A44A87CE1B40DAFF5D30F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A86141C4958EA552F36F40B0 /* Pods-Debug App Tests.release.xcconfig */;
+			baseConfigurationReference = AA7C90876554008CD06D6A0B /* Pods-Debug App Tests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";

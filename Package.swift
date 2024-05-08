@@ -13,7 +13,7 @@ let package = Package(
             name: "PrimerSDK",
             targets: [
                 "PrimerSDK",
-                "PromiseKit"
+                "PrimerPromiseKit"
             ]
         )
     ],
@@ -21,15 +21,17 @@ let package = Package(
         .target(
             name: "PrimerSDK",
             dependencies: [
-                .target(name: "PromiseKit")
+                .target(name: "PrimerPromiseKit")
             ],
-            path: "Sources/PrimerSDK"
+            path: "Sources/PrimerSDK",
+            resources: [
+                .process("Resources")
+            ]
         ),
         .target(
-            name: "PromiseKit",
+            name: "PrimerPromiseKit",
             path: "Sources/PromiseKit",
             resources: [
-                .process("Resources"),
                 .copy("PromiseKit/LICENSE")
             ]
         ),
@@ -37,7 +39,7 @@ let package = Package(
             name: "PrimerSDKTests",
             dependencies: [
                 .byName(name: "PrimerSDK"),
-                .byName(name: "PromiseKit")
+                .byName(name: "PrimerPromiseKit")
             ],
             path: "Tests/Unit Tests"
         )
