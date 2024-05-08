@@ -32,7 +32,7 @@ let package = Package(
             name: "PrimerPromiseKit",
             path: "Sources/PromiseKit",
             resources: [
-                .copy("PromiseKit/LICENSE")
+                .copy("LICENSE")
             ]
         ),
         .testTarget(
