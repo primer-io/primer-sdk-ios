@@ -131,7 +131,10 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     }
 
     func handleSuccessfulFlow() {
-        PrimerUIManager.dismissOrShowResultScreen(type: .success, withMessage: self.successMessage)
+        let categories = self.config.paymentMethodManagerCategories
+        PrimerUIManager.dismissOrShowResultScreen(type: .success,
+                                                  paymentMethodManagerCategories: categories ?? [],
+                                                  withMessage: self.successMessage)
     }
 
     func presentPaymentMethodUserInterface() -> Promise<Void> {
