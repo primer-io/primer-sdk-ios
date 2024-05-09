@@ -258,13 +258,6 @@ internal extension String {
                 .compare(otherVersionComponents.joined(separator: versionDelimiter), options: .numeric)
         }
     }
-//
-//    var isValidCountryCode: Bool {
-//        let pattern = "^\\+\\d{1,3}(-\\d{1,4})?$"
-//        let regex = try? NSRegularExpression(pattern: pattern, options: [])
-//        let matches = regex?.matches(in: self, options: [], range: NSRange(location: 0, length: self.count))
-//        return matches?.count ?? 0 > 0
-//    }
 
     var isValidMobilePhoneNumber: Bool {
         let sanitizedInput = self.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "-", with: "")

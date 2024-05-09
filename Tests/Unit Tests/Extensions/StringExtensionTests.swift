@@ -237,18 +237,6 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertEqual("1.2".compareWithVersion("1.2.0"), .orderedSame)
     }
 
-//    func testIsValidCountryCode() {
-//        XCTAssertTrue("+44".isValidCountryCode)
-//        XCTAssertTrue("+68".isValidCountryCode)
-//        XCTAssertTrue("+862".isValidCountryCode)
-//        XCTAssertTrue("+862-1234".isValidCountryCode)
-//
-//        XCTAssertFalse("+AB".isValidCountryCode)
-//        XCTAssertFalse("44".isValidCountryCode)
-//        XCTAssertFalse("44-1234".isValidCountryCode)
-//        XCTAssertFalse("-44".isValidCountryCode)
-//    }
-
     func testIsValidMobilePhoneNumber() {
         XCTAssertTrue("01234567890".isValidMobilePhoneNumber)
         XCTAssertTrue("09876543210".isValidMobilePhoneNumber)
