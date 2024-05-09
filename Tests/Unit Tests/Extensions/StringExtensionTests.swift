@@ -76,7 +76,7 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertTrue("12/30".isValidExpiryDate)
     }
 
-    func testIsTypingValidCVV() {
+    func testIsValidCVV() {
         // Four digit
         let fourDigitCVVNetworks = CardNetwork.allCases.filter { network in
             guard let validation = network.validation else { return false }
@@ -104,6 +104,36 @@ final class StringExtensionTests: XCTestCase {
         // Unknown
         XCTAssertTrue("123".isValidCVV(cardNetwork: .unknown))
         XCTAssertFalse("123456".isValidCVV(cardNetwork: .unknown))
+    }
+
+    func testIsTypingValidCVV() {
+        // Three digit
+        let threeDigitCVVNetworks = CardNetwork.allCases.filter { network in
+            guard let validation = network.validation else { return false }
+            return validation.code.length == 3
+        }
+        threeDigitCVVNetworks.forEach { network in
+            XCTAssertTrue("123".isTypingValidCVV(cardNetwork: network)!)
+            XCTAssertNil("12".isTypingValidCVV(cardNetwork: network))
+            XCTAssertEqual("1234".isTypingValidCVV(cardNetwork: network)!, false)
+            XCTAssertNil("".isTypingValidCVV(cardNetwork: network))
+        }
+
+        // Four digit
+        let fourDigitCVVNetworks = CardNetwork.allCases.filter { network in
+            guard let validation = network.validation else { return false }
+            return validation.code.length == 4
+        }
+        fourDigitCVVNetworks.forEach { network in
+            XCTAssertTrue("1234".isTypingValidCVV(cardNetwork: network)!)
+            XCTAssertNil("12".isTypingValidCVV(cardNetwork: network))
+            XCTAssertTrue("123".isTypingValidCVV(cardNetwork: network)!)
+            XCTAssertNil("".isTypingValidCVV(cardNetwork: network))
+        }
+
+        // Unknown
+        XCTAssertTrue("123".isTypingValidCVV(cardNetwork: .unknown)!)
+        XCTAssertFalse("123456".isTypingValidCVV(cardNetwork: .unknown)!)
     }
 
     func testIsValidNonDecimalString() {
