@@ -180,7 +180,6 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertTrue("5280802886982742".isValidLuhn)
         XCTAssertTrue("5410239186890221".isValidLuhn)
         XCTAssertTrue("2720992286723005".isValidLuhn)
-
     }
 
     func testDecodedJWTToken() {
@@ -286,14 +285,12 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertFalse("".isValidOTP)
     }
 
-    
-
     // MARK: Helpers
 
     private func almostOneYearAgoDateString(format: String = "MM/YY") -> String {
         let date = Date() - 364
-        let df = DateFormatter()
-        df.dateFormat = "MM/YYYY"
-        return df.string(from: date)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM/YYYY"
+        return dateFormatter.string(from: date)
     }
 }
