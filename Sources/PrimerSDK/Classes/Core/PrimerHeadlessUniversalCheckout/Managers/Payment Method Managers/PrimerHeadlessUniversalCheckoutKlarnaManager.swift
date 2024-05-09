@@ -5,13 +5,15 @@
 //  Created by Stefan Vrancianu on 17.02.2024.
 //
 
-#if canImport(PrimerKlarnaSDK)
 import UIKit
+#if canImport(PrimerKlarnaSDK)
 import PrimerKlarnaSDK
+#endif
 
 extension PrimerHeadlessUniversalCheckout {
     public class KlarnaManager: NSObject {
         public func provideKlarnaComponent(with intent: PrimerSessionIntent) throws -> (any KlarnaComponent)? {
+            #if canImport(PrimerKlarnaSDK)
             guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?
                     .first(where: { $0.type == "KLARNA" })
             else {
@@ -33,7 +35,9 @@ extension PrimerHeadlessUniversalCheckout {
             PrimerInternal.shared.intent = intent
             let tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: paymentMethod)
             return PrimerHeadlessKlarnaComponent(tokenizationComponent: tokenizationComponent)
+            #else
+            return nil
+            #endif
         }
     }
 }
-#endif
