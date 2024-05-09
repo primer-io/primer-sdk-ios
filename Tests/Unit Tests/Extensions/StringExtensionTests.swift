@@ -288,7 +288,7 @@ final class StringExtensionTests: XCTestCase {
     // MARK: Helpers
 
     private func almostOneYearAgoDateString(format: String = "MM/YY") -> String {
-        let date = Date() - 364
+        let date = Date() - (60 * 60 * 24 * 364)
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MM/YYYY"
         return dateFormatter.string(from: date)
