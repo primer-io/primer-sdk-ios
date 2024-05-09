@@ -14,7 +14,7 @@ import Foundation
  * object on successful tokenization or rejects with an `Error` if the tokenization process fails.
  */
 protocol StripeTokenizationManagerProtocol {
-    func tokenize() -> Promise<PrimerPaymentMethodTokenData>
+    func tokenize(paymentMethodConfigId: String) -> Promise<PrimerPaymentMethodTokenData>
 }
 
 class StripeTokenizationManager: StripeTokenizationManagerProtocol {
@@ -27,10 +27,10 @@ class StripeTokenizationManager: StripeTokenizationManagerProtocol {
     }
 
     // MARK: - Tokenize
-    func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
+    func tokenize(paymentMethodConfigId: String) -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             firstly {
-                getRequestBody()
+                getRequestBody(paymentMethodConfigId: paymentMethodConfigId)
             }
             .then { requestBody in
                 self.tokenizationService.tokenize(requestBody: requestBody)
@@ -54,10 +54,10 @@ class StripeTokenizationManager: StripeTokenizationManagerProtocol {
  * - Returns: A promise that resolves with a `Request.Body.Tokenization` containing the payment instrument data.
  */
 extension StripeTokenizationManager {
-    private func getRequestBody() -> Promise<Request.Body.Tokenization> {
+    private func getRequestBody(paymentMethodConfigId: String) -> Promise<Request.Body.Tokenization> {
         return Promise { seal in
             let sessionInfo = StripeHelpers.constructLocaleData()
-            let paymentInstrument = StripeAchPaymentInstrument(paymentMethodConfigId: "",
+            let paymentInstrument = StripeAchPaymentInstrument(paymentMethodConfigId: paymentMethodConfigId,
                                                                paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue,
                                                                authenticationProvider: PrimerPaymentMethodType.stripeAch.provider,
                                                                type: PaymentInstrumentType.stripe.rawValue,

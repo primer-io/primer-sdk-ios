@@ -9,7 +9,9 @@ import UIKit
 
 extension PrimerHeadlessUniversalCheckout {
     public class StripeManager: NSObject {
-        public func provideStripeAchUserDetailsComponent() throws -> (any KlarnaComponent)? {
+        public var mandateDelegate: StripeAchMandateDelegate?
+        
+        public func provideStripeAchUserDetailsComponent() throws -> (any StripeAchUserDetailsComponent)? {
             guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?
                     .first(where: { $0.type == "STRIPE_ACH" })
             else {
@@ -19,9 +21,19 @@ extension PrimerHeadlessUniversalCheckout {
                 ErrorHandler.handle(error: err)
                 throw err
             }
+            
+            guard let tokenizationViewModel = paymentMethod.tokenizationViewModel as? StripeTokenizationViewModel else {
+                let err = PrimerError.generic(message: "Unable to locate a valid payment method view model.",
+                                              userInfo: .errorUserInfoDictionary(),
+                                              diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
 
-            let tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: paymentMethod)
-            return PrimerHeadlessKlarnaComponent(tokenizationComponent: tokenizationComponent)
+            mandateDelegate = tokenizationViewModel
+            let tokenizationComponent = StripeAchTokenizationComponent(paymentMethod: paymentMethod)
+            return StripeAchHeadlessComponent(tokenizationComponent: tokenizationComponent,
+                                              tokenizationViewModel: tokenizationViewModel)
         }
     }
 }

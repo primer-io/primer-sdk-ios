@@ -53,6 +53,15 @@ struct StripeHelpers {
         return error
     }
     
+    static func getCancelledError() -> PrimerError {
+        let error = PrimerError.cancelled(
+            paymentMethodType: "STRIPE_ACH",
+            userInfo: .errorUserInfoDictionary(),
+            diagnosticsId:  UUID().uuidString)
+        ErrorHandler.handle(error: error)
+        return error
+    }
+    
     static func getPaymentFailedError() -> PrimerError {
         let error = PrimerError.paymentFailed(
             paymentMethodType: "STRIPE_ACH",

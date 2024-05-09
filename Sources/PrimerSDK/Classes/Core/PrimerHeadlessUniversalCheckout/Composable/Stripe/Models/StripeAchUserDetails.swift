@@ -51,9 +51,9 @@ public enum StripeAchUserDetailsError: Error {
  *  - `emptyUserDetails()`: Factory method to create an instance of `StripeAchUserDetails` with all fields set to empty strings.
  */
 public class StripeAchUserDetails: Codable {
-    var firstName: String
-    var lastName: String
-    var emailAddress: String
+    public var firstName: String
+    public var lastName: String
+    public var emailAddress: String
     
     
     public init(firstName: String, lastName: String, emailAddress: String) {

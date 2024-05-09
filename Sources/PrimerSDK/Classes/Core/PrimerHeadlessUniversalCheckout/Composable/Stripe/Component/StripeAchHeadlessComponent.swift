@@ -7,9 +7,15 @@
 
 import UIKit
 
+public protocol StripeAchMandateDelegate {
+    func mandateAccepted()
+    func mandateDeclined()
+}
+
 class StripeAchHeadlessComponent {
     // MARK: - Tokenization
     var tokenizationComponent: StripeAchTokenizationComponentProtocol
+    var tokenizationViewModel: StripeTokenizationViewModel
     
     /// Global settings for the payment process, injected as a dependency.
     let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -23,8 +29,11 @@ class StripeAchHeadlessComponent {
     public internal(set) var nextDataStep: StripeAchStep = .notInitialized
     
     // MARK: - Init
-    init(tokenizationComponent: StripeAchTokenizationComponentProtocol) {
+    init(tokenizationComponent: StripeAchTokenizationComponentProtocol,
+         tokenizationViewModel: StripeTokenizationViewModel
+    ) {
         self.tokenizationComponent = tokenizationComponent
+        self.tokenizationViewModel = tokenizationViewModel
     }
     
     /// Delegation
@@ -81,30 +90,6 @@ extension StripeAchHeadlessComponent: StripeAchUserDetailsComponent {
     public func submit() {
         trackSubmit()
         patchClientSessionIfNeeded()
-    }
-}
-
-// MARK: - PrimerStripeCollectorViewControllerDelegate
-extension StripeAchHeadlessComponent: PrimerStripeCollectorViewControllerDelegate {
-    /// Handles statuses from the PrimerStripeSDK, forwarding them to the next steps.
-    public func primerStripeCollected(_ stripeStatus: PrimerStripeStatus) {
-        switch stripeStatus {
-        case .succeeded(let paymentId):
-            // TODO: handle success case
-            break
-        case .canceled:
-            // TODO: handle canceled case
-            break
-        case .failed(let error):
-            // TODO: handle error case
-            let primerError = PrimerError.stripeWrapperError(
-                message: error.errorDescription,
-                userInfo: error.userInfo,
-                diagnosticsId: error.diagnosticsId
-            )
-            ErrorHandler.handle(error: primerError)
-            errorDelegate?.didReceiveError(error: primerError)
-        }
     }
 }
 
