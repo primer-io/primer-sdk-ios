@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import PrimerSDK
 
 internal extension Timer {
 
