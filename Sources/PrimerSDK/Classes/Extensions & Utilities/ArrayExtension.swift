@@ -7,9 +7,9 @@
 
 import Foundation
 
-internal extension Array where Element: Hashable {
+internal extension Array where Element: Hashable & Comparable {
     var unique: [Element] {
-        return Array(Set(self))
+        return Array(Set(self)).sorted()
     }
 }
 

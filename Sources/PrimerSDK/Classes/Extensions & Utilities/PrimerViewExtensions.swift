@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 
 internal class PrimerView: UIView {
-
     func pin(to superView: UIView) {
         translatesAutoresizingMaskIntoConstraints = false
         topAnchor.constraint(equalTo: superView.topAnchor).isActive = true
@@ -21,5 +20,4 @@ internal class PrimerView: UIView {
     func removeSubviews() {
         subviews.forEach { $0.removeFromSuperview() }
     }
-
 }
