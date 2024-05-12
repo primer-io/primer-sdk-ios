@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct StripeAnalyticsEvents {
+struct StripeAchAnalyticsEvents {
     static let startMethod = "StripeAchUserDetailsComponent.start()"
     static let submitMethod = "StripeAchUserDetailsComponent.submit()"
     static let updateCollectedData = "StripeAchUserDetailsComponent.updateCollectedData()"

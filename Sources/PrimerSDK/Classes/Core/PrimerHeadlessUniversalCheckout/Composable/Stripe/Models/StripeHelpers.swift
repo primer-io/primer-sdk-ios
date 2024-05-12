@@ -7,8 +7,8 @@
 
 import UIKit
 
-// StripeHelpers: A utility structure to facilitate various operations related to Stripe ACH payment sessions.
-struct StripeHelpers {
+// StripeAchHelpers: A utility structure to facilitate various operations related to Stripe ACH payment sessions.
+struct StripeAchHelpers {
     
     /// - Helper function to construct locale data.
     static func constructLocaleData() -> Request.Body.StripeAch.SessionData {

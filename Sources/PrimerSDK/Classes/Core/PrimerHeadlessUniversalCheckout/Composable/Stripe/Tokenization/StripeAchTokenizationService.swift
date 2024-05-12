@@ -69,31 +69,31 @@ class StripeAchTokenizationService: StripeAchTokenizationDelegate, StripeAchVali
             decodedJWTToken.isValid,
             decodedJWTToken.pciUrl != nil
         else {
-            throw StripeHelpers.getInvalidTokenError()
+            throw StripeAchHelpers.getInvalidTokenError()
         }
         
         guard paymentMethod.id != nil else {
-            throw StripeHelpers.getInvalidValueError(
+            throw StripeAchHelpers.getInvalidValueError(
                 key: "configuration.id",
                 value: paymentMethod.id
             )
         }
         
         if AppState.current.amount == nil {
-            throw StripeHelpers.getInvalidSettingError(name: "amount")
+            throw StripeAchHelpers.getInvalidSettingError(name: "amount")
         }
         
         if AppState.current.currency == nil {
-            throw StripeHelpers.getInvalidSettingError(name: "currency")
+            throw StripeAchHelpers.getInvalidSettingError(name: "currency")
         }
         
         let lineItems = clientSession?.order?.lineItems ?? []
         if lineItems.isEmpty {
-            throw StripeHelpers.getInvalidValueError(key: "lineItems")
+            throw StripeAchHelpers.getInvalidValueError(key: "lineItems")
         }
         
         if !(lineItems.filter({ $0.amount == nil })).isEmpty {
-            throw StripeHelpers.getInvalidValueError(key: "settings.orderItems")
+            throw StripeAchHelpers.getInvalidValueError(key: "settings.orderItems")
         }
     }
 }
@@ -109,7 +109,7 @@ class StripeAchTokenizationService: StripeAchTokenizationDelegate, StripeAchVali
 extension StripeAchTokenizationService {
     private func getRequestBody(paymentMethodConfigId: String) -> Promise<Request.Body.Tokenization> {
         return Promise { seal in
-            let sessionInfo = StripeHelpers.constructLocaleData()
+            let sessionInfo = StripeAchHelpers.constructLocaleData()
             let paymentInstrument = StripeAchPaymentInstrument(paymentMethodConfigId: paymentMethodConfigId,
                                                                paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue,
                                                                authenticationProvider: PrimerPaymentMethodType.stripeAch.provider,

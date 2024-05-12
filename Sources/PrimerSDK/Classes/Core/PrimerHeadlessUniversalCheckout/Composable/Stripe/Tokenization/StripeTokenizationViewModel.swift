@@ -291,7 +291,7 @@ extension StripeTokenizationViewModel: StripeAchMandateDelegate {
     }
     
     func mandateDeclined() {
-        let error = StripeHelpers.getCancelledError()
+        let error = StripeAchHelpers.getCancelledError()
         stripeMandateCompletion?(false, error)
     }
 }
@@ -315,7 +315,7 @@ extension StripeTokenizationViewModel: PrimerStripeCollectorViewControllerDelega
             stripeBankAccountCollectorCompletion?(true, nil)
             break
         case .canceled:
-            let error = StripeHelpers.getCancelledError()
+            let error = StripeAchHelpers.getCancelledError()
             stripeBankAccountCollectorCompletion?(false, error)
         case .failed(let error):
             let primerError = PrimerError.stripeWrapperError(

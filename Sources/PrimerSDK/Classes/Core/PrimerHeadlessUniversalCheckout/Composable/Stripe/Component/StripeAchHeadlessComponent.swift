@@ -100,7 +100,7 @@ extension StripeAchHeadlessComponent: PrimerHeadlessAnalyticsRecordable {
     func trackStart() {
         recordEvent(
             type: .sdkEvent,
-            name: StripeAnalyticsEvents.startMethod,
+            name: StripeAchAnalyticsEvents.startMethod,
             params: [:]
         )
     }
@@ -108,7 +108,7 @@ extension StripeAchHeadlessComponent: PrimerHeadlessAnalyticsRecordable {
     func trackSubmit() {
         recordEvent(
             type: .sdkEvent,
-            name: StripeAnalyticsEvents.submitMethod,
+            name: StripeAchAnalyticsEvents.submitMethod,
             params: [:]
         )
     }
@@ -116,7 +116,7 @@ extension StripeAchHeadlessComponent: PrimerHeadlessAnalyticsRecordable {
     func trackCollectableData() {
         recordEvent(
             type: .sdkEvent,
-            name: StripeAnalyticsEvents.updateCollectedData,
+            name: StripeAchAnalyticsEvents.updateCollectedData,
             params: [:]
         )
     }

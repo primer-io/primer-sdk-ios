@@ -86,7 +86,7 @@ private extension StripeAchClientSessionService {
         return Promise { seal in
             // Verify if we have a valid decoded JWT token
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                seal.reject(StripeHelpers.getInvalidTokenError())
+                seal.reject(StripeAchHelpers.getInvalidTokenError())
                 return
             }
             
