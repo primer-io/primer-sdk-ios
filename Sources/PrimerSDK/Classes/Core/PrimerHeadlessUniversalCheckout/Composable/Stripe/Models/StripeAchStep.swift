@@ -21,7 +21,7 @@ import UIKit
  */
 public enum StripeAchStep: PrimerHeadlessStep {
     /// Session creation
-    case collectUserDetails(_ details: StripeAchUserDetails)
+    case didFetchUserDetails(_ details: StripeAchUserDetails)
     case tokenizationStarted
     case notInitialized
 }

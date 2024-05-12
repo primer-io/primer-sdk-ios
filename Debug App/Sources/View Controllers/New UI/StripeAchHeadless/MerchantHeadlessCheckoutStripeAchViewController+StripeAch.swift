@@ -42,7 +42,7 @@ extension MerchantHeadlessCheckoutStripeAchViewController: PrimerHeadlessErrorab
     func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
         guard let step = step as? StripeAchStep else { return }
         switch step {
-        case .collectUserDetails(let userDetails):
+        case .didFetchUserDetails(let userDetails):
             stripeFormViewModel.firstName = userDetails.firstName
             stripeFormViewModel.lastName = userDetails.lastName
             stripeFormViewModel.emailAddress = userDetails.emailAddress

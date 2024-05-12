@@ -22,7 +22,7 @@ extension StripeAchHeadlessComponent {
         }
         .done { stripeAchUserDetails in
             self.clientSessionUserDetails = stripeAchUserDetails
-            let step = StripeAchStep.collectUserDetails(stripeAchUserDetails)
+            let step = StripeAchStep.didFetchUserDetails(stripeAchUserDetails)
             self.stepDelegate?.didReceiveStep(step: step)
         }
         .catch { _ in }

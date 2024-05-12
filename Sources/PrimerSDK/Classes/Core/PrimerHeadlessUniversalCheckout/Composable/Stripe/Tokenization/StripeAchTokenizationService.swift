@@ -18,7 +18,7 @@ protocol StripeAchTokenizationDelegate {
 }
 
 /**
- * Validation method to ensure data integrity before proceeding with tokenization or session updates.
+ * Validation method to ensure data integrity before proceeding with tokenization.
  */
 protocol StripeAchValidationDelegate {
     func validate() throws
