@@ -60,7 +60,7 @@ extension StripeTokenizationManager {
             let paymentInstrument = StripeAchPaymentInstrument(paymentMethodConfigId: paymentMethodConfigId,
                                                                paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue,
                                                                authenticationProvider: PrimerPaymentMethodType.stripeAch.provider,
-                                                               type: PaymentInstrumentType.stripe.rawValue,
+                                                               type: PaymentInstrumentType.stripeAch.rawValue,
                                                                sessionInfo: sessionInfo)
             
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)

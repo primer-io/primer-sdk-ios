@@ -8,14 +8,14 @@
 import Foundation
 
 extension Request.Body {
-    public class Stripe {}
+    public class StripeAch {}
 }
 
 extension Response.Body {
-    public class Stripe {}
+    public class StripeAch {}
 }
 
-extension Request.Body.Stripe {
+extension Request.Body.StripeAch {
     public struct SessionData: Codable {
         public let locale: String?
         public let platform: String?

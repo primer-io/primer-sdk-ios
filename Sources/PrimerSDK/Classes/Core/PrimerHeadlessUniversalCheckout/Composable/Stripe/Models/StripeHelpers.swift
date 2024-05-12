@@ -11,8 +11,8 @@ import UIKit
 struct StripeHelpers {
     
     /// - Helper function to construct locale data.
-    static func constructLocaleData() -> Request.Body.Stripe.SessionData {
-        return Request.Body.Stripe.SessionData(locale: PrimerSettings.current.localeData.localeCode,
+    static func constructLocaleData() -> Request.Body.StripeAch.SessionData {
+        return Request.Body.StripeAch.SessionData(locale: PrimerSettings.current.localeData.localeCode,
                                                platform: "IOS")
     }
     

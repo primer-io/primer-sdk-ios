@@ -21,7 +21,7 @@ class MerchantHeadlessCheckoutStripeAchViewController: UIViewController {
     var cancellables: Set<AnyCancellable> = []
     
     // MARK: - Stripe ACH
-    lazy var manager: PrimerHeadlessUniversalCheckout.StripeManager = PrimerHeadlessUniversalCheckout.StripeManager()
+    lazy var manager: PrimerHeadlessUniversalCheckout.AchManager = PrimerHeadlessUniversalCheckout.AchManager()
     var stripeForm: StripeAchFieldsView?
     var stripeFormViewModel: StripeAchFieldsViewModel = StripeAchFieldsViewModel()
     var stripeAchComponent: (any StripeAchUserDetailsComponent)?
@@ -64,7 +64,7 @@ class MerchantHeadlessCheckoutStripeAchViewController: UIViewController {
     
     private func initializeStripeAchComponent() {
         do {
-            stripeAchComponent = try manager.provideStripeAchUserDetailsComponent()
+            stripeAchComponent = try manager.provide(paymentMethodType: "STRIPE_ACH")
             stripeAchComponent?.stepDelegate = self
             stripeAchComponent?.errorDelegate = self
             stripeAchComponent?.validationDelegate = self
