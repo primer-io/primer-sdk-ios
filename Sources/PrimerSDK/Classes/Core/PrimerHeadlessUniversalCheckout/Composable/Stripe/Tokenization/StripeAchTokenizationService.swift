@@ -13,22 +13,40 @@ import Foundation
  * - Returns: A `Promise<PrimerPaymentMethodTokenData>` which resolves to a `PrimerPaymentMethodTokenData`
  * object on successful tokenization or rejects with an `Error` if the tokenization process fails.
  */
-protocol StripeTokenizationManagerProtocol {
-    func tokenize(paymentMethodConfigId: String) -> Promise<PrimerPaymentMethodTokenData>
+protocol StripeAchTokenizationDelegate {
+    func tokenize() -> Promise<PrimerPaymentMethodTokenData>
 }
 
-class StripeTokenizationManager: StripeTokenizationManagerProtocol {
+/**
+ * Validation method to ensure data integrity before proceeding with tokenization or session updates.
+ */
+protocol StripeAchValidationDelegate {
+    func validate() throws
+}
+
+class StripeAchTokenizationService: StripeAchTokenizationDelegate, StripeAchValidationDelegate {
+    
     // MARK: - Properties
     private let tokenizationService: TokenizationServiceProtocol
+    private let paymentMethod: PrimerPaymentMethod
+    private var clientSession: ClientSession.APIResponse?
 
     // MARK: - Init
-    init() {
+    init(paymentMethod: PrimerPaymentMethod) {
+        self.paymentMethod = paymentMethod
         self.tokenizationService = TokenizationService()
+        self.clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
     }
 
     // MARK: - Tokenize
-    func tokenize(paymentMethodConfigId: String) -> Promise<PrimerPaymentMethodTokenData> {
+    func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
+            // Ensure the payment method has a valid ID
+            guard let paymentMethodConfigId = paymentMethod.id else {
+                seal.reject(KlarnaHelpers.getInvalidValueError(key: "configuration.id", value: paymentMethod.id))
+                return
+            }
+            
             firstly {
                 getRequestBody(paymentMethodConfigId: paymentMethodConfigId)
             }
@@ -43,6 +61,41 @@ class StripeTokenizationManager: StripeTokenizationManagerProtocol {
             }
         }
     }
+    
+    // MARK: - Validation
+    func validate() throws {
+        guard
+            let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
+            decodedJWTToken.isValid,
+            decodedJWTToken.pciUrl != nil
+        else {
+            throw StripeHelpers.getInvalidTokenError()
+        }
+        
+        guard paymentMethod.id != nil else {
+            throw StripeHelpers.getInvalidValueError(
+                key: "configuration.id",
+                value: paymentMethod.id
+            )
+        }
+        
+        if AppState.current.amount == nil {
+            throw StripeHelpers.getInvalidSettingError(name: "amount")
+        }
+        
+        if AppState.current.currency == nil {
+            throw StripeHelpers.getInvalidSettingError(name: "currency")
+        }
+        
+        let lineItems = clientSession?.order?.lineItems ?? []
+        if lineItems.isEmpty {
+            throw StripeHelpers.getInvalidValueError(key: "lineItems")
+        }
+        
+        if !(lineItems.filter({ $0.amount == nil })).isEmpty {
+            throw StripeHelpers.getInvalidValueError(key: "settings.orderItems")
+        }
+    }
 }
 
 /**
@@ -53,7 +106,7 @@ class StripeTokenizationManager: StripeTokenizationManagerProtocol {
  *
  * - Returns: A promise that resolves with a `Request.Body.Tokenization` containing the payment instrument data.
  */
-extension StripeTokenizationManager {
+extension StripeAchTokenizationService {
     private func getRequestBody(paymentMethodConfigId: String) -> Promise<Request.Body.Tokenization> {
         return Promise { seal in
             let sessionInfo = StripeHelpers.constructLocaleData()
