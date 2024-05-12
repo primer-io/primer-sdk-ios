@@ -14,8 +14,9 @@ public protocol StripeAchMandateDelegate {
 
 class StripeAchHeadlessComponent {
     // MARK: - Tokenization
-    var tokenizationComponent: StripeAchTokenizationComponentProtocol
+    var tokenizationService: StripeAchTokenizationService
     var tokenizationViewModel: StripeTokenizationViewModel
+    var clientSessionService: StripeAchClientSessionService
     
     /// Global settings for the payment process, injected as a dependency.
     let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -29,11 +30,12 @@ class StripeAchHeadlessComponent {
     public internal(set) var nextDataStep: StripeAchStep = .notInitialized
     
     // MARK: - Init
-    init(tokenizationComponent: StripeAchTokenizationComponentProtocol,
+    init(tokenizationService: StripeAchTokenizationService,
          tokenizationViewModel: StripeTokenizationViewModel
     ) {
-        self.tokenizationComponent = tokenizationComponent
+        self.tokenizationService = tokenizationService
         self.tokenizationViewModel = tokenizationViewModel
+        self.clientSessionService = StripeAchClientSessionService()
     }
     
     /// Delegation
@@ -48,7 +50,7 @@ class StripeAchHeadlessComponent {
     /// Validates the tokenization component, handling any errors that occur during the process.
     func validate() {
         do {
-            try tokenizationComponent.validate()
+            try tokenizationService.validate()
         } catch {
             if let err = error as? PrimerError {
                 ErrorHandler.handle(error: error)

@@ -8,25 +8,27 @@
 // swiftlint:disable type_body_length
 
 import UIKit
-import SafariServices
+#if canImport(PrimerStripeSDK)
+import PrimerStripeSDK
+#endif
 
 class StripeTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     // MARK: Variables
     private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-    private var tokenizationComponent: StripeAchTokenizationComponentProtocol
+    private var tokenizationService: StripeAchTokenizationService
     private var stripeMandateCompletion: ((_ success: Bool, _ error: Error?) -> Void)?
     private var stripeBankAccountCollectorCompletion: ((_ success: Bool, _ error: Error?) -> Void)?
     
     // MARK: Init
     required init(config: PrimerPaymentMethod) {
-        tokenizationComponent = StripeAchTokenizationComponent(paymentMethod: config)
+        tokenizationService = StripeAchTokenizationService(paymentMethod: config)
         super.init(config: config)
     }
     
     // MARK: Validate
     override func validate() throws {
-        try tokenizationComponent.validate()
+        try tokenizationService.validate()
     }
     
     override func performPreTokenizationSteps() -> Promise<Void> {
@@ -68,7 +70,7 @@ class StripeTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                return self.tokenizationComponent.tokenize(paymentMethodConfigId: self.config.id ?? "")
+                return self.tokenizationService.tokenize()
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
@@ -142,6 +144,19 @@ class StripeTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
+#if canImport(PrimerStripeSDK)
+            let stripeParams = PrimerStripeParams(publishableKey: "",
+                                                  clientSecret: "",
+                                                  returnUrl: "",
+                                                  fullName: "",
+                                                  emailAddress: "")
+            
+            let collectorViewController = PrimerStripeCollectorViewController.getCollectorViewController(params: stripeParams, delegate: self)
+            PrimerUIManager.primerRootViewController?.show(viewController: collectorViewController)
+            seal.fulfill()
+#else
+            seal.fulfill()
+#endif
             seal.fulfill()
         }
     }
@@ -281,6 +296,7 @@ extension StripeTokenizationViewModel: StripeAchMandateDelegate {
     }
 }
 
+#if canImport(PrimerStripeSDK)
 // MARK: - PrimerStripeCollectorViewControllerDelegate method
 extension StripeTokenizationViewModel: PrimerStripeCollectorViewControllerDelegate {
     
@@ -312,4 +328,5 @@ extension StripeTokenizationViewModel: PrimerStripeCollectorViewControllerDelega
         }
     }
 }
+#endif
 // swiftlint:enable type_body_length

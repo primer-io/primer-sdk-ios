@@ -18,7 +18,7 @@ extension StripeAchHeadlessComponent {
      */
     func getClientSessionUserDetails() {
         firstly {
-            tokenizationComponent.getClientSessionUserDetails()
+            clientSessionService.getClientSessionUserDetails()
         }
         .done { stripeAchUserDetails in
             self.clientSessionUserDetails = stripeAchUserDetails
@@ -71,7 +71,7 @@ extension StripeAchHeadlessComponent {
                 actions: actions))
 
         firstly {
-            tokenizationComponent.patchClientSession(actionsRequest: clientSessionActionsRequest)
+            clientSessionService.patchClientSession(actionsRequest: clientSessionActionsRequest)
         }
         .done { _ in
             self.startVMTokenization()

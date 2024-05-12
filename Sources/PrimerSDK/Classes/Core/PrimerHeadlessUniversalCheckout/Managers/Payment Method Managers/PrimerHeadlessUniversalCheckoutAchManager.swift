@@ -36,8 +36,8 @@ extension PrimerHeadlessUniversalCheckout {
             }
 
             mandateDelegate = tokenizationViewModel
-            let tokenizationComponent = StripeAchTokenizationComponent(paymentMethod: paymentMethod)
-            return StripeAchHeadlessComponent(tokenizationComponent: tokenizationComponent,
+            let tokenizationService = StripeAchTokenizationService(paymentMethod: paymentMethod)
+            return StripeAchHeadlessComponent(tokenizationService: tokenizationService,
                                               tokenizationViewModel: tokenizationViewModel)
         }
     }
