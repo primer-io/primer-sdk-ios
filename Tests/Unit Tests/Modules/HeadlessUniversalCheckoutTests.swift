@@ -1,5 +1,5 @@
 //
-//  EndToEndPaymentTokenizationTests.swift
+//  HeadlessUniversalCheckoutTests.swift
 //
 //
 //  Created by Jack Newcombe on 01/05/2024.
@@ -29,6 +29,10 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
 
         rawDataManagerDelegate = MockPrimerHeadlessUniversalCheckoutRawDataManagerDelegate()
         uiDelegate.strictMode = true
+
+        nativePaymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
+        rawDataPaymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
+
     }
 
     override func tearDownWithError() throws {
@@ -48,19 +52,19 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
 
     // MARK: NativeUIManager Tests
 
+    let nativePaymentMethod = Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod
+
     func testNativeUIManager_presentAdyenGiroPay_withoutSurcharge_auto() throws {
         setupSettings(handling: .auto)
 
-        let paymentMethod = Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod
-        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
         let apiConfiguration = setupApiConfiguration(
-            paymentMethod: paymentMethod
+            paymentMethod: nativePaymentMethod
         )
         setupMockApiClients(apiConfiguration: apiConfiguration)
         
-        let orderedExpectations = expectationsForDelegates(paymentMethod: paymentMethod)
+        let orderedExpectations = expectationsForDelegates(paymentMethod: nativePaymentMethod)
 
-        try presentNativeUIManager(paymentMethod: paymentMethod, expecting: orderedExpectations)
+        try presentNativeUIManager(paymentMethod: nativePaymentMethod, expecting: orderedExpectations)
     }
 
     func testNativeUIManager_presentAdyenGiroPay_withSurcharge_auto() throws {
@@ -68,33 +72,29 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
 
         let surchargeAmount: Int = 99
 
-        let paymentMethod = Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod
-        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
         let apiConfiguration = setupApiConfiguration(
-            paymentMethod: paymentMethod,
+            paymentMethod: nativePaymentMethod,
             surchargeAmount: surchargeAmount
         )
         setupMockApiClients(apiConfiguration: apiConfiguration)
 
-        let orderedExpectations = expectationsForDelegates(paymentMethod: paymentMethod, surchargeAmount: 99)
+        let orderedExpectations = expectationsForDelegates(paymentMethod: nativePaymentMethod, surchargeAmount: 99)
 
-        try presentNativeUIManager(paymentMethod: paymentMethod, expecting: orderedExpectations)
+        try presentNativeUIManager(paymentMethod: nativePaymentMethod, expecting: orderedExpectations)
     }
 
     func testNativeUIManager_presentAdyenGiroPay_withoutSurcharge_manual() throws {
         setupSettings(handling: .manual)
 
-        let paymentMethod = Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod
-        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
         let apiConfiguration = setupApiConfiguration(
-            paymentMethod: paymentMethod
+            paymentMethod: nativePaymentMethod
         )
         setupMockApiClients(apiConfiguration: apiConfiguration)
 
-        let orderedExpectations = expectationsForDelegates(paymentMethod: paymentMethod, 
+        let orderedExpectations = expectationsForDelegates(paymentMethod: nativePaymentMethod,
                                                            handling: .manual)
 
-        try presentNativeUIManager(paymentMethod: paymentMethod, expecting: orderedExpectations)
+        try presentNativeUIManager(paymentMethod: nativePaymentMethod, expecting: orderedExpectations)
     }
 
     func testNativeUIManager_presentAdyenGiroPay_withSurcharge_manual() throws {
@@ -102,52 +102,48 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
 
         let surchargeAmount: Int = 99
 
-        let paymentMethod = Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod
-        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
         let apiConfiguration = setupApiConfiguration(
-            paymentMethod: paymentMethod,
+            paymentMethod: nativePaymentMethod,
             surchargeAmount: surchargeAmount
         )
         setupMockApiClients(apiConfiguration: apiConfiguration)
 
-        let orderedExpectations = expectationsForDelegates(paymentMethod: paymentMethod, 
+        let orderedExpectations = expectationsForDelegates(paymentMethod: nativePaymentMethod,
                                                            handling: .manual,
                                                            surchargeAmount: 99)
 
-        try presentNativeUIManager(paymentMethod: paymentMethod, expecting: orderedExpectations)
+        try presentNativeUIManager(paymentMethod: nativePaymentMethod, expecting: orderedExpectations)
     }
 
     func testNativeUIManager_presentAdyenGiroPay_withoutSurcharge_auto_abort() throws {
         setupSettings(handling: .auto)
 
-        let paymentMethod = Mocks.PaymentMethods.adyenGiroPayRedirectPaymentMethod
-        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
         let apiConfiguration = setupApiConfiguration(
-            paymentMethod: paymentMethod
+            paymentMethod: nativePaymentMethod
         )
         setupMockApiClients(apiConfiguration: apiConfiguration)
 
-        let orderedExpectations = expectationsForDelegates(paymentMethod: paymentMethod,
+        let orderedExpectations = expectationsForDelegates(paymentMethod: nativePaymentMethod,
                                                            shouldAbort: true)
 
-        try presentNativeUIManager(paymentMethod: paymentMethod, expecting: orderedExpectations)
+        try presentNativeUIManager(paymentMethod: nativePaymentMethod, expecting: orderedExpectations)
     }
 
     // MARK: RawDataManager Tests
 
+    let rawDataPaymentMethod = Mocks.PaymentMethods.paymentCardPaymentMethod
+
     func testRawDataManager_presentPaymentCard_withoutSurcharge_auto() throws {
         setupSettings(handling: .auto)
 
-        let paymentMethod = Mocks.PaymentMethods.paymentCardPaymentMethod
-        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
         let apiConfiguration = setupApiConfiguration(
-            paymentMethod: paymentMethod
+            paymentMethod: rawDataPaymentMethod
         )
         setupMockApiClients(apiConfiguration: apiConfiguration)
 
-        let orderedExpectations = expectationsForDelegates(paymentMethod: paymentMethod)
+        let orderedExpectations = expectationsForDelegates(paymentMethod: rawDataPaymentMethod)
 
-        try submitWithRawDataManager(paymentMethod: paymentMethod, expecting: orderedExpectations)
+        try submitWithRawDataManager(paymentMethod: rawDataPaymentMethod, expecting: orderedExpectations)
     }
 
     func testRawDataManager_presentPaymentCard_withoutSurcharge_manual() throws {
@@ -166,24 +162,22 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
         try submitWithRawDataManager(paymentMethod: paymentMethod, expecting: orderedExpectations)
     }
 
-    func testRawDataManager_presentAdyenGiroPay_withoutSurcharge_auto_abort() throws {
+    func testRawDataManager_paymentCardPayment_withoutSurcharge_auto_abort() throws {
         setupSettings(handling: .auto)
 
-        let paymentMethod = Mocks.PaymentMethods.paymentCardPaymentMethod
-        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
         let apiConfiguration = setupApiConfiguration(
-            paymentMethod: paymentMethod
+            paymentMethod: rawDataPaymentMethod
         )
         setupMockApiClients(apiConfiguration: apiConfiguration)
 
-        let orderedExpectations = expectationsForDelegates(paymentMethod: paymentMethod,
+        let orderedExpectations = expectationsForDelegates(paymentMethod: rawDataPaymentMethod,
                                                            shouldAbort: true)
 
-        try submitWithRawDataManager(paymentMethod: paymentMethod, expecting: orderedExpectations)
+        try submitWithRawDataManager(paymentMethod: rawDataPaymentMethod, expecting: orderedExpectations)
     }
 
 
-    // JN TODO: Check with Semir - why doesn't RDM support surcharge? can we fix it?
+    // NOTE: RawDataManager does not support surcharge yet - enable this test when it does
 //    func testRawDataManager_presentAdyenGiroPay_withSurcharge() throws {
 //        setupSettings(handling: .auto)
 //
