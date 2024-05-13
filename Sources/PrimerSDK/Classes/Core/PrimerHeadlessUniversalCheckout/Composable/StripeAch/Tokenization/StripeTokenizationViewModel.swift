@@ -291,7 +291,7 @@ extension StripeTokenizationViewModel: StripeAchMandateDelegate {
     }
     
     func mandateDeclined() {
-        let error = StripeAchHelpers.getCancelledError(paymentMethodType: config.type)
+        let error = ACHHelpers.getCancelledError(paymentMethodType: config.type)
         stripeMandateCompletion?(false, error)
     }
 }
@@ -315,7 +315,7 @@ extension StripeTokenizationViewModel: PrimerStripeCollectorViewControllerDelega
             stripeBankAccountCollectorCompletion?(true, nil)
             break
         case .canceled:
-            let error = StripeAchHelpers.getCancelledError(paymentMethodType: config.type)
+            let error = ACHHelpers.getCancelledError(paymentMethodType: config.type)
             stripeBankAccountCollectorCompletion?(false, error)
         case .failed(let error):
             let primerError = PrimerError.stripeWrapperError(

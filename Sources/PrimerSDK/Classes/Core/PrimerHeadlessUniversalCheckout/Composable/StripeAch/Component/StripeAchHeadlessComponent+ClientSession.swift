@@ -22,7 +22,7 @@ extension StripeAchHeadlessComponent {
         }
         .done { stripeAchUserDetails in
             self.clientSessionUserDetails = stripeAchUserDetails
-            let step = StripeAchStep.didFetchUserDetails(stripeAchUserDetails)
+            let step = ACHStep.didFetchUserDetails(stripeAchUserDetails)
             self.stepDelegate?.didReceiveStep(step: step)
         }
         .catch { _ in }
@@ -35,7 +35,7 @@ extension StripeAchHeadlessComponent {
      * discrepancy, it updates the client session; otherwise, it continues with the tokenization process.
      */
     func patchClientSessionIfNeeded() {
-        let shouldPatchUserDetails = StripeAchUserDetails.isEqual(lhs: inputUserDetails, rhs: clientSessionUserDetails)
+        let shouldPatchUserDetails = ACHUserDetails.isEqual(lhs: inputUserDetails, rhs: clientSessionUserDetails)
         var clientSessionActions: [ClientSession.Action] = []
 
         if shouldPatchUserDetails.areEqual {
@@ -95,7 +95,7 @@ extension StripeAchHeadlessComponent {
      */
     private func startVMTokenization() {
         tokenizationViewModel.start()
-        stepDelegate?.didReceiveStep(step: StripeAchStep.tokenizationStarted)
+        stepDelegate?.didReceiveStep(step: ACHStep.tokenizationStarted)
     }
 
     /**
@@ -108,7 +108,7 @@ extension StripeAchHeadlessComponent {
      * - Parameter validationError: The validation error encountered with user details.
      * - Returns: An optional `ClientSession.Action` to update the client session or `nil` if no update is necessary.
      */
-    private func createAction(from validationError: StripeAchUserDetailsError) -> ClientSession.Action? {
+    private func createAction(from validationError: ACHUserDetailsError) -> ClientSession.Action? {
         switch validationError {
         case .invalidFirstName:
             return ClientSession.Action.setCustomerFirstName(inputUserDetails.firstName)

@@ -20,14 +20,14 @@ class StripeAchHeadlessComponent {
     
     /// Global settings for the payment process, injected as a dependency.
     let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-    var inputUserDetails: StripeAchUserDetails = .emptyUserDetails()
-    var clientSessionUserDetails: StripeAchUserDetails = .emptyUserDetails()
+    var inputUserDetails: ACHUserDetails = .emptyUserDetails()
+    var clientSessionUserDetails: ACHUserDetails = .emptyUserDetails()
     
     // MARK: - Delegates
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
-    public internal(set) var nextDataStep: StripeAchStep = .notInitialized
+    public internal(set) var nextDataStep: ACHStep = .notInitialized
     
     // MARK: - Init
     init(tokenizationService: StripeAchTokenizationService,
@@ -62,7 +62,7 @@ class StripeAchHeadlessComponent {
 
 // MARK: - PrimerHeadlessMainComponent delegates
 extension StripeAchHeadlessComponent: StripeAchUserDetailsComponent {
-    public func updateCollectedData(collectableData: StripeAchCollectableData) {
+    public func updateCollectedData(collectableData: ACHCollectableData) {
         trackCollectableData()
         validationDelegate?.didUpdate(validationStatus: .validating, for: collectableData)
         
@@ -73,7 +73,7 @@ extension StripeAchHeadlessComponent: StripeAchUserDetailsComponent {
             let error = collectableData.invalidFieldError
             ErrorHandler.handle(error: error)
             let validationError = PrimerValidationError.invalidValue(
-                field: error.fieldValue,
+                field: error.fieldValueDescription,
                 userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString)
             

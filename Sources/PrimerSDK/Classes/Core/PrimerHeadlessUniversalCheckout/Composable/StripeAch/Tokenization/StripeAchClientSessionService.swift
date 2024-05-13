@@ -15,7 +15,7 @@ import Foundation
  *  - `patchClientSession`: Updates the client session with new user details based on a given request.
  */
 protocol StripeAchUserDetailsProviding {
-    func getClientSessionUserDetails() -> Promise<StripeAchUserDetails>
+    func getClientSessionUserDetails() -> Promise<ACHUserDetails>
     func patchClientSession(actionsRequest: ClientSessionUpdateRequest) -> Promise<Void>
 }
 
@@ -42,10 +42,10 @@ class StripeAchClientSessionService: StripeAchUserDetailsProviding {
  * - Returns: A promise that resolves with `StripeAchUserDetails` containing the current user details.
  */
 extension StripeAchClientSessionService {
-    func getClientSessionUserDetails() -> Promise<StripeAchUserDetails> {
+    func getClientSessionUserDetails() -> Promise<ACHUserDetails> {
         let customerDetails = clientSession?.customer
         return Promise { seal in
-            let userDetails = StripeAchUserDetails(firstName: customerDetails?.firstName ?? "",
+            let userDetails = ACHUserDetails(firstName: customerDetails?.firstName ?? "",
                                                    lastName: customerDetails?.lastName ?? "",
                                                    emailAddress: customerDetails?.emailAddress ?? "")
             seal.fulfill(userDetails)
@@ -86,7 +86,7 @@ private extension StripeAchClientSessionService {
         return Promise { seal in
             // Verify if we have a valid decoded JWT token
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                seal.reject(StripeAchHelpers.getInvalidTokenError())
+                seal.reject(ACHHelpers.getInvalidTokenError())
                 return
             }
             
