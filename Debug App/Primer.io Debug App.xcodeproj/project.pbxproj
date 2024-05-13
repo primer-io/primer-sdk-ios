@@ -11,6 +11,9 @@
 		0489E2BB2B68F71300FA0682 /* TapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0489E2BA2B68F71300FA0682 /* TapGestureRecognizer.swift */; };
 		049A055E2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
 		04F3235C2BD2F99000F5927C /* UIApplication+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F3235B2BD2F99000F5927C /* UIApplication+Extensions.swift */; };
+		04F323612BD408C600F5927C /* AppetizeConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F3235D2BD408C600F5927C /* AppetizeConfigTests.swift */; };
+		04F323622BD408C600F5927C /* Debug App Tests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04F3235E2BD408C600F5927C /* Debug App Tests-Info.plist */; };
+		04F323632BD408C600F5927C /* MetadataParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F3235F2BD408C600F5927C /* MetadataParserTests.swift */; };
 		04F323642BD409FE00F5927C /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47512B06C5030091C31F /* BanksListModel.swift */; };
 		04F323652BD40A0E00F5927C /* MerchantHeadlessCheckoutBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E129D66F2B162022004694F9 /* MerchantHeadlessCheckoutBankViewController.swift */; };
 		04F323662BD40A2300F5927C /* MerchantNewLineItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */; };
@@ -47,6 +50,7 @@
 		E1A2971F2B021ABA005ADA51 /* URL+NetworkHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB44D12AFE13AF00639DC5 /* URL+NetworkHeaders.swift */; };
 		EA7FAA4F8476BD3711D628CB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B18D7E7738BF86467B0F1465 /* Images.xcassets */; };
 		F02F496FD20B5291C044F62C /* MerchantResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */; };
+		F03699592AC2E63700E4179D /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		F08F63D82B9B5A7C006EF9A9 /* SessionConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63D72B9B5A7C006EF9A9 /* SessionConfiguration.swift */; };
 		F08F63DA2B9B5BC5006EF9A9 /* AppetizeConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63D92B9B5BC5006EF9A9 /* AppetizeConfigProvider.swift */; };
 		F08F63DC2B9F27B0006EF9A9 /* MetadataParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63DB2B9F27B0006EF9A9 /* MetadataParser.swift */; };
@@ -54,8 +58,28 @@
 		FD5ADBCFA70DB606339F3AF2 /* TransactionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D3D6CF0F006A06B7CEC71B /* TransactionResponse.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		FED76127253C549C91488087 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 25AB41367F759CCDA1881AD2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BEB14ABCDF34E3D24759EAAB;
+			remoteInfo = "Debug App";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		73B416AD9A0CB3B0EA16AF79 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D11E367C3560C383BC4CA0A7 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
@@ -91,6 +115,7 @@
 		33E18D5B5190C64631309D1B /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		39CCCB917D1881082ED75975 /* ViewController+Primer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+Primer.swift"; sourceTree = "<group>"; };
 		404E173A513B986A36F835F7 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift; sourceTree = "<group>"; };
+		483D2036DE3F89CA2C244C4F /* Debug App Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Debug App Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4ACFB17A73AB7240BED98585 /* ExampleApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ExampleApp.entitlements; sourceTree = "<group>"; };
 		4C353D84EABA4990DAB4DD28 /* MerchantHeadlessCheckoutRawRetailDataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutRawRetailDataViewController.swift; sourceTree = "<group>"; };
 		4E79C93EA805E87E1137A513 /* PaymentMethodCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentMethodCell.swift; sourceTree = "<group>"; };
@@ -154,6 +179,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		70DF25A36D08F36CBD603C15 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CB612F7DF16CD3190025327F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -314,6 +346,7 @@
 		DF30711EB149C64C364BB79A /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				483D2036DE3F89CA2C244C4F /* Debug App Tests.xctest */,
 				68E2722188A5A2948DB31144 /* Debug App.app */,
 			);
 			name = Products;
@@ -372,6 +405,25 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		301F25EE1514F3AF2E4A7FBD /* Debug App Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4700FFD06E10F0EE123A7B8B /* Build configuration list for PBXNativeTarget "Debug App Tests" */;
+			buildPhases = (
+				1E0FCAD905F5F8F13B6A164B /* Sources */,
+				9CED4C4EFACB340F3C55B1F0 /* Resources */,
+				D11E367C3560C383BC4CA0A7 /* Embed Frameworks */,
+				70DF25A36D08F36CBD603C15 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0F2453263528C0A3659CD00A /* PBXTargetDependency */,
+			);
+			name = "Debug App Tests";
+			productName = "Debug App Tests";
+			productReference = 483D2036DE3F89CA2C244C4F /* Debug App Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		BEB14ABCDF34E3D24759EAAB /* Debug App */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CA98A6B11506835A81F6391A /* Build configuration list for PBXNativeTarget "Debug App" */;
@@ -401,6 +453,11 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				ORGANIZATIONNAME = "Primer API Ltd";
+				TargetAttributes = {
+					301F25EE1514F3AF2E4A7FBD = {
+						TestTargetID = BEB14ABCDF34E3D24759EAAB;
+					};
+				};
 			};
 			buildConfigurationList = 10479B54C02C96DE0B327687 /* Build configuration list for PBXProject "Primer.io Debug App" */;
 			compatibilityVersion = "Xcode 13.0";
@@ -430,6 +487,7 @@
 			projectRoot = "";
 			targets = (
 				BEB14ABCDF34E3D24759EAAB /* Debug App */,
+				301F25EE1514F3AF2E4A7FBD /* Debug App Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -443,6 +501,14 @@
 				EA7FAA4F8476BD3711D628CB /* Images.xcassets in Resources */,
 				F0C2147F6FA26527BE55549A /* LaunchScreen.xib in Resources */,
 				949864026D1CDE6F5C62C66E /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9CED4C4EFACB340F3C55B1F0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				04F323622BD408C600F5927C /* Debug App Tests-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -510,6 +576,16 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1E0FCAD905F5F8F13B6A164B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F03699592AC2E63700E4179D /* BuildFile in Sources */,
+				04F323612BD408C600F5927C /* AppetizeConfigTests.swift in Sources */,
+				04F323632BD408C600F5927C /* MetadataParserTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		66BB6A7BADD3A9CDD6412CE2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -558,6 +634,15 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0F2453263528C0A3659CD00A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Debug App";
+			target = BEB14ABCDF34E3D24759EAAB /* Debug App */;
+			targetProxy = FED76127253C549C91488087 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		CE259612A00F85709107B872 /* Main.storyboard */ = {
@@ -677,6 +762,34 @@
 			};
 			name = Release;
 		};
+		5434DA74E34D2EBEBD3D74C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = N8UN9TR5DY;
+				INFOPLIST_FILE = "Tests/Debug App Tests-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.primerapi.PrimerSDKExampleTests;
+				PRODUCT_NAME = "Debug App Tests";
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_COMPILATION_MODE = singlefile;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Debug App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Debug App";
+				TEST_TARGET_NAME = "Debug App";
+			};
+			name = Debug;
+		};
 		C02E8D181B9F35EB41C35E07 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -728,6 +841,33 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F10A44A87CE1B40DAFF5D30F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = N8UN9TR5DY;
+				INFOPLIST_FILE = "Tests/Debug App Tests-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.primerapi.PrimerSDKExampleTests;
+				PRODUCT_NAME = "Debug App Tests";
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Debug App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Debug App";
+				TEST_TARGET_NAME = "Debug App";
 			};
 			name = Release;
 		};
@@ -799,6 +939,15 @@
 			buildConfigurations = (
 				F5CDF642D3EADA50CDF5FF84 /* Debug */,
 				C02E8D181B9F35EB41C35E07 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4700FFD06E10F0EE123A7B8B /* Build configuration list for PBXNativeTarget "Debug App Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5434DA74E34D2EBEBD3D74C7 /* Debug */,
+				F10A44A87CE1B40DAFF5D30F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
