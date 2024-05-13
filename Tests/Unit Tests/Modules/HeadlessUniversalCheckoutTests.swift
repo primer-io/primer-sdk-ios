@@ -64,7 +64,7 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
         
         let orderedExpectations = expectationsForDelegates(paymentMethod: nativePaymentMethod)
 
-        try presentNativeUIManager(nativePaymentMethod: nativePaymentMethod, expecting: orderedExpectations)
+        try presentNativeUIManager(paymentMethod: nativePaymentMethod, expecting: orderedExpectations)
     }
 
     func testNativeUIManager_presentAdyenGiroPay_withSurcharge_auto() throws {
