@@ -1,5 +1,5 @@
 //
-//  StripeAchUserDetails.swift
+//  ACHUserDetails.swift
 //  PrimerSDK
 //
 //  Created by Stefan Vrancianu on 26.04.2024.
@@ -8,7 +8,17 @@
 import Foundation
 
 /**
- * Defines errors related to user detail fields during a Stripe ACH payment session.
+ * Protocol type defined for describing a customer field associated with the error.
+ *
+ * Property:
+ *  - `fieldValueDescription`: Returns a string identifier for the field associated with the error.
+ */
+protocol ACHFieldValueDescribable {
+    var fieldValueDescription: String { get }
+}
+
+/**
+ * Defines errors related to user detail fields during an ACH payment session.
  * This enum encapsulates the types of errors that can occur when validating user details such as first name, last name, and email address.
  *
  * Cases:
@@ -16,15 +26,16 @@ import Foundation
  *  - `invalidLastName`: Indicates an error with the user's last name.
  *  - `invalidEmailAddress`: Indicates an error with the user's email address.
  *
- * Property:
- *  - `fieldValue`: Returns a string identifier for the field associated with the error.
+ * Extends `ACHFieldValueDescribable` protocol.
  */
-public enum StripeAchUserDetailsError: Error {
+public enum ACHUserDetailsError: Error {
     case invalidFirstName
     case invalidLastName
     case invalidEmailAddress
-    
-    public var fieldValue: String {
+}
+
+extension ACHUserDetailsError: ACHFieldValueDescribable {
+    public var fieldValueDescription: String {
         switch self {
         case .invalidFirstName:
             return "firstname"
@@ -37,7 +48,7 @@ public enum StripeAchUserDetailsError: Error {
 }
 
 /**
- * Represents user details specifically for a Stripe ACH transaction.
+ * Represents user details specifically for an ACH transaction.
  * This class holds and manages user data such as first name, last name, and email address.
  *
  * Properties:
@@ -48,9 +59,9 @@ public enum StripeAchUserDetailsError: Error {
  * Initialization and Update:
  *  - `init(firstName:lastName:emailAddress:)`: Initializes a new user details instance with specified first name, last name, and email address.
  *  - `update(with:)`: Updates the user details with new data collected during a transaction process.
- *  - `emptyUserDetails()`: Factory method to create an instance of `StripeAchUserDetails` with all fields set to empty strings.
+ *  - `emptyUserDetails()`: Factory method to create an instance of `ACHUserDetails` with all fields set to empty strings.
  */
-public class StripeAchUserDetails: Codable {
+public class ACHUserDetails: Codable {
     public var firstName: String
     public var lastName: String
     public var emailAddress: String
@@ -62,7 +73,7 @@ public class StripeAchUserDetails: Codable {
         self.emailAddress = emailAddress
     }
     
-    public func update(with collectedData: StripeAchCollectableData) {
+    public func update(with collectedData: ACHCollectableData) {
         switch collectedData {
         case .firstName(let value):
             firstName = value
@@ -73,44 +84,44 @@ public class StripeAchUserDetails: Codable {
         }
     }
     
-    public static func emptyUserDetails() -> StripeAchUserDetails {
-        return StripeAchUserDetails(firstName: "", lastName: "", emailAddress: "")
+    public static func emptyUserDetails() -> ACHUserDetails {
+        return ACHUserDetails(firstName: "", lastName: "", emailAddress: "")
     }
 }
 
 /**
- * Extension to make `StripeAchUserDetails` conform to `Equatable`, allowing for comparison between instances.
+ * Extension to make `ACHUserDetails` conform to `Equatable`, allowing for comparison between instances.
  * Methods:
- *  - `==`: Determines if two instances of `StripeAchUserDetails` are exactly equal by comparing their properties.
+ *  - `==`: Determines if two instances of `ACHUserDetails` are exactly equal by comparing their properties.
  *  - `isEqual(lhs:rhs:)`: Checks for equality between two instances and identifies fields that are not equal.
  */
-extension StripeAchUserDetails: Equatable {
-    public static func == (lhs: StripeAchUserDetails, rhs: StripeAchUserDetails) -> Bool {
+extension ACHUserDetails: Equatable {
+    public static func == (lhs: ACHUserDetails, rhs: ACHUserDetails) -> Bool {
         return lhs.firstName == rhs.firstName &&
         lhs.lastName == rhs.lastName &&
         lhs.emailAddress == rhs.emailAddress
     }
     
     /**
-     * Evaluates the equality of two `StripeAchUserDetails` instances and identifies which fields, if any, are not equal.
+     * Evaluates the equality of two `ACHUserDetails` instances and identifies which fields, if any, are not equal.
      * This method not only checks if two instances are equal but also collects details about which fields differ.
-     * - Returns: A tuple containing a boolean indicating overall equality and an array of `StripeAchUserDetailsError`
+     * - Returns: A tuple containing a boolean indicating overall equality and an array of `ACHUserDetailsError`
      *            representing each field that is not equal.
      */
-    public static func isEqual(lhs: StripeAchUserDetails,
-                               rhs: StripeAchUserDetails) -> (areEqual: Bool, differingFields: [StripeAchUserDetailsError]) {
-        var unequalFields: [StripeAchUserDetailsError] = []
+    public static func isEqual(lhs: ACHUserDetails,
+                               rhs: ACHUserDetails) -> (areEqual: Bool, differingFields: [ACHUserDetailsError]) {
+        var unequalFields: [ACHUserDetailsError] = []
         var areEqual = true
         if lhs.firstName != rhs.firstName {
-            unequalFields.append(StripeAchUserDetailsError.invalidFirstName)
+            unequalFields.append(ACHUserDetailsError.invalidFirstName)
             areEqual = false
         }
         if lhs.lastName != rhs.lastName {
-            unequalFields.append(StripeAchUserDetailsError.invalidLastName)
+            unequalFields.append(ACHUserDetailsError.invalidLastName)
             areEqual = false
         }
         if lhs.emailAddress != rhs.emailAddress {
-            unequalFields.append(StripeAchUserDetailsError.invalidEmailAddress)
+            unequalFields.append(ACHUserDetailsError.invalidEmailAddress)
             areEqual = false
         }
         

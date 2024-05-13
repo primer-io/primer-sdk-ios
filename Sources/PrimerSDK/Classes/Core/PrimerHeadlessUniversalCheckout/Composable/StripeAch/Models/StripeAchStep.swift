@@ -1,5 +1,5 @@
 //
-//  StripeAchStep.swift
+//  ACHStep.swift
 //  PrimerSDK
 //
 //  Created by Stefan Vrancianu on 25.04.2024.
@@ -13,15 +13,15 @@ import UIKit
  * It conforms to `PrimerHeadlessStep`.
  *
  * Cases:
- * - `collectUserDetails`: Collection of the user details. It caries:
- *     - `details` of type `StripeAchUserDetails`, representing the object that wrapps the user details (firstName lastName and emailAddress).
+ * - `didFetchUserDetails`: Collection of the user details. It caries:
+ *     - `details` of type `ACHUserDetails`, representing the object that wrapps the user details (firstName lastName and emailAddress).
  *
- * - `tokenizationStarted`: Indicates that the Stripe ACH tokenization has started.
- * - `notInitialized`: Indicates that the Stripe ACH logic is not initialized.
+ * - `tokenizationStarted`: Indicates that the ACH tokenization has started.
+ * - `notInitialized`: Indicates that the ACH logic is not initialized.
  */
-public enum StripeAchStep: PrimerHeadlessStep {
+public enum ACHStep: PrimerHeadlessStep {
     /// Session creation
-    case didFetchUserDetails(_ details: StripeAchUserDetails)
+    case didFetchUserDetails(_ details: ACHUserDetails)
     case tokenizationStarted
     case notInitialized
 }

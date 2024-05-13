@@ -1,5 +1,5 @@
 //
-//  StripeAchAnalyticsEvents.swift
+//  ACHAnalyticsEvents.swift
 //  PrimerSDK
 //
 //  Created by Stefan Vrancianu on 25.04.2024.
@@ -7,8 +7,27 @@
 
 import Foundation
 
-struct StripeAchAnalyticsEvents {
-    static let startMethod = "StripeAchUserDetailsComponent.start()"
-    static let submitMethod = "StripeAchUserDetailsComponent.submit()"
-    static let updateCollectedData = "StripeAchUserDetailsComponent.updateCollectedData()"
+enum ACHAnalyticsEvents {
+    case stripe
+    
+    var startMethod: String {
+        switch self {
+        case .stripe:
+            return "StripeAchUserDetailsComponent.start()"
+        }
+    }
+    
+    var submitMethod: String {
+        switch self {
+        case .stripe:
+            return "StripeAchUserDetailsComponent.submit()"
+        }
+    }
+    
+    var updateCollectedData: String {
+        switch self {
+        case .stripe:
+            return "StripeAchUserDetailsComponent.updateCollectedData()"
+        }
+    }
 }

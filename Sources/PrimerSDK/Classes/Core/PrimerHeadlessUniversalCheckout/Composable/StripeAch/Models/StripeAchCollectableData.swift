@@ -1,5 +1,5 @@
 //
-//  StripeAchCollectableData.swift
+//  ACHCollectableData.swift
 //  PrimerSDK
 //
 //  Created by Stefan Vrancianu on 25.04.2024.
@@ -8,7 +8,19 @@
 import Foundation
 
 /**
- * Enumerates the types of data that can be collected during a Stripe ACH payment session.
+ * Protocol type defined for validating customer's information.
+ *
+ * Properties:
+ *  - `isValid`: A computed value that determines whether the collected data is valid.
+ *  - `invalidFieldError`: A computed value that provides a specific error related to the field that is found invalid.
+ */
+protocol ACHCollectableDataValidatable {
+    var isValid: Bool { get }
+    var invalidFieldError: ACHUserDetailsError { get }
+}
+
+/**
+ * Enumerates the types of data that can be collected during an ACH payment session.
  * It conforms to `PrimerCollectableData` for integration with the Primer SDK data collection process and is `Encodable` to facilitate serialization.
  *
  * Cases:
@@ -17,14 +29,15 @@ import Foundation
  *  - `emailAddress(_ value: String)` - Represents the customer's email address.
  *
  * Properties:
- *  - `isValid`: A computed value that determines whether the collected data is valid.
- *  - `invalidFieldError`: A computed value that provides a specific error related to the field that is found invalid.
+ *  Extends `ACHCollectableDataValidatable` protocol.
  */
-public enum StripeAchCollectableData: PrimerCollectableData, Encodable {
+public enum ACHCollectableData: PrimerCollectableData, Encodable {
     case firstName(_ value: String)
     case lastName(_ value: String)
     case emailAddress(_ value: String)
+}
 
+extension ACHCollectableData: ACHCollectableDataValidatable {
     /**
      * Validates the data based on the type.
      * For `firstName` and `lastName`, checks if the string is not empty.
@@ -50,16 +63,16 @@ public enum StripeAchCollectableData: PrimerCollectableData, Encodable {
      * Provides an error specific to the type of data that is invalid.
      * This helps in identifying which particular field did not pass validation and needs correction.
      *
-     * - Returns: A `StripeAchUserDetailsError` corresponding to the invalid field.
+     * - Returns: A `ACHUserDetailsError` corresponding to the invalid field.
      */
-    public var invalidFieldError: StripeAchUserDetailsError {
+    public var invalidFieldError: ACHUserDetailsError {
         switch self {
         case .firstName:
-            return StripeAchUserDetailsError.invalidFirstName
+            return ACHUserDetailsError.invalidFirstName
         case .lastName:
-            return StripeAchUserDetailsError.invalidLastName
+            return ACHUserDetailsError.invalidLastName
         case .emailAddress:
-            return StripeAchUserDetailsError.invalidEmailAddress
+            return ACHUserDetailsError.invalidEmailAddress
         }
     }
 }
