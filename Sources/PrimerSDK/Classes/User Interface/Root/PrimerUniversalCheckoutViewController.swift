@@ -48,7 +48,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         renderSelectedPaymentInstrument()
         renderAvailablePaymentMethods()
 
-        guard PrimerAPIConfigurationModule.decodedJWTToken.exists else { return }
+        guard PrimerAPIConfigurationModule.decodedJWTToken != nil else { return }
 
         let vaultService: VaultServiceProtocol = VaultService()
         firstly {
