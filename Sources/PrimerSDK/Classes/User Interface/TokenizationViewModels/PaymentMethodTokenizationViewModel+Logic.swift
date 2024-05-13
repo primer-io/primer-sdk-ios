@@ -65,7 +65,7 @@ extension PaymentMethodTokenizationViewModel {
                 }
                 // The above promises will never end up on error.
                 .catch { _ in
-                    print("Oops!")
+                    self.logger.error(message: "Unselection of payment method failed - this should never happen ...")
                 }
             }
         }
