@@ -189,6 +189,10 @@ extension PaymentMethodTokenizationViewModel {
                         if let cancelledError = cancelledError {
                             throw cancelledError
                         }
+                        
+                        // Here we can hook into the logic and change things for ACH a little bit
+                        // This method is described into StripeAchTokenizationViewModel so i can play with it there
+                        // return nil
                         return self.handleDecodedClientTokenIfNeeded(decodedJWTToken)
                     }
                     .done { resumeToken in
@@ -215,8 +219,10 @@ extension PaymentMethodTokenizationViewModel {
                                 }
                             }
                         } else if let checkoutData = self.paymentCheckoutData {
+                            // Because the resumeToken is returned nil by me it will enter here, if it was auto handling.
                             seal.fulfill(checkoutData)
                         } else {
+                            // Here if it was manual handling.
                             seal.fulfill(nil)
                         }
                     }

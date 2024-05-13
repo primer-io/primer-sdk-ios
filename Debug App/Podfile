@@ -12,6 +12,7 @@ target 'Debug App' do
   pod 'PrimerKlarnaSDK'
   pod 'PrimerIPay88MYSDK'
   pod 'PrimerNolPaySDK'
+  pod 'PrimerStripeSDK', :git => 'https://github.com/primer-io/primer-stripe-sdk-ios/', :branch => 'nq/initial_setup'
   pod 'IQKeyboardManagerSwift'
 
   target 'Debug App Tests' do
