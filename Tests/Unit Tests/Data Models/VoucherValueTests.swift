@@ -30,12 +30,13 @@ final class VoucherValueTests: XCTestCase {
     func testCurrentVoucherValues() {
 
         // No config
+        setupAppState()
         XCTAssertEqual(VoucherValue.currentVoucherValues.count, 2)
         XCTAssertEqual(VoucherValue.currentVoucherValues[0].id, "entity")
         XCTAssertEqual(VoucherValue.currentVoucherValues[1].id, "reference")
 
         // With config
-        let appState = setupAppState()
+        let appState = setupAppState(amount: 4999)
         XCTAssertEqual(VoucherValue.currentVoucherValues.count, 3)
         XCTAssertEqual(VoucherValue.currentVoucherValues[0].id, "entity")
         XCTAssertEqual(VoucherValue.currentVoucherValues[1].id, "reference")
@@ -58,10 +59,10 @@ Expires at: 1 Jan 2050 at 00:00
     }
 
     @discardableResult
-    private func setupAppState() -> AppStateProtocol {
+    private func setupAppState(amount: Int? = nil) -> AppStateProtocol {
         let appState = MockAppState()
-        appState.amount = 4999
-        appState.currency = Currency(code: "GBP", decimalDigits: 2)
+        appState.amount = amount
+        appState.currency = amount != nil ? Currency(code: "GBP", decimalDigits: 2) : nil
         DependencyContainer.register(appState as AppStateProtocol)
         return appState
     }
