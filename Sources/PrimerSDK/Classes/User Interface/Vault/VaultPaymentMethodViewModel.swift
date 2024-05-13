@@ -1,4 +1,3 @@
-
 internal protocol VaultPaymentMethodViewModelProtocol: AnyObject {
     var paymentMethods: [PrimerPaymentMethodTokenData] { get }
     var selectedPaymentMethodId: String? { get set }
