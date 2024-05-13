@@ -256,19 +256,9 @@ public enum CountryCode: String, Codable, CaseIterable {
     case ye = "YE"
     case zm = "ZM"
     case zw = "ZW"
-
-    init?(optionalRawValue: String?) {
-        guard let rawValue = optionalRawValue else {
-            return nil
-        }
-
-        self.init(rawValue: rawValue.uppercased())
-    }
 }
 
 internal extension CountryCode {
-
-    static var all = CountryCode.allCases
 
     var country: String {
         return localizedCountryName
