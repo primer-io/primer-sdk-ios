@@ -1,6 +1,6 @@
 import Foundation
 
-public enum PMKError: Error {
+package enum PMKError: Error {
     /**
      The completionHandler with form `(T?, Error?)` was called with `(nil, nil)`.
      This is invalid as per Cocoa/Apple calling conventions.
@@ -41,7 +41,7 @@ public enum PMKError: Error {
 }
 
 extension PMKError: CustomDebugStringConvertible {
-    public var debugDescription: String {
+    package var debugDescription: String {
         switch self {
         case .flatMap(let obj, let type):
             return "Could not `flatMap<\(type)>`: \(obj)"
@@ -66,7 +66,7 @@ extension PMKError: CustomDebugStringConvertible {
 }
 
 extension PMKError: LocalizedError {
-    public var errorDescription: String? {
+    package var errorDescription: String? {
         return debugDescription
     }
 }
@@ -74,13 +74,13 @@ extension PMKError: LocalizedError {
 //////////////////////////////////////////////////////////// Cancellation
 
 /// An error that may represent the cancelled condition
-public protocol CancellableError: Error {
+package protocol CancellableError: Error {
     /// returns true if this Error represents a cancelled condition
     var isCancelled: Bool { get }
 }
 
 extension Error {
-    public var isCancelled: Bool {
+    package var isCancelled: Bool {
         do {
             throw self
         } catch PMKError.cancelled {
@@ -108,7 +108,7 @@ extension Error {
 }
 
 /// Used by `catch` and `recover`
-public enum CatchPolicy {
+package enum CatchPolicy {
     /// Indicates that `catch` or `recover` handle all error types including cancellable-errors.
     case allErrors
 

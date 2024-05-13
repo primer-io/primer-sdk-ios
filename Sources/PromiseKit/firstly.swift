@@ -23,7 +23,7 @@ import Dispatch
 
  - Note: the block you pass executes immediately on the current thread/queue.
  */
-public  func firstly<U: Thenable>(execute body: () throws -> U) -> Promise<U.T> {
+package  func firstly<U: Thenable>(execute body: () throws -> U) -> Promise<U.T> {
     do {
         let rp = Promise<U.T>(.pending)
         try body().pipe(to: rp.box.seal)
@@ -34,7 +34,7 @@ public  func firstly<U: Thenable>(execute body: () throws -> U) -> Promise<U.T> 
 }
 
 /// - See: firstly()
-public func firstly<T>(execute body: () -> Guarantee<T>) -> Guarantee<T> {
+package func firstly<T>(execute body: () -> Guarantee<T>) -> Guarantee<T> {
     return body()
 }
 
@@ -72,7 +72,7 @@ public func firstly<T>(execute body: () -> Guarantee<T>) -> Guarantee<T> {
  - Note: the block you pass excecutes immediately on the current thread/queue.
  - See: firstly(execute: () -> Thenable)
  */
-public func firstly<V: CancellableThenable>(execute body: () throws -> V) -> CancellablePromise<V.U.T> {
+package func firstly<V: CancellableThenable>(execute body: () throws -> V) -> CancellablePromise<V.U.T> {
     do {
         let rv = try body()
         let rp: CancellablePromise<V.U.T>

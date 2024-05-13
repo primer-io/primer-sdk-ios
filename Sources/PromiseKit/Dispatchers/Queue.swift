@@ -5,7 +5,7 @@ import Foundation
 private let arraySizeWorthCompacting = 100
 private let minUtilization = 0.6
 
-public struct Queue<T> {
+package struct Queue<T> {
 
     var elements: [T?] = []
     var head = 0

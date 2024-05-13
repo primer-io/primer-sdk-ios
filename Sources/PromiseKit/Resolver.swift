@@ -1,5 +1,5 @@
 /// An object for resolving promises
-public final class Resolver<T> {
+package final class Resolver<T> {
     let box: Box<Result<T, Error>>
 
     init(_ box: Box<Result<T, Error>>) {
@@ -13,7 +13,7 @@ public final class Resolver<T> {
     }
 }
 
-public extension Resolver {
+package extension Resolver {
     /// Fulfills the promise with the provided value
     func fulfill(_ value: T) {
         box.seal(.success(value))
@@ -57,7 +57,7 @@ public extension Resolver {
 
 extension Resolver where T == Void {
     /// Fulfills the promise unless error is non-nil
-    public func resolve(_ error: Error?) {
+    package func resolve(_ error: Error?) {
         if let error = error {
             reject(error)
         } else {
@@ -67,7 +67,7 @@ extension Resolver where T == Void {
 
     /// Fulfills the promise
     /// - Note: underscore is present due to: https://github.com/mxcl/PromiseKit/issues/990
-    public func fulfill() {
+    package func fulfill() {
         self.fulfill(())
     }
 }

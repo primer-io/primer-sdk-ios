@@ -20,7 +20,7 @@ private func _race<U: Thenable>(_ thenables: [U]) -> Promise<U.T> {
  - Returns: The promise that resolves first
  - Warning: If the first resolution is a rejection, the returned promise is rejected
  */
-public func race<U: Thenable>(_ thenables: U...) -> Promise<U.T> {
+package func race<U: Thenable>(_ thenables: U...) -> Promise<U.T> {
     return _race(thenables)
 }
 
@@ -35,7 +35,7 @@ public func race<U: Thenable>(_ thenables: U...) -> Promise<U.T> {
  - Warning: If the first resolution is a rejection, the returned promise is rejected
  - Remark: If the provided array is empty the returned promise is rejected with PMKError.badInput
  */
-public func race<U: Thenable>(_ thenables: [U]) -> Promise<U.T> {
+package func race<U: Thenable>(_ thenables: [U]) -> Promise<U.T> {
     guard !thenables.isEmpty else {
         return Promise(error: PMKError.badInput)
     }
@@ -51,7 +51,7 @@ public func race<U: Thenable>(_ thenables: [U]) -> Promise<U.T> {
 
  - Returns: The guarantee that resolves first
  */
-public func race<T>(_ guarantees: Guarantee<T>...) -> Guarantee<T> {
+package func race<T>(_ guarantees: Guarantee<T>...) -> Guarantee<T> {
     let rg = Guarantee<T>(.pending)
     for guarantee in guarantees {
         guarantee.pipe(to: rg.box.seal)
@@ -78,7 +78,7 @@ public func race<T>(_ guarantees: Guarantee<T>...) -> Guarantee<T> {
  - Warning: If any of the provided promises reject, the returned promise is rejected.
  - Warning: aborts if the array is empty.
  */
-public func race<V: CancellableThenable>(_ thenables: V...) -> CancellablePromise<V.U.T> {
+package func race<V: CancellableThenable>(_ thenables: V...) -> CancellablePromise<V.U.T> {
     return race(thenables)
 }
 
@@ -98,7 +98,7 @@ public func race<V: CancellableThenable>(_ thenables: V...) -> CancellablePromis
  - Warning: If any of the provided promises reject, the returned promise is rejected.
  - Remark: Returns promise rejected with PMKError.badInput if empty array provided
  */
-public func race<V: CancellableThenable>(_ thenables: [V]) -> CancellablePromise<V.U.T> {
+package func race<V: CancellableThenable>(_ thenables: [V]) -> CancellablePromise<V.U.T> {
     guard !thenables.isEmpty else {
         return CancellablePromise(error: PMKError.badInput)
     }
@@ -130,7 +130,7 @@ public func race<V: CancellableThenable>(_ thenables: [V]) -> CancellablePromise
  - Warning: Skips all rejected promises.
  - Remark: If the provided array is empty, the returned promise is rejected with `PMKError.badInput`. If there are no fulfilled promises, the returned promise is rejected with `PMKError.noWinner`.
  */
-public func race<U: Thenable>(fulfilled thenables: [U]) -> Promise<U.T> {
+package func race<U: Thenable>(fulfilled thenables: [U]) -> Promise<U.T> {
     var countdown = thenables.count
     guard countdown > 0 else {
         return Promise(error: PMKError.badInput)
@@ -181,6 +181,6 @@ public func race<U: Thenable>(fulfilled thenables: [U]) -> Promise<U.T> {
  //…
  }
  */
-public func timeout(seconds: TimeInterval) -> Promise<Void> {
+package func timeout(seconds: TimeInterval) -> Promise<Void> {
     return after(seconds: seconds).done { throw PMKError.timedOut }
 }

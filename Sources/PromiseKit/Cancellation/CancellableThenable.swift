@@ -5,7 +5,7 @@ import Dispatch
  When chained, all CancellableThenable members of the chain are cancelled when `cancel` is called on the associated CancelContext.
  */
 // swiftlint:disable identifier_name
-public protocol CancellableThenable: AnyObject {
+package protocol CancellableThenable: AnyObject {
     /// Type of the delegate `thenable`
     associatedtype U: Thenable
 
@@ -20,7 +20,7 @@ public protocol CancellableThenable: AnyObject {
     var cancelItemList: CancelItemList { get }
 }
 
-public extension CancellableThenable {
+package extension CancellableThenable {
     /// Append the `task` and `reject` function for a cancellable task to the cancel context
     func appendCancellable(_ cancellable: Cancellable?, reject: ((Error) -> Void)?) {
         self.cancelContext.append(cancellable: cancellable, reject: reject, thenable: self)
@@ -298,7 +298,7 @@ public extension CancellableThenable {
     }
 }
 
-public extension CancellableThenable {
+package extension CancellableThenable {
     /**
      - Returns: The error with which this cancellable promise was rejected; `nil` if this promise is not rejected.
      */
@@ -342,7 +342,7 @@ public extension CancellableThenable {
     }
 }
 
-public extension CancellableThenable where U.T: Sequence {
+package extension CancellableThenable where U.T: Sequence {
     /**
      `CancellablePromise<[U.T]>` => `U.T` -> `V` => `CancellablePromise<[V]>`
 
@@ -488,7 +488,7 @@ public extension CancellableThenable where U.T: Sequence {
     }
 }
 
-public extension CancellableThenable where U.T: Collection {
+package extension CancellableThenable where U.T: Collection {
     /// - Returns: a cancellable promise fulfilled with the first value of this `Collection` or,
     /// if empty, a promise rejected with PMKError.emptySequence.
     var firstValue: CancellablePromise<U.T.Iterator.Element> {
@@ -526,7 +526,7 @@ public extension CancellableThenable where U.T: Collection {
     }
 }
 
-public extension CancellableThenable where U.T: Sequence, U.T.Iterator.Element: Comparable {
+package extension CancellableThenable where U.T: Sequence, U.T.Iterator.Element: Comparable {
     /// - Returns: a cancellable promise fulfilled with the sorted values of this `Sequence`.
     func sortedValues(on: Dispatcher = conf.D.map) -> CancellablePromise<[U.T.Iterator.Element]> {
         return map(on: on) { $0.sorted() }

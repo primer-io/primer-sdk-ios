@@ -5,7 +5,7 @@ import Dispatch
  A `Promise` is a functional abstraction around a failable asynchronous operation.
  - See: `Thenable`
  */
-public final class Promise<T>: Thenable, CatchMixin {
+package final class Promise<T>: Thenable, CatchMixin {
     let box: Box<Result<T, Error>>
 
     fileprivate init(box: SealedBox<Result<T, Error>>) {
@@ -38,23 +38,23 @@ public final class Promise<T>: Thenable, CatchMixin {
      return .value(bar)
      }
      */
-    public class func value(_ value: T) -> Promise<T> {
+    package class func value(_ value: T) -> Promise<T> {
         return Promise(box: SealedBox(value: .success(value)))
     }
 
     /// Initialize a new rejected promise.
-    public init(error: Error) {
+    package init(error: Error) {
         box = SealedBox(value: .failure(error))
     }
 
     /// Initialize a new promise bound to the provided `Thenable`.
-    public init<U: Thenable>(_ bridge: U) where U.T == T {
+    package init<U: Thenable>(_ bridge: U) where U.T == T {
         box = EmptyBox()
         bridge.pipe(to: box.seal)
     }
 
     /// Initialize a new promise that can be resolved with the provided `Resolver`.
-    public init(resolver body: (Resolver<T>) throws -> Void) {
+    package init(resolver body: (Resolver<T>) throws -> Void) {
         box = EmptyBox()
         let resolver = Resolver(box)
         do {
@@ -65,7 +65,7 @@ public final class Promise<T>: Thenable, CatchMixin {
     }
 
     /// Initialize a new promise that can be resolved with the provided `Resolver`.
-    public init(cancellable: Cancellable, resolver body: (Resolver<T>) throws -> Void) {
+    package init(cancellable: Cancellable, resolver body: (Resolver<T>) throws -> Void) {
         box = EmptyBox()
         let resolver = Resolver(box)
         self.cancellable = cancellable
@@ -78,12 +78,12 @@ public final class Promise<T>: Thenable, CatchMixin {
     }
 
     /// - Returns: a tuple of a new pending promise and its `Resolver`.
-    public class func pending() -> (promise: Promise<T>, resolver: Resolver<T>) {
+    package class func pending() -> (promise: Promise<T>, resolver: Resolver<T>) {
         return { ($0, Resolver($0.box)) }(Promise<T>(.pending))
     }
 
     /// - See: `Thenable.pipe`
-    public func pipe(to: @escaping(Result<T, Error>) -> Void) {
+    package func pipe(to: @escaping(Result<T, Error>) -> Void) {
         switch box.inspect() {
         case .pending:
             box.inspect {
@@ -100,7 +100,7 @@ public final class Promise<T>: Thenable, CatchMixin {
     }
 
     /// - See: `Thenable.result`
-    public var result: Result<T, Error>? {
+    package var result: Result<T, Error>? {
         switch box.inspect() {
         case .pending:
             return nil
@@ -116,13 +116,13 @@ public final class Promise<T>: Thenable, CatchMixin {
     var cancellable: Cancellable?
     var rejectIfCancelled: ((Error) -> Void)?
 
-    public func setCancellable(_ cancellable: Cancellable?, reject: ((Error) -> Void)? = nil) {
+    package func setCancellable(_ cancellable: Cancellable?, reject: ((Error) -> Void)? = nil) {
         self.cancellable = cancellable
         rejectIfCancelled = reject
     }
 }
 
-public extension Promise {
+package extension Promise {
     /**
      Blocks this thread, so—you know—don’t call this on a serial thread that
      any part of your chain may use. Like the main thread for example.
@@ -148,17 +148,17 @@ public extension Promise {
 
 extension Promise where T == Void {
     /// Initializes a new promise fulfilled with `Void`
-    public convenience init() {
+    package convenience init() {
         self.init(box: SealedBox(value: .success(Void())))
     }
 
     /// Returns a new promise fulfilled with `Void`
-    public static var value: Promise<Void> {
+    package static var value: Promise<Void> {
         return .value(Void())
     }
 }
 
-public extension DispatchQueue {
+package extension DispatchQueue {
     /**
      Asynchronously executes the provided closure on a dispatch queue, yielding a `Promise`.
 
@@ -190,7 +190,7 @@ public extension DispatchQueue {
     }
 }
 
-public extension Dispatcher {
+package extension Dispatcher {
     /**
      Executes the provided closure on a `Dispatcher`, yielding a `Promise`
      that represents the value ultimately returned by the closure.
@@ -218,7 +218,7 @@ public extension Dispatcher {
 }
 
 /// used by our extensions to provide unambiguous functions with the same name as the original function
-public enum PMKNamespacer {
+package enum PMKNamespacer {
     case promise
 }
 

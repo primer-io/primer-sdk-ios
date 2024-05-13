@@ -3,7 +3,7 @@
 
 import Dispatch
 
-public extension Guarantee {
+package extension Guarantee {
 
     @discardableResult
     func then<U>(on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil, _ body: @escaping(T) -> Guarantee<U>) -> Guarantee<U> {
@@ -50,7 +50,7 @@ public extension Guarantee {
     }
 }
 
-public extension Guarantee where T: Sequence {
+package extension Guarantee where T: Sequence {
 
     func thenMap<U>(on: DispatchQueue? = .pmkDefault, flags: DispatchWorkItemFlags? = nil, _ transform: @escaping(T.Iterator.Element) -> Guarantee<U>) -> Guarantee<[U]> {
         let dispatcher = selectDispatcher(given: on, configured: conf.D.map, flags: flags)

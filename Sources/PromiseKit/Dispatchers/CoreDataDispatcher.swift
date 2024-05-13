@@ -3,7 +3,7 @@
 import Foundation
 import CoreData
 
-public extension NSManagedObjectContext {
+package extension NSManagedObjectContext {
     var dispatcher: CoreDataDispatcher {
         return CoreDataDispatcher(self)
     }
@@ -13,15 +13,15 @@ public extension NSManagedObjectContext {
 /// `NSManagedObjectContext`s, allowing Core Data operations to be
 /// handled using promises.
 
-public struct CoreDataDispatcher: Dispatcher {
+package struct CoreDataDispatcher: Dispatcher {
 
     let context: NSManagedObjectContext
 
-    public init(_ context: NSManagedObjectContext) {
+    package init(_ context: NSManagedObjectContext) {
         self.context = context
     }
 
-    public func dispatch(_ body: @escaping () -> Void) {
+    package func dispatch(_ body: @escaping () -> Void) {
         context.perform(body)
     }
 

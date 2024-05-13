@@ -9,31 +9,31 @@ import Dispatch
  - See: `CancellableThenable`
  */
 // swiftlint:disable identifier_name
-public class CancellablePromise<T>: CancellableThenable, CancellableCatchMixin {
+package class CancellablePromise<T>: CancellableThenable, CancellableCatchMixin {
     /// Delegate `promise` for this CancellablePromise
-    public let promise: Promise<T>
+    package let promise: Promise<T>
 
     /// Type of the delegate `thenable`
-    public typealias U = Promise<T>
+    package typealias U = Promise<T>
 
     /// Delegate `thenable` for this CancellablePromise
-    public var thenable: U {
+    package var thenable: U {
         return promise
     }
 
     /// Type of the delegate `catchable`
-    public typealias C = Promise<T>
+    package typealias C = Promise<T>
 
     /// Delegate `catchable` for this CancellablePromise
-    public var catchable: C {
+    package var catchable: C {
         return promise
     }
 
     /// The CancelContext associated with this CancellablePromise
-    public var cancelContext: CancelContext
+    package var cancelContext: CancelContext
 
     /// Tracks the cancel items for this CancellablePromise.  These items are removed from the associated CancelContext when the promise resolves.
-    public var cancelItemList: CancelItemList
+    package var cancelItemList: CancelItemList
 
     init(promise: Promise<T>, context: CancelContext? = nil, cancelItemList: CancelItemList? = nil) {
         self.promise = promise
@@ -42,7 +42,7 @@ public class CancellablePromise<T>: CancellableThenable, CancellableCatchMixin {
     }
 
     /// Initialize a new rejected cancellable promise.
-    public convenience init(cancellable: Cancellable? = nil, error: Error) {
+    package convenience init(cancellable: Cancellable? = nil, error: Error) {
         var reject: ((Error) -> Void)!
         self.init(promise: Promise { seal in
             reject = seal.reject
@@ -52,7 +52,7 @@ public class CancellablePromise<T>: CancellableThenable, CancellableCatchMixin {
     }
 
     /// Initialize a new cancellable promise bound to the provided `Thenable`.
-    public convenience init<U: Thenable>(_ bridge: U, cancelContext: CancelContext? = nil) where U.T == T {
+    package convenience init<U: Thenable>(_ bridge: U, cancelContext: CancelContext? = nil) where U.T == T {
         var promise: Promise<U.T>!
         let cancellable: Cancellable!
         var reject: ((Error) -> Void)!
@@ -86,7 +86,7 @@ public class CancellablePromise<T>: CancellableThenable, CancellableCatchMixin {
     }
 
     /// Initialize a new cancellable promise that can be resolved with the provided `Resolver`.
-    public convenience init(cancellable: Cancellable? = nil, resolver body: (Resolver<T>) throws -> Void) {
+    package convenience init(cancellable: Cancellable? = nil, resolver body: (Resolver<T>) throws -> Void) {
         var reject: ((Error) -> Void)!
         self.init(promise: Promise { seal in
             reject = seal.reject
@@ -96,26 +96,26 @@ public class CancellablePromise<T>: CancellableThenable, CancellableCatchMixin {
     }
 
     /// Initialize a new cancellable promise using the given Promise and its Resolver.
-    public convenience init(cancellable: Cancellable? = nil, promise: Promise<T>, resolver: Resolver<T>) {
+    package convenience init(cancellable: Cancellable? = nil, promise: Promise<T>, resolver: Resolver<T>) {
         self.init(promise: promise)
         self.appendCancellable(cancellable, reject: resolver.reject)
     }
 
     /// - Returns: a tuple of a new cancellable pending promise and its `Resolver`.
-    public class func pending() -> (promise: CancellablePromise<T>, resolver: Resolver<T>) {
+    package class func pending() -> (promise: CancellablePromise<T>, resolver: Resolver<T>) {
         let rp = Promise<T>.pending()
         return (promise: CancellablePromise(promise: rp.promise), resolver: rp.resolver)
     }
 
-    /// public function required for `Thenable` conformance.
+    /// package function required for `Thenable` conformance.
     /// - See: `Thenable.pipe`
-    public func pipe(to: @escaping (Result<T, Error>) -> Void) {
+    package func pipe(to: @escaping (Result<T, Error>) -> Void) {
         promise.pipe(to: to)
     }
 
     /// - Returns: The current `Result` for this cancellable promise.
     /// - See: `Thenable.result`
-    public var result: Result<T, Error>? {
+    package var result: Result<T, Error>? {
         return promise.result
     }
 
@@ -123,19 +123,19 @@ public class CancellablePromise<T>: CancellableThenable, CancellableCatchMixin {
      Blocks this thread, so—you know—don’t call this on a serial thread that
      any part of your chain may use. Like the main thread for example.
      */
-    public func wait() throws -> T {
+    package func wait() throws -> T {
         return try promise.wait()
     }
 }
 
 extension CancellablePromise where T == Void {
     /// Initializes a new cancellable promise fulfilled with `Void`
-    public convenience init() {
+    package convenience init() {
         self.init(promise: Promise())
     }
 
     /// Initializes a new cancellable promise fulfilled with `Void` and with the given ` Cancellable`
-    public convenience init(cancellable: Cancellable) {
+    package convenience init(cancellable: Cancellable) {
         self.init()
         self.appendCancellable(cancellable, reject: nil)
     }

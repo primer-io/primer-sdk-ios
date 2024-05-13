@@ -71,37 +71,37 @@ private func _when<U: Thenable>(_ thenables: [U]) -> Promise<Void> {
  - Note: `when` provides `NSProgress`.
  - SeeAlso: `when(resolved:)`
  */
-public func when<U: Thenable>(fulfilled thenables: [U]) -> Promise<[U.T]> {
+package func when<U: Thenable>(fulfilled thenables: [U]) -> Promise<[U.T]> {
     return _when(thenables).map(on: nil) { thenables.map { $0.value! } }
 }
 
 /// Wait for all promises in a set to fulfill.
-public func when<U: Thenable>(fulfilled promises: U...) -> Promise<Void> where U.T == Void {
+package func when<U: Thenable>(fulfilled promises: U...) -> Promise<Void> where U.T == Void {
     return _when(promises)
 }
 
 /// Wait for all promises in a set to fulfill.
-public func when<U: Thenable>(fulfilled promises: [U]) -> Promise<Void> where U.T == Void {
+package func when<U: Thenable>(fulfilled promises: [U]) -> Promise<Void> where U.T == Void {
     return _when(promises)
 }
 
 /// Wait for all promises in a set to fulfill.
-public func when<U: Thenable, V: Thenable>(fulfilled pu: U, _ pv: V) -> Promise<(U.T, V.T)> {
+package func when<U: Thenable, V: Thenable>(fulfilled pu: U, _ pv: V) -> Promise<(U.T, V.T)> {
     return _when([pu.asVoid(), pv.asVoid()]).map(on: nil) { (pu.value!, pv.value!) }
 }
 
 /// Wait for all promises in a set to fulfill.
-public func when<U: Thenable, V: Thenable, W: Thenable>(fulfilled pu: U, _ pv: V, _ pw: W) -> Promise<(U.T, V.T, W.T)> {
+package func when<U: Thenable, V: Thenable, W: Thenable>(fulfilled pu: U, _ pv: V, _ pw: W) -> Promise<(U.T, V.T, W.T)> {
     return _when([pu.asVoid(), pv.asVoid(), pw.asVoid()]).map(on: nil) { (pu.value!, pv.value!, pw.value!) }
 }
 
 /// Wait for all promises in a set to fulfill.
-public func when<U: Thenable, V: Thenable, W: Thenable, X: Thenable>(fulfilled pu: U, _ pv: V, _ pw: W, _ px: X) -> Promise<(U.T, V.T, W.T, X.T)> {
+package func when<U: Thenable, V: Thenable, W: Thenable, X: Thenable>(fulfilled pu: U, _ pv: V, _ pw: W, _ px: X) -> Promise<(U.T, V.T, W.T, X.T)> {
     return _when([pu.asVoid(), pv.asVoid(), pw.asVoid(), px.asVoid()]).map(on: nil) { (pu.value!, pv.value!, pw.value!, px.value!) }
 }
 
 /// Wait for all promises in a set to fulfill.
-public func when<U: Thenable, V: Thenable, W: Thenable, X: Thenable, Y: Thenable>(fulfilled pu: U, _ pv: V, _ pw: W, _ px: X, _ py: Y) -> Promise<(U.T, V.T, W.T, X.T, Y.T)> {
+package func when<U: Thenable, V: Thenable, W: Thenable, X: Thenable, Y: Thenable>(fulfilled pu: U, _ pv: V, _ pw: W, _ px: X, _ py: Y) -> Promise<(U.T, V.T, W.T, X.T, Y.T)> {
     return _when([pu.asVoid(), pv.asVoid(), pw.asVoid(), px.asVoid(), py.asVoid()]).map(on: nil) { (pu.value!, pv.value!, pw.value!, px.value!, py.value!) }
 }
 
@@ -137,7 +137,7 @@ public func when<U: Thenable, V: Thenable, W: Thenable, X: Thenable, Y: Thenable
  - SeeAlso: `when(resolved:)`
  */
 
-public func when<It: IteratorProtocol>(fulfilled promiseIterator: It, concurrently: Int) -> Promise<[It.Element.T]> where It.Element: Thenable {
+package func when<It: IteratorProtocol>(fulfilled promiseIterator: It, concurrently: Int) -> Promise<[It.Element.T]> where It.Element: Thenable {
 
     guard concurrently > 0 else {
         return Promise(error: PMKError.badInput)
@@ -221,12 +221,12 @@ public func when<It: IteratorProtocol>(fulfilled promiseIterator: It, concurrent
  - Note: we do not provide tuple variants for `when(resolved:)` but will accept a pull-request
  - Remark: Doesn't take Thenable due to protocol `associatedtype` paradox
  */
-public func when<T>(resolved promises: Promise<T>...) -> Guarantee<[Result<T, Error>]> {
+package func when<T>(resolved promises: Promise<T>...) -> Guarantee<[Result<T, Error>]> {
     return when(resolved: promises)
 }
 
 /// - See: `when(resolved: Promise<T>...)`
-public func when<T>(resolved promises: [Promise<T>]) -> Guarantee<[Result<T, Error>]> {
+package func when<T>(resolved promises: [Promise<T>]) -> Guarantee<[Result<T, Error>]> {
     guard !promises.isEmpty else {
         return .value([])
     }
@@ -281,7 +281,7 @@ public func when<T>(resolved promises: [Promise<T>]) -> Guarantee<[Result<T, Err
  - Returns: A new promise that resolves once all the provided promises resolve. The array is ordered the same as the input, ie. the result order is *not* resolution order.
  - SeeAlso: `when(resolved:)`
  */
-public func when<It: IteratorProtocol>(resolved promiseIterator: It, concurrently: Int)
+package func when<It: IteratorProtocol>(resolved promiseIterator: It, concurrently: Int)
 -> Guarantee<[Result<It.Element.T, Error>]> where It.Element: Thenable {
     guard concurrently > 0 else {
         return Guarantee.value([Result.failure(PMKError.badInput)])
@@ -354,12 +354,12 @@ public func when<It: IteratorProtocol>(resolved promiseIterator: It, concurrentl
 }
 
 /// Waits on all provided Guarantees.
-public func when(_ guarantees: Guarantee<Void>...) -> Guarantee<Void> {
+package func when(_ guarantees: Guarantee<Void>...) -> Guarantee<Void> {
     return when(guarantees: guarantees)
 }
 
 // Waits on all provided Guarantees.
-public func when(guarantees: [Guarantee<Void>]) -> Guarantee<Void> {
+package func when(guarantees: [Guarantee<Void>]) -> Guarantee<Void> {
     return when(fulfilled: guarantees).recover { _ in }.asVoid()
 }
 
@@ -394,7 +394,7 @@ public func when(guarantees: [Guarantee<Void>]) -> Guarantee<Void> {
  - Note: `when` provides `NSProgress`.
  - SeeAlso: `when(resolved:)`
  */
-public func when<V: CancellableThenable>(fulfilled thenables: V...) -> CancellablePromise<[V.U.T]> {
+package func when<V: CancellableThenable>(fulfilled thenables: V...) -> CancellablePromise<[V.U.T]> {
     let rp = CancellablePromise(when(fulfilled: asThenables(thenables)))
     for t in thenables {
         rp.appendCancelContext(from: t)
@@ -402,7 +402,7 @@ public func when<V: CancellableThenable>(fulfilled thenables: V...) -> Cancellab
     return rp
 }
 
-public func when<V: CancellableThenable>(fulfilled thenables: [V]) -> CancellablePromise<[V.U.T]> {
+package func when<V: CancellableThenable>(fulfilled thenables: [V]) -> CancellablePromise<[V.U.T]> {
     let rp = CancellablePromise(when(fulfilled: asThenables(thenables)))
     for t in thenables {
         rp.appendCancelContext(from: t)
@@ -411,7 +411,7 @@ public func when<V: CancellableThenable>(fulfilled thenables: [V]) -> Cancellabl
 }
 
 /// Wait for all cancellable promises in a set to fulfill.
-public func when<V: CancellableThenable>(fulfilled promises: V...) -> CancellablePromise<Void> where V.U.T == Void {
+package func when<V: CancellableThenable>(fulfilled promises: V...) -> CancellablePromise<Void> where V.U.T == Void {
     let rp = CancellablePromise(when(fulfilled: asThenables(promises)))
     for p in promises {
         rp.appendCancelContext(from: p)
@@ -420,7 +420,7 @@ public func when<V: CancellableThenable>(fulfilled promises: V...) -> Cancellabl
 }
 
 /// Wait for all cancellable promises in a set to fulfill.
-public func when<V: CancellableThenable>(fulfilled promises: [V]) -> CancellablePromise<Void> where V.U.T == Void {
+package func when<V: CancellableThenable>(fulfilled promises: [V]) -> CancellablePromise<Void> where V.U.T == Void {
     let rp = CancellablePromise(when(fulfilled: asThenables(promises)))
     for p in promises {
         rp.appendCancelContext(from: p)
@@ -451,19 +451,19 @@ public func when<V: CancellableThenable>(fulfilled promises: [V]) -> Cancellable
 
  - SeeAlso: `when(fulfilled:,_:)`
  */
-public func cancellableWhen<U: CancellableThenable, V: CancellableThenable>(fulfilled pu: U, _ pv: V) -> CancellablePromise<(U.U.T, V.U.T)> {
+package func cancellableWhen<U: CancellableThenable, V: CancellableThenable>(fulfilled pu: U, _ pv: V) -> CancellablePromise<(U.U.T, V.U.T)> {
     return when(fulfilled: [pu.asVoid(), pv.asVoid()]).map(on: nil) { (pu.value!, pv.value!) }
 }
 
 /// Wait for all cancellable promises in a set to fulfill.
 /// - SeeAlso: `when(fulfilled:,_:)`
-public func cancellableWhen<U: CancellableThenable, V: CancellableThenable, W: CancellableThenable>(fulfilled pu: U, _ pv: V, _ pw: W) -> CancellablePromise<(U.U.T, V.U.T, W.U.T)> {
+package func cancellableWhen<U: CancellableThenable, V: CancellableThenable, W: CancellableThenable>(fulfilled pu: U, _ pv: V, _ pw: W) -> CancellablePromise<(U.U.T, V.U.T, W.U.T)> {
     return when(fulfilled: [pu.asVoid(), pv.asVoid(), pw.asVoid()]).map(on: nil) { (pu.value!, pv.value!, pw.value!) }
 }
 
 /// Wait for all cancellable promises in a set to fulfill.
 /// - SeeAlso: `when(fulfilled:,_:)`
-public func cancellableWhen<U: CancellableThenable,
+package func cancellableWhen<U: CancellableThenable,
                               V: CancellableThenable,
                               W: CancellableThenable,
                               X: CancellableThenable>(fulfilled pu: U, _ pv: V, _ pw: W, _ px: X) -> CancellablePromise<(U.U.T, V.U.T, W.U.T, X.U.T)> {
@@ -472,7 +472,7 @@ public func cancellableWhen<U: CancellableThenable,
 
 /// Wait for all cancellable promises in a set to fulfill.
 /// - SeeAlso: `when(fulfilled:,_:)`
-public func cancellableWhen<U: CancellableThenable,
+package func cancellableWhen<U: CancellableThenable,
                               V: CancellableThenable,
                               W: CancellableThenable,
                               X: CancellableThenable,
@@ -518,7 +518,7 @@ public func cancellableWhen<U: CancellableThenable,
  - Returns: A new promise that resolves when all the provided promises fulfill or one of the provided promises rejects.
  - SeeAlso: `when(resolved:)`
  */
-public func when<It: IteratorProtocol>(fulfilled promiseIterator: It, concurrently: Int) -> CancellablePromise<[It.Element.U.T]> where It.Element: CancellableThenable {
+package func when<It: IteratorProtocol>(fulfilled promiseIterator: It, concurrently: Int) -> CancellablePromise<[It.Element.U.T]> where It.Element: CancellableThenable {
     guard concurrently > 0 else {
         return CancellablePromise(error: PMKError.badInput)
     }
@@ -569,13 +569,13 @@ public func when<It: IteratorProtocol>(fulfilled promiseIterator: It, concurrent
  - Note: Any promises that error are implicitly consumed.
  - Remark: Doesn't take CancellableThenable due to protocol associatedtype paradox
  */
-public func when<T>(resolved promises: CancellablePromise<T>...) -> CancellablePromise<[Result<T, Error>]> {
+package func when<T>(resolved promises: CancellablePromise<T>...) -> CancellablePromise<[Result<T, Error>]> {
     return when(resolved: promises)
 }
 
 /// Waits on all provided cancellable promises.
 /// - SeeAlso: `when(resolved:)`
-public func when<T>(resolved promises: [CancellablePromise<T>]) -> CancellablePromise<[Result<T, Error>]> {
+package func when<T>(resolved promises: [CancellablePromise<T>]) -> CancellablePromise<[Result<T, Error>]> {
     let rp = CancellablePromise(when(resolved: asPromises(promises)))
     for p in promises {
         rp.appendCancelContext(from: p)

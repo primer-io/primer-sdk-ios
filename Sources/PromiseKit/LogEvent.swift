@@ -15,7 +15,7 @@
  case misc (String)
  ````
  */
-public enum LogEvent {
+package enum LogEvent {
     /// A promise or guarantee has blocked the main thread
     case waitOnMainThread
 
@@ -36,7 +36,7 @@ public enum LogEvent {
 }
 
 extension LogEvent: CustomStringConvertible {
-    public var description: String {
+    package var description: String {
         switch self {
         case .waitOnMainThread:
             return "warning: `wait()` called on main thread!"

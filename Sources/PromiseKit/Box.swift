@@ -11,7 +11,7 @@ final class Handlers<R> {
 }
 
 /// - Remark: not protocol ∵ http://www.russbishop.net/swift-associated-types-cont
-public class Box<T> {
+package class Box<T> {
     func inspect() -> Sealant<T> { fatalError() }
     func inspect(_: (Sealant<T>) -> Void) { fatalError() }
     func seal(_: T) {}
@@ -29,7 +29,7 @@ final class SealedBox<T>: Box<T> {
     }
 }
 
-public class EmptyBox<T>: Box<T> {
+package class EmptyBox<T>: Box<T> {
     private var sealant = Sealant<T>.pending(.init())
     private let barrier = DispatchQueue(label: "org.promisekit.barrier", attributes: .concurrent)
 

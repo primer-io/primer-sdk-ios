@@ -12,7 +12,7 @@ import CoreFoundation
  - Throws: An error, should the promise be rejected
  - See: `wait()`
  */
-public func hang<T>(_ promise: Promise<T>) throws -> T {
+package func hang<T>(_ promise: Promise<T>) throws -> T {
     #if os(Linux) || os(Android)
     #if compiler(>=5)
     let runLoopMode: CFRunLoopMode = kCFRunLoopDefaultMode
@@ -61,6 +61,6 @@ public func hang<T>(_ promise: Promise<T>) throws -> T {
 
  Simply calls `hang` directly on the delegate promise, so the behavior is exactly the same with Promise and CancellablePromise.
  */
-public func hang<T>(_ promise: CancellablePromise<T>) throws -> T {
+package func hang<T>(_ promise: CancellablePromise<T>) throws -> T {
     return try hang(promise.promise)
 }

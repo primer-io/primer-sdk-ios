@@ -1,6 +1,6 @@
 import Foundation
 
-public class RateLimitedDispatcherBase: Dispatcher {
+package class RateLimitedDispatcherBase: Dispatcher {
 
     let maxDispatches: Int
     let interval: TimeInterval
@@ -14,13 +14,13 @@ public class RateLimitedDispatcherBase: Dispatcher {
     var cleanupNonce: Int64 = 0
     var cleanupWorkItem: DispatchWorkItem? { willSet { cleanupWorkItem?.cancel() }}
 
-    public init(maxDispatches: Int, perInterval interval: TimeInterval, queue: Dispatcher = DispatchQueue.global()) {
+    package init(maxDispatches: Int, perInterval interval: TimeInterval, queue: Dispatcher = DispatchQueue.global()) {
         self.maxDispatches = maxDispatches
         self.interval = interval
         self.queue = queue
     }
 
-    public func dispatch(_ body: @escaping () -> Void) {
+    package func dispatch(_ body: @escaping () -> Void) {
         serializer.async {
             self.undispatched.enqueue(body)
             self.dispatchFromQueue()

@@ -13,7 +13,7 @@ extension DispatchWorkItem: Cancellable { }
  - Note: cancelling this guarantee will cancel the underlying timer task
  - SeeAlso: [Cancellation](http://promisekit.org/docs/)
  */
-public func after(seconds: TimeInterval) -> Guarantee<Void> {
+package func after(seconds: TimeInterval) -> Guarantee<Void> {
     let (rgg, seal) = Guarantee<Void>.pending()
     let when = DispatchTime.now() + seconds
     let task = DispatchWorkItem { seal(()) }
@@ -31,7 +31,7 @@ public func after(seconds: TimeInterval) -> Guarantee<Void> {
  - Note: cancelling this guarantee will cancel the underlying timer task
  - SeeAlso: [Cancellation](http://promisekit.org/docs/)
  */
-public func after(_ interval: DispatchTimeInterval) -> Guarantee<Void> {
+package func after(_ interval: DispatchTimeInterval) -> Guarantee<Void> {
     let (rgg, seal) = Guarantee<Void>.pending()
     let when = DispatchTime.now() + interval
     let task = DispatchWorkItem { seal(()) }

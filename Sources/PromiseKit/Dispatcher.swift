@@ -10,7 +10,7 @@ import Dispatch
 ///
 /// All `DispatchQueue`s are also valid `Dispatcher`s.
 
-public protocol Dispatcher {
+package protocol Dispatcher {
     func dispatch(_ body: @escaping () -> Void)
 }
 
@@ -20,21 +20,21 @@ public protocol Dispatcher {
 /// `Dispatcher` will be submitted to the underlying `DispatchQueue`
 /// with the supplied components.
 
-public struct DispatchQueueDispatcher: Dispatcher {
+package struct DispatchQueueDispatcher: Dispatcher {
 
     let queue: DispatchQueue
     let group: DispatchGroup?
     let qos: DispatchQoS?
     let flags: DispatchWorkItemFlags?
 
-    public init(queue: DispatchQueue, group: DispatchGroup? = nil, qos: DispatchQoS? = nil, flags: DispatchWorkItemFlags? = nil) {
+    package init(queue: DispatchQueue, group: DispatchGroup? = nil, qos: DispatchQoS? = nil, flags: DispatchWorkItemFlags? = nil) {
         self.queue = queue
         self.group = group
         self.qos = qos
         self.flags = flags
     }
 
-    public func dispatch(_ body: @escaping () -> Void) {
+    package func dispatch(_ body: @escaping () -> Void) {
         queue.asyncD(group: group, qos: qos, flags: flags, execute: body)
     }
 }
@@ -50,14 +50,14 @@ public struct DispatchQueueDispatcher: Dispatcher {
 /// same as assigning an instance of `CurrentThreadDispatcher` to these
 /// variables.)
 
-public struct CurrentThreadDispatcher: Dispatcher {
-    public func dispatch(_ body: () -> Void) {
+package struct CurrentThreadDispatcher: Dispatcher {
+    package func dispatch(_ body: () -> Void) {
         body()
     }
 }
 
 extension DispatchQueue: Dispatcher {
-    public func dispatch(_ body: @escaping () -> Void) {
+    package func dispatch(_ body: @escaping () -> Void) {
         async(execute: body)
     }
 }
@@ -67,11 +67,11 @@ extension DispatchQueue: Dispatcher {
 // queue, explicit nil, and no value specified. Dispatchers from conf.D cannot directly
 // be used as default parameter values because they are not necessarily DispatchQueues.
 
-public extension DispatchQueue {
+package extension DispatchQueue {
     static var pmkDefault = DispatchQueue(label: "org.promisekit.sentinel")
 }
 
-public extension DispatchQueue {
+package extension DispatchQueue {
     /// Converts a `DispatchQueue` with given dispatching parameters into a `Dispatcher`
     func asDispatcher(group: DispatchGroup? = nil, qos: DispatchQoS? = nil, flags: DispatchWorkItemFlags? = nil) -> Dispatcher {
         if group == nil && qos == nil && flags == nil {
@@ -82,7 +82,7 @@ public extension DispatchQueue {
 }
 
 // Avoid having to hard-code any particular defaults for qos or flags
-public extension DispatchQueue {
+package extension DispatchQueue {
     final func asyncD(group: DispatchGroup? = nil, qos: DispatchQoS? = nil, flags: DispatchWorkItemFlags? = nil, execute body: @escaping () -> Void) {
         switch (qos, flags) {
         case (nil, nil):
@@ -102,7 +102,7 @@ public extension DispatchQueue {
 // flags but no DispatchQueue should still work (that is, the dispatcher should use those flags)
 // as long as the configured default is actually some kind of DispatchQueue.
 
-public func selectDispatcher(given: DispatchQueue?, configured: Dispatcher, flags: DispatchWorkItemFlags?) -> Dispatcher {
+package func selectDispatcher(given: DispatchQueue?, configured: Dispatcher, flags: DispatchWorkItemFlags?) -> Dispatcher {
     guard let given = given else {
         if flags != nil {
             conf.logHandler(.nilDispatchQueueWithFlags)

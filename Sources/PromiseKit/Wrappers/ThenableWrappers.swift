@@ -1,6 +1,6 @@
 import Dispatch
 
-public extension _PMKSharedWrappers {
+package extension _PMKSharedWrappers {
 
     /**
      The provided closure is executed when this promise is resolved.
@@ -71,7 +71,7 @@ public extension _PMKSharedWrappers {
     }
 }
 
-public extension Thenable {
+package extension Thenable {
 
     /**
      The provided closure executes when this promise resolves.
@@ -143,7 +143,7 @@ public extension Thenable {
     }
 }
 
-public extension CancellableThenable {
+package extension CancellableThenable {
 
     /**
      The provided closure executes when this cancellable promise resolves.

@@ -4,12 +4,12 @@ import Foundation
 /**
  Keeps track of all promises in a promise chain with pending or currently running tasks, and cancels them all when `cancel` is called.
  */
-public class CancelContext: Hashable {
-    public static func == (lhs: CancelContext, rhs: CancelContext) -> Bool {
+package class CancelContext: Hashable {
+    package static func == (lhs: CancelContext, rhs: CancelContext) -> Bool {
         return lhs === rhs
     }
 
-    public func hash(into hasher: inout Hasher) {
+    package func hash(into hasher: inout Hasher) {
         hasher.combine(ObjectIdentifier(self))
     }
 
@@ -26,7 +26,7 @@ public class CancelContext: Hashable {
 
      - Parameter error: Specifies the cancellation error to use for the cancel operation, defaults to `PMKError.cancelled`
      */
-    public func cancel(with error: Error = PMKError.cancelled) {
+    package func cancel(with error: Error = PMKError.cancelled) {
         self.cancel(with: error, visited: Set<CancelContext>())
     }
 
@@ -45,7 +45,7 @@ public class CancelContext: Hashable {
     /**
      True if all members of the promise chain have been successfully cancelled, false otherwise.
      */
-    public var isCancelled: Bool {
+    package var isCancelled: Bool {
         var items: [CancelItem]!
         barrier.sync {
             items = cancelItems
@@ -60,7 +60,7 @@ public class CancelContext: Hashable {
     /**
      True if `cancel` has been called on the CancelContext associated with this promise, false otherwise.  `cancelAttempted` will be true if `cancel` is called on any promise in the chain.
      */
-    public var cancelAttempted: Bool {
+    package var cancelAttempted: Bool {
         return cancelledError != nil
     }
 
@@ -69,7 +69,7 @@ public class CancelContext: Hashable {
     /**
      The cancellation error initialized when the promise is cancelled, or `nil` if not cancelled.
      */
-    public private(set) var cancelledError: Error? {
+    package private(set) var cancelledError: Error? {
         get {
             var err: Error!
             barrier.sync {
@@ -197,7 +197,7 @@ public class CancelContext: Hashable {
 }
 
 /// Tracks the cancel items for a CancellablePromise.  These items are removed from the associated CancelContext when the promise resolves.
-public class CancelItemList {
+package class CancelItemList {
     fileprivate var items: [CancelItem]
 
     init() {
@@ -218,7 +218,7 @@ private class CancelItem: Hashable {
         return lhs === rhs
     }
 
-    public func hash(into hasher: inout Hasher) {
+    package func hash(into hasher: inout Hasher) {
         hasher.combine(ObjectIdentifier(self))
     }
 

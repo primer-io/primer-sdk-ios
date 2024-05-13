@@ -1,6 +1,6 @@
 import Dispatch
 
-public extension _PMKSharedWrappers {
+package extension _PMKSharedWrappers {
 
     /**
      The provided closure executes when this promise resolves, whether it rejects or not.

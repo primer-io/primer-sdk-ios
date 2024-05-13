@@ -41,7 +41,7 @@ Pod::Spec.new do |s|
         ss.dependency "PrimerSDK/PrimerPromiseKit"
     end
 
-    s.subspec "PrimerPromiseKit" do |ss|
+    s.subspec "PrimerSDK_PromiseKit" do |ss|
         ss.ios.source_files = "Sources/PromiseKit/**/*.swift"
     end
 
