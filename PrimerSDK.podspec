@@ -38,7 +38,7 @@ Pod::Spec.new do |s|
                 "${PODS_XCFRAMEWORKS_BUILD_DIR}/PrimerKlarnaSDK"
             ]
         }
-        ss.dependency "PrimerSDK/PrimerPromiseKit"
+        ss.dependency "PrimerSDK/PrimerSDK_PromiseKit"
     end
 
     s.subspec "PrimerSDK_PromiseKit" do |ss|
