@@ -4,13 +4,14 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.ref }}-tests
   cancel-in-progress: true
 
 jobs:
-  sdk-unit-tests:
+  unit-tests:
     runs-on: macos-13-large
     timeout-minutes: 20
     name: "SDK - Unit Tests"
@@ -23,7 +24,7 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           ref: ${{ github.ref }}
-      - name: Run SDK tests
+      - name: Run unit tests
         uses: ./.github/actions/sdk-tests
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
@@ -38,7 +39,7 @@ jobs:
 
   sonarcloud:
     needs:
-      - sdk-unit-tests
+      - unit-tests
     runs-on: macos-13-large
     name: SonarCloud
     steps:

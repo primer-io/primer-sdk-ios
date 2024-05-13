@@ -40,6 +40,19 @@ final class SDKSessionHelper {
         PrimerAPIConfigurationModule.clientToken = nil
     }
 
+    static func test(withPaymentMethods paymentMethods: [PrimerPaymentMethod]? = nil,
+                     _ completion: () throws -> Void) throws {
+        setUp(withPaymentMethods: paymentMethods)
+        try completion()
+        tearDown()
+    }
+
+    static func test(withPaymentMethods paymentMethods: [PrimerPaymentMethod]? = nil,
+                     _ completion: @escaping (_ done: @escaping () -> Void) throws -> Void) throws {
+        setUp(withPaymentMethods: paymentMethods)
+        try completion(tearDown)
+    }
+
     static func updateAllowedCardNetworks(cardNetworks: [CardNetwork]) {
         PrimerAPIConfigurationModule.apiConfiguration?.clientSession = .init(
             clientSessionId: "",

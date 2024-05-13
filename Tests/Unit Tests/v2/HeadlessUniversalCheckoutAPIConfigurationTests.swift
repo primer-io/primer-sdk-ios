@@ -1,5 +1,5 @@
 //
-//  HeadlessUniversalCheckoutTests.swift
+//  HeadlessUniversalCheckoutAPIConfigurationTests.swift
 //  Debug App Tests
 //
 //  Created by Evangelos Pittas on 20/4/23.
@@ -9,7 +9,7 @@
 import XCTest
 @testable import PrimerSDK
 
-class HeadlessUniversalCheckoutTests: XCTestCase {
+class HeadlessUniversalCheckoutAPIConfigurationTests: XCTestCase {
 
     func test_start_headless() throws {
         let exp = expectation(description: "Start Headless Universal Checkout")
