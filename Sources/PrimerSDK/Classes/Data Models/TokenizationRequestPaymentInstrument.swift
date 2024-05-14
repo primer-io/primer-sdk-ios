@@ -57,7 +57,7 @@ struct KlarnaAuthorizationPaymentInstrument: TokenizationRequestBodyPaymentInstr
     var sessionData: Response.Body.Klarna.SessionData
 }
 
-struct StripeAchPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
+struct ACHPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
     var paymentMethodConfigId: String
     var paymentMethodType: String
     var authenticationProvider: String

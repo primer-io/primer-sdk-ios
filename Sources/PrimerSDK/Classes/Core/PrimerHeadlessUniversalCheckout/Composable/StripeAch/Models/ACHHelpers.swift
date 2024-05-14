@@ -16,6 +16,21 @@ struct ACHHelpers {
                                                platform: "IOS")
     }
     
+    static func getACHPaymentInstrument(paymentMethod: PrimerPaymentMethod) -> ACHPaymentInstrument? {
+        let sessionInfo = constructLocaleData()
+        
+        switch paymentMethod.type {
+        case "STRIPE_ACH":
+            return ACHPaymentInstrument(paymentMethodConfigId: paymentMethod.id ?? "",
+                                                               paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue,
+                                                               authenticationProvider: PrimerPaymentMethodType.stripeAch.provider,
+                                                               type: PaymentInstrumentType.stripeAch.rawValue,
+                                                               sessionInfo: sessionInfo)
+        default:
+            return nil
+        }
+    }
+    
     // MARK: - Error helpers
     static func getInvalidTokenError() -> PrimerError {
         let error = PrimerError.invalidClientToken(

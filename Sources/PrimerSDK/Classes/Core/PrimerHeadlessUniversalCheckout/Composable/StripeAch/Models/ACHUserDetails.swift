@@ -8,43 +8,19 @@
 import Foundation
 
 /**
- * Protocol type defined for describing a customer field associated with the error.
- *
- * Property:
- *  - `fieldValueDescription`: Returns a string identifier for the field associated with the error.
- */
-protocol ACHFieldValueDescribable {
-    var fieldValueDescription: String { get }
-}
-
-/**
- * Defines errors related to user detail fields during an ACH payment session.
- * This enum encapsulates the types of errors that can occur when validating user details such as first name, last name, and email address.
- *
- * Cases:
- *  - `invalidFirstName`: Indicates an error with the user's first name.
- *  - `invalidLastName`: Indicates an error with the user's last name.
- *  - `invalidEmailAddress`: Indicates an error with the user's email address.
- *
- * Extends `ACHFieldValueDescribable` protocol.
- */
-public enum ACHUserDetailsError: Error {
-    case invalidFirstName
-    case invalidLastName
-    case invalidEmailAddress
-}
-
-extension ACHUserDetailsError: ACHFieldValueDescribable {
-    public var fieldValueDescription: String {
-        switch self {
-        case .invalidFirstName:
-            return "firstname"
-        case .invalidLastName:
-            return "lastname"
-        case .invalidEmailAddress:
-            return "email"
-        }
-    }
+ * The protocol includes methods for updating user details with new data collected during the transaction process,
+  * as well as a factory method for creating a new instance of `ACHUserDetails` with all fields initialized to empty strings.
+  *
+  * Methods:
+  *  - `update(with:)`: Updates the `ACHUserDetails` instance with new data from a given `ACHCollectableData` instance.
+  *    This method should be used to reflect any changes in the user's information that came from the client session.
+  *
+  *  - `emptyUserDetails()`: Factory method that returns a new `ACHUserDetails` instance where all user detail fields are initialized to empty strings.
+  *    Use this method to create a default state for `ACHUserDetails` with no pre-filled information.
+  */
+protocol ACHUserDetailsHandling {
+    func update(with collectedData: ACHCollectableData)
+    static func emptyUserDetails() -> ACHUserDetails
 }
 
 /**
@@ -56,10 +32,8 @@ extension ACHUserDetailsError: ACHFieldValueDescribable {
  *  - `lastName`: A `String` representing the user's last name.
  *  - `emailAddress`: A `String` representing the user's email address.
  *
- * Initialization and Update:
+ * Initialization:
  *  - `init(firstName:lastName:emailAddress:)`: Initializes a new user details instance with specified first name, last name, and email address.
- *  - `update(with:)`: Updates the user details with new data collected during a transaction process.
- *  - `emptyUserDetails()`: Factory method to create an instance of `ACHUserDetails` with all fields set to empty strings.
  */
 public class ACHUserDetails: Codable {
     public var firstName: String
@@ -72,7 +46,9 @@ public class ACHUserDetails: Codable {
         self.lastName = lastName
         self.emailAddress = emailAddress
     }
-    
+}
+
+extension ACHUserDetails: ACHUserDetailsHandling {
     public func update(with collectedData: ACHCollectableData) {
         switch collectedData {
         case .firstName(let value):
@@ -90,7 +66,7 @@ public class ACHUserDetails: Codable {
 }
 
 /**
- * Extension to make `ACHUserDetails` conform to `Equatable`, allowing for comparison between instances.
+ * Extension that conforms `ACHUserDetails` to the `Equatable` protocol, enabling comparison of instances.
  * Methods:
  *  - `==`: Determines if two instances of `ACHUserDetails` are exactly equal by comparing their properties.
  *  - `isEqual(lhs:rhs:)`: Checks for equality between two instances and identifies fields that are not equal.
@@ -101,13 +77,8 @@ extension ACHUserDetails: Equatable {
         lhs.lastName == rhs.lastName &&
         lhs.emailAddress == rhs.emailAddress
     }
-    
-    /**
-     * Evaluates the equality of two `ACHUserDetails` instances and identifies which fields, if any, are not equal.
-     * This method not only checks if two instances are equal but also collects details about which fields differ.
-     * - Returns: A tuple containing a boolean indicating overall equality and an array of `ACHUserDetailsError`
-     *            representing each field that is not equal.
-     */
+
+    /// Compares two instances for equality and details any differing fields.
     public static func isEqual(lhs: ACHUserDetails,
                                rhs: ACHUserDetails) -> (areEqual: Bool, differingFields: [ACHUserDetailsError]) {
         var unequalFields: [ACHUserDetailsError] = []

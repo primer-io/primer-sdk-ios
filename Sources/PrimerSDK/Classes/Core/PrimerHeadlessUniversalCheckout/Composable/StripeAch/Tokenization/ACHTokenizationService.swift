@@ -1,5 +1,5 @@
 //
-//  StripeAchTokenizationManager.swift
+//  ACHTokenizationManager.swift
 //  PrimerSDK
 //
 //  Created by Stefan Vrancianu on 25.04.2024.
@@ -8,23 +8,23 @@
 import Foundation
 
 /**
- * Protocol for tokenization process regarding a Stripe ACH payment.
+ * Protocol for tokenization process regarding an ACH payment.
  *
  * - Returns: A `Promise<PrimerPaymentMethodTokenData>` which resolves to a `PrimerPaymentMethodTokenData`
  * object on successful tokenization or rejects with an `Error` if the tokenization process fails.
  */
-protocol StripeAchTokenizationDelegate {
+protocol ACHTokenizationDelegate {
     func tokenize() -> Promise<PrimerPaymentMethodTokenData>
 }
 
 /**
  * Validation method to ensure data integrity before proceeding with tokenization.
  */
-protocol StripeAchValidationDelegate {
+protocol ACHValidationDelegate {
     func validate() throws
 }
 
-class StripeAchTokenizationService: StripeAchTokenizationDelegate, StripeAchValidationDelegate {
+class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelegate {
     
     // MARK: - Properties
     private let tokenizationService: TokenizationServiceProtocol
@@ -99,22 +99,24 @@ class StripeAchTokenizationService: StripeAchTokenizationDelegate, StripeAchVali
 }
 
 /**
- * Constructs a tokenization request body for a Stripe ACH tokenize method.
+ * Constructs a tokenization request body for an ACH tokenize method.
  *
  * This private function generates the necessary payload for tokenization by assembling data related to
  * the payment method and additional session information.
  *
  * - Returns: A promise that resolves with a `Request.Body.Tokenization` containing the payment instrument data.
  */
-extension StripeAchTokenizationService {
+extension ACHTokenizationService {
     private func getRequestBody(paymentMethodConfigId: String) -> Promise<Request.Body.Tokenization> {
         return Promise { seal in
-            let sessionInfo = ACHHelpers.constructLocaleData()
-            let paymentInstrument = StripeAchPaymentInstrument(paymentMethodConfigId: paymentMethodConfigId,
-                                                               paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue,
-                                                               authenticationProvider: PrimerPaymentMethodType.stripeAch.provider,
-                                                               type: PaymentInstrumentType.stripeAch.rawValue,
-                                                               sessionInfo: sessionInfo)
+            guard let paymentInstrument = ACHHelpers.getACHPaymentInstrument(paymentMethod: paymentMethod) else {
+                let error = ACHHelpers.getInvalidValueError(
+                    key: "configuration.type",
+                    value: paymentMethod.type
+                )
+                seal.reject(error)
+                return
+            }
             
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             seal.fulfill(requestBody)

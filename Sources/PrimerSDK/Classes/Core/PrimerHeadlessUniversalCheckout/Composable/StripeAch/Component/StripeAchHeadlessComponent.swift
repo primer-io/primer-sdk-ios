@@ -14,9 +14,9 @@ public protocol StripeAchMandateDelegate {
 
 class StripeAchHeadlessComponent {
     // MARK: - Tokenization
-    var tokenizationService: StripeAchTokenizationService
+    var tokenizationService: ACHTokenizationService
     var tokenizationViewModel: StripeTokenizationViewModel
-    var clientSessionService: StripeAchClientSessionService
+    var clientSessionService: ACHClientSessionService
     
     /// Global settings for the payment process, injected as a dependency.
     let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -30,12 +30,12 @@ class StripeAchHeadlessComponent {
     public internal(set) var nextDataStep: ACHStep = .notInitialized
     
     // MARK: - Init
-    init(tokenizationService: StripeAchTokenizationService,
+    init(tokenizationService: ACHTokenizationService,
          tokenizationViewModel: StripeTokenizationViewModel
     ) {
         self.tokenizationService = tokenizationService
         self.tokenizationViewModel = tokenizationViewModel
-        self.clientSessionService = StripeAchClientSessionService()
+        self.clientSessionService = ACHClientSessionService()
     }
     
     /// Delegation

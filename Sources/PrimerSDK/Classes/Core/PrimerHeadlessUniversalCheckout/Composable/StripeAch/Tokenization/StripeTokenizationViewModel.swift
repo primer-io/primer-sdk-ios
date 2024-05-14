@@ -16,13 +16,13 @@ class StripeTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     // MARK: Variables
     private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-    private var tokenizationService: StripeAchTokenizationService
+    private var tokenizationService: ACHTokenizationService
     private var stripeMandateCompletion: ((_ success: Bool, _ error: Error?) -> Void)?
     private var stripeBankAccountCollectorCompletion: ((_ success: Bool, _ error: Error?) -> Void)?
     
     // MARK: Init
     required init(config: PrimerPaymentMethod) {
-        tokenizationService = StripeAchTokenizationService(paymentMethod: config)
+        tokenizationService = ACHTokenizationService(paymentMethod: config)
         super.init(config: config)
     }
     

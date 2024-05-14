@@ -7,7 +7,13 @@
 
 import Foundation
 
-enum ACHAnalyticsEvents {
+protocol ACHAnalyticsEventsRecordable {
+    var startMethod: String { get }
+    var submitMethod: String { get }
+    var updateCollectedData: String { get }
+}
+
+enum ACHAnalyticsEvents: ACHAnalyticsEventsRecordable {
     case stripe
     
     var startMethod: String {

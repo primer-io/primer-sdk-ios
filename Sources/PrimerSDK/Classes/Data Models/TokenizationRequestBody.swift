@@ -41,7 +41,7 @@ extension Request.Body {
                 try container.encode(paymentInstrument, forKey: .paymentInstrument)
             } else if let paymentInstrument = self.paymentInstrument as? CardOffSessionPaymentInstrument {
                 try container.encode(paymentInstrument, forKey: .paymentInstrument)
-            } else if let paymentInstrument = self.paymentInstrument as? StripeAchPaymentInstrument {
+            } else if let paymentInstrument = self.paymentInstrument as? ACHPaymentInstrument {
                 try container.encode(paymentInstrument, forKey: .paymentInstrument)
             } else {
                 let err = InternalError.invalidValue(key: "PaymentInstrument",
