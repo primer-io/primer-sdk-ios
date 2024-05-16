@@ -218,7 +218,7 @@ class StripeTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     /**
-     * Waits for a response from the StripeAchMandateDelegate delegate method.
+     * Waits for a response from the ACHMandateDelegate method.
      * The response is returned in stripeMandateCompletion handler.
      */
     private func awaitShowMandateResponse() -> Promise<Void> {
@@ -284,8 +284,8 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
     }
 }
 
-// MARK: - StripeAchMandateDelegate methods
-extension StripeTokenizationViewModel: StripeAchMandateDelegate {
+// MARK: - ACHMandateDelegate methods
+extension StripeTokenizationViewModel: ACHMandateDelegate {
     func mandateAccepted() {
         stripeMandateCompletion?(true, nil)
     }

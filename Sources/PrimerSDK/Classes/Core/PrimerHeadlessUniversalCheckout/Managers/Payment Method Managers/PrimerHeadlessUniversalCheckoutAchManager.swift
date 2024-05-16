@@ -9,7 +9,7 @@ import UIKit
 
 extension PrimerHeadlessUniversalCheckout {
     public class AchManager: NSObject {
-        public var mandateDelegate: StripeAchMandateDelegate?
+        public var mandateDelegate: ACHMandateDelegate?
         
         public func provide<MainComponent>(paymentMethodType: String) throws -> MainComponent?
         where PrimerCollectableData: Any, PrimerHeadlessStep: Any {

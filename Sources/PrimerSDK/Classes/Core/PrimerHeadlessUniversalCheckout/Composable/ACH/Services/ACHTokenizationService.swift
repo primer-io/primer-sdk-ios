@@ -43,7 +43,7 @@ class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelegate {
         return Promise { seal in
             // Ensure the payment method has a valid ID
             guard let paymentMethodConfigId = paymentMethod.id else {
-                seal.reject(KlarnaHelpers.getInvalidValueError(key: "configuration.id", value: paymentMethod.id))
+                seal.reject(ACHHelpers.getInvalidValueError(key: "configuration.id", value: paymentMethod.id))
                 return
             }
             

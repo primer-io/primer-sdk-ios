@@ -7,15 +7,10 @@
 
 import UIKit
 
-public protocol StripeAchMandateDelegate {
-    func mandateAccepted()
-    func mandateDeclined()
-}
-
 class StripeAchHeadlessComponent {
     // MARK: - Tokenization
-    var tokenizationService: ACHTokenizationService
     var tokenizationViewModel: StripeTokenizationViewModel
+    var tokenizationService: ACHTokenizationService
     var clientSessionService: ACHClientSessionService
     
     /// Global settings for the payment process, injected as a dependency.
@@ -33,8 +28,8 @@ class StripeAchHeadlessComponent {
     init(tokenizationService: ACHTokenizationService,
          tokenizationViewModel: StripeTokenizationViewModel
     ) {
-        self.tokenizationService = tokenizationService
         self.tokenizationViewModel = tokenizationViewModel
+        self.tokenizationService = tokenizationService
         self.clientSessionService = ACHClientSessionService()
     }
     
