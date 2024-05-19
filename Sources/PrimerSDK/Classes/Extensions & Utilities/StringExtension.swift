@@ -145,7 +145,6 @@ internal extension String {
         return sum % 10 == 0
     }
 
-    // TODO: Move to utility
     var decodedJWTToken: DecodedJWTToken? {
         let components = self.split(separator: ".")
         if components.count < 2 { return nil }
