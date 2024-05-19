@@ -51,10 +51,16 @@ final class VoucherValueTests: XCTestCase {
 
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientTokenWithVoucher
         let withAmountString = VoucherValue.sharableVoucherValuesText
+
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        let dateString = formatter.string(from: PrimerAPIConfigurationModule.decodedJWTToken!.expiresAt!)
+
         XCTAssertEqual(withAmountString, """
 Entity: entity_value
 Reference: reference_value
-Expires at: 1 Jan 2050 at \(Locale.current.is12HourTimeFormat ? "12:00 AM" : "00:00")
+Expires at: \(dateString)
 """)
     }
 
@@ -67,15 +73,4 @@ Expires at: 1 Jan 2050 at \(Locale.current.is12HourTimeFormat ? "12:00 AM" : "00
         return appState
     }
 
-}
-
-fileprivate extension Locale {
-    var is12HourTimeFormat: Bool {
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeStyle = .short
-        dateFormatter.dateStyle = .none
-        dateFormatter.locale = self
-        let dateString = dateFormatter.string(from: Date())
-        return dateString.contains(dateFormatter.amSymbol) || dateString.contains(dateFormatter.pmSymbol)
-    }
 }
