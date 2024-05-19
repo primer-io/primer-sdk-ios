@@ -53,7 +53,7 @@ platform :ios do
     )
 
     run_tests(workspace: app_workspace,
-              scheme: "Debug App Tests",
+              scheme: "PrimerSDKTests",
               destination: "platform=iOS Simulator,name=iPhone 14 Pro",
               xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
               skip_package_dependencies_resolution: true)
