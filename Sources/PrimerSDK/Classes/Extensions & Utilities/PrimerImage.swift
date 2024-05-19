@@ -9,29 +9,29 @@ import UIKit
 
 internal enum PrimerImage {
 
-    case amexCardIcon, 
+    case amexCardIcon,
          appleIcon,
          backIcon,
          bankcontactCardIcon,
          bankIcon,
          backIconRTL,
          cameraIcon,
-         checkmarkIcon, 
+         checkmarkIcon,
          creditCardIcon,
          deleteIcon,
          discoverCardIcon,
          errorIcon,
-         forwardArrowIcon, 
+         forwardArrowIcon,
          genericCardIcon,
          jcbCardIcon,
          klarnaLogo,
          lockIcon,
-         masterCardIcon, 
+         masterCardIcon,
          mobileIcon,
          payPalLogoCopy,
          payPalLogo,
          rightArrowIcon,
-         successIcon, 
+         successIcon,
          visaIcon
 
     var image: UIImage? {

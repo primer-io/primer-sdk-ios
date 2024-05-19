@@ -14,6 +14,7 @@ extension PrimerTheme {
     }
 }
 
+// swiftlint:disable type_body_length
 class PrimerPaymentMethod: Codable, LogReporter {
 
     static func getPaymentMethod(withType type: String) -> PrimerPaymentMethod? {
@@ -322,3 +323,4 @@ extension PrimerPaymentMethod {
         }
     }
 }
+// swiftlint:enable type_body_length
