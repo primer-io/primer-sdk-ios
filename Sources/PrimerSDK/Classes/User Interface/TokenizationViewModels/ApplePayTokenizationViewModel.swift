@@ -541,8 +541,8 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                         publicKeyHash: "apple-pay-mock-public-key-hash",
                         transactionId: "apple-pay-mock--transaction-id"))
             } else {
-                tokenPaymentData = try JSONParser().parse(ApplePayPaymentResponseTokenPaymentData.self,
-                                                          from: payment.token.paymentData)
+                tokenPaymentData = try JSONDecoder().decode(ApplePayPaymentResponseTokenPaymentData.self,
+                                                            from: payment.token.paymentData)
             }
 
             let billingAddress = clientSessionBillingAddressFromApplePayBillingContact(payment.billingContact)
