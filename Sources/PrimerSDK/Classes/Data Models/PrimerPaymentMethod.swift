@@ -5,9 +5,6 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
-// swiftlint:disable file_length
-// swiftlint:disable type_body_length
-
 import Foundation
 import UIKit
 
@@ -325,5 +322,3 @@ extension PrimerPaymentMethod {
         }
     }
 }
-// swiftlint:enable type_body_length
-// swiftlint:enable file_length
