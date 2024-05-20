@@ -15,7 +15,8 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(name: "PrimerNolPaySDK", path: "../primer-nol-pay-sdk-ios")
+        .package(name: "PrimerNolPaySDK", path: "../primer-nol-pay-sdk-ios"),
+        .package(url: "https://github.com/primer-io/primer-klarna-sdk-ios", from: "1.1.0")
     ],
     targets: [
         .target(
@@ -30,7 +31,8 @@ let package = Package(
             name: "PrimerSDKTests",
             dependencies: [
                 .byName(name: "PrimerSDK"),
-                .byName(name: "PrimerNolPaySDK")
+                .byName(name: "PrimerNolPaySDK"),
+                .product(name: "PrimerKlarnaSDK", package: "primer-klarna-sdk-ios")
             ],
             path: "Tests/Unit Tests"
         )

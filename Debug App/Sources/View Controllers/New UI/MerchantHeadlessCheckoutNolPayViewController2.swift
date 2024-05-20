@@ -10,7 +10,7 @@ import UIKit
 import PrimerSDK
 import IQKeyboardManagerSwift
 
-class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
+class MerchantHeadlessCheckoutNolPayViewController2: UIViewController {
 
     private var nolPayManager: PrimerHeadlessUniversalCheckout.PrimerHeadlessNolPayManager!
     private var linkCardComponent: NolPayLinkCardComponent!
@@ -324,7 +324,7 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
 }
 
 // MARK: - UITableViewDataSource, UITableViewDelegate
-extension MerchantHeadlessCheckoutNolPayViewController: UITableViewDataSource, UITableViewDelegate {
+extension MerchantHeadlessCheckoutNolPayViewController2: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return linkedCards.count
     }
@@ -352,7 +352,7 @@ extension MerchantHeadlessCheckoutNolPayViewController: UITableViewDataSource, U
 }
 
 // MARK: - PrimerHeadlessErrorableDelegate, PrimerHeadlessValidatableDelegate, PrimerHeadlessStepableDelegate
-extension MerchantHeadlessCheckoutNolPayViewController: PrimerHeadlessErrorableDelegate,
+extension MerchantHeadlessCheckoutNolPayViewController2: PrimerHeadlessErrorableDelegate,
                                                         PrimerHeadlessValidatableDelegate,
                                                         PrimerHeadlessSteppableDelegate {
 
