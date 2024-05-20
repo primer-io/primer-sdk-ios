@@ -79,7 +79,7 @@ extension ACHUserDetails: Equatable {
     }
 
     /// Compares two instances for equality and details any differing fields.
-    public static func isEqual(lhs: ACHUserDetails,
+    public static func compare(lhs: ACHUserDetails,
                                rhs: ACHUserDetails) -> (areEqual: Bool, differingFields: [ACHUserDetailsError]) {
         var unequalFields: [ACHUserDetailsError] = []
         var areEqual = true

@@ -35,7 +35,7 @@ extension StripeAchHeadlessComponent {
      * discrepancy, it updates the client session; otherwise, it continues with the tokenization process.
      */
     func patchClientSessionIfNeeded() {
-        let shouldPatchUserDetails = ACHUserDetails.isEqual(lhs: inputUserDetails, rhs: clientSessionUserDetails)
+        let shouldPatchUserDetails = ACHUserDetails.compare(lhs: inputUserDetails, rhs: clientSessionUserDetails)
         var clientSessionActions: [ClientSession.Action] = []
 
         if shouldPatchUserDetails.areEqual {
