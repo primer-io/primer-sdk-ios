@@ -23,7 +23,9 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         let paymentMethod = Mocks.PaymentMethods.nolPaymentMethod
         SDKSessionHelper.setUp(withPaymentMethods: [paymentMethod])
 
-        let component = NolPayLinkedCardsComponent()
+        let mockApiClient = MockPrimerAPIClient()
+        mockApiClient.mockSuccessfulResponses()
+        let component = NolPayLinkedCardsComponent(apiClient: mockApiClient)
 
         let mockNolPay = MockPrimerNolPay(appId: "123", isDebug: true, isSandbox: true, appSecretHandler: { _, _ in
             return "appSecret"
@@ -33,9 +35,6 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         mockPhoneMetadataService.resultToReturn = .success((.valid, "+123", "1234567890"))
         component.phoneMetadataService = mockPhoneMetadataService
         component.nolPay = mockNolPay
-        let mockApiClient = MockPrimerAPIClient()
-        mockApiClient.mockSuccessfulResponses()
-        component.apiClient = mockApiClient
 
         let expectation = self.expectation(description: "Wait for getLinkedCards to return")
 
@@ -58,7 +57,9 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         let paymentMethod = Mocks.PaymentMethods.nolPaymentMethod
         SDKSessionHelper.setUp(withPaymentMethods: [paymentMethod])
 
-        let component = NolPayLinkedCardsComponent()
+        let mockApiClient = MockPrimerAPIClient()
+        mockApiClient.testFetchNolSdkSecretResult = (nil, PrimerError.nolError(code: "", message: "", userInfo: nil, diagnosticsId: ""))
+        let component = NolPayLinkedCardsComponent(apiClient: mockApiClient)
 
         let mockNolPay = MockPrimerNolPay(appId: "123", isDebug: true, isSandbox: true, appSecretHandler: { _, _ in
             return "appSecret"
@@ -69,9 +70,6 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         mockPhoneMetadataService.resultToReturn = .success((.valid, "+123", "1234567890"))
         component.phoneMetadataService = mockPhoneMetadataService
         component.nolPay = mockNolPay
-        let mockApiClient = MockPrimerAPIClient()
-        mockApiClient.testFetchNolSdkSecretResult = (nil, PrimerError.nolError(code: "", message: "", userInfo: nil, diagnosticsId: ""))
-        component.apiClient = mockApiClient
 
         let expectation = self.expectation(description: "Get Linked Cards For SDK Not Available")
 

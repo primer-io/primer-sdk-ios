@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0442C4072B7CE1E900EAD8EE /* TapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0442C4062B7CE1E900EAD8EE /* TapGestureRecognizer.swift */; };
+		0498E1CF2BFB509F00EEF9EE /* PrimerNolPaySDK in Frameworks */ = {isa = PBXBuildFile; productRef = 0498E1CE2BFB509F00EEF9EE /* PrimerNolPaySDK */; };
 		049A055C2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055B2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
 		8723ADDD2B8E0F5100A5FE23 /* MerchantHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADDC2B8E0F5100A5FE23 /* MerchantHelpers.swift */; };
 		8723ADE42B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADDF2B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift */; };
@@ -156,6 +157,7 @@
 				F01193FF2B28FD1700D0ABD9 /* Primer3DS in Frameworks */,
 				F04510E32ACD98E100A0A48C /* PrimerSDK in Frameworks */,
 				F04510E62ACD990A00A0A48C /* PrimerKlarnaSDK in Frameworks */,
+				0498E1CF2BFB509F00EEF9EE /* PrimerNolPaySDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -375,6 +377,7 @@
 				F04510E22ACD98E100A0A48C /* PrimerSDK */,
 				F04510E52ACD990A00A0A48C /* PrimerKlarnaSDK */,
 				F01193FE2B28FD1700D0ABD9 /* Primer3DS */,
+				0498E1CE2BFB509F00EEF9EE /* PrimerNolPaySDK */,
 			);
 			productName = "Debug App";
 			productReference = F00C661E2ACC67FA00187028 /* Debug App SPM.app */;
@@ -415,6 +418,7 @@
 			packageReferences = (
 				F04510E42ACD990A00A0A48C /* XCRemoteSwiftPackageReference "primer-klarna-sdk-ios" */,
 				F01193FD2B28FD1700D0ABD9 /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */,
+				0498E1CD2BFB509F00EEF9EE /* XCRemoteSwiftPackageReference "primer-nol-pay-sdk-ios" */,
 			);
 			productRefGroup = DF30711EB149C64C364BB79A /* Products */;
 			projectDirPath = "";
@@ -739,6 +743,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		0498E1CD2BFB509F00EEF9EE /* XCRemoteSwiftPackageReference "primer-nol-pay-sdk-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/primer-io/primer-nol-pay-sdk-ios";
+			requirement = {
+				branch = "jn/package-swift";
+				kind = branch;
+			};
+		};
 		F01193FD2B28FD1700D0ABD9 /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/primer-io/primer-sdk-3ds-ios";
@@ -758,6 +770,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0498E1CE2BFB509F00EEF9EE /* PrimerNolPaySDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0498E1CD2BFB509F00EEF9EE /* XCRemoteSwiftPackageReference "primer-nol-pay-sdk-ios" */;
+			productName = PrimerNolPaySDK;
+		};
 		F01193FE2B28FD1700D0ABD9 /* Primer3DS */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F01193FD2B28FD1700D0ABD9 /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */;

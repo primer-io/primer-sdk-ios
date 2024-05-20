@@ -14,6 +14,9 @@ let package = Package(
             targets: ["PrimerSDK"]
         )
     ],
+    dependencies: [
+        .package(name: "PrimerNolPaySDK", path: "../primer-nol-pay-sdk-ios")
+    ],
     targets: [
         .target(
             name: "PrimerSDK",
@@ -26,7 +29,8 @@ let package = Package(
         .testTarget(
             name: "PrimerSDKTests",
             dependencies: [
-                .byName(name: "PrimerSDK")
+                .byName(name: "PrimerSDK"),
+                .byName(name: "PrimerNolPaySDK")
             ],
             path: "Tests/Unit Tests"
         )
