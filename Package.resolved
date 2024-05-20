@@ -2,12 +2,12 @@
   "object": {
     "pins": [
       {
-        "package": "PrimerKlarnaSDK",
-        "repositoryURL": "https://github.com/primer-io/primer-klarna-sdk-ios",
+        "package": "PrimerNolPaySDK",
+        "repositoryURL": "https://github.com/primer-io/primer-nol-pay-sdk-ios",
         "state": {
           "branch": null,
-          "revision": "e16b2caff5f34a12ba5de00e31b07a6f1b7fd710",
-          "version": "1.1.1"
+          "revision": "2ddb759f2aa710ff4287723d2ca762f019eae7b7",
+          "version": "1.0.2"
         }
       }
     ]
