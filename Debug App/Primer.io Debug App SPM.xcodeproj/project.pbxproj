@@ -759,8 +759,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/primer-io/primer-nol-pay-sdk-ios";
 			requirement = {
-				branch = "jn/package-swift";
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.2;
 			};
 		};
 		F01193FD2B28FD1700D0ABD9 /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */ = {
