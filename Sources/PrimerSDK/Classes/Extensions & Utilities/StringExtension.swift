@@ -145,7 +145,6 @@ internal extension String {
         return sum % 10 == 0
     }
 
-    // TODO: Move to utility
     var decodedJWTToken: DecodedJWTToken? {
         let components = self.split(separator: ".")
         if components.count < 2 { return nil }
@@ -153,7 +152,7 @@ internal extension String {
         guard !segment.isEmpty, let data = Data(base64Encoded: segment,
                                                 options: .ignoreUnknownCharacters)
         else { return nil }
-        return try? JSONParser().parse(DecodedJWTToken.self, from: data)
+        return try? JSONDecoder().decode(DecodedJWTToken.self, from: data)
     }
 
     private var base64IOSFormat: Self {

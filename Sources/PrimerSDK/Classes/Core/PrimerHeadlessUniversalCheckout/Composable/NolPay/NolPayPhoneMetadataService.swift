@@ -44,7 +44,7 @@ struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
             let urlSessionConfiguration = URLSessionConfiguration.default
             urlSessionConfiguration.requestCachePolicy = .returnCacheDataElseLoad
             let urlSession = URLSession(configuration: urlSessionConfiguration)
-            let networkService = URLSessionStack(session: urlSession)
+            let networkService = DefaultNetworkService(withUrlSession: urlSession)
             let client = PrimerAPIClient(networkService: networkService)
 
             let requestBody = Request.Body.PhoneMetadata.PhoneMetadataDataRequest(phoneNumber: mobileNumber)

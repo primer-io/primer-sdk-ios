@@ -5,9 +5,6 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
-// swiftlint:disable file_length
-// swiftlint:disable type_body_length
-
 import Foundation
 import UIKit
 
@@ -17,6 +14,7 @@ extension PrimerTheme {
     }
 }
 
+// swiftlint:disable type_body_length
 class PrimerPaymentMethod: Codable, LogReporter {
 
     static func getPaymentMethod(withType type: String) -> PrimerPaymentMethod? {
@@ -39,28 +37,12 @@ class PrimerPaymentMethod: Codable, LogReporter {
 
     var logo: UIImage? {
         guard let baseLogoImage = baseLogoImage else { return nil }
-
-        if UIScreen.isDarkModeEnabled {
-            if let darkImage = baseLogoImage.dark {
-                return darkImage
-            } else if let coloredImage = baseLogoImage.colored {
-                return coloredImage
-            } else if let lightImage = baseLogoImage.light {
-                return lightImage
-            } else {
-                return nil
-            }
-        } else {
-            if let coloredImage = baseLogoImage.colored {
-                return coloredImage
-            } else if let lightImage = baseLogoImage.light {
-                return lightImage
-            } else if let darkImage = baseLogoImage.dark {
-                return darkImage
-            } else {
-                return nil
-            }
-        }
+        let isDarkModeEnabled = UIScreen.isDarkModeEnabled
+        return (
+            (isDarkModeEnabled ? baseLogoImage.dark : baseLogoImage.colored) ??
+            (isDarkModeEnabled ? baseLogoImage.colored : baseLogoImage.light) ??
+            (isDarkModeEnabled ? baseLogoImage.light : baseLogoImage.dark)
+        )
     }
 
     var invertedLogo: UIImage? {
@@ -142,6 +124,7 @@ class PrimerPaymentMethod: Codable, LogReporter {
 
         return nil
     }()
+
     lazy var tokenizationModel: PaymentMethodTokenizationModelProtocol? = {
         switch internalPaymentMethodType {
         case .adyenIDeal:
@@ -151,7 +134,7 @@ class PrimerPaymentMethod: Codable, LogReporter {
     }()
 
     var isCheckoutEnabled: Bool {
-        if self.baseLogoImage == nil {
+        guard self.baseLogoImage != nil else {
             return false
         }
 
@@ -169,7 +152,7 @@ class PrimerPaymentMethod: Codable, LogReporter {
     }
 
     var isVaultingEnabled: Bool {
-        if self.baseLogoImage == nil {
+        guard self.baseLogoImage != nil else {
             return false
         }
 
@@ -320,11 +303,7 @@ class PrimerPaymentMethod: Codable, LogReporter {
         try container.encode(surcharge, forKey: .surcharge)
         try container.encode(displayMetadata, forKey: .displayMetadata)
 
-        if let options = options as? CardOptions {
-            try container.encode(options, forKey: .options)
-        } else if let options = options as? PayPalOptions {
-            try container.encode(options, forKey: .options)
-        } else if let options = options as? MerchantOptions {
+        if let options = options {
             try container.encode(options, forKey: .options)
         }
     }
@@ -344,233 +323,4 @@ extension PrimerPaymentMethod {
         }
     }
 }
-
-extension PrimerPaymentMethod {
-
-    class DisplayMetadata: Codable {
-
-        var button: PrimerPaymentMethod.DisplayMetadata.Button
-
-        init(button: PrimerPaymentMethod.DisplayMetadata.Button) {
-            self.button = button
-        }
-
-        // swiftlint:disable:next nesting
-        class Button: Codable {
-
-            var iconUrl: PrimerTheme.BaseColoredURLs?
-            var backgroundColor: PrimerTheme.BaseColors?
-            var cornerRadius: Int?
-            var borderWidth: PrimerTheme.BaseBorderWidth?
-            var borderColor: PrimerTheme.BaseColors?
-            var text: String?
-            var textColor: PrimerTheme.BaseColors?
-
-            // swiftlint:disable:next nesting
-            private enum CodingKeys: String, CodingKey {
-                case iconUrl,
-                     backgroundColor,
-                     cornerRadius,
-                     borderWidth,
-                     borderColor,
-                     text,
-                     textColor
-            }
-
-            init(
-                iconUrl: PrimerTheme.BaseColoredURLs?,
-                backgroundColor: PrimerTheme.BaseColors?,
-                cornerRadius: Int?,
-                borderWidth: PrimerTheme.BaseBorderWidth?,
-                borderColor: PrimerTheme.BaseColors?,
-                text: String?,
-                textColor: PrimerTheme.BaseColors?
-            ) {
-                self.iconUrl = iconUrl
-                self.backgroundColor = backgroundColor
-                self.cornerRadius = cornerRadius
-                self.borderWidth = borderWidth
-                self.borderColor = borderColor
-                self.text = text
-                self.textColor = textColor
-            }
-
-            required init(from decoder: Decoder) throws {
-                let container = try decoder.container(keyedBy: CodingKeys.self)
-
-                iconUrl = (try? container.decode(PrimerTheme.BaseColoredURLs?.self, forKey: .iconUrl)) ?? nil
-                backgroundColor = (try? container.decode(PrimerTheme.BaseColors?.self, forKey: .backgroundColor)) ?? nil
-                cornerRadius = (try? container.decode(Int?.self, forKey: .cornerRadius)) ?? nil
-                borderWidth = (try? container.decode(PrimerTheme.BaseBorderWidth?.self, forKey: .borderWidth)) ?? nil
-                borderColor = (try? container.decode(PrimerTheme.BaseColors?.self, forKey: .borderColor)) ?? nil
-                text = (try? container.decode(String?.self, forKey: .text)) ?? nil
-                textColor = (try? container.decode(PrimerTheme.BaseColors?.self, forKey: .textColor)) ?? nil
-
-                if iconUrl == nil,
-                   backgroundColor == nil,
-                   cornerRadius == nil,
-                   borderWidth == nil,
-                   borderColor == nil,
-                   text == nil,
-                   textColor == nil {
-                    let err = InternalError.failedToDecode(message: "BaseColors", userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    throw err
-                }
-            }
-        }
-    }
-}
-
-extension PrimerTheme {
-
-    class BaseImage {
-
-        var colored: UIImage?
-        var light: UIImage?
-        var dark: UIImage?
-
-        init?(colored: UIImage?, light: UIImage?, dark: UIImage?) {
-            self.colored = colored
-            self.light = light
-            self.dark = dark
-
-            if self.colored == nil, self.light == nil, self.dark == nil {
-                return nil
-            }
-        }
-    }
-
-    public class BaseColoredURLs: Codable {
-
-        var coloredUrlStr: String?
-        var darkUrlStr: String?
-        var lightUrlStr: String?
-
-        // swiftlint:disable:next nesting
-        private enum CodingKeys: String, CodingKey {
-            case coloredUrlStr = "colored"
-            case darkUrlStr = "dark"
-            case lightUrlStr = "light"
-        }
-
-        init?(
-            coloredUrlStr: String?,
-            lightUrlStr: String?,
-            darkUrlStr: String?
-        ) {
-            self.coloredUrlStr = coloredUrlStr
-            self.lightUrlStr = lightUrlStr
-            self.darkUrlStr = darkUrlStr
-        }
-
-        public required init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-
-            coloredUrlStr = (try? container.decode(String?.self, forKey: .coloredUrlStr)) ?? nil
-            lightUrlStr = (try? container.decode(String?.self, forKey: .lightUrlStr)) ?? nil
-            darkUrlStr = (try? container.decode(String?.self, forKey: .darkUrlStr)) ?? nil
-
-            if coloredUrlStr == nil && lightUrlStr == nil && darkUrlStr == nil {
-                let err = InternalError.failedToDecode(message: "BaseColoredURLs", userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
-        }
-
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try? container.encode(coloredUrlStr, forKey: .coloredUrlStr)
-            try? container.encode(lightUrlStr, forKey: .lightUrlStr)
-            try? container.encode(darkUrlStr, forKey: .darkUrlStr)
-        }
-    }
-
-    public class BaseColors: Codable {
-
-        var coloredHex: String?
-        var darkHex: String?
-        var lightHex: String?
-
-        // swiftlint:disable:next nesting
-        private enum CodingKeys: String, CodingKey {
-            case coloredHex = "colored"
-            case darkHex = "dark"
-            case lightHex = "light"
-        }
-
-        init?(
-            coloredHex: String?,
-            lightHex: String?,
-            darkHex: String?
-        ) {
-            self.coloredHex = coloredHex
-            self.lightHex = lightHex
-            self.darkHex = darkHex
-        }
-
-        public required init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-
-            coloredHex = (try? container.decode(String?.self, forKey: .coloredHex)) ?? nil
-            darkHex = (try? container.decode(String?.self, forKey: .darkHex)) ?? nil
-            lightHex = (try? container.decode(String?.self, forKey: .lightHex)) ?? nil
-
-            if coloredHex == nil && lightHex == nil && darkHex == nil {
-                let err = InternalError.failedToDecode(message: "BaseColors", userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
-        }
-
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try? container.encode(coloredHex, forKey: .coloredHex)
-            try? container.encode(darkHex, forKey: .darkHex)
-            try? container.encode(lightHex, forKey: .lightHex)
-        }
-    }
-
-    public class BaseBorderWidth: Codable {
-
-        var colored: CGFloat?
-        var dark: CGFloat?
-        var light: CGFloat?
-
-        // swiftlint:disable:next nesting
-        private enum CodingKeys: String, CodingKey {
-            case colored
-            case dark
-            case light
-        }
-
-        init?(
-            colored: CGFloat? = 0,
-            light: CGFloat? = 0,
-            dark: CGFloat? = 0
-        ) {
-            self.colored = colored
-            self.light = light
-            self.dark = dark
-        }
-
-        public required init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            colored = (try? container.decode(CGFloat?.self, forKey: .colored)) ?? nil
-            light = (try? container.decode(CGFloat?.self, forKey: .light)) ?? nil
-            dark = (try? container.decode(CGFloat?.self, forKey: .dark)) ?? nil
-        }
-
-        public func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try? container.encode(colored, forKey: .colored)
-            try? container.encode(light, forKey: .light)
-            try? container.encode(dark, forKey: .dark)
-        }
-    }
-}
 // swiftlint:enable type_body_length
-// swiftlint:enable file_length
