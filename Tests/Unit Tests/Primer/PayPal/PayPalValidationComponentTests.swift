@@ -1,6 +1,5 @@
 //
 //  PayPalValidationComponentTests.swift
-//  
 //
 //  Created by Jack Newcombe on 20/05/2024.
 //
