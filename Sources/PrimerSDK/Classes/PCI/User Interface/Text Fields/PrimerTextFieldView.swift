@@ -38,7 +38,7 @@ public extension PrimerTextFieldViewDelegate {
                              validationDidFailWithError error: Error) {}
     func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {}
     func primerTextFieldViewShouldBeginEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool { return true }
-    func primerTextFieldViewShouldEndEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool { return true}
+    func primerTextFieldViewShouldEndEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool { return true }
     func primerTextFieldViewDidEndEditing(_ primerTextFieldView: PrimerTextFieldView) {}
 }
 
@@ -171,11 +171,9 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     override func loadNib() -> UIView {
         let bundle = Bundle.primerResources
         let nib = UINib(nibName: PrimerTextFieldView.className, bundle: bundle)
-        guard let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
-        else {
-            fatalError()
-        }
-        return view
+        // swiftlint:disable force_cast
+        return nib.instantiate(withOwner: self, options: nil).first as! UIView
+        // swiftlint:enable force_cast
     }
 
     override func xibSetup() {
@@ -237,35 +235,5 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         return true
     }
 
-}
-
-internal class PaddedImageView: PrimerImageView {
-
-    internal private(set) var insets: UIEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-
-    override var alignmentRectInsets: UIEdgeInsets {
-        return insets
-    }
-
-    convenience init(insets: UIEdgeInsets) {
-        self.init(image: nil)
-    }
-
-    convenience init(image: UIImage?, insets: UIEdgeInsets) {
-        self.init(image: image)
-        self.insets = insets
-    }
-
-    override init(image: UIImage?) {
-        super.init(image: image)
-    }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
 }
 // swiftlint:enable function_body_length
