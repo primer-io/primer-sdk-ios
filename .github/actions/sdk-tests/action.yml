@@ -63,6 +63,13 @@ runs:
         MATCH_KEYCHAIN_NAME: ${{ inputs.match-keychain-name }}
         MATCH_KEYCHAIN_PASSWORD: ${{ inputs.match-password }}
         SOURCE_BRANCH: ${{ inputs.source-branch }}
+    - name: Archive log
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: fastlane-logs
+        path: /Users/runner/Library/Logs/scan/PrimerSDKTests.log
+        retention-days: 1
     - name: Prepare coverage reports
       shell: bash
       run: |
