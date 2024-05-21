@@ -98,7 +98,7 @@ final class PrimerTextFieldViewTests: XCTestCase {
     }
 
     func testDelegateCallbacks() {
-        let delegate = TextFieldViewDelegate()
+        let delegate = MockTextFieldViewDelegate()
         view.delegate = delegate
 
         let didBeginEditingExpectation = self.expectation(description: "Did call ...DidBeginEditing")
@@ -121,7 +121,7 @@ final class PrimerTextFieldViewTests: XCTestCase {
     }
 
     func testFailureValidation() {
-        let delegate = TextFieldViewDelegate()
+        let delegate = MockTextFieldViewDelegate()
         view.delegate = delegate
         view.isValid = { _ in
             return self.view.text == "success"
@@ -139,7 +139,7 @@ final class PrimerTextFieldViewTests: XCTestCase {
     }
 
     func testSuccessValidation() {
-        let delegate = TextFieldViewDelegate()
+        let delegate = MockTextFieldViewDelegate()
         view.delegate = delegate
         view.isValid = { _ in
             return self.view.text == "success"
@@ -163,38 +163,5 @@ final class PrimerTextFieldViewTests: XCTestCase {
                                    shouldChangeCharactersIn: NSRange(), 
                                    replacementString: "")
         XCTAssertTrue(value)
-    }
-}
-
-fileprivate class TextFieldViewDelegate: PrimerTextFieldViewDelegate {
-
-    var onDidBeginEditing: (() -> Void)?
-
-    func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {
-        onDidBeginEditing?()
-    }
-
-    var onDidEndEditing: (() -> Void)?
-
-    func primerTextFieldViewDidEndEditing(_ primerTextFieldView: PrimerTextFieldView) {
-        onDidEndEditing?()
-    }
-
-    var onShouldBeginEditing: (() -> Bool)?
-
-    func primerTextFieldViewShouldBeginEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool {
-        onShouldBeginEditing?() ?? false
-    }
-
-    var onShouldEndEditing: (() -> Bool)?
-
-    func primerTextFieldViewShouldEndEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool {
-        onShouldEndEditing?() ?? false
-    }
-
-    var onIsValid: ((Bool?) -> Void)?
-
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        onIsValid?(isValid)
     }
 }
