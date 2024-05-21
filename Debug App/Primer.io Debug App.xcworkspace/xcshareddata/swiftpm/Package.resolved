@@ -11,6 +11,15 @@
         }
       },
       {
+        "package": "PrimerNolPaySDK",
+        "repositoryURL": "https://github.com/primer-io/primer-nol-pay-sdk-ios",
+        "state": {
+          "branch": null,
+          "revision": "2ddb759f2aa710ff4287723d2ca762f019eae7b7",
+          "version": "1.0.2"
+        }
+      },
+      {
         "package": "Primer3DS",
         "repositoryURL": "https://github.com/primer-io/primer-sdk-3ds-ios",
         "state": {

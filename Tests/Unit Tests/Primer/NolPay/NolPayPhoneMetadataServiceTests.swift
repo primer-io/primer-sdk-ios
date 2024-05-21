@@ -27,7 +27,12 @@ final class NolPayPhoneMetadataServiceTests: XCTestCase {
             switch result {
 
             case let .success((validationStatus, countryCode, mobileNumber)):
-                XCTAssert(validationStatus == .valid)
+                switch validationStatus {
+                case .valid:
+                    break
+                default:
+                    XCTFail()
+                }
                 XCTAssert(countryCode == "+123")
                 XCTAssert(mobileNumber == "1234567890")
                 expectation.fulfill()
@@ -50,7 +55,12 @@ final class NolPayPhoneMetadataServiceTests: XCTestCase {
         mockService.getPhoneMetadata(mobileNumber: "invalid") { result in
             switch result {
             case let .success((validationStatus, _, _)):
-                XCTAssertEqual(validationStatus, .invalid(errors: [validationError]))
+                switch validationStatus {
+                case .invalid(let errors):
+                    XCTAssertEqual(errors.map { $0.errorId }, [validationError].map { $0.errorId })
+                default:
+                    XCTFail()
+                }
                 expectation.fulfill()
             case .failure:
                 XCTFail("Expected success but got failure")
