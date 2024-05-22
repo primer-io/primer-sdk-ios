@@ -339,11 +339,10 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 sourceConfig: ApplePayPaymentInstrument.SourceConfig(source: "IN_APP", merchantId: merchantIdentifier),
                 token: self.applePayPaymentResponse.token)
 
-            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
 
             firstly {
-                tokenizationService.tokenize(requestBody: requestBody)
+                self.tokenizationService.tokenize(requestBody: requestBody)
             }
             .done { paymentMethodTokenData in
                 seal.fulfill(paymentMethodTokenData)

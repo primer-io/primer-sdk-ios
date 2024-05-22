@@ -17,6 +17,8 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
 
     let uiManager: PrimerUIManaging
 
+    let tokenizationService: TokenizationServiceProtocol
+
     var uiModule: UserInterfaceModule!
     var position: Int = 0
     var checkoutEventsNotifierModule: CheckoutEventsNotifierModule
@@ -38,12 +40,17 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
 
 
     convenience init(config: PrimerPaymentMethod) {
-        self.init(config: config, uiManager: PrimerUIManager.shared)
+        self.init(config: config,
+                  uiManager: PrimerUIManager.shared,
+                  tokenizationService: TokenizationService())
     }
 
-    required init(config: PrimerPaymentMethod, uiManager: PrimerUIManaging) {
+    required init(config: PrimerPaymentMethod,
+                  uiManager: PrimerUIManaging,
+                  tokenizationService: TokenizationServiceProtocol) {
         self.config = config
         self.uiManager = uiManager
+        self.tokenizationService = tokenizationService
         self.checkoutEventsNotifierModule = CheckoutEventsNotifierModule()
     }
 

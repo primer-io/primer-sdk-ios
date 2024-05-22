@@ -18,20 +18,18 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     var didDismissExternalView: (() -> Void)?
 
     private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-    private var tokenizationComponent: KlarnaTokenizationComponentProtocol
+    private let tokenizationComponent: KlarnaTokenizationComponentProtocol
     private var klarnaPaymentSession: Response.Body.Klarna.PaymentSession?
     private var klarnaCustomerTokenAPIResponse: Response.Body.Klarna.CustomerToken?
     private var klarnaPaymentSessionCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var authorizationToken: String?
 
 
-    convenience init(config: PrimerPaymentMethod) {
-        self.init(config: config, uiManager: PrimerUIManager.shared)
-    }
-
-    required init(config: PrimerPaymentMethod, uiManager: PrimerUIManaging) {
+    required init(config: PrimerPaymentMethod,
+                  uiManager: PrimerUIManaging,
+                  tokenizationService: TokenizationServiceProtocol) {
         tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: config)
-        super.init(config: config, uiManager: uiManager)
+        super.init(config: config, uiManager: uiManager, tokenizationService: tokenizationService)
     }
 
     override func validate() throws {

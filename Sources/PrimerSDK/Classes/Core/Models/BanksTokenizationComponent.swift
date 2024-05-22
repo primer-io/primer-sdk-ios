@@ -51,15 +51,22 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
     let uiManager: PrimerUIManaging
 
+    let tokenizationService: TokenizationServiceProtocol
+
     var apiClient: PrimerAPIClientBanksProtocol! = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
 
     convenience init(config: PrimerPaymentMethod) {
-        self.init(config: config, uiManager: PrimerUIManager.shared)
+        self.init(config: config,
+                  uiManager: PrimerUIManager.shared,
+                  tokenizationService: TokenizationService())
     }
 
-    init(config: PrimerPaymentMethod, uiManager: PrimerUIManaging) {
+    init(config: PrimerPaymentMethod, 
+         uiManager: PrimerUIManaging,
+         tokenizationService: TokenizationServiceProtocol) {
         self.config = config
         self.uiManager = uiManager
+        self.tokenizationService = tokenizationService
         self.paymentMethodType = config.internalPaymentMethodType!
     }
 
@@ -689,7 +696,6 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             return
         }
 
-        let tokenizationService: TokenizationServiceProtocol = TokenizationService()
         let requestBody = Request.Body.Tokenization(
             paymentInstrument: OffSessionPaymentInstrument(
                 paymentMethodConfigId: self.config.id!,

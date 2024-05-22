@@ -14,7 +14,7 @@ protocol TokenizationSetupAndCleaning {
 }
 
 protocol BankSelectorTokenizationProviding: TokenizationSetupAndCleaning {
-    var paymentMethodType: PrimerPaymentMethodType { get set }
+    var paymentMethodType: PrimerPaymentMethodType { get }
     func validateReturningPromise() -> Promise<Void>
     func retrieveListOfBanks() -> Promise<[AdyenBank]>
     func filterBanks(query: String) -> [AdyenBank]

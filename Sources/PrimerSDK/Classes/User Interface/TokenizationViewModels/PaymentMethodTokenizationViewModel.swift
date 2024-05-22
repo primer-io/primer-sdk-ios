@@ -28,10 +28,6 @@ internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
 
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol, LogReporter {
 
-    let config: PrimerPaymentMethod
-
-    let uiManager: PrimerUIManaging
-
     static var apiClient: PrimerAPIClientProtocol?
 
     // Events
@@ -51,25 +47,36 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     var position: Int = 0
     var uiModule: UserInterfaceModule!
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
+    let config: PrimerPaymentMethod
+
+    let uiManager: PrimerUIManaging
+
+    let tokenizationService: TokenizationServiceProtocol
 
     convenience init(config: PrimerPaymentMethod) {
-        self.init(config: config, uiManager: PrimerUIManager.shared)
+        self.init(config: config,
+                  uiManager: PrimerUIManager.shared,
+                  tokenizationService: TokenizationService()
+        )
     }
 
     required init(config: PrimerPaymentMethod,
-                  uiManager: PrimerUIManaging) {
+                  uiManager: PrimerUIManaging,
+                  tokenizationService: TokenizationServiceProtocol) {
         self.config = config
         self.uiManager = uiManager
+        self.tokenizationService = tokenizationService
         super.init()
         self.uiModule = UserInterfaceModule(paymentMethodTokenizationViewModel: self)
     }
 
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
     @objc
     func receivedNotification(_ notification: Notification) {
-        // Use it to handle notifications that apply on tokenization view models.
+        // Override to handle notifications that are relevant tokenization view models.
     }
 
     @objc

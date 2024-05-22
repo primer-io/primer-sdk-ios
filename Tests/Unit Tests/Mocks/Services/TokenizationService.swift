@@ -1,57 +1,34 @@
-////
-////  TokenizationService.swift
-////  PrimerSDKTests
-////
-////  Created by Carl Eriksson on 16/01/2021.
-////
 //
-// #if canImport(UIKit)
+//  TokenizationService.swift
+//  PrimerSDKTests
 //
-// @testable import PrimerSDK
+//  Created by Jack Newcombe on 22/05/2024.
 //
-// class MockTokenizationService: TokenizationServiceProtocol {
-//
-//    var paymentMethodTokenData: PrimerPaymentMethodTokenData?
-//
-//    var paymentInstrumentType: String
-//    var tokenType: String
-//    var tokenizeCalled = false
-//    lazy var paymentMethodTokenJSON: [String: Any] = [
-//        "token": "payment_method_token",
-//        "analyticsId": "analytics_id",
-//        "tokenType":  tokenType,
-//        "paymentInstrumentType": paymentInstrumentType
-//    ]
-//
-//    required init(apiClient: PrimerAPIClientProtocol) {
-//
-//    }
-//
-//    init(paymentInstrumentType: String, tokenType: String) {
-//        self.paymentInstrumentType = paymentInstrumentType
-//        self.tokenType = tokenType
-//    }
-//
-//    func tokenize(requestBody: Request.Body.Tokenization, onTokenizeSuccess: @escaping (Result<PrimerPaymentMethodTokenData, Error>) -> Void) {
-//        tokenizeCalled = true
-//
-//        let paymentMethodTokenData = try! JSONSerialization.data(withJSONObject: paymentMethodTokenJSON, options: .fragmentsAllowed)
-//        let token = try! JSONDecoder().decode(PrimerPaymentMethodTokenData.self, from: paymentMethodTokenData) //PaymentMethodToken(token: "tokenID", paymentInstrumentType: .paymentCard, vaultData: VaultData())
-//        return onTokenizeSuccess(.success(token))
-//    }
-//
-//    func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData> {
-//        return Promise { seal in
-//            self.tokenize(requestBody: requestBody) { result in
-//                switch result {
-//                case .failure(let err):
-//                    seal.reject(err)
-//                case .success(let res):
-//                    seal.fulfill(res)
-//                }
-//            }
-//        }
-//    }
-// }
-//
-// #endif
+
+import Foundation
+@testable import PrimerSDK
+
+class MockTokenizationService: TokenizationServiceProtocol {
+
+    static var apiClient: (any PrimerSDK.PrimerAPIClientProtocol)?
+    
+    var paymentMethodTokenData: PrimerSDK.PrimerPaymentMethodTokenData?
+    
+    // MARK: tokenize
+
+    var onTokenize: ((Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData>)?
+
+    func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData> {
+        return onTokenize?(requestBody) ??
+            Promise.rejected(PrimerError.generic(message: "", userInfo: nil, diagnosticsId: ""))
+    }
+
+    // MARK: exchangePaymentMethodToken
+
+    var onExchangePaymentMethodToken: ((String, PrimerVaultedPaymentMethodAdditionalData?) -> Promise<PrimerPaymentMethodTokenData>)?
+
+    func exchangePaymentMethodToken(_ paymentMethodTokenId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?) -> Promise<PrimerPaymentMethodTokenData> {
+        return onExchangePaymentMethodToken?(paymentMethodTokenId, vaultedPaymentMethodAdditionalData) ??
+            Promise.rejected(PrimerError.generic(message: "", userInfo: nil, diagnosticsId: ""))
+    }
+}

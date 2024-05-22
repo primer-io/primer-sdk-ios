@@ -290,12 +290,10 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: - Init
 
-    convenience init(config: PrimerPaymentMethod) {
-        self.init(config: config, uiManager: PrimerUIManager.shared)
-    }
-
-    required init(config: PrimerPaymentMethod, uiManager: PrimerUIManaging) {
-        super.init(config: config, uiManager: uiManager)
+    required init(config: PrimerPaymentMethod,
+                  uiManager: PrimerUIManaging,
+                  tokenizationService: TokenizationServiceProtocol) {
+        super.init(config: config, uiManager: uiManager, tokenizationService: tokenizationService)
 
         self.cardComponentsManager = InternalCardComponentsManager(
             cardnumberField: cardNumberField,
