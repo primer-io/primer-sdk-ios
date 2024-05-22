@@ -60,7 +60,7 @@ internal class PrimerInternal: LogReporter {
         #endif
 
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        if let urlScheme = settings.paymentMethodOptions.urlScheme, url.absoluteString.contains(urlScheme) {
+        if let urlScheme = try? settings.paymentMethodOptions.validUrlForUrlScheme(), url.absoluteString.hasPrefix(urlScheme.absoluteString) {
             if url.absoluteString.contains("/cancel") {
                 NotificationCenter.default.post(name: Notification.Name.receivedUrlSchemeCancellation, object: nil)
             } else {

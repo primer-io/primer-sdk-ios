@@ -85,27 +85,20 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
 
-        guard var urlScheme = PrimerSettings.current.paymentMethodOptions.urlScheme else {
-            let err = PrimerError.invalidValue(
-                key: "urlScheme",
-                value: nil,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
+        var scheme: String
+        do {
+            scheme = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
+        } catch let error {
+            completion(.failure(error))
             return
-        }
-
-        if urlScheme.suffix(3) == "://" {
-            urlScheme = urlScheme.replacingOccurrences(of: "://", with: "")
         }
 
         let body = Request.Body.PayPal.CreateOrder(
             paymentMethodConfigId: configId,
             amount: amount,
             currencyCode: currency.code,
-            returnUrl: "\(urlScheme)://paypal-success",
-            cancelUrl: "\(urlScheme)://paypal-cancel"
+            returnUrl: "\(scheme)://paypal-success",
+            cancelUrl: "\(scheme)://paypal-cancel"
         )
 
         let apiClient: PrimerAPIClientProtocol = PayPalService.apiClient ?? PrimerAPIClient()
@@ -145,25 +138,18 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
 
-        guard var urlScheme = PrimerSettings.current.paymentMethodOptions.urlScheme else {
-            let err = PrimerError.invalidValue(
-                key: "urlScheme",
-                value: nil,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(.failure(err))
+        var scheme: String
+        do {
+            scheme = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
+        } catch let error {
+            completion(.failure(error))
             return
-        }
-
-        if urlScheme.suffix(3) == "://" {
-            urlScheme = urlScheme.replacingOccurrences(of: "://", with: "")
         }
 
         let body = Request.Body.PayPal.CreateBillingAgreement(
             paymentMethodConfigId: configId,
-            returnUrl: "\(urlScheme)://paypal-success",
-            cancelUrl: "\(urlScheme)://paypal-cancel"
+            returnUrl: "\(scheme)://paypal-success",
+            cancelUrl: "\(scheme)://paypal-cancel"
         )
 
         let apiClient: PrimerAPIClientProtocol = PayPalService.apiClient ?? PrimerAPIClient()

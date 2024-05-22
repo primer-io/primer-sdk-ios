@@ -9,13 +9,17 @@ import Foundation
 
 // MARK: OFF-SESSION PAYMENT INFO
 
+fileprivate func urlScheme() -> String? {
+    (try? PrimerSettings.current.paymentMethodOptions.validUrlForUrlScheme())?.absoluteString
+}
+
 protocol OffSessionPaymentSessionInfo: Encodable {}
 
 struct CardOffSessionInfo: Encodable {
     var locale: String = PrimerSettings.current.localeData.localeCode
     var platform: String = "IOS"
     var browserInfo: [String: String] = ["userAgent": UserAgent.userAgentAsString]
-    var redirectionUrl: String? = PrimerSettings.current.paymentMethodOptions.urlScheme
+    var redirectionUrl: String? = urlScheme()
 }
 
 struct BankSelectorSessionInfo: OffSessionPaymentSessionInfo {
@@ -28,14 +32,14 @@ struct BlikSessionInfo: OffSessionPaymentSessionInfo {
     let blikCode: String
     let locale: String
     let platform: String = "IOS"
-    let redirectionUrl: String? = PrimerSettings.current.paymentMethodOptions.urlScheme
+    let redirectionUrl: String? = urlScheme()
 }
 
 struct InputPhonenumberSessionInfo: OffSessionPaymentSessionInfo {
     let phoneNumber: String
     let locale: String = PrimerSettings.current.localeData.localeCode
     let platform: String = "IOS"
-    let redirectionUrl: String? = PrimerSettings.current.paymentMethodOptions.urlScheme
+    let redirectionUrl: String? = urlScheme()
 }
 
 struct PrimerTestPaymentMethodSessionInfo: OffSessionPaymentSessionInfo {
@@ -53,14 +57,14 @@ struct PrimerTestPaymentMethodSessionInfo: OffSessionPaymentSessionInfo {
 struct WebRedirectSessionInfo: OffSessionPaymentSessionInfo {
     var locale: String
     var platform: String = "IOS"
-    var redirectionUrl: String? = PrimerSettings.current.paymentMethodOptions.urlScheme
+    var redirectionUrl: String? = urlScheme()
 }
 
 struct IPay88SessionInfo: OffSessionPaymentSessionInfo {
     var refNo: String
     var locale: String
     var platform: String = "IOS"
-    var redirectionUrl: String? = PrimerSettings.current.paymentMethodOptions.urlScheme
+    var redirectionUrl: String? = urlScheme()
 }
 
 struct NolPaySessionInfo: OffSessionPaymentSessionInfo {

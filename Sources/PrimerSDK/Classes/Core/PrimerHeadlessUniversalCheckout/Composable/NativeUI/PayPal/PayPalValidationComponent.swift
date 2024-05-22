@@ -11,12 +11,6 @@ struct PayPalValidationComponent: NativeUIValidateable {
     let paymentMethodType = PrimerPaymentMethodType.payPal.rawValue
 
     func validatePaymentMethod() throws {
-        if PrimerSettings.current.paymentMethodOptions.urlScheme == nil {
-            let error = PrimerError.invalidUrlScheme(urlScheme: nil,
-                                                     userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: error)
-            throw error
-        }
+        try _ = PrimerSettings.current.paymentMethodOptions.validUrlForUrlScheme()
     }
 }
