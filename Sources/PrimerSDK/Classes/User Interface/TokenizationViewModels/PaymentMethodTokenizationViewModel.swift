@@ -53,19 +53,24 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
 
     let tokenizationService: TokenizationServiceProtocol
 
+    let createResumePaymentService: CreateResumePaymentServiceProtocol
+
     convenience init(config: PrimerPaymentMethod) {
         self.init(config: config,
                   uiManager: PrimerUIManager.shared,
-                  tokenizationService: TokenizationService()
+                  tokenizationService: TokenizationService(),
+                  createResumePaymentService: CreateResumePaymentService()
         )
     }
 
-    required init(config: PrimerPaymentMethod,
-                  uiManager: PrimerUIManaging,
-                  tokenizationService: TokenizationServiceProtocol) {
+    init(config: PrimerPaymentMethod,
+         uiManager: PrimerUIManaging,
+         tokenizationService: TokenizationServiceProtocol,
+         createResumePaymentService: CreateResumePaymentServiceProtocol) {
         self.config = config
         self.uiManager = uiManager
         self.tokenizationService = tokenizationService
+        self.createResumePaymentService = createResumePaymentService
         super.init()
         self.uiModule = UserInterfaceModule(paymentMethodTokenizationViewModel: self)
     }

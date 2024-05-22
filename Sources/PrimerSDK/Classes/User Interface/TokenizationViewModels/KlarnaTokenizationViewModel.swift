@@ -24,12 +24,15 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var klarnaPaymentSessionCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var authorizationToken: String?
 
-
-    required init(config: PrimerPaymentMethod,
+    override init(config: PrimerPaymentMethod,
                   uiManager: PrimerUIManaging,
-                  tokenizationService: TokenizationServiceProtocol) {
+                  tokenizationService: TokenizationServiceProtocol,
+                  createResumePaymentService: CreateResumePaymentServiceProtocol) {
         tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: config)
-        super.init(config: config, uiManager: uiManager, tokenizationService: tokenizationService)
+        super.init(config: config, 
+                   uiManager: uiManager,
+                   tokenizationService: tokenizationService,
+                   createResumePaymentService: createResumePaymentService)
     }
 
     override func validate() throws {

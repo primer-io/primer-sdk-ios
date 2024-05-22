@@ -9,9 +9,9 @@ import Foundation
 internal protocol PaymentMethodTokenizationModelProtocol: NSObject {
     static var apiClient: PrimerAPIClientProtocol? { get set }
 
-    init(config: PrimerPaymentMethod,
-         uiManager: PrimerUIManaging,
-         tokenizationService: TokenizationServiceProtocol)
+//    init(config: PrimerPaymentMethod,
+//         uiManager: PrimerUIManaging,
+//         tokenizationService: TokenizationServiceProtocol)
     var checkoutEventsNotifierModule: CheckoutEventsNotifierModule { get }
 
     // Events
