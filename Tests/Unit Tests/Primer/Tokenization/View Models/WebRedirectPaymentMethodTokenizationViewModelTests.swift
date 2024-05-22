@@ -22,6 +22,7 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
 
     override func tearDownWithError() throws {
         sut = nil
+        uiManager = nil
     }
 
     func testClientTokenValidation() throws {

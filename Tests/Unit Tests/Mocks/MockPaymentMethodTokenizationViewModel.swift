@@ -19,7 +19,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
 
     var uiModule: UserInterfaceModule!
     var position: Int = 0
-    var checkouEventsNotifierModule: CheckoutEventsNotifierModule
+    var checkoutEventsNotifierModule: CheckoutEventsNotifierModule
     var didStartPayment: (() -> Void)?
     var didFinishPayment: ((Error?) -> Void)?
     var willPresentPaymentMethodUI: (() -> Void)?
@@ -44,7 +44,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     required init(config: PrimerPaymentMethod, uiManager: PrimerUIManaging) {
         self.config = config
         self.uiManager = uiManager
-        self.checkouEventsNotifierModule = CheckoutEventsNotifierModule()
+        self.checkoutEventsNotifierModule = CheckoutEventsNotifierModule()
     }
 
     convenience init(
@@ -149,14 +149,14 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
 
             firstly {
-                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+                self.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 return self.tokenize()
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+                return self.checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
             }
             .done {
                 seal.fulfill()

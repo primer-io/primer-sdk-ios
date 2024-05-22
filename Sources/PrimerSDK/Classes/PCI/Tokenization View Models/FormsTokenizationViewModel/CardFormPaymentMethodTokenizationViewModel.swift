@@ -310,12 +310,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
 
     override func start() {
-        self.checkouEventsNotifierModule.didStartTokenization = {
+        self.checkoutEventsNotifierModule.didStartTokenization = {
             self.uiModule.submitButton?.startAnimating()
             PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
         }
 
-        self.checkouEventsNotifierModule.didFinishTokenization = {
+        self.checkoutEventsNotifierModule.didFinishTokenization = {
             self.uiModule.submitButton?.stopAnimating()
             PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
         }
@@ -421,14 +421,14 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
 
             firstly {
-                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+                self.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 return self.tokenize()
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+                return self.checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
             }
             .done {
                 seal.fulfill()

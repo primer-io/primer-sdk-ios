@@ -102,7 +102,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
     func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             firstly {
-                self.config.tokenizationViewModel!.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+                self.config.tokenizationViewModel!.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 guard let paymentMethodTokenId = self.selectedPaymentMethodTokenData.id else {
@@ -120,7 +120,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
-                return self.config.tokenizationViewModel!.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+                return self.config.tokenizationViewModel!.checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
             }
             .done {
                 seal.fulfill()

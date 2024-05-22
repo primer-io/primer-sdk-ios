@@ -98,7 +98,7 @@ internal class PrimerUIManager: PrimerUIManaging {
 
         PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
 
-        paymentMethodTokenizationViewModel?.checkouEventsNotifierModule.didStartTokenization = {
+        paymentMethodTokenizationViewModel?.checkoutEventsNotifierModule.didStartTokenization = {
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
 

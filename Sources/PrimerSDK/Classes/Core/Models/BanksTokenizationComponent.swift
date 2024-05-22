@@ -19,7 +19,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     var paymentMethodType: PrimerPaymentMethodType
     private(set) var banks: [AdyenBank] = []
     private var selectedBank: AdyenBank?
-    let checkouEventsNotifierModule: CheckoutEventsNotifierModule = CheckoutEventsNotifierModule()
+    let checkoutEventsNotifierModule: CheckoutEventsNotifierModule = CheckoutEventsNotifierModule()
 
     var willDismissPaymentMethodUI: (() -> Void)?
     var didDismissPaymentMethodUI: (() -> Void)?
@@ -711,14 +711,14 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             firstly {
-                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+                self.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 return self.tokenize()
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+                return self.checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
             }
             .done {
                 seal.fulfill()
