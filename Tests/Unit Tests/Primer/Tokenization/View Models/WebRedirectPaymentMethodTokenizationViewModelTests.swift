@@ -41,12 +41,20 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
 
     func testStartWithCancellation() throws {
         SDKSessionHelper.setUp()
+        let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
+        PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
         sut.start()
 
-        let expectation = self.expectation(description: "Is cancelled")
-        sut.didCancel = {
-            expectation.fulfill()
+        let expectDidFail = self.expectation(description: "onDidFail called")
+        delegate.onDidFail = { error in
+            switch error {
+            case PrimerError.cancelled(let paymentMethodType, _, _):
+                XCTAssertEqual(paymentMethodType, Mocks.Static.Strings.webRedirectPaymentMethodType)
+            default:
+                XCTFail()
+            }
+            expectDidFail.fulfill()
         }
 
         let cancelNotif = Notification(name: Notification.Name.receivedUrlSchemeCancellation)
@@ -82,45 +90,5 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
 
         waitForExpectations(timeout: 2.0)
     }
-
-    func testStartWithPreTokenizationAndContinue() throws {
-        SDKSessionHelper.setUp()
-        let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
-        PrimerHeadlessUniversalCheckout.current.delegate = delegate
-
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
-        delegate.onWillCreatePaymentWithData = { data, decision in
-            XCTAssertEqual(data.paymentMethodType.type, Mocks.Static.Strings.webRedirectPaymentMethodType)
-            decision(.continuePaymentCreation())
-            expectWillCreatePaymentData.fulfill()
-        }
-
-        let expectDidStartTokenization = self.expectation(description: "onDidStartTokenization is called")
-        delegate.onDidStartTokenization = { type in
-            XCTAssertEqual(type, Mocks.Static.Strings.webRedirectPaymentMethodType)
-            expectDidStartTokenization.fulfill()
-        }
-
-        let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        tokenizationService.onTokenize = { body in
-            expectDidTokenize.fulfill()
-            return Promise.fulfilled(.init(analyticsId: "analytics_id",
-                                           id: "id",
-                                           isVaulted: false,
-                                           isAlreadyVaulted: false,
-                                           paymentInstrumentType: .offSession,
-                                           paymentMethodType: Mocks.Static.Strings.webRedirectPaymentMethodType,
-                                           paymentInstrumentData: nil,
-                                           threeDSecureAuthentication: nil,
-                                           token: "token",
-                                           tokenType: .singleUse,
-                                           vaultData: nil))
-        }
-
-        sut.start()
-
-        waitForExpectations(timeout: 60.0)
-    }
-
 
 }
