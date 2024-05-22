@@ -1,5 +1,5 @@
 //
-//  PayPalResposeTests.swift
+//  PayPalResponseTests.swift
 //  Debug App SPM
 //
 //  Created by Niall Quinn on 04/05/24.
@@ -9,7 +9,7 @@
 import XCTest
 @testable import PrimerSDK
 
-final class PayPalResposeTests: XCTestCase {
+final class PayPalResponseTests: XCTestCase {
 
     private typealias PayPalResponse = Response.Body.Tokenization.PayPal
 

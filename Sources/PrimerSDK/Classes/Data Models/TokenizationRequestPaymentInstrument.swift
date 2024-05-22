@@ -79,33 +79,7 @@ class OffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
 
         try container.encode(paymentMethodConfigId, forKey: .paymentMethodConfigId)
         try container.encode(paymentMethodType, forKey: .paymentMethodType)
-
-        if let sessionInfo = sessionInfo as? BankSelectorSessionInfo {
-            try container.encode(sessionInfo, forKey: .sessionInfo)
-        } else if let sessionInfo = sessionInfo as? BlikSessionInfo {
-            try container.encode(sessionInfo, forKey: .sessionInfo)
-        } else if let sessionInfo = sessionInfo as? InputPhonenumberSessionInfo {
-            try container.encode(sessionInfo, forKey: .sessionInfo)
-        } else if let sessionInfo = sessionInfo as? PrimerTestPaymentMethodSessionInfo {
-            try container.encode(sessionInfo, forKey: .sessionInfo)
-        } else if let sessionInfo = sessionInfo as? WebRedirectSessionInfo {
-            try container.encode(sessionInfo, forKey: .sessionInfo)
-        } else if let sessionInfo = sessionInfo as? RetailOutletTokenizationSessionRequestParameters {
-            try container.encode(sessionInfo, forKey: .sessionInfo)
-        } else if let sessionInfo = sessionInfo as? IPay88SessionInfo {
-            try container.encode(sessionInfo, forKey: .sessionInfo)
-        } else if let sessionInfo = sessionInfo as? NolPaySessionInfo {
-            try container.encode(sessionInfo, forKey: .sessionInfo)
-        } else {
-            let err = InternalError.invalidValue(
-                key: "SessionInfo",
-                value: self.sessionInfo,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-
+        try container.encode(sessionInfo, forKey: .sessionInfo)
         try container.encode(type, forKey: .type)
     }
 }

@@ -17,7 +17,7 @@ extension Array where Element == Error {
                 message += "\(primerError.localizedDescription) | "
             } else {
                 let nsErr = err as NSError
-                message += "Domain: \(nsErr.domain), Code: \(nsErr.code), Description: \(nsErr.localizedDescription)  | "
+                message += "Domain: \(nsErr.domain), Code: \(nsErr.code), Description: \(nsErr.localizedDescription) | "
             }
         }
 
