@@ -21,14 +21,17 @@ internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
 
     var tableView: UITableView { get set }
     var searchableTextField: PrimerSearchTextField { get set }
-    var config: PrimerPaymentMethod! { get set }
+    var config: PrimerPaymentMethod { get }
 
     func cancel()
 }
 
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol, LogReporter {
 
-    var config: PrimerPaymentMethod!
+    let config: PrimerPaymentMethod
+
+    let uiManager: PrimerUIManaging
+
     static var apiClient: PrimerAPIClientProtocol?
 
     // Events
@@ -52,8 +55,14 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         NotificationCenter.default.removeObserver(self)
     }
 
-    required init(config: PrimerPaymentMethod) {
+    convenience init(config: PrimerPaymentMethod) {
+        self.init(config: config, uiManager: PrimerUIManager.shared)
+    }
+
+    required init(config: PrimerPaymentMethod,
+                  uiManager: PrimerUIManaging) {
         self.config = config
+        self.uiManager = uiManager
         super.init()
         self.uiModule = UserInterfaceModule(paymentMethodTokenizationViewModel: self)
     }

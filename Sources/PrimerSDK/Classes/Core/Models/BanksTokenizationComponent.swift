@@ -49,17 +49,17 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
     let config: PrimerPaymentMethod
 
-    let apiClient: PrimerAPIClientBanksProtocol
+    let uiManager: PrimerUIManaging
 
-    required convenience init(config: PrimerPaymentMethod) {
-        self.init(config: config,
-                  apiClient: PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient())
+    var apiClient: PrimerAPIClientBanksProtocol! = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+
+    convenience init(config: PrimerPaymentMethod) {
+        self.init(config: config, uiManager: PrimerUIManager.shared)
     }
 
-    init(config: PrimerPaymentMethod,
-         apiClient: PrimerAPIClientBanksProtocol) {
+    init(config: PrimerPaymentMethod, uiManager: PrimerUIManaging) {
         self.config = config
-        self.apiClient = apiClient
+        self.uiManager = uiManager
         self.paymentMethodType = config.internalPaymentMethodType!
     }
 
@@ -938,7 +938,7 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
             self.cleanup()
         }
 
-        setup()
+        setupNotificationObservers()
     }
 
     @objc func receivedNotification(_ notification: Notification) {
@@ -955,7 +955,7 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
         }
     }
 
-    func setup() {
+    func setupNotificationObservers() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(self.receivedNotification(_:)),
                                                name: Notification.Name.receivedUrlSchemeRedirect,

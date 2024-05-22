@@ -22,9 +22,14 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     private var tokenizationService: TokenizationServiceProtocol?
     var paymentMethodType: PrimerPaymentMethodType
 
-    required init(config: PrimerPaymentMethod) {
+
+    convenience init(config: PrimerPaymentMethod) {
+        self.init(config: config, uiManager: PrimerUIManager.shared)
+    }
+
+    required init(config: PrimerPaymentMethod, uiManager: PrimerUIManaging) {
         self.paymentMethodType = config.internalPaymentMethodType!
-        super.init(config: config)
+        super.init(config: config, uiManager: uiManager)
     }
 
     override func validate() throws {

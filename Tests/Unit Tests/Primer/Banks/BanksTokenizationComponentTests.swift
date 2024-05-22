@@ -31,8 +31,8 @@ final class BanksTokenizationComponentTests: XCTestCase {
 
     override func setUpWithError() throws {
         let paymentMethod = Mocks.PaymentMethods.idealFormWithRedirectPaymentMethod
-        apiClient = MockBanksAPIClient()
-        sut = BanksTokenizationComponent(config: paymentMethod, apiClient: apiClient)
+        sut = BanksTokenizationComponent(config: paymentMethod)
+        sut.apiClient = MockBanksAPIClient()
     }
 
     override func tearDownWithError() throws {
