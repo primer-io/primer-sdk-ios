@@ -96,7 +96,7 @@ jobs:
           slack-channel: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           slack-reporter-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
           github-run-id: ${{ github.run_id }}
-      - uses: peter-evans/find-comment@d5fe37641ad8451bdd80312415672ba26c86575e #v3.0.0
+      - uses: peter-evans/find-comment@3eae4d37986fb5a8592848f6a574fdf654e61f9e #v3.1.0
         if: ${{ success() }}
         id: find_comment
         with:
