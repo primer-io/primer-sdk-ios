@@ -8,12 +8,8 @@
 	</array>
 	<key>com.apple.developer.in-app-payments</key>
 	<array>
-		<string>merchant.acceptance.team</string>
-		<string>merchant.acceptance.team.sandbox</string>
-		<string>merchant.acceptance.team.staging</string>
 		<string>merchant.checkout.team</string>
 		<string>merchant.dx.team</string>
-		<string>merchant.acceptance.team.dev</string>
 	</array>
 	<key>com.apple.developer.nfc.readersession.formats</key>
 	<array>
