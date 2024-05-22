@@ -22,6 +22,7 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
     case invalidFirstName(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidLastName(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidAddress(message: String, userInfo: [String: String]?, diagnosticsId: String)
+    case invalidCity(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidState(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidCountry(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case invalidPhoneNumber(message: String, userInfo: [String: String]?, diagnosticsId: String)
@@ -55,6 +56,8 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
         case .invalidLastName(_, _, let diagnosticsId):
             return diagnosticsId
         case .invalidAddress(_, _, let diagnosticsId):
+            return diagnosticsId
+        case .invalidCity(_, _, let diagnosticsId):
             return diagnosticsId
         case .invalidState(_, _, let diagnosticsId):
             return diagnosticsId
@@ -103,6 +106,8 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "invalid-last-name"
         case .invalidAddress:
             return "invalid-address"
+        case .invalidCity:
+            return "invalid-city"
         case .invalidState:
             return "invalid-state"
         case .invalidCountry:
@@ -150,6 +155,8 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "[\(errorId)] \(message)"
         case .invalidAddress(let message, _, _):
             return "[\(errorId)] \(message)"
+        case .invalidCity(let message, _, _):
+            return "[\(errorId)] \(message)"
         case .invalidState(let message, _, _):
             return "[\(errorId)] \(message)"
         case .invalidCountry(let message, _, _):
@@ -191,6 +198,7 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
              .invalidFirstName(_, let userInfo, _),
              .invalidLastName(_, let userInfo, _),
              .invalidAddress(_, let userInfo, _),
+             .invalidCity(_, let userInfo, _),
              .invalidState(_, let userInfo, _),
              .invalidCountry(_, let userInfo, _),
              .invalidPhoneNumber(_, let userInfo, _),
@@ -241,26 +249,10 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "CVV"
         case .invalidExpiryDate:
             return "EXPIRY_DATE"
-        case .invalidPostalCode:
-            return nil
-        case .invalidFirstName:
-            return nil
-        case .invalidLastName:
-            return nil
-        case .invalidAddress:
-            return nil
-        case .invalidState:
-            return nil
-        case .invalidCountry:
-            return nil
         case .invalidPhoneNumber:
             return "PHONE_NUMBER"
         case .invalidRetailer:
             return "RETAILER"
-        case .invalidRawData:
-            return nil
-        case .vaultedPaymentMethodAdditionalDataMismatch:
-            return nil
         case .invalidOTPCode:
             return "OTP"
         case .invalidCardType:
@@ -269,7 +261,7 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "BANKS"
         case .invalidBankId:
             return "BANK"
-        case .sessionNotCreated, .invalidPaymentCategory, .paymentAlreadyFinalized:
+        default:
             return nil
         }
     }

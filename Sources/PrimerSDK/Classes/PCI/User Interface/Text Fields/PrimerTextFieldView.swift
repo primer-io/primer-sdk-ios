@@ -8,40 +8,6 @@
 // swiftlint:disable function_body_length
 import UIKit
 
-/// The PrimerTextFieldViewDelegate protocol can be used to retrieve information about the text input.
-/// PrimerCardNumberFieldView, PrimerExpiryDateFieldView, PrimerCVVFieldView & PrimerCardholderNameFieldView
-/// all have a delegate of PrimerTextFieldViewDelegate type.
-public protocol PrimerTextFieldViewDelegate: AnyObject {
-    /// Will return true if valid, false if invalid, nil if it cannot be detected yet.
-    /// It is applied on all PrimerTextFieldViews.
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?)
-    /// Will return the card network (e.g. Visa) detected, unknown if the network cannot be detected.
-    /// Only applies on PrimerCardNumberFieldView
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?)
-    /// Will return a the validation error on the text input.
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, validationDidFailWithError error: Error)
-
-    func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView)
-
-    func primerTextFieldViewShouldBeginEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool
-
-    func primerTextFieldViewShouldEndEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool
-
-    func primerTextFieldViewDidEndEditing(_ primerTextFieldView: PrimerTextFieldView)
-}
-
-public extension PrimerTextFieldViewDelegate {
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {}
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView,
-                             didDetectCardNetwork cardNetwork: CardNetwork?) {}
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView,
-                             validationDidFailWithError error: Error) {}
-    func primerTextFieldViewDidBeginEditing(_ primerTextFieldView: PrimerTextFieldView) {}
-    func primerTextFieldViewShouldBeginEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool { return true }
-    func primerTextFieldViewShouldEndEditing(_ primerTextFieldView: PrimerTextFieldView) -> Bool { return true}
-    func primerTextFieldViewDidEndEditing(_ primerTextFieldView: PrimerTextFieldView) {}
-}
-
 public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
 
     @IBOutlet internal weak var textField: PrimerTextField!
@@ -171,11 +137,9 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
     override func loadNib() -> UIView {
         let bundle = Bundle.primerResources
         let nib = UINib(nibName: PrimerTextFieldView.className, bundle: bundle)
-        guard let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
-        else {
-            fatalError()
-        }
-        return view
+        // swiftlint:disable force_cast
+        return nib.instantiate(withOwner: self, options: nil).first as! UIView
+        // swiftlint:enable force_cast
     }
 
     override func xibSetup() {
@@ -237,35 +201,5 @@ public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
         return true
     }
 
-}
-
-internal class PaddedImageView: PrimerImageView {
-
-    internal private(set) var insets: UIEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-
-    override var alignmentRectInsets: UIEdgeInsets {
-        return insets
-    }
-
-    convenience init(insets: UIEdgeInsets) {
-        self.init(image: nil)
-    }
-
-    convenience init(image: UIImage?, insets: UIEdgeInsets) {
-        self.init(image: image)
-        self.insets = insets
-    }
-
-    override init(image: UIImage?) {
-        super.init(image: image)
-    }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
 }
 // swiftlint:enable function_body_length
