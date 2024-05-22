@@ -15,7 +15,7 @@ internal enum InternalError: PrimerErrorProtocol {
     case invalidResponse(userInfo: [String: String]?, diagnosticsId: String?)
     case noData(userInfo: [String: String]?, diagnosticsId: String?)
     case serverError(status: Int, response: PrimerServerError?, userInfo: [String: String]?, diagnosticsId: String?)
-    case unauthorized(url: String, method: HTTPMethod, userInfo: [String: String]?, diagnosticsId: String?)
+    case unauthorized(url: String, userInfo: [String: String]?, diagnosticsId: String?)
     case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String?)
     case failedToPerform3dsButShouldContinue(error: Primer3DSErrorContainer)
     case failedToPerform3dsAndShouldBreak(error: Error)
@@ -62,7 +62,7 @@ internal enum InternalError: PrimerErrorProtocol {
             return diagnosticsId ?? UUID().uuidString
         case .serverError(_, _, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
-        case .unauthorized(_, _, _, let diagnosticsId):
+        case .unauthorized(_, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
         case .underlyingErrors(_, _, let diagnosticsId):
             return diagnosticsId ?? UUID().uuidString
@@ -93,8 +93,8 @@ internal enum InternalError: PrimerErrorProtocol {
                 resStr = str
             }
             return "[\(errorId)] Server error [\(status)] Response: \(resStr) (diagnosticsId: \(self.diagnosticsId))"
-        case .unauthorized(let url, let method, _, _):
-            return "[\(errorId)] Unauthorized response for URL \(url) [\(method.rawValue)] (diagnosticsId: \(self.diagnosticsId))"
+        case .unauthorized(let url, _, _):
+            return "[\(errorId)] Unauthorized response for URL \(url) (diagnosticsId: \(self.diagnosticsId))"
         case .underlyingErrors(let errors, _, _):
             return "[\(errorId)] Multiple errors occured | Errors \(errors.combinedDescription) (diagnosticsId: \(self.diagnosticsId))"
         case .failedToPerform3dsButShouldContinue:
@@ -116,7 +116,7 @@ internal enum InternalError: PrimerErrorProtocol {
              .invalidResponse(let userInfo, _),
              .noData(let userInfo, _),
              .serverError(_, _, let userInfo, _),
-             .unauthorized(_, _, let userInfo, _),
+             .unauthorized(_, let userInfo, _),
              .underlyingErrors(_, let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
             tmpUserInfo["diagnosticsId"] = self.diagnosticsId
@@ -131,29 +131,6 @@ internal enum InternalError: PrimerErrorProtocol {
 
     var errorUserInfo: [String: Any] {
         return info ?? [:]
-    }
-
-    var recoverySuggestion: String? {
-        switch self {
-        case .failedToDecode:
-            return "Check object's init(from:) function for wrong CodingKeys, or unexpected values."
-        case .invalidUrl:
-            return "Provide a valid URL, meaning that it must include http(s):// at the begining and also follow URL formatting rules."
-        case .invalidValue(let key, let value, _, _):
-            return "Check if value \(value ?? "nil") is valid for key \(key)"
-        case .noData:
-            return "If you were expecting data on this response, check that your backend has sent the appropriate data."
-        case .serverError, .invalidResponse:
-            return "Check the server's response to debug this error further."
-        case .unauthorized:
-            return "Check that the you have provided the SDK with a client token."
-        case .underlyingErrors(let errors, _, _):
-            return "Check underlying errors' recovery suggestions for more information.\nRecovery Suggestions:\n\(errors.compactMap({ ($0 as NSError).localizedRecoverySuggestion }))"
-        case .failedToPerform3dsButShouldContinue,
-             .failedToPerform3dsAndShouldBreak,
-             .noNeedToPerform3ds:
-            return nil
-        }
     }
 
     var exposedError: Error {

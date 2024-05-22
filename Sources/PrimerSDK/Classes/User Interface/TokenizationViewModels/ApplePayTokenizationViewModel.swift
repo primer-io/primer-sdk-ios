@@ -201,7 +201,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 let currency = AppState.current.currency!
                 let merchantIdentifier = PrimerSettings.current.paymentMethodOptions.applePayOptions!.merchantIdentifier
 
-                let orderItems: [OrderItem]
+                let orderItems: [ApplePayOrderItem]
 
                 do {
                     let session = AppState.current.apiConfiguration!.clientSession!
@@ -401,12 +401,12 @@ extension ApplePayTokenizationViewModel {
         }
     }
 
-    internal func createOrderItemsFromClientSession(_ clientSession: ClientSession.APIResponse) throws -> [OrderItem] {
-        var orderItems: [OrderItem] = []
+    internal func createOrderItemsFromClientSession(_ clientSession: ClientSession.APIResponse) throws -> [ApplePayOrderItem] {
+        var orderItems: [ApplePayOrderItem] = []
 
         if let merchantAmount = clientSession.order?.merchantAmount {
             // If there's a hardcoded amount, create an order item with the merchant name as its title
-            let summaryItem = try OrderItem(
+            let summaryItem = try ApplePayOrderItem(
                 name: PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? "",
                 unitAmount: merchantAmount,
                 quantity: 1,
@@ -435,7 +435,7 @@ extension ApplePayTokenizationViewModel {
                 for fee in fees {
                     switch fee.type {
                     case .surcharge:
-                        let feeItem = try OrderItem(
+                        let feeItem = try ApplePayOrderItem(
                             name: Strings.ApplePay.surcharge,
                             unitAmount: fee.amount,
                             quantity: 1,
@@ -446,7 +446,7 @@ extension ApplePayTokenizationViewModel {
                 }
             }
 
-            let summaryItem = try OrderItem(
+            let summaryItem = try ApplePayOrderItem(
                 name: PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? "",
                 unitAmount: clientSession.order?.totalOrderAmount,
                 quantity: 1,
@@ -541,8 +541,8 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                         publicKeyHash: "apple-pay-mock-public-key-hash",
                         transactionId: "apple-pay-mock--transaction-id"))
             } else {
-                tokenPaymentData = try JSONParser().parse(ApplePayPaymentResponseTokenPaymentData.self,
-                                                          from: payment.token.paymentData)
+                tokenPaymentData = try JSONDecoder().decode(ApplePayPaymentResponseTokenPaymentData.self,
+                                                            from: payment.token.paymentData)
             }
 
             let billingAddress = clientSessionBillingAddressFromApplePayBillingContact(payment.billingContact)

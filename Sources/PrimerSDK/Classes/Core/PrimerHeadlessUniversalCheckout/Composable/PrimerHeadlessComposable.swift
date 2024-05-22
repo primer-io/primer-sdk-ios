@@ -35,23 +35,7 @@ protocol PrimerHeadlessAnalyticsRecordable {
     func submit()
 }
 
-public enum PrimerValidationStatus: Equatable {
-
-    public static func == (lhs: PrimerValidationStatus, rhs: PrimerValidationStatus) -> Bool {
-        switch (lhs, rhs) {
-        case (.validating, .validating):
-            return true
-        case (.valid, .valid):
-            return true
-        case (.invalid(let errorsLHS), .invalid(let errorsRHS)):
-            return errorsLHS == errorsRHS
-        case (.error(let errorLHS), .error(let errorRHS)):
-            return errorLHS.errorCode == errorRHS.errorCode
-        default:
-            return false
-        }
-    }
-
+public enum PrimerValidationStatus {
     case validating
     case valid
     case invalid(errors: [PrimerValidationError])

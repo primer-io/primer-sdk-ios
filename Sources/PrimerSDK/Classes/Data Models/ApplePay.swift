@@ -9,7 +9,7 @@ struct ApplePayRequest {
     var currency: Currency
     var merchantIdentifier: String
     var countryCode: CountryCode
-    var items: [OrderItem]
+    var items: [ApplePayOrderItem]
 }
 
 struct ApplePayPaymentResponse {

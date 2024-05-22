@@ -13,18 +13,17 @@ struct VoucherValue {
     let value: String?
 }
 
-extension VoucherValue: Comparable {
+extension VoucherValue: Equatable {
 
-    static func < (lhs: VoucherValue, rhs: VoucherValue) -> Bool {
+    static func == (lhs: VoucherValue, rhs: VoucherValue) -> Bool {
         return lhs.id == rhs.id
     }
 }
 
 extension VoucherValue {
 
-    static var currentVoucherValues: [VoucherValue] {
-
-        var currentVaucherValues = [
+    fileprivate static var defaultVoucherValues: [VoucherValue] {
+        [
             VoucherValue(id: "entity",
                          description: Strings.VoucherInfoPaymentView.entityLabelText,
                          value: PrimerAPIConfigurationModule.decodedJWTToken?.entity),
@@ -32,14 +31,18 @@ extension VoucherValue {
                          description: Strings.VoucherInfoPaymentView.referenceLabelText,
                          value: PrimerAPIConfigurationModule.decodedJWTToken?.reference)
         ]
+    }
 
+    static var currentVoucherValues: [VoucherValue] {
+
+        var currentVoucherValues = defaultVoucherValues
         if let currency = AppState.current.currency, let amount = AppState.current.amount {
-            currentVaucherValues.append(VoucherValue(id: "amount",
+            currentVoucherValues.append(VoucherValue(id: "amount",
                                                      description: Strings.VoucherInfoPaymentView.amountLabelText,
                                                      value: "\(amount.toCurrencyString(currency: currency))"))
         }
 
-        return currentVaucherValues
+        return currentVoucherValues
     }
 }
 
@@ -54,16 +57,7 @@ extension VoucherValue {
         /// Expires at: 12 Dec 2022 12:00 PM (Date in the user format)
         ///
 
-        var voucherSharableValues = ""
-
-        var sharableVoucherValues = [
-            VoucherValue(id: "entity",
-                         description: Strings.VoucherInfoPaymentView.entityLabelText,
-                         value: PrimerAPIConfigurationModule.decodedJWTToken?.entity),
-            VoucherValue(id: "reference",
-                         description: Strings.VoucherInfoPaymentView.referenceLabelText,
-                         value: PrimerAPIConfigurationModule.decodedJWTToken?.reference)
-        ]
+        var sharableVoucherValues = defaultVoucherValues
 
         if let expirationDate = PrimerAPIConfigurationModule.decodedJWTToken?.expiresAt {
             let formatter = DateFormatter()
@@ -74,17 +68,13 @@ extension VoucherValue {
                                                       value: formatter.string(from: expirationDate)))
         }
 
-        for voucherValue in sharableVoucherValues {
-
+        let description = sharableVoucherValues.compactMap { voucherValue in
             if let unwrappedVoucherValue = voucherValue.value {
-                voucherSharableValues += "\(voucherValue.description): \(unwrappedVoucherValue)"
+                return "\(voucherValue.description): \(unwrappedVoucherValue)"
             }
+            return nil
+        }.joined(separator: "\n")
 
-            if let lastValue = VoucherValue.currentVoucherValues.last, voucherValue != lastValue {
-                voucherSharableValues += "\n"
-            }
-        }
-
-        return voucherSharableValues.isEmpty ? nil : voucherSharableValues
+        return description.isEmpty ? nil : description
     }
 }

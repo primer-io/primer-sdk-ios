@@ -54,7 +54,11 @@ class JSONNetworkResponseFactory: NetworkResponseFactory, LogReporter {
                     diagnosticsId: UUID().uuidString
                 )
             }
-        case 400...599:
+        case 401:
+            throw InternalError.unauthorized(url: metadata.responseUrl ?? "Unknown",
+                                             userInfo: .errorUserInfoDictionary(),
+                                             diagnosticsId: UUID().uuidString)
+        case 400, 402...599:
             let serverError = try? decoder.decode(PrimerServerErrorResponse.self, from: response)
             throw InternalError.serverError(
                 status: metadata.statusCode,

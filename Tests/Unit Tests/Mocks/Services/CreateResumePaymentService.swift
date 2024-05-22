@@ -6,6 +6,7 @@
 //  Copyright © 2022 CocoaPods. All rights reserved.
 //
 
+import Foundation
 @testable import PrimerSDK
 
 class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
@@ -36,7 +37,7 @@ class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
         }
 
         do {
-            let response = try JSONParser().parse(Response.Body.Payment.self, from: data)
+            let response = try JSONDecoder().decode(Response.Body.Payment.self, from: data)
             completion(response, nil)
         } catch {
             completion(nil, error)
@@ -51,7 +52,7 @@ class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
         }
 
         do {
-            let response = try JSONParser().parse(Response.Body.Payment.self, from: data)
+            let response = try JSONDecoder().decode(Response.Body.Payment.self, from: data)
             completion(response, nil)
         } catch {
             completion(nil, error)

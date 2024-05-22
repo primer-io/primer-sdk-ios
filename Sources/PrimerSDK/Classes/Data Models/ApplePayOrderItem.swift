@@ -8,8 +8,7 @@
 import Foundation
 import PassKit
 
-@available(*, deprecated, message: "Set the order items in the client session with POST /client-session. See documentation here: https://primer.io/docs/api#tag/Client-Session")
-internal struct OrderItem: Codable {
+internal struct ApplePayOrderItem: Codable {
 
     public let name: String
     public let unitAmount: Int?
@@ -20,7 +19,7 @@ internal struct OrderItem: Codable {
 
     public var applePayItem: PKPaymentSummaryItem {
 
-        var applePayItemAmount: NSDecimalNumber!
+        var paymentSummaryItem: NSDecimalNumber!
 
         let tmpUnitAmount = unitAmount ?? 0
         let tmpQuantity = quantity
@@ -30,12 +29,12 @@ internal struct OrderItem: Codable {
         let tmpTotalOrderItemAmount = tmpAmount - tmpDiscountAmount + tmpTaxAmount
 
         if AppState.current.currency?.isZeroDecimal == true {
-            applePayItemAmount = NSDecimalNumber(value: tmpTotalOrderItemAmount)
+            paymentSummaryItem = NSDecimalNumber(value: tmpTotalOrderItemAmount)
         } else {
-            applePayItemAmount = NSDecimalNumber(value: tmpTotalOrderItemAmount).dividing(by: 100)
+            paymentSummaryItem = NSDecimalNumber(value: tmpTotalOrderItemAmount).dividing(by: 100)
         }
 
-        let item = PKPaymentSummaryItem(label: name, amount: applePayItemAmount)
+        let item = PKPaymentSummaryItem(label: name, amount: paymentSummaryItem)
         item.type = isPending ? .pending : .final
         return item
     }

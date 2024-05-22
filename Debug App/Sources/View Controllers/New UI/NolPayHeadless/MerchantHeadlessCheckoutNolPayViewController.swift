@@ -8,7 +8,9 @@
 
 import UIKit
 import PrimerSDK
+#if canImport(IQKeyboardManagerSwift)
 import IQKeyboardManagerSwift
+#endif
 
 class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
 
@@ -75,12 +77,16 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        #if canImport(IQKeyboardManagerSwift)
         IQKeyboardManager.shared.enable = true
+        #endif
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        #if canImport(IQKeyboardManagerSwift)
         IQKeyboardManager.shared.enable = false
+        #endif
     }
 
     private func setupUI() {

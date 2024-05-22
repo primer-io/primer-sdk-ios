@@ -50,6 +50,13 @@ class DefaultNetworkService: NetworkService, LogReporter {
         self.reportingService = reportingService
     }
 
+    init(withUrlSession urlSession: URLSession = .shared,
+         analyticsService: Analytics.Service = .shared) {
+        self.requestFactory = DefaultNetworkRequestFactory()
+        self.requestDispatcher = DefaultRequestDispatcher(urlSession: urlSession)
+        self.reportingService = DefaultNetworkReportingService(analyticsService: analyticsService)
+    }
+
     func request<T>(_ endpoint: Endpoint, completion: @escaping ResponseCompletion<T>) -> PrimerCancellable? where T: Decodable {
 
         do {
