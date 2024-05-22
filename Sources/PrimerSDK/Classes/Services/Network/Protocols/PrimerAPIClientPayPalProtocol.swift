@@ -8,7 +8,7 @@
 import Foundation
 
 protocol PrimerAPIClientPayPalProtocol {
-    
+
     func createPayPalOrderSession(
         clientToken: DecodedJWTToken,
         payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder,
