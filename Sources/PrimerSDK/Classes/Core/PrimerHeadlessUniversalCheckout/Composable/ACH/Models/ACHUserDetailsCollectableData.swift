@@ -1,5 +1,5 @@
 //
-//  ACHCollectableData.swift
+//  ACHUserDetailsCollectableData.swift
 //  PrimerSDK
 //
 //  Created by Stefan Vrancianu on 25.04.2024.
@@ -14,7 +14,7 @@ import Foundation
  *  - `isValid`: A computed value that determines whether the collected data is valid.
  *  - `invalidFieldError`: A computed value that provides a specific error related to the field that is found invalid.
  */
-protocol ACHCollectableDataValidatable {
+protocol ACHUserDetailsCollectableDataValidatable {
     var isValid: Bool { get }
     var invalidFieldError: ACHUserDetailsError { get }
 }
@@ -28,16 +28,15 @@ protocol ACHCollectableDataValidatable {
  *  - `lastName(_ value: String)` - Represents the customer's last name.
  *  - `emailAddress(_ value: String)` - Represents the customer's email address.
  *
- * Properties:
- *  Extends `ACHCollectableDataValidatable` protocol.
+ *  Extends `ACHUserDetailsCollectableDataValidatable` protocol.
  */
-public enum ACHCollectableData: PrimerCollectableData, Encodable {
+public enum ACHUserDetailsCollectableData: PrimerCollectableData, Encodable {
     case firstName(_ value: String)
     case lastName(_ value: String)
     case emailAddress(_ value: String)
 }
 
-extension ACHCollectableData: ACHCollectableDataValidatable {
+extension ACHUserDetailsCollectableData: ACHUserDetailsCollectableDataValidatable {
     /**
      * Validates the data based on the type.
      * For `firstName` and `lastName`, checks if the string is not empty.

@@ -26,7 +26,7 @@ extension MerchantHeadlessCheckoutStripeAchViewController: PrimerHeadlessErrorab
 
     // MARK: - PrimerHeadlessValidatableDelegate
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
-        guard let data = data as? ACHCollectableData else { return }
+        guard let data = data as? ACHUserDetailsCollectableData else { return }
         switch validationStatus {
         case .valid:
             updateFieldStatus(data)
@@ -40,9 +40,9 @@ extension MerchantHeadlessCheckoutStripeAchViewController: PrimerHeadlessErrorab
 
     // MARK: - PrimerHeadlessSteppableDelegate
     func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
-        guard let step = step as? ACHStep else { return }
+        guard let step = step as? ACHUserDetailsStep else { return }
         switch step {
-        case .didFetchUserDetails(let userDetails):
+        case .retrievedUserDetails(let userDetails):
             stripeFormViewModel.firstName = userDetails.firstName
             stripeFormViewModel.lastName = userDetails.lastName
             stripeFormViewModel.emailAddress = userDetails.emailAddress
@@ -54,7 +54,7 @@ extension MerchantHeadlessCheckoutStripeAchViewController: PrimerHeadlessErrorab
 
 // MARK: - Method helpers
 extension MerchantHeadlessCheckoutStripeAchViewController {
-    private func updateFieldStatus(_ data: ACHCollectableData, error: PrimerValidationError? = nil) {
+    private func updateFieldStatus(_ data: ACHUserDetailsCollectableData, error: PrimerValidationError? = nil) {
         let isFieldValid = data.isValid
         switch data {
         case .firstName:

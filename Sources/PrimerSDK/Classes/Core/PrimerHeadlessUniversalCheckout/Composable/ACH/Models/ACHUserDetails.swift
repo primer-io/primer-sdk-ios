@@ -12,14 +12,14 @@ import Foundation
   * as well as a factory method for creating a new instance of `ACHUserDetails` with all fields initialized to empty strings.
   *
   * Methods:
-  *  - `update(with:)`: Updates the `ACHUserDetails` instance with new data from a given `ACHCollectableData` instance.
+  *  - `update(with:)`: Updates the `ACHUserDetails` instance with new data from a given `ACHUserDetailsCollectableData` instance.
   *    This method should be used to reflect any changes in the user's information that came from the client session.
   *
   *  - `emptyUserDetails()`: Factory method that returns a new `ACHUserDetails` instance where all user detail fields are initialized to empty strings.
   *    Use this method to create a default state for `ACHUserDetails` with no pre-filled information.
   */
 protocol ACHUserDetailsHandling {
-    func update(with collectedData: ACHCollectableData)
+    func update(with collectedData: ACHUserDetailsCollectableData)
     static func emptyUserDetails() -> ACHUserDetails
 }
 
@@ -49,7 +49,7 @@ public class ACHUserDetails: Codable {
 }
 
 extension ACHUserDetails: ACHUserDetailsHandling {
-    public func update(with collectedData: ACHCollectableData) {
+    public func update(with collectedData: ACHUserDetailsCollectableData) {
         switch collectedData {
         case .firstName(let value):
             firstName = value

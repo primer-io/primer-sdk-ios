@@ -22,7 +22,7 @@ class StripeAchHeadlessComponent {
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
-    public internal(set) var nextDataStep: ACHStep = .notInitialized
+    public internal(set) var nextDataStep: ACHUserDetailsStep = .notInitialized
     
     // MARK: - Init
     init(tokenizationService: ACHTokenizationService,
@@ -57,7 +57,7 @@ class StripeAchHeadlessComponent {
 
 // MARK: - PrimerHeadlessMainComponent delegates
 extension StripeAchHeadlessComponent: StripeAchUserDetailsComponent {
-    public func updateCollectedData(collectableData: ACHCollectableData) {
+    public func updateCollectedData(collectableData: ACHUserDetailsCollectableData) {
         trackCollectableData()
         validationDelegate?.didUpdate(validationStatus: .validating, for: collectableData)
         

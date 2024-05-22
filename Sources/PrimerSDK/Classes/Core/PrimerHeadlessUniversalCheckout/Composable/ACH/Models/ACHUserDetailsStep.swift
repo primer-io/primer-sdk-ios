@@ -1,5 +1,5 @@
 //
-//  ACHStep.swift
+//  ACHUserDetailsStep.swift
 //  PrimerSDK
 //
 //  Created by Stefan Vrancianu on 25.04.2024.
@@ -14,15 +14,15 @@ import UIKit
  * It conforms to `PrimerHeadlessStep`.
  *
  * Cases:
- * - `didFetchUserDetails`: Collection of the user details. It caries:
+ * - `retrievedUserDetails`: Collection of the user details. It caries:
  *     - `details` of type `ACHUserDetails`, representing the object that wrapps the user details (firstName lastName and emailAddress).
  *
- * - `tokenizationStarted`: Indicates that the ACH tokenization has started.
+ * - `didCollectUserDetails`: Indicates that user details were collected and tokenization started.
  * - `notInitialized`: Indicates that the ACH logic is not initialized.
  */
-public enum ACHStep: PrimerHeadlessStep {
+public enum ACHUserDetailsStep: PrimerHeadlessStep {
     /// Session creation
-    case didFetchUserDetails(_ details: ACHUserDetails)
-    case tokenizationStarted
+    case retrievedUserDetails(_ details: ACHUserDetails)
+    case didCollectUserDetails
     case notInitialized
 }

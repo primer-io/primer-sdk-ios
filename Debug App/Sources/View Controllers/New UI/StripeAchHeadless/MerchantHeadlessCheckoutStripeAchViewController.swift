@@ -40,7 +40,7 @@ class MerchantHeadlessCheckoutStripeAchViewController: UIViewController {
         stripeFormViewModel.$firstName
             .receive(on: DispatchQueue.main)
             .sink { [weak self] firstName in
-                let firstNameCollectedData = ACHCollectableData.firstName(firstName)
+                let firstNameCollectedData = ACHUserDetailsCollectableData.firstName(firstName)
                 self?.stripeAchComponent?.updateCollectedData(collectableData: firstNameCollectedData)
             }
             .store(in: &cancellables)
@@ -48,7 +48,7 @@ class MerchantHeadlessCheckoutStripeAchViewController: UIViewController {
         stripeFormViewModel.$lastName
             .receive(on: DispatchQueue.main)
             .sink { [weak self] lastName in
-                let lastNameCollectedData = ACHCollectableData.lastName(lastName)
+                let lastNameCollectedData = ACHUserDetailsCollectableData.lastName(lastName)
                 self?.stripeAchComponent?.updateCollectedData(collectableData: lastNameCollectedData)
             }
             .store(in: &cancellables)
@@ -56,7 +56,7 @@ class MerchantHeadlessCheckoutStripeAchViewController: UIViewController {
         stripeFormViewModel.$emailAddress
             .receive(on: DispatchQueue.main)
             .sink { [weak self] emailAddress in
-                let emailCollectedData = ACHCollectableData.emailAddress(emailAddress)
+                let emailCollectedData = ACHUserDetailsCollectableData.emailAddress(emailAddress)
                 self?.stripeAchComponent?.updateCollectedData(collectableData: emailCollectedData)
             }
             .store(in: &cancellables)

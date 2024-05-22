@@ -7,4 +7,4 @@
 
 import Foundation
 
-public protocol StripeAchUserDetailsComponent: PrimerHeadlessMainComponent where Data == ACHCollectableData, Step == ACHStep {}
+public protocol StripeAchUserDetailsComponent: PrimerHeadlessMainComponent where Data == ACHUserDetailsCollectableData, Step == ACHUserDetailsStep {}

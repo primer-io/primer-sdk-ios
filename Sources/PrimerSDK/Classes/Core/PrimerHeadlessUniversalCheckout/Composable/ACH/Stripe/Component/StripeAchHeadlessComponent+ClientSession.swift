@@ -22,7 +22,7 @@ extension StripeAchHeadlessComponent {
         }
         .done { stripeAchUserDetails in
             self.clientSessionUserDetails = stripeAchUserDetails
-            let step = ACHStep.didFetchUserDetails(stripeAchUserDetails)
+            let step = ACHUserDetailsStep.retrievedUserDetails(stripeAchUserDetails)
             self.stepDelegate?.didReceiveStep(step: step)
         }
         .catch { _ in }
@@ -95,7 +95,7 @@ extension StripeAchHeadlessComponent {
      */
     private func startVMTokenization() {
         tokenizationViewModel.start()
-        stepDelegate?.didReceiveStep(step: ACHStep.tokenizationStarted)
+        stepDelegate?.didReceiveStep(step: ACHUserDetailsStep.didCollectUserDetails)
     }
 
     /**
