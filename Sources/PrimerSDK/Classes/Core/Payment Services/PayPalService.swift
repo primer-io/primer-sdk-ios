@@ -4,7 +4,6 @@
 import Foundation
 
 internal protocol PayPalServiceProtocol {
-    static var apiClient: PrimerAPIClientProtocol? { get set }
     func startOrderSession(_ completion: @escaping (Result<Response.Body.PayPal.CreateOrder, Error>) -> Void)
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void)
     func confirmBillingAgreement(_ completion: @escaping (Result<Response.Body.PayPal.ConfirmBillingAgreement, Error>) -> Void)
@@ -13,9 +12,13 @@ internal protocol PayPalServiceProtocol {
 
 internal class PayPalService: PayPalServiceProtocol {
 
-    static var apiClient: PrimerAPIClientProtocol?
-
     private var paypalTokenId: String?
+
+    let apiClient: PrimerAPIClientPayPalProtocol
+
+    init(apiClient: PrimerAPIClientPayPalProtocol = PrimerAPIClient()) {
+        self.apiClient = apiClient
+    }
 
     // swiftlint:disable:next large_tuple
     private func prepareUrlAndTokenAndId(path: String) -> (DecodedJWTToken, URL, String)? {
@@ -101,7 +104,6 @@ internal class PayPalService: PayPalServiceProtocol {
             cancelUrl: "\(scheme)://paypal-cancel"
         )
 
-        let apiClient: PrimerAPIClientProtocol = PayPalService.apiClient ?? PrimerAPIClient()
         apiClient.createPayPalOrderSession(clientToken: decodedJWTToken, payPalCreateOrderRequest: body) { result in
             switch result {
             case .failure(let err):
@@ -152,7 +154,6 @@ internal class PayPalService: PayPalServiceProtocol {
             cancelUrl: "\(scheme)://paypal-cancel"
         )
 
-        let apiClient: PrimerAPIClientProtocol = PayPalService.apiClient ?? PrimerAPIClient()
         apiClient.createPayPalBillingAgreementSession(clientToken: decodedJWTToken,
                                                       payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
             switch result {
@@ -204,7 +205,6 @@ internal class PayPalService: PayPalServiceProtocol {
 
         let body = Request.Body.PayPal.ConfirmBillingAgreement(paymentMethodConfigId: configId, tokenId: tokenId)
 
-        let apiClient: PrimerAPIClientProtocol = PayPalService.apiClient ?? PrimerAPIClient()
         apiClient.confirmPayPalBillingAgreement(clientToken: decodedJWTToken,
                                                 payPalConfirmBillingAgreementRequest: body) { result in
             switch result {
@@ -242,7 +242,6 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
 
-        let apiClient: PrimerAPIClientProtocol = PayPalService.apiClient ?? PrimerAPIClient()
         apiClient.fetchPayPalExternalPayerInfo(
             clientToken: decodedJWTToken,
             payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo(paymentMethodConfigId: configId, orderId: orderId)) { result in
