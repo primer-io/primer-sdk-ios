@@ -159,7 +159,7 @@ jobs:
         - name: Post summary message to a Slack channel
           if: ${{ success() || failure() }}
           id: slack
-          uses: slackapi/slack-github-action@6c661ce58804a1a20f6dc5fbee7f0381b469e001 #v1.25.0
+          uses: slackapi/slack-github-action@70cd7be8e40a46e8b0eced40b0de447bdb42f68e #v1.26.0
           with:
             channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
             payload-file-path: '/var/tmp/slack-minimal_summary.json'
@@ -177,7 +177,7 @@ jobs:
         - name: Post detailed summary to Slack channel thread
           if: ${{ failure() }}
           id: slack_thread
-          uses: slackapi/slack-github-action@6c661ce58804a1a20f6dc5fbee7f0381b469e001 #v1.25.0
+          uses: slackapi/slack-github-action@70cd7be8e40a46e8b0eced40b0de447bdb42f68e #v1.26.0
           with:
             channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
             payload-file-path: '/var/tmp/slack_failed_summary.json'
