@@ -51,6 +51,7 @@ internal protocol PrimerPaymentMethodOptionsProtocol {
     var applePayOptions: PrimerApplePayOptions? { get }
     var klarnaOptions: PrimerKlarnaOptions? { get }
     var threeDsOptions: PrimerThreeDsOptions? { get }
+    var stripeOptions: PrimerStripeACHOptions? { get }
 }
 
 public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Codable {
@@ -63,17 +64,20 @@ public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Cod
     // Was it intentional?
     var cardPaymentOptions: PrimerCardPaymentOptions = PrimerCardPaymentOptions()
     var threeDsOptions: PrimerThreeDsOptions?
+    var stripeOptions: PrimerStripeACHOptions?
 
     public init(
         urlScheme: String? = nil,
         applePayOptions: PrimerApplePayOptions? = nil,
         klarnaOptions: PrimerKlarnaOptions? = nil,
-        threeDsOptions: PrimerThreeDsOptions? = nil
+        threeDsOptions: PrimerThreeDsOptions? = nil,
+        stripeOptions: PrimerStripeACHOptions? = nil
     ) {
         self.urlScheme = urlScheme
         self.applePayOptions = applePayOptions
         self.klarnaOptions = klarnaOptions
         self.threeDsOptions = threeDsOptions
+        self.stripeOptions = stripeOptions
     }
 
     @available(swift, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
@@ -81,11 +85,13 @@ public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Cod
         urlScheme: String? = nil,
         applePayOptions: PrimerApplePayOptions? = nil,
         klarnaOptions: PrimerKlarnaOptions? = nil,
-        cardPaymentOptions: PrimerCardPaymentOptions? = nil
+        cardPaymentOptions: PrimerCardPaymentOptions? = nil,
+        stripeOptions: PrimerStripeACHOptions? = nil
     ) {
         self.urlScheme = urlScheme
         self.applePayOptions = applePayOptions
         self.klarnaOptions = klarnaOptions
+        self.stripeOptions = stripeOptions
     }
 }
 
@@ -125,6 +131,15 @@ public class PrimerKlarnaOptions: Codable {
 
     public init(recurringPaymentDescription: String) {
         self.recurringPaymentDescription = recurringPaymentDescription
+    }
+}
+
+// MARK: Stripe ACH
+public class PrimerStripeACHOptions: Codable {
+    var publishableKey: String
+
+    public init(publishableKey: String) {
+        self.publishableKey = publishableKey
     }
 }
 
