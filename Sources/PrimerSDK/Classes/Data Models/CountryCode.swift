@@ -256,19 +256,9 @@ public enum CountryCode: String, Codable, CaseIterable {
     case ye = "YE"
     case zm = "ZM"
     case zw = "ZW"
-
-    init?(optionalRawValue: String?) {
-        guard let rawValue = optionalRawValue else {
-            return nil
-        }
-
-        self.init(rawValue: rawValue.uppercased())
-    }
 }
 
 internal extension CountryCode {
-
-    static var all = CountryCode.allCases
 
     var country: String {
         return localizedCountryName
@@ -329,11 +319,10 @@ extension CountryCode {
     struct LocalizedCountries {
 
         static var loadedCountriesBasedOnLocale: DecodableLocalizedCountries? = {
-            let jsonParser = JSONParser()
-            guard let localizedCountriesData = jsonParser.loadJsonData(fileName: CountryCode.languageCode) else {
+            guard let localizedCountriesData = JSONLoader.loadJsonData(fileName: CountryCode.languageCode) else {
                 return nil
             }
-            return try? jsonParser.parse(DecodableLocalizedCountries.self, from: localizedCountriesData)
+            return try? JSONDecoder().decode(DecodableLocalizedCountries.self, from: localizedCountriesData)
         }()
     }
 
@@ -353,11 +342,11 @@ extension CountryCode {
     }
 
     private static var loadedPhoneNumberCountryCodes: [PhoneNumberCountryCode]? = {
-        let jsonParser = JSONParser().withSnakeCaseParsing()
-        guard let currenciesData = jsonParser.loadJsonData(fileName: "phone_number_country_codes") else {
+        guard let currenciesData = JSONLoader.loadJsonData(fileName: "phone_number_country_codes") else {
             return nil
         }
-        return try? jsonParser.parse([PhoneNumberCountryCode].self, from: currenciesData)
+        let jsonDecoder = JSONDecoder().withSnakeCaseParsing()
+        return try? jsonDecoder.decode([PhoneNumberCountryCode].self, from: currenciesData)
     }()
 }
 // swiftlint:enable identifier_name

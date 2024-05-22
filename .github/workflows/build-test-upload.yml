@@ -41,7 +41,7 @@ jobs:
     needs:
       - unit-tests
     name: SonarCloud
-    runs-on: macos-13-large
+    runs-on: macos-13
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
@@ -64,7 +64,7 @@ jobs:
   build-and-upload-to-appetize:
     needs:
       - unit-tests
-    runs-on: macos-13
+    runs-on: macos-13-large
     timeout-minutes: 45
     name: "Build and upload app to Appetize"
     steps:

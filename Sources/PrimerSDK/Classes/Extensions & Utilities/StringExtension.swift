@@ -152,7 +152,7 @@ internal extension String {
         guard !segment.isEmpty, let data = Data(base64Encoded: segment,
                                                 options: .ignoreUnknownCharacters)
         else { return nil }
-        return try? JSONParser().parse(DecodedJWTToken.self, from: data)
+        return try? JSONDecoder().decode(DecodedJWTToken.self, from: data)
     }
 
     private var base64IOSFormat: Self {
@@ -165,13 +165,9 @@ internal extension String {
     }
 
     var base64RFC4648Format: Self {
-        let str = self.replacingOccurrences(of: "+",
-                                            with: "-")
-            .replacingOccurrences(of: "/",
-                                  with: "_")
-            .replacingOccurrences(of: "=",
-                                  with: "")
-        return str
+        return self.replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "=", with: "")
     }
 
     func toDate(withFormat format: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
@@ -260,13 +256,6 @@ internal extension String {
             return versionComponents.joined(separator: versionDelimiter)
                 .compare(otherVersionComponents.joined(separator: versionDelimiter), options: .numeric)
         }
-    }
-
-    var isValidCountryCode: Bool {
-        let pattern = "^\\+\\d{1,3}(-\\d{1,4})?$"
-        let regex = try? NSRegularExpression(pattern: pattern, options: [])
-        let matches = regex?.matches(in: self, options: [], range: NSRange(location: 0, length: self.count))
-        return matches?.count ?? 0 > 0
     }
 
     var isValidMobilePhoneNumber: Bool {

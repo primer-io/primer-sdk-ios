@@ -1,6 +1,6 @@
 //
 //  PrimerNolPayProtocol.swift
-//  Debug App Tests
+//  PrimerSDK
 //
 //  Created by Boris on 4.10.23..
 //  Copyright © 2023 Primer API Ltd. All rights reserved.
