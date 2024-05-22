@@ -20,8 +20,15 @@ final class PrimerPaymentMethodOptionsTests: XCTestCase {
         XCTAssertEqual(try model.validSchemeForUrlScheme(), "urlscheme")
     }
 
-    func testUrlSchemeInvalid() throws {
+    func testUrlSchemeInvalidSchemeValidUrl() throws {
         let model = PrimerPaymentMethodOptions(urlScheme: "urlscheme./")
+
+        XCTAssertThrowsError(try model.validUrlForUrlScheme())
+        XCTAssertThrowsError(try model.validSchemeForUrlScheme())
+    }
+
+    func testUrlSchemeInvalidUrl() throws {
+        let model = PrimerPaymentMethodOptions(urlScheme: "!@£$%^&*()")
 
         XCTAssertThrowsError(try model.validUrlForUrlScheme())
         XCTAssertThrowsError(try model.validSchemeForUrlScheme())

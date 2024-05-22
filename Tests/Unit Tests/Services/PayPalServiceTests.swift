@@ -13,10 +13,7 @@ class PayPalServiceTests: XCTestCase {
     func test_startOrderSession_fails_if_client_token_nil() throws {
         let expectation = self.expectation(description: "Create PayPal payment sesion | Failure: No client token")
 
-        let response = Response.Body.PayPal.CreateOrder(orderId: "oid", approvalUrl: "primer.io")
-        //        let api = MockPrimerAPIClient(with: data, throwsError: true)
         let state = MockAppState()
-
         DependencyContainer.register(state as AppStateProtocol)
         state.clientToken = nil
 
@@ -163,6 +160,38 @@ class PayPalServiceTests: XCTestCase {
         })
 
         wait(for: [expectation], timeout: 2.0)
+    }
+
+    func testStartOrderSession() throws {
+        let apiClient = MockPayPalAPIClient()
+        let service = PayPalService(apiClient: apiClient)
+
+        MockLocator.registerDependencies()
+        let settings = PrimerSettings(paymentMethodOptions: PrimerPaymentMethodOptions(urlScheme: "scheme://"))
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        SDKSessionHelper.setUp(withPaymentMethods: [Mocks.PaymentMethods.paypalPaymentMethod])
+
+        let state = MockAppState()
+        DependencyContainer.register(state as AppStateProtocol)
+        state.amount = 123
+        state.currency = Currency(code: "GBP", decimalDigits: 2)
+
+        apiClient.onCreateOrderSession = { _, _ in
+            return .init(orderId: "order_id", approvalUrl: "scheme://approve")
+        }
+
+        let startOrderSessionExpectation = self.expectation(description: "Billing agreement started")
+        service.startOrderSession { result in
+            switch result {
+            case .success(let model):
+                XCTAssertEqual(model.orderId, "order_id")
+                XCTAssertEqual(model.approvalUrl, "scheme://approve")
+            case .failure(_):
+                XCTFail()
+            }
+            startOrderSessionExpectation.fulfill()
+        }
+        waitForExpectations(timeout: 2.0)
     }
 
     func testCreateBillingAgreement() throws {
