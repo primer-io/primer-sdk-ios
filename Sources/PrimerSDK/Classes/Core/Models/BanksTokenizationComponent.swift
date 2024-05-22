@@ -61,7 +61,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                   tokenizationService: TokenizationService())
     }
 
-    init(config: PrimerPaymentMethod, 
+    init(config: PrimerPaymentMethod,
          uiManager: PrimerUIManaging,
          tokenizationService: TokenizationServiceProtocol) {
         self.config = config

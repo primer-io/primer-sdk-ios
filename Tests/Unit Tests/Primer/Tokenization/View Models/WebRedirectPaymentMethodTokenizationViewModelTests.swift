@@ -33,10 +33,10 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
         uiManager = nil
         createResumePaymentService = nil
         tokenizationService = nil
-        SDKSessionHelper.tearDown()
     }
 
     func testClientTokenValidation() throws {
+        SDKSessionHelper.tearDown()
         XCTAssertThrowsError(try sut.validate())
 
         try SDKSessionHelper.test {
