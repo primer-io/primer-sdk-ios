@@ -98,7 +98,7 @@ The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a 
     }
 
     func validUrlForUrlScheme() throws -> URL {
-        guard let urlScheme = urlScheme, let url = URL(string: urlScheme) else {
+        guard let urlScheme = urlScheme, let url = URL(string: urlScheme), url.scheme != nil else {
             let err = PrimerError.invalidValue(
                 key: "urlScheme",
                 value: nil,
