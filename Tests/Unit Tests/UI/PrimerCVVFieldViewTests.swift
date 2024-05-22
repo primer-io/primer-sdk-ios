@@ -12,19 +12,21 @@ final class PrimerCVVFieldViewTests: XCTestCase {
 
     var view: PrimerCVVFieldView!
 
+    var delegate: MockTextFieldViewDelegate!
+
     override func setUpWithError() throws {
         view = PrimerCVVFieldView()
+        delegate = MockTextFieldViewDelegate()
+        view.delegate = delegate
     }
 
     override func tearDownWithError() throws {
+        delegate = nil
         view = nil
     }
 
     func testValidationValidCVV() {
         view.text = "1234"
-        let delegate = MockTextFieldViewDelegate()
-        view.delegate = delegate
-
         view.cardNetwork = .amex
 
         let expectation = self.expectation(description: "onIsValid is called")
@@ -49,9 +51,6 @@ final class PrimerCVVFieldViewTests: XCTestCase {
 
     func testValidationInvalidCVV() {
         view.text = "1234"
-        let delegate = MockTextFieldViewDelegate()
-        view.delegate = delegate
-
         view.cardNetwork = .visa
 
         let expectation = self.expectation(description: "onIsValid is called")
@@ -77,9 +76,6 @@ final class PrimerCVVFieldViewTests: XCTestCase {
 
     func testValidationEmptyCVV() {
         view.text = "1234"
-        let delegate = MockTextFieldViewDelegate()
-        view.delegate = delegate
-
         view.cardNetwork = .visa
 
         view.isValid = { _ in false }

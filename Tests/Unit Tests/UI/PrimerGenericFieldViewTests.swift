@@ -12,19 +12,21 @@ final class PrimerGenericFieldViewTests: XCTestCase {
 
     var view: PrimerGenericFieldView!
 
+    var delegate: MockTextFieldViewDelegate!
+
     override func setUpWithError() throws {
         view = PrimerGenericFieldView()
+        delegate = MockTextFieldViewDelegate()
+        view.delegate = delegate
     }
 
     override func tearDownWithError() throws {
+        delegate = nil
         view = nil
     }
 
     func testValidationValidGeneric() throws {
         view.text = ""
-        let delegate = MockTextFieldViewDelegate()
-        view.delegate = delegate
-
         view.isValid = { _ in true }
 
         let expectation = self.expectation(description: "onIsValid is called")
@@ -49,9 +51,6 @@ final class PrimerGenericFieldViewTests: XCTestCase {
 
     func testValidationInvalidGeneric() throws {
         view.text = ""
-        let delegate = MockTextFieldViewDelegate()
-        view.delegate = delegate
-
         view.isValid = { _ in false }
 
         let expectation = self.expectation(description: "onIsValid is called")

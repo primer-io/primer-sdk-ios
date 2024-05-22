@@ -12,18 +12,21 @@ final class PrimerFirstNameFieldViewTests: XCTestCase {
 
     var view: PrimerFirstNameFieldView!
 
+    var delegate: MockTextFieldViewDelegate!
+
     override func setUpWithError() throws {
         view = PrimerFirstNameFieldView()
+        delegate = MockTextFieldViewDelegate()
+        view.delegate = delegate
     }
 
     override func tearDownWithError() throws {
+        delegate = nil
         view = nil
     }
 
     func testValidationValidFirstName() throws {
         view.text = ""
-        let delegate = MockTextFieldViewDelegate()
-        view.delegate = delegate
 
         let expectation = self.expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in

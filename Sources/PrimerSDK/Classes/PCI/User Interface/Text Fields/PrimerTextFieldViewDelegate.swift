@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 /// The PrimerTextFieldViewDelegate protocol can be used to retrieve information about the text input.
 /// PrimerCardNumberFieldView, PrimerExpiryDateFieldView, PrimerCVVFieldView & PrimerCardholderNameFieldView
 /// all have a delegate of PrimerTextFieldViewDelegate type.

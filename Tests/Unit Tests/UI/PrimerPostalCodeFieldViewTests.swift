@@ -12,18 +12,21 @@ final class PrimerPostalCodeFieldViewTests: XCTestCase {
 
     var view: PrimerPostalCodeFieldView!
 
+    var delegate: MockTextFieldViewDelegate!
+
     override func setUpWithError() throws {
         view = PrimerPostalCodeFieldView()
+        delegate = MockTextFieldViewDelegate()
+        view.delegate = delegate
     }
 
     override func tearDownWithError() throws {
+        delegate = nil
         view = nil
     }
 
     func testValidationValidCode() throws {
         view.text = ""
-        let delegate = MockTextFieldViewDelegate()
-        view.delegate = delegate
 
         let expectation = self.expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
@@ -47,8 +50,6 @@ final class PrimerPostalCodeFieldViewTests: XCTestCase {
 
     func testValidationInvalidCode() throws {
         view.text = ""
-        let delegate = MockTextFieldViewDelegate()
-        view.delegate = delegate
 
         let expectation = self.expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in

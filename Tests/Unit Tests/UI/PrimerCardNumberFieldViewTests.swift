@@ -12,11 +12,16 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
 
     var view: PrimerCardNumberFieldView!
 
+    var delegate: MockTextFieldViewDelegate!
+
     override func setUpWithError() throws {
         view = PrimerCardNumberFieldView()
+        delegate = MockTextFieldViewDelegate()
+        view.delegate = delegate
     }
 
     override func tearDownWithError() throws {
+        delegate = nil
         view = nil
     }
 
@@ -47,8 +52,6 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
 
     func testValidationInvalidCardNumber() throws {
         view.text = ""
-        let delegate = MockTextFieldViewDelegate()
-        view.delegate = delegate
 
         let expectation = self.expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
@@ -72,8 +75,6 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
 
     func testValidationInvalidCardNumber_Empty() throws {
         view.text = "4111"
-        let delegate = MockTextFieldViewDelegate()
-        view.delegate = delegate
 
         let expectation = self.expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
@@ -96,8 +97,6 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
 
     func testValidationInvalidCardNumber_Partial() throws {
         view.text = ""
-        let delegate = MockTextFieldViewDelegate()
-        view.delegate = delegate
 
         let expectation = self.expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in

@@ -12,18 +12,21 @@ final class PrimerExpiryDateFieldViewTests: XCTestCase {
 
     var view: PrimerExpiryDateFieldView!
 
+    var delegate: MockTextFieldViewDelegate!
+
     override func setUpWithError() throws {
         view = PrimerExpiryDateFieldView()
+        delegate = MockTextFieldViewDelegate()
+        view.delegate = delegate
     }
 
     override func tearDownWithError() throws {
+        delegate = nil
         view = nil
     }
 
     func testValidationValidCode() throws {
         view.text = ""
-        let delegate = MockTextFieldViewDelegate()
-        view.delegate = delegate
 
         let expectation = self.expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
@@ -47,8 +50,6 @@ final class PrimerExpiryDateFieldViewTests: XCTestCase {
 
     func testValidationInvalidCode() throws {
         view.text = ""
-        let delegate = MockTextFieldViewDelegate()
-        view.delegate = delegate
 
         let expectation = self.expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
@@ -73,12 +74,9 @@ final class PrimerExpiryDateFieldViewTests: XCTestCase {
 
     func testValidationValidCodePartials() throws {
         view.text = ""
-        let delegate = MockTextFieldViewDelegate()
-        view.delegate = delegate
 
         let expectation = self.expectation(description: "onIsValid is called")
         delegate.onIsValid = { isValid in
-            print(">>>>> IS VALID TEXT: \(self.view.textField!.internalText!)")
             if self.view.textField!.internalText!.count < 5 { return }
             XCTAssertNotNil(isValid)
             XCTAssertTrue(isValid!)
@@ -98,7 +96,6 @@ final class PrimerExpiryDateFieldViewTests: XCTestCase {
         _ = view.textField(view.textField,
                            shouldChangeCharactersIn: NSRange(location: 3, length: 0),
                            replacementString: "40")
-
 
         waitForExpectations(timeout: 2.0)
     }
