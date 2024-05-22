@@ -39,11 +39,4 @@ public class PrimerBancontactCardData: PrimerRawData {
         self.cardholderName = cardholderName
         super.init()
     }
-
-    public override func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(cardNumber, forKey: .cardNumber)
-        try container.encode(expiryDate, forKey: .expiryDate)
-        try container.encode(cardholderName, forKey: .cardholderName)
-    }
 }

@@ -14,11 +14,6 @@ target 'Debug App' do
   pod 'PrimerNolPaySDK'
   pod 'IQKeyboardManagerSwift'
 
-  target 'Debug App Tests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
   post_install do |installer|
     fix_code_signing(installer)
     fix_linking(installer)

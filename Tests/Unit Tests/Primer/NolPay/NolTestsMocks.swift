@@ -8,57 +8,57 @@
 
 #if canImport(PrimerNolPaySDK)
 import XCTest
-@testable import PrimerSDK
 import PrimerNolPaySDK
+@testable import PrimerSDK
 
-class MockPrimerNolPay: PrimerNolPayProtocol {
-
-    // Mock responses for the mock methods
-    var mockCardNumber: String = "1234567890123456"
-    var mockError: PrimerNolPayError = PrimerNolPayError(description: "Mock Error")
-    var mockBoolResponse: Bool = true
-    var mockOTPResponse: (String, String) = ("mockOTP", "mockToken")
-    var mockCards: [PrimerNolPayCard] = [PrimerNolPayCard(cardNumber: "1234567890123456", expiredTime: "12/34")]
-
-    required init(appId: String, isDebug: Bool, isSandbox: Bool, appSecretHandler: @escaping (String, String) async throws -> String) {
-    }
-
-    func scanNFCCard(completion: @escaping (Result<String, PrimerNolPayError>) -> Void) {
-        completion(.success(mockCardNumber))
-    }
-
-    func makeLinkingToken(for cardNumber: String, completion: @escaping (Result<String, PrimerNolPayError>) -> Void) {
-        completion(.success("mockLinkingToken"))
-    }
-
-    func sendLinkOTP(to mobileNumber: String, with countryCode: String, and token: String, completion: ((Result<Bool, PrimerNolPayError>) -> Void)?) {
-        completion?(.success(mockBoolResponse))
-    }
-
-    func linkCard(for otp: String, and linkToken: String, completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void) {
-        completion(.success(mockBoolResponse))
-    }
-
-    func sendUnlinkOTP(to mobileNumber: String, with countryCode: String, and cardNumber: String, completion: @escaping (Result<(String, String), PrimerNolPayError>) -> Void) {
-        completion(.success(mockOTPResponse))
-    }
-
-    func unlinkCard(with cardNumber: String, otp: String, and unlinkToken: String, completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void) {
-        completion(.success(mockBoolResponse))
-    }
-
-    func requestPayment(for cardNumber: String, and transactionNumber: String, completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void) {
-        completion(.success(mockBoolResponse))
-    }
-
-    func getAvailableCards(for mobileNumber: String, with countryCode: String, completion: @escaping (Result<[PrimerNolPayCard], PrimerNolPayError>) -> Void) {
-        if mockCards.count > 0 {
-            completion(.success(mockCards))
-        } else {
-            completion(.failure(PrimerNolPayError.nolPaySdkError(message: "Failed")))
-        }
-    }
-}
+//class MockPrimerNolPay: PrimerNolPayProtocol {
+//
+//    // Mock responses for the mock methods
+//    var mockCardNumber: String = "1234567890123456"
+//    var mockError: PrimerNolPayError = PrimerNolPayError(description: "Mock Error")
+//    var mockBoolResponse: Bool = true
+//    var mockOTPResponse: (String, String) = ("mockOTP", "mockToken")
+//    var mockCards: [PrimerNolPayCard] = [PrimerNolPayCard(cardNumber: "1234567890123456", expiredTime: "12/34")]
+//
+//    required init(appId: String, isDebug: Bool, isSandbox: Bool, appSecretHandler: @escaping (String, String) async throws -> String) {
+//    }
+//
+//    func scanNFCCard(completion: @escaping (Result<String, PrimerNolPayError>) -> Void) {
+//        completion(.success(mockCardNumber))
+//    }
+//
+//    func makeLinkingToken(for cardNumber: String, completion: @escaping (Result<String, PrimerNolPayError>) -> Void) {
+//        completion(.success("mockLinkingToken"))
+//    }
+//
+//    func sendLinkOTP(to mobileNumber: String, with countryCode: String, and token: String, completion: ((Result<Bool, PrimerNolPayError>) -> Void)?) {
+//        completion?(.success(mockBoolResponse))
+//    }
+//
+//    func linkCard(for otp: String, and linkToken: String, completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void) {
+//        completion(.success(mockBoolResponse))
+//    }
+//
+//    func sendUnlinkOTP(to mobileNumber: String, with countryCode: String, and cardNumber: String, completion: @escaping (Result<(String, String), PrimerNolPayError>) -> Void) {
+//        completion(.success(mockOTPResponse))
+//    }
+//
+//    func unlinkCard(with cardNumber: String, otp: String, and unlinkToken: String, completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void) {
+//        completion(.success(mockBoolResponse))
+//    }
+//
+//    func requestPayment(for cardNumber: String, and transactionNumber: String, completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void) {
+//        completion(.success(mockBoolResponse))
+//    }
+//
+//    func getAvailableCards(for mobileNumber: String, with countryCode: String, completion: @escaping (Result<[PrimerNolPayCard], PrimerNolPayError>) -> Void) {
+//        if mockCards.count > 0 {
+//            completion(.success(mockCards))
+//        } else {
+//            completion(.failure(PrimerNolPayError.nolPaySdkError(message: "Failed")))
+//        }
+//    }
+//}
 
 class MockPhoneMetadataService: NolPayPhoneMetadataProviding {
     var resultToReturn: Result<(PrimerValidationStatus, String?, String?), PrimerError>?

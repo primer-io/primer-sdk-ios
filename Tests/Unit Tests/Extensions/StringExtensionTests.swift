@@ -76,7 +76,7 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertTrue("12/30".isValidExpiryDate)
     }
 
-    func testIsTypingValidCVV() {
+    func testIsValidCVV() {
         // Four digit
         let fourDigitCVVNetworks = CardNetwork.allCases.filter { network in
             guard let validation = network.validation else { return false }
@@ -100,6 +100,40 @@ final class StringExtensionTests: XCTestCase {
             XCTAssertFalse("1234".isValidCVV(cardNetwork: network))
             XCTAssertFalse("".isValidCVV(cardNetwork: network))
         }
+
+        // Unknown
+        XCTAssertTrue("123".isValidCVV(cardNetwork: .unknown))
+        XCTAssertFalse("123456".isValidCVV(cardNetwork: .unknown))
+    }
+
+    func testIsTypingValidCVV() {
+        // Three digit
+        let threeDigitCVVNetworks = CardNetwork.allCases.filter { network in
+            guard let validation = network.validation else { return false }
+            return validation.code.length == 3
+        }
+        threeDigitCVVNetworks.forEach { network in
+            XCTAssertTrue("123".isTypingValidCVV(cardNetwork: network)!)
+            XCTAssertNil("12".isTypingValidCVV(cardNetwork: network))
+            XCTAssertEqual("1234".isTypingValidCVV(cardNetwork: network)!, false)
+            XCTAssertNil("".isTypingValidCVV(cardNetwork: network))
+        }
+
+        // Four digit
+        let fourDigitCVVNetworks = CardNetwork.allCases.filter { network in
+            guard let validation = network.validation else { return false }
+            return validation.code.length == 4
+        }
+        fourDigitCVVNetworks.forEach { network in
+            XCTAssertTrue("1234".isTypingValidCVV(cardNetwork: network)!)
+            XCTAssertNil("12".isTypingValidCVV(cardNetwork: network))
+            XCTAssertTrue("123".isTypingValidCVV(cardNetwork: network)!)
+            XCTAssertNil("".isTypingValidCVV(cardNetwork: network))
+        }
+
+        // Unknown
+        XCTAssertTrue("123".isTypingValidCVV(cardNetwork: .unknown)!)
+        XCTAssertFalse("123456".isTypingValidCVV(cardNetwork: .unknown)!)
     }
 
     func testIsValidNonDecimalString() {
@@ -146,7 +180,6 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertTrue("5280802886982742".isValidLuhn)
         XCTAssertTrue("5410239186890221".isValidLuhn)
         XCTAssertTrue("2720992286723005".isValidLuhn)
-
     }
 
     func testDecodedJWTToken() {
@@ -198,11 +231,20 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertThrowsError(try "".validateExpiryDateString())
         XCTAssertThrowsError(try "01/2022".validateExpiryDateString())
         XCTAssertThrowsError(try "08/2022".validateExpiryDateString())
+        XCTAssertThrowsError(try "2022/2023".validateExpiryDateString())
         XCTAssertNoThrow(try almostOneYearAgoDateString().validateExpiryDateString())
         XCTAssertNoThrow(try "01/2028".validateExpiryDateString())
         XCTAssertNoThrow(try "02/2028".validateExpiryDateString())
         XCTAssertNoThrow(try "12/2028".validateExpiryDateString())
         XCTAssertNoThrow(try "01/2030".validateExpiryDateString())
+    }
+
+    func testBase64RFC4648Format() {
+        XCTAssertEqual("++//==".base64RFC4648Format, "--__")
+        XCTAssertEqual(
+            "aHR0cHM6Ly93d3cuZ29vZ2xlLmNvbS9tYXBzL3BsYWNlL0NpdHkrb2YrUGF3bmVlL0AzOC41ODc3NjQzLC05NC43MTc2NzUzLDZ6L2RhdGE9ITRtMTAhMW0yITJtMSExc3Bhd25lZSwraW5kaWFuYSEzbTYhMXMweDg3YjExZWNmYjRlZmZmZmY6MHgyNjEzNTIzNWY3YzA2ZTkyIThtMiEzZDM2LjMzNzY3ODghNGQtOTYuODA0NDk3NSExNXNDZzl3WVhkdVpXVXNJR2x1WkdsaGJtR1NBUVJ3WVhKcjRBRUEhMTZzJTJGZyUyRjExZ2hyMTEyaG4/ZW50cnk9dHR1YQ==".base64RFC4648Format,
+            "aHR0cHM6Ly93d3cuZ29vZ2xlLmNvbS9tYXBzL3BsYWNlL0NpdHkrb2YrUGF3bmVlL0AzOC41ODc3NjQzLC05NC43MTc2NzUzLDZ6L2RhdGE9ITRtMTAhMW0yITJtMSExc3Bhd25lZSwraW5kaWFuYSEzbTYhMXMweDg3YjExZWNmYjRlZmZmZmY6MHgyNjEzNTIzNWY3YzA2ZTkyIThtMiEzZDM2LjMzNzY3ODghNGQtOTYuODA0NDk3NSExNXNDZzl3WVhkdVpXVXNJR2x1WkdsaGJtR1NBUVJ3WVhKcjRBRUEhMTZzJTJGZyUyRjExZ2hyMTEyaG4_ZW50cnk9dHR1YQ"
+        )
     }
 
     func testCompareWithVersion() {
@@ -219,18 +261,9 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertEqual("15.0.0".compareWithVersion("12.1.3"), .orderedDescending)
 
         XCTAssertEqual("1.2.3".compareWithVersion("1.2.3"), .orderedSame)
-    }
 
-    func testIsValidCountryCode() {
-        XCTAssertTrue("+44".isValidCountryCode)
-        XCTAssertTrue("+68".isValidCountryCode)
-        XCTAssertTrue("+862".isValidCountryCode)
-        XCTAssertTrue("+862-1234".isValidCountryCode)
-
-        XCTAssertFalse("+AB".isValidCountryCode)
-        XCTAssertFalse("44".isValidCountryCode)
-        XCTAssertFalse("44-1234".isValidCountryCode)
-        XCTAssertFalse("-44".isValidCountryCode)
+        XCTAssertEqual("1.2.3".compareWithVersion("1.2"), .orderedDescending)
+        XCTAssertEqual("1.2".compareWithVersion("1.2.0"), .orderedSame)
     }
 
     func testIsValidMobilePhoneNumber() {
@@ -252,10 +285,12 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertFalse("".isValidOTP)
     }
 
+    // MARK: Helpers
+
     private func almostOneYearAgoDateString(format: String = "MM/YY") -> String {
-        let date = Date() - 364
-        let df = DateFormatter()
-        df.dateFormat = "MM/YYYY"
-        return df.string(from: date)
+        let date = Date() - (60 * 60 * 24 * 364)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM/YYYY"
+        return dateFormatter.string(from: date)
     }
 }

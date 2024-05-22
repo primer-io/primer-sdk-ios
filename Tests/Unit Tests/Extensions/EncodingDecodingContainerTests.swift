@@ -9,72 +9,141 @@
 import XCTest
 @testable import PrimerSDK
 
-class EncodingTests: XCTestCase {
+class EncodingDecodingTests: XCTestCase {
 
-    func test_encoding_event_context() throws {
-        let event = Analytics.Event.message(
-            message: "This is a test message",
-            messageType: .error,
-            severity: .error,
-            context: [
-                "bool": true,
-                "int": 1,
-                "double": 1.0001,
-                "string": "This is a string"
+    let event = Analytics.Event.message(
+        message: "This is a test message",
+        messageType: .error,
+        severity: .error,
+        context: [
+            "bool": true,
+            "int": 123,
+            "double": 1.123,
+            "string": "This is a string",
+            "dict": [
+                "string": "This is another string"
+            ],
+            "array": [
+                false,
+                321,
+                3.321,
+                "This is a string in an array",
             ]
-        )
+        ]
+    )
 
-        do {
-            let data = try JSONEncoder().encode(event)
-            guard let dictionary = (try JSONSerialization.jsonObject(with: data)) as? [String: Any] else {
-                XCTAssert(false, "Failed to find serialize data into Dictionary<String: Any>")
-                return
-            }
+    let eventWithoutContext = Analytics.Event.message(
+        message: "This is a test message",
+        messageType: .error,
+        severity: .error
+    )
 
-            guard let properties = dictionary["properties"] as? [String: Any] else {
-                XCTAssert(false, "Failed to serialize 'properties' into Dictionary<String: Any>")
-                return
-            }
+    func testEncodingEventContext() throws {
+        let data = try JSONEncoder().encode(event)
 
-            guard let context = properties["context"] as? [String: Any] else {
-                XCTAssert(false, "Failed to serialize 'context' into Dictionary<String: Any>")
-                return
-            }
+        let dictionary = (try JSONSerialization.jsonObject(with: data)) as? [String: Any]
+        XCTAssertNotNil(dictionary)
 
-            if let boolVal = context["bool"] as? Bool {
-                if !boolVal {
-                    XCTAssert(false, "Boolean value for key 'bool' has wrong value")
-                }
-            } else {
-                XCTAssert(false, "Failed to find boolean value for key 'bool'")
-            }
+        let properties = dictionary!["properties"] as? [String: Any]
+        XCTAssertNotNil(properties)
 
-            if let intVal = context["int"] as? Int {
-                if intVal != 1 {
-                    XCTAssert(false, "Int value for key 'int' has wrong value")
-                }
-            } else {
-                XCTAssert(false, "Failed to find int value for key 'int'")
-            }
+        let context = properties!["context"] as? [String: Any]
+        XCTAssertNotNil(context)
 
-            if let doubleVal = context["double"] as? Double {
-                if doubleVal != 1.0001 {
-                    XCTAssert(false, "Double value for key 'double' has wrong value")
-                }
-            } else {
-                XCTAssert(false, "Failed to find double value for key 'double'")
-            }
+        let boolValue = context!["bool"] as? Bool
+        XCTAssertNotNil(boolValue)
+        XCTAssertTrue(boolValue!)
 
-            if let stringVal = context["string"] as? String {
-                if stringVal != "This is a string" {
-                    XCTAssert(false, "String value for key 'string' has wrong value")
-                }
-            } else {
-                XCTAssert(false, "Failed to find string value for key 'string'")
-            }
+        let intValue = context!["int"] as? Int
+        XCTAssertNotNil(intValue)
+        XCTAssertEqual(intValue!, 123)
 
-        } catch {
-            XCTAssert(false, error.localizedDescription)
-        }
+        let doubleValue = context!["double"] as? Double
+        XCTAssertNotNil(doubleValue)
+        XCTAssertEqual(doubleValue!, 1.123, accuracy: 0.001)
+
+
+        let stringValue = context!["string"] as? String
+        XCTAssertNotNil(stringValue)
+        XCTAssertEqual(stringValue!, "This is a string")
+
+        let nestedDict = context!["dict"] as? [String: Any]
+        XCTAssertNotNil(nestedDict)
+
+        let nestedDictStringValue = nestedDict!["string"] as? String
+        XCTAssertNotNil(nestedDictStringValue)
+        XCTAssertEqual(nestedDictStringValue!, "This is another string")
+
+        let nestedArray = context!["array"] as? [Any]
+        XCTAssertNotNil(nestedArray)
+
+        let nestedArrayBoolValue = nestedArray![0] as? Bool
+        XCTAssertNotNil(nestedArrayBoolValue)
+        XCTAssertFalse(nestedArrayBoolValue!)
+        let nestedArrayIntValue = nestedArray![1] as? Int
+        XCTAssertNotNil(nestedArrayIntValue)
+        XCTAssertEqual(nestedArrayIntValue!, 321)
+        let nestedArrayDoubleValue = nestedArray![2] as? Double
+        XCTAssertNotNil(nestedArrayDoubleValue)
+        XCTAssertEqual(nestedArrayDoubleValue!, 3.321, accuracy: 0.001)
+        let nestedArrayStringValue = nestedArray![3] as? String
+        XCTAssertNotNil(nestedArrayStringValue)
+        XCTAssertEqual(nestedArrayStringValue!, "This is a string in an array")
+    }
+
+    func testDecodingEventContext() throws {
+        let data = try JSONEncoder().encode(event)
+        let event = try JSONDecoder().decode(Analytics.Event.self, from: data)
+
+        let properties = event.properties as? MessageEventProperties
+        XCTAssertNotNil(properties)
+
+        let context = properties?.context
+        XCTAssertNotNil(context)
+
+        let boolValue = context!["bool"] as? Bool
+        XCTAssertNotNil(boolValue)
+        XCTAssertTrue(boolValue!)
+
+        let intValue = context!["int"] as? Int
+        XCTAssertNotNil(intValue)
+        XCTAssertEqual(intValue!, 123)
+
+        let doubleValue = context!["double"] as? Double
+        XCTAssertNotNil(doubleValue)
+        XCTAssertEqual(doubleValue!, 1.123, accuracy: 0.001)
+
+
+        let stringValue = context!["string"] as? String
+        XCTAssertNotNil(stringValue)
+        XCTAssertEqual(stringValue!, "This is a string")
+
+        let nestedDict = context!["dict"] as? [String: Any]
+        XCTAssertNotNil(nestedDict)
+
+        let nestedDictStringValue = nestedDict!["string"] as? String
+        XCTAssertNotNil(nestedDictStringValue)
+        XCTAssertEqual(nestedDictStringValue!, "This is another string")
+
+        let nestedArray = context!["array"] as? [Any]
+        XCTAssertNotNil(nestedArray)
+
+        let nestedArrayBoolValue = nestedArray![0] as? Bool
+        XCTAssertNotNil(nestedArrayBoolValue)
+        XCTAssertFalse(nestedArrayBoolValue!)
+        let nestedArrayIntValue = nestedArray![1] as? Int
+        XCTAssertNotNil(nestedArrayIntValue)
+        XCTAssertEqual(nestedArrayIntValue!, 321)
+        let nestedArrayDoubleValue = nestedArray![2] as? Double
+        XCTAssertNotNil(nestedArrayDoubleValue)
+        XCTAssertEqual(nestedArrayDoubleValue!, 3.321, accuracy: 0.001)
+        let nestedArrayStringValue = nestedArray![3] as? String
+        XCTAssertNotNil(nestedArrayStringValue)
+        XCTAssertEqual(nestedArrayStringValue!, "This is a string in an array")
+    }
+
+    func testEncodingEventWithoutContext() throws {
+        let data = try JSONEncoder().encode(eventWithoutContext)
+        XCTAssertNotNil(data)
     }
 }

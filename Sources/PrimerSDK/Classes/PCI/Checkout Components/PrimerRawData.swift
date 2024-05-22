@@ -7,15 +7,11 @@
 
 import Foundation
 
-internal protocol PrimerRawDataProtocol: Encodable {
+internal protocol PrimerRawDataProtocol {
     var onDataDidChange: (() -> Void)? { get set }
 }
 
 public class PrimerRawData: NSObject, PrimerRawDataProtocol {
 
     var onDataDidChange: (() -> Void)?
-
-    public func encode(to encoder: Encoder) throws {
-        fatalError()
-    }
 }

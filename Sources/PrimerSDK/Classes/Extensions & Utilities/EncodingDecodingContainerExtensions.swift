@@ -40,20 +40,48 @@ extension KeyedEncodingContainer {
         var nestedContainer = nestedContainer(keyedBy: JSONCodingKeys.self, forKey: key)
 
         for (entryKey, entryVal) in dictionary {
+            guard let key = JSONCodingKeys(stringValue: entryKey) else {
+                PrimerLogging.shared.logger.warn(message:
+                    "Expected to encode value in container of type \(K.self), but key '\(entryKey) was not valid"
+                )
+                continue
+            }
             if let boolVal = entryVal as? Bool {
-                try nestedContainer.encode(boolVal, forKey: JSONCodingKeys(stringValue: entryKey)!)
+                try nestedContainer.encode(boolVal, forKey: key)
             } else if let intVal = entryVal as? Int {
-                try nestedContainer.encode(intVal, forKey: JSONCodingKeys(stringValue: entryKey)!)
+                try nestedContainer.encode(intVal, forKey: key)
             } else if let floatVal = entryVal as? Float {
-                try nestedContainer.encode(floatVal, forKey: JSONCodingKeys(stringValue: entryKey)!)
+                try nestedContainer.encode(floatVal, forKey: key)
             } else if let doubleVal = entryVal as? Double {
-                try nestedContainer.encode(doubleVal, forKey: JSONCodingKeys(stringValue: entryKey)!)
+                try nestedContainer.encode(doubleVal, forKey: key)
             } else if let stringVal = entryVal as? String {
-                try nestedContainer.encode(stringVal, forKey: JSONCodingKeys(stringValue: entryKey)!)
-            } else {
-                if !mapNilToUndefined {
-                    try nestedContainer.encodeNil(forKey: JSONCodingKeys(stringValue: entryKey)!)
-                }
+                try nestedContainer.encode(stringVal, forKey: key)
+            } else if let dictVal = entryVal as? [String: Any] {
+                try nestedContainer.encode(dictVal, forKey: key)
+            } else if let arrayVal = entryVal as? [Any] {
+                try nestedContainer.encode(arrayVal, forKey: key)
+            } else if !mapNilToUndefined {
+                try nestedContainer.encodeNil(forKey: key)
+            }
+        }
+    }
+
+    mutating func encode(_ array: [Any], forKey key: KeyedEncodingContainer<K>.Key, mapNilToUndefined: Bool = false) throws {
+        var nestedContainer = nestedUnkeyedContainer(forKey: key)
+
+        for entryVal in array {
+            if let boolVal = entryVal as? Bool {
+                try nestedContainer.encode(boolVal)
+            } else if let intVal = entryVal as? Int {
+                try nestedContainer.encode(intVal)
+            } else if let floatVal = entryVal as? Float {
+                try nestedContainer.encode(floatVal)
+            } else if let doubleVal = entryVal as? Double {
+                try nestedContainer.encode(doubleVal)
+            } else if let stringVal = entryVal as? String {
+                try nestedContainer.encode(stringVal)
+            } else if !mapNilToUndefined {
+                try nestedContainer.encodeNil()
             }
         }
     }
@@ -79,16 +107,6 @@ extension KeyedDecodingContainer {
     func decode(_ type: Array<Any>.Type, forKey key: K) throws -> [Any] {
         var container = try self.nestedUnkeyedContainer(forKey: key)
         return try container.decode(type)
-    }
-
-    func decodeIfPresent(_ type: Array<Any>.Type, forKey key: K) throws -> [Any]? {
-        guard contains(key) else {
-            return nil
-        }
-        guard try decodeNil(forKey: key) == false else {
-            return nil
-        }
-        return try decode(type, forKey: key)
     }
 
     func decode(_ type: Dictionary<String, Any>.Type) throws -> [String: Any] {
@@ -122,6 +140,8 @@ extension UnkeyedDecodingContainer {
             if try decodeNil() {
                 continue
             } else if let value = try? decode(Bool.self) {
+                array.append(value)
+            } else if let value = try? decode(Int.self) {
                 array.append(value)
             } else if let value = try? decode(Double.self) {
                 array.append(value)

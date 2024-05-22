@@ -60,6 +60,9 @@ final class NetworkResponseFactoryTests: XCTestCase {
             XCTFail()
         } catch let error as InternalError {
             XCTAssertEqual(error.errorId, "failed-to-decode")
+            XCTAssertTrue(error.errorDescription!.hasPrefix(
+                "[failed-to-decode] Failed to decode (Failed to decode response of type \'TestCodable\' from URL: a_url"
+            ))
         } catch {
             XCTFail() // should be failed-to-decode only
         }
