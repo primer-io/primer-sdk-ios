@@ -135,9 +135,9 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         return Promise { seal in
             DispatchQueue.main.async {
                 #if canImport(PrimerKlarnaSDK)
-                guard let urlSchemeStr = self.settings.paymentMethodOptions.urlScheme,
-                      URL(string: urlSchemeStr) != nil else {
-                    let error = KlarnaHelpers.getInvalidUrlSchemeError(settings: self.settings)
+                do {
+                    _ = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
+                } catch let error {
                     seal.reject(error)
                     return
                 }

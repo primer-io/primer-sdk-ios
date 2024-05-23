@@ -239,15 +239,6 @@ struct KlarnaHelpers {
         return error
     }
 
-    static func getInvalidUrlSchemeError(settings: PrimerSettingsProtocol) -> PrimerError {
-        let error = PrimerError.invalidUrlScheme(
-            urlScheme: settings.paymentMethodOptions.urlScheme,
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: error)
-        return error
-    }
-
     static func getMissingSDKError() -> PrimerError {
         let error = PrimerError.missingSDK(
             paymentMethodType: PrimerPaymentMethodType.klarna.rawValue,
