@@ -63,7 +63,7 @@ class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
         }
     }
 
-    private func createRequest(for applePayRequest: ApplePayRequest) -> PKPaymentRequest {
+    func createRequest(for applePayRequest: ApplePayRequest) -> PKPaymentRequest {
         let request = PKPaymentRequest()
         let applePayOptions = PrimerSettings.current.paymentMethodOptions.applePayOptions
         let isBillingContactFieldsRequired = applePayOptions?.isCaptureBillingAddressEnabled == true
@@ -78,7 +78,7 @@ class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
         return request
     }
 
-    private var errorForDisplay: Error {
+    var errorForDisplay: Error {
         let errorMessage = "Cannot run ApplePay on this device"
 
         if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {

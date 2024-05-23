@@ -19,7 +19,20 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: - Properties
 
-    private var cardComponentsManager: InternalCardComponentsManager!
+    private lazy var cardComponentsManager: InternalCardComponentsManager = {
+        let manager = InternalCardComponentsManager(
+            cardnumberField: cardNumberField,
+            expiryDateField: expiryDateField,
+            cvvField: cvvField,
+            cardholderNameField: cardholderNameField,
+            billingAddressFieldViews: allVisibleBillingAddressFieldViews,
+            paymentMethodType: self.config.type,
+            isRequiringCVVInput: isRequiringCVVInput
+        )
+        cardComponentsManager.delegate = self
+        return manager
+    }()
+
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
     private var userInputCompletion: (() -> Void)?
@@ -286,29 +299,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
         formViews.append(contentsOf: allVisibleBillingAddressFieldContainerViews)
         return PrimerFormView(frame: .zero, formViews: formViews)
-    }
-
-    // MARK: - Init
-
-    override init(config: PrimerPaymentMethod,
-                  uiManager: PrimerUIManaging,
-                  tokenizationService: TokenizationServiceProtocol,
-                  createResumePaymentService: CreateResumePaymentServiceProtocol) {
-        super.init(config: config,
-                   uiManager: uiManager,
-                   tokenizationService: tokenizationService,
-                   createResumePaymentService: createResumePaymentService)
-
-        self.cardComponentsManager = InternalCardComponentsManager(
-            cardnumberField: cardNumberField,
-            expiryDateField: expiryDateField,
-            cvvField: cvvField,
-            cardholderNameField: cardholderNameField,
-            billingAddressFieldViews: allVisibleBillingAddressFieldViews,
-            paymentMethodType: self.config.type,
-            isRequiringCVVInput: isRequiringCVVInput
-        )
-        cardComponentsManager.delegate = self
     }
 
     override func start() {
