@@ -32,7 +32,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     static var apiClient: PrimerAPIClientProtocol?
 
     // Events
-    let checkouEventsNotifierModule = CheckoutEventsNotifierModule()
+    let checkoutEventsNotifierModule = CheckoutEventsNotifierModule()
     var didStartPayment: (() -> Void)?
     var didFinishPayment: ((Error?) -> Void)?
     var willPresentPaymentMethodUI: (() -> Void)?

@@ -100,7 +100,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             firstly {
-                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+                self.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 let customerToken = self.klarnaCustomerTokenAPIResponse
@@ -108,7 +108,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+                return self.checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
             }
             .done {
                 seal.fulfill()
