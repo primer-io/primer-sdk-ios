@@ -33,56 +33,68 @@ class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
     func present(withRequest applePayRequest: ApplePayRequest,
                  delegate: PKPaymentAuthorizationControllerDelegate) -> Promise<Void> {
         Promise { seal in
-            if isPresentable {
-                let request = PKPaymentRequest()
-                let applePayOptions = PrimerSettings.current.paymentMethodOptions.applePayOptions
-                let isBillingContactFieldsRequired = applePayOptions?.isCaptureBillingAddressEnabled == true
-                request.requiredBillingContactFields = isBillingContactFieldsRequired ? [.postalAddress] : []
-                request.currencyCode = applePayRequest.currency.code
-                request.countryCode = applePayRequest.countryCode.rawValue
-                request.merchantIdentifier = applePayRequest.merchantIdentifier
-                request.merchantCapabilities = [.capability3DS]
-                request.supportedNetworks = supportedNetworks
-                request.paymentSummaryItems = applePayRequest.items.compactMap({ $0.applePayItem })
+            guard isPresentable else {
+                let error = errorForDisplay
+                ErrorHandler.handle(error: error)
+                seal.reject(error)
+                return
+            }
 
-                let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
-                paymentController.delegate = delegate
+            let request = createRequest(for: applePayRequest)
 
-                paymentController.present { success in
-                    if success == false {
-                        let err = PrimerError.unableToPresentApplePay(userInfo: .errorUserInfoDictionary(),
-                                                                      diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        self.logger.error(message: "APPLE PAY")
-                        self.logger.error(message: err.recoverySuggestion ?? "")
-                        seal.reject(err)
-                        return
-                    } else {
-                        PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: PrimerPaymentMethodType.applePay.rawValue)
-                        seal.fulfill()
-                    }
-                }
-            } else {
-                let errorMessage = "Cannot run ApplePay on this device"
+            let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
+            paymentController.delegate = delegate
 
-                if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
-                    self.logger.error(message: "APPLE PAY")
-                    self.logger.error(message: errorMessage)
-                    let err = PrimerError.unableToMakePaymentsOnProvidedNetworks(userInfo: .errorUserInfoDictionary(),
-                                                                                 diagnosticsId: UUID().uuidString)
+            paymentController.present { success in
+                if success == false {
+                    let err = PrimerError.unableToPresentApplePay(userInfo: .errorUserInfoDictionary(),
+                                                                  diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
+                    self.logger.error(message: "APPLE PAY")
+                    self.logger.error(message: err.recoverySuggestion ?? "")
                     seal.reject(err)
+                    return
                 } else {
-                    self.logger.error(message: "APPLE PAY")
-                    self.logger.error(message: errorMessage)
-                    let info = ["message": errorMessage]
-                    let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: "APPLE_PAY",
-                                                                       userInfo: .errorUserInfoDictionary(additionalInfo: info),
-                                                                       diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
+                    PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: PrimerPaymentMethodType.applePay.rawValue)
+                    seal.fulfill()
                 }
             }
+
+        }
+    }
+
+    private func createRequest(for applePayRequest: ApplePayRequest) -> PKPaymentRequest {
+        let request = PKPaymentRequest()
+        let applePayOptions = PrimerSettings.current.paymentMethodOptions.applePayOptions
+        let isBillingContactFieldsRequired = applePayOptions?.isCaptureBillingAddressEnabled == true
+        request.requiredBillingContactFields = isBillingContactFieldsRequired ? [.postalAddress] : []
+        request.currencyCode = applePayRequest.currency.code
+        request.countryCode = applePayRequest.countryCode.rawValue
+        request.merchantIdentifier = applePayRequest.merchantIdentifier
+        request.merchantCapabilities = [.capability3DS]
+        request.supportedNetworks = supportedNetworks
+        request.paymentSummaryItems = applePayRequest.items.compactMap({ $0.applePayItem })
+
+        return request
+    }
+
+    private var errorForDisplay: Error {
+        let errorMessage = "Cannot run ApplePay on this device"
+
+        if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
+            self.logger.error(message: "APPLE PAY")
+            self.logger.error(message: errorMessage)
+            let err = PrimerError.unableToMakePaymentsOnProvidedNetworks(userInfo: .errorUserInfoDictionary(),
+                                                                         diagnosticsId: UUID().uuidString)
+            return err
+        } else {
+            self.logger.error(message: "APPLE PAY")
+            self.logger.error(message: errorMessage)
+            let info = ["message": errorMessage]
+            let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: "APPLE_PAY",
+                                                               userInfo: .errorUserInfoDictionary(additionalInfo: info),
+                                                               diagnosticsId: UUID().uuidString)
+            return err
         }
     }
 }

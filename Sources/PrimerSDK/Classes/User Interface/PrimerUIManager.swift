@@ -249,8 +249,8 @@ internal class PrimerUIManager: PrimerUIManaging {
     }
 
     func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType,
-                                          paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
-                                          withMessage message: String? = nil) {
+                                   paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
+                                   withMessage message: String? = nil) {
         if PrimerSettings.current.uiOptions.isSuccessScreenEnabled && type == .success {
             showResultScreenForResultType(type: .success, message: message)
         } else if PrimerSettings.current.uiOptions.isErrorScreenEnabled && type == .failure {
@@ -327,7 +327,7 @@ extension PrimerUIManager {
         shared.handleErrorBasedOnSDKSettings(error)
     }
 
-    static fileprivate func showResultScreenForResultType(type: PrimerResultViewController.ScreenType, 
+    static fileprivate func showResultScreenForResultType(type: PrimerResultViewController.ScreenType,
                                                           message: String? = nil) {
         shared.showResultScreenForResultType(type: type, message: message)
     }

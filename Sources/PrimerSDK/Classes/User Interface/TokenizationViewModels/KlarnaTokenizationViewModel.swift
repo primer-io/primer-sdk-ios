@@ -29,7 +29,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                   tokenizationService: TokenizationServiceProtocol,
                   createResumePaymentService: CreateResumePaymentServiceProtocol) {
         tokenizationComponent = KlarnaTokenizationComponent(paymentMethod: config)
-        super.init(config: config, 
+        super.init(config: config,
                    uiManager: uiManager,
                    tokenizationService: tokenizationService,
                    createResumePaymentService: createResumePaymentService)
