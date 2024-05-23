@@ -29,7 +29,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
                   createResumePaymentService: CreateResumePaymentServiceProtocol
     ) {
         self.paymentMethodType = config.internalPaymentMethodType!
-        super.init(config: config, 
+        super.init(config: config,
                    uiManager: uiManager,
                    tokenizationService: tokenizationService,
                    createResumePaymentService: createResumePaymentService)
