@@ -104,6 +104,7 @@ class Mocks {
             static var klarnaPaymentMethodId = "mock_klarna_payment_method_id"
             static var paymentCardPaymentMethodId = "mock_payment_card_payment_method_id"
             static var nolPaymentMethodId = "mock_nol_payment_method_id"
+            static var paypalPaymentMethodId = "mock_paypal_method_id"
 
             static var webRedirectPaymentMethodType = "MOCK_WEB_REDIRECT_PAYMENT_METHOD_TYPE"
             static var adyenGiroPayRedirectPaymentMethodType = "MOCK_ADYEN_GIROPAY_PAYMENT_METHOD_TYPE"
@@ -191,6 +192,16 @@ class Mocks {
             name: "KLARNA",
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 299,
+            options: nil,
+            displayMetadata: nil)
+
+        static var paypalPaymentMethod = PrimerPaymentMethod(
+            id: Mocks.Static.Strings.paypalPaymentMethodId,
+            implementationType: .nativeSdk,
+            type: "PAYPAL",
+            name: "PAYPAL",
+            processorConfigId: Mocks.Static.Strings.processorConfigId,
+            surcharge: 0,
             options: nil,
             displayMetadata: nil)
     }

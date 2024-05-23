@@ -165,11 +165,12 @@ extension KlarnaTokenizationComponent {
 private extension KlarnaTokenizationComponent {
     /// - Helper method to prepare Klarna Payment Session request body
     private func prepareKlarnaPaymentSessionRequestBody(paymentMethodConfigId: String) -> Request.Body.Klarna.CreatePaymentSession {
+        let urlScheme = (try? settings.paymentMethodOptions.validUrlForUrlScheme())?.absoluteString
         return KlarnaHelpers.getKlarnaPaymentSessionBody(
             with: paymentMethodConfigId,
             clientSession: clientSession,
             recurringPaymentDescription: recurringPaymentDescription,
-            redirectUrl: settings.paymentMethodOptions.urlScheme)
+            redirectUrl: urlScheme)
     }
     /// - Helper method to prepare Client Session Update Request body with actions
     private func prepareKlarnaClientSessionActionsRequestBody() -> ClientSessionUpdateRequest {
