@@ -71,7 +71,7 @@ internal class PrimerDelegateProxy: LogReporter {
 
     static func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
         DispatchQueue.main.async {
-             if PrimerInternal.shared.sdkIntegrationType == .headless {
+            if PrimerInternal.shared.sdkIntegrationType == .headless {
                 let delegate = PrimerHeadlessUniversalCheckout.current.delegate
                 if delegate?.primerHeadlessUniversalCheckoutWillCreatePaymentWithData != nil {
                     delegate?.primerHeadlessUniversalCheckoutWillCreatePaymentWithData?(data,
