@@ -17,6 +17,8 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
 
     var uiManager: MockPrimerUIManager!
 
+    var appState: MockAppState!
+
     var sut: ApplePayTokenizationViewModel!
 
     override func setUpWithError() throws {
@@ -35,7 +37,7 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         )
         DependencyContainer.register(settings as PrimerSettingsProtocol)
 
-        let appState = MockAppState()
+        appState = MockAppState()
         appState.amount = 1234
         appState.currency = Currency(code: "GBP", decimalDigits: 2)
         DependencyContainer.register(appState as AppStateProtocol)
@@ -50,9 +52,36 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
     }
 
     func testClientTokenValidation() throws {
+        // without token
         SDKSessionHelper.tearDown()
         XCTAssertThrowsError(try sut.validate())
 
+        // without order
+        try SDKSessionHelper.test {
+            XCTAssertThrowsError(try sut.validate())
+        }
+
+        // without currency
+        try SDKSessionHelper.test(order: order) {
+            appState.currency = nil
+            XCTAssertThrowsError(try sut.validate())
+            appState.currency = Currency(code: "GBP", decimalDigits: 2)
+        }
+
+        // without apple pay options
+        try SDKSessionHelper.test(order: order) {
+            let settings = PrimerSettings(paymentMethodOptions: PrimerPaymentMethodOptions())
+            DependencyContainer.register(settings as PrimerSettingsProtocol)
+            XCTAssertThrowsError(try sut.validate())
+            let resetSettings = PrimerSettings(paymentMethodOptions:
+                PrimerPaymentMethodOptions(applePayOptions:
+                    PrimerApplePayOptions(merchantIdentifier: "merchant_id", merchantName: "merchant_name")
+                )
+            )
+            DependencyContainer.register(resetSettings as PrimerSettingsProtocol)
+        }
+
+        // with order
         try SDKSessionHelper.test(order: order) {
             XCTAssertNoThrow(try sut.validate())
         }
@@ -91,6 +120,10 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
+        let apiClient = MockPrimerAPIClient()
+        PrimerAPIConfigurationModule.apiClient = apiClient
+        apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
+
         let applePayPresentationManager = MockApplePayPresentationManager()
         sut.applePayPresentationManager = applePayPresentationManager
 
@@ -111,10 +144,12 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         let expectDidPresent = self.expectation(description: "Did present ApplePay")
         applePayPresentationManager.onPresent = { request, delegate in
             Promise { seal in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    delegate.paymentAuthorizationController?(PKPaymentAuthorizationController(),
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    let dummyController = PKPaymentAuthorizationController()
+                    delegate.paymentAuthorizationController?(dummyController,
                                                              didAuthorizePayment: MockPKPayment(),
                                                              handler: { _ in })
+                    delegate.paymentAuthorizationControllerDidFinish(dummyController)
                 }
                 expectDidPresent.fulfill()
                 seal.fulfill()
@@ -124,34 +159,14 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { body in
             expectDidTokenize.fulfill()
-            return Promise.fulfilled(.init(analyticsId: "analytics_id",
-                                           id: "id",
-                                           isVaulted: false,
-                                           isAlreadyVaulted: false,
-                                           paymentInstrumentType: .offSession,
-                                           paymentMethodType: Mocks.Static.Strings.webRedirectPaymentMethodType,
-                                           paymentInstrumentData: nil,
-                                           threeDSecureAuthentication: nil,
-                                           token: "token",
-                                           tokenType: .singleUse,
-                                           vaultData: nil))
+            return Promise.fulfilled(self.tokenizationResponseBody)
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
         createResumePaymentService.onCreatePayment = { body in
             expectDidCreatePayment.fulfill()
-            return .init(id: "id",
-                         paymentId: "payment_id",
-                         amount: 123,
-                         currencyCode: "GBP",
-                         customer: nil,
-                         customerId: "customer_id",
-                         dateStr: nil,
-                         order: nil,
-                         orderId: "order_id",
-                         requiredAction: nil,
-                         status: .success,
-                         paymentFailureReason: nil)
+            return self.paymentResponseBody
+
         }
 
         delegate.onDidFail = { error in
@@ -193,6 +208,54 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
               shippingAmount: nil)
     }
 
+    var paymentResponseBody: Response.Body.Payment {
+        return .init(id: "id",
+                     paymentId: "payment_id",
+                     amount: 123,
+                     currencyCode: "GBP",
+                     customer: .init(firstName: "first_name",
+                                     lastName: "last_name",
+                                     emailAddress: "email_address",
+                                     mobileNumber: "+44(0)7891234567",
+                                     billingAddress: .init(firstName: "billing_first_name",
+                                                           lastName: "billing_last_name",
+                                                           addressLine1: "billing_line_1",
+                                                           addressLine2: "billing_line_2",
+                                                           city: "billing_city",
+                                                           state: "billing_state",
+                                                           countryCode: "billing_country_code",
+                                                           postalCode: "billing_postal_code"),
+                                     shippingAddress: .init(firstName: "shipping_first_name",
+                                                            lastName: "shipping_last_name",
+                                                            addressLine1: "shipping_line_1",
+                                                            addressLine2: "shipping_line_2",
+                                                            city: "shipping_city",
+                                                            state: "shipping_state",
+                                                            countryCode: "shipping_country_code",
+                                                            postalCode: "shipping_postal_code")),
+                     customerId: "customer_id",
+                     dateStr: nil,
+                     order: nil,
+                     orderId: "order_id",
+                     requiredAction: nil,
+                     status: .success,
+                     paymentFailureReason: nil)
+    }
+
+    var tokenizationResponseBody: Response.Body.Tokenization {
+        .init(analyticsId: "analytics_id",
+              id: "id",
+              isVaulted: false,
+              isAlreadyVaulted: false,
+              paymentInstrumentType: .offSession,
+              paymentMethodType: Mocks.Static.Strings.webRedirectPaymentMethodType,
+              paymentInstrumentData: nil,
+              threeDSecureAuthentication: nil,
+              token: "token",
+              tokenType: .singleUse,
+              vaultData: nil)
+    }
+
 }
 
 fileprivate class MockApplePayPresentationManager: ApplePayPresenting {
@@ -210,6 +273,10 @@ fileprivate class MockApplePayPresentationManager: ApplePayPresenting {
 fileprivate class MockPKPayment: PKPayment {
     override var token: PKPaymentToken {
         return MockPKPaymentToken()
+    }
+
+    override var billingContact: PKContact? {
+        return MockPKContact()
     }
 }
 
@@ -238,5 +305,19 @@ fileprivate class MockPKPaymentMethod: PKPaymentMethod {
 
     override var type: PKPaymentMethodType {
         .credit
+    }
+}
+
+fileprivate class MockPKContact: PKContact {
+    override var postalAddress: CNPostalAddress? {
+        get {
+            let address = CNMutablePostalAddress()
+            address.street = "pk_contact_street"
+            address.postalCode = "pk_contact_postal_code"
+            address.city = "pk_contact_city"
+            address.state = "pk_contact_state"
+            return address as CNPostalAddress
+        }
+        set {}
     }
 }
