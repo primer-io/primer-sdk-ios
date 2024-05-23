@@ -17,6 +17,10 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
 
     static var apiClient: PrimerAPIClientProtocol?
 
+    let tokenizationService: TokenizationServiceProtocol
+
+    let createResumePaymentService: CreateResumePaymentServiceProtocol
+
     var config: PrimerPaymentMethod
     var selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData
     var paymentMethodTokenData: PrimerPaymentMethodTokenData!
@@ -37,10 +41,15 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
 
     init(configuration: PrimerPaymentMethod,
          selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData,
-         additionalData: PrimerVaultedCardAdditionalData?) {
+         additionalData: PrimerVaultedCardAdditionalData?,
+         tokenizationService: TokenizationServiceProtocol = TokenizationService(),
+         createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()) {
         self.config = configuration
         self.selectedPaymentMethodTokenData = selectedPaymentMethodTokenData
         self.additionalData = additionalData
+
+        self.tokenizationService = tokenizationService
+        self.createResumePaymentService = createResumePaymentService
     }
 
     func start() -> Promise<Void> {
@@ -115,8 +124,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                     throw err
                 }
 
-                let tokenizationService = TokenizationService()
-                return tokenizationService.exchangePaymentMethodToken(paymentMethodTokenId, vaultedPaymentMethodAdditionalData: self.additionalData)
+                return self.tokenizationService.exchangePaymentMethodToken(paymentMethodTokenId, vaultedPaymentMethodAdditionalData: self.additionalData)
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
@@ -197,9 +205,9 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
 
                         switch paymentCreationDecision.type {
                         case .abort(let errorMessage):
-                            let error = PrimerError.generic(message: errorMessage ?? "",
-                                                            userInfo: .errorUserInfoDictionary(),
-                                                            diagnosticsId: UUID().uuidString)
+                            let error = PrimerError.merchantError(message: errorMessage ?? "",
+                                                                  userInfo: .errorUserInfoDictionary(),
+                                                                  diagnosticsId: UUID().uuidString)
                             seal.reject(error)
                         case .continue:
                             seal.fulfill()
@@ -335,9 +343,8 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
             let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
-            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
+            self.createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
                                                                   paymentResumeRequest: resumeRequest) { paymentResponse, error in
 
                 if let error = error {
@@ -557,9 +564,8 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
             let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
-            createResumePaymentService.createPayment(paymentRequest: paymentRequest) { paymentResponse, error in
+            self.createResumePaymentService.createPayment(paymentRequest: paymentRequest) { paymentResponse, error in
 
                 if let error = error {
                     if let paymentResponse {
