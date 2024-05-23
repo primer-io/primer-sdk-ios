@@ -320,8 +320,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 if let redirectUrlStr = decodedJWTToken.redirectUrl,
                    let redirectUrl = URL(string: redirectUrlStr),
                    let statusUrlStr = decodedJWTToken.statusUrl,
-                   let statusUrl = URL(string: statusUrlStr),
-                   decodedJWTToken.intent != nil {
+                   let statusUrl = URL(string: statusUrlStr) {
 
                     DispatchQueue.main.async {
                         self.uiManager.primerRootViewController?.enableUserInteraction(true)
