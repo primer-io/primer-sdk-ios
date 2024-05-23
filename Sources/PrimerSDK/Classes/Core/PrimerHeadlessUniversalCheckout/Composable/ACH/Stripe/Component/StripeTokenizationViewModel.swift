@@ -17,8 +17,13 @@ class StripeTokenizationViewModel: PaymentMethodTokenizationViewModel {
     // MARK: Variables
     private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
     private var tokenizationService: ACHTokenizationService
+    private var clientSessionService: ACHClientSessionService = ACHClientSessionService()
     private var stripeMandateCompletion: ((_ success: Bool, _ error: Error?) -> Void)?
     private var stripeBankAccountCollectorCompletion: ((_ success: Bool, _ error: Error?) -> Void)?
+    private var publishableKey: String = ""
+    private var clientSecret: String = ""
+    private var completeUrl: String = ""
+    private var userDetails: ACHUserDetails = .emptyUserDetails()
     
     // MARK: Init
     required init(config: PrimerPaymentMethod) {
@@ -103,13 +108,9 @@ class StripeTokenizationViewModel: PaymentMethodTokenizationViewModel {
      */
     override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
         return Promise { seal in
-            if decodedJWTToken.intent?.contains("NOL_PAY_REDIRECTION") == true {
-                if let transactionNo = decodedJWTToken.nolPayTransactionNo,
-                   let redirectUrlStr = decodedJWTToken.redirectUrl,
-                   let redirectUrl = URL(string: redirectUrlStr),
-                   let statusUrlStr = decodedJWTToken.statusUrl,
-                   let statusUrl = URL(string: statusUrlStr),
-                   decodedJWTToken.intent != nil {
+            if decodedJWTToken.intent?.contains("STRIPE_ACH") == true {
+                if let clientSecret = decodedJWTToken.clientSecret {
+                    self.clientSecret = clientSecret
                     
                     DispatchQueue.main.async {
                         PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
@@ -145,19 +146,34 @@ class StripeTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
 #if canImport(PrimerStripeSDK)
-            let stripeParams = PrimerStripeParams(publishableKey: "",
-                                                  clientSecret: "",
-                                                  returnUrl: "",
-                                                  fullName: "",
-                                                  emailAddress: "")
-            
-            let collectorViewController = PrimerStripeCollectorViewController.getCollectorViewController(params: stripeParams, delegate: self)
-            PrimerUIManager.primerRootViewController?.show(viewController: collectorViewController)
-            seal.fulfill()
+            firstly {
+                getPublishableKey()
+            }
+            .then { () -> Promise<Void> in
+                return self.getClientSessionUserDetails()
+            }
+            .then { () -> Promise<String> in
+                return self.getUrlScheme()
+            }
+            .done { urlScheme in
+                let fullName = "\(self.userDetails.firstName) \(self.userDetails.lastName)"
+                let stripeParams = PrimerStripeParams(publishableKey: self.publishableKey,
+                                                      clientSecret: self.clientSecret,
+                                                      returnUrl: urlScheme,
+                                                      fullName: fullName,
+                                                      emailAddress: self.userDetails.emailAddress)
+                
+                let collectorViewController = PrimerStripeCollectorViewController.getCollectorViewController(params: stripeParams, delegate: self)
+                PrimerUIManager.primerRootViewController?.show(viewController: collectorViewController)
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
+            }
 #else
-            seal.fulfill()
+            let error = ACHHelpers.getMissingSDKError(sdk: "PrimerStripeSDK")
+            seal.reject(error)
 #endif
-            seal.fulfill()
         }
     }
     
@@ -236,7 +252,7 @@ class StripeTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
     
     /**
-     * Sends additional information via delegate`'PrimerHeadlessUniversalCheckoutDelegate` if implemented in the headless checkout context.
+     * Sends additional information via delegate `PrimerHeadlessUniversalCheckoutDelegate` if implemented in the headless checkout context.
      *
      * This private method checks if the checkout is being conducted in a headless mode and whether the delegate
      * for handling additional information is implemented. It ensures that additional information events are only
@@ -262,16 +278,15 @@ class StripeTokenizationViewModel: PaymentMethodTokenizationViewModel {
             
             guard isAdditionalInfoImplemented else {
                 let message =
-                    """
-Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)'\
- hasn't been implemented. No events will be sent to your delegate instance.
-"""
+                        """
+    Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)'\
+     hasn't been implemented. No events will be sent to your delegate instance.
+    """
                 let error = PrimerError.generic(
                     message: message,
                     userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString
                 )
-                ErrorHandler.handle(error: error)
                 seal.reject(error)
                 return
             }
@@ -280,6 +295,50 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
             let additionalInfo = PrimerCheckoutAdditionalInfo()
             PrimerDelegateProxy.primerDidReceiveAdditionalInfo(additionalInfo)
             seal.fulfill()
+        }
+    }
+    
+    private func getClientSessionUserDetails() -> Promise<Void> {
+        return Promise { seal in
+            firstly {
+                clientSessionService.getClientSessionUserDetails()
+            }
+            .done { stripeAchUserDetails in
+                self.userDetails = stripeAchUserDetails
+                seal.fulfill()
+            }
+            .catch { _ in }
+        }
+    }
+    
+#if canImport(PrimerStripeSDK)
+    private func getPublishableKey() -> Promise<Void> {
+        return Promise { seal in
+            guard let publishableKey = settings.paymentMethodOptions.stripeOptions?.publishableKey else {
+                let error = PrimerStripeError.stripeInvalidPublishableKeyError
+                let primerError = PrimerError.stripeWrapperError(
+                    key: error.errorId,
+                    message: error.errorDescription,
+                    userInfo: error.userInfo,
+                    diagnosticsId: error.diagnosticsId
+                )
+                seal.reject(primerError)
+                return
+            }
+            self.publishableKey = publishableKey
+            seal.fulfill()
+        }
+    }
+#endif
+    
+    private func getUrlScheme() -> Promise<String> {
+        return Promise { seal in
+            guard let urlScheme = settings.paymentMethodOptions.urlScheme else {
+                let error = ACHHelpers.getInvalidUrlSchemeError(settings: self.settings)
+                seal.reject(error)
+                return
+            }
+            seal.fulfill(urlScheme)
         }
     }
 }
@@ -319,6 +378,7 @@ extension StripeTokenizationViewModel: PrimerStripeCollectorViewControllerDelega
             stripeBankAccountCollectorCompletion?(false, error)
         case .failed(let error):
             let primerError = PrimerError.stripeWrapperError(
+                key: error.errorId,
                 message: error.errorDescription,
                 userInfo: error.userInfo,
                 diagnosticsId: error.diagnosticsId
