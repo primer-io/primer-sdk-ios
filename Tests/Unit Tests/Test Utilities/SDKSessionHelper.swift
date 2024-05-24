@@ -14,7 +14,8 @@ final class SDKSessionHelper {
     private init() {}
 
     static func setUp(withPaymentMethods paymentMethods: [PrimerPaymentMethod]? = nil,
-                      order: ClientSession.Order? = nil) {
+                      order: ClientSession.Order? = nil,
+                      checkoutModules: [PrimerAPIConfiguration.CheckoutModule]? = nil) {
         let paymentMethods = paymentMethods ?? [
             Mocks.PaymentMethods.paymentCardPaymentMethod
         ]
@@ -31,7 +32,7 @@ final class SDKSessionHelper {
                                                paymentMethods: paymentMethods,
                                                primerAccountId: "account_id",
                                                keys: nil,
-                                               checkoutModules: nil)
+                                               checkoutModules: checkoutModules)
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfig
     }

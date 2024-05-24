@@ -27,15 +27,16 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             cardholderNameField: cardholderNameField,
             billingAddressFieldViews: allVisibleBillingAddressFieldViews,
             paymentMethodType: self.config.type,
-            isRequiringCVVInput: isRequiringCVVInput
+            isRequiringCVVInput: isRequiringCVVInput,
+            tokenizationService: tokenizationService
         )
-        cardComponentsManager.delegate = self
+        manager.delegate = self
         return manager
     }()
 
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
-    private var userInputCompletion: (() -> Void)?
+    var userInputCompletion: (() -> Void)?
     // swiftlint:disable:next identifier_name
     private var cardComponentsManagerTokenizationCompletion: ((PrimerPaymentMethodTokenData?, Error?) -> Void)?
     private var webViewController: SFSafariViewController?
@@ -100,7 +101,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: - Card number field
 
-    internal lazy var cardNumberField: PrimerCardNumberFieldView = {
+    lazy var cardNumberField: PrimerCardNumberFieldView = {
         PrimerCardNumberField.cardNumberFieldViewWithDelegate(self)
     }()
 
@@ -110,7 +111,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: - Cardholder name field
 
-    private lazy var cardholderNameField: PrimerCardholderNameFieldView? = {
+    lazy var cardholderNameField: PrimerCardholderNameFieldView? = {
         if !PrimerCardholderNameField.isCardholderNameFieldEnabled { return nil }
         return PrimerCardholderNameField.cardholderNameFieldViewWithDelegate(self)
     }()
@@ -122,7 +123,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: - Expiry date field
 
-    private lazy var expiryDateField: PrimerExpiryDateFieldView = {
+    lazy var expiryDateField: PrimerExpiryDateFieldView = {
         return PrimerEpiryDateField.expiryDateFieldViewWithDelegate(self)
     }()
 
@@ -132,7 +133,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: - CVV field
 
-    private lazy var cvvField: PrimerCVVFieldView = {
+    lazy var cvvField: PrimerCVVFieldView = {
         PrimerCVVField.cvvFieldViewWithDelegate(self)
     }()
 
@@ -148,7 +149,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: First name
 
-    private lazy var firstNameFieldView: PrimerFirstNameFieldView = {
+    lazy var firstNameFieldView: PrimerFirstNameFieldView = {
         PrimerFirstNameField.firstNameFieldViewWithDelegate(self)
     }()
 
@@ -162,7 +163,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: Last name
 
-    private lazy var lastNameFieldView: PrimerLastNameFieldView = {
+    lazy var lastNameFieldView: PrimerLastNameFieldView = {
         PrimerLastNameField.lastNameFieldViewWithDelegate(self)
     }()
 
@@ -176,7 +177,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: Address Line 1
 
-    private lazy var addressLine1FieldView: PrimerAddressLine1FieldView = {
+    lazy var addressLine1FieldView: PrimerAddressLine1FieldView = {
         PrimerAddressLine1Field.addressLine1FieldViewWithDelegate(self)
     }()
 
@@ -190,7 +191,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: Address Line 2
 
-    private lazy var addressLine2FieldView: PrimerAddressLine2FieldView = {
+    lazy var addressLine2FieldView: PrimerAddressLine2FieldView = {
         PrimerAddressLine2Field.addressLine2FieldViewWithDelegate(self)
     }()
 
@@ -204,7 +205,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: Postal code
 
-    private lazy var postalCodeFieldView: PrimerPostalCodeFieldView = {
+    lazy var postalCodeFieldView: PrimerPostalCodeFieldView = {
         PrimerPostalCodeField.postalCodeViewWithDelegate(self)
     }()
 
@@ -218,7 +219,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: City
 
-    private lazy var cityFieldView: PrimerCityFieldView = {
+    lazy var cityFieldView: PrimerCityFieldView = {
         PrimerCityField.cityFieldViewWithDelegate(self)
     }()
 
@@ -232,7 +233,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: State
 
-    private lazy var stateFieldView: PrimerStateFieldView = {
+    lazy var stateFieldView: PrimerStateFieldView = {
         PrimerStateField.stateFieldViewWithDelegate(self)
     }()
 
@@ -246,7 +247,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: Country
 
-    private lazy var countryFieldView: PrimerCountryFieldView = {
+    lazy var countryFieldView: PrimerCountryFieldView = {
         PrimerCountryField.countryFieldViewWithDelegate(self)
     }()
 
@@ -450,7 +451,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                     PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
                     seal.fulfill()
                 default:
-                    precondition(false, "Should never end up here")
+                    assertionFailure("Failed to present card form payment method - \(self.config.type) is not a valid payment method type for this payment flow.")
                 }
             }
         }
@@ -461,6 +462,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             self.userInputCompletion = {
                 seal.fulfill()
             }
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
         }
     }
 
