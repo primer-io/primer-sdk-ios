@@ -17,6 +17,8 @@ extension PrimerHeadlessUniversalCheckout {
 
     public class VaultManager: NSObject {
 
+        var vaultService: VaultServiceProtocol = VaultService(apiClient: PrimerAPIClient())
+
         var vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]?
         private(set) var paymentMethodTokenData: PrimerPaymentMethodTokenData?
         private(set) var paymentCheckoutData: PrimerCheckoutData?
@@ -108,8 +110,6 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         public func fetchVaultedPaymentMethods(completion: @escaping (_ vaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod]?, _ error: Error?) -> Void) {
-            let vaultService = VaultService()
-
             firstly {
                 vaultService.fetchVaultedPaymentMethods()
             }
@@ -140,8 +140,6 @@ extension PrimerHeadlessUniversalCheckout {
                 }
                 return
             }
-
-            let vaultService = VaultService()
 
             firstly {
                 vaultService.deleteVaultedPaymentMethod(with: id)

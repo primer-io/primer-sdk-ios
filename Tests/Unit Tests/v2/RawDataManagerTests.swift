@@ -96,13 +96,11 @@ class RawDataManagerTests: XCTestCase {
         mockApiClient.fetchVaultedPaymentMethodsResult = (vaultedPaymentMethods, nil)
         mockApiClient.fetchConfigurationResult = (mockPrimerApiConfiguration, nil)
         mockApiClient.listCardNetworksResult = (Mocks.listCardNetworksData, nil)
-        VaultService.apiClient = mockApiClient
         DefaultCardValidationService.apiClient = mockApiClient
         PrimerAPIConfigurationModule.apiClient = mockApiClient
     }
 
     override class func tearDown() {
-        VaultService.apiClient = nil
         DefaultCardValidationService.apiClient = nil
         PrimerAPIConfigurationModule.apiClient = nil
     }
