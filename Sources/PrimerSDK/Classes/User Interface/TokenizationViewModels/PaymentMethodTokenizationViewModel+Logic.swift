@@ -189,10 +189,6 @@ extension PaymentMethodTokenizationViewModel {
                         if let cancelledError = cancelledError {
                             throw cancelledError
                         }
-                        
-                        // Here we can hook into the logic and change things for ACH a little bit
-                        // This method is described into StripeAchTokenizationViewModel so i can play with it there
-                        // return nil
                         return self.handleDecodedClientTokenIfNeeded(decodedJWTToken)
                     }
                     .done { resumeToken in
@@ -219,10 +215,8 @@ extension PaymentMethodTokenizationViewModel {
                                 }
                             }
                         } else if let checkoutData = self.paymentCheckoutData {
-                            // Because the resumeToken is returned nil by me it will enter here, if it was auto handling.
                             seal.fulfill(checkoutData)
                         } else {
-                            // Here if it was manual handling.
                             seal.fulfill(nil)
                         }
                     }
@@ -437,8 +431,15 @@ extension PaymentMethodTokenizationViewModel {
                     return
                 }
 
+                var timeStamp: String?
+
+                if config.type == PrimerPaymentMethodType.stripeAch.rawValue {
+                    let timeZone = TimeZone(abbreviation: "UTC")
+                    timeStamp = Date().toString(timeZone: timeZone)
+                }
+
                 firstly {
-                    self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
+                    self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken, timeStamp: timeStamp)
                 }
                 .done { paymentResponse -> Void in
                     guard let paymentResponse = paymentResponse else {
@@ -557,10 +558,18 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
     // Resume payment with Resume payment ID
 
-    private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
+    private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String, timeStamp: String? = nil) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
             let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-            let body = Request.Body.Payment.Resume(token: resumeToken)
+            var body: Request.Body.Payment.Resume
+
+            // The STRIPE_ACH payment method has a different Resume Request Body
+            if let timeStamp {
+                body = Request.Body.Payment.Resume(paymentMethodId: resumeToken, timeStamp: timeStamp)
+            } else {
+                body = Request.Body.Payment.Resume(token: resumeToken)
+            }
+            
             createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: body) { paymentResponse, error in
 
                 if let error = error {

@@ -27,7 +27,7 @@ extension PrimerHeadlessUniversalCheckout {
                 throw err
             }
             
-            guard let tokenizationViewModel = paymentMethod.tokenizationViewModel as? StripeTokenizationViewModel else {
+            guard let tokenizationViewModel = paymentMethod.tokenizationViewModel as? StripeAchTokenizationViewModel else {
                 let err = PrimerError.generic(message: "Unable to locate a valid payment method view model.",
                                               userInfo: .errorUserInfoDictionary(),
                                               diagnosticsId: UUID().uuidString)

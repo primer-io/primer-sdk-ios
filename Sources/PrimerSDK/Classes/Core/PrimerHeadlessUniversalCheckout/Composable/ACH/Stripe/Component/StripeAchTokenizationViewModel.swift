@@ -1,5 +1,5 @@
 //
-//  StripeTokenizationViewModel.swift
+//  StripeAchTokenizationViewModel.swift
 //  PrimerSDK
 //
 //  Created by Stefan Vrancianu on 25.04.2024.
@@ -12,7 +12,7 @@ import UIKit
 import PrimerStripeSDK
 #endif
 
-class StripeTokenizationViewModel: PaymentMethodTokenizationViewModel {
+class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     // MARK: Variables
     private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -22,7 +22,7 @@ class StripeTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var stripeBankAccountCollectorCompletion: ((_ success: Bool, _ error: Error?) -> Void)?
     private var publishableKey: String = ""
     private var clientSecret: String = ""
-    private var completeUrl: String = ""
+    private var returnedStripeAchPaymentId: String = ""
     private var userDetails: ACHUserDetails = .emptyUserDetails()
     
     // MARK: Init
@@ -117,16 +117,13 @@ class StripeTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     }
                     
                     firstly {
-                        self.presentPaymentMethodUserInterface()
+                        presentPaymentMethodUserInterface()
                     }
                     .then { () -> Promise<Void> in
                         return self.awaitUserInput()
                     }
-                    .then { () -> Promise<Void> in
-                        return self.callCompletionUrl()
-                    }
                     .done {
-                        seal.fulfill(nil)
+                        seal.fulfill(self.returnedStripeAchPaymentId)
                     }
                     .catch { err in
                         seal.reject(err)
@@ -205,13 +202,6 @@ class StripeTokenizationViewModel: PaymentMethodTokenizationViewModel {
             .catch { err in
                 seal.reject(err)
             }
-        }
-    }
-    
-    // TODO: This is the method that needs to be called in order for the payment to be completed
-    private func callCompletionUrl() -> Promise<Void> {
-        return Promise { seal in
-            seal.fulfill()
         }
     }
     
@@ -344,7 +334,7 @@ class StripeTokenizationViewModel: PaymentMethodTokenizationViewModel {
 }
 
 // MARK: - ACHMandateDelegate methods
-extension StripeTokenizationViewModel: ACHMandateDelegate {
+extension StripeAchTokenizationViewModel: ACHMandateDelegate {
     func mandateAccepted() {
         stripeMandateCompletion?(true, nil)
     }
@@ -357,7 +347,7 @@ extension StripeTokenizationViewModel: ACHMandateDelegate {
 
 #if canImport(PrimerStripeSDK)
 // MARK: - PrimerStripeCollectorViewControllerDelegate method
-extension StripeTokenizationViewModel: PrimerStripeCollectorViewControllerDelegate {
+extension StripeAchTokenizationViewModel: PrimerStripeCollectorViewControllerDelegate {
     
     /**
      * Handles the outcome of a Stripe collection process by processing various statuses of the Stripe transaction.
@@ -371,6 +361,7 @@ extension StripeTokenizationViewModel: PrimerStripeCollectorViewControllerDelega
     public func primerStripeCollected(_ stripeStatus: PrimerStripeStatus) {
         switch stripeStatus {
         case .succeeded(let paymentId):
+            returnedStripeAchPaymentId = paymentId
             stripeBankAccountCollectorCompletion?(true, nil)
             break
         case .canceled:

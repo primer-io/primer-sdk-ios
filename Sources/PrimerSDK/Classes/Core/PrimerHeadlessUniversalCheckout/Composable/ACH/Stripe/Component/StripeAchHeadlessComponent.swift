@@ -9,7 +9,7 @@ import UIKit
 
 class StripeAchHeadlessComponent {
     // MARK: - Tokenization
-    var tokenizationViewModel: StripeTokenizationViewModel
+    var tokenizationViewModel: StripeAchTokenizationViewModel
     var tokenizationService: ACHTokenizationService
     var clientSessionService: ACHClientSessionService
     
@@ -26,7 +26,7 @@ class StripeAchHeadlessComponent {
     
     // MARK: - Init
     init(tokenizationService: ACHTokenizationService,
-         tokenizationViewModel: StripeTokenizationViewModel
+         tokenizationViewModel: StripeAchTokenizationViewModel
     ) {
         self.tokenizationViewModel = tokenizationViewModel
         self.tokenizationService = tokenizationService
