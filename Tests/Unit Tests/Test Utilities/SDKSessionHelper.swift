@@ -15,12 +15,15 @@ final class SDKSessionHelper {
 
     static func setUp(withPaymentMethods paymentMethods: [PrimerPaymentMethod]? = nil,
                       order: ClientSession.Order? = nil,
+                      paymentMethodOptions: [[String: Any]]? = nil,
                       checkoutModules: [PrimerAPIConfiguration.CheckoutModule]? = nil) {
         let paymentMethods = paymentMethods ?? [
             Mocks.PaymentMethods.paymentCardPaymentMethod
         ]
         let session = ClientSession.APIResponse(clientSessionId: "client_session_id",
-                                                paymentMethod: nil,
+                                                paymentMethod: .init(vaultOnSuccess: false,
+                                                                     options: paymentMethodOptions,
+                                                                     orderedAllowedCardNetworks: nil),
                                                 order: order,
                                                 customer: nil,
                                                 testId: nil)
