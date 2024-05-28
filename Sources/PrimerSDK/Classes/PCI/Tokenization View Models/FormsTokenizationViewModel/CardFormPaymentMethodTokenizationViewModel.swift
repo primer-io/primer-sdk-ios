@@ -254,7 +254,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     private lazy var countryFieldContainerView: PrimerCustomFieldView = {
         PrimerCountryField.countryContainerViewFieldView(countryFieldView, openCountriesListPressed: {
             DispatchQueue.main.async {
-                PrimerUIManager.primerRootViewController?.show(viewController: self.countrySelectorViewController)
+                self.uiManager.primerRootViewController?.show(viewController: self.countrySelectorViewController)
             }
         })
     }()
@@ -305,22 +305,22 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override func start() {
         self.checkoutEventsNotifierModule.didStartTokenization = {
             self.uiModule.submitButton?.startAnimating()
-            PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
+            self.uiManager.primerRootViewController?.enableUserInteraction(false)
         }
 
         self.checkoutEventsNotifierModule.didFinishTokenization = {
             self.uiModule.submitButton?.stopAnimating()
-            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+            self.uiManager.primerRootViewController?.enableUserInteraction(true)
         }
 
         self.didStartPayment = {
             self.uiModule.submitButton?.startAnimating()
-            PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
+            self.uiManager.primerRootViewController?.enableUserInteraction(false)
         }
 
         self.didFinishPayment = { _ in
             self.uiModule.submitButton?.stopAnimating()
-            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+            self.uiManager.primerRootViewController?.enableUserInteraction(true)
 
             self.willDismissPaymentMethodUI?()
             self.webViewController?.dismiss(animated: true, completion: {
@@ -444,11 +444,11 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 switch self.config.type {
                 case PrimerPaymentMethodType.paymentCard.rawValue:
                     let pcfvc = PrimerCardFormViewController(viewModel: self)
-                    PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
+                    self.uiManager.primerRootViewController?.show(viewController: pcfvc)
                     seal.fulfill()
                 case PrimerPaymentMethodType.adyenBancontactCard.rawValue:
                     let pcfvc = PrimerCardFormViewController(navigationBarLogo: self.uiModule.logo, viewModel: self)
-                    PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
+                    self.uiManager.primerRootViewController?.show(viewController: pcfvc)
                     seal.fulfill()
                 default:
                     assertionFailure("Failed to present card form payment method - \(self.config.type) is not a valid payment method type for this payment flow.")
@@ -491,7 +491,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                    decodedJWTToken.intent != nil {
 
                     DispatchQueue.main.async {
-                        PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+                        self.uiManager.primerRootViewController?.enableUserInteraction(true)
                     }
 
                     firstly {
@@ -553,7 +553,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                    decodedJWTToken.intent != nil {
 
                     DispatchQueue.main.async {
-                        PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+                        self.uiManager.primerRootViewController?.enableUserInteraction(true)
                     }
 
                     firstly {
@@ -608,7 +608,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
 
             DispatchQueue.main.async {
-                PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
+                self.uiManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
                     DispatchQueue.main.async {
                         seal.fulfill()
                     }
@@ -747,7 +747,7 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
         } else {
             self.uiModule.submitButton?.stopAnimating()
         }
-        PrimerUIManager.primerRootViewController?.enableUserInteraction(!isLoading)
+        self.uiManager.primerRootViewController?.enableUserInteraction(!isLoading)
     }
 
     fileprivate func autofocusToNextFieldIfNeeded(for primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
@@ -953,7 +953,7 @@ extension CardFormPaymentMethodTokenizationViewModel: UITableViewDataSource, UIT
         countryFieldView.countryCode = country
         countryFieldView.validation = .valid
         countryFieldView.textFieldDidEndEditing(countryFieldView.textField)
-        PrimerUIManager.primerRootViewController?.popViewController()
+        self.uiManager.primerRootViewController?.popViewController()
     }
 }
 
