@@ -24,7 +24,7 @@ extension PaymentMethodTokenizationViewModel {
             self.processPaymentMethodTokenData()
         }
         .ensure {
-            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+            self.uiManager.primerRootViewController?.enableUserInteraction(true)
         }
         .catch { err in
             let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()

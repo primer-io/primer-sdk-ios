@@ -1,33 +1,36 @@
 //
-//  CheckoutWithVaultedPaymentMethodViewModelTests.swift
+//  FormPaymentMethodTokenizationViewModelTests.swift
 //  
 //
-//  Created by Jack Newcombe on 07/05/2024.
+//  Created by Jack Newcombe on 24/05/2024.
 //
 
 import XCTest
 @testable import PrimerSDK
 
-final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
-    
+final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
+
+    var uiManager: MockPrimerUIManager!
+
     var tokenizationService: MockTokenizationService!
 
     var createResumePaymentService: MockCreateResumePaymentService!
 
-    var sut: CheckoutWithVaultedPaymentMethodViewModel!
+    var sut: FormPaymentMethodTokenizationViewModel!
 
     override func setUpWithError() throws {
         tokenizationService = MockTokenizationService()
         createResumePaymentService = MockCreateResumePaymentService()
-        sut = CheckoutWithVaultedPaymentMethodViewModel(configuration: Mocks.PaymentMethods.paymentCardPaymentMethod,
-                                                        selectedPaymentMethodTokenData: Mocks.primerPaymentMethodTokenData,
-                                                        additionalData: nil,
-                                                        tokenizationService: tokenizationService,
-                                                        createResumePaymentService: createResumePaymentService)
+        uiManager = MockPrimerUIManager()
+        sut = FormPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.adyenBlikPaymentMethod,
+                                                     uiManager: uiManager,
+                                                     tokenizationService: tokenizationService,
+                                                     createResumePaymentService: createResumePaymentService)
     }
 
     override func tearDownWithError() throws {
         sut = nil
+        uiManager = nil
         createResumePaymentService = nil
         tokenizationService = nil
     }
@@ -37,10 +40,24 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
         SDKSessionHelper.setUp()
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
+        let uiDelegate = MockPrimerHeadlessUniversalCheckoutUIDelegate()
+        PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
+
+        let mockViewController = MockPrimerRootViewController()
+        uiManager.onPrepareViewController = {
+            self.uiManager.primerRootViewController = mockViewController
+            return Promise.fulfilled(())
+        }
+
+        let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
+        uiDelegate.onUIDidShowPaymentMethod = { _ in
+            self.sut.userInputCompletion?()
+            expectShowPaymentMethod.fulfill()
+        }
 
         let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
-            XCTAssertEqual(data.paymentMethodType.type, "PAYMENT_CARD")
+            XCTAssertEqual(data.paymentMethodType.type, "ADYEN_BLIK")
             decision(.abortPaymentCreation())
             expectWillCreatePaymentData.fulfill()
         }
@@ -58,21 +75,42 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
 
         _ = sut.start()
 
-        waitForExpectations(timeout: 2.0)
+        wait(for: [
+            expectShowPaymentMethod,
+            expectWillCreatePaymentData,
+            expectWillAbort
+        ], timeout: 10.0, enforceOrder: true)
     }
 
     func testStartWithFullCheckoutFlow() throws {
         SDKSessionHelper.setUp()
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
+        let uiDelegate = MockPrimerHeadlessUniversalCheckoutUIDelegate()
+        PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
 
         let apiClient = MockPrimerAPIClient()
         PrimerAPIConfigurationModule.apiClient = apiClient
         apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
 
+        let mockViewController = MockPrimerRootViewController()
+        uiManager.onPrepareViewController = {
+            self.uiManager.primerRootViewController = mockViewController
+            return Promise.fulfilled(())
+        }
+        let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
+        uiDelegate.onUIDidShowPaymentMethod = { _ in
+            self.sut.userInputCompletion?()
+            expectShowPaymentMethod.fulfill()
+        }
+
+        uiManager.prepareRootViewController()
+
+        sut.inputs.append(MockInput(name: "blikCode", text: "123456"))
+
         let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
-            XCTAssertEqual(data.paymentMethodType.type, "PAYMENT_CARD")
+            XCTAssertEqual(data.paymentMethodType.type, "ADYEN_BLIK")
             decision(.continuePaymentCreation())
             expectWillCreatePaymentData.fulfill()
         }
@@ -90,35 +128,31 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
             return Promise.fulfilled(self.tokenizationResponseBody)
         }
 
-        let expectDidExchangeToken = self.expectation(description: "didExchangeToken called")
-        tokenizationService.onExchangePaymentMethodToken = { tokenId, data in
-            XCTAssertEqual(tokenId, "mock_payment_method_token_data_id")
-            expectDidExchangeToken.fulfill()
-            return Promise.fulfilled(self.tokenizationResponseBody)
-        }
+//        let expectDidExchangeToken = self.expectation(description: "didExchangeToken called")
+//        tokenizationService.onExchangePaymentMethodToken = { tokenId, data in
+//            XCTAssertEqual(tokenId, "mock_payment_method_token_data_id")
+//            expectDidExchangeToken.fulfill()
+//            return Promise.fulfilled(self.tokenizationResponseBody)
+//        }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
         createResumePaymentService.onCreatePayment = { body in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
-
         }
 
         delegate.onDidFail = { error in
             print(error)
         }
 
-        let expectPromiseResolved = self.expectation(description: "Expect start promise to resolve")
-        _ = sut.start().done {
-            expectPromiseResolved.fulfill()
-        }
-
+        sut.start()
+        
         wait(for: [
+            expectShowPaymentMethod,
             expectWillCreatePaymentData,
-            expectDidExchangeToken,
+            expectOnTokenize,
             expectDidCreatePayment,
-            expectCheckoutDidCompletewithData,
-            expectPromiseResolved
+            expectCheckoutDidCompletewithData
         ], timeout: 10.0, enforceOrder: true)
     }
 
@@ -206,5 +240,19 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
                      requiredAction: nil,
                      status: .success,
                      paymentFailureReason: nil)
+    }
+
+}
+
+fileprivate class MockInput: Input {
+
+    var mockText: String?
+
+    override var text: String? { mockText }
+
+    init(name: String, text: String) {
+        super.init()
+        self.name = name
+        self.mockText = text
     }
 }
