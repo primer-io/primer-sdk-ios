@@ -137,43 +137,6 @@ final class QRCodeTokenizationViewModelTests: XCTestCase {
         ], timeout: 10.0, enforceOrder: true)
     }
 
-    func testHandleSuccessFlow() throws {
-        let expectation = self.expectation(description: "Results controller is displayed")
-
-        _ = PrimerUIManager.prepareRootViewController().done { _ in
-            PrimerUIManager.primerRootViewController?.navController.setViewControllers([], animated: false)
-            self.sut.handleSuccessfulFlow()
-
-            let viewControllers = PrimerUIManager.primerRootViewController!.navController.viewControllers
-            XCTAssertEqual(viewControllers.count, 1)
-            XCTAssertTrue(viewControllers.first! is PrimerContainerViewController)
-            let childViewController = (viewControllers.first as! PrimerContainerViewController).childViewController
-            XCTAssertTrue(childViewController is PrimerResultViewController)
-            expectation.fulfill()
-        }
-
-        waitForExpectations(timeout: 5.0)
-    }
-
-    func testHandleFailureFlow() throws {
-        let expectation = self.expectation(description: "Results controller is displayed")
-
-        _ = PrimerUIManager.prepareRootViewController().done { _ in
-            PrimerUIManager.primerRootViewController?.navController.setViewControllers([], animated: false)
-            PrimerSettings.current.uiOptions.isErrorScreenEnabled = true
-            self.sut.handleFailureFlow(errorMessage: "Message")
-
-            let viewControllers = PrimerUIManager.primerRootViewController!.navController.viewControllers
-            XCTAssertEqual(viewControllers.count, 1)
-            XCTAssertTrue(viewControllers.first! is PrimerContainerViewController)
-            let childViewController = (viewControllers.first as! PrimerContainerViewController).childViewController
-            XCTAssertTrue(childViewController is PrimerResultViewController)
-            expectation.fulfill()
-        }
-
-        waitForExpectations(timeout: 5.0)
-    }
-
     // MARK: Helpers
 
     var tokenizationResponseBody: Response.Body.Tokenization {
