@@ -124,7 +124,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                     throw err
                 }
 
-                return self.tokenizationService.exchangePaymentMethodToken(paymentMethodTokenId, 
+                return self.tokenizationService.exchangePaymentMethodToken(paymentMethodTokenId,
                                                                            vaultedPaymentMethodAdditionalData: self.additionalData)
             }
             .then { paymentMethodTokenData -> Promise<Void> in
