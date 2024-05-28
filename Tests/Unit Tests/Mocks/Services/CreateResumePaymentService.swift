@@ -2,8 +2,7 @@
 //  CreateResumePaymentService.swift
 //  PrimerSDK_Tests
 //
-//  Created by Dario Carlomagno on 27/04/22.
-//  Copyright © 2022 CocoaPods. All rights reserved.
+//  Created by Jack Newcombe on 22/05/2024.
 //
 
 import Foundation
@@ -11,51 +10,34 @@ import Foundation
 
 class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
 
-    static var apiClient: PrimerAPIClientProtocol?
-    private let rawPaymentResponse = """
-        {
-          "id": "AY6mjuo9111",
-          "date": "2022-04-27T13:07:11.845401",
-          "status": "SUCCESS",
-          "currencyCode": "EUR",
-          "orderId": "ios_order_id_TUqYLuja",
-          "amount": 8888,
-          "customerId": "ios_customer_id"
-        }
-        """
+    static var apiClient: (any PrimerSDK.PrimerAPIClientProtocol)?
+    
+    // MARL: createPayment
 
-    private let rawPaymentCreateRequest = """
-{"paymentMethodToken":"S5oJoPWgTraPoTPWF72wZXwxNj0000000xMDY0ODMx"}
-"""
-    private let rawPaymentResumeRequest = """
-{"resumeToken":"AY6mjuo9111"}
-"""
+    var onCreatePayment: ((Request.Body.Payment.Create) -> Response.Body.Payment?)?
 
-    func createPayment(paymentRequest: Request.Body.Payment.Create, completion: @escaping (Response.Body.Payment?, Error?) -> Void) {
-        guard let data = rawPaymentResponse.data(using: .utf8) else {
-            return
-        }
-
-        do {
-            let response = try JSONDecoder().decode(Response.Body.Payment.self, from: data)
-            completion(response, nil)
-        } catch {
-            completion(nil, error)
-        }
-
-    }
-
-    func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (Response.Body.Payment?, Error?) -> Void) {
-
-        guard let data = rawPaymentResponse.data(using: .utf8) else {
-            return
-        }
-
-        do {
-            let response = try JSONDecoder().decode(Response.Body.Payment.self, from: data)
-            completion(response, nil)
-        } catch {
-            completion(nil, error)
+    func createPayment(paymentRequest: Request.Body.Payment.Create,
+                       completion: @escaping (Response.Body.Payment?, (any Error)?) -> Void) {
+        if let result = onCreatePayment?(paymentRequest) {
+            completion(result, nil)
+        } else {
+            completion(nil, PrimerError.generic(message: "", userInfo: nil, diagnosticsId: ""))
         }
     }
+
+    // MARK: resumePaymentWithPaymentId
+
+    var onResumePayment: ((String, Request.Body.Payment.Resume) -> Response.Body.Payment?)?
+
+    func resumePaymentWithPaymentId(_ paymentId: String,
+                                    paymentResumeRequest: Request.Body.Payment.Resume,
+                                    completion: @escaping (Response.Body.Payment?, (any Error)?) -> Void) {
+        if let result = onResumePayment?(paymentId, paymentResumeRequest) {
+            completion(result, nil)
+        } else {
+            completion(nil, PrimerError.generic(message: "", userInfo: nil, diagnosticsId: ""))
+        }
+    }
+    
+
 }

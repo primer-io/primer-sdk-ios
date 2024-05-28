@@ -49,17 +49,24 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
     let config: PrimerPaymentMethod
 
-    let apiClient: PrimerAPIClientBanksProtocol
+    let uiManager: PrimerUIManaging
 
-    required convenience init(config: PrimerPaymentMethod) {
+    let tokenizationService: TokenizationServiceProtocol
+
+    var apiClient: PrimerAPIClientBanksProtocol! = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+
+    convenience init(config: PrimerPaymentMethod) {
         self.init(config: config,
-                  apiClient: PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient())
+                  uiManager: PrimerUIManager.shared,
+                  tokenizationService: TokenizationService())
     }
 
     init(config: PrimerPaymentMethod,
-         apiClient: PrimerAPIClientBanksProtocol) {
+         uiManager: PrimerUIManaging,
+         tokenizationService: TokenizationServiceProtocol) {
         self.config = config
-        self.apiClient = apiClient
+        self.uiManager = uiManager
+        self.tokenizationService = tokenizationService
         self.paymentMethodType = config.internalPaymentMethodType!
     }
 
@@ -689,7 +696,6 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             return
         }
 
-        let tokenizationService: TokenizationServiceProtocol = TokenizationService()
         let requestBody = Request.Body.Tokenization(
             paymentInstrument: OffSessionPaymentInstrument(
                 paymentMethodConfigId: self.config.id!,
@@ -938,7 +944,7 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
             self.cleanup()
         }
 
-        setup()
+        setupNotificationObservers()
     }
 
     @objc func receivedNotification(_ notification: Notification) {
@@ -955,7 +961,7 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
         }
     }
 
-    func setup() {
+    func setupNotificationObservers() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(self.receivedNotification(_:)),
                                                name: Notification.Name.receivedUrlSchemeRedirect,
