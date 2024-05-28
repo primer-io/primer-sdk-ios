@@ -160,6 +160,7 @@ final class QRCodeTokenizationViewModelTests: XCTestCase {
 
         _ = PrimerUIManager.prepareRootViewController().done { _ in
             PrimerUIManager.primerRootViewController?.navController.setViewControllers([], animated: false)
+            PrimerSettings.current.uiOptions.isErrorScreenEnabled = true
             self.sut.handleFailureFlow(errorMessage: "Message")
 
             let viewControllers = PrimerUIManager.primerRootViewController!.navController.viewControllers
