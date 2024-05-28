@@ -259,6 +259,7 @@ No custom error message will be displayed on the error screen.
     }
 
     static func primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for paymentMethodType: String) {
+        print(">>>>> primerHeadlessUniversalCheckoutUIDidShowPaymentMethod")
         DispatchQueue.main.async {
             if PrimerInternal.shared.sdkIntegrationType == .headless {
                 PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod?(for: paymentMethodType)
