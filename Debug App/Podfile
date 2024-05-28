@@ -15,11 +15,6 @@ target 'Debug App' do
   pod 'PrimerStripeSDK', :git => 'https://github.com/primer-io/primer-stripe-sdk-ios/', :branch => 'nq/initial_setup'
   pod 'IQKeyboardManagerSwift'
 
-  target 'Debug App Tests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
   post_install do |installer|
     fix_code_signing(installer)
     fix_linking(installer)

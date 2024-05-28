@@ -54,6 +54,5 @@ struct UserAgent {
 }
 
 extension UserAgent {
-
     static var userAgentAsString: String = "\(appNameAndVersion()) \(deviceName()) \(deviceVersion()) \(cFNetworkVersion()) \(darwinVersion())"
 }

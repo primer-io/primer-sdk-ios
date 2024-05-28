@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
    LastUpgradeVersion = "1530"
-   version = "2.2">
+   version = "2.1">
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES"
@@ -13,8 +13,9 @@
             buildForProfiling = "NO"
             buildForArchiving = "NO"
             buildForAnalyzing = "NO">
-            <AutocreatedTestPlanReference>
-            </AutocreatedTestPlanReference>
+            <TestPlanReference
+               reference = "container:Debug App/Tests/UnitTestsTestPlan.xctestplan">
+            </TestPlanReference>
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
@@ -22,8 +23,13 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      shouldAutocreateTestPlan = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES">
+      <TestPlans>
+         <TestPlanReference
+            reference = "container:Debug App/Tests/UnitTestsTestPlan.xctestplan"
+            default = "YES">
+         </TestPlanReference>
+      </TestPlans>
       <Testables>
          <TestableReference
             skipped = "NO">
@@ -34,11 +40,6 @@
                BlueprintName = "PrimerSDKTests"
                ReferencedContainer = "container:">
             </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "HUC_TokenizationViewModelTests">
-               </Test>
-            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>
@@ -59,15 +60,6 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "PrimerSDKTests"
-            BuildableName = "PrimerSDKTests"
-            BlueprintName = "PrimerSDKTests"
-            ReferencedContainer = "container:">
-         </BuildableReference>
-      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

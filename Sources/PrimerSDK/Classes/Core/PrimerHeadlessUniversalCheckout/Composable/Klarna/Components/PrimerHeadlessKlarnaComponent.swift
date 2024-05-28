@@ -38,9 +38,10 @@ class PrimerHeadlessKlarnaComponent {
 
     /// Configures the Klarna provider and view handling component with necessary information for payment processing.
     func setProvider(with clientToken: String, paymentCategory: String) {
+        let urlScheme = (try? settings.paymentMethodOptions.validUrlForUrlScheme())?.absoluteString
         let provider: PrimerKlarnaProviding = PrimerKlarnaProvider(clientToken: clientToken,
                                                                    paymentCategory: paymentCategory,
-                                                                   urlScheme: settings.paymentMethodOptions.urlScheme)
+                                                                   urlScheme: urlScheme)
         klarnaProvider = provider
     }
 

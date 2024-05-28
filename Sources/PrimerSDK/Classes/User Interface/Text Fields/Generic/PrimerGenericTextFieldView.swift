@@ -51,6 +51,7 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
         primerTextField.internalText = newText
 
         let valid = PrimerTextField.Validation.valid
+
         let invalid = PrimerTextField.Validation.invalid(PrimerValidationError.invalidCardnumber(
             message: "Card number is not valid.",
             userInfo: .errorUserInfoDictionary(),

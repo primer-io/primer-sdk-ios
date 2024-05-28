@@ -1,6 +1,6 @@
 [tool.commitizen]
 version_scheme = "semver"
-version = "2.26.2"
+version = "2.26.4"
 version_files = [
   "Sources/PrimerSDK/Classes/version.swift:let PrimerSDKVersion",
   "PrimerSDK.podspec:s.version"

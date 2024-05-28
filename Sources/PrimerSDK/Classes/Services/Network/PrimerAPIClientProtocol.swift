@@ -10,7 +10,11 @@ import Foundation
 typealias APIResult<T> = Result<T, Error>
 typealias APICompletion<T> = (APIResult<T>) -> Void
 
-protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPIClientBINDataProtocol {
+protocol PrimerAPIClientProtocol:
+    PrimerAPIClientAnalyticsProtocol,
+    PrimerAPIClientBINDataProtocol,
+    PrimerAPIClientBanksProtocol,
+    PrimerAPIClientPayPalProtocol {
 
     // MARK: Configuration
 
@@ -37,27 +41,6 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPICli
         clientToken: DecodedJWTToken,
         id: String,
         completion: @escaping APICompletion<Void>)
-
-    // MARK: PayPal
-
-    func createPayPalOrderSession(
-        clientToken: DecodedJWTToken,
-        payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder,
-        completion: @escaping APICompletion<Response.Body.PayPal.CreateOrder>)
-
-    func createPayPalBillingAgreementSession(
-        clientToken: DecodedJWTToken,
-        payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement,
-        completion: @escaping APICompletion<Response.Body.PayPal.CreateBillingAgreement>)
-
-    func confirmPayPalBillingAgreement(
-        clientToken: DecodedJWTToken,
-        payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement,
-        completion: @escaping APICompletion<Response.Body.PayPal.ConfirmBillingAgreement>)
-
-    func fetchPayPalExternalPayerInfo(clientToken: DecodedJWTToken,
-                                      payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo,
-                                      completion: @escaping APICompletion<Response.Body.PayPal.PayerInfo>)
 
     // MARK: Klarna
 
@@ -101,13 +84,6 @@ protocol PrimerAPIClientProtocol: PrimerAPIClientAnalyticsProtocol, PrimerAPICli
         threeDSTokenId: String,
         continueInfo: ThreeDS.ContinueInfo,
         completion: @escaping APICompletion<ThreeDS.PostAuthResponse>)
-
-    // MARK: Adyen
-
-    func listAdyenBanks(
-        clientToken: DecodedJWTToken,
-        request: Request.Body.Adyen.BanksList,
-        completion: @escaping APICompletion<BanksListSessionResponse>)
 
     // MARK: Retail Outlets
 

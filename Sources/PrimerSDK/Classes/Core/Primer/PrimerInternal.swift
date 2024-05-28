@@ -60,7 +60,7 @@ internal class PrimerInternal: LogReporter {
         #endif
 
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-        if let urlScheme = settings.paymentMethodOptions.urlScheme, url.absoluteString.contains(urlScheme) {
+        if let urlScheme = try? settings.paymentMethodOptions.validUrlForUrlScheme(), url.absoluteString.hasPrefix(urlScheme.absoluteString) {
             if url.absoluteString.contains("/cancel") {
                 NotificationCenter.default.post(name: Notification.Name.receivedUrlSchemeCancellation, object: nil)
             } else {
@@ -246,14 +246,13 @@ internal class PrimerInternal: LogReporter {
                                                          userInfo: .errorUserInfoDictionary(),
                                                          diagnosticsId: UUID().uuidString)
             }
-
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
             completion?(err)
         }
     }
 
     /** Dismisses any opened checkout sheet view. */
-    internal func dismiss() {
+    internal func dismiss(paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory] = []) {
         let sdkEvent = Analytics.Event.sdk(name: #function, params: nil)
 
         let timingEvent = Analytics.Event.timer(
@@ -268,7 +267,9 @@ internal class PrimerInternal: LogReporter {
         self.selectedPaymentMethodType = nil
 
         PrimerUIManager.dismissPrimerUI(animated: true) {
-            PrimerDelegateProxy.primerDidDismiss()
+            PrimerDelegateProxy.primerDidDismiss(
+                paymentMethodManagerCategories: paymentMethodManagerCategories
+            )
 
             if PrimerInternal.shared.sdkIntegrationType == .dropIn {
                 PrimerAPIConfigurationModule.resetSession()

@@ -33,7 +33,7 @@ internal struct BankTokenizationSessionRequestParameters: Encodable {
 
 extension Response.Body.Adyen {
 
-    struct Bank: Decodable {
+    struct Bank: Decodable, Equatable {
 
         let id: String
         let name: String

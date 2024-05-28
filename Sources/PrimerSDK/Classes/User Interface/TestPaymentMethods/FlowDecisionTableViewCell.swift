@@ -47,7 +47,7 @@ class FlowDecisionTableViewCell: UITableViewCell {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         if selected {
-            layer.borderColor = PrimerColor.blue.cgColor
+            layer.borderColor = UIColor.blue.cgColor
             accessoryType = .checkmark
         } else {
             layer.borderColor = UIColor(red: 229/255, green: 229/255, blue: 234/255, alpha: 1).cgColor

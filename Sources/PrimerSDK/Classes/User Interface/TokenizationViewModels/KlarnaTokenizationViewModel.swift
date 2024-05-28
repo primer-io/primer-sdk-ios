@@ -100,7 +100,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             firstly {
-                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+                self.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 let customerToken = self.klarnaCustomerTokenAPIResponse
@@ -108,7 +108,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+                return self.checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
             }
             .done {
                 seal.fulfill()
@@ -129,9 +129,9 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
         return Promise { seal in
             DispatchQueue.main.async {
                 #if canImport(PrimerKlarnaSDK)
-                guard let urlSchemeStr = self.settings.paymentMethodOptions.urlScheme,
-                      URL(string: urlSchemeStr) != nil else {
-                    let error = KlarnaHelpers.getInvalidUrlSchemeError(settings: self.settings)
+                do {
+                    _ = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
+                } catch let error {
                     seal.reject(error)
                     return
                 }

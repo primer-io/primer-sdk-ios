@@ -7,7 +7,7 @@
 
 // swiftlint:disable function_body_length
 
-import Foundation
+import UIKit
 #if canImport(PrimerNolPaySDK)
 import PrimerNolPaySDK
 #endif
@@ -22,9 +22,16 @@ public class NolPayLinkedCardsComponent {
     var mobileNumber: String?
     var countryCode: String?
     var phoneMetadataService: NolPayPhoneMetadataProviding?
-    var apiClient: PrimerAPIClientProtocol?
 
-    public init() {}
+    let apiClient: PrimerAPIClientProtocol
+
+    public convenience init() {
+        self.init(apiClient: PrimerAPIClient())
+    }
+
+    init(apiClient: PrimerAPIClientProtocol) {
+        self.apiClient = apiClient
+    }
 
     public func getLinkedCardsFor(mobileNumber: String, completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
 
@@ -97,7 +104,7 @@ public class NolPayLinkedCardsComponent {
                                                                                 phoneModel: UIDevice.modelIdentifier!)
 
             return try await withCheckedThrowingContinuation { continuation in
-                self.apiClient?.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
+                self.apiClient.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
                     switch result {
                     case .success(let appSecret):
                         continuation.resume(returning: appSecret.sdkSecret)

@@ -68,14 +68,14 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
 
             firstly {
-                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+                self.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 return self.tokenize()
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+                return self.checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
             }
             .done {
                 seal.fulfill()

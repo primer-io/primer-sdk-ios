@@ -43,12 +43,12 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
 
     override func start() {
 
-        self.checkouEventsNotifierModule.didStartTokenization = {
+        self.checkoutEventsNotifierModule.didStartTokenization = {
             self.uiModule.submitButton?.startAnimating()
             PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
         }
 
-        self.checkouEventsNotifierModule.didFinishTokenization = {
+        self.checkoutEventsNotifierModule.didFinishTokenization = {
             self.uiModule.submitButton?.stopAnimating()
             PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
         }
@@ -118,14 +118,14 @@ class PrimerTestPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             firstly {
-                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+                self.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 return self.tokenize()
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+                return self.checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
             }
             .done {
                 seal.fulfill()

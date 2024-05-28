@@ -1,11 +1,6 @@
 import Foundation
 
 internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable, Hashable {
-
-    static var allProviders: [String] {
-        return PrimerPaymentMethodType.allCases.compactMap({ $0.provider }).unique
-    }
-
     case adyenAlipay            = "ADYEN_ALIPAY"
     case adyenBlik              = "ADYEN_BLIK"
     case adyenBancontactCard    = "ADYEN_BANCONTACT_CARD"
@@ -59,16 +54,6 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     case xfersPayNow            = "XFERS_PAYNOW"
     case nolPay                 = "NOL_PAY"
     case stripeAch              = "STRIPE_ACH"
-
-    var isEnabled: Bool {
-        switch self {
-        case .goCardless,
-             .googlePay:
-            return false
-        default:
-            return true
-        }
-    }
 
     var provider: String {
         switch self {
@@ -149,9 +134,5 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
         case .stripeAch:
             return "STRIPE"
         }
-    }
-
-    var paymentMethodIdentifier: String {
-        return self.rawValue.replacingOccurrences(of: "\(self.provider)_", with: "")
     }
 }

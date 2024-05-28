@@ -1,3 +1,5 @@
+import Foundation
+
 // MARK: - PRIMER SETTINGS
 
 internal protocol PrimerSettingsProtocol {
@@ -47,16 +49,18 @@ public enum PrimerPaymentHandling: String, Codable {
 // MARK: - PAYMENT METHOD OPTIONS
 
 internal protocol PrimerPaymentMethodOptionsProtocol {
-    var urlScheme: String? { get }
     var applePayOptions: PrimerApplePayOptions? { get }
     var klarnaOptions: PrimerKlarnaOptions? { get }
     var threeDsOptions: PrimerThreeDsOptions? { get }
     var stripeOptions: PrimerStripeACHOptions? { get }
+
+    func validUrlForUrlScheme() throws -> URL
+    func validSchemeForUrlScheme() throws -> String
 }
 
 public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Codable {
 
-    let urlScheme: String?
+    private let urlScheme: String?
     let applePayOptions: PrimerApplePayOptions?
     var klarnaOptions: PrimerKlarnaOptions?
 
@@ -74,6 +78,11 @@ public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Cod
         stripeOptions: PrimerStripeACHOptions? = nil
     ) {
         self.urlScheme = urlScheme
+        if let urlScheme = urlScheme, URL(string: urlScheme) == nil {
+            PrimerLogging.shared.logger.warn(message: """
+The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a valid url scheme is provided of the form 'myurlscheme://myapp'
+""")
+        }
         self.applePayOptions = applePayOptions
         self.klarnaOptions = klarnaOptions
         self.threeDsOptions = threeDsOptions
@@ -92,6 +101,33 @@ public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Cod
         self.applePayOptions = applePayOptions
         self.klarnaOptions = klarnaOptions
         self.stripeOptions = stripeOptions
+    }
+
+    func validUrlForUrlScheme() throws -> URL {
+        guard let urlScheme = urlScheme, let url = URL(string: urlScheme), url.scheme != nil else {
+            let err = PrimerError.invalidValue(
+                key: "urlScheme",
+                value: nil,
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+        return url
+    }
+
+    func validSchemeForUrlScheme() throws -> String {
+        let url = try validUrlForUrlScheme()
+        guard let scheme = url.scheme else {
+            let err = PrimerError.invalidValue(
+                key: "urlScheme",
+                value: nil,
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+        return scheme
     }
 }
 

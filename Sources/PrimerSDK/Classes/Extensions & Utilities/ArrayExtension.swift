@@ -7,26 +7,16 @@
 
 import Foundation
 
-internal extension Array where Element: Equatable {
-
+internal extension Array where Element: Hashable & Comparable {
     var unique: [Element] {
-        var uniqueValues: [Element] = []
-        forEach { item in
-            guard !uniqueValues.contains(item) else { return }
-            uniqueValues.append(item)
-        }
-        return uniqueValues
+        return Array(Set(self)).sorted()
     }
+}
 
+internal extension Array where Element: Equatable {
     func toBatches(of size: UInt) -> [[Element]] {
         return stride(from: 0, to: count, by: Int(size)).map {
             Array(self[$0 ..< Swift.min($0 + Int(size), count)])
         }
-    }
-}
-
-extension Array where Element: Weak<AnyObject> {
-    mutating func reap () {
-        self = self.filter { nil != $0.value }
     }
 }

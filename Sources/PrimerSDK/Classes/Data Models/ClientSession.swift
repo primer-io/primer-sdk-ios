@@ -264,10 +264,10 @@ internal class ClientSession {
             let taxCode: String?
             let productType: String?
 
-            func toOrderItem() throws -> OrderItem {
+            func toOrderItem() throws -> ApplePayOrderItem {
                 let applePayOptions = PrimerSettings.current.paymentMethodOptions.applePayOptions
                 let name = (self.description ?? applePayOptions?.merchantName)
-                return try OrderItem(
+                return try ApplePayOrderItem(
                     name: name ?? "Item",
                     unitAmount: self.amount,
                     quantity: self.quantity,

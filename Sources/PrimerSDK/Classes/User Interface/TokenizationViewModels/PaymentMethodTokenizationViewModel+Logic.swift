@@ -64,7 +64,9 @@ extension PaymentMethodTokenizationViewModel {
                     self.handleFailureFlow(errorMessage: merchantErrorMessage)
                 }
                 // The above promises will never end up on error.
-                .catch { _ in }
+                .catch { _ in
+                    self.logger.error(message: "Unselection of payment method failed - this should never happen ...")
+                }
             }
         }
     }
@@ -462,7 +464,12 @@ extension PaymentMethodTokenizationViewModel {
     }
 
     func handleFailureFlow(errorMessage: String?) {
-        PrimerUIManager.dismissOrShowResultScreen(type: .failure, withMessage: errorMessage)
+        let categories = self.config.paymentMethodManagerCategories
+        PrimerUIManager.dismissOrShowResultScreen(
+            type: .failure,
+            paymentMethodManagerCategories: categories ?? [],
+            withMessage: errorMessage
+        )
     }
 
     internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {

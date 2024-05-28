@@ -36,7 +36,7 @@
 //        tokenizeCalled = true
 //
 //        let paymentMethodTokenData = try! JSONSerialization.data(withJSONObject: paymentMethodTokenJSON, options: .fragmentsAllowed)
-//        let token = try! JSONParser().parse(PrimerPaymentMethodTokenData.self, from: paymentMethodTokenData) //PaymentMethodToken(token: "tokenID", paymentInstrumentType: .paymentCard, vaultData: VaultData())
+//        let token = try! JSONDecoder().decode(PrimerPaymentMethodTokenData.self, from: paymentMethodTokenData) //PaymentMethodToken(token: "tokenID", paymentInstrumentType: .paymentCard, vaultData: VaultData())
 //        return onTokenizeSuccess(.success(token))
 //    }
 //

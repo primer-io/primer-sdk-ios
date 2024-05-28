@@ -19,7 +19,7 @@ jobs:
         xcode: [14.3.1]
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
         with:
           ref: ${{ github.ref }}
       - name: Select Xcode Version
@@ -59,7 +59,7 @@ jobs:
       - name: Build and archive app via SPM
         if: ${{ matrix.variant == 'spm' }}
         run: |
-          bundle exec fastlane build_spm
+          bundle exec fastlane test_spm sim_version:16.4
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
@@ -74,7 +74,7 @@ jobs:
           node Report\ Scripts/multixcode-failure-report.js createMultiXcodeFailureReport ${{ github.head_ref || github.ref_name }} ${{ matrix.xcode}} ${{ matrix.variant }}
       - name: Slack Notification
         if: ${{ failure() }}
-        uses: slackapi/slack-github-action@6c661ce58804a1a20f6dc5fbee7f0381b469e001 #v1.25.0
+        uses: slackapi/slack-github-action@70cd7be8e40a46e8b0eced40b0de447bdb42f68e #v1.26.0
         with:
           channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           payload-file-path: '/var/tmp/multixcode-failure-report.json'
@@ -86,7 +86,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
         with:
           ref: ${{ github.ref }}
       - name: Setup node
@@ -100,7 +100,7 @@ jobs:
           node Report\ Scripts/multixcode-success-report.js createMultiXcodeSummaryReport ${{ github.head_ref || github.ref_name }} "14.3.1, 14.2, 14.1" "cocoapods, spm"
       - name: Slack Notification
         if: ${{ success() }}
-        uses: slackapi/slack-github-action@6c661ce58804a1a20f6dc5fbee7f0381b469e001 #v1.25.0
+        uses: slackapi/slack-github-action@70cd7be8e40a46e8b0eced40b0de447bdb42f68e #v1.26.0
         with:
           channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           payload-file-path: '/var/tmp/multixcode-success-summary.json'

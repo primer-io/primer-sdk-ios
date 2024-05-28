@@ -48,7 +48,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         renderSelectedPaymentInstrument()
         renderAvailablePaymentMethods()
 
-        guard PrimerAPIConfigurationModule.decodedJWTToken.exists else { return }
+        guard PrimerAPIConfigurationModule.decodedJWTToken != nil else { return }
 
         let vaultService: VaultServiceProtocol = VaultService()
         firstly {
@@ -70,7 +70,9 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 switch errorDecision.type {
                 case .fail(let message):
                     DispatchQueue.main.async {
-                        PrimerUIManager.dismissOrShowResultScreen(type: .failure, withMessage: message)
+                        PrimerUIManager.dismissOrShowResultScreen(type: .failure,
+                                                                  paymentMethodManagerCategories: [],
+                                                                  withMessage: message)
                     }
                 }
             }
@@ -170,7 +172,9 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     PrimerDelegateProxy.raisePrimerDidFailWithError(err, data: nil)
                 }
                 .done { errMessage in
-                    PrimerUIManager.dismissOrShowResultScreen(type: .failure, withMessage: errMessage)
+                    PrimerUIManager.dismissOrShowResultScreen(type: .failure,
+                                                              paymentMethodManagerCategories: [],
+                                                              withMessage: errMessage)
                 }
                 .catch { _ in }
                 return

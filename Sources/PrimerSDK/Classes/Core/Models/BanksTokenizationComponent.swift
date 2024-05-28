@@ -15,11 +15,11 @@ import UIKit
 import SafariServices
 
 final class BanksTokenizationComponent: NSObject, LogReporter {
-    var config: PrimerPaymentMethod
+
     var paymentMethodType: PrimerPaymentMethodType
     private(set) var banks: [AdyenBank] = []
     private var selectedBank: AdyenBank?
-    let checkouEventsNotifierModule: CheckoutEventsNotifierModule = CheckoutEventsNotifierModule()
+    let checkoutEventsNotifierModule: CheckoutEventsNotifierModule = CheckoutEventsNotifierModule()
 
     var willDismissPaymentMethodUI: (() -> Void)?
     var didDismissPaymentMethodUI: (() -> Void)?
@@ -47,8 +47,19 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
     private var bankSelectionCompletion: ((AdyenBank) -> Void)?
 
-    required init(config: PrimerPaymentMethod) {
+    let config: PrimerPaymentMethod
+
+    let apiClient: PrimerAPIClientBanksProtocol
+
+    required convenience init(config: PrimerPaymentMethod) {
+        self.init(config: config,
+                  apiClient: PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient())
+    }
+
+    init(config: PrimerPaymentMethod,
+         apiClient: PrimerAPIClientBanksProtocol) {
         self.config = config
+        self.apiClient = apiClient
         self.paymentMethodType = config.internalPaymentMethodType!
     }
 
@@ -84,19 +95,17 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 paymentMethodConfigId: config.id!,
                 parameters: BankTokenizationSessionRequestParameters(paymentMethod: paymentMethodRequestValue))
 
-            let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
-
-            apiClient.listAdyenBanks(clientToken: decodedJWTToken, request: request) { result in
+            self.apiClient.listAdyenBanks(clientToken: decodedJWTToken, request: request) { result in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
-
                 case .success(let banks):
                     seal.fulfill(banks.result)
                 }
             }
         }
     }
+
     func processPaymentMethodTokenData() {
         if PrimerInternal.shared.intent == .vault {
             PrimerDelegateProxy.primerDidTokenizePaymentMethod(self.paymentMethodTokenData!) { _ in }
@@ -642,15 +651,21 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             }
         }
     }
-    func handleSuccessfulFlow() {
-    }
+
+    func handleSuccessfulFlow() {}
+
     func nullifyEventCallbacks() {
         self.didStartPayment = nil
         self.didFinishPayment = nil
     }
+
     func handleFailureFlow(errorMessage: String?) {
-        PrimerUIManager.dismissOrShowResultScreen(type: .failure, withMessage: errorMessage)
+        let categories = self.config.paymentMethodManagerCategories
+        PrimerUIManager.dismissOrShowResultScreen(type: .failure,
+                                                  paymentMethodManagerCategories: categories ?? [],
+                                                  withMessage: errorMessage)
     }
+
     func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             self.tokenize(bank: self.selectedBank!) { paymentMethodTokenData, err in
@@ -664,6 +679,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             }
         }
     }
+
     private func tokenize(bank: AdyenBank, completion: @escaping (_ paymentMethodTokenData: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
         guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
             let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
@@ -691,17 +707,18 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             completion(nil, err)
         }
     }
+
     func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             firstly {
-                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+                self.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 return self.tokenize()
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+                return self.checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
             }
             .done {
                 seal.fulfill()
@@ -722,11 +739,13 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             }
         }
     }
+
     func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
         }
     }
+
     // Resume payment with Resume payment ID
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in

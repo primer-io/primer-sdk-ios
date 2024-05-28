@@ -123,14 +123,14 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
 
             firstly {
-                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+                self.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 return self.tokenize()
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+                return self.checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
             }
             .done {
                 seal.fulfill()
@@ -234,23 +234,17 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     private func createOAuthSession(_ url: URL) -> Promise<URL> {
         return Promise { seal in
-            guard var urlScheme = PrimerSettings.current.paymentMethodOptions.urlScheme else {
-                let err = PrimerError.invalidValue(key: "settings.paymentMethodOptions.urlScheme",
-                                                   value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
+            var scheme: String
+            do {
+                scheme = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
+            } catch let error {
+                seal.reject(error)
                 return
-            }
-
-            if urlScheme.contains("://") {
-                urlScheme = urlScheme.components(separatedBy: "://").first!
             }
 
             let webAuthSession =  ASWebAuthenticationSession(
                 url: url,
-                callbackURLScheme: urlScheme,
+                callbackURLScheme: scheme,
                 completionHandler: { [weak self] (url, error) in
                     guard let strongSelf = self else { return }
 

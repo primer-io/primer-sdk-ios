@@ -1,0 +1,113 @@
+name: Build app
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+concurrency:
+  group: ${{ github.ref }}-tests
+  cancel-in-progress: true
+
+jobs:
+  unit-tests:
+    runs-on: macos-13-large
+    timeout-minutes: 20
+    name: "Unit Tests"
+    steps:
+      - name: Cancel previous jobs
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
+        with:
+          access_token: ${{ github.token }}
+      - name: Git - Checkout
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        with:
+          ref: ${{ github.ref }}
+      - name: Run SDK tests
+        uses: ./.github/actions/sdk-tests
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+          known-hosts: ${{ secrets.KNOWN_HOSTS }}
+          match-password: ${{ secrets.MATCH_PASSWORD }}
+          match-git-private-key: ${{ secrets.FASTLANE_PASSWORD }}
+          fastlane-session: ${{ secrets.FASTLANE_SESSION }}
+          fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
+          match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
+          match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          coverage-file-name: sonar-coverage.xml
+
+  sonarcloud:
+    needs:
+      - unit-tests
+    name: SonarCloud
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+      - uses: actions/download-artifact@master
+        with:
+          name: coverage-file
+      - name: SonarCloud Scan
+        uses: ./.github/actions/sonar
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          sonar-host: https://sonarcloud.io.
+          pull-request-number: ${{ github.event.pull_request.number }}
+          branch: ${{ github.head_ref }}
+          base-branch: ${{ github.base_ref }}
+          pull-request-sha: ${{ github.event.pull_request.head.sha }}
+          coverage-file-name: sonar-coverage.xml
+          
+  build-and-upload-to-appetize:
+    needs:
+      - unit-tests
+    runs-on: macos-13-large
+    timeout-minutes: 45
+    name: "Build and upload app to Appetize"
+    steps:
+      - name: Cancel previous jobs
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
+        with:
+          access_token: ${{ github.token }}
+      - name: Git - Checkout
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        with:
+          ref: ${{ github.ref }}
+      - name: Upload preview to Appetize
+        id: appetize-upload
+        uses: ./.github/actions/appetize-build
+        with:
+          build_type: 'preview'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+          known-hosts: ${{ secrets.KNOWN_HOSTS }}
+          match-password: ${{ secrets.MATCH_PASSWORD }}
+          match-git-private-key: ${{ secrets.FASTLANE_PASSWORD }}
+          fastlane-session: ${{ secrets.FASTLANE_SESSION }}
+          fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
+          match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
+          match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          appetize-api-token: ${{ secrets.APPETIZE_API_TOKEN }}
+          source-branch: ${{ github.head_ref || github.ref_name }}
+          pr-number: ${{ github.event.pull_request.number }}
+          slack-channel: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
+          slack-reporter-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
+          github-run-id: ${{ github.run_id }}
+      - uses: peter-evans/find-comment@3eae4d37986fb5a8592848f6a574fdf654e61f9e #v3.1.0
+        if: ${{ success() }}
+        id: find_comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: Appetize link
+      - uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 #v4.0.0
+        if: ${{ success() }}
+        with:
+          body: |
+            Appetize link: ${{ env.APPETIZE_APP_URL }}
+          edit-mode: replace
+          comment-id: ${{ steps.find_comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          token: ${{ secrets.GITHUB_TOKEN }}

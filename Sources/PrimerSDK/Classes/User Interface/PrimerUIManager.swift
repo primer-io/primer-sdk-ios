@@ -78,7 +78,7 @@ internal class PrimerUIManager {
 
         PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
 
-        paymentMethodTokenizationViewModel?.checkouEventsNotifierModule.didStartTokenization = {
+        paymentMethodTokenizationViewModel?.checkoutEventsNotifierModule.didStartTokenization = {
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
 
@@ -228,13 +228,17 @@ internal class PrimerUIManager {
         }
     }
 
-    static func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType, withMessage message: String? = nil) {
+    static func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType,
+                                          paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
+                                          withMessage message: String? = nil) {
         if PrimerSettings.current.uiOptions.isSuccessScreenEnabled && type == .success {
             showResultScreenForResultType(type: .success, message: message)
         } else if PrimerSettings.current.uiOptions.isErrorScreenEnabled && type == .failure {
             showResultScreenForResultType(type: .failure, message: message)
         } else {
-            PrimerInternal.shared.dismiss()
+            PrimerInternal.shared.dismiss(
+                paymentMethodManagerCategories: paymentMethodManagerCategories
+            )
         }
     }
 
@@ -242,7 +246,9 @@ internal class PrimerUIManager {
         PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { errorDecision in
             switch errorDecision.type {
             case .fail(let message):
-                PrimerUIManager.dismissOrShowResultScreen(type: .failure, withMessage: message)
+                PrimerUIManager.dismissOrShowResultScreen(type: .failure,
+                                                          paymentMethodManagerCategories: [],
+                                                          withMessage: message)
             }
         }
     }

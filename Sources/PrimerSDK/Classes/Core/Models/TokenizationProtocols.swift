@@ -10,7 +10,7 @@ internal protocol PaymentMethodTokenizationModelProtocol: NSObject {
     static var apiClient: PrimerAPIClientProtocol? { get set }
 
     init(config: PrimerPaymentMethod)
-    var checkouEventsNotifierModule: CheckoutEventsNotifierModule { get }
+    var checkoutEventsNotifierModule: CheckoutEventsNotifierModule { get }
 
     // Events
     var didStartPayment: (() -> Void)? { get set }

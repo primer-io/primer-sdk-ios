@@ -90,10 +90,12 @@ internal class PrimerDelegateProxy: LogReporter {
         }
     }
 
-    static func primerDidDismiss() {
+    static func primerDidDismiss(paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory]) {
         DispatchQueue.main.async {
             if PrimerInternal.shared.sdkIntegrationType == .dropIn {
                 Primer.shared.delegate?.primerDidDismiss?()
+            } else if paymentMethodManagerCategories.contains(.nativeUI) {
+                PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniveraslCheckoutUIDidDismissPaymentMethod?()
             }
         }
     }
@@ -143,11 +145,6 @@ internal class PrimerDelegateProxy: LogReporter {
 
     static func primerDidFailWithError(_ error: any PrimerErrorProtocol, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
         DispatchQueue.main.async {
-
-            if case .merchantError = (error as? PrimerError) {
-                decisionHandler(.fail(withErrorMessage: error.errorDescription))
-                return
-            }
 
             let exposedError: Error = error.exposedError
 

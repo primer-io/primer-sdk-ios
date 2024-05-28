@@ -35,23 +35,7 @@ protocol PrimerHeadlessAnalyticsRecordable {
     func submit()
 }
 
-public enum PrimerValidationStatus: Equatable {
-
-    public static func == (lhs: PrimerValidationStatus, rhs: PrimerValidationStatus) -> Bool {
-        switch (lhs, rhs) {
-        case (.validating, .validating):
-            return true
-        case (.valid, .valid):
-            return true
-        case (.invalid(let errorsLHS), .invalid(let errorsRHS)):
-            return errorsLHS == errorsRHS
-        case (.error(let errorLHS), .error(let errorRHS)):
-            return errorLHS.errorCode == errorRHS.errorCode
-        default:
-            return false
-        }
-    }
-
+public enum PrimerValidationStatus {
     case validating
     case valid
     case invalid(errors: [PrimerValidationError])
@@ -76,7 +60,7 @@ extension PrimerHeadlessCollectDataComponent {
         let error = PrimerError.invalidValue(key: key,
                                              value: nil,
                                              userInfo: .errorUserInfoDictionary(),
-        diagnosticsId: UUID().uuidString)
+                                             diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: error)
         self.errorDelegate?.didReceiveError(error: error)
     }

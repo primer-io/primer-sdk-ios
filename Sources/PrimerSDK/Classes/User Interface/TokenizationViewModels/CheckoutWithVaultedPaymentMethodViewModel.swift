@@ -1,5 +1,5 @@
 //
-//  VaultedPaymentMethodTokenizationViewModel.swift
+//  CheckoutWithVaultedPaymentMethodViewModel.swift
 //  PrimerSDK
 //
 //  Created by Evangelos on 9/5/22.
@@ -102,7 +102,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
     func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             firstly {
-                self.config.tokenizationViewModel!.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+                self.config.tokenizationViewModel!.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 guard let paymentMethodTokenId = self.selectedPaymentMethodTokenData.id else {
@@ -120,7 +120,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
-                return self.config.tokenizationViewModel!.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+                return self.config.tokenizationViewModel!.checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
             }
             .done {
                 seal.fulfill()
@@ -606,11 +606,16 @@ Make sure you call the decision handler otherwise the SDK will hang.
     }
 
     func handleSuccessfulFlow() {
-        PrimerUIManager.dismissOrShowResultScreen(type: .success)
+        let categories = self.config.paymentMethodManagerCategories
+        PrimerUIManager.dismissOrShowResultScreen(type: .success,
+                                                  paymentMethodManagerCategories: categories ?? [])
     }
 
     func handleFailureFlow(errorMessage: String?) {
-        PrimerUIManager.dismissOrShowResultScreen(type: .failure, withMessage: errorMessage)
+        let categories = self.config.paymentMethodManagerCategories
+        PrimerUIManager.dismissOrShowResultScreen(type: .failure,
+                                                  paymentMethodManagerCategories: categories ?? [],
+                                                  withMessage: errorMessage)
     }
 
     private var paymentMethodType: String {
