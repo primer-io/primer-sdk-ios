@@ -84,11 +84,11 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
             expectCheckoutDidCompletewithData.fulfill()
         }
 
-        let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        tokenizationService.onTokenize = { body in
-            expectOnTokenize.fulfill()
-            return Promise.fulfilled(self.tokenizationResponseBody)
-        }
+//        let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
+//        tokenizationService.onTokenize = { body in
+//            expectOnTokenize.fulfill()
+//            return Promise.fulfilled(self.tokenizationResponseBody)
+//        }
 
         let expectDidExchangeToken = self.expectation(description: "didExchangeToken called")
         tokenizationService.onExchangePaymentMethodToken = { tokenId, data in
