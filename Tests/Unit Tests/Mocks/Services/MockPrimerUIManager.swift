@@ -15,7 +15,6 @@ class MockPrimerUIManager: PrimerUIManaging {
     var primerWindow: UIWindow?
     
     var primerRootViewController: PrimerSDK.PrimerRootViewController?
-
     var apiConfigurationModule: (any PrimerSDK.PrimerAPIConfigurationModuleProtocol)?
 
     // MARK: prepareRootViewController
