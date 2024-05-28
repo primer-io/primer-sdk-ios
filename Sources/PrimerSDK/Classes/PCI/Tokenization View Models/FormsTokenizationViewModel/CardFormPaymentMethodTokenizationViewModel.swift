@@ -29,7 +29,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             paymentMethodType: self.config.type,
             isRequiringCVVInput: isRequiringCVVInput
         )
-        cardComponentsManager.delegate = self
+        manager.delegate = self
         return manager
     }()
 
