@@ -32,7 +32,10 @@ class MockPrimerRootViewController: PrimerRootViewController {
 
     var onShow: ((UIViewController, Bool) -> Void)?
 
+    var latestViewController: UIViewController?
+
     override func show(viewController: UIViewController, animated: Bool = false) {
+        latestViewController = viewController
         onShow?(viewController, animated)
     }
 
@@ -41,6 +44,7 @@ class MockPrimerRootViewController: PrimerRootViewController {
     var onPresent: ((UIViewController, Bool) -> Void)?
 
     override func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
+        latestViewController = viewControllerToPresent
         onPresent?(viewControllerToPresent, flag)
         completion?()
     }

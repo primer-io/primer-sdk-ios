@@ -102,6 +102,7 @@ class Mocks {
             static var webRedirectPaymentMethodId = "mock_web_redirect_payment_method_id"
             static var adyenGiroPayRedirectPaymentMethodId = "mock_adyen_giropay_payment_method_id"
             static var adyenBlikPaymentMethodId = "mock_adyen_blik_payment_method_id"
+            static var adyenIDealPaymentMethodId = "mock_adyen_ideal_payment_method_id"
             static var klarnaPaymentMethodId = "mock_klarna_payment_method_id"
             static var paymentCardPaymentMethodId = "mock_payment_card_payment_method_id"
             static var nolPaymentMethodId = "mock_nol_payment_method_id"
@@ -115,6 +116,7 @@ class Mocks {
             static var webRedirectPaymentMethodName = "Mock Web Redirect Payment Method"
             static var adyenGiroPayRedirectPaymentMethodName = "Mock Adyen GiroPay Payment Method"
             static var adyenBlikPaymentMethodName = "Mock Adyen Blik Payment Method"
+            static var adyenIDealPaymentMethodName = "Mock iDeal Blik Payment Method"
             static var klarnaPaymentMethodName = "Mock Klarna Payment Method"
             static var paymentCardPaymentMethodName = "Mock Payment Card Payment Method"
             static var nolPaymentMethodName = "Mock NOL Payment Method"
@@ -172,6 +174,16 @@ class Mocks {
             implementationType: .webRedirect,
             type: "ADYEN_BLIK", // Mocks.Static.Strings.adyenGiroPayRedirectPaymentMethodType,
             name: Mocks.Static.Strings.adyenBlikPaymentMethodName,
+            processorConfigId: Mocks.Static.Strings.processorConfigId,
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil)
+
+        static var adyenIDealPaymentMethod = PrimerPaymentMethod(
+            id: Mocks.Static.Strings.adyenBlikPaymentMethodId,
+            implementationType: .webRedirect,
+            type: "ADYEN_IDEAL", // Mocks.Static.Strings.adyenGiroPayRedirectPaymentMethodType,
+            name: Mocks.Static.Strings.adyenIDealPaymentMethodName,
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: nil,
             options: nil,

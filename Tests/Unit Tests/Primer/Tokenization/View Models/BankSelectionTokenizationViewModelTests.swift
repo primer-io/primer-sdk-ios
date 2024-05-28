@@ -1,14 +1,14 @@
 //
-//  FormPaymentMethodTokenizationViewModelTests.swift
+//  BankSelectionTokenizationViewModelTests.swift
 //  
 //
-//  Created by Jack Newcombe on 24/05/2024.
+//  Created by Jack Newcombe on 28/05/2024.
 //
 
 import XCTest
 @testable import PrimerSDK
 
-final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
+final class BankSelectionTokenizationViewModelTests: XCTestCase {
 
     var uiManager: MockPrimerUIManager!
 
@@ -16,23 +16,25 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
 
     var createResumePaymentService: MockCreateResumePaymentService!
 
-    var sut: FormPaymentMethodTokenizationViewModel!
+    var sut: BankSelectorTokenizationViewModel!
 
     override func setUpWithError() throws {
+
+        uiManager = MockPrimerUIManager()
         tokenizationService = MockTokenizationService()
         createResumePaymentService = MockCreateResumePaymentService()
-        uiManager = MockPrimerUIManager()
-        sut = FormPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.adyenBlikPaymentMethod,
-                                                     uiManager: uiManager,
-                                                     tokenizationService: tokenizationService,
-                                                     createResumePaymentService: createResumePaymentService)
+
+        sut = BankSelectorTokenizationViewModel(config: Mocks.PaymentMethods.adyenIDealPaymentMethod,
+                                                uiManager: uiManager,
+                                                tokenizationService: tokenizationService,
+                                                createResumePaymentService: createResumePaymentService)
     }
 
     override func tearDownWithError() throws {
         sut = nil
-        uiManager = nil
         createResumePaymentService = nil
         tokenizationService = nil
+        uiManager = nil
     }
 
     func testStartWithPreTokenizationAndAbort() throws {
@@ -42,21 +44,25 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
         let uiDelegate = MockPrimerHeadlessUniversalCheckoutUIDelegate()
         PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
 
+        let banks = setupBanksAPIClient()
+
         let mockViewController = MockPrimerRootViewController()
         uiManager.onPrepareViewController = {
             self.uiManager.primerRootViewController = mockViewController
             return Promise.fulfilled(())
         }
+        
+        _ = uiManager.prepareRootViewController()
 
         let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
-            self.sut.userInputCompletion?()
+            self.sut.bankSelectionCompletion?(banks.result.first!)
             expectShowPaymentMethod.fulfill()
         }
 
         let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
-            XCTAssertEqual(data.paymentMethodType.type, "ADYEN_BLIK")
+            XCTAssertEqual(data.paymentMethodType.type, "ADYEN_IDEAL")
             decision(.abortPaymentCreation())
             expectWillCreatePaymentData.fulfill()
         }
@@ -72,7 +78,7 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
             expectWillAbort.fulfill()
         }
 
-        _ = sut.start()
+        sut.start()
 
         wait(for: [
             expectShowPaymentMethod,
@@ -92,24 +98,25 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
         PrimerAPIConfigurationModule.apiClient = apiClient
         apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
 
+        let banks = setupBanksAPIClient()
+
         let mockViewController = MockPrimerRootViewController()
         uiManager.onPrepareViewController = {
             self.uiManager.primerRootViewController = mockViewController
             return Promise.fulfilled(())
         }
+
         let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
-            self.sut.userInputCompletion?()
+            self.sut.bankSelectionCompletion?(banks.result.first!)
             expectShowPaymentMethod.fulfill()
         }
 
-        uiManager.prepareRootViewController()
-
-        sut.inputs.append(MockInput(name: "blikCode", text: "123456"))
+        _ = uiManager.prepareRootViewController()
 
         let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
-            XCTAssertEqual(data.paymentMethodType.type, "ADYEN_BLIK")
+            XCTAssertEqual(data.paymentMethodType.type, "ADYEN_IDEAL")
             decision(.continuePaymentCreation())
             expectWillCreatePaymentData.fulfill()
         }
@@ -127,13 +134,6 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
             return Promise.fulfilled(self.tokenizationResponseBody)
         }
 
-//        let expectDidExchangeToken = self.expectation(description: "didExchangeToken called")
-//        tokenizationService.onExchangePaymentMethodToken = { tokenId, data in
-//            XCTAssertEqual(tokenId, "mock_payment_method_token_data_id")
-//            expectDidExchangeToken.fulfill()
-//            return Promise.fulfilled(self.tokenizationResponseBody)
-//        }
-
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
         createResumePaymentService.onCreatePayment = { body in
             expectDidCreatePayment.fulfill()
@@ -145,7 +145,7 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
         }
 
         sut.start()
-        
+
         wait(for: [
             expectShowPaymentMethod,
             expectWillCreatePaymentData,
@@ -193,6 +193,17 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
 
     // MARK: Helpers
 
+    func setupBanksAPIClient() -> BanksListSessionResponse {
+        let banksApiClient = MockBanksAPIClient()
+        let banks: BanksListSessionResponse = .init(
+            result: [.init(id: "id", name: "name", iconUrlStr: "icon", disabled: false)]
+        )
+        banksApiClient.result = banks
+        sut.apiClient = banksApiClient
+
+        return banks
+    }
+
     var tokenizationResponseBody: Response.Body.Tokenization {
         .init(analyticsId: "analytics_id",
               id: "id",
@@ -239,19 +250,5 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
                      requiredAction: nil,
                      status: .success,
                      paymentFailureReason: nil)
-    }
-
-}
-
-fileprivate class MockInput: Input {
-
-    var mockText: String?
-
-    override var text: String? { mockText }
-
-    init(name: String, text: String) {
-        super.init()
-        self.name = name
-        self.mockText = text
     }
 }
