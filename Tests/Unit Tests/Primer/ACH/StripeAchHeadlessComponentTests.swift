@@ -13,7 +13,7 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
 
     var sut: StripeAchHeadlessComponent!
     var tokenizationService: ACHTokenizationService!
-    var tokenizationViewModel: StripeTokenizationViewModel!
+    var tokenizationViewModel: StripeAchTokenizationViewModel!
     var mockApiClient: MockPrimerAPIClient!
 
     var errorResult: PrimerSDK.PrimerError!
@@ -105,7 +105,12 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
         let expectedResult: PrimerValidationStatus = .valid
         sut?.updateCollectedData(collectableData: collectableData)
 
-       XCTAssertTrue(expectedResult == validationResult)
+        switch validationResult {
+        case .valid:
+            break
+        default:
+            XCTFail("The result should be valid")
+        }
     }
 
     func test_validationStatus_lastName_valid() {
@@ -113,7 +118,12 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
         let expectedResult: PrimerValidationStatus = .valid
         sut?.updateCollectedData(collectableData: collectableData)
 
-       XCTAssertTrue(expectedResult == validationResult)
+        switch validationResult {
+        case .valid:
+            break
+        default:
+            XCTFail("The result should be valid")
+        }
     }
 
     func test_validationStatus_emailAddress_valid() {
@@ -121,7 +131,12 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
         let expectedResult: PrimerValidationStatus = .valid
         sut?.updateCollectedData(collectableData: collectableData)
 
-       XCTAssertTrue(expectedResult == validationResult)
+        switch validationResult {
+        case .valid:
+            break
+        default:
+            XCTFail("The result should be valid")
+        }
     }
 
     func test_didFetchUserDetails_step() {
@@ -269,7 +284,7 @@ extension StripeAchHeadlessComponentTests {
         PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
 
         tokenizationService = ACHTokenizationService(paymentMethod: ACHMocks.stripeACHPaymentMethod)
-        tokenizationViewModel = StripeTokenizationViewModel(config: ACHMocks.stripeACHPaymentMethod)
+        tokenizationViewModel = StripeAchTokenizationViewModel(config: ACHMocks.stripeACHPaymentMethod)
         sut = StripeAchHeadlessComponent(tokenizationService: tokenizationService, tokenizationViewModel: tokenizationViewModel)
         sut.stepDelegate = self
         sut.validationDelegate = self

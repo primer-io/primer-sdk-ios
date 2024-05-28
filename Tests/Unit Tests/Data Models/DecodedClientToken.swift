@@ -32,7 +32,8 @@ internal extension DecodedJWTToken {
         iPay88ActionType: String? = "iPay88-action-type",
         supportedCurrencyCode: String? = "GBP",
         supportedCountry: String? = "GB",
-        nolPayTransactionNo: String? = "1714577102659239937"
+        nolPayTransactionNo: String? = "1714577102659239937",
+        clientSecret: String? = "client_secret_token"
     ) throws -> DecodedJWTToken {
         let decodedClientToken = DecodedJWTToken(
             accessToken: accessToken,
@@ -56,7 +57,8 @@ internal extension DecodedJWTToken {
             iPay88ActionType: iPay88ActionType,
             supportedCurrencyCode: supportedCurrencyCode,
             supportedCountry: supportedCountry,
-            nolPayTransactionNo: nolPayTransactionNo)
+            nolPayTransactionNo: nolPayTransactionNo,
+            clientSecret: clientSecret)
         return decodedClientToken
     }
 
