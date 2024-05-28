@@ -72,14 +72,14 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
             
             firstly {
-                self.checkouEventsNotifierModule.fireDidStartTokenizationEvent()
+                self.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
                 return self.tokenizationService.tokenize()
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkouEventsNotifierModule.fireDidFinishTokenizationEvent()
+                return self.checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
             }
             .done {
                 seal.fulfill()
@@ -323,12 +323,12 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     private func getUrlScheme() -> Promise<String> {
         return Promise { seal in
-            guard let urlScheme = settings.paymentMethodOptions.urlScheme else {
-                let error = ACHHelpers.getInvalidUrlSchemeError(settings: self.settings)
+            do {
+                let urlScheme = try settings.paymentMethodOptions.validSchemeForUrlScheme()
+                seal.fulfill(urlScheme)
+            } catch let error {
                 seal.reject(error)
-                return
             }
-            seal.fulfill(urlScheme)
         }
     }
 }
