@@ -16,7 +16,7 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     // MARK: Variables
     private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
-    private var tokenizationService: ACHTokenizationService
+    private var achTokenizationService: ACHTokenizationService
     private var clientSessionService: ACHClientSessionService = ACHClientSessionService()
     private var stripeMandateCompletion: ((_ success: Bool, _ error: Error?) -> Void)?
     private var stripeBankAccountCollectorCompletion: ((_ success: Bool, _ error: Error?) -> Void)?
@@ -26,14 +26,20 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var userDetails: ACHUserDetails = .emptyUserDetails()
     
     // MARK: Init
-    required init(config: PrimerPaymentMethod) {
-        tokenizationService = ACHTokenizationService(paymentMethod: config)
-        super.init(config: config)
+    override init(config: PrimerPaymentMethod,
+                  uiManager: PrimerUIManaging,
+                  tokenizationService: TokenizationServiceProtocol,
+                  createResumePaymentService: CreateResumePaymentServiceProtocol) {
+        achTokenizationService = ACHTokenizationService(paymentMethod: config)
+        super.init(config: config,
+                   uiManager: uiManager,
+                   tokenizationService: tokenizationService,
+                   createResumePaymentService: createResumePaymentService)
     }
     
     // MARK: Validate
     override func validate() throws {
-        try tokenizationService.validate()
+        try achTokenizationService.validate()
     }
     
     override func performPreTokenizationSteps() -> Promise<Void> {
@@ -75,7 +81,7 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 self.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
             }
             .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                return self.tokenizationService.tokenize()
+                return self.achTokenizationService.tokenize()
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
