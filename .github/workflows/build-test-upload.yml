@@ -25,9 +25,9 @@ jobs:
         with:
           ref: ${{ github.ref }}
       - name: Setup Package.swift
-        run:
-          - mv Package.swift Package.swift.orig
-          - cp Package.NolPay.swift Package.swift
+        run: |
+          mv Package.swift Package.swift.orig
+          cp Package.NolPay.swift Package.swift
       - name: Run SDK tests
         uses: ./.github/actions/sdk-tests
         with:
