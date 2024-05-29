@@ -5,11 +5,11 @@
 //  Created by Alexandra Lovin on 03.11.2023.
 //
 
+fileprivate typealias TokenizationViewModelType = BankSelectorTokenizationProviding & WebRedirectTokenizationDelegate & PaymentMethodTokenizationModelProtocol
+
 import Foundation
 extension PrimerHeadlessUniversalCheckout {
     @objc public class ComponentWithRedirectManager: NSObject {
-
-        typealias TokenizationViewModelType = BankSelectorTokenizationProviding & WebRedirectTokenizationDelegate
 
         @objc public func provideComponent(paymentMethodType: String) -> PrimerHeadlessBanksComponentWrapper {
             PrimerHeadlessBanksComponentWrapper(manager: self, paymentMethodType: paymentMethodType)
@@ -31,7 +31,7 @@ extension PrimerHeadlessUniversalCheckout {
                 throw err
             }
 
-            guard let tokenizationModel = try getPaymentMethodTokenizationModel(ofType: BankSelectorTokenizationProviding.self) as? TokenizationViewModelType else {
+            guard let tokenizationModel = try getTokenizationModel() else {
                 let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType.rawValue,
                                                                userInfo: .errorUserInfoDictionary(additionalInfo: [
                                                                    "message": "Unable to locate a correct payment method view model"
@@ -47,19 +47,19 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
 
-        private func getPaymentMethodTokenizationModel<T>(ofType type: T.Type) throws -> T? {
-            let vm = PrimerAPIConfiguration.paymentMethodConfigs?
+        private func getTokenizationModel() throws -> TokenizationViewModelType? {
+            let viewModel = PrimerAPIConfiguration.paymentMethodConfigs?
                 .filter { $0.isEnabled }
                 .filter { $0.baseLogoImage != nil }
-                .compactMap { $0.tokenizationModel as? T }
+                .compactMap { $0.tokenizationModel as? TokenizationViewModelType }
                 .first
 
-            guard let vm = vm else {
+            guard let viewModel = viewModel else {
                 return nil
             }
 
-            try (vm as? PaymentMethodTokenizationModelProtocol)?.validate()
-            return vm
+            try viewModel.validate()
+            return viewModel
         }
     }
 }

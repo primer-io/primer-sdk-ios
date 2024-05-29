@@ -255,17 +255,17 @@ extension QRCodeTokenizationViewModel {
             let isHeadlessDidReceiveAdditionalInfoImplemented = delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo != nil
 
             if !isHeadlessDidReceiveAdditionalInfoImplemented {
-                let message =
+                let logMessage =
                     """
 Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)'\
  hasn't been implemented. No events will be sent to your delegate instance.
 """
-                logger.warn(message: message)
+                logger.warn(message: logMessage)
 
-                let errorMessage = "Couldn't continue as necessary delegate method `primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo` was not implemented"
+                let message = "Couldn't continue as due to unimplemented delegate method `primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo`"
                 let error = PrimerError.unableToPresentPaymentMethod(paymentMethodType: self.config.type,
                                                                      userInfo: .errorUserInfoDictionary(additionalInfo: [
-                                                                        "message": errorMessage
+                                                                        "message": message
                                                                      ]),
                                                                      diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: error)
