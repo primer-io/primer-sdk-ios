@@ -20,7 +20,7 @@ class MockTokenizationService: TokenizationServiceProtocol {
 
     func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData> {
         return onTokenize?(requestBody) ??
-            Promise.rejected(PrimerError.generic(message: "", userInfo: nil, diagnosticsId: ""))
+            Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
     }
 
     // MARK: exchangePaymentMethodToken
@@ -29,6 +29,6 @@ class MockTokenizationService: TokenizationServiceProtocol {
 
     func exchangePaymentMethodToken(_ paymentMethodTokenId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?) -> Promise<PrimerPaymentMethodTokenData> {
         return onExchangePaymentMethodToken?(paymentMethodTokenId, vaultedPaymentMethodAdditionalData) ??
-            Promise.rejected(PrimerError.generic(message: "", userInfo: nil, diagnosticsId: ""))
+            Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
     }
 }
