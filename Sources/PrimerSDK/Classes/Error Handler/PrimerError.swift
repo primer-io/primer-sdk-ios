@@ -39,7 +39,6 @@ public enum PrimerError: PrimerErrorProtocol {
                                    diagnosticsId: String)
     case cancelled(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
     case failedToCreateSession(error: Error?, userInfo: [String: String]?, diagnosticsId: String)
-    case failedToPerform3DS(paymentMethodType: String, error: Error?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidArchitecture(description: String, recoverSuggestion: String?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidClientSessionValue(name: String, value: String?, allowedValue: String?, userInfo: [String: String]?, diagnosticsId: String)
@@ -89,8 +88,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "payment-cancelled"
         case .failedToCreateSession:
             return "failed-to-create-session"
-        case .failedToPerform3DS:
-            return "failed-to-perform-3ds"
         case .invalidArchitecture:
             return "invalid-architecture"
         case .invalidClientSessionValue:
@@ -163,8 +160,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .failedToCreateSession(_, _, let diagnosticsId):
             return diagnosticsId
-        case .failedToPerform3DS(_, _, _, let diagnosticsId):
-            return diagnosticsId
         case .invalidUrl(_, _, let diagnosticsId):
             return diagnosticsId
         case .invalidArchitecture(_, _, _, let diagnosticsId):
@@ -230,8 +225,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Payment method \(paymentMethodType) cancelled"
         case .failedToCreateSession(error: let error, _, _):
             return "Failed to create session with error: \(error?.localizedDescription ?? "nil")"
-        case .failedToPerform3DS(_, let error, _, _):
-            return "Failed on perform 3DS with error: \(error?.localizedDescription ?? "nil")"
         case .invalidArchitecture(let description, _, _, _):
             return "\(description)"
         case .invalidClientSessionValue(let name, let value, _, _, _):
@@ -292,7 +285,6 @@ public enum PrimerError: PrimerErrorProtocol {
              .misconfiguredPaymentMethods(let userInfo, _),
              .cancelled(_, let userInfo, _),
              .failedToCreateSession(_, let userInfo, _),
-             .failedToPerform3DS(_, _, let userInfo, _),
              .invalidUrl(_, let userInfo, _),
              .invalidArchitecture(_, _, let userInfo, _),
              .invalidClientSessionValue(_, _, _, let userInfo, _),
@@ -352,8 +344,6 @@ on your dashboard https://dashboard.primer.io/
         case .cancelled:
             return nil
         case .failedToCreateSession:
-            return nil
-        case .failedToPerform3DS:
             return nil
         case .invalidUrl:
             return nil
@@ -437,8 +427,7 @@ and other parameters are set correctly for the current environment.
              .unableToPresentPaymentMethod(let paymentMethodType, _, _),
              .unsupportedPaymentMethod(let paymentMethodType, _, _),
              .missingSDK(let paymentMethodType, _, _, _),
-             .failedToProcessPayment(let paymentMethodType?, _, _, _, _),
-             .failedToPerform3DS(let paymentMethodType, _, _, _):
+             .failedToProcessPayment(let paymentMethodType?, _, _, _, _):
             return paymentMethodType
         case .applePayTimedOut,
              .unableToMakePaymentsOnProvidedNetworks:
