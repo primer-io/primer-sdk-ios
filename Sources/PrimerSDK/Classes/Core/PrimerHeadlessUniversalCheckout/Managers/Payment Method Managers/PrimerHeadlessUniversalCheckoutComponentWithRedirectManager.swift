@@ -5,7 +5,11 @@
 //  Created by Alexandra Lovin on 03.11.2023.
 //
 
-fileprivate typealias TokenizationViewModelType = BankSelectorTokenizationProviding & WebRedirectTokenizationDelegate & PaymentMethodTokenizationModelProtocol
+private typealias TokenizationViewModelType = (
+    BankSelectorTokenizationProviding &
+    WebRedirectTokenizationDelegate &
+    PaymentMethodTokenizationModelProtocol
+)
 
 import Foundation
 extension PrimerHeadlessUniversalCheckout {
