@@ -102,11 +102,6 @@ class PrimerPaymentMethod: Codable, LogReporter {
             case PrimerPaymentMethodType.payPal:
                 return PayPalTokenizationViewModel(config: self)
 
-            case PrimerPaymentMethodType.primerTestKlarna,
-                 PrimerPaymentMethodType.primerTestPayPal,
-                 PrimerPaymentMethodType.primerTestSofort:
-                return PrimerTestPaymentMethodTokenizationViewModel(config: self)
-
             case PrimerPaymentMethodType.xfersPayNow,
                  PrimerPaymentMethodType.rapydPromptPay,
                  PrimerPaymentMethodType.omisePromptPay:
