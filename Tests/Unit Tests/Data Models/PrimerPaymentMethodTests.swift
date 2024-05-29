@@ -106,6 +106,18 @@ final class PrimerPaymentMethodTests: XCTestCase {
             XCTAssertTrue(paymentMethod.tokenizationViewModel is QRCodeTokenizationViewModel)
         }
 
+        let testPaymentMethods: [PrimerPaymentMethodType] = [
+            .primerTestKlarna,
+            .primerTestSofort,
+            .primerTestPayPal
+        ]
+        testPaymentMethods.forEach { type in
+            let paymentMethod = createPaymentMethod(withImplementationType: .nativeSdk,
+                                                    paymentType: type)
+            XCTAssertTrue(paymentMethod.tokenizationViewModel is PrimerTestPaymentMethodTokenizationViewModel)
+        }
+
+
         let applePayPaymentMethod = createPaymentMethod(withImplementationType: .nativeSdk, paymentType: .applePay)
         XCTAssertTrue(applePayPaymentMethod.tokenizationViewModel is ApplePayTokenizationViewModel)
 
