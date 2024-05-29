@@ -35,12 +35,12 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         switch notification.name.rawValue {
         case Notification.Name.receivedUrlSchemeRedirect.rawValue:
             self.webViewController?.dismiss(animated: true)
-            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+            self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
 
         case Notification.Name.receivedUrlSchemeCancellation.rawValue:
             self.webViewController?.dismiss(animated: true)
             self.didCancel?()
-            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+            self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         default:
             super.receivedNotification(notification)
         }
@@ -61,12 +61,12 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             self.cleanup()
         }
 
-        setup()
+        setupNotificationObservers()
 
         super.start()
     }
 
-    func setup() {
+    func setupNotificationObservers() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(self.receivedNotification(_:)),
                                                name: Notification.Name.receivedUrlSchemeRedirect,
@@ -75,13 +75,6 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                                                selector: #selector(self.receivedNotification(_:)),
                                                name: Notification.Name.receivedUrlSchemeCancellation,
                                                object: nil)
-
-        self.didFinishPayment = { _ in
-            self.willDismissPaymentMethodUI?()
-            self.webViewController?.dismiss(animated: true, completion: {
-                self.didDismissPaymentMethodUI?()
-            })
-        }
     }
 
     func cleanup() {
@@ -94,7 +87,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     override func performPreTokenizationSteps() -> Promise<Void> {
 
         DispatchQueue.main.async {
-            PrimerUIManager.primerRootViewController?.enableUserInteraction(false)
+            self.uiManager.primerRootViewController?.enableUserInteraction(false)
         }
 
         let event = Analytics.Event.ui(
@@ -112,7 +105,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         Analytics.Service.record(event: event)
 
         let imageView = self.uiModule.makeIconImageView(withDimension: 24.0)
-        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView,
+        self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView,
                                                                             message: nil)
 
         return Promise { seal in
@@ -209,12 +202,12 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 }
                 #endif
 
-                if PrimerUIManager.primerRootViewController == nil {
+                if self.uiManager.primerRootViewController == nil {
                     firstly {
-                        PrimerUIManager.prepareRootViewController()
+                        self.uiManager.prepareRootViewController()
                     }
                     .done {
-                        PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
+                        self.uiManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
                             DispatchQueue.main.async {
                                 self.handleWebViewControllerPresentedCompletion()
                                 seal.fulfill()
@@ -223,7 +216,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                     }
                     .catch { _ in }
                 } else {
-                    PrimerUIManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
+                    self.uiManager.primerRootViewController?.present(self.webViewController!, animated: true, completion: {
                         DispatchQueue.main.async {
                             self.handleWebViewControllerPresentedCompletion()
                             seal.fulfill()
@@ -308,10 +301,9 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 sessionInfo: sessionInfo)
 
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
-            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
 
             firstly {
-                tokenizationService.tokenize(requestBody: requestBody)
+                self.tokenizationService.tokenize(requestBody: requestBody)
             }
             .done { paymentMethod in
                 seal.fulfill(paymentMethod)
@@ -328,11 +320,10 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 if let redirectUrlStr = decodedJWTToken.redirectUrl,
                    let redirectUrl = URL(string: redirectUrlStr),
                    let statusUrlStr = decodedJWTToken.statusUrl,
-                   let statusUrl = URL(string: statusUrlStr),
-                   decodedJWTToken.intent != nil {
+                   let statusUrl = URL(string: statusUrlStr) {
 
                     DispatchQueue.main.async {
-                        PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+                        self.uiManager.primerRootViewController?.enableUserInteraction(true)
                     }
 
                     self.redirectUrl = redirectUrl
@@ -425,7 +416,7 @@ extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerD
 
         if URL.absoluteString.hasSuffix("primer.io/static/loading.html") || URL.absoluteString.hasSuffix("primer.io/static/loading-spinner.html") {
             self.webViewController?.dismiss(animated: true)
-            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+            self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         }
     }
 }

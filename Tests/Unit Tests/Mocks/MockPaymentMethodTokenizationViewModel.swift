@@ -13,7 +13,12 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
 
     static var apiClient: PrimerAPIClientProtocol?
 
-    var config: PrimerPaymentMethod!
+    let config: PrimerPaymentMethod
+
+    let uiManager: PrimerUIManaging
+
+    let tokenizationService: TokenizationServiceProtocol
+
     var uiModule: UserInterfaceModule!
     var position: Int = 0
     var checkoutEventsNotifierModule: CheckoutEventsNotifierModule
@@ -33,8 +38,19 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     var paymentCreationDecision: PrimerPaymentCreationDecision?
     var paymentResult: (PrimerCheckoutData?, Error?)?
 
-    required init(config: PrimerPaymentMethod) {
+
+    convenience init(config: PrimerPaymentMethod) {
+        self.init(config: config,
+                  uiManager: PrimerUIManager.shared,
+                  tokenizationService: TokenizationService())
+    }
+
+    required init(config: PrimerPaymentMethod,
+                  uiManager: PrimerUIManaging,
+                  tokenizationService: TokenizationServiceProtocol) {
         self.config = config
+        self.uiManager = uiManager
+        self.tokenizationService = tokenizationService
         self.checkoutEventsNotifierModule = CheckoutEventsNotifierModule()
     }
 

@@ -18,13 +18,21 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             tableView.reloadData()
         }
     }
-    private var bankSelectionCompletion: ((AdyenBank) -> Void)?
-    private var tokenizationService: TokenizationServiceProtocol?
-    var paymentMethodType: PrimerPaymentMethodType
 
-    required init(config: PrimerPaymentMethod) {
+    var bankSelectionCompletion: ((AdyenBank) -> Void)?
+
+    let paymentMethodType: PrimerPaymentMethodType
+
+    override init(config: PrimerPaymentMethod,
+                  uiManager: PrimerUIManaging,
+                  tokenizationService: TokenizationServiceProtocol,
+                  createResumePaymentService: CreateResumePaymentServiceProtocol
+    ) {
         self.paymentMethodType = config.internalPaymentMethodType!
-        super.init(config: config)
+        super.init(config: config,
+                   uiManager: uiManager,
+                   tokenizationService: tokenizationService,
+                   createResumePaymentService: createResumePaymentService)
     }
 
     override func validate() throws {
@@ -257,7 +265,6 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             return
         }
 
-        let tokenizationService: TokenizationServiceProtocol = TokenizationService()
         let requestBody = Request.Body.Tokenization(
             paymentInstrument: OffSessionPaymentInstrument(
                 paymentMethodConfigId: self.config.id!,
@@ -265,7 +272,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
                 sessionInfo: BankSelectorSessionInfo(issuer: bank.id)))
 
         firstly {
-            tokenizationService.tokenize(requestBody: requestBody)
+            self.tokenizationService.tokenize(requestBody: requestBody)
         }
         .done { paymentMethodTokenData in
             self.paymentMethodTokenData = paymentMethodTokenData

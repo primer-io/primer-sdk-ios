@@ -508,7 +508,6 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
             let body = Request.Body.Payment.Create(token: paymentMethodData)
             createResumePaymentService.createPayment(paymentRequest: body) { paymentResponse, error in
 
@@ -560,7 +559,6 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
             let body = Request.Body.Payment.Resume(token: resumeToken)
             createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: body) { paymentResponse, error in
 
