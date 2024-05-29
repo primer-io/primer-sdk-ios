@@ -90,7 +90,7 @@ final class ErrorExtensionTests: XCTestCase {
         ]
 
         let singleDescription = { (message: String) in
-            "[primer-generic] Generic error | Message: \(message) (diagnosticsId: )"
+            "[unknown] Something went wrong (diagnosticsId: )"
         }
 
         XCTAssertEqual(arrayOfErrors.combinedDescription,
