@@ -75,7 +75,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
     }
 
     func test_klarnaAuthorization_error() {
-        let error = PrimerError.klarnaWrapperError(
+        let error = PrimerError.klarnaError(
             message: "PrimerKlarnaWrapperAuthorization failed",
             userInfo: [:],
             diagnosticsId: UUID().uuidString
@@ -86,7 +86,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
     }
 
     func test_klarnaFinalization_error() {
-        let error = PrimerError.klarnaWrapperError(
+        let error = PrimerError.klarnaError(
             message: "PrimerKlarnaWrapperFinalization failed",
             userInfo: [:],
             diagnosticsId: UUID().uuidString
