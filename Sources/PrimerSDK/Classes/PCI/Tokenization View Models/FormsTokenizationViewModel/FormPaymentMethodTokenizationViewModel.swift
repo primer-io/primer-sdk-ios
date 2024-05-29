@@ -474,19 +474,19 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
 
         if PrimerInternal.shared.intent == .checkout {
             if AppState.current.amount == nil {
-                let err = PrimerError.invalidSetting(name: "amount",
-                                                     value: nil,
-                                                     userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidValue(key: "amount",
+                                                   value: nil,
+                                                   userInfo: .errorUserInfoDictionary(),
+                                                   diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
 
             if AppState.current.currency == nil {
-                let err = PrimerError.invalidSetting(name: "currency",
-                                                     value: nil,
-                                                     userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
+                let err = PrimerError.invalidValue(key: "currency",
+                                                   value: nil,
+                                                   userInfo: .errorUserInfoDictionary(),
+                                                   diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
