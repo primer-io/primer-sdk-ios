@@ -11,7 +11,7 @@ let package = Package(
     products: [
         .library(
             name: "PrimerSDK",
-            targets: ["PrimerSDK"]
+            targets: ["PrimerSDK", "PrimerNolPaySDK"]
         )
     ],
     dependencies: [
@@ -20,9 +20,6 @@ let package = Package(
     targets: [
         .target(
             name: "PrimerSDK",
-            dependencies: [
-                .product(name: "PrimerNolPaySDK", package: "primer-nol-pay-sdk-ios")
-            ],
             path: "Sources/PrimerSDK",
             resources: [
                 .process("Resources"),

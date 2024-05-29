@@ -13,12 +13,6 @@
   },
   "testTargets" : [
     {
-      "skippedTests" : [
-        "NolPayLinkCardComponentTest",
-        "NolPayPaymentComponentTests",
-        "NolPayPhoneMetadataServiceTests",
-        "NolPayUnlinkCardComponentTest"
-      ],
       "target" : {
         "containerPath" : "container:",
         "identifier" : "PrimerSDKTests",
