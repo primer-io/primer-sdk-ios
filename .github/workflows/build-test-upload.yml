@@ -24,22 +24,10 @@ jobs:
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
         with:
           ref: ${{ github.ref }}
-      - name: Setup Package.swift
-        run: |
-          mv Package.swift Package.swift.orig
-          cp Package.NolPay.swift Package.swift
       - name: Run SDK tests
         uses: ./.github/actions/sdk-tests
         with:
-          ssh-private-key: ${{ secrets.SSH_KEY }}
-          known-hosts: ${{ secrets.KNOWN_HOSTS }}
-          match-password: ${{ secrets.MATCH_PASSWORD }}
-          match-git-private-key: ${{ secrets.FASTLANE_PASSWORD }}
-          fastlane-session: ${{ secrets.FASTLANE_SESSION }}
-          fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
-          match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
-          match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-          coverage-file-name: sonar-coverage.xml
+          package-swift: Package.NolPay.swift
 
   sonarcloud:
     needs:
