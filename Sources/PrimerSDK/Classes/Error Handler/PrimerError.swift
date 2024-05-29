@@ -43,7 +43,6 @@ public enum PrimerError: PrimerErrorProtocol {
     case invalidArchitecture(description: String, recoverSuggestion: String?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidClientSessionValue(name: String, value: String?, allowedValue: String?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidMerchantIdentifier(merchantIdentifier: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidUrlScheme(urlScheme: String?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidValue(key: String, value: Any?, userInfo: [String: String]?, diagnosticsId: String)
     case unableToMakePaymentsOnProvidedNetworks(userInfo: [String: String]?, diagnosticsId: String)
     case unableToPresentPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
@@ -96,8 +95,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "invalid-url"
         case .invalidMerchantIdentifier:
             return "invalid-merchant-identifier"
-        case .invalidUrlScheme:
-            return "invalid-url-scheme"
         case .invalidValue:
             return "invalid-value"
         case .unableToMakePaymentsOnProvidedNetworks:
@@ -168,8 +165,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .invalidMerchantIdentifier(_, _, let diagnosticsId):
             return diagnosticsId
-        case .invalidUrlScheme(_, _, let diagnosticsId):
-            return diagnosticsId
         case .invalidValue(_, _, _, let diagnosticsId):
             return diagnosticsId
         case .unableToMakePaymentsOnProvidedNetworks(_, let diagnosticsId):
@@ -233,8 +228,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Invalid URL: \(url ?? "nil")"
         case .invalidMerchantIdentifier(let merchantIdentifier, _, _):
             return "Invalid merchant identifier: \(merchantIdentifier == nil ? "nil" : "\(merchantIdentifier!)")"
-        case .invalidUrlScheme(let urlScheme, _, _):
-            return "Invalid URL scheme: \(urlScheme == nil ? "nil" : "\(urlScheme!)")"
         case .invalidValue(key: let key, value: let value, _, _):
             return "Invalid value '\(value ?? "nil")' for key '\(key)'"
         case .unableToMakePaymentsOnProvidedNetworks:
@@ -289,7 +282,6 @@ public enum PrimerError: PrimerErrorProtocol {
              .invalidArchitecture(_, _, let userInfo, _),
              .invalidClientSessionValue(_, _, _, let userInfo, _),
              .invalidMerchantIdentifier(_, let userInfo, _),
-             .invalidUrlScheme(_, let userInfo, _),
              .invalidValue(_, _, let userInfo, _),
              .unableToMakePaymentsOnProvidedNetworks(let userInfo, _),
              .unableToPresentPaymentMethod(_, let userInfo, _),
@@ -357,8 +349,6 @@ on your dashboard https://dashboard.primer.io/
             return str
         case .invalidMerchantIdentifier:
             return "Check if you have provided a valid merchant identifier in the SDK settings."
-        case .invalidUrlScheme:
-            return "Check if you have provided a valid URL scheme in the SDK settings."
         case .invalidValue(let key, let value, _, _):
             return "Check if value \(value ?? "nil") is valid for key \(key)"
         case .unableToMakePaymentsOnProvidedNetworks:
