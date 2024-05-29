@@ -60,19 +60,19 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
 
         guard PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode != nil else {
-            let err = PrimerError.invalidSetting(name: "countryCode",
-                                                 value: nil,
-                                                 userInfo: .errorUserInfoDictionary(),
-                                                 diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidValue(key: "countryCode",
+                                               value: nil,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
 
         guard AppState.current.currency != nil else {
-            let err = PrimerError.invalidSetting(name: "currency",
-                                                 value: nil,
-                                                 userInfo: .errorUserInfoDictionary(),
-                                                 diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidValue(key: "currency",
+                                               value: nil,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }

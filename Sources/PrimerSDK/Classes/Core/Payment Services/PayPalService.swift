@@ -67,8 +67,8 @@ internal class PayPalService: PayPalServiceProtocol {
         }
 
         guard let amount = AppState.current.amount else {
-            let err = PrimerError.invalidSetting(
-                name: "amount",
+            let err = PrimerError.invalidValue(
+                key: "amount",
                 value: nil,
                 userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString)
@@ -78,8 +78,8 @@ internal class PayPalService: PayPalServiceProtocol {
         }
 
         guard let currency = AppState.current.currency else {
-            let err = PrimerError.invalidSetting(
-                name: "currency",
+            let err = PrimerError.invalidValue(
+                key: "currency",
                 value: nil,
                 userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString)
