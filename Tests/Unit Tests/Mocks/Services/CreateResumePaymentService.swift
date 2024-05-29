@@ -21,7 +21,7 @@ class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
         if let result = onCreatePayment?(paymentRequest) {
             completion(result, nil)
         } else {
-            completion(nil, PrimerError.generic(message: "", userInfo: nil, diagnosticsId: ""))
+            completion(nil, PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
         }
     }
 
@@ -35,7 +35,7 @@ class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
         if let result = onResumePayment?(paymentId, paymentResumeRequest) {
             completion(result, nil)
         } else {
-            completion(nil, PrimerError.generic(message: "", userInfo: nil, diagnosticsId: ""))
+            completion(nil, PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
         }
     }
     

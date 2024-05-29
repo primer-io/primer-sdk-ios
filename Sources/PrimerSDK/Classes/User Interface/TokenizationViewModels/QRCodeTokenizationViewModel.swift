@@ -254,18 +254,22 @@ extension QRCodeTokenizationViewModel {
             // swiftlint:disable:next identifier_name
             let isHeadlessDidReceiveAdditionalInfoImplemented = delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo != nil
 
-            guard isHeadlessDidReceiveAdditionalInfoImplemented else {
+            if !isHeadlessDidReceiveAdditionalInfoImplemented {
                 let message =
                     """
 Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)'\
  hasn't been implemented. No events will be sent to your delegate instance.
 """
-                let err = PrimerError.generic(message: message,
-                                              userInfo: .errorUserInfoDictionary(),
-                                              diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
+                logger.warn(message: message)
+
+                let errorMessage = "Couldn't continue as necessary delegate method `primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo` was not implemented"
+                let error = PrimerError.unableToPresentPaymentMethod(paymentMethodType: self.config.type,
+                                                                     userInfo: .errorUserInfoDictionary(additionalInfo: [
+                                                                        "message": errorMessage
+                                                                     ]),
+                                                                     diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: error)
+                seal.reject(error)
             }
 
             /// We don't want to put a lot of conditions for already unhandled payment methods

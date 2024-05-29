@@ -10,7 +10,7 @@ import XCTest
 
 final class ErrorExtensionTests: XCTestCase {
 
-    let dummyError: PrimerError = PrimerError.generic(message: "1", userInfo: nil, diagnosticsId: "")
+    let dummyError: PrimerError = PrimerError.unknown(userInfo: ["test": "test"], diagnosticsId: "")
 
     func testPrimerErrorForInternalErrors() {
         // MARK: Internal errors
@@ -28,8 +28,8 @@ final class ErrorExtensionTests: XCTestCase {
         let internalError3DSFailureBreak = InternalError.failedToPerform3dsAndShouldBreak(error: dummyError)
         let exposedError3DSFailureBreak = internalError3DSFailureBreak.exposedError
         switch exposedError3DSFailureBreak {
-        case PrimerError.generic(let message, _, _):
-            XCTAssertEqual(message, "1")
+        case PrimerError.unknown(let userInfo, _):
+            XCTAssertEqual(userInfo?["test"], "test")
             break
         default:
             XCTFail()
@@ -52,15 +52,15 @@ final class ErrorExtensionTests: XCTestCase {
         let singleUnderlyingErrorsError = PrimerError.underlyingErrors(errors: [dummyError], userInfo: nil, diagnosticsId: "")
 
         switch singleUnderlyingErrorsError.primerError {
-        case PrimerError.generic(let message, _, _):
-            XCTAssertEqual(message, "1")
+        case PrimerError.unknown(let userInfo, _):
+            XCTAssertEqual(userInfo?["test"], "test")
         default:
             XCTFail()
         }
 
         let multipleUnderlyingErrorsError = PrimerError.underlyingErrors(errors: [
             dummyError,
-            PrimerError.generic(message: "2", userInfo: nil, diagnosticsId: "")
+            PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         ], userInfo: nil, diagnosticsId: "")
 
         switch multipleUnderlyingErrorsError.primerError {
@@ -85,8 +85,8 @@ final class ErrorExtensionTests: XCTestCase {
     func testCombinedDescriptionForPrimerErrors() {
         let arrayOfErrors: [Error] = [
             dummyError,
-            PrimerError.generic(message: "2", userInfo: nil, diagnosticsId: ""),
-            PrimerError.generic(message: "3", userInfo: nil, diagnosticsId: "")
+            PrimerError.unknown(userInfo: nil, diagnosticsId: ""),
+            PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         ]
 
         let singleDescription = { (message: String) in

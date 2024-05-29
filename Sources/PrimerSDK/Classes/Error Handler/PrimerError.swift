@@ -30,7 +30,6 @@ protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
 
 public enum PrimerError: PrimerErrorProtocol {
     typealias InfoType = [String: Any]
-    case generic(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case uninitializedSDKSession(userInfo: [String: String]?, diagnosticsId: String)
     case invalidClientToken(userInfo: [String: String]?, diagnosticsId: String)
     case missingPrimerConfiguration(userInfo: [String: String]?, diagnosticsId: String)
@@ -77,8 +76,6 @@ public enum PrimerError: PrimerErrorProtocol {
 
     public var errorId: String {
         switch self {
-        case .generic:
-            return "primer-generic"
         case .uninitializedSDKSession:
             return "uninitialized-sdk-session"
         case .invalidClientToken:
@@ -155,8 +152,6 @@ public enum PrimerError: PrimerErrorProtocol {
 
     public var diagnosticsId: String {
         switch self {
-        case .generic(_, _, let diagnosticsId):
-            return diagnosticsId
         case .uninitializedSDKSession(_, let diagnosticsId):
             return diagnosticsId
         case .invalidClientToken(_, let diagnosticsId):
@@ -224,14 +219,6 @@ public enum PrimerError: PrimerErrorProtocol {
 
     var plainDescription: String? {
         switch self {
-        case .generic(let message, let userInfo, _):
-            if let userInfo = userInfo,
-               let jsonData = try? JSONSerialization.data(withJSONObject: userInfo, options: .fragmentsAllowed),
-               let jsonStr = jsonData.prettyPrintedJSONString as String? {
-                return "Generic error | Message: \(message) | Data: \(jsonStr))"
-            } else {
-                return "Generic error | Message: \(message)"
-            }
         case .uninitializedSDKSession:
             return "[\(errorId)] SDK session has not been initialzed (diagnosticsId: \(self.diagnosticsId)"
         case .invalidClientToken:
@@ -305,8 +292,7 @@ public enum PrimerError: PrimerErrorProtocol {
         var tmpUserInfo: [String: Any] = errorUserInfo
 
         switch self {
-        case .generic(_, let userInfo, _),
-             .uninitializedSDKSession(let userInfo, _),
+        case .uninitializedSDKSession(let userInfo, _),
              .invalidClientToken(let userInfo, _),
              .missingPrimerConfiguration(let userInfo, _),
              .missingPrimerDelegate(let userInfo, _),
@@ -354,8 +340,6 @@ public enum PrimerError: PrimerErrorProtocol {
 
     public var recoverySuggestion: String? {
         switch self {
-        case .generic:
-            return nil
         case .uninitializedSDKSession:
             return "Make sure you have provided the SDK with a client token."
         case .invalidClientToken:
