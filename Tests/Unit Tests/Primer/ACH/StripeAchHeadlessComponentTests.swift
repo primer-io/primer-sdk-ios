@@ -102,7 +102,6 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
 
     func test_validationStatus_firstName_valid() {
         let collectableData = ACHUserDetailsCollectableData.firstName("test-firstname")
-        let expectedResult: PrimerValidationStatus = .valid
         sut?.updateCollectedData(collectableData: collectableData)
 
         switch validationResult {
@@ -115,7 +114,6 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
 
     func test_validationStatus_lastName_valid() {
         let collectableData = ACHUserDetailsCollectableData.lastName("test-lastname")
-        let expectedResult: PrimerValidationStatus = .valid
         sut?.updateCollectedData(collectableData: collectableData)
 
         switch validationResult {
@@ -128,7 +126,6 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
 
     func test_validationStatus_emailAddress_valid() {
         let collectableData = ACHUserDetailsCollectableData.emailAddress("test-email@test.com")
-        let expectedResult: PrimerValidationStatus = .valid
         sut?.updateCollectedData(collectableData: collectableData)
 
         switch validationResult {
@@ -249,6 +246,117 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
         
         let emptyUserDetails = ACHUserDetails.emptyUserDetails()
         XCTAssertTrue(ACHUserDetails.compare(lhs: emptyUserDetails, rhs: expectedUserDetails).areEqual)
+    }
+    
+    func test_resetVariables() {
+        let userDetails = ACHUserDetails(firstName: "firstname-1", lastName: "lastname-1", emailAddress: "email-1")
+        sut.inputUserDetails = userDetails
+        sut.clientSessionUserDetails = userDetails
+        
+        let emptyUserDetails = ACHUserDetails.emptyUserDetails()
+        sut.resetVariables()
+        
+        XCTAssertTrue(ACHUserDetails.compare(lhs: sut.inputUserDetails, rhs: emptyUserDetails).areEqual)
+        XCTAssertTrue(ACHUserDetails.compare(lhs: sut.clientSessionUserDetails, rhs: emptyUserDetails).areEqual)
+    }
+    
+    func test_component_start() {
+        let expectedUserDetails = ACHUserDetails(firstName: "firstname-test",
+                                                 lastName: "lastname-test",
+                                                 emailAddress: "test@mail.com")
+        
+        sut.start()
+        
+        let expectation = self.expectation(description: "Waiting for the getClientSessionUserDetails method to update the step async.")
+        
+        DispatchQueue.global().async {
+            sleep(2)
+            
+            switch self.stepResult as? ACHUserDetailsStep {
+            case .retrievedUserDetails(let userDetails):
+                XCTAssertTrue(ACHUserDetails.compare(lhs: userDetails, rhs: expectedUserDetails).areEqual)
+                expectation.fulfill()
+            default:
+                XCTFail("The result should be retrievedUserDetails")
+            }
+        }
+
+        waitForExpectations(timeout: 5) { error in
+            if let error {
+                XCTFail("Failed to update the step due to error: \(error.localizedDescription).")
+            }
+        }
+    }
+    
+    func test_component_submit_with_patching() {
+        let outdatedUserDetails = ACHUserDetails(firstName: "firstname-test",
+                                                 lastName: "lastname-test",
+                                                 emailAddress: "test@mail.com")
+        
+        let newUserDetails = ACHUserDetails(firstName: "new-firstname-test",
+                                            lastName: "new-lastname-test",
+                                            emailAddress: "new-test@mail.com")
+        
+        sut.clientSessionUserDetails = outdatedUserDetails
+        sut.inputUserDetails = newUserDetails
+        
+        let configurationsFetchWithActions = getFetchConfiguration(firstName: newUserDetails.firstName,
+                                                                   lastName: newUserDetails.lastName,
+                                                                   email: newUserDetails.emailAddress)
+
+        mockApiClient.fetchConfigurationWithActionsResult = (configurationsFetchWithActions, nil)
+        
+        sut.submit()
+        
+       
+        
+        let expectation = self.expectation(description: "Waiting for the patchClientSessionIfNeeded method to update the step async.")
+        
+        DispatchQueue.global().async {
+            sleep(2)
+            
+            switch self.stepResult as? ACHUserDetailsStep {
+            case .didCollectUserDetails:
+                expectation.fulfill()
+            default:
+                XCTFail("The result should be retrievedUserDetails")
+            }
+        }
+
+        waitForExpectations(timeout: 5) { error in
+            if let error {
+                XCTFail("Failed to update the step due to error: \(error.localizedDescription).")
+            }
+        }
+    }
+    
+    func test_component_submit_without_patching() {
+        let expectedUserDetails = ACHUserDetails(firstName: "firstname-test",
+                                                 lastName: "lastname-test",
+                                                 emailAddress: "test@mail.com")
+        
+        sut.inputUserDetails = expectedUserDetails
+        sut.clientSessionUserDetails = expectedUserDetails
+        sut.submit()
+        
+        let expectation = self.expectation(description: "Waiting for the patchClientSessionIfNeeded method to update the step async.")
+        
+        DispatchQueue.global().async {
+            sleep(2)
+            
+            switch self.stepResult as? ACHUserDetailsStep {
+            case .didCollectUserDetails:
+                expectation.fulfill()
+            default:
+                XCTFail("The result should be retrievedUserDetails")
+            }
+        }
+
+        waitForExpectations(timeout: 5) { error in
+            if let error {
+                XCTFail("Failed to update the step due to error: \(error.localizedDescription).")
+            }
+        }
     }
 }
 

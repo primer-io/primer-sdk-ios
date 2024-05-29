@@ -14,6 +14,8 @@ class ACHMocks {
     static var stripeACHPaymentMethodName = "Mock StripeACH Payment Method"
     static var stripeACHPaymentMethodType = "STRIPE_ACH"
     static var processorConfigId = "mock_processor_config_id"
+    static var inexistentPaymentMethod = "inexistent"
+    static var klarnaPaymentMethodType = "KLARNA"
 
     static let invalidTokenError = PrimerError.invalidClientToken(
         userInfo: [:],
@@ -33,15 +35,52 @@ class ACHMocks {
                 orderedAllowedCardNetworks: nil),
             order: ClientSession.Order(
                 id: "mock-client-session-order-stripe-ach_id",
-                merchantAmount: nil,
-                totalOrderAmount: 100,
-                totalTaxAmount: nil,
+                merchantAmount: 1050,
+                totalOrderAmount: 1000,
+                totalTaxAmount: 50,
                 countryCode: .de,
                 currencyCode: CurrencyLoader().getCurrency("EUR"),
                 fees: nil,
-                lineItems: nil,
+                lineItems: [ClientSession.Order.LineItem(
+                    itemId: "mock-item-id-1",
+                    quantity: 1,
+                    amount: 1000,
+                    discountAmount: nil,
+                    name: "mock-name-1",
+                    description: "mock-description-1",
+                    taxAmount: 50,
+                    taxCode: nil,
+                    productType: nil)
+            ],
                 shippingAmount: nil),
             customer: getClientSessionCustomer(firstName: firstName, lastName: lastName, email: email),
+            testId: nil)
+    }
+    
+    static func getEmptyClientSession(
+        emptyMerchantAmmount: Bool,
+        emptyTotalOrderAmmount: Bool,
+        emptyLineItems: Bool,
+        emptyOrderAmount: Bool,
+        emptyCurrencyCode: Bool
+    ) -> ClientSession.APIResponse {
+        return ClientSession.APIResponse(
+            clientSessionId: "mock-client-session-stripe-ach_id",
+            paymentMethod: ClientSession.PaymentMethod(
+                vaultOnSuccess: false,
+                options: nil,
+                orderedAllowedCardNetworks: nil),
+            order: ClientSession.Order(
+                id: "mock-client-session-order-stripe-ach_id",
+                merchantAmount: emptyMerchantAmmount ? nil: 1000,
+                totalOrderAmount: emptyTotalOrderAmmount ? nil : 1000,
+                totalTaxAmount: nil,
+                countryCode: .de,
+                currencyCode: emptyCurrencyCode ? nil : CurrencyLoader().getCurrency("EUR"),
+                fees: nil,
+                lineItems: emptyLineItems ? nil : [getLineItem(hasAmount: !emptyOrderAmount)],
+                shippingAmount: nil),
+            customer: getClientSessionCustomer(firstName: "firstname", lastName: "lastname", email: "email"),
             testId: nil)
     }
 
@@ -81,6 +120,20 @@ class ACHMocks {
         options: nil,
         displayMetadata: nil)
     
+    static let klarnaPaymentMethod = PrimerPaymentMethod(
+        id: "klarna-test",
+        implementationType: .nativeSdk,
+        type: "KLARNA",
+        name: "Klarna",
+        processorConfigId: "klarna-processor-config-id",
+        surcharge: nil,
+        options: MerchantOptions(
+            merchantId: "merchant-id",
+            merchantAccountId: "merchant-account-id",
+            appId: "app-id",
+            extraMerchantData: nil),
+        displayMetadata: nil)
+    
     static func getClientSessionCustomer(firstName: String, lastName: String, email: String) -> ClientSession.Customer {
         return ClientSession.Customer(
             id: "ach-client-id",
@@ -91,5 +144,32 @@ class ACHMocks {
             billingAddress: nil,
             shippingAddress: nil)
     }
-        
+    
+    static func getInvalidPaymentMethod() -> PrimerPaymentMethod {
+        PrimerPaymentMethod(
+            id: "invalid-id",
+            implementationType: .nativeSdk,
+            type: "INVALID_PM",
+            name: "INVALID",
+            processorConfigId: "invalid-processor-config-id",
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil)
+    }
+    
+    static func getPayment(id: String, status: Response.Body.Payment.Status) -> Response.Body.Payment {
+        Response.Body.Payment(
+            id: id,
+            paymentId: "mock_payment_id",
+            amount: 1000,
+            currencyCode: "EUR",
+            customer: nil,
+            customerId: "mock_customer_id",
+            dateStr: nil,
+            order: nil,
+            orderId: nil,
+            requiredAction: nil,
+            status: status,
+            paymentFailureReason: nil)
+    }
 }

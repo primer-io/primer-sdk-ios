@@ -11,9 +11,9 @@ extension PrimerHeadlessUniversalCheckout {
     public class AchManager: NSObject {
         public var mandateDelegate: ACHMandateDelegate?
         
-        public func provide<MainComponent>(paymentMethodType: String) throws -> MainComponent?
+        public func provide<ACHComponent>(paymentMethodType: String) throws -> ACHComponent?
         where PrimerCollectableData: Any, PrimerHeadlessStep: Any {
-            try provideStripeAchUserDetailsComponent(paymentMethodType: paymentMethodType) as? MainComponent
+            try provideStripeAchUserDetailsComponent(paymentMethodType: paymentMethodType) as? ACHComponent
         }
         
         public func provideStripeAchUserDetailsComponent(paymentMethodType: String) throws -> (any StripeAchUserDetailsComponent)? {
