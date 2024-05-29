@@ -13,13 +13,14 @@ final class SDKSessionHelper {
 
     private init() {}
 
-    static func setUp(withPaymentMethods paymentMethods: [PrimerPaymentMethod]? = nil) {
+    static func setUp(withPaymentMethods paymentMethods: [PrimerPaymentMethod]? = nil,
+                      order: ClientSession.Order? = nil) {
         let paymentMethods = paymentMethods ?? [
             Mocks.PaymentMethods.paymentCardPaymentMethod
         ]
         let session = ClientSession.APIResponse(clientSessionId: "client_session_id",
                                                 paymentMethod: nil,
-                                                order: nil,
+                                                order: order,
                                                 customer: nil,
                                                 testId: nil)
         let apiConfig = PrimerAPIConfiguration(coreUrl: "core_url",
@@ -41,8 +42,9 @@ final class SDKSessionHelper {
     }
 
     static func test(withPaymentMethods paymentMethods: [PrimerPaymentMethod]? = nil,
+                     order: ClientSession.Order? = nil,
                      _ completion: () throws -> Void) throws {
-        setUp(withPaymentMethods: paymentMethods)
+        setUp(withPaymentMethods: paymentMethods, order: order)
         try completion()
         tearDown()
     }

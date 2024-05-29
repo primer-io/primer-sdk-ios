@@ -297,10 +297,9 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
                 sessionInfo: sessionInfo)
 
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
-            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
 
             firstly {
-                tokenizationService.tokenize(requestBody: requestBody)
+                self.tokenizationService.tokenize(requestBody: requestBody)
             }
             .done { paymentMethod in
                 seal.fulfill(paymentMethod)

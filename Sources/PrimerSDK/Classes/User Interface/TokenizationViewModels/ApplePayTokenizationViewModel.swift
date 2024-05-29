@@ -24,14 +24,14 @@ internal extension PKPaymentMethodType {
 @available(iOS 11.0, *)
 class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
-    private var applePayWindow: UIWindow?
-    private var request: PKPaymentRequest!
     private var applePayPaymentResponse: ApplePayPaymentResponse!
     // This is the completion handler that notifies that the necessary data were received.
     private var applePayReceiveDataCompletion: ((Result<ApplePayPaymentResponse, Error>) -> Void)?
     // This is the PKPaymentAuthorizationController's completion, call it when tokenization has finished.
     private var applePayControllerCompletion: ((PKPaymentAuthorizationResult) -> Void)?
     private var didTimeout: Bool = false
+
+    var applePayPresentationManager: ApplePayPresenting = ApplePayPresentationManager()
 
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
@@ -218,69 +218,17 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     items: orderItems
                 )
 
-                let supportedNetworks = ApplePayUtils.supportedPKPaymentNetworks()
-                var canMakePayment: Bool
-                if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
-                    canMakePayment = PKPaymentAuthorizationController.canMakePayments(usingNetworks: supportedNetworks)
-                } else {
-                    canMakePayment = PKPaymentAuthorizationController.canMakePayments()
-                }
-
-                if canMakePayment {
-                    let request = PKPaymentRequest()
-                    let applePayOptions = PrimerSettings.current.paymentMethodOptions.applePayOptions
-                    let isBillingContactFieldsRequired = applePayOptions?.isCaptureBillingAddressEnabled == true
-                    request.requiredBillingContactFields = isBillingContactFieldsRequired ? [.postalAddress] : []
-                    request.currencyCode = applePayRequest.currency.code
-                    request.countryCode = applePayRequest.countryCode.rawValue
-                    request.merchantIdentifier = merchantIdentifier
-                    request.merchantCapabilities = [.capability3DS]
-                    request.supportedNetworks = supportedNetworks
-                    request.paymentSummaryItems = applePayRequest.items.compactMap({ $0.applePayItem })
-
-                    let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
-                    paymentController.delegate = self
-
+                if self.applePayPresentationManager.isPresentable {
                     self.willPresentPaymentMethodUI?()
                     self.isCancelled = true
 
-                    paymentController.present { success in
-                        if success == false {
-                            let err = PrimerError.unableToPresentApplePay(userInfo: .errorUserInfoDictionary(),
-                                                                          diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: err)
-                            self.logger.error(message: "APPLE PAY")
-                            self.logger.error(message: err.recoverySuggestion ?? "")
-                            seal.reject(err)
-                            return
-                        } else {
-                            let type = self.config.type
-                            PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: type)
-                            self.didPresentPaymentMethodUI?()
-                            seal.fulfill()
-                        }
+                    self.applePayPresentationManager.present(withRequest: applePayRequest, delegate: self)
+                    .done {
+                        self.didPresentPaymentMethodUI?()
+                        seal.fulfill()
+                    }.catch { error in
+                        seal.reject(error)
                     }
-                } else {
-                    let errorMessage = "Cannot run ApplePay on this device"
-
-                    if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
-                        self.logger.error(message: "APPLE PAY")
-                        self.logger.error(message: errorMessage)
-                        let err = PrimerError.unableToMakePaymentsOnProvidedNetworks(userInfo: .errorUserInfoDictionary(),
-                                                                                     diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
-                    } else {
-                        self.logger.error(message: "APPLE PAY")
-                        self.logger.error(message: errorMessage)
-                        let info = ["message": errorMessage]
-                        let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: "APPLE_PAY",
-                                                                           userInfo: .errorUserInfoDictionary(additionalInfo: info),
-                                                                           diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
-                    }
-
                 }
             }
         }
@@ -339,11 +287,10 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 sourceConfig: ApplePayPaymentInstrument.SourceConfig(source: "IN_APP", merchantId: merchantIdentifier),
                 token: self.applePayPaymentResponse.token)
 
-            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
 
             firstly {
-                tokenizationService.tokenize(requestBody: requestBody)
+                self.tokenizationService.tokenize(requestBody: requestBody)
             }
             .done { paymentMethodTokenData in
                 seal.fulfill(paymentMethodTokenData)
@@ -504,21 +451,21 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
         #endif
 
         #if targetEnvironment(simulator)
-        if payment.token.paymentData.count == 0 && !isMockedBE {
-            let err = PrimerError.invalidArchitecture(
-                description: "Apple Pay does not work with Primer when used in the simulator due to a limitation from Apple Pay.",
-                recoverSuggestion: "Use a real device instead of the simulator",
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            completion(PKPaymentAuthorizationResult(status: .failure, errors: [err]))
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                controller.dismiss(completion: nil)
-            }
-            applePayReceiveDataCompletion?(.failure(err))
-            applePayReceiveDataCompletion = nil
-            return
-        }
+//        if payment.token.paymentData.count == 0 && !isMockedBE {
+//            let err = PrimerError.invalidArchitecture(
+//                description: "Apple Pay does not work with Primer when used in the simulator due to a limitation from Apple Pay.",
+//                recoverSuggestion: "Use a real device instead of the simulator",
+//                userInfo: .errorUserInfoDictionary(),
+//                diagnosticsId: UUID().uuidString)
+//            ErrorHandler.handle(error: err)
+//            completion(PKPaymentAuthorizationResult(status: .failure, errors: [err]))
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//                controller.dismiss(completion: nil)
+//            }
+//            applePayReceiveDataCompletion?(.failure(err))
+//            applePayReceiveDataCompletion = nil
+//            return
+//        }
         #endif
 
         self.isCancelled = false
@@ -560,6 +507,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
 
             completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
             controller.dismiss(completion: nil)
+            print(">>>>> CALLING COMPLETION")
             applePayReceiveDataCompletion?(.success(applePayPaymentResponse))
             applePayReceiveDataCompletion = nil
 

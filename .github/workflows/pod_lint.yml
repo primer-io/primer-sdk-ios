@@ -23,7 +23,7 @@ jobs:
           access_token: ${{ github.token }}
 
       - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
-      - uses: ruby/setup-ruby@d4526a55538b775af234ba4af27118ed6f8f6677  # v1.172.0
+      - uses: ruby/setup-ruby@943103cae7d3f1bb1e4951d5fcc7928b40e4b742  # v1.177.1
         with:
           ruby-version: "3.2"
           bundler-cache: true

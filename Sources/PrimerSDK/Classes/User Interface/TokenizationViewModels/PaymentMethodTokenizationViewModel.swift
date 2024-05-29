@@ -21,14 +21,13 @@ internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
 
     var tableView: UITableView { get set }
     var searchableTextField: PrimerSearchTextField { get set }
-    var config: PrimerPaymentMethod! { get set }
+    var config: PrimerPaymentMethod { get }
 
     func cancel()
 }
 
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol, LogReporter {
 
-    var config: PrimerPaymentMethod!
     static var apiClient: PrimerAPIClientProtocol?
 
     // Events
@@ -48,19 +47,41 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     var position: Int = 0
     var uiModule: UserInterfaceModule!
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
+    let config: PrimerPaymentMethod
+
+    let uiManager: PrimerUIManaging
+
+    let tokenizationService: TokenizationServiceProtocol
+
+    let createResumePaymentService: CreateResumePaymentServiceProtocol
+
+    convenience init(config: PrimerPaymentMethod) {
+        self.init(config: config,
+                  uiManager: PrimerUIManager.shared,
+                  tokenizationService: TokenizationService(),
+                  createResumePaymentService: CreateResumePaymentService()
+        )
     }
 
-    required init(config: PrimerPaymentMethod) {
+    init(config: PrimerPaymentMethod,
+         uiManager: PrimerUIManaging,
+         tokenizationService: TokenizationServiceProtocol,
+         createResumePaymentService: CreateResumePaymentServiceProtocol) {
         self.config = config
+        self.uiManager = uiManager
+        self.tokenizationService = tokenizationService
+        self.createResumePaymentService = createResumePaymentService
         super.init()
         self.uiModule = UserInterfaceModule(paymentMethodTokenizationViewModel: self)
     }
 
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
     @objc
     func receivedNotification(_ notification: Notification) {
-        // Use it to handle notifications that apply on tokenization view models.
+        // Override to handle notifications that are relevant tokenization view models.
     }
 
     @objc

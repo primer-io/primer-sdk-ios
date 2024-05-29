@@ -21,7 +21,7 @@ jobs:
     name: "Build and upload app to Appetize"
     steps:
       - name: Cancel previous jobs
-        uses: styfle/cancel-workflow-action@0.12.0
+        uses: styfle/cancel-workflow-action@0.12.1
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout
@@ -79,7 +79,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - uses: ruby/setup-ruby@d4526a55538b775af234ba4af27118ed6f8f6677  # v1.172.0
+      - uses: ruby/setup-ruby@943103cae7d3f1bb1e4951d5fcc7928b40e4b742  # v1.177.1
         with:
           ruby-version: "3.2"
           bundler-cache: true
@@ -108,7 +108,7 @@ jobs:
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
           SOURCE_BRANCH: ${{ github.ref }}
       - name: Save Browserstack ID
-        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 #v4.3.1
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 #v4.3.3
         id: save_browserstack_id_step
         with:
           name: browserstack_id

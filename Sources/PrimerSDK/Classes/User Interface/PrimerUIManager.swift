@@ -9,13 +9,33 @@
 
 import UIKit
 
-internal class PrimerUIManager {
+protocol PrimerUIManaging {
+    var primerWindow: UIWindow? { get }
+    var primerRootViewController: PrimerRootViewController? { get }
+    var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol? { get }
 
-    internal static var primerWindow: UIWindow?
-    internal static var primerRootViewController: PrimerRootViewController?
-    internal static var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol?
+    func prepareRootViewController() -> Promise<Void>
+}
 
-    static func preparePresentation(clientToken: String) -> Promise<Void> {
+internal class PrimerUIManager: PrimerUIManaging {
+
+    static let shared: PrimerUIManager = .init()
+
+    static var primerWindow: UIWindow? {
+        shared.primerWindow
+    }
+    static var primerRootViewController: PrimerRootViewController? {
+        shared.primerRootViewController
+    }
+    static var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol? {
+        shared.apiConfigurationModule
+    }
+
+    var primerWindow: UIWindow?
+    var primerRootViewController: PrimerRootViewController?
+    var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol?
+
+    func preparePresentation(clientToken: String) -> Promise<Void> {
         return Promise { seal in
             firstly {
                 PrimerUIManager.prepareRootViewController()
@@ -42,7 +62,7 @@ internal class PrimerUIManager {
         }
     }
 
-    static func presentPaymentUI() {
+    func presentPaymentUI() {
         if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
             PrimerUIManager.presentPaymentMethod(type: paymentMethodType)
         } else if PrimerInternal.shared.intent == .checkout {
@@ -61,7 +81,7 @@ internal class PrimerUIManager {
         }
     }
 
-    static func presentPaymentMethod(type: String) {
+    func presentPaymentMethod(type: String) {
         let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first
 
         precondition(paymentMethodTokenizationViewModel != nil, "PrimerUIManager should have validated that the view model exists.")
@@ -95,27 +115,27 @@ internal class PrimerUIManager {
         paymentMethodTokenizationViewModel?.start()
     }
 
-    static func prepareRootViewController() -> Promise<Void> {
+    func prepareRootViewController() -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
                 if PrimerUIManager.primerRootViewController == nil {
-                    PrimerUIManager.primerRootViewController = PrimerRootViewController()
+                    self.primerRootViewController = PrimerRootViewController()
                 }
 
                 if PrimerUIManager.primerWindow == nil {
                     if let windowScene = UIApplication.shared.connectedScenes
                         .filter({ $0.activationState == .foregroundActive })
                         .first as? UIWindowScene {
-                        PrimerUIManager.primerWindow = UIWindow(windowScene: windowScene)
+                        self.primerWindow = UIWindow(windowScene: windowScene)
                     } else {
                         // Not opted-in in UISceneDelegate
-                        PrimerUIManager.primerWindow = UIWindow(frame: UIScreen.main.bounds)
+                        self.primerWindow = UIWindow(frame: UIScreen.main.bounds)
                     }
 
-                    PrimerUIManager.primerWindow!.rootViewController = PrimerUIManager.primerRootViewController
-                    PrimerUIManager.primerWindow!.backgroundColor = UIColor.clear
-                    PrimerUIManager.primerWindow!.windowLevel = UIWindow.Level.normal
-                    PrimerUIManager.primerWindow!.makeKeyAndVisible()
+                    self.primerWindow!.rootViewController = self.primerRootViewController
+                    self.primerWindow!.backgroundColor = UIColor.clear
+                    self.primerWindow!.windowLevel = UIWindow.Level.normal
+                    self.primerWindow!.makeKeyAndVisible()
                 }
 
                 seal.fulfill()
@@ -123,7 +143,7 @@ internal class PrimerUIManager {
         }
     }
 
-    static func validatePaymentUIPresentation() -> Promise<Void> {
+    func validatePaymentUIPresentation() -> Promise<Void> {
         return Promise { seal in
             if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
                 guard let paymentMethod = PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) else {
@@ -181,7 +201,7 @@ internal class PrimerUIManager {
     }
 
     @discardableResult
-    static func dismissPrimerUI(animated flag: Bool) -> Promise<Void> {
+    func dismissPrimerUI(animated flag: Bool) -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.main.async {
                 self.dismissPrimerUI(animated: flag) {
@@ -191,46 +211,46 @@ internal class PrimerUIManager {
         }
     }
 
-    static func dismissPrimerUI(animated flag: Bool, completion: (() -> Void)? = nil) {
+    func dismissPrimerUI(animated flag: Bool, completion: (() -> Void)? = nil) {
         DispatchQueue.main.async {
-            guard let primerRootViewController = PrimerUIManager.primerRootViewController else {
-                PrimerUIManager.dismissPrimerWindow(completion: completion)
+            guard let primerRootViewController = self.primerRootViewController else {
+                self.dismissPrimerWindow(completion: completion)
                 completion?()
                 return
             }
 
             if #available(iOS 16.1, *) {
                 primerRootViewController.dismissPrimerRootViewController(animated: flag) {
-                    PrimerUIManager.dismissPrimerWindow(completion: completion)
+                    self.dismissPrimerWindow(completion: completion)
                 }
             } else if #available(iOS 16.0, *) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                     primerRootViewController.dismissPrimerRootViewController(animated: flag) {
-                        PrimerUIManager.dismissPrimerWindow(completion: completion)
+                        self.dismissPrimerWindow(completion: completion)
                     }
                 }
             } else {
                 primerRootViewController.dismissPrimerRootViewController(animated: flag) {
-                    PrimerUIManager.dismissPrimerWindow(completion: completion)
+                    self.dismissPrimerWindow(completion: completion)
                 }
             }
         }
     }
 
-    static func dismissPrimerWindow(completion: (() -> Void)? = nil) {
+    func dismissPrimerWindow(completion: (() -> Void)? = nil) {
         DispatchQueue.main.async {
-            PrimerUIManager.primerWindow?.isHidden = true
-            PrimerUIManager.primerWindow?.windowScene = nil
-            PrimerUIManager.primerWindow?.resignKey()
-            PrimerUIManager.primerWindow = nil
-            PrimerUIManager.primerRootViewController = nil
+            self.primerWindow?.isHidden = true
+            self.primerWindow?.windowScene = nil
+            self.primerWindow?.resignKey()
+            self.primerWindow = nil
+            self.primerRootViewController = nil
             completion?()
         }
     }
 
-    static func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType,
-                                          paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
-                                          withMessage message: String? = nil) {
+    func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType,
+                                   paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
+                                   withMessage message: String? = nil) {
         if PrimerSettings.current.uiOptions.isSuccessScreenEnabled && type == .success {
             showResultScreenForResultType(type: .success, message: message)
         } else if PrimerSettings.current.uiOptions.isErrorScreenEnabled && type == .failure {
@@ -242,7 +262,7 @@ internal class PrimerUIManager {
         }
     }
 
-    static func handleErrorBasedOnSDKSettings(_ error: PrimerError) {
+    func handleErrorBasedOnSDKSettings(_ error: PrimerError) {
         PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { errorDecision in
             switch errorDecision.type {
             case .fail(let message):
@@ -253,11 +273,63 @@ internal class PrimerUIManager {
         }
     }
 
-    static private func showResultScreenForResultType(type: PrimerResultViewController.ScreenType, message: String? = nil) {
+    fileprivate func showResultScreenForResultType(type: PrimerResultViewController.ScreenType, message: String? = nil) {
         let resultViewController = PrimerResultViewController(screenType: type, message: message)
         resultViewController.view.translatesAutoresizingMaskIntoConstraints = false
         resultViewController.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
         PrimerUIManager.primerRootViewController?.show(viewController: resultViewController)
+    }
+}
+
+// Legacy static support
+extension PrimerUIManager {
+
+    static func preparePresentation(clientToken: String) -> Promise<Void> {
+        shared.preparePresentation(clientToken: clientToken)
+    }
+
+    static func presentPaymentUI() {
+        shared.presentPaymentUI()
+    }
+
+    static func presentPaymentMethod(type: String) {
+        shared.presentPaymentMethod(type: type)
+    }
+
+    static func prepareRootViewController() -> Promise<Void> {
+        shared.prepareRootViewController()
+    }
+
+    static func validatePaymentUIPresentation() -> Promise<Void> {
+        shared.validatePaymentUIPresentation()
+    }
+
+    @discardableResult
+    static func dismissPrimerUI(animated flag: Bool) -> Promise<Void> {
+        shared.dismissPrimerUI(animated: flag)
+    }
+
+    static func dismissPrimerUI(animated flag: Bool, completion: (() -> Void)? = nil) {
+        shared.dismissPrimerUI(animated: flag, completion: completion)
+    }
+
+    static func dismissPrimerWindow(completion: (() -> Void)? = nil) {
+        shared.dismissPrimerWindow(completion: completion)
+    }
+
+    static func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType,
+                                          paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
+                                          withMessage message: String? = nil) {
+        shared.dismissOrShowResultScreen(type: type, paymentMethodManagerCategories: paymentMethodManagerCategories, withMessage: message)
+    }
+
+    static func handleErrorBasedOnSDKSettings(_ error: PrimerError) {
+        shared.handleErrorBasedOnSDKSettings(error)
+    }
+
+    static fileprivate func showResultScreenForResultType(type: PrimerResultViewController.ScreenType,
+                                                          message: String? = nil) {
+        shared.showResultScreenForResultType(type: type, message: message)
     }
 }
 // swiftlint:enable function_body_length
