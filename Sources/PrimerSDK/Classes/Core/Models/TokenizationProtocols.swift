@@ -9,7 +9,6 @@ import Foundation
 internal protocol PaymentMethodTokenizationModelProtocol: NSObject {
     static var apiClient: PrimerAPIClientProtocol? { get set }
 
-    init(config: PrimerPaymentMethod)
     var checkoutEventsNotifierModule: CheckoutEventsNotifierModule { get }
 
     // Events
@@ -45,7 +44,7 @@ internal protocol PaymentMethodTokenizationViewProtocol: NSObject {
     var didDismissPaymentMethodUI: (() -> Void)? { get set }
 
     // UI
-    var config: PrimerPaymentMethod! { get set }
+    var config: PrimerPaymentMethod { get }
     var uiModule: UserInterfaceModule! { get }
     var position: Int { get set }
 }

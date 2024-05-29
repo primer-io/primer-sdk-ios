@@ -31,12 +31,14 @@ final class BanksTokenizationComponentTests: XCTestCase {
 
     override func setUpWithError() throws {
         let paymentMethod = Mocks.PaymentMethods.idealFormWithRedirectPaymentMethod
+        sut = BanksTokenizationComponent(config: paymentMethod)
         apiClient = MockBanksAPIClient()
-        sut = BanksTokenizationComponent(config: paymentMethod, apiClient: apiClient)
+        sut.apiClient = apiClient
     }
 
     override func tearDownWithError() throws {
         sut = nil
+        apiClient = nil
     }
 
     func testValidationSuccess() throws {

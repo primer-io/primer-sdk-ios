@@ -43,7 +43,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
 
             return DefaultBanksComponent(paymentMethodType: paymentMethodType, tokenizationProvidingModel: tokenizationModel) {
-                webDelegate.setup()
+                webDelegate.setupNotificationObservers()
                 return WebRedirectComponent(paymentMethodType: paymentMethodType, tokenizationModelDelegate: webDelegate)
             }
         }
