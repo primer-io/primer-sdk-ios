@@ -27,9 +27,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             cardholderNameField: cardholderNameField,
             billingAddressFieldViews: allVisibleBillingAddressFieldViews,
             paymentMethodType: self.config.type,
-            isRequiringCVVInput: isRequiringCVVInput
+            isRequiringCVVInput: isRequiringCVVInput,
+            delegate: self
         )
-        manager.delegate = self
         return manager
     }()
 

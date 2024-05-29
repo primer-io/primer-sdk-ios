@@ -33,7 +33,6 @@ public enum PrimerError: PrimerErrorProtocol {
     case uninitializedSDKSession(userInfo: [String: String]?, diagnosticsId: String)
     case invalidClientToken(userInfo: [String: String]?, diagnosticsId: String)
     case missingPrimerConfiguration(userInfo: [String: String]?, diagnosticsId: String)
-    case missingPrimerDelegate(userInfo: [String: String]?, diagnosticsId: String)
     case misconfiguredPaymentMethods(userInfo: [String: String]?, diagnosticsId: String)
     case missingPrimerInputElement(inputElementType: PrimerInputElementType,
                                    userInfo: [String: String]?,
@@ -82,8 +81,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "invalid-client-token"
         case .missingPrimerConfiguration:
             return "missing-configuration"
-        case .missingPrimerDelegate:
-            return "missing-primer-delegate"
         case .misconfiguredPaymentMethods:
             return "misconfigured-payment-methods"
         case .missingPrimerInputElement:
@@ -158,8 +155,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .missingPrimerConfiguration(_, let diagnosticsId):
             return diagnosticsId
-        case .missingPrimerDelegate(_, let diagnosticsId):
-            return diagnosticsId
         case .misconfiguredPaymentMethods(_, let diagnosticsId):
             return diagnosticsId
         case .missingPrimerInputElement(_, _, let diagnosticsId):
@@ -225,8 +220,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Client token is not valid"
         case .missingPrimerConfiguration:
             return "Missing SDK configuration"
-        case .missingPrimerDelegate:
-            return "Primer delegate has not been set"
         case .missingPrimerInputElement(let inputElementType, _, _):
             return "Missing primer input element for \(inputElementType)"
         case .missingSDK(let paymentMethodType, let sdkName, _, _):
@@ -295,7 +288,6 @@ public enum PrimerError: PrimerErrorProtocol {
         case .uninitializedSDKSession(let userInfo, _),
              .invalidClientToken(let userInfo, _),
              .missingPrimerConfiguration(let userInfo, _),
-             .missingPrimerDelegate(let userInfo, _),
              .missingPrimerInputElement(_, let userInfo, _),
              .misconfiguredPaymentMethods(let userInfo, _),
              .cancelled(_, let userInfo, _),
@@ -346,12 +338,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Check if the token you have provided is a valid token (not nil and not expired)."
         case .missingPrimerConfiguration:
             return "Check if you have an active internet connection."
-        case .missingPrimerDelegate:
-            let message = """
-Primer's delegate has not been set. Ensure that you have added Primer.shared.delegate = self \
-on the view controller you wish to present Primer's SDK.
-"""
-            return message
         case .missingPrimerInputElement(let inputElementtype, _, _):
             return "A PrimerInputElement for \(inputElementtype) has to be provided."
         case .misconfiguredPaymentMethods:
