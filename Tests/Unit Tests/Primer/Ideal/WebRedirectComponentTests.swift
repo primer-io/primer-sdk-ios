@@ -45,7 +45,7 @@ final class MockWebRedirectTokenizationModel: WebRedirectTokenizationDelegate {
     var didDismissPaymentMethodUI: (() -> Void)?
     var didCancel: (() -> Void)?
 
-    func setup() {}
+    func setupNotificationObservers() {}
     func cancel() {}
     func cleanup() {}
 }

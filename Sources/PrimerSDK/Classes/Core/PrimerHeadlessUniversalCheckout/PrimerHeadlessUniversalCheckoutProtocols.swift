@@ -31,7 +31,6 @@ public protocol PrimerHeadlessUniversalCheckoutDelegate {
     @objc optional func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)
     @objc optional func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)
     @objc optional func primerHeadlessUniversalCheckoutDidFail(withError err: Error, checkoutData: PrimerCheckoutData?)
-    @objc optional func primerHeadlessUniversalCheckoutDidAbort(withMerchantError error: Error)
     @objc optional func primerHeadlessUniversalCheckoutWillUpdateClientSession()
     @objc optional func primerHeadlessUniversalCheckoutDidUpdateClientSession(_ clientSession: PrimerClientSession)
     @objc optional func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void)

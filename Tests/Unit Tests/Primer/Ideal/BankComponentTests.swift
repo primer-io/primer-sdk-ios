@@ -296,7 +296,7 @@ private class MockBankSelectorTokenizationModel: BankSelectorTokenizationProvidi
             seal.fulfill()
         }
     }
-    func setup() {}
+    func setupNotificationObservers() {}
     func cancel() {
         didCallCancel = true
     }
