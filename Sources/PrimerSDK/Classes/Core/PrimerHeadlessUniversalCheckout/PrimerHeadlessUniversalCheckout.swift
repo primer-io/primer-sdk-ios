@@ -36,6 +36,9 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         PrimerPaymentMethodType.adyenDotPay.rawValue,
         PrimerPaymentMethodType.goCardless.rawValue,
         PrimerPaymentMethodType.googlePay.rawValue,
+        PrimerPaymentMethodType.primerTestKlarna.rawValue,
+        PrimerPaymentMethodType.primerTestPayPal.rawValue,
+        PrimerPaymentMethodType.primerTestSofort.rawValue,
         PrimerPaymentMethodType.xfersPayNow.rawValue
     ]
 
