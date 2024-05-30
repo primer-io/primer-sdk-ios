@@ -28,9 +28,9 @@ inputs:
   source-branch:
     description: Source branch
     required: true
-  coverage-file-name:
-    description: Name of the generic coverage file
-    required: true
+  sdk-name:
+    description: The name of the SDK, if not using the default Package.swift
+    default: sdk
   package-swift:
     description: The swift package file to use, if not default
     required: false
@@ -77,8 +77,8 @@ runs:
       shell: bash
       run: |
         bash Scripts/xccov-to-sonarqube-generic.sh fastlane/test_output/PrimerSDKTests.xcresult/ > coverage.xml
-        sed "s#$PWD/##g" coverage.xml > ${{ inputs.coverage-file-name }}
+        sed "s#$PWD/##g" coverage.xml >sonar-coverage-${{ inputs.sdk-name }}.xml
     - uses: actions/upload-artifact@master
       with:
-        name: coverage-file
-        path: ${{ inputs.coverage-file-name }}
+        name: coverage-file-${{ inputs.sdk-name }}
+        path: sonar-coverage-${{ inputs.sdk-name }}.xml

@@ -37,5 +37,5 @@ jobs:
           fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
           match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-          coverage-file-name: sonar-coverage-${{ matrix.package-swift.name }}.xml
+          sdk-name: ${{ matrix.package-swift.name }}
           package-swift: ${{  matrix.package-swift.file }}
