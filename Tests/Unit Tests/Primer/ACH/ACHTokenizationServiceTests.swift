@@ -94,8 +94,8 @@ final class ACHTokenizationServiceTests: XCTestCase {
             }
             
             switch primerError {
-            case .invalidSetting(let name, _, _, _):
-                XCTAssertTrue(name == "amount")
+            case .invalidValue(let key, _, _, _):
+                XCTAssertTrue(key == "amount")
             default:
                 XCTFail("primerError should be of type invalidSetting")
             }
@@ -113,8 +113,8 @@ final class ACHTokenizationServiceTests: XCTestCase {
             }
             
             switch primerError {
-            case .invalidSetting(let name, _, _, _):
-                XCTAssertTrue(name == "currency")
+            case .invalidValue(let key, _, _, _):
+                XCTAssertTrue(key == "currency")
             default:
                 XCTFail("primerError should be of type invalidSetting")
             }
