@@ -5,13 +5,22 @@
 //  Created by Alexandra Lovin on 03.11.2023.
 //
 
+private typealias TokenizationViewModelType = (
+    BankSelectorTokenizationProviding &
+    WebRedirectTokenizationDelegate &
+    PaymentMethodTokenizationModelProtocol
+)
+
 import Foundation
 extension PrimerHeadlessUniversalCheckout {
     @objc public class ComponentWithRedirectManager: NSObject {
+
         @objc public func provideComponent(paymentMethodType: String) -> PrimerHeadlessBanksComponentWrapper {
             PrimerHeadlessBanksComponentWrapper(manager: self, paymentMethodType: paymentMethodType)
         }
+
         public func provide<MainComponent>(paymentMethodType: String) throws -> MainComponent?
+
         where PrimerCollectableData: Any, PrimerHeadlessStep: Any {
             try provideBanksComponent(paymentMethodType: paymentMethodType) as? MainComponent
         }
@@ -26,45 +35,35 @@ extension PrimerHeadlessUniversalCheckout {
                 throw err
             }
 
-            guard let tokenizationModel = try getPaymentMethodTokenizationModel() as? BankSelectorTokenizationProviding else {
-                let err = PrimerError.generic(message: "Unable to locate a correct payment method view model",
-                                              userInfo: .errorUserInfoDictionary(),
-                                              diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
-
-            guard let webDelegate = try getPaymentMethodTokenizationModel() as? WebRedirectTokenizationDelegate else {
-                let err = PrimerError.generic(message: "Unable to locate a correct payment method view model",
-                                              userInfo: .errorUserInfoDictionary(),
-                                              diagnosticsId: UUID().uuidString)
+            guard let tokenizationModel = try getTokenizationModel() else {
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType.rawValue,
+                                                               userInfo: .errorUserInfoDictionary(additionalInfo: [
+                                                                   "message": "Unable to locate a correct payment method view model"
+                                                               ]),
+                                                               diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
 
             return DefaultBanksComponent(paymentMethodType: paymentMethodType, tokenizationProvidingModel: tokenizationModel) {
-                webDelegate.setupNotificationObservers()
-                return WebRedirectComponent(paymentMethodType: paymentMethodType, tokenizationModelDelegate: webDelegate)
+                tokenizationModel.setupNotificationObservers()
+                return WebRedirectComponent(paymentMethodType: paymentMethodType, tokenizationModelDelegate: tokenizationModel)
             }
         }
 
-        private func getPaymentMethodTokenizationModel() throws -> PaymentMethodTokenizationModelProtocol? {
-            try PrimerAPIConfiguration.paymentMethodConfigs?
-                .filter({ $0.isEnabled })
-                .filter({ $0.baseLogoImage != nil })
-                .compactMap({
-                    do {
-                        try $0.tokenizationModel?.validate()
-                    } catch {
-                        let err = PrimerError.generic(message: "Unable to locate a valid payment method view model",
-                                                      userInfo: .errorUserInfoDictionary(),
-                                                      diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        throw err
-                    }
-                    return $0.tokenizationModel
-                })
+        private func getTokenizationModel() throws -> TokenizationViewModelType? {
+            let viewModel = PrimerAPIConfiguration.paymentMethodConfigs?
+                .filter { $0.isEnabled }
+                .filter { $0.baseLogoImage != nil }
+                .compactMap { $0.tokenizationModel as? TokenizationViewModelType }
                 .first
+
+            guard let viewModel = viewModel else {
+                return nil
+            }
+
+            try viewModel.validate()
+            return viewModel
         }
     }
 }

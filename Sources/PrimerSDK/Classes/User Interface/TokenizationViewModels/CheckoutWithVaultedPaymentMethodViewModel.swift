@@ -75,8 +75,9 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                 if let error = err as? PrimerError {
                     primerErr = error
                 } else {
-                    primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: .errorUserInfoDictionary(),
-                                                    diagnosticsId: UUID().uuidString)
+                    primerErr = PrimerError.underlyingErrors(errors: [err],
+                                                             userInfo: .errorUserInfoDictionary(),
+                                                             diagnosticsId: UUID().uuidString)
                 }
 
                 firstly {

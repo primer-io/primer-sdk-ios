@@ -39,8 +39,8 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
             klarnaComponent?.validationDelegate = self
         } catch let error as PrimerError {
             switch error {
-            case .generic(let message, _, _):
-                showAlert(title: "Error", message: message)
+            case .unsupportedPaymentMethod(let pm, let userInfo, _):
+                showAlert(title: "Error", message: userInfo?["message"] ?? "Couldn't configure payment method \(pm)")
             case .unsupportedIntent(let intent, _, _):
                 showAlert(title: "Error", message: "Unsupported intent: \(intent.rawValue)")
             default:

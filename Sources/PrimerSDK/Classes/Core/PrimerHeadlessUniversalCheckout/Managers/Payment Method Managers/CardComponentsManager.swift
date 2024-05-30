@@ -1098,9 +1098,9 @@ extension PrimerHeadlessUniversalCheckout.CardComponentsManager {
                 if let err = err as? PrimerError {
                     primerErr = err
                 } else {
-                    primerErr = PrimerError.generic(message: err.localizedDescription,
-                                                    userInfo: .errorUserInfoDictionary(),
-                                                    diagnosticsId: UUID().uuidString)
+                    primerErr = PrimerError.underlyingErrors(errors: [err],
+                                                             userInfo: .errorUserInfoDictionary(),
+                                                             diagnosticsId: UUID().uuidString)
                 }
 
                 ErrorHandler.handle(error: primerErr)

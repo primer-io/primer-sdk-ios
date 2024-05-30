@@ -25,7 +25,7 @@ class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
         if shouldSucceed {
             completion(.success(.init(id: nil, result: nil)))
         } else {
-            completion(.failure(PrimerError.generic(message: "", userInfo: nil, diagnosticsId: "")))
+            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
         self.onSendAnalyticsEvent?(body)
     }

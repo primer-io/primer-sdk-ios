@@ -87,9 +87,12 @@ class PollingModule: Module {
                 } else if res.status == .complete {
                     completion(res.id, nil)
                 } else {
-                    let err = PrimerError.generic(message: "Should never end up here",
-                                                  userInfo: .errorUserInfoDictionary(),
-                                                  diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.unknown(
+                        userInfo: .errorUserInfoDictionary(additionalInfo: [
+                            "message": "Received unexpected polling status for id '\(res.id)'"
+                        ]),
+                        diagnosticsId: UUID().uuidString
+                    )
                     ErrorHandler.handle(error: err)
                 }
             case .failure(let err):

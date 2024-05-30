@@ -233,10 +233,12 @@ extension PrimerHeadlessUniversalCheckout {
                                         guard let checkoutData = self.paymentCheckoutData,
                                               PrimerSettings.current.paymentHandling == .auto
                                         else {
-                                            let err = PrimerError.generic(
-                                                message: "Failed to find checkout data",
+                                            let err = PrimerError.paymentFailed(
+                                                paymentMethodType: self.paymentMethodType,
+                                                description: "Failed to find checkout data after resuming payment",
                                                 userInfo: .errorUserInfoDictionary(),
-                                                diagnosticsId: UUID().uuidString)
+                                                diagnosticsId: UUID().uuidString
+                                            )
                                             ErrorHandler.handle(error: err)
                                             PrimerDelegateProxy.primerDidFailWithError(err,
                                                                                        data: self.paymentCheckoutData) { _ in
@@ -271,10 +273,12 @@ extension PrimerHeadlessUniversalCheckout {
                         } else {
                             DispatchQueue.main.async {
                                 guard let checkoutData = self.paymentCheckoutData else {
-                                    let err = PrimerError.generic(
-                                        message: "Failed to find checkout data",
+                                    let err = PrimerError.paymentFailed(
+                                        paymentMethodType: self.paymentMethodType,
+                                        description: "Failed to find checkout data after completing payment",
                                         userInfo: .errorUserInfoDictionary(),
-                                        diagnosticsId: UUID().uuidString)
+                                        diagnosticsId: UUID().uuidString
+                                    )
                                     ErrorHandler.handle(error: err)
                                     PrimerDelegateProxy.primerDidFailWithError(err,
                                                                                data: self.paymentCheckoutData) { _ in
@@ -312,10 +316,12 @@ extension PrimerHeadlessUniversalCheckout {
                             guard let checkoutData = self.paymentCheckoutData,
                                   PrimerSettings.current.paymentHandling == .auto
                             else {
-                                let err = PrimerError.generic(
-                                    message: "Failed to find checkout data",
+                                let err = PrimerError.paymentFailed(
+                                    paymentMethodType: self.paymentMethodType,
+                                    description: "Failed to find checkout data after completing payment",
                                     userInfo: .errorUserInfoDictionary(),
-                                    diagnosticsId: UUID().uuidString)
+                                    diagnosticsId: UUID().uuidString
+                                )
                                 ErrorHandler.handle(error: err)
                                 PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { _ in
                                     // No need to pass anything

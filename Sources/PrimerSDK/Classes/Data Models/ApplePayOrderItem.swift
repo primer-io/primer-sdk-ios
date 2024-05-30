@@ -48,17 +48,23 @@ internal struct ApplePayOrderItem: Codable {
         isPending: Bool = false
     ) throws {
         if isPending && unitAmount != nil {
-            let err = PrimerError.generic(message: "amount should be null for pending items",
-                                          userInfo: .errorUserInfoDictionary(),
-                                          diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidValue(key: "amount",
+                                               value: unitAmount,
+                                               userInfo: .errorUserInfoDictionary(additionalInfo: [
+                                                "message": "amount should be null for pending items"
+                                               ]),
+                                               diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }
 
         if !isPending && unitAmount == nil {
-            let err = PrimerError.generic(message: "amount cannot be null for non-pending items",
-                                          userInfo: .errorUserInfoDictionary(),
-                                          diagnosticsId: UUID().uuidString)
+            let err = PrimerError.invalidValue(key: "amount",
+                                               value: unitAmount,
+                                               userInfo: .errorUserInfoDictionary(additionalInfo: [
+                                                "message": "amount cannot be null for non-pending items"
+                                               ]),
+                                               diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
         }

@@ -20,7 +20,13 @@ final class ApplePayOrderItemTests: XCTestCase {
                                       isPending: false)
             XCTFail("Error should be thrown for nil unitAmount when not pending")
         } catch let error {
-            XCTAssertTrue(error.localizedDescription.contains("Message: amount cannot be null for non-pending items"))
+            if case let PrimerError.invalidValue(key, value, userInfo, _) = error {
+                XCTAssertEqual(key, "amount")
+                XCTAssertNil(value)
+                XCTAssertEqual(userInfo?["message"], ("amount cannot be null for non-pending items"))
+            } else {
+                XCTFail("Expected invalidValue error")
+            }
         }
 
         do {
@@ -32,7 +38,13 @@ final class ApplePayOrderItemTests: XCTestCase {
                                       isPending: true)
             XCTFail("Error should be thrown for non-nil unitAmount when pending")
         } catch let error {
-            XCTAssertTrue(error.localizedDescription.contains("Message: amount should be null for pending items"))
+            if case let PrimerError.invalidValue(key, value, userInfo, _) = error {
+                XCTAssertEqual(key, "amount")
+                XCTAssertEqual(value as? Int, 1)
+                XCTAssertEqual(userInfo?["message"], ("amount should be null for pending items"))
+            } else {
+                XCTFail("Expected invalidValue error")
+            }
         }
     }
 }
