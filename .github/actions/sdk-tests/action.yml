@@ -57,7 +57,7 @@ runs:
         bundler-cache: true
     - name: Setup Package.swift
       shell: bash
-      if: ${{ input.package-swift != '' }}
+      if: ${{ inputs.package-swift != '' }}
       run: |
         mv Package.swift Package.swift.orig
         cp Package.NolPay.swift Package.swift
