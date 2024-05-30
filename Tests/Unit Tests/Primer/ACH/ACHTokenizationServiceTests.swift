@@ -194,6 +194,12 @@ extension ACHTokenizationServiceTests {
                                        emptyCurrencyCode: Bool = false) {
         mockApiClient = MockPrimerAPIClient()
         
+        let settings = PrimerSettings(paymentMethodOptions:
+                                        PrimerPaymentMethodOptions(urlScheme: "test://primer.io",
+                                                                   stripeOptions: PrimerStripeACHOptions(publishableKey: "test-pk-1234")))
+        
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+        
         var clientSession: ClientSession.APIResponse?
         
         if isClientSessionEmpty {

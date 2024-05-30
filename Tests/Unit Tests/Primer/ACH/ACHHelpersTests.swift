@@ -48,10 +48,10 @@ final class ACHHelpersTests: XCTestCase {
 
     func test_get_invalid_setting_error() {
         let expectedName = "test-setting"
-        let expectedRecoverySuggestion = "Check if you have provided a value for \(expectedName) in the SDK settings."
+        let expectedRecoverySuggestion = "Check if value nil is valid for key \(expectedName)"
         let error = ACHHelpers.getInvalidSettingError(name: expectedName)
         
-        XCTAssertEqual(error.errorId, "invalid-setting")
+        XCTAssertEqual(error.errorId, "invalid-value")
         XCTAssertEqual(error.recoverySuggestion, expectedRecoverySuggestion)
     }
 
