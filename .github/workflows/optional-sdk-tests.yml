@@ -15,6 +15,8 @@ jobs:
       matrix:
         package-swift:
           - Package.NolPay.swift
+          - Package.Klarna.swift
+
     steps:
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
