@@ -94,7 +94,7 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
         billingAddressFieldViews: [PrimerTextFieldView]?,
         paymentMethodType: String? = nil,
         isRequiringCVVInput: Bool = true,
-        tokenizationService: TokenizationServiceProtocol
+        tokenizationService: TokenizationServiceProtocol,
         delegate: InternalCardComponentsManagerDelegate
     ) {
         self.cardnumberField = cardnumberField

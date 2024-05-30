@@ -30,8 +30,8 @@ class DefaultWebAuthenticationService: NSObject, WebAuthenticationService {
                                                                      userInfo: .errorUserInfoDictionary(),
                                                                      diagnosticsId: UUID().uuidString)))
                 } else {
-                    completion(.failure(PrimerError.generic(message: "Failed to create web authentication session",
-                                                            userInfo: .errorUserInfoDictionary(),
+                    let additionalInfo: [String: String] = [ "message": "Failed to create web authentication session" ]
+                    completion(.failure(PrimerError.unknown(userInfo: .errorUserInfoDictionary(additionalInfo: additionalInfo),
                                                             diagnosticsId: UUID().uuidString)))
                 }
             }

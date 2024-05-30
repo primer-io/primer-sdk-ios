@@ -28,7 +28,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             billingAddressFieldViews: allVisibleBillingAddressFieldViews,
             paymentMethodType: self.config.type,
             isRequiringCVVInput: isRequiringCVVInput,
-            tokenizationService: tokenizationService
+            tokenizationService: tokenizationService,
             delegate: self
         )
         return manager

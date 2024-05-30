@@ -151,7 +151,7 @@ fileprivate class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
         if let result = onFetchVaultedPaymentMethods?(clientToken) {
             completion(.success(result))
         } else {
-            completion(.failure(PrimerError.generic(message: "", userInfo: nil, diagnosticsId: "")))
+            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
     }
 
@@ -162,7 +162,7 @@ fileprivate class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
             onDeleteVaultedPaymentMethods(clientToken, id)
             completion(.success(()))
         } else {
-            completion(.failure(PrimerError.generic(message: "", userInfo: nil, diagnosticsId: "")))
+            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
     }
     

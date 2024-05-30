@@ -228,7 +228,7 @@ class MockPayPalService: PayPalServiceProtocol {
         if let onStartOrderSession = onStartOrderSession {
             completion(.success(onStartOrderSession()))
         } else {
-            completion(.failure(PrimerError.generic(message: "", userInfo: nil, diagnosticsId: "")))
+            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
     }
 
@@ -240,7 +240,7 @@ class MockPayPalService: PayPalServiceProtocol {
         if let onStartBillingAgreementSession {
             completion(.success(onStartBillingAgreementSession()))
         } else {
-            completion(.failure(PrimerError.generic(message: "", userInfo: nil, diagnosticsId: "")))
+            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
     }
     
@@ -252,7 +252,7 @@ class MockPayPalService: PayPalServiceProtocol {
         if let onConfirmBillingAgreement {
             completion(.success(onConfirmBillingAgreement()))
         } else {
-            completion(.failure(PrimerError.generic(message: "", userInfo: nil, diagnosticsId: "")))
+            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
     }
 
@@ -264,7 +264,7 @@ class MockPayPalService: PayPalServiceProtocol {
         if let onFetchPayPalExternalPayerInfo {
             completion(.success(onFetchPayPalExternalPayerInfo(orderId)))
         } else {
-            completion(.failure(PrimerError.generic(message: "", userInfo: nil, diagnosticsId: "")))
+            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
     }
 }
@@ -278,7 +278,7 @@ class MockWebAuthenticationService: WebAuthenticationService {
         if let onConnect = onConnect {
             completion(.success(onConnect(url, scheme)))
         } else {
-            completion(.failure(PrimerError.generic(message: "", userInfo: nil, diagnosticsId: "")))
+            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
     }
 }
