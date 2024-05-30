@@ -33,19 +33,16 @@ public enum PrimerError: PrimerErrorProtocol {
     case uninitializedSDKSession(userInfo: [String: String]?, diagnosticsId: String)
     case invalidClientToken(userInfo: [String: String]?, diagnosticsId: String)
     case missingPrimerConfiguration(userInfo: [String: String]?, diagnosticsId: String)
-    case missingPrimerDelegate(userInfo: [String: String]?, diagnosticsId: String)
     case misconfiguredPaymentMethods(userInfo: [String: String]?, diagnosticsId: String)
     case missingPrimerInputElement(inputElementType: PrimerInputElementType,
                                    userInfo: [String: String]?,
                                    diagnosticsId: String)
     case cancelled(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
     case failedToCreateSession(error: Error?, userInfo: [String: String]?, diagnosticsId: String)
-    case failedToPerform3DS(paymentMethodType: String, error: Error?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidArchitecture(description: String, recoverSuggestion: String?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidClientSessionValue(name: String, value: String?, allowedValue: String?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidMerchantIdentifier(merchantIdentifier: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidUrlScheme(urlScheme: String?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidValue(key: String, value: Any?, userInfo: [String: String]?, diagnosticsId: String)
     case unableToMakePaymentsOnProvidedNetworks(userInfo: [String: String]?, diagnosticsId: String)
     case unableToPresentPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
@@ -70,7 +67,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case applePayTimedOut(userInfo: [String: String]?, diagnosticsId: String)
     case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, userInfo: [String: String]?, diagnosticsId: String)
     case nolError(code: String?, message: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case klarnaWrapperError(message: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case klarnaError(message: String?, userInfo: [String: String]?, diagnosticsId: String)
     case unableToPresentApplePay(userInfo: [String: String]?, diagnosticsId: String)
     case unknown(userInfo: [String: String]?, diagnosticsId: String)
 
@@ -82,8 +79,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "invalid-client-token"
         case .missingPrimerConfiguration:
             return "missing-configuration"
-        case .missingPrimerDelegate:
-            return "missing-primer-delegate"
         case .misconfiguredPaymentMethods:
             return "misconfigured-payment-methods"
         case .missingPrimerInputElement:
@@ -92,8 +87,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "payment-cancelled"
         case .failedToCreateSession:
             return "failed-to-create-session"
-        case .failedToPerform3DS:
-            return "failed-to-perform-3ds"
         case .invalidArchitecture:
             return "invalid-architecture"
         case .invalidClientSessionValue:
@@ -102,8 +95,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "invalid-url"
         case .invalidMerchantIdentifier:
             return "invalid-merchant-identifier"
-        case .invalidUrlScheme:
-            return "invalid-url-scheme"
         case .invalidValue:
             return "invalid-value"
         case .unableToMakePaymentsOnProvidedNetworks:
@@ -132,8 +123,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "invalid-vaulted-payment-method-id"
         case .nolError:
             return "nol-pay-sdk-error"
-        case .klarnaWrapperError:
-            return "klarna-wrapper-sdk-error"
+        case .klarnaError:
+            return "klarna-sdk-error"
         case .unableToPresentApplePay:
             return "unable-to-present-apple-pay"
         case .unknown:
@@ -158,8 +149,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .missingPrimerConfiguration(_, let diagnosticsId):
             return diagnosticsId
-        case .missingPrimerDelegate(_, let diagnosticsId):
-            return diagnosticsId
         case .misconfiguredPaymentMethods(_, let diagnosticsId):
             return diagnosticsId
         case .missingPrimerInputElement(_, _, let diagnosticsId):
@@ -168,8 +157,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .failedToCreateSession(_, _, let diagnosticsId):
             return diagnosticsId
-        case .failedToPerform3DS(_, _, _, let diagnosticsId):
-            return diagnosticsId
         case .invalidUrl(_, _, let diagnosticsId):
             return diagnosticsId
         case .invalidArchitecture(_, _, _, let diagnosticsId):
@@ -177,8 +164,6 @@ public enum PrimerError: PrimerErrorProtocol {
         case .invalidClientSessionValue(_, _, _, _, let diagnosticsId):
             return diagnosticsId
         case .invalidMerchantIdentifier(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidUrlScheme(_, _, let diagnosticsId):
             return diagnosticsId
         case .invalidValue(_, _, _, let diagnosticsId):
             return diagnosticsId
@@ -210,7 +195,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .nolError(_, _, _, let diagnosticsId):
             return diagnosticsId
-        case .klarnaWrapperError(_, _, let diagnosticsId):
+        case .klarnaError(_, _, let diagnosticsId):
             return diagnosticsId
         case .unknown(_, let diagnosticsId):
             return diagnosticsId
@@ -225,8 +210,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Client token is not valid"
         case .missingPrimerConfiguration:
             return "Missing SDK configuration"
-        case .missingPrimerDelegate:
-            return "Primer delegate has not been set"
         case .missingPrimerInputElement(let inputElementType, _, _):
             return "Missing primer input element for \(inputElementType)"
         case .missingSDK(let paymentMethodType, let sdkName, _, _):
@@ -237,8 +220,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Payment method \(paymentMethodType) cancelled"
         case .failedToCreateSession(error: let error, _, _):
             return "Failed to create session with error: \(error?.localizedDescription ?? "nil")"
-        case .failedToPerform3DS(_, let error, _, _):
-            return "Failed on perform 3DS with error: \(error?.localizedDescription ?? "nil")"
         case .invalidArchitecture(let description, _, _, _):
             return "\(description)"
         case .invalidClientSessionValue(let name, let value, _, _, _):
@@ -247,8 +228,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Invalid URL: \(url ?? "nil")"
         case .invalidMerchantIdentifier(let merchantIdentifier, _, _):
             return "Invalid merchant identifier: \(merchantIdentifier == nil ? "nil" : "\(merchantIdentifier!)")"
-        case .invalidUrlScheme(let urlScheme, _, _):
-            return "Invalid URL scheme: \(urlScheme == nil ? "nil" : "\(urlScheme!)")"
         case .invalidValue(key: let key, value: let value, _, _):
             return "Invalid value '\(value ?? "nil")' for key '\(key)'"
         case .unableToMakePaymentsOnProvidedNetworks:
@@ -275,7 +254,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return "The vaulted payment method with id '\(vaultedPaymentMethodId)' doesn't exist."
         case .nolError(let code, let message, _, _):
             return "Nol SDK encountered an error: \(String(describing: code)), \(String(describing: message))"
-        case .klarnaWrapperError(let message, _, _):
+        case .klarnaError(let message, _, _):
             return "Klarna wrapper SDK encountered an error: \(String(describing: message))"
         case .unableToPresentApplePay:
             return "Unable to present Apple Pay"
@@ -295,17 +274,14 @@ public enum PrimerError: PrimerErrorProtocol {
         case .uninitializedSDKSession(let userInfo, _),
              .invalidClientToken(let userInfo, _),
              .missingPrimerConfiguration(let userInfo, _),
-             .missingPrimerDelegate(let userInfo, _),
              .missingPrimerInputElement(_, let userInfo, _),
              .misconfiguredPaymentMethods(let userInfo, _),
              .cancelled(_, let userInfo, _),
              .failedToCreateSession(_, let userInfo, _),
-             .failedToPerform3DS(_, _, let userInfo, _),
              .invalidUrl(_, let userInfo, _),
              .invalidArchitecture(_, _, let userInfo, _),
              .invalidClientSessionValue(_, _, _, let userInfo, _),
              .invalidMerchantIdentifier(_, let userInfo, _),
-             .invalidUrlScheme(_, let userInfo, _),
              .invalidValue(_, _, let userInfo, _),
              .unableToMakePaymentsOnProvidedNetworks(let userInfo, _),
              .unableToPresentPaymentMethod(_, let userInfo, _),
@@ -320,7 +296,7 @@ public enum PrimerError: PrimerErrorProtocol {
              .failedToProcessPayment(_, _, _, let userInfo, _),
              .invalidVaultedPaymentMethodId(_, let userInfo, _),
              .nolError(_, _, let userInfo, _),
-             .klarnaWrapperError(_, let userInfo, _),
+             .klarnaError(_, let userInfo, _),
              .unableToPresentApplePay(let userInfo, _),
              .unknown(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
@@ -346,12 +322,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Check if the token you have provided is a valid token (not nil and not expired)."
         case .missingPrimerConfiguration:
             return "Check if you have an active internet connection."
-        case .missingPrimerDelegate:
-            let message = """
-Primer's delegate has not been set. Ensure that you have added Primer.shared.delegate = self \
-on the view controller you wish to present Primer's SDK.
-"""
-            return message
         case .missingPrimerInputElement(let inputElementtype, _, _):
             return "A PrimerInputElement for \(inputElementtype) has to be provided."
         case .misconfiguredPaymentMethods:
@@ -367,8 +337,6 @@ on your dashboard https://dashboard.primer.io/
             return nil
         case .failedToCreateSession:
             return nil
-        case .failedToPerform3DS:
-            return nil
         case .invalidUrl:
             return nil
         case .invalidArchitecture(_, let recoverySuggestion, _, _):
@@ -381,8 +349,6 @@ on your dashboard https://dashboard.primer.io/
             return str
         case .invalidMerchantIdentifier:
             return "Check if you have provided a valid merchant identifier in the SDK settings."
-        case .invalidUrlScheme:
-            return "Check if you have provided a valid URL scheme in the SDK settings."
         case .invalidValue(let key, let value, _, _):
             return "Check if value \(value ?? "nil") is valid for key \(key)"
         case .unableToMakePaymentsOnProvidedNetworks:
@@ -419,7 +385,7 @@ Check if all necessary values have been provided on your client session.\
             return "Please provide the id of one of the vaulted payment methods that have been returned by the 'fetchVaultedPaymentMethods' function."
         case .nolError:
             return nil
-        case .klarnaWrapperError:
+        case .klarnaError:
             return nil
         case .unableToPresentApplePay:
             let message = """
@@ -451,8 +417,7 @@ and other parameters are set correctly for the current environment.
              .unableToPresentPaymentMethod(let paymentMethodType, _, _),
              .unsupportedPaymentMethod(let paymentMethodType, _, _),
              .missingSDK(let paymentMethodType, _, _, _),
-             .failedToProcessPayment(let paymentMethodType?, _, _, _, _),
-             .failedToPerform3DS(let paymentMethodType, _, _, _):
+             .failedToProcessPayment(let paymentMethodType?, _, _, _, _):
             return paymentMethodType
         case .applePayTimedOut,
              .unableToMakePaymentsOnProvidedNetworks:

@@ -169,7 +169,7 @@ extension PrimerHeadlessKlarnaComponent {
 extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderErrorDelegate {
     /// Handles errors from the Klarna SDK, forwarding them to the configured error delegate.
     public func primerKlarnaWrapperFailed(with error: PrimerKlarnaSDK.PrimerKlarnaError) {
-        let primerError = PrimerError.klarnaWrapperError(
+        let primerError = PrimerError.klarnaError(
             message: error.errorDescription,
             userInfo: error.info,
             diagnosticsId: error.diagnosticsId

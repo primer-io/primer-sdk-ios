@@ -230,7 +230,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
             .done { decodedJWTToken in
                 if let decodedJWTToken = decodedJWTToken {
                     firstly {
-                        self.handleDecodedClientTokenIfNeeded(decodedJWTToken)
+                        self.handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
                     }
                     .done { resumeToken in
                         if let resumeToken = resumeToken {
@@ -514,21 +514,9 @@ Make sure you call the decision handler otherwise the SDK will hang.
         }
     }
 
-    private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+    private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         return Promise { seal in
             if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-                guard let paymentMethodTokenData = self.paymentMethodTokenData else {
-                    let err = InternalError.failedToDecode(message: "Failed to find paymentMethod",
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                    let containerErr = PrimerError.failedToPerform3DS(paymentMethodType: self.paymentMethodType,
-                                                                      error: err,
-                                                                      userInfo: .errorUserInfoDictionary(),
-                                                                      diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: containerErr)
-                    seal.reject(containerErr)
-                    return
-                }
 
                 let threeDSService = ThreeDSService()
                 threeDSService.perform3DS(

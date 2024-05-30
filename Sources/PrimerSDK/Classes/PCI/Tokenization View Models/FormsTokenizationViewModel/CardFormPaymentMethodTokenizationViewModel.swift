@@ -27,9 +27,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             cardholderNameField: cardholderNameField,
             billingAddressFieldViews: allVisibleBillingAddressFieldViews,
             paymentMethodType: self.config.type,
-            isRequiringCVVInput: isRequiringCVVInput
+            isRequiringCVVInput: isRequiringCVVInput,
+            delegate: self
         )
-        manager.delegate = self
         return manager
     }()
 
@@ -478,7 +478,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
 
-    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
+                                                   paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         return Promise { seal in
 
             if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
@@ -511,19 +512,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 }
 
             } else if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-                guard let paymentMethodTokenData = paymentMethodTokenData else {
-                    let err = InternalError.failedToDecode(message: "Failed to find paymentMethod",
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                    let containerErr = PrimerError.failedToPerform3DS(paymentMethodType: self.paymentMethodType,
-                                                                      error: err,
-                                                                      userInfo: .errorUserInfoDictionary(),
-                                                                      diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: containerErr)
-                    seal.reject(containerErr)
-                    return
-                }
-
                 var threeDSService: ThreeDSServiceProtocol = ThreeDSService()
                 #if DEBUG
                 if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
