@@ -50,7 +50,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 
         guard PrimerAPIConfigurationModule.decodedJWTToken != nil else { return }
 
-        let vaultService: VaultServiceProtocol = VaultService()
+        let vaultService: VaultServiceProtocol = VaultService(apiClient: PrimerAPIClient())
         firstly {
             vaultService.fetchVaultedPaymentMethods()
         }

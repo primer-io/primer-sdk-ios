@@ -77,6 +77,8 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
     private(set) public var isLoading: Bool = false
     internal private(set) var paymentMethod: PrimerPaymentMethodTokenData?
 
+    let tokenizationService: TokenizationServiceProtocol
+
     deinit {
         setIsLoading(false)
     }
@@ -92,6 +94,7 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
         billingAddressFieldViews: [PrimerTextFieldView]?,
         paymentMethodType: String? = nil,
         isRequiringCVVInput: Bool = true,
+        tokenizationService: TokenizationServiceProtocol,
         delegate: InternalCardComponentsManagerDelegate
     ) {
         self.cardnumberField = cardnumberField
@@ -108,7 +111,10 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
             self.paymentMethodType = self.primerPaymentMethodType.rawValue
         }
         self.isRequiringCVVInput = isRequiringCVVInput
+
+        self.tokenizationService = tokenizationService
         self.delegate = delegate
+
         super.init()
     }
 
@@ -240,10 +246,14 @@ and 4 characters for expiry year separated by '/'.
         }
 
         billingAddressFieldViews?.filter { $0.isTextValid == false }.forEach {
-            if let simpleCardFormTextFieldView = $0 as? PrimerSimpleCardFormTextFieldView,
-               let validationError = simpleCardFormTextFieldView.validationError {
-                ErrorHandler.handle(error: validationError)
-                errors.append(validationError)
+            if let simpleCardFormTextFieldView = $0 as? PrimerSimpleCardFormTextFieldView {
+                switch simpleCardFormTextFieldView.validation {
+                case .invalid(let error):
+                    ErrorHandler.handle(error: error!)
+                    errors.append(error!)
+                default:
+                    break
+                }
             }
         }
 
@@ -322,11 +332,10 @@ and 4 characters for expiry year separated by '/'.
                 }
 
                 self.paymentMethodsConfig = PrimerAPIConfigurationModule.apiConfiguration
-                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
                 let requestBody = Request.Body.Tokenization(paymentInstrument: tokenizationPaymentInstrument)
 
                 firstly {
-                    return tokenizationService.tokenize(requestBody: requestBody)
+                    return self.tokenizationService.tokenize(requestBody: requestBody)
                 }
                 .done { paymentMethodTokenData in
                     self.delegate.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
