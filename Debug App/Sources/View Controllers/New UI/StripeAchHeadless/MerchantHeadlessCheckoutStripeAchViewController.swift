@@ -69,15 +69,13 @@ class MerchantHeadlessCheckoutStripeAchViewController: UIViewController {
             stripeAchComponent?.errorDelegate = self
             stripeAchComponent?.validationDelegate = self
             stripeAchComponent?.start()
-        } catch let error as PrimerError {
-            switch error {
-            case .generic(let message, _, _):
-                showAlert(title: "Error", message: message)
-            default:
+        } catch {
+            guard let primerError = error as? PrimerError else {
+                showAlert(title: "Error", message: "StripeAch component provider not found.")
                 return
             }
-        } catch {
-            showAlert(title: "Error", message: "StripeAch component provider not found.")
+            
+            showAlert(title: "Error", message: primerError.errorDescription ?? "StripeAch component provider not found.")
         }
     }
     

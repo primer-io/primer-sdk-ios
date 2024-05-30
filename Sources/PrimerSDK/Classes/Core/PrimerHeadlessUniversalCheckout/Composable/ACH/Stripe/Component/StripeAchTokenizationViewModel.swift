@@ -292,8 +292,8 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)'\
      hasn't been implemented. No events will be sent to your delegate instance.
     """
-                let error = PrimerError.generic(
-                    message: message,
+                let error = PrimerError.underlyingErrors(
+                    errors: [],
                     userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString
                 )

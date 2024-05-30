@@ -18,19 +18,24 @@ extension PrimerHeadlessUniversalCheckout {
         
         public func provideStripeAchUserDetailsComponent(paymentMethodType: String) throws -> (any StripeAchUserDetailsComponent)? {
             guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?
-                    .first(where: { $0.type == paymentMethodType })
+                .first(where: { $0.type == paymentMethodType })
             else {
-                let err = PrimerError.generic(message: "Unable to locate a valid payment method configuration.",
-                                              userInfo: .errorUserInfoDictionary(),
-                                              diagnosticsId: UUID().uuidString)
+                
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType,
+                                                               userInfo: .errorUserInfoDictionary(additionalInfo: [
+                                                                "message": "Unable to locate a valid payment method configuration"
+                                                               ]),
+                                                               diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }
             
             guard let tokenizationViewModel = paymentMethod.tokenizationViewModel as? StripeAchTokenizationViewModel else {
-                let err = PrimerError.generic(message: "Unable to locate a valid payment method view model.",
-                                              userInfo: .errorUserInfoDictionary(),
-                                              diagnosticsId: UUID().uuidString)
+                let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType,
+                                                               userInfo: .errorUserInfoDictionary(additionalInfo: [
+                                                                "message": "Unable to locate a valid payment method view model."
+                                                               ]),
+                                                               diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 throw err
             }

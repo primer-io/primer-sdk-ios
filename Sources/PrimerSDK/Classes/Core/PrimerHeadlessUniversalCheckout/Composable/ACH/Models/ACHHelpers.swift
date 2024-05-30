@@ -44,8 +44,8 @@ struct ACHHelpers {
     static func getInvalidSettingError(
         name: String
     ) -> PrimerError {
-        let error = PrimerError.invalidSetting(
-            name: name,
+        let error = PrimerError.invalidValue(
+            key: name,
             value: nil,
             userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString
