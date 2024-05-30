@@ -14,8 +14,8 @@ jobs:
       max-parallel: 3
       matrix:
         package-swift:
-          - Package.NolPay.swift
-          - Package.Klarna.swift
+          - { name: 'nol-pay', file: 'Package.NolPay.swift' }
+          - { name: 'klarna', file: Package.Klarna.swift }
 
     steps:
       - name: Cancel previous jobs
@@ -37,5 +37,5 @@ jobs:
           fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
           match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-          coverage-file-name: sonar-coverage.xml
-          package-swift: ${{  matrix.package-swift }}
+          coverage-file-name: sonar-coverage-${{ matrix.package-swift.file }}.xml
+          package-swift: ${{  matrix.package-swift.name }}
