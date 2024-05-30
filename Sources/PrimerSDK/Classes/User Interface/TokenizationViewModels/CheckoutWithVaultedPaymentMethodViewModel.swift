@@ -66,8 +66,9 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                 if let error = err as? PrimerError {
                     primerErr = error
                 } else {
-                    primerErr = PrimerError.generic(message: err.localizedDescription, userInfo: .errorUserInfoDictionary(),
-                                                    diagnosticsId: UUID().uuidString)
+                    primerErr = PrimerError.underlyingErrors(errors: [err],
+                                                             userInfo: .errorUserInfoDictionary(),
+                                                             diagnosticsId: UUID().uuidString)
                 }
 
                 firstly {
@@ -197,9 +198,9 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
 
                         switch paymentCreationDecision.type {
                         case .abort(let errorMessage):
-                            let error = PrimerError.generic(message: errorMessage ?? "",
-                                                            userInfo: .errorUserInfoDictionary(),
-                                                            diagnosticsId: UUID().uuidString)
+                            let error = PrimerError.merchantError(message: errorMessage ?? "",
+                                                                  userInfo: .errorUserInfoDictionary(),
+                                                                  diagnosticsId: UUID().uuidString)
                             seal.reject(error)
                         case .continue:
                             seal.fulfill()

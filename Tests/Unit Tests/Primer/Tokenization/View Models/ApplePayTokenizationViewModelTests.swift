@@ -264,7 +264,7 @@ fileprivate class MockApplePayPresentationManager: ApplePayPresenting {
     var onPresent: ((ApplePayRequest, PKPaymentAuthorizationControllerDelegate) -> Promise<Void>)?
 
     func present(withRequest applePayRequest: ApplePayRequest, delegate: PKPaymentAuthorizationControllerDelegate) -> Promise<Void> {
-        return onPresent?(applePayRequest, delegate) ?? Promise.rejected(PrimerError.generic(message: "", userInfo: nil, diagnosticsId: ""))
+        return onPresent?(applePayRequest, delegate) ?? Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
     }
     
 

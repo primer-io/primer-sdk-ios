@@ -253,7 +253,7 @@ fileprivate class MockPayPalAPIClient: PrimerAPIClientPayPalProtocol {
         if let onCreateOrderSession = onCreateOrderSession {
             completion(.success(onCreateOrderSession(clientToken, payPalCreateOrderRequest)))
         } else {
-            completion(.failure(PrimerError.generic(message: "createPayPalOrderSession failure", userInfo: nil, diagnosticsId: "")))
+            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
     }
     
@@ -265,7 +265,7 @@ fileprivate class MockPayPalAPIClient: PrimerAPIClientPayPalProtocol {
         if let onCreateBillingAgreementSession = onCreateBillingAgreementSession {
             completion(.success(onCreateBillingAgreementSession(clientToken, payPalCreateBillingAgreementRequest)))
         } else {
-            completion(.failure(PrimerError.generic(message: "createPayPalBillingAgreementSession failure", userInfo: nil, diagnosticsId: "")))
+            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
     }
     
@@ -277,7 +277,7 @@ fileprivate class MockPayPalAPIClient: PrimerAPIClientPayPalProtocol {
         if let onConfirmBillingAgreement = onConfirmBillingAgreement {
             completion(.success(onConfirmBillingAgreement(clientToken, payPalConfirmBillingAgreementRequest)))
         } else {
-            completion(.failure(PrimerError.generic(message: "confirmPayPalBillingAgreement failure", userInfo: nil, diagnosticsId: "")))
+            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
     }
     
@@ -289,7 +289,7 @@ fileprivate class MockPayPalAPIClient: PrimerAPIClientPayPalProtocol {
         if let onFetchExternalPayerInfo = onFetchExternalPayerInfo {
             completion(.success(onFetchExternalPayerInfo(clientToken, payPalExternalPayerInfoRequestBody)))
         } else {
-            completion(.failure(PrimerError.generic(message: "fetchPayPalExternalPayerInfo failure", userInfo: nil, diagnosticsId: "")))
+            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
     }
     

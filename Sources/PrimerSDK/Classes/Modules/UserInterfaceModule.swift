@@ -323,7 +323,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                     textColor: nil))
 
         case .adyenSofort,
-             .buckarooSofort:
+             .buckarooSofort,
+             .primerTestSofort:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
                     iconUrl: nil,
@@ -554,7 +555,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         lightHex: "#000000",
                         darkHex: "#FFFFFF")))
 
-        case .klarna:
+        case .klarna,
+             .primerTestKlarna:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
                     iconUrl: nil,
@@ -637,7 +639,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
                         lightHex: "#000000",
                         darkHex: "#FFFFFF")))
 
-        case .payPal:
+        case .payPal,
+             .primerTestPayPal:
             return PrimerPaymentMethod.DisplayMetadata(
                 button: PrimerPaymentMethod.DisplayMetadata.Button(
                     iconUrl: nil,
@@ -979,6 +982,11 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             }
 
             return makePrimerButtonWithTitleText(buttonTitle, isEnabled: false)
+
+        case PrimerPaymentMethodType.primerTestKlarna.rawValue,
+             PrimerPaymentMethodType.primerTestPayPal.rawValue,
+             PrimerPaymentMethodType.primerTestSofort.rawValue:
+            return makePrimerButtonWithTitleText(Strings.PaymentButton.pay, isEnabled: false)
 
         case PrimerPaymentMethodType.adyenBlik.rawValue,
              PrimerPaymentMethodType.xfersPayNow.rawValue:

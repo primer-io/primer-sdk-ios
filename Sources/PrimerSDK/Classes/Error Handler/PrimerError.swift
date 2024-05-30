@@ -30,7 +30,6 @@ protocol PrimerErrorProtocol: CustomNSError, LocalizedError {
 
 public enum PrimerError: PrimerErrorProtocol {
     typealias InfoType = [String: Any]
-    case generic(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case uninitializedSDKSession(userInfo: [String: String]?, diagnosticsId: String)
     case invalidClientToken(userInfo: [String: String]?, diagnosticsId: String)
     case missingPrimerConfiguration(userInfo: [String: String]?, diagnosticsId: String)
@@ -47,7 +46,6 @@ public enum PrimerError: PrimerErrorProtocol {
     case invalidClientSessionValue(name: String, value: String?, allowedValue: String?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidMerchantIdentifier(merchantIdentifier: String?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidUrlScheme(urlScheme: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case invalidSetting(name: String, value: String?, userInfo: [String: String]?, diagnosticsId: String)
     case invalidValue(key: String, value: Any?, userInfo: [String: String]?, diagnosticsId: String)
     case unableToMakePaymentsOnProvidedNetworks(userInfo: [String: String]?, diagnosticsId: String)
     case unableToPresentPaymentMethod(paymentMethodType: String, userInfo: [String: String]?, diagnosticsId: String)
@@ -79,8 +77,6 @@ public enum PrimerError: PrimerErrorProtocol {
 
     public var errorId: String {
         switch self {
-        case .generic:
-            return "primer-generic"
         case .uninitializedSDKSession:
             return "uninitialized-sdk-session"
         case .invalidClientToken:
@@ -109,8 +105,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "invalid-merchant-identifier"
         case .invalidUrlScheme:
             return "invalid-url-scheme"
-        case .invalidSetting:
-            return "invalid-setting"
         case .invalidValue:
             return "invalid-value"
         case .unableToMakePaymentsOnProvidedNetworks:
@@ -161,8 +155,6 @@ public enum PrimerError: PrimerErrorProtocol {
 
     public var diagnosticsId: String {
         switch self {
-        case .generic(_, _, let diagnosticsId):
-            return diagnosticsId
         case .uninitializedSDKSession(_, let diagnosticsId):
             return diagnosticsId
         case .invalidClientToken(_, let diagnosticsId):
@@ -190,8 +182,6 @@ public enum PrimerError: PrimerErrorProtocol {
         case .invalidMerchantIdentifier(_, _, let diagnosticsId):
             return diagnosticsId
         case .invalidUrlScheme(_, _, let diagnosticsId):
-            return diagnosticsId
-        case .invalidSetting(_, _, _, let diagnosticsId):
             return diagnosticsId
         case .invalidValue(_, _, _, let diagnosticsId):
             return diagnosticsId
@@ -234,14 +224,6 @@ public enum PrimerError: PrimerErrorProtocol {
 
     var plainDescription: String? {
         switch self {
-        case .generic(let message, let userInfo, _):
-            if let userInfo = userInfo,
-               let jsonData = try? JSONSerialization.data(withJSONObject: userInfo, options: .fragmentsAllowed),
-               let jsonStr = jsonData.prettyPrintedJSONString as String? {
-                return "Generic error | Message: \(message) | Data: \(jsonStr))"
-            } else {
-                return "Generic error | Message: \(message)"
-            }
         case .uninitializedSDKSession:
             return "[\(errorId)] SDK session has not been initialzed (diagnosticsId: \(self.diagnosticsId)"
         case .invalidClientToken:
@@ -272,8 +254,6 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Invalid merchant identifier: \(merchantIdentifier == nil ? "nil" : "\(merchantIdentifier!)")"
         case .invalidUrlScheme(let urlScheme, _, _):
             return "Invalid URL scheme: \(urlScheme == nil ? "nil" : "\(urlScheme!)")"
-        case .invalidSetting(let name, let value, _, _):
-            return "Invalid setting for \(name) (provided value is \(value ?? "nil"))"
         case .invalidValue(key: let key, value: let value, _, _):
             return "Invalid value '\(value ?? "nil")' for key '\(key)'"
         case .unableToMakePaymentsOnProvidedNetworks:
@@ -319,8 +299,7 @@ public enum PrimerError: PrimerErrorProtocol {
         var tmpUserInfo: [String: Any] = errorUserInfo
 
         switch self {
-        case .generic(_, let userInfo, _),
-             .uninitializedSDKSession(let userInfo, _),
+        case .uninitializedSDKSession(let userInfo, _),
              .invalidClientToken(let userInfo, _),
              .missingPrimerConfiguration(let userInfo, _),
              .missingPrimerDelegate(let userInfo, _),
@@ -334,7 +313,6 @@ public enum PrimerError: PrimerErrorProtocol {
              .invalidClientSessionValue(_, _, _, let userInfo, _),
              .invalidMerchantIdentifier(_, let userInfo, _),
              .invalidUrlScheme(_, let userInfo, _),
-             .invalidSetting(_, _, let userInfo, _),
              .invalidValue(_, _, let userInfo, _),
              .unableToMakePaymentsOnProvidedNetworks(let userInfo, _),
              .unableToPresentPaymentMethod(_, let userInfo, _),
@@ -370,8 +348,6 @@ public enum PrimerError: PrimerErrorProtocol {
 
     public var recoverySuggestion: String? {
         switch self {
-        case .generic:
-            return nil
         case .uninitializedSDKSession:
             return "Make sure you have provided the SDK with a client token."
         case .invalidClientToken:
@@ -415,8 +391,6 @@ on your dashboard https://dashboard.primer.io/
             return "Check if you have provided a valid merchant identifier in the SDK settings."
         case .invalidUrlScheme:
             return "Check if you have provided a valid URL scheme in the SDK settings."
-        case .invalidSetting(let name, _, _, _):
-            return "Check if you have provided a value for \(name) in the SDK settings."
         case .invalidValue(let key, let value, _, _):
             return "Check if value \(value ?? "nil") is valid for key \(key)"
         case .unableToMakePaymentsOnProvidedNetworks:
