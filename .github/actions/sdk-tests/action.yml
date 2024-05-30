@@ -60,7 +60,7 @@ runs:
       if: ${{ inputs.package-swift != '' }}
       run: |
         mv Package.swift Package.swift.orig
-        cp "{{ inputs.package-swift }}" Package.swift
+        cp "${{ inputs.package-swift }}" Package.swift
     - name: Build SPM App
       shell: bash
       run: |
