@@ -113,8 +113,8 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
         self.isRequiringCVVInput = isRequiringCVVInput
 
         self.tokenizationService = tokenizationService
-
         self.delegate = delegate
+
         super.init()
     }
 
