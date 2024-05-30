@@ -15,8 +15,8 @@
     {
       "target" : {
         "containerPath" : "container:",
-        "identifier" : "PrimerSDKTests",
-        "name" : "PrimerSDKTests"
+        "identifier" : "Tests",
+        "name" : "Tests"
       }
     },
     {

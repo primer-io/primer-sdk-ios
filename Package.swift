@@ -14,9 +14,6 @@ let package = Package(
             targets: ["PrimerSDK"]
         )
     ],
-    dependencies: [
-        .package(url: "https://github.com/primer-io/primer-nol-pay-sdk-ios", from: "1.0.2")
-    ],
     targets: [
         .target(
             name: "PrimerSDK",
@@ -27,12 +24,15 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "PrimerSDKTests",
+            name: "Tests",
             dependencies: [
-                .product(name: "PrimerNolPaySDK", package: "primer-nol-pay-sdk-ios"),
                 .byName(name: "PrimerSDK")
             ],
-            path: "Tests/Unit Tests"
+            path: "Tests/",
+            sources: [
+                "Primer/",
+                "Utilities/"
+            ]
         )
     ],
     swiftLanguageVersions: [.v5]

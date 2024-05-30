@@ -30,12 +30,16 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "PrimerSDKTests",
+            name: "Tests",
             dependencies: [
                 .product(name: "PrimerNolPaySDK", package: "primer-nol-pay-sdk-ios"),
                 .byName(name: "PrimerSDK")
             ],
-            path: "Tests/Unit Tests"
+            path: "Tests/",
+            sources: [
+                "NolPay/",
+                "Utilities/"
+            ]
         )
     ],
     swiftLanguageVersions: [.v5]
