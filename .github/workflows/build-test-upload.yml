@@ -35,7 +35,6 @@ jobs:
           fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
           match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-          coverage-file-name: sonar-coverage.xml
 
   sonarcloud:
     needs:
@@ -48,7 +47,7 @@ jobs:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
       - uses: actions/download-artifact@master
         with:
-          name: coverage-file
+          name: coverage-file-sdk
       - name: SonarCloud Scan
         uses: ./.github/actions/sonar
         with:
@@ -59,7 +58,7 @@ jobs:
           branch: ${{ github.head_ref }}
           base-branch: ${{ github.base_ref }}
           pull-request-sha: ${{ github.event.pull_request.head.sha }}
-          coverage-file-name: sonar-coverage.xml
+          coverage-file-name: sonar-coverage-sdk.xml
           
   build-and-upload-to-appetize:
     needs:
