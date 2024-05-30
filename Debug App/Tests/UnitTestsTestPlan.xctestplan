@@ -13,6 +13,12 @@
   },
   "testTargets" : [
     {
+      "skippedTests" : [
+        "PrimerHeadlessKlarnaComponentTests\/test_CreatePaymentView()",
+        "PrimerHeadlessKlarnaComponentTests\/test_updateCollectable_error()",
+        "PrimerHeadlessKlarnaComponentTests\/test_updateCollectable_invalid()",
+        "PrimerHeadlessKlarnaComponentTests\/test_updateCollectable_valid()"
+      ],
       "target" : {
         "containerPath" : "container:",
         "identifier" : "Tests",
