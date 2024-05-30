@@ -14,7 +14,8 @@ final class SDKSessionHelper {
     private init() {}
 
     static func setUp(withPaymentMethods paymentMethods: [PrimerPaymentMethod]? = nil,
-                      order: ClientSession.Order? = nil) {
+                      order: ClientSession.Order? = nil,
+                      showTestId: Bool = false) {
         let paymentMethods = paymentMethods ?? [
             Mocks.PaymentMethods.paymentCardPaymentMethod
         ]
@@ -22,7 +23,7 @@ final class SDKSessionHelper {
                                                 paymentMethod: nil,
                                                 order: order,
                                                 customer: nil,
-                                                testId: nil)
+                                                testId: showTestId ? "test_id" : nil)
         let apiConfig = PrimerAPIConfiguration(coreUrl: "core_url",
                                                pciUrl: "pci_url",
                                                binDataUrl: "bindata_url",

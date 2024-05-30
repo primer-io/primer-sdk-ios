@@ -32,9 +32,9 @@ class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelegate {
     private var clientSession: ClientSession.APIResponse?
 
     // MARK: - Init
-    init(paymentMethod: PrimerPaymentMethod) {
+    init(paymentMethod: PrimerPaymentMethod, tokenizationService: TokenizationServiceProtocol = TokenizationService()) {
         self.paymentMethod = paymentMethod
-        self.tokenizationService = TokenizationService()
+        self.tokenizationService = tokenizationService
         self.clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
     }
 
@@ -94,6 +94,18 @@ class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelegate {
         
         if !(lineItems.filter({ $0.amount == nil })).isEmpty {
             throw ACHHelpers.getInvalidValueError(key: "settings.orderItems")
+        }
+        
+        guard let publishableKey = PrimerSettings.current.paymentMethodOptions.stripeOptions?.publishableKey,
+              !publishableKey.isEmpty
+        else {
+            throw ACHHelpers.getInvalidValueError(key: "stripeOptions.publishableKey")
+        }
+        
+        do {
+            _ = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
+        } catch let error {
+            throw error
         }
     }
 }

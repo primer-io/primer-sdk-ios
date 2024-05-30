@@ -15,22 +15,22 @@ import PrimerStripeSDK
 class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     // MARK: Variables
-    private let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
     private var achTokenizationService: ACHTokenizationService
     private var clientSessionService: ACHClientSessionService = ACHClientSessionService()
-    private var stripeMandateCompletion: ((_ success: Bool, _ error: Error?) -> Void)?
-    private var stripeBankAccountCollectorCompletion: ((_ success: Bool, _ error: Error?) -> Void)?
     private var publishableKey: String = ""
     private var clientSecret: String = ""
     private var returnedStripeAchPaymentId: String = ""
     private var userDetails: ACHUserDetails = .emptyUserDetails()
+    
+    var stripeMandateCompletion: ((_ success: Bool, _ error: Error?) -> Void)?
+    var stripeBankAccountCollectorCompletion: ((_ success: Bool, _ error: Error?) -> Void)?
     
     // MARK: Init
     override init(config: PrimerPaymentMethod,
                   uiManager: PrimerUIManaging,
                   tokenizationService: TokenizationServiceProtocol,
                   createResumePaymentService: CreateResumePaymentServiceProtocol) {
-        achTokenizationService = ACHTokenizationService(paymentMethod: config)
+        achTokenizationService = ACHTokenizationService(paymentMethod: config, tokenizationService: tokenizationService)
         super.init(config: config,
                    uiManager: uiManager,
                    tokenizationService: tokenizationService,
@@ -148,7 +148,6 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
-#if canImport(PrimerStripeSDK)
             firstly {
                 getPublishableKey()
             }
@@ -159,6 +158,7 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return self.getUrlScheme()
             }
             .done { urlScheme in
+#if canImport(PrimerStripeSDK)
                 let fullName = "\(self.userDetails.firstName) \(self.userDetails.lastName)"
                 let stripeParams = PrimerStripeParams(publishableKey: self.publishableKey,
                                                       clientSecret: self.clientSecret,
@@ -169,14 +169,28 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 let collectorViewController = PrimerStripeCollectorViewController.getCollectorViewController(params: stripeParams, delegate: self)
                 PrimerUIManager.primerRootViewController?.show(viewController: collectorViewController)
                 seal.fulfill()
+#else
+                var isMockBE = false
+
+                #if DEBUG
+                if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
+                    isMockBE = true
+                }
+                #endif
+
+                if isMockBE {
+                #if DEBUG
+                    seal.fulfill()
+                #endif
+                }
+
+                let error = ACHHelpers.getMissingSDKError(sdk: "PrimerStripeSDK")
+                seal.reject(error)
+#endif
             }
             .catch { err in
                 seal.reject(err)
             }
-#else
-            let error = ACHHelpers.getMissingSDKError(sdk: "PrimerStripeSDK")
-            seal.reject(error)
-#endif
         }
     }
     
@@ -306,11 +320,11 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
             .catch { _ in }
         }
     }
-    
-#if canImport(PrimerStripeSDK)
+
     private func getPublishableKey() -> Promise<Void> {
         return Promise { seal in
-            guard let publishableKey = settings.paymentMethodOptions.stripeOptions?.publishableKey else {
+            guard let publishableKey = PrimerSettings.current.paymentMethodOptions.stripeOptions?.publishableKey else {
+#if canImport(PrimerStripeSDK)
                 let error = PrimerStripeError.stripeInvalidPublishableKeyError
                 let primerError = PrimerError.stripeWrapperError(
                     key: error.errorId,
@@ -319,18 +333,18 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     diagnosticsId: error.diagnosticsId
                 )
                 seal.reject(primerError)
+#endif
                 return
             }
             self.publishableKey = publishableKey
             seal.fulfill()
         }
     }
-#endif
     
     private func getUrlScheme() -> Promise<String> {
         return Promise { seal in
             do {
-                let urlScheme = try settings.paymentMethodOptions.validSchemeForUrlScheme()
+                let urlScheme = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
                 seal.fulfill(urlScheme)
             } catch let error {
                 seal.reject(error)
