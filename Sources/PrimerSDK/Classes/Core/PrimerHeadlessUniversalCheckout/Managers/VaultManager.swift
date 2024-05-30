@@ -211,14 +211,14 @@ extension PrimerHeadlessUniversalCheckout {
                 tokenizationService.exchangePaymentMethodToken(vaultedPaymentMethod.id,
                                                                vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData)
             }
-            .then { paymentMethodTokenData -> Promise<DecodedJWTToken?> in
+            .then { paymentMethodTokenData -> Promise<(DecodedJWTToken, PrimerPaymentMethodTokenData)?> in
                 self.paymentMethodTokenData = paymentMethodTokenData
                 return self.startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
             }
-            .done { decodedJWTToken in
-                if let decodedJWTToken = decodedJWTToken {
+            .done { payload in
+                if let payload = payload {
                     firstly {
-                        self.handleDecodedClientTokenIfNeeded(decodedJWTToken)
+                        self.handleDecodedClientTokenIfNeeded(payload.0, paymentMethodTokenData: payload.1)
                     }
                     .done { resumeToken in
                         if let resumeToken = resumeToken {
@@ -378,7 +378,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
 
-        private func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?> {
+        private func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<(DecodedJWTToken, PrimerPaymentMethodTokenData)?> {
             return Promise { seal in
                 if PrimerSettings.current.paymentHandling == .manual {
                     PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { resumeDecision in
@@ -401,7 +401,7 @@ extension PrimerHeadlessUniversalCheckout {
                                         throw err
                                     }
 
-                                    seal.fulfill(decodedJWTToken)
+                                    seal.fulfill((decodedJWTToken, paymentMethodTokenData))
                                 }
                                 .catch { err in
                                     seal.reject(err)
@@ -436,7 +436,7 @@ extension PrimerHeadlessUniversalCheckout {
                                         throw err
                                     }
 
-                                    seal.fulfill(decodedJWTToken)
+                                    seal.fulfill((decodedJWTToken, paymentMethodTokenData))
                                 }
                                 .catch { err in
                                     seal.reject(err)
@@ -490,7 +490,7 @@ extension PrimerHeadlessUniversalCheckout {
                                     throw err
                                 }
 
-                                seal.fulfill(decodedJWTToken)
+                                seal.fulfill((decodedJWTToken, paymentMethodTokenData))
                             }
                             .catch { err in
                                 seal.reject(err)
@@ -507,21 +507,10 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
 
-        private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+        private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
+                                                      paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
             return Promise { seal in
                 if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-                    guard let paymentMethodTokenData = paymentMethodTokenData else {
-                        let err = InternalError.failedToDecode(message: "Failed to find paymentMethod",
-                                                               userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                        let containerErr = PrimerError.failedToPerform3DS(paymentMethodType: self.paymentMethodType,
-                                                                          error: err,
-                                                                          userInfo: .errorUserInfoDictionary(),
-                                                                          diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: containerErr)
-                        seal.reject(containerErr)
-                        return
-                    }
 
                     let threeDSService = ThreeDSService()
                     threeDSService.perform3DS(
@@ -769,7 +758,8 @@ extension PrimerHeadlessUniversalCheckout {
                                 paymentMethodType: self.paymentMethodType,
                                 description: "Failed to create payment",
                                 userInfo: .errorUserInfoDictionary(),
-                                diagnosticsId: UUID().uuidString)
+                                diagnosticsId: UUID().uuidString
+                            )
                             ErrorHandler.handle(error: err)
                             seal.reject(err)
 
@@ -779,7 +769,8 @@ extension PrimerHeadlessUniversalCheckout {
                                 paymentId: paymentResponse.id ?? "nil",
                                 status: paymentResponse.status.rawValue,
                                 userInfo: .errorUserInfoDictionary(),
-                                diagnosticsId: UUID().uuidString)
+                                diagnosticsId: UUID().uuidString
+                            )
                             ErrorHandler.handle(error: err)
                             seal.reject(err)
 

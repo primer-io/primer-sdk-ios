@@ -15,7 +15,7 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessErrorableD
     // MARK: - PrimerHeadlessErrorableDelegate
     func didReceiveError(error: PrimerSDK.PrimerError) {
         switch error {
-        case .klarnaWrapperError:
+        case .klarnaError:
             showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
         default:
             logs.removeAll()

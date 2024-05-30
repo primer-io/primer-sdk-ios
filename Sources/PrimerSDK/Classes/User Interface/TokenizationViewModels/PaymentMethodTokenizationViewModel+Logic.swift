@@ -191,7 +191,7 @@ extension PaymentMethodTokenizationViewModel {
                         if let cancelledError = cancelledError {
                             throw cancelledError
                         }
-                        return self.handleDecodedClientTokenIfNeeded(decodedJWTToken)
+                        return self.handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
                     }
                     .done { resumeToken in
                         if let cancelledError = cancelledError {

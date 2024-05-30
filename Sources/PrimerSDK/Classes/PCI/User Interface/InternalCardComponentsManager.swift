@@ -39,7 +39,7 @@ protocol InternalCardComponentsManagerProtocol {
     var expiryDateField: PrimerExpiryDateFieldView { get }
     var cvvField: PrimerCVVFieldView { get }
     var cardholderField: PrimerCardholderNameFieldView? { get }
-    var delegate: InternalCardComponentsManagerDelegate? { get }
+    var delegate: InternalCardComponentsManagerDelegate { get }
     var customerId: String? { get }
     var merchantIdentifier: String? { get }
     var amount: Int? { get }
@@ -64,7 +64,7 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
     var billingAddressFieldViews: [PrimerTextFieldView]?
     var isRequiringCVVInput: Bool
     var paymentMethodType: String
-    var delegate: InternalCardComponentsManagerDelegate?
+    let delegate: InternalCardComponentsManagerDelegate
     var customerId: String?
     var merchantIdentifier: String?
     var amount: Int?
@@ -95,6 +95,7 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
         paymentMethodType: String? = nil,
         isRequiringCVVInput: Bool = true,
         tokenizationService: TokenizationServiceProtocol
+        delegate: InternalCardComponentsManagerDelegate
     ) {
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
@@ -113,26 +114,18 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
 
         self.tokenizationService = tokenizationService
 
+        self.delegate = delegate
         super.init()
     }
 
     internal func setIsLoading(_ isLoading: Bool) {
         if self.isLoading == isLoading { return }
         self.isLoading = isLoading
-        delegate?.cardComponentsManager?(self, isLoading: isLoading)
+        delegate.cardComponentsManager?(self, isLoading: isLoading)
     }
 
     private func fetchClientToken() -> Promise<DecodedJWTToken> {
         return Promise { seal in
-            guard let delegate = delegate else {
-                logger.warn(message: "Delegate has not been set for InternalCardComponentsManager")
-                let err = PrimerError.missingPrimerDelegate(userInfo: .errorUserInfoDictionary(),
-                                                            diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
-            }
-
             delegate.cardComponentsManager?(self, clientTokenCallback: { clientToken, error in
                 guard error == nil, let clientToken = clientToken else {
                     seal.reject(error!)
@@ -334,7 +327,7 @@ and 4 characters for expiry year separated by '/'.
                                                        userInfo: .errorUserInfoDictionary(),
                                                        diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
-                    self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
+                    self.delegate.cardComponentsManager?(self, tokenizationFailedWith: [err])
                     return
                 }
 
@@ -345,90 +338,29 @@ and 4 characters for expiry year separated by '/'.
                     return self.tokenizationService.tokenize(requestBody: requestBody)
                 }
                 .done { paymentMethodTokenData in
-                    self.delegate?.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
+                    self.delegate.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)
                 }
                 .catch { err in
                     let containerErr = PrimerError.underlyingErrors(errors: [err], userInfo: .errorUserInfoDictionary(),
                                                                     diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: containerErr)
-                    self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
+                    self.delegate.cardComponentsManager?(self, tokenizationFailedWith: [err])
                 }
             }
             .catch { err in
-                self.delegate?.cardComponentsManager?(self, tokenizationFailedWith: [err])
+                self.delegate.cardComponentsManager?(self, tokenizationFailedWith: [err])
                 self.setIsLoading(false)
             }
         } catch PrimerError.underlyingErrors(let errors, _, _) {
-            delegate?.cardComponentsManager?(self, tokenizationFailedWith: errors)
+            delegate.cardComponentsManager?(self, tokenizationFailedWith: errors)
             setIsLoading(false)
         } catch {
-            delegate?.cardComponentsManager?(self, tokenizationFailedWith: [error])
+            delegate.cardComponentsManager?(self, tokenizationFailedWith: [error])
             setIsLoading(false)
         }
     }
-
 }
 
-internal class MockCardComponentsManager: InternalCardComponentsManagerProtocol {
-
-    var cardnumberField: PrimerCardNumberFieldView
-
-    var expiryDateField: PrimerExpiryDateFieldView
-
-    var cvvField: PrimerCVVFieldView
-
-    var cardholderField: PrimerCardholderNameFieldView?
-
-    var postalCodeField: PrimerPostalCodeFieldView?
-
-    var delegate: InternalCardComponentsManagerDelegate?
-
-    var customerId: String?
-
-    var merchantIdentifier: String?
-
-    var amount: Int?
-
-    var currency: Currency?
-
-    var decodedJWTToken: DecodedJWTToken? {
-        return PrimerAPIConfigurationModule.decodedJWTToken
-    }
-
-    var paymentMethodsConfig: PrimerAPIConfiguration?
-
-    public init(
-        cardnumberField: PrimerCardNumberFieldView,
-        expiryDateField: PrimerExpiryDateFieldView,
-        cvvField: PrimerCVVFieldView,
-        cardholderNameField: PrimerCardholderNameFieldView?,
-        postalCodeField: PrimerPostalCodeFieldView
-    ) {
-        self.cardnumberField = cardnumberField
-        self.expiryDateField = expiryDateField
-        self.cvvField = cvvField
-        self.cardholderField = cardholderNameField
-        self.postalCodeField = postalCodeField
-    }
-
-    convenience init(
-        cardnumber: String?
-    ) {
-        let cardnumberFieldView = PrimerCardNumberFieldView()
-        cardnumberFieldView.textField.internalText = cardnumber
-        self.init(
-            cardnumberField: cardnumberFieldView,
-            expiryDateField: PrimerExpiryDateFieldView(),
-            cvvField: PrimerCVVFieldView(),
-            cardholderNameField: PrimerCardholderNameFieldView(),
-            postalCodeField: PrimerPostalCodeFieldView()
-        )
-    }
-
-    func tokenize() {
-
-    }
-}
 // swiftlint:enable function_body_length
 // swiftlint:enable type_body_length
 // swiftlint:enable large_tuple
