@@ -42,7 +42,7 @@ extension KeyedEncodingContainer {
         for (entryKey, entryVal) in dictionary {
             guard let key = JSONCodingKeys(stringValue: entryKey) else {
                 PrimerLogging.shared.logger.warn(message:
-                    "Expected to encode value in container of type \(K.self), but key '\(entryKey) was not valid"
+                                                    "Expected to encode value in container of type \(K.self), but key '\(entryKey) was not valid"
                 )
                 continue
             }

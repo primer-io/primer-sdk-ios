@@ -347,7 +347,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
         return Promise { seal in
             let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
             self.createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
-                                                                  paymentResumeRequest: resumeRequest) { paymentResponse, error in
+                                                                       paymentResumeRequest: resumeRequest) { paymentResponse, error in
 
                 if let error = error {
                     if let paymentResponse {

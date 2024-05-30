@@ -38,7 +38,7 @@ extension PrimerHeadlessUniversalCheckout {
             guard let tokenizationModel = try getTokenizationModel() else {
                 let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType.rawValue,
                                                                userInfo: .errorUserInfoDictionary(additionalInfo: [
-                                                                   "message": "Unable to locate a correct payment method view model"
+                                                                "message": "Unable to locate a correct payment method view model"
                                                                ]),
                                                                diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)

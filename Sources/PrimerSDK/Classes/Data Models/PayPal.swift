@@ -98,7 +98,7 @@ extension Response.Body.Tokenization {
 
             public init(from decoder: Decoder) throws {
                 let container: KeyedDecodingContainer<Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys> =
-                try decoder.container(keyedBy: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.self)
+                    try decoder.container(keyedBy: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.self)
 
                 self.externalPayerId = try container.decodeIfPresent(
                     String.self,

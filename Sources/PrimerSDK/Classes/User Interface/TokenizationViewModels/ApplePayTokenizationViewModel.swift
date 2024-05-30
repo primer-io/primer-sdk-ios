@@ -223,12 +223,12 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     self.isCancelled = true
 
                     self.applePayPresentationManager.present(withRequest: applePayRequest, delegate: self)
-                    .done {
-                        self.didPresentPaymentMethodUI?()
-                        seal.fulfill()
-                    }.catch { error in
-                        seal.reject(error)
-                    }
+                        .done {
+                            self.didPresentPaymentMethodUI?()
+                            seal.fulfill()
+                        }.catch { error in
+                            seal.reject(error)
+                        }
                 }
             }
         }
@@ -451,21 +451,21 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
         #endif
 
         #if targetEnvironment(simulator)
-//        if payment.token.paymentData.count == 0 && !isMockedBE {
-//            let err = PrimerError.invalidArchitecture(
-//                description: "Apple Pay does not work with Primer when used in the simulator due to a limitation from Apple Pay.",
-//                recoverSuggestion: "Use a real device instead of the simulator",
-//                userInfo: .errorUserInfoDictionary(),
-//                diagnosticsId: UUID().uuidString)
-//            ErrorHandler.handle(error: err)
-//            completion(PKPaymentAuthorizationResult(status: .failure, errors: [err]))
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//                controller.dismiss(completion: nil)
-//            }
-//            applePayReceiveDataCompletion?(.failure(err))
-//            applePayReceiveDataCompletion = nil
-//            return
-//        }
+        //        if payment.token.paymentData.count == 0 && !isMockedBE {
+        //            let err = PrimerError.invalidArchitecture(
+        //                description: "Apple Pay does not work with Primer when used in the simulator due to a limitation from Apple Pay.",
+        //                recoverSuggestion: "Use a real device instead of the simulator",
+        //                userInfo: .errorUserInfoDictionary(),
+        //                diagnosticsId: UUID().uuidString)
+        //            ErrorHandler.handle(error: err)
+        //            completion(PKPaymentAuthorizationResult(status: .failure, errors: [err]))
+        //            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        //                controller.dismiss(completion: nil)
+        //            }
+        //            applePayReceiveDataCompletion?(.failure(err))
+        //            applePayReceiveDataCompletion = nil
+        //            return
+        //        }
         #endif
 
         self.isCancelled = false

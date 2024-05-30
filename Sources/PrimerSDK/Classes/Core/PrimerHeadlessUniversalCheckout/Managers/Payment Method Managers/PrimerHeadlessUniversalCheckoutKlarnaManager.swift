@@ -19,7 +19,7 @@ extension PrimerHeadlessUniversalCheckout {
             else {
                 let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: "KLARNA",
                                                                userInfo: .errorUserInfoDictionary(additionalInfo: [
-                                                                   "message": "Unable to locate a valid payment method configuration"
+                                                                "message": "Unable to locate a valid payment method configuration"
                                                                ]),
                                                                diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
