@@ -1,10 +1,40 @@
-inputs:
-  package-swift:
-    description: Package.swift file to use
-    required: false
-
 name: 'Run SDK tests'
 description: 'Test the SDK using SPM'
+inputs:
+  ssh-private-key:
+    description: SSH private key
+    required: true
+  known-hosts:
+    description: Known Hosts
+    required: true
+  match-password:
+    description: Match password
+    required: true
+  match-git-private-key:
+    description: Match git private key
+    required: true
+  fastlane-password:
+    description: Fastlane password
+    required: true
+  fastlane-session:
+    description: Fastlane session
+    required: true
+  match-keychain-name:
+    description: Match keychain name
+    required: true
+  match-keychain-password:
+    description: Match keychain password
+    required: true
+  source-branch:
+    description: Source branch
+    required: true
+  coverage-file-name:
+    description: Name of the generic coverage file
+    required: true
+  package-swift:
+    description: The swift package file to use, if not default
+    required: false
+
 runs:
   using: "composite"
   steps:
@@ -15,19 +45,19 @@ runs:
     - name: Install SSH key
       uses: shimataro/ssh-key-action@d4fffb50872869abe2d9a9098a6d9c5aa7d16be4 #v2.7.0
       with:
-        key: ${{ secrets.SSH_KEY }}
+        key: ${{ inputs.ssh-private-key }}
         name: id_rsa_github_actions
-        known_hosts: ${{ secrets.KNOWN_HOSTS }}
+        known_hosts: ${{ inputs.known-hosts }}
     - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
       with:
-        ssh-private-key: ${{ secrets.SSH_KEY }}
+        ssh-private-key: ${{ inputs.ssh-private-key }}
     - uses: ruby/setup-ruby@d4526a55538b775af234ba4af27118ed6f8f6677  # v1.172.0
       with:
         ruby-version: "3.2"
         bundler-cache: true
     - name: Setup Package.swift
-      if: github.event.inputs.package-swift != ''
       shell: bash
+      if: ${{ input.package-swift != '' }}
       run: |
         mv Package.swift Package.swift.orig
         cp Package.NolPay.swift Package.swift
@@ -36,12 +66,13 @@ runs:
       run: |
         bundle exec fastlane test_spm
       env:
-        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-        MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-        FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
-        FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
-        MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
-        MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+        MATCH_PASSWORD: ${{ inputs.match-password }}
+        MATCH_GIT_PRIVATE_KEY: ${{ inputs.ssh-private-key }}
+        FASTLANE_PASSWORD: ${{ inputs.fastlane-password }}
+        FASTLANE_SESSION: ${{ inputs.fastlane-session }}
+        MATCH_KEYCHAIN_NAME: ${{ inputs.match-keychain-name }}
+        MATCH_KEYCHAIN_PASSWORD: ${{ inputs.match-password }}
+        SOURCE_BRANCH: ${{ inputs.source-branch }}
     - name: Archive log
       uses: actions/upload-artifact@v4
       if: always()
@@ -53,8 +84,8 @@ runs:
       shell: bash
       run: |
         bash Scripts/xccov-to-sonarqube-generic.sh fastlane/test_output/PrimerSDKTests.xcresult/ > coverage.xml
-        sed "s#$PWD/##g" coverage.xml > sonar-coverage.xml
+        sed "s#$PWD/##g" coverage.xml > ${{ inputs.coverage-file-name }}
     - uses: actions/upload-artifact@master
       with:
         name: coverage-file
-        path: sonar-coverage.xml
+        path: ${{ inputs.coverage-file-name }}
