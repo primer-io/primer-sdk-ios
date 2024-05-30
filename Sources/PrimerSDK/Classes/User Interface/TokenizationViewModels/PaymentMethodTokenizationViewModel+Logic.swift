@@ -109,7 +109,7 @@ extension PaymentMethodTokenizationViewModel {
                 PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
             }
 
-             self.handleSuccessfulFlow()
+            self.handleSuccessfulFlow()
         }
         .ensure {
             PrimerUIManager.primerRootViewController?.enableUserInteraction(true)

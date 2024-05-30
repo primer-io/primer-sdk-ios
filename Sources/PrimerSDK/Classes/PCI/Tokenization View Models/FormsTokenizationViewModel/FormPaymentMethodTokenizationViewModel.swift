@@ -510,7 +510,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
 
         let imageView = self.uiModule.makeIconImageView(withDimension: 24.0)
         self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView,
-                                                                            message: nil)
+                                                                           message: nil)
 
         return Promise { seal in
             firstly {
