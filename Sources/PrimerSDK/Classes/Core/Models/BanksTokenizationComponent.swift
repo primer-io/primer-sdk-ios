@@ -219,7 +219,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                         if let cancelledError = cancelledError {
                             throw cancelledError
                         }
-                        return self.handleDecodedClientTokenIfNeeded(decodedJWTToken)
+                        return self.handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
                     }
                     .done { resumeToken in
                         if let cancelledError = cancelledError {
@@ -463,7 +463,8 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         }
     }
 
-    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
+                                          paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         return Promise { seal in
             if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
                 if let redirectUrlStr = decodedJWTToken.redirectUrl,

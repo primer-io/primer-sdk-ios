@@ -1,14 +1,17 @@
 import Foundation
 
 internal protocol VaultServiceProtocol {
-    static var apiClient: PrimerAPIClientProtocol? { get set }
     func fetchVaultedPaymentMethods() -> Promise<Void>
     func deleteVaultedPaymentMethod(with id: String) -> Promise<Void>
 }
 
 internal class VaultService: VaultServiceProtocol {
 
-    static var apiClient: PrimerAPIClientProtocol?
+    let apiClient: PrimerAPIClientVaultProtocol
+
+    init(apiClient: PrimerAPIClientVaultProtocol) {
+        self.apiClient = apiClient
+    }
 
     func fetchVaultedPaymentMethods() -> Promise<Void> {
         return Promise { seal in
@@ -47,7 +50,6 @@ internal class VaultService: VaultServiceProtocol {
 
     func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) -> Promise<Response.Body.VaultedPaymentMethods> {
         return Promise { seal in
-            let apiClient: PrimerAPIClientProtocol = VaultService.apiClient ?? PrimerAPIClient()
             apiClient.fetchVaultedPaymentMethods(clientToken: clientToken, completion: { result in
                 switch result {
                 case .success(let response):
@@ -68,8 +70,6 @@ internal class VaultService: VaultServiceProtocol {
                 seal.reject(err)
                 return
             }
-
-            let apiClient: PrimerAPIClientProtocol = VaultService.apiClient ?? PrimerAPIClient()
 
             apiClient.deleteVaultedPaymentMethod(clientToken: clientToken, id: id) { (result) in
                 switch result {

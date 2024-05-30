@@ -1,46 +1,60 @@
 //
-//  CheckoutWithVaultedPaymentMethodViewModelTests.swift
+//  QRCodeTokenizationViewModelTests.swift
 //  
 //
-//  Created by Jack Newcombe on 07/05/2024.
+//  Created by Jack Newcombe on 28/05/2024.
 //
 
 import XCTest
 @testable import PrimerSDK
 
-final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
-    
+final class QRCodeTokenizationViewModelTests: XCTestCase {
+
+    var uiManager: MockPrimerUIManager!
+
     var tokenizationService: MockTokenizationService!
 
     var createResumePaymentService: MockCreateResumePaymentService!
 
-    var sut: CheckoutWithVaultedPaymentMethodViewModel!
+    var sut: QRCodeTokenizationViewModel!
 
     override func setUpWithError() throws {
+
+        uiManager = MockPrimerUIManager()
         tokenizationService = MockTokenizationService()
         createResumePaymentService = MockCreateResumePaymentService()
-        sut = CheckoutWithVaultedPaymentMethodViewModel(configuration: Mocks.PaymentMethods.paymentCardPaymentMethod,
-                                                        selectedPaymentMethodTokenData: Mocks.primerPaymentMethodTokenData,
-                                                        additionalData: nil,
-                                                        tokenizationService: tokenizationService,
-                                                        createResumePaymentService: createResumePaymentService)
+
+        sut = QRCodeTokenizationViewModel(config: Mocks.PaymentMethods.adyenIDealPaymentMethod,
+                                          uiManager: uiManager,
+                                          tokenizationService: tokenizationService,
+                                          createResumePaymentService: createResumePaymentService)
     }
 
     override func tearDownWithError() throws {
         sut = nil
         createResumePaymentService = nil
         tokenizationService = nil
+        uiManager = nil
     }
-
 
     func testStartWithPreTokenizationAndAbort() throws {
         SDKSessionHelper.setUp()
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
+        let uiDelegate = MockPrimerHeadlessUniversalCheckoutUIDelegate()
+        PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
+
+        let mockViewController = MockPrimerRootViewController()
+        uiManager.onPrepareViewController = {
+            self.uiManager.primerRootViewController = mockViewController
+            return Promise.fulfilled(())
+        }
+
+        _ = uiManager.prepareRootViewController()
 
         let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
-            XCTAssertEqual(data.paymentMethodType.type, "PAYMENT_CARD")
+            XCTAssertEqual(data.paymentMethodType.type, "ADYEN_IDEAL")
             decision(.abortPaymentCreation())
             expectWillCreatePaymentData.fulfill()
         }
@@ -56,23 +70,36 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
             expectWillAbort.fulfill()
         }
 
-        _ = sut.start()
+        sut.start()
 
-        waitForExpectations(timeout: 2.0)
+        wait(for: [
+            expectWillCreatePaymentData,
+            expectWillAbort
+        ], timeout: 10.0, enforceOrder: true)
     }
 
     func testStartWithFullCheckoutFlow() throws {
         SDKSessionHelper.setUp()
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
+        let uiDelegate = MockPrimerHeadlessUniversalCheckoutUIDelegate()
+        PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
 
         let apiClient = MockPrimerAPIClient()
         PrimerAPIConfigurationModule.apiClient = apiClient
         apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
 
+        let mockViewController = MockPrimerRootViewController()
+        uiManager.onPrepareViewController = {
+            self.uiManager.primerRootViewController = mockViewController
+            return Promise.fulfilled(())
+        }
+
+        _ = uiManager.prepareRootViewController()
+
         let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
-            XCTAssertEqual(data.paymentMethodType.type, "PAYMENT_CARD")
+            XCTAssertEqual(data.paymentMethodType.type, "ADYEN_IDEAL")
             decision(.continuePaymentCreation())
             expectWillCreatePaymentData.fulfill()
         }
@@ -84,16 +111,9 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
             expectCheckoutDidCompletewithData.fulfill()
         }
 
-//        let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-//        tokenizationService.onTokenize = { body in
-//            expectOnTokenize.fulfill()
-//            return Promise.fulfilled(self.tokenizationResponseBody)
-//        }
-
-        let expectDidExchangeToken = self.expectation(description: "didExchangeToken called")
-        tokenizationService.onExchangePaymentMethodToken = { tokenId, data in
-            XCTAssertEqual(tokenId, "mock_payment_method_token_data_id")
-            expectDidExchangeToken.fulfill()
+        let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
+        tokenizationService.onTokenize = { body in
+            expectOnTokenize.fulfill()
             return Promise.fulfilled(self.tokenizationResponseBody)
         }
 
@@ -101,24 +121,19 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
         createResumePaymentService.onCreatePayment = { body in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
-
         }
 
         delegate.onDidFail = { error in
             print(error)
         }
 
-        let expectPromiseResolved = self.expectation(description: "Expect start promise to resolve")
-        _ = sut.start().done {
-            expectPromiseResolved.fulfill()
-        }
+        sut.start()
 
         wait(for: [
             expectWillCreatePaymentData,
-            expectDidExchangeToken,
+            expectOnTokenize,
             expectDidCreatePayment,
-            expectCheckoutDidCompletewithData,
-            expectPromiseResolved
+            expectCheckoutDidCompletewithData
         ], timeout: 10.0, enforceOrder: true)
     }
 

@@ -23,6 +23,8 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
 
     let paymentMethodType: PrimerPaymentMethodType
 
+    var apiClient: PrimerAPIClientBanksProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+
     override init(config: PrimerPaymentMethod,
                   uiManager: PrimerUIManaging,
                   tokenizationService: TokenizationServiceProtocol,
@@ -85,7 +87,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     override func performPreTokenizationSteps() -> Promise<Void> {
         if !PrimerInternal.isInHeadlessMode {
             DispatchQueue.main.async {
-                PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+                self.uiManager.primerRootViewController?.enableUserInteraction(true)
             }
         }
 
@@ -187,10 +189,8 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         return Promise { seal in
             DispatchQueue.main.async {
                 let bsvc = BankSelectorViewController(viewModel: self)
-                DispatchQueue.main.async {
-                    PrimerUIManager.primerRootViewController?.show(viewController: bsvc)
-                    seal.fulfill()
-                }
+                self.uiManager.primerRootViewController?.show(viewController: bsvc)
+                seal.fulfill()
             }
         }
     }
@@ -201,6 +201,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
                 self.selectedBank = bank
                 seal.fulfill()
             }
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
         }
     }
 
@@ -228,9 +229,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
                 paymentMethodConfigId: config.id!,
                 parameters: BankTokenizationSessionRequestParameters(paymentMethod: paymentMethodRequestValue))
 
-            let apiClient: PrimerAPIClientProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
-
-            apiClient.listAdyenBanks(clientToken: decodedJWTToken, request: request) { result in
+            self.apiClient.listAdyenBanks(clientToken: decodedJWTToken, request: request) { result in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)

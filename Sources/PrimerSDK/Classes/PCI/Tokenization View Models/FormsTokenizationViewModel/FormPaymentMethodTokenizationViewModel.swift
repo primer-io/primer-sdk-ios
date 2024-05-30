@@ -376,7 +376,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     private lazy var countryFieldContainerView: PrimerCustomFieldView = {
         PrimerCountryField.countryContainerViewFieldView(countryFieldView, openCountriesListPressed: {
             DispatchQueue.main.async {
-                PrimerUIManager.primerRootViewController?.show(viewController: self.countrySelectorViewController)
+                self.uiManager.primerRootViewController?.show(viewController: self.countrySelectorViewController)
             }
         })
     }()
@@ -509,24 +509,24 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         Analytics.Service.record(event: event)
 
         let imageView = self.uiModule.makeIconImageView(withDimension: 24.0)
-        PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView,
-                                                                            message: nil)
+        self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView,
+                                                                           message: nil)
 
         return Promise { seal in
             firstly {
                 self.validateReturningPromise()
             }
-            .then { () -> Promise<Void> in
+            .then {
                 let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
                 return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
             }
-            .then { () -> Promise<Void> in
+            .then {
                 return self.presentPaymentMethodUserInterface()
             }
-            .then { () -> Promise<Void> in
+            .then {
                 return self.evaluatePaymentMethodNeedingFurtherUserActions()
             }
-            .then { () -> Promise<Void> in
+            .then {
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
             }
             .done {
@@ -567,7 +567,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
         }
     }
 
-    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         return Promise { seal in
             if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
                 if let statusUrlStr = decodedJWTToken.statusUrl,
@@ -678,6 +678,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
             self.userInputCompletion = {
                 seal.fulfill()
             }
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
         }
     }
 
@@ -717,20 +718,18 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     }
 
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
+        guard let configId = config.id else {
+            let err = PrimerError.invalidValue(key: "configuration.id",
+                                               value: config.id,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            return Promise { $0.reject(err) }
+        }
+
         switch config.type {
         case PrimerPaymentMethodType.adyenBlik.rawValue:
             return Promise { seal in
-
-                guard let configId = config.id else {
-                    let err = PrimerError.invalidValue(key: "configuration.id",
-                                                       value: config.id,
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
-                }
-
                 guard let blikCode = inputs.first?.text else {
                     let err = PrimerError.invalidValue(key: "blikCode",
                                                        value: nil,
@@ -750,7 +749,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                     paymentMethodType: config.type,
                     sessionInfo: sessionInfo)
 
-                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
                 let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
 
                 firstly {
@@ -766,16 +764,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
 
         case PrimerPaymentMethodType.rapydFast.rawValue:
             return Promise { seal in
-                guard let configId = config.id else {
-                    let err = PrimerError.invalidValue(key: "configuration.id",
-                                                       value: config.id,
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
-                }
-
                 let sessionInfo = WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
 
                 let paymentInstrument = OffSessionPaymentInstrument(
@@ -799,17 +787,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
 
         case PrimerPaymentMethodType.adyenMBWay.rawValue:
             return Promise { seal in
-
-                guard let configId = config.id else {
-                    let err = PrimerError.invalidValue(key: "configuration.id",
-                                                       value: config.id,
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
-                }
-
                 guard let phoneNumber = inputs.first?.text else {
                     let err = PrimerError.invalidValue(key: "phoneNumber",
                                                        value: nil,
@@ -844,16 +821,6 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
 
         case PrimerPaymentMethodType.adyenMultibanco.rawValue:
             return Promise { seal in
-                guard let configId = config.id else {
-                    let err = PrimerError.invalidValue(key: "configuration.id",
-                                                       value: config.id,
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                    return
-                }
-
                 let sessionInfo = WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
 
                 let paymentInstrument = OffSessionPaymentInstrument(
@@ -959,7 +926,7 @@ extension FormPaymentMethodTokenizationViewModel: UITableViewDataSource, UITable
         countryFieldView.countryCode = country
         countryFieldView.validation = .valid
         countryFieldView.textFieldDidEndEditing(countryFieldView.textField)
-        PrimerUIManager.primerRootViewController?.popViewController()
+        self.uiManager.primerRootViewController?.popViewController()
     }
 }
 

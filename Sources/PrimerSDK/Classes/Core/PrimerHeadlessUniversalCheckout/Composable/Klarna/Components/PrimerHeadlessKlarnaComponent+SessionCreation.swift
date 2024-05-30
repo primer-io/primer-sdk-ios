@@ -103,13 +103,13 @@ extension PrimerHeadlessKlarnaComponent {
                 diagnosticsId: UUID().uuidString
             )
         case .klarnaAuthorizationFailed:
-            primerError = PrimerError.klarnaWrapperError(
+            primerError = PrimerError.klarnaError(
                 message: "PrimerKlarnaWrapperAuthorization failed",
                 userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString
             )
         case .klarnaFinalizationFailed:
-            primerError = PrimerError.klarnaWrapperError(
+            primerError = PrimerError.klarnaError(
                 message: "PrimerKlarnaWrapperFinalization failed",
                 userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString
