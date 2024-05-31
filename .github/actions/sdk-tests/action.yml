@@ -68,7 +68,7 @@ runs:
     - name: Build SPM App
       shell: bash
       run: |
-        bundle exec fastlane ${{ inputs.fastlane-lane }}
+        bundle exec fastlane ${{ inputs.fastlane-test-lane }}
       env:
         MATCH_PASSWORD: ${{ inputs.match-password }}
         MATCH_GIT_PRIVATE_KEY: ${{ inputs.ssh-private-key }}
