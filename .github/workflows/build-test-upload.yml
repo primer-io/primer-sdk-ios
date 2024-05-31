@@ -11,10 +11,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  unit-tests:
+  unit-tests-sdk:
     runs-on: macos-13-large
     timeout-minutes: 20
-    name: "Unit Tests"
+    name: "Unit Tests - SDK"
     steps:
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
@@ -35,30 +35,58 @@ jobs:
           fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
           match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          sdk-name: sdk
 
-  sonarcloud:
-    needs:
-      - unit-tests
-    name: SonarCloud
-    runs-on: macos-13
+  unit-tests-debug-app:
+    runs-on: macos-13-large
+    timeout-minutes: 20
+    name: "Unit Tests - SDK"
     steps:
-      - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+      - name: Cancel previous jobs
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
         with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
-      - uses: actions/download-artifact@master
+          access_token: ${{ github.token }}
+      - name: Git - Checkout
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
         with:
-          name: coverage-file-sdk
-      - name: SonarCloud Scan
-        uses: ./.github/actions/sonar
+          ref: ${{ github.ref }}
+      - name: Run debug app tests
+        uses: ./.github/actions/sdk-tests
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-          sonar-token: ${{ secrets.SONAR_TOKEN }}
-          sonar-host: https://sonarcloud.io.
-          pull-request-number: ${{ github.event.pull_request.number }}
-          branch: ${{ github.head_ref }}
-          base-branch: ${{ github.base_ref }}
-          pull-request-sha: ${{ github.event.pull_request.head.sha }}
-          coverage-file-name: sonar-coverage-sdk.xml
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+          known-hosts: ${{ secrets.KNOWN_HOSTS }}
+          match-password: ${{ secrets.MATCH_PASSWORD }}
+          match-git-private-key: ${{ secrets.FASTLANE_PASSWORD }}
+          fastlane-session: ${{ secrets.FASTLANE_SESSION }}
+          fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
+          match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
+          match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          fastlane-test-lane: test_debug_app
+
+  # sonarcloud:
+  #   needs:
+  #     - unit-tests-sdk
+  #     - unit-tests-debug-app
+  #   name: SonarCloud
+  #   runs-on: macos-13
+  #   steps:
+  #     - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+  #       with:
+  #         fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+  #     - uses: actions/download-artifact@master
+  #       with:
+  #         name: coverage-file-sdk
+  #     - name: SonarCloud Scan
+  #       uses: ./.github/actions/sonar
+  #       with:
+  #         github-token: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+  #         sonar-token: ${{ secrets.SONAR_TOKEN }}
+  #         sonar-host: https://sonarcloud.io.
+  #         pull-request-number: ${{ github.event.pull_request.number }}
+  #         branch: ${{ github.head_ref }}
+  #         base-branch: ${{ github.base_ref }}
+  #         pull-request-sha: ${{ github.event.pull_request.head.sha }}
+  #         coverage-file-name: sonar-coverage-sdk.xml
           
   build-and-upload-to-appetize:
     needs:

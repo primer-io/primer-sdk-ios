@@ -20,21 +20,35 @@
                ReferencedContainer = "container:Primer.io Debug App.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "301F25EE1514F3AF2E4A7FBD"
+               BuildableName = "Debug App Tests.xctest"
+               BlueprintName = "Debug App Tests"
+               ReferencedContainer = "container:Primer.io Debug App.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
       buildConfiguration = "Debug"
-      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
-      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      selectedDebuggerIdentifier = ""
+      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BEB14ABCDF34E3D24759EAAB"
-               BuildableName = "Debug App.app"
-               BlueprintName = "Debug App"
+               BlueprintIdentifier = "301F25EE1514F3AF2E4A7FBD"
+               BuildableName = "Debug App Tests.xctest"
+               BlueprintName = "Debug App Tests"
                ReferencedContainer = "container:Primer.io Debug App.xcodeproj">
             </BuildableReference>
          </TestableReference>

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0453CB3B2C0A08AD00C8C750 /* DebugAppTestPlan.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = 0453CB3A2C0A08AD00C8C750 /* DebugAppTestPlan.xctestplan */; };
 		0489E2BB2B68F71300FA0682 /* TapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0489E2BA2B68F71300FA0682 /* TapGestureRecognizer.swift */; };
 		04921D0D2BFB79DC004DFB4D /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04921D0B2BFB79DC004DFB4D /* MerchantHeadlessCheckoutNolPayViewController.swift */; };
 		049A055E2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
@@ -94,6 +95,7 @@
 /* Begin PBXFileReference section */
 		00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantResultViewController.swift; sourceTree = "<group>"; };
 		01C09DEAB07F42004B26A278 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		0453CB3A2C0A08AD00C8C750 /* DebugAppTestPlan.xctestplan */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DebugAppTestPlan.xctestplan; sourceTree = "<group>"; };
 		0489E2BA2B68F71300FA0682 /* TapGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapGestureRecognizer.swift; sourceTree = "<group>"; };
 		04921D0B2BFB79DC004DFB4D /* MerchantHeadlessCheckoutNolPayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutNolPayViewController.swift; sourceTree = "<group>"; };
 		049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessVaultManagerViewController.swift; sourceTree = "<group>"; };
@@ -218,6 +220,7 @@
 		04F323602BD408C600F5927C /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				0453CB3A2C0A08AD00C8C750 /* DebugAppTestPlan.xctestplan */,
 				04C1906F2BEA5B75009A225A /* UnitTestsTestPlan.xctestplan */,
 				04F3235E2BD408C600F5927C /* Debug App Tests-Info.plist */,
 				04F3235D2BD408C600F5927C /* AppetizeConfigTests.swift */,
@@ -516,6 +519,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0453CB3B2C0A08AD00C8C750 /* DebugAppTestPlan.xctestplan in Resources */,
 				04F323622BD408C600F5927C /* Debug App Tests-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

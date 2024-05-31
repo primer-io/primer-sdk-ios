@@ -19,6 +19,10 @@ inputs:
   fastlane-session:
     description: Fastlane session
     required: true
+  fastlane-test-lane:
+    description: The fastlane test lane to run
+    required: false
+    default: test_sdk 
   match-keychain-name:
     description: Match keychain name
     required: true
@@ -29,8 +33,8 @@ inputs:
     description: Source branch
     required: true
   sdk-name:
-    description: The name of the SDK, if not using the default Package.swift
-    default: sdk
+    description: The name of the SDK, if running SDK tests
+    required: false
   package-swift:
     description: The swift package file to use, if not default
     required: false
@@ -64,7 +68,7 @@ runs:
     - name: Build SPM App
       shell: bash
       run: |
-        bundle exec fastlane test_spm
+        bundle exec fastlane ${{ inputs.fastlane-lane }}
       env:
         MATCH_PASSWORD: ${{ inputs.match-password }}
         MATCH_GIT_PRIVATE_KEY: ${{ inputs.ssh-private-key }}
@@ -75,6 +79,7 @@ runs:
         SOURCE_BRANCH: ${{ inputs.source-branch }}
     - name: Prepare coverage reports
       shell: bash
+      if: ${{ inputs.sdk-name != '' }}
       run: |
         bash Scripts/xccov-to-sonarqube-generic.sh fastlane/test_output/PrimerSDKTests.xcresult/ > coverage.xml
         sed "s#$PWD/##g" coverage.xml >sonar-coverage-${{ inputs.sdk-name }}.xml
