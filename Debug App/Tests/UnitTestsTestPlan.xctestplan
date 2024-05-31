@@ -24,13 +24,6 @@
         "identifier" : "Tests",
         "name" : "Tests"
       }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Debug App\/Primer.io Debug App.xcodeproj",
-        "identifier" : "301F25EE1514F3AF2E4A7FBD",
-        "name" : "Debug App Tests"
-      }
     }
   ],
   "version" : 1
