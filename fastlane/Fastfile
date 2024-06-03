@@ -134,6 +134,12 @@ platform :ios do
 
     sim_version = options[:sim_version] || "17.2"
 
+    cocoapods(
+      clean_install: true,
+      use_bundle_exec: true,
+      podfile: podfile_path
+    )
+
     run_tests(
       workspace: app_workspace,
       scheme: app_scheme,
