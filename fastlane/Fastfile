@@ -135,8 +135,8 @@ platform :ios do
     sim_version = options[:sim_version] || "17.2"
 
     run_tests(
-      workspace: "Primer.io Debug App.xcworkspace",
-      scheme: "Debug App",
+      workspace: app_workspace,
+      scheme: app_scheme,
       sdk: "iphonesimulator#{sim_version}",
       destination: "OS=#{sim_version},name=iPhone 14 Pro",
       result_bundle: true,
