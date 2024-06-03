@@ -137,6 +137,7 @@ platform :ios do
     run_tests(
       workspace: app_workspace,
       scheme: app_scheme,
+      configuration: "Debug",
       sdk: "iphonesimulator#{sim_version}",
       destination: "OS=#{sim_version},name=iPhone 14 Pro",
       result_bundle: true,
