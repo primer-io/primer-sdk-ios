@@ -152,6 +152,13 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
         case "ADYEN_IDEAL":
             let vc = MerchantHeadlessCheckoutBankViewController()
             self.navigationController?.pushViewController(vc, animated: true)
+        case "STRIPE_ACH":
+            #if canImport(PrimerStripeSDK)
+            let vc = MerchantHeadlessCheckoutStripeAchViewController()
+            self.navigationController?.pushViewController(vc, animated: true)
+            #else
+            break
+            #endif
         default:
             redirectManager = try? PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethodType)
             try? redirectManager?.showPaymentMethod(intent: sessionIntent)
@@ -400,12 +407,19 @@ class MerchantPaymentMethodCell: UITableViewCell {
                 self.paymentMethodLabel.text = "Failed to find logo for \(paymentMethod.paymentMethodType)"
             }
 
-            paymentMethodLabel.text = "Pay with \(paymentMethodAsset.paymentMethodName) "
+            paymentMethodLabel.text = "Pay with \(paymentMethodAsset.paymentMethodName.truncate(length: 15)) "
+            paymentMethodLabel.lineBreakMode = .byTruncatingTail
 
         } else {
             self.paymentMethodLogoView.isHidden = true
             self.paymentMethodLabel.isHidden = false
             self.paymentMethodLabel.text = "Failed to find payment method asset for \(paymentMethod.paymentMethodType)"
         }
+    }
+}
+
+extension String {
+    func truncate(length: Int, trailing: String = "...") -> String {
+        return count > length ? prefix(length) + trailing : self
     }
 }

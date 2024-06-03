@@ -32,6 +32,7 @@ class MerchantHeadlessCheckoutStripeAchViewController: UIViewController {
         setupUI()
         setupLayout()
         addStripeFormView()
+        addHUCDelegate()
         initObservables()
         initializeStripeAchComponent()
     }
@@ -60,6 +61,10 @@ class MerchantHeadlessCheckoutStripeAchViewController: UIViewController {
                 self?.stripeAchComponent?.updateCollectedData(collectableData: emailCollectedData)
             }
             .store(in: &cancellables)
+    }
+    
+    private func addHUCDelegate() {
+        PrimerHeadlessUniversalCheckout.current.delegate = self
     }
     
     private func initializeStripeAchComponent() {
@@ -131,6 +136,10 @@ extension MerchantHeadlessCheckoutStripeAchViewController {
         alert.addAction(okAction)
         alert.addAction(cancelAction)
         present(alert, animated: true, completion: nil)
+    }
+    
+    func showStripeCollector(_ stripeBankCollector: UIViewController) {
+        present(stripeBankCollector, animated: true)
     }
     
     func showLoader() {

@@ -41,7 +41,7 @@ struct DecodedJWTToken: Codable {
     var nolPayTransactionNo: String?
     
     // StripeACH
-    var clientSecret: String?
+    var stripeClientSecret: String?
 
     // Voucher info
     var expiresAt: Date?
@@ -94,7 +94,7 @@ struct DecodedJWTToken: Codable {
         // Nol
         case nolPayTransactionNo
         // StripeACH
-        case clientSecret
+        case stripeClientSecret
     }
 
     init(
@@ -120,7 +120,7 @@ struct DecodedJWTToken: Codable {
         supportedCurrencyCode: String?,
         supportedCountry: String?,
         nolPayTransactionNo: String?,
-        clientSecret: String?
+        stripeClientSecret: String?
     ) {
         self.accessToken = accessToken
         self.expDate = expDate
@@ -144,7 +144,7 @@ struct DecodedJWTToken: Codable {
         self.supportedCurrencyCode = supportedCurrencyCode
         self.supportedCountry = supportedCountry
         self.nolPayTransactionNo = nolPayTransactionNo
-        self.clientSecret = clientSecret
+        self.stripeClientSecret = stripeClientSecret
     }
 
     init(from decoder: Decoder) throws {
@@ -168,7 +168,7 @@ struct DecodedJWTToken: Codable {
         self.redirectUrl = try? container.decode(String.self, forKey: .redirectUrl)
         self.accountNumber = try? container.decode(String.self, forKey: .accountNumber)
         self.nolPayTransactionNo = try? container.decode(String.self, forKey: .nolPayTransactionNo)
-        self.clientSecret = try? container.decode(String.self, forKey: .clientSecret)
+        self.stripeClientSecret = try? container.decode(String.self, forKey: .stripeClientSecret)
         // For some APMs we receive another value out of the client token `expiration`
         // They may have different values.
         // We understand this should be changed in the future
@@ -260,7 +260,7 @@ struct DecodedJWTToken: Codable {
         try? container.encode(nolPayTransactionNo, forKey: .nolPayTransactionNo)
         
         // StripeACH
-        try? container.encode(clientSecret, forKey: .clientSecret)
+        try? container.encode(stripeClientSecret, forKey: .stripeClientSecret)
     }
 }
 
