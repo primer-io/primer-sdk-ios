@@ -120,7 +120,7 @@ jobs:
           branch: ${{ github.head_ref }}
           base-branch: ${{ github.base_ref }}
           pull-request-sha: ${{ github.event.pull_request.head.sha }}
-          coverage-file-names: sonar-coverage-sdk.xml,sonar-coverage-3DS.xml,sonar-coverage-nol-pay.xml,sonar-coverage-klarna.xml
+          coverage-file-names: sonar-coverage-*.xml
           
   build-and-upload-to-appetize:
     needs:
