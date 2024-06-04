@@ -82,7 +82,7 @@ runs:
       if: ${{ inputs.sdk-name != '' }}
       run: |
         bash Scripts/xccov-to-sonarqube-generic.sh fastlane/test_output/PrimerSDKTests.xcresult/ > coverage.xml
-        sed "s#$PWD/##g" coverage.xml >sonar-coverage-${{ inputs.sdk-name }}.xml
+        sed "s#$PWD/##g" coverage.xml > sonar-coverage-${{ inputs.sdk-name }}.xml
     - uses: actions/upload-artifact@master
       with:
         name: coverage-file-${{ inputs.sdk-name }}
