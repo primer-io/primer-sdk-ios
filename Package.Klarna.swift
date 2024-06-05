@@ -14,9 +14,15 @@ let package = Package(
             targets: ["PrimerSDK"]
         )
     ],
+    dependencies: [
+        .package(url: "https://github.com/primer-io/primer-klarna-sdk-ios", from: "1.1.1")
+    ],
     targets: [
         .target(
             name: "PrimerSDK",
+            dependencies: [
+                .product(name: "PrimerKlarnaSDK", package: "primer-klarna-sdk-ios")
+            ],
             path: "Sources/PrimerSDK",
             resources: [
                 .process("Resources"),
@@ -26,11 +32,12 @@ let package = Package(
         .testTarget(
             name: "Tests",
             dependencies: [
+                .product(name: "PrimerKlarnaSDK", package: "primer-klarna-sdk-ios"),
                 .byName(name: "PrimerSDK")
             ],
             path: "Tests/",
             sources: [
-                "Primer/",
+                "Klarna/",
                 "Utilities/"
             ]
         )

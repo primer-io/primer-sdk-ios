@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "8F18C1CB-7B2C-4E3F-8739-E715868A9ABA",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Debug App\/Primer.io Debug App.xcodeproj",
+        "identifier" : "301F25EE1514F3AF2E4A7FBD",
+        "name" : "Debug App Tests"
+      }
+    }
+  ],
+  "version" : 1
+}

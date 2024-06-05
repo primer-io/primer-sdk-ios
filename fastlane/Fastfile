@@ -111,8 +111,8 @@ platform :ios do
 
   end
 
-  desc 'This action builds the app using the SPM integration'
-  lane :test_spm do |options|
+  desc 'This action tests the SDK using a SPM test target'
+  lane :test_sdk do |options|
     common_pre_build_action
 
     sim_version = options[:sim_version] || "17.2"
@@ -120,6 +120,30 @@ platform :ios do
     run_tests(
       package_path: ".",
       scheme: "PrimerSDKTests",
+      sdk: "iphonesimulator#{sim_version}",
+      destination: "OS=#{sim_version},name=iPhone 14 Pro",
+      result_bundle: true,
+      code_coverage: true,
+      output_directory: Dir.pwd + "/test_output"
+    )
+  end
+
+  desc 'This action tests the Debug App using a Xcode test target'
+  lane :test_debug_app do |options|
+    common_pre_build_action
+
+    sim_version = options[:sim_version] || "17.2"
+
+    cocoapods(
+      clean_install: true,
+      use_bundle_exec: true,
+      podfile: podfile_path
+    )
+
+    run_tests(
+      workspace: app_workspace,
+      scheme: app_scheme,
+      configuration: "Debug",
       sdk: "iphonesimulator#{sim_version}",
       destination: "OS=#{sim_version},name=iPhone 14 Pro",
       result_bundle: true,
