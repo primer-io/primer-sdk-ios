@@ -11,17 +11,18 @@ import Foundation
 class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
 
     static var apiClient: (any PrimerSDK.PrimerAPIClientProtocol)?
-    
+
     // MARL: createPayment
 
     var onCreatePayment: ((Request.Body.Payment.Create) -> Response.Body.Payment?)?
 
-    func createPayment(paymentRequest: Request.Body.Payment.Create,
-                       completion: @escaping (Response.Body.Payment?, (any Error)?) -> Void) {
-        if let result = onCreatePayment?(paymentRequest) {
-            completion(result, nil)
-        } else {
-            completion(nil, PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+    func createPayment(paymentRequest: Request.Body.Payment.Create) -> Promise<Response.Body.Payment> {
+        Promise { seal in
+            if let result = onCreatePayment?(paymentRequest) {
+                seal.fulfill(result)
+            } else {
+                seal.reject(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+            }
         }
     }
 
@@ -30,12 +31,13 @@ class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
     var onResumePayment: ((String, Request.Body.Payment.Resume) -> Response.Body.Payment?)?
 
     func resumePaymentWithPaymentId(_ paymentId: String,
-                                    paymentResumeRequest: Request.Body.Payment.Resume,
-                                    completion: @escaping (Response.Body.Payment?, (any Error)?) -> Void) {
-        if let result = onResumePayment?(paymentId, paymentResumeRequest) {
-            completion(result, nil)
-        } else {
-            completion(nil, PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+                                    paymentResumeRequest: Request.Body.Payment.Resume) -> Promise<Response.Body.Payment> {
+        Promise { seal in
+            if let result = onResumePayment?(paymentId, paymentResumeRequest) {
+                seal.fulfill(result)
+            } else {
+                seal.reject(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+            }
         }
     }
     

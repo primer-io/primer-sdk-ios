@@ -345,9 +345,11 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             payButton.startAnimating()
             enableView(false)
 
-            let checkoutWithVaultedPaymentMethodVM = CheckoutWithVaultedPaymentMethodViewModel(configuration: config,
-                                                                                               selectedPaymentMethodTokenData: selectedPaymentMethod,
-                                                                                               additionalData: additionalData)
+            let checkoutWithVaultedPaymentMethodVM = CheckoutWithVaultedPaymentMethodViewModel(
+                configuration: config,
+                selectedPaymentMethodTokenData: selectedPaymentMethod,
+                additionalData: additionalData,
+                createResumePaymentService: CreateResumePaymentService(paymentMethodType: selectedPaymentMethodType))
             firstly {
                 checkoutWithVaultedPaymentMethodVM.start()
             }

@@ -24,11 +24,15 @@ protocol KlarnaTokenizationManagerProtocol {
 class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
 
     // MARK: - Properties
+    
     private let tokenizationService: TokenizationServiceProtocol
 
+    private let createResumePaymentService: CreateResumePaymentServiceProtocol
+
     // MARK: - Init
-    init() {
+    init(createResumePaymentService: CreateResumePaymentServiceProtocol) {
         self.tokenizationService = TokenizationService()
+        self.createResumePaymentService = createResumePaymentService
     }
 
     // MARK: - Tokenize Headless
@@ -93,25 +97,8 @@ extension KlarnaTokenizationManager {
 
     // Create payment with Payment method token
     private func createPaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
-        return Promise { seal in
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-            let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
-            createResumePaymentService.createPayment(paymentRequest: paymentRequest) { paymentResponse, error in
-                if let error {
-                    seal.reject(error)
-                } else if let paymentResponse {
-                    if paymentResponse.id == nil {
-                        seal.reject(KlarnaHelpers.getPaymentFailedError())
-                    } else if paymentResponse.status == .failed {
-                        seal.reject(KlarnaHelpers.getFailedToProcessPaymentError(paymentResponse: paymentResponse))
-                    } else {
-                        seal.fulfill(paymentResponse)
-                    }
-                } else {
-                    seal.reject(KlarnaHelpers.getPaymentFailedError())
-                }
-            }
-        }
+        let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
+        return createResumePaymentService.createPayment(paymentRequest: paymentRequest)
     }
 
     private func getRequestBody(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<Request.Body.Tokenization> {
