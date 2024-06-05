@@ -9,7 +9,7 @@ import Foundation
 import XCTest
 @testable import PrimerSDK
 
-class ACHMocks {
+final class ACHMocks {
     static var stripeACHPaymentMethodId = "STRIPE_ACH"
     static var stripeACHPaymentMethodName = "Mock StripeACH Payment Method"
     static var stripeACHPaymentMethodType = "STRIPE_ACH"

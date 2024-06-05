@@ -23,7 +23,7 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
         createResumePaymentService = MockCreateResumePaymentService()
         uiManager = MockPrimerUIManager()
         
-        sut = StripeAchTokenizationViewModel(config: ACHMocks.stripeACHPaymentMethod, uiManager: uiManager, tokenizationService: tokenizationService, createResumePaymentService: createResumePaymentService)
+        sut = StripeAchTokenizationViewModel(config: stripeACHPaymentMethod, uiManager: uiManager, tokenizationService: tokenizationService, createResumePaymentService: createResumePaymentService)
         mandateDelegate = sut
         
         let settings = PrimerSettings(paymentMethodOptions:
@@ -57,7 +57,7 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
         
         let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
-            XCTAssertEqual(data.paymentMethodType.type, ACHMocks.stripeACHPaymentMethodType)
+            XCTAssertEqual(data.paymentMethodType.type, self.stripeACHPaymentMethodType)
             decision(.abortPaymentCreation())
             expectWillCreatePaymentData.fulfill()
         }
@@ -89,14 +89,14 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
         
         let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
-            XCTAssertEqual(data.paymentMethodType.type, ACHMocks.stripeACHPaymentMethodType)
+            XCTAssertEqual(data.paymentMethodType.type, self.stripeACHPaymentMethodType)
             decision(.continuePaymentCreation())
             expectWillCreatePaymentData.fulfill()
         }
         
         let expectDidStartTokenization = self.expectation(description: "didStartTokenization is called")
         delegate.onDidStartTokenization = { paymentType in
-            XCTAssertEqual(paymentType, ACHMocks.stripeACHPaymentMethodType)
+            XCTAssertEqual(paymentType, self.stripeACHPaymentMethodType)
             expectDidStartTokenization.fulfill()
         }
         
@@ -158,6 +158,19 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
     }
     
     // MARK: Helpers
+    
+    var stripeACHPaymentMethodType = "STRIPE_ACH"
+    
+    let stripeACHPaymentMethod = PrimerPaymentMethod(
+        id: "STRIPE_ACH",
+        implementationType: .nativeSdk,
+        type: "STRIPE_ACH",
+        name: "Mock StripeACH Payment Method",
+        processorConfigId: "mock_processor_config_id",
+        surcharge: 299,
+        options: nil,
+        displayMetadata: nil)
+    
     var order: ClientSession.Order {
         .init(id: "order_id",
               merchantAmount: 1234,
@@ -209,7 +222,7 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
                      dateStr: nil,
                      order: nil,
                      orderId: "order_id",
-                     requiredAction: .init(clientToken: ACHMocks.stripeACHToken,
+                     requiredAction: .init(clientToken: stripeACHToken,
                                            name: .checkout,
                                            description: "description"),
                      status: .success,
@@ -222,11 +235,15 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
               isVaulted: false,
               isAlreadyVaulted: false,
               paymentInstrumentType: .stripeAch,
-              paymentMethodType: ACHMocks.stripeACHPaymentMethodType,
+              paymentMethodType: stripeACHPaymentMethodType,
               paymentInstrumentData: nil,
               threeDSecureAuthentication: nil,
               token: "token",
               tokenType: .singleUse,
               vaultData: nil)
+    }
+    
+    var stripeACHToken: String {
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6ImNsaWVudC10b2tlbi1zaWduaW5nLWtleSJ9.eyJleHAiOjE2NjQ5NTM1OTkwLCJhY2Nlc3NUb2tlbiI6ImIwY2E0NTFhLTBmYmItNGZlYS1hY2UwLTgxMDYwNGQ4OTBkYSIsImFuYWx5dGljc1VybCI6Imh0dHBzOi8vYW5hbHl0aWNzLmFwaS5zYW5kYm94LmNvcmUucHJpbWVyLmlvL21peHBhbmVsIiwiYW5hbHl0aWNzVXJsVjIiOiJodHRwczovL2FuYWx5dGljcy5zYW5kYm94LmRhdGEucHJpbWVyLmlvL2NoZWNrb3V0L3RyYWNrIiwiaW50ZW50IjoiU1RSSVBFX0FDSCIsInN0cmlwZUNsaWVudFNlY3JldCI6ImNsaWVudC1zZWNyZXQtdGVzdCIsImNvbmZpZ3VyYXRpb25VcmwiOiJodHRwczovL2FwaS5zYW5kYm94LnByaW1lci5pby9jbGllbnQtc2RrL2NvbmZpZ3VyYXRpb24iLCJjb3JlVXJsIjoiaHR0cHM6Ly9hcGkuc2FuZGJveC5wcmltZXIuaW8iLCJwY2lVcmwiOiJodHRwczovL3Nkay5hcGkuc2FuZGJveC5wcmltZXIuaW8iLCJlbnYiOiJTQU5EQk9YIiwic3RhdHVzVXJsIjoiaHR0cHM6Ly9hcGkuc2FuZGJveC5wcmltZXIuaW8vcmVzdW1lLXRva2Vucy9lOTM3ZDQyMS0zYzE2LTRjMmUtYTBjOC01OGQxY2RhNWM0NmUiLCJyZWRpcmVjdFVybCI6Imh0dHBzOi8vdGVzdC5hZHllbi5jb20vaHBwL2NoZWNrb3V0LnNodG1sP3U9c2tpcERldGFpbHMmcD1lSnlOVTl0eW16QVEtUnJ6QmdQaVluamd3UVdTdUUwY2g5aE9waThlV2F4dDFTQXhrbkROMzJjaGwyblR6clF6ekk3WWN5U2RQYnVpYlZ0elJnMlhZaTcyMG9HTEFTVm92YXlwMlV2VnpJV0JnNkpHcW5TcGVBUEtvdi1Zc2FBTi1DOTNBMG9qbGhKcnA2aW9NbGxCZXVCS3RyUzNXS2NVQ05hUHlXSmRXbmdnTzFKaFpvekpUcGkzTzc3dVZxQk5rZDNmZlJEZU5lUEpqdWxiU0xPYkl2dDJ2MTV0cjR0RlVjNnp2ekxQYjFxaTZRZGN3aDRHRFpCeXFiZFNWYUMydk5xRzljLTc5bGJ0ZnVHWlRvbWNHcHBtRCpGeUdUd0gqVk5PbmhZeCplQTg4a042TFNET29KSDVobmpWNWZRZ3dwc3YtV0puaXRYc0txZzhsWWlZcTRmbkpTSHJpWjliNkVJRFdHOHpsdXZGcnFWZ2NJV0xReWFGVVpTWnRDeXlkVm5PRjllSXRVQ05MWVZ0MEJmWm1YUlBhdzJZMSp2eU5qMGEwKnFKUDV1UUstellFZGdKT2ZvbzJ4YVViZEJEaDFZOUNJZko1azhDWmpTb00yZWdjYmw4RlRZWHlFVXhKVlFjbFJsRXpoNkdXakpzOFN2bkRzeFJWaFAtNmxQM3NMN1AtWnVRU0kxR29seUVYd1dUY0pBY0RxSXgwSlk3R2dkbEp5OU9PMjUzdUJ3UnJMSnJ3RGJ5QkVLUEdVajhhUlVRei1hWkY5a0JJMkJUbDhWMkdGY2VxMmpJZ2doR0loYlIxbUNHSDMqNFlYdUNmbGpueVg0S1BtR0pIZTg4WmdmVXhWVTFCWnZSTVBKZFZzVlRCcFlHUFl6Tmh0YTg0cVpQaVV1STdibTJHNnpjR1AxMkl3eCo4dDE2YzNJWXVhRnp3NmdWZVBYZ0M3eUR2dzJjelRwdEpPSzJtblcxS2ZYUjBpY3V4dmZRZGp2blRKeVllSkVmVENNdkNYMHZJYjZUZTlxZkMqa2EqWGh3Tnp5QTQ5YmRlLVVxbi1QTE9lSWJNZTEtblBmSldwcmlCY3BiWlBRIn0.wBc6G5-y-Ji5hFjdMkqhOq2nlsQsm5-DgdVptWwKdl4"
     }
 }
