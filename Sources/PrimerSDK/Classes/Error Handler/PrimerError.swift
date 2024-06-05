@@ -68,7 +68,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, userInfo: [String: String]?, diagnosticsId: String)
     case nolError(code: String?, message: String?, userInfo: [String: String]?, diagnosticsId: String)
     case klarnaError(message: String?, userInfo: [String: String]?, diagnosticsId: String)
-    case stripeWrapperError(key: String, message: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case stripeError(key: String, message: String?, userInfo: [String: String]?, diagnosticsId: String)
     case unableToPresentApplePay(userInfo: [String: String]?, diagnosticsId: String)
     case unknown(userInfo: [String: String]?, diagnosticsId: String)
 
@@ -126,7 +126,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return "nol-pay-sdk-error"
         case .klarnaError:
             return "klarna-sdk-error"
-        case .stripeWrapperError(let key, _, _, _):
+        case .stripeError(let key, _, _, _):
             return key
         case .unableToPresentApplePay:
             return "unable-to-present-apple-pay"
@@ -200,7 +200,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .klarnaError(_, _, let diagnosticsId):
             return diagnosticsId
-        case .stripeWrapperError(_, _, _, let diagnosticsId):
+        case .stripeError(_, _, _, let diagnosticsId):
             return diagnosticsId
         case .unknown(_, let diagnosticsId):
             return diagnosticsId
@@ -261,7 +261,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Nol SDK encountered an error: \(String(describing: code)), \(String(describing: message))"
         case .klarnaError(let message, _, _):
             return "Klarna wrapper SDK encountered an error: \(String(describing: message))"
-        case .stripeWrapperError(_, let message, _, _):
+        case .stripeError(_, let message, _, _):
             return "Stripe wrapper SDK encountered an error: \(String(describing: message))"
         case .unableToPresentApplePay:
             return "Unable to present Apple Pay"
@@ -304,7 +304,7 @@ public enum PrimerError: PrimerErrorProtocol {
              .invalidVaultedPaymentMethodId(_, let userInfo, _),
              .nolError(_, _, let userInfo, _),
              .klarnaError(_, let userInfo, _),
-             .stripeWrapperError(_, _, let userInfo, _),
+             .stripeError(_, _, let userInfo, _),
              .unableToPresentApplePay(let userInfo, _),
              .unknown(let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
@@ -395,7 +395,7 @@ Check if all necessary values have been provided on your client session.\
             return nil
         case .klarnaError:
             return nil
-        case .stripeWrapperError:
+        case .stripeError:
             return nil
         case .unableToPresentApplePay:
             let message = """

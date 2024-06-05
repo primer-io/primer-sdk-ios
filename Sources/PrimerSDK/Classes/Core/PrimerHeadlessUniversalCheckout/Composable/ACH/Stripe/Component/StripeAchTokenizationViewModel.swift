@@ -112,7 +112,8 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
      * - Parameter decodedJWTToken: A `DecodedJWTToken` object containing details extracted from a JWT token.
      * - Returns: A promise that resolves with an optional string.
      */
-    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
+                                                   paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         return Promise { seal in
             if decodedJWTToken.intent?.contains("STRIPE_ACH") == true {
                 if let clientSecret = decodedJWTToken.stripeClientSecret {
@@ -361,7 +362,7 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
             guard let publishableKey = PrimerSettings.current.paymentMethodOptions.stripeOptions?.publishableKey else {
 #if canImport(PrimerStripeSDK)
                 let error = PrimerStripeError.stripeInvalidPublishableKeyError
-                let primerError = PrimerError.stripeWrapperError(
+                let primerError = PrimerError.stripeError(
                     key: error.errorId,
                     message: error.errorDescription,
                     userInfo: error.userInfo,
@@ -423,7 +424,7 @@ extension StripeAchTokenizationViewModel: PrimerStripeCollectorViewControllerDel
             let error = ACHHelpers.getCancelledError(paymentMethodType: config.type)
             stripeBankAccountCollectorCompletion?(false, error)
         case .failed(let error):
-            let primerError = PrimerError.stripeWrapperError(
+            let primerError = PrimerError.stripeError(
                 key: error.errorId,
                 message: error.errorDescription,
                 userInfo: error.userInfo,

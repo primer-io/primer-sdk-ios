@@ -15,7 +15,7 @@ extension MerchantHeadlessCheckoutStripeAchViewController: PrimerHeadlessErrorab
     // MARK: - PrimerHeadlessErrorableDelegate
     func didReceiveError(error: PrimerSDK.PrimerError) {
         switch error {
-        case .stripeWrapperError:
+        case .stripeError:
             showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
         default:
             logs.removeAll()
