@@ -7,6 +7,12 @@ internal protocol VaultPaymentMethodViewModelProtocol: AnyObject {
 
 internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
 
+    let vaultService: VaultServiceProtocol
+
+    init(vaultService: VaultServiceProtocol = VaultService(apiClient: PrimerAPIClient())) {
+        self.vaultService = vaultService
+    }
+
     var paymentMethods: [PrimerPaymentMethodTokenData] {
         return AppState.current.paymentMethods
     }
@@ -20,7 +26,6 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
     }
 
     func reloadVault(with completion: @escaping (Error?) -> Void) {
-        let vaultService: VaultServiceProtocol = VaultService()
         firstly {
             vaultService.fetchVaultedPaymentMethods()
         }
@@ -33,7 +38,6 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
     }
 
     func deletePaymentMethod(with paymentMethodToken: String, and completion: @escaping (Error?) -> Void) {
-        let vaultService: VaultServiceProtocol = VaultService()
         firstly {
             vaultService.deleteVaultedPaymentMethod(with: paymentMethodToken)
         }
@@ -42,7 +46,7 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
                 AppState.current.selectedPaymentMethodId = nil
             }
 
-            return vaultService.fetchVaultedPaymentMethods()
+            return self.vaultService.fetchVaultedPaymentMethods()
         }
         .done {
             completion(nil)
@@ -51,20 +55,4 @@ internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol 
             completion(err)
         }
     }
-}
-
-internal class MockVaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
-
-    var theme: PrimerTheme { return PrimerTheme() }
-    var paymentMethods: [PrimerPaymentMethodTokenData] { return [] }
-    var selectedPaymentMethodId: String? = "id"
-
-    func reloadVault(with completion: @escaping (Error?) -> Void) {
-
-    }
-
-    func deletePaymentMethod(with id: String, and completion: @escaping (Error?) -> Void) {
-
-    }
-
 }

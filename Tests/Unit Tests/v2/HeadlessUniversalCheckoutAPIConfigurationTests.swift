@@ -79,7 +79,6 @@ class HeadlessUniversalCheckoutAPIConfigurationTests: XCTestCase {
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.fetchVaultedPaymentMethodsResult = (vaultedPaymentMethods, nil)
         mockApiClient.fetchConfigurationResult = (mockPrimerApiConfiguration, nil)
-        VaultService.apiClient = mockApiClient
         PrimerAPIConfigurationModule.apiClient = mockApiClient
 
         var availablePaymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]?
@@ -188,7 +187,6 @@ class HeadlessUniversalCheckoutAPIConfigurationTests: XCTestCase {
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.fetchVaultedPaymentMethodsResult = (vaultedPaymentMethods, nil)
         mockApiClient.fetchConfigurationResult = (mockPrimerApiConfiguration, nil)
-        VaultService.apiClient = mockApiClient
         PrimerAPIConfigurationModule.apiClient = mockApiClient
 
         var availablePaymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]?

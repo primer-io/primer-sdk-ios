@@ -30,7 +30,8 @@ internal protocol PaymentMethodTokenizationModelProtocol: NSObject {
     func presentPaymentMethodUserInterface() -> Promise<Void>
     func awaitUserInput() -> Promise<Void>
 
-    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?>
+    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
+                                          paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?>
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?>
     func handleSuccessfulFlow()
     func handleFailureFlow(errorMessage: String?)

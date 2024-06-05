@@ -166,7 +166,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         fatalError("\(#function) must be overriden")
     }
 
-    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
+                                          paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         fatalError("\(#function) must be overriden")
     }
 

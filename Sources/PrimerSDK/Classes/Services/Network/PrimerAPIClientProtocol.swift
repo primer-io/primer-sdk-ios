@@ -14,7 +14,8 @@ protocol PrimerAPIClientProtocol:
     PrimerAPIClientAnalyticsProtocol,
     PrimerAPIClientBINDataProtocol,
     PrimerAPIClientBanksProtocol,
-    PrimerAPIClientPayPalProtocol {
+    PrimerAPIClientPayPalProtocol,
+    PrimerAPIClientVaultProtocol {
 
     // MARK: Configuration
 
@@ -30,17 +31,6 @@ protocol PrimerAPIClientProtocol:
     func requestPrimerConfigurationWithActions(clientToken: DecodedJWTToken,
                                                request: ClientSessionUpdateRequest,
                                                completion: @escaping APICompletion<PrimerAPIConfiguration>)
-
-    // MARK: Vault
-
-    func fetchVaultedPaymentMethods(
-        clientToken: DecodedJWTToken,
-        completion: @escaping APICompletion<Response.Body.VaultedPaymentMethods>)
-
-    func deleteVaultedPaymentMethod(
-        clientToken: DecodedJWTToken,
-        id: String,
-        completion: @escaping APICompletion<Void>)
 
     // MARK: Klarna
 

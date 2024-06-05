@@ -162,7 +162,7 @@ class MockNolPayTokenizationViewModel: NolPayTokenizationViewModel {
         }
     }
 
-    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         switch mockHandleDecodedClientTokenResult {
         case .success(let token):
             return .value(token)

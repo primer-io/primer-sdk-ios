@@ -24,7 +24,7 @@ extension PaymentMethodTokenizationViewModel {
             self.processPaymentMethodTokenData()
         }
         .ensure {
-            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+            self.uiManager.primerRootViewController?.enableUserInteraction(true)
         }
         .catch { err in
             let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
@@ -191,7 +191,7 @@ extension PaymentMethodTokenizationViewModel {
                         if let cancelledError = cancelledError {
                             throw cancelledError
                         }
-                        return self.handleDecodedClientTokenIfNeeded(decodedJWTToken)
+                        return self.handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
                     }
                     .done { resumeToken in
                         if let cancelledError = cancelledError {

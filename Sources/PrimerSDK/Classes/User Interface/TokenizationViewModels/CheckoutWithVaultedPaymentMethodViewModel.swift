@@ -17,6 +17,10 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
 
     static var apiClient: PrimerAPIClientProtocol?
 
+    let tokenizationService: TokenizationServiceProtocol
+
+    let createResumePaymentService: CreateResumePaymentServiceProtocol
+
     var config: PrimerPaymentMethod
     var selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData
     var paymentMethodTokenData: PrimerPaymentMethodTokenData!
@@ -37,10 +41,15 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
 
     init(configuration: PrimerPaymentMethod,
          selectedPaymentMethodTokenData: PrimerPaymentMethodTokenData,
-         additionalData: PrimerVaultedCardAdditionalData?) {
+         additionalData: PrimerVaultedCardAdditionalData?,
+         tokenizationService: TokenizationServiceProtocol = TokenizationService(),
+         createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()) {
         self.config = configuration
         self.selectedPaymentMethodTokenData = selectedPaymentMethodTokenData
         self.additionalData = additionalData
+
+        self.tokenizationService = tokenizationService
+        self.createResumePaymentService = createResumePaymentService
     }
 
     func start() -> Promise<Void> {
@@ -116,8 +125,8 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                     throw err
                 }
 
-                let tokenizationService = TokenizationService()
-                return tokenizationService.exchangePaymentMethodToken(paymentMethodTokenId, vaultedPaymentMethodAdditionalData: self.additionalData)
+                return self.tokenizationService.exchangePaymentMethodToken(paymentMethodTokenId,
+                                                                           vaultedPaymentMethodAdditionalData: self.additionalData)
             }
             .then { paymentMethodTokenData -> Promise<Void> in
                 self.paymentMethodTokenData = paymentMethodTokenData
@@ -230,7 +239,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
             .done { decodedJWTToken in
                 if let decodedJWTToken = decodedJWTToken {
                     firstly {
-                        self.handleDecodedClientTokenIfNeeded(decodedJWTToken)
+                        self.handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
                     }
                     .done { resumeToken in
                         if let resumeToken = resumeToken {
@@ -336,9 +345,8 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
             let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
-            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
+            self.createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
                                                                   paymentResumeRequest: resumeRequest) { paymentResponse, error in
 
                 if let error = error {
@@ -514,21 +522,9 @@ Make sure you call the decision handler otherwise the SDK will hang.
         }
     }
 
-    private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+    private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         return Promise { seal in
             if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-                guard let paymentMethodTokenData = self.paymentMethodTokenData else {
-                    let err = InternalError.failedToDecode(message: "Failed to find paymentMethod",
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                    let containerErr = PrimerError.failedToPerform3DS(paymentMethodType: self.paymentMethodType,
-                                                                      error: err,
-                                                                      userInfo: .errorUserInfoDictionary(),
-                                                                      diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: containerErr)
-                    seal.reject(containerErr)
-                    return
-                }
 
                 let threeDSService = ThreeDSService()
                 threeDSService.perform3DS(
@@ -558,9 +554,8 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
         return Promise { seal in
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
             let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
-            createResumePaymentService.createPayment(paymentRequest: paymentRequest) { paymentResponse, error in
+            self.createResumePaymentService.createPayment(paymentRequest: paymentRequest) { paymentResponse, error in
 
                 if let error = error {
                     if let paymentResponse {

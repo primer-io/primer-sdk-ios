@@ -385,7 +385,7 @@ extension FormPaymentMethodTokenizationViewModel {
             let infoView = makePaymentPendingInfoView(message: message)
             let paymentPendingInfoView = PrimerPaymentPendingInfoViewController(formPaymentMethodTokenizationViewModel: self,
                                                                                 infoView: infoView)
-            PrimerUIManager.primerRootViewController?.show(viewController: paymentPendingInfoView)
+            self.uiManager.primerRootViewController?.show(viewController: paymentPendingInfoView)
             return Promise()
         }
 
@@ -407,7 +407,7 @@ extension FormPaymentMethodTokenizationViewModel {
             let pcfvc = PrimerAccountInfoPaymentViewController(navigationBarLogo: uiModule.navigationBarLogo,
                                                                formPaymentMethodTokenizationViewModel: self)
             infoView = voucherConfirmationInfoView
-            PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
+            self.uiManager.primerRootViewController?.show(viewController: pcfvc)
             seal.fulfill()
         }
     }
@@ -418,14 +418,14 @@ extension FormPaymentMethodTokenizationViewModel {
                                                            formPaymentMethodTokenizationViewModel: self,
                                                            shouldShareVoucherInfoWithText: voucherText)
         infoView = voucherInfoView
-        PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
+        self.uiManager.primerRootViewController?.show(viewController: pcfvc)
     }
 
     func presentAccountInfoViewController() {
         let pcfvc = PrimerAccountInfoPaymentViewController(navigationBarLogo: uiModule.navigationBarLogo,
                                                            formPaymentMethodTokenizationViewModel: self)
         infoView = makeAccountInfoPaymentView()
-        PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
+        self.uiManager.primerRootViewController?.show(viewController: pcfvc)
     }
 
     func presentInputViewController() -> Promise<Void> {
@@ -434,7 +434,7 @@ extension FormPaymentMethodTokenizationViewModel {
                                                   formPaymentMethodTokenizationViewModel: self,
                                                   inputsDistribution: .horizontal)
             inputs.append(contentsOf: makeInputViews())
-            PrimerUIManager.primerRootViewController?.show(viewController: pcfvc)
+            self.uiManager.primerRootViewController?.show(viewController: pcfvc)
             seal.fulfill()
         }
     }

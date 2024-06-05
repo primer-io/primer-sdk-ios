@@ -507,7 +507,6 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
 
             completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
             controller.dismiss(completion: nil)
-            print(">>>>> CALLING COMPLETION")
             applePayReceiveDataCompletion?(.success(applePayPaymentResponse))
             applePayReceiveDataCompletion = nil
 

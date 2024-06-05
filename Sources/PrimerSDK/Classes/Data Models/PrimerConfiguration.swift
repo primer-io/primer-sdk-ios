@@ -386,6 +386,26 @@ extension Response.Body.Configuration {
                 case state
             }
 
+            init(firstName: Bool? = nil,
+                 lastName: Bool? = nil,
+                 city: Bool? = nil,
+                 postalCode: Bool? = nil,
+                 addressLine1: Bool? = nil,
+                 addressLine2: Bool? = nil,
+                 countryCode: Bool? = nil,
+                 phoneNumber: Bool? = nil,
+                 state: Bool? = nil) {
+                self.firstName = firstName
+                self.lastName = lastName
+                self.city = city
+                self.postalCode = postalCode
+                self.addressLine1 = addressLine1
+                self.addressLine2 = addressLine2
+                self.countryCode = countryCode
+                self.phoneNumber = phoneNumber
+                self.state = state
+            }
+
             init(from decoder: Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
                 self.firstName = (try? container.decode(Bool?.self, forKey: .firstName)) ?? nil
@@ -414,6 +434,12 @@ extension Response.Body.Configuration {
                     throw err
                 }
             }
+        }
+
+        init(type: String, requestUrlStr: String?, options: CheckoutModuleOptions?) {
+            self.type = type
+            self.requestUrlStr = requestUrlStr
+            self.options = options
         }
 
         init(from decoder: Decoder) throws {

@@ -320,7 +320,8 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
-    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
+                                                   paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         return Promise { seal in
             #if canImport(PrimerIPay88MYSDK)
             if decodedJWTToken.intent == "IPAY88_CARD_REDIRECTION" {

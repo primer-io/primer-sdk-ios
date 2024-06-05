@@ -39,7 +39,6 @@ final class IdealPaymentMethodTests: XCTestCase {
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.fetchVaultedPaymentMethodsResult = (vaultedPaymentMethods, nil)
         mockApiClient.fetchConfigurationResult = (mockPrimerApiConfiguration, nil)
-        VaultService.apiClient = mockApiClient
         PrimerAPIConfigurationModule.apiClient = mockApiClient
 
         let expectation = XCTestExpectation(description: "Successful HUC initialization")

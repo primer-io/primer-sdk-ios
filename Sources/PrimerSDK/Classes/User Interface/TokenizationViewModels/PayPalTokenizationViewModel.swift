@@ -18,7 +18,12 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var session: Any!
     private var orderId: String?
     private var confirmBillingAgreementResponse: Response.Body.PayPal.ConfirmBillingAgreement?
-    private lazy var paypalService: PayPalServiceProtocol = {
+
+    lazy var webAuthenticationService: WebAuthenticationService = {
+        DefaultWebAuthenticationService()
+    }()
+
+    lazy var payPalService: PayPalServiceProtocol = {
         PayPalService()
     }()
 
@@ -186,7 +191,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
             switch PrimerInternal.shared.intent {
             case .checkout:
-                paypalService.startOrderSession { result in
+                payPalService.startOrderSession { result in
                     switch result {
                     case .success(let res):
                         guard let url = URL(string: res.approvalUrl) else {
@@ -207,7 +212,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     }
                 }
             case .vault:
-                paypalService.startBillingAgreementSession { result in
+                payPalService.startBillingAgreementSession { result in
                     switch result {
                     case .success(let urlStr):
                         guard let url = URL(string: urlStr) else {
@@ -242,42 +247,21 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return
             }
 
-            let webAuthSession =  ASWebAuthenticationSession(
-                url: url,
-                callbackURLScheme: scheme,
-                completionHandler: { [weak self] (url, error) in
-                    guard let strongSelf = self else { return }
-
-                    if let error = error {
-                        let nsError = (error as NSError)
-                        if nsError.domain == "com.apple.AuthenticationServices.WebAuthenticationSession" && nsError.code == 1 {
-                            let cancelErr = PrimerError.cancelled(
-                                paymentMethodType: strongSelf.config.type,
-                                userInfo: .errorUserInfoDictionary(),
-                                diagnosticsId: UUID().uuidString)
-                            seal.reject(cancelErr)
-
-                        } else {
-                            seal.reject(error)
-                        }
-
-                    } else if let url = url {
-                        seal.fulfill(url)
-                    }
-
-                    (strongSelf.session as? ASWebAuthenticationSession)?.cancel()
+            webAuthenticationService.connect(url: url, scheme: scheme) { [weak self] result in
+                switch result {
+                case .success(let url):
+                    seal.fulfill(url)
+                case .failure(let error):
+                    seal.reject(error)
                 }
-            )
-            session = webAuthSession
-
-            webAuthSession.presentationContextProvider = self
-            webAuthSession.start()
+                self?.webAuthenticationService.session?.cancel()
+            }
         }
     }
 
     func fetchPayPalExternalPayerInfo(orderId: String) -> Promise<Response.Body.PayPal.PayerInfo> {
         return Promise { seal in
-            paypalService.fetchPayPalExternalPayerInfo(orderId: orderId) { result in
+            payPalService.fetchPayPalExternalPayerInfo(orderId: orderId) { result in
                 switch result {
                 case .success(let response):
                     seal.fulfill(response)
@@ -423,7 +407,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     private func generateBillingAgreementConfirmation(_ completion: @escaping (Response.Body.PayPal.ConfirmBillingAgreement?, Error?) -> Void) {
 
-        paypalService.confirmBillingAgreement({ result in
+        payPalService.confirmBillingAgreement({ result in
             switch result {
             case .failure(let err):
                 let contaiinerErr = PrimerError.failedToCreateSession(error: err,
@@ -442,15 +426,6 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         let requestBody = Request.Body.Tokenization(paymentInstrument: self.payPalInstrument)
         return tokenizationService.tokenize(requestBody: requestBody)
     }
-}
-
-@available(iOS 11.0, *)
-extension PayPalTokenizationViewModel: ASWebAuthenticationPresentationContextProviding {
-    @available(iOS 12.0, *)
-    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-        return UIApplication.shared.keyWindow ?? ASPresentationAnchor()
-    }
-
 }
 // swiftlint:enable type_body_length
 // swiftlint:enable function_body_length

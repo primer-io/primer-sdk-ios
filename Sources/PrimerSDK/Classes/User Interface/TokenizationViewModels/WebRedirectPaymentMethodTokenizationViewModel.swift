@@ -106,7 +106,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
         let imageView = self.uiModule.makeIconImageView(withDimension: 24.0)
         self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView,
-                                                                            message: nil)
+                                                                           message: nil)
 
         return Promise { seal in
             firstly {
@@ -314,7 +314,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         }
     }
 
-    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
+                                                   paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         return Promise { seal in
             if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
                 if let redirectUrlStr = decodedJWTToken.redirectUrl,

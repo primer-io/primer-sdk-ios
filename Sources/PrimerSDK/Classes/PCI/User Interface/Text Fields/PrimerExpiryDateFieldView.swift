@@ -12,8 +12,8 @@ import UIKit
 
 public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
 
-    private(set) public var expiryMonth: String?
-    private(set) public var expiryYear: String?
+    internal(set) public var expiryMonth: String?
+    internal(set) public var expiryYear: String?
 
     override func xibSetup() {
         super.xibSetup()

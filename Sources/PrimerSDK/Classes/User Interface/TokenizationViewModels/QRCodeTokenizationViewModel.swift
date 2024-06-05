@@ -164,7 +164,8 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
         }
     }
 
-    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
+                                                   paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         return Promise { seal in
             if let statusUrlStr = decodedJWTToken.statusUrl,
                let statusUrl = URL(string: statusUrlStr),

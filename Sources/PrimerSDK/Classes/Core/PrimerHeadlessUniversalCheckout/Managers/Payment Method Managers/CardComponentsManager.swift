@@ -409,7 +409,8 @@ extension PrimerHeadlessUniversalCheckout {
                 .done { decodedJWTToken in
                     if let decodedJWTToken = decodedJWTToken {
                         firstly {
-                            self.handleDecodedClientTokenIfNeeded(decodedJWTToken)
+                            self.handleDecodedClientTokenIfNeeded(decodedJWTToken,
+                                                                  paymentMethodTokenData: paymentMethodTokenData)
                         }
                         .done { resumeToken in
                             if let resumeToken = resumeToken {
@@ -624,22 +625,10 @@ Make sure you call the decision handler otherwise the SDK will hang.
             }
         }
 
-        func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken) -> Promise<String?> {
+        func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
+                                              paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
             return Promise { seal in
                 if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-                    guard let paymentMethodTokenData = paymentMethodTokenData else {
-                        let err = InternalError.failedToDecode(message: "Failed to find paymentMethod",
-                                                               userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                        let containerErr = PrimerError.failedToPerform3DS(paymentMethodType: self.paymentMethodType,
-                                                                          error: err,
-                                                                          userInfo: .errorUserInfoDictionary(),
-                                                                          diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: containerErr)
-                        seal.reject(containerErr)
-                        return
-                    }
-
                     let threeDSService = ThreeDSService()
                     threeDSService.perform3DS(
                         paymentMethodTokenData: paymentMethodTokenData,
@@ -1058,122 +1047,6 @@ Make sure you call the decision handler otherwise the SDK will hang.
                 if tmpIsFormValid != self.isCardFormValid {
                     self.isCardFormValid = tmpIsFormValid
                 }
-            }
-        }
-    }
-}
-
-@available(*, deprecated, message: "CardComponentsManager is no longer supported, please use PrimerHeadlessUniversalCheckout instead")
-extension PrimerHeadlessUniversalCheckout.CardComponentsManager: ResumeHandlerProtocol {
-
-    // MARK: - RESUME HANDLER
-
-    public func handle(newClientToken clientToken: String) {
-        self.handle(clientToken)
-    }
-
-    public func handle(error: Error) {}
-
-    public func handleSuccess() {}
-}
-
-@available(*, deprecated, message: "CardComponentsManager is no longer supported, please use PrimerHeadlessUniversalCheckout instead")
-extension PrimerHeadlessUniversalCheckout.CardComponentsManager {
-
-    private func handle(_ clientToken: String) {
-
-        if PrimerAPIConfigurationModule.clientToken != clientToken {
-            let apiConfigurationModule = PrimerAPIConfigurationModule()
-
-            firstly {
-                apiConfigurationModule.storeRequiredActionClientToken(clientToken)
-            }
-            .done {
-                DispatchQueue.main.async {
-                    self.continueHandleNewClientToken(clientToken)
-                }
-            }
-            .catch { err in
-                var primerErr: PrimerError!
-                if let err = err as? PrimerError {
-                    primerErr = err
-                } else {
-                    primerErr = PrimerError.underlyingErrors(errors: [err],
-                                                             userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
-                }
-
-                ErrorHandler.handle(error: primerErr)
-                PrimerDelegateProxy.primerDidFailWithError(primerErr, data: nil) { _ in
-
-                }
-            }
-        } else {
-            self.continueHandleNewClientToken(clientToken)
-        }
-    }
-
-    private func continueHandleNewClientToken(_ clientToken: String) {
-
-        if let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
-           decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-
-            guard let paymentMethodTokenData = paymentMethodTokenData else {
-                DispatchQueue.main.async {
-                    let err = InternalError.failedToDecode(message: "Failed to find paymentMethod",
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                    let containerErr = PrimerError.failedToPerform3DS(paymentMethodType: self.paymentMethodType,
-                                                                      error: err,
-                                                                      userInfo: .errorUserInfoDictionary(),
-                                                                      diagnosticsId: UUID().uuidString)
-                    self.handle(error: containerErr)
-                }
-                return
-            }
-
-            PrimerInternal.shared.intent = .checkout
-            let threeDSService = ThreeDSService()
-            threeDSService.perform3DS(
-                paymentMethodTokenData: paymentMethodTokenData,
-                sdkDismissed: nil) { result in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success(let resumeToken):
-                        PrimerDelegateProxy.primerDidResumeWith(resumeToken) { _ in
-
-                        }
-
-                    case .failure(let err):
-                        var primerError: PrimerError
-
-                        if let primerErr = err as? PrimerError {
-                            primerError = primerErr
-                        } else {
-                            primerError = PrimerError.underlyingErrors(
-                                errors: [err],
-                                userInfo: .errorUserInfoDictionary(),
-                                diagnosticsId: UUID().uuidString)
-                        }
-
-                        PrimerDelegateProxy.primerDidFailWithError(primerError, data: nil) { _ in
-
-                        }
-                    }
-                }
-            }
-
-        } else {
-            let err = PrimerError.invalidValue(key: "resumeToken",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-
-            DispatchQueue.main.async {
-                PrimerHeadlessUniversalCheckout.current.delegate?
-                    .primerHeadlessUniversalCheckoutDidFail?(withError: err,
-                                                             checkoutData: self.paymentCheckoutData)
             }
         }
     }

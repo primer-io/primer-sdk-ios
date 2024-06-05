@@ -277,7 +277,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         requestVaultedPaymentMethods: Bool
     ) -> Promise<PrimerAPIConfiguration> {
         if requestVaultedPaymentMethods {
-            let vaultService: VaultServiceProtocol = VaultService()
+            let vaultService: VaultServiceProtocol = VaultService(apiClient: PrimerAPIClient())
             let vaultedPaymentMethodsPromise = vaultService.fetchVaultedPaymentMethods()
             let fetchConfigurationPromise = self.fetchConfiguration(requestDisplayMetadata: true)
 

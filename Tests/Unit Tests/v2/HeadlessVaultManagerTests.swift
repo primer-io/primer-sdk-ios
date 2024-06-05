@@ -114,11 +114,11 @@ final class HeadlessVaultManagerTests: XCTestCase {
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.fetchVaultedPaymentMethodsResult = (vaultedPaymentMethods, nil)
         mockApiClient.fetchConfigurationResult = (mockPrimerApiConfiguration, nil)
-        VaultService.apiClient = mockApiClient
         PrimerAPIConfigurationModule.apiClient = mockApiClient
 
         PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { _, _ in
             let vaultManager = PrimerHeadlessUniversalCheckout.VaultManager()
+            vaultManager.vaultService = VaultService(apiClient: mockApiClient)
             try! vaultManager.configure()
             vaultManager.fetchVaultedPaymentMethods { vpm, _ in
                 if let unwrappedVaultedPaymentMethods = vpm {
@@ -194,11 +194,11 @@ final class HeadlessVaultManagerTests: XCTestCase {
         let mockApiClient = MockPrimerAPIClient()
         mockApiClient.fetchVaultedPaymentMethodsResult = (vaultedPaymentMethods, nil)
         mockApiClient.fetchConfigurationResult = (mockPrimerApiConfiguration, nil)
-        VaultService.apiClient = mockApiClient
         PrimerAPIConfigurationModule.apiClient = mockApiClient
 
         PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { _, _ in
             let vaultManager = PrimerHeadlessUniversalCheckout.VaultManager()
+            vaultManager.vaultService = VaultService(apiClient: mockApiClient)
             do {
                 try vaultManager.configure()
             } catch {
@@ -314,11 +314,11 @@ final class HeadlessVaultManagerTests: XCTestCase {
         mockApiClient.fetchVaultedPaymentMethodsResult = (vaultedPaymentMethods, nil)
         mockApiClient.fetchConfigurationResult = (mockPrimerApiConfiguration, nil)
         mockApiClient.deleteVaultedPaymentMethodResult = ((), nil)
-        VaultService.apiClient = mockApiClient
         PrimerAPIConfigurationModule.apiClient = mockApiClient
 
         PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { _, err in
             let vaultManager = PrimerHeadlessUniversalCheckout.VaultManager()
+            vaultManager.vaultService = VaultService(apiClient: mockApiClient)
             try! vaultManager.configure()
             vaultManager.fetchVaultedPaymentMethods { vaultedPaymentMethods, err in
                 if let err = err {
@@ -328,7 +328,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
                     if let testVaultedPaymentMethod = vaultedPaymentMethods.first(where: { $0.id == "test" }) {
                         mockApiClient = MockPrimerAPIClient()
                         mockApiClient.deleteVaultedPaymentMethodResult = ((), nil)
-                        VaultService.apiClient = mockApiClient
+                        vaultManager.vaultService = VaultService(apiClient: mockApiClient)
 
                         vaultManager.deleteVaultedPaymentMethod(id: testVaultedPaymentMethod.id) { err in
                             if err != nil {
@@ -336,7 +336,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
                             } else {
                                 mockApiClient = MockPrimerAPIClient()
                                 mockApiClient.fetchVaultedPaymentMethodsResult = (Response.Body.VaultedPaymentMethods(data: []), nil)
-                                VaultService.apiClient = mockApiClient
+                                vaultManager.vaultService = VaultService(apiClient: mockApiClient)
                                 vaultManager.fetchVaultedPaymentMethods { updatedVaultedPaymentMethods, err in
                                     if let err = err {
                                         XCTAssert(true, "Failed with error \(err.localizedDescription)")

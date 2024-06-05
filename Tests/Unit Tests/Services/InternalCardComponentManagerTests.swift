@@ -135,3 +135,71 @@ class InternalCardComponentManagerTests: XCTestCase {
         }
     }
 }
+
+class MockCardComponentsManager: InternalCardComponentsManagerProtocol {
+
+    var cardnumberField: PrimerCardNumberFieldView
+
+    var expiryDateField: PrimerExpiryDateFieldView
+
+    var cvvField: PrimerCVVFieldView
+
+    var cardholderField: PrimerCardholderNameFieldView?
+
+    var postalCodeField: PrimerPostalCodeFieldView?
+
+    var delegate: InternalCardComponentsManagerDelegate
+
+    var customerId: String?
+
+    var merchantIdentifier: String?
+
+    var amount: Int?
+
+    var currency: Currency?
+
+    var decodedJWTToken: DecodedJWTToken? {
+        return PrimerAPIConfigurationModule.decodedJWTToken
+    }
+
+    var paymentMethodsConfig: PrimerAPIConfiguration?
+
+    public init(
+        cardnumberField: PrimerCardNumberFieldView,
+        expiryDateField: PrimerExpiryDateFieldView,
+        cvvField: PrimerCVVFieldView,
+        cardholderNameField: PrimerCardholderNameFieldView?,
+        postalCodeField: PrimerPostalCodeFieldView
+    ) {
+        self.cardnumberField = cardnumberField
+        self.expiryDateField = expiryDateField
+        self.cvvField = cvvField
+        self.cardholderField = cardholderNameField
+        self.postalCodeField = postalCodeField
+        self.delegate = MockCardComponentsManagerDelegate()
+    }
+
+    convenience init(
+        cardnumber: String?
+    ) {
+        let cardnumberFieldView = PrimerCardNumberFieldView()
+        cardnumberFieldView.textField.internalText = cardnumber
+        self.init(
+            cardnumberField: cardnumberFieldView,
+            expiryDateField: PrimerExpiryDateFieldView(),
+            cvvField: PrimerCVVFieldView(),
+            cardholderNameField: PrimerCardholderNameFieldView(),
+            postalCodeField: PrimerPostalCodeFieldView()
+        )
+    }
+
+    func tokenize() {
+
+    }
+}
+
+class MockCardComponentsManagerDelegate: InternalCardComponentsManagerDelegate {
+    func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager,
+                               onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData) {
+    }
+}
