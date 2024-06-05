@@ -58,7 +58,7 @@ internal extension DecodedJWTToken {
             supportedCurrencyCode: supportedCurrencyCode,
             supportedCountry: supportedCountry,
             nolPayTransactionNo: nolPayTransactionNo,
-            clientSecret: clientSecret)
+            stripeClientSecret: clientSecret)
         return decodedClientToken
     }
 

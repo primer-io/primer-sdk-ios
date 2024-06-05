@@ -154,7 +154,6 @@ extension ACHClientSessionServiceTests {
         mockApiClient.fetchConfigurationResult = (apiConfiguration, nil)
 
         AppState.current.clientToken = MockAppState.mockClientToken
-        VaultService.apiClient = mockApiClient
         PrimerAPIConfigurationModule.apiClient = mockApiClient
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
@@ -187,7 +186,6 @@ extension ACHClientSessionServiceTests {
         PrimerAPIConfigurationModule.apiClient = nil
         PrimerAPIConfigurationModule.clientToken = nil
         PrimerAPIConfigurationModule.apiConfiguration = nil
-        VaultService.apiClient = nil
 
         clientSessionService = nil
     }

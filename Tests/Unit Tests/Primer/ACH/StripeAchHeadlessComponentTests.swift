@@ -386,7 +386,6 @@ extension StripeAchHeadlessComponentTests {
         mockApiClient.fetchConfigurationResult = (apiConfiguration, nil)
 
         AppState.current.clientToken = MockAppState.mockClientToken
-        VaultService.apiClient = mockApiClient
         PrimerAPIConfigurationModule.apiClient = mockApiClient
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
@@ -424,7 +423,6 @@ extension StripeAchHeadlessComponentTests {
         PrimerAPIConfigurationModule.apiClient = nil
         PrimerAPIConfigurationModule.clientToken = nil
         PrimerAPIConfigurationModule.apiConfiguration = nil
-        VaultService.apiClient = nil
 
         tokenizationService = nil
         tokenizationViewModel = nil

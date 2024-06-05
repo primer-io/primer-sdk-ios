@@ -113,21 +113,18 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
         }
         
         let expectStripeCollectorCompletion = self.expectation(description: "stripeCollectorCompletion called")
-        DispatchQueue.global().async {
-            sleep(3)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             self.sut.stripeBankAccountCollectorCompletion?(true, nil)
             expectStripeCollectorCompletion.fulfill()
         }
         
-        
-        let expectDidReceiveAdditionalInfo = self.expectation(description: "didReceiveAdditionalInfo is called")
+        let expectDidReceiveMandateAdditionalInfo = self.expectation(description: "didReceiveMandateAdditionalInfo is called")
         delegate.onDidReceiveAdditionalInfo = { _ in
-            expectDidReceiveAdditionalInfo.fulfill()
+            expectDidReceiveMandateAdditionalInfo.fulfill()
         }
         
         let expectMandateCompletion = self.expectation(description: "mandateCompletion called")
-        DispatchQueue.global().async {
-            sleep(5)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
             self.mandateDelegate?.mandateAccepted()
             expectMandateCompletion.fulfill()
         }
@@ -153,7 +150,7 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
             expectDidTokenize,
             expectDidCreatePayment,
             expectStripeCollectorCompletion,
-            expectDidReceiveAdditionalInfo,
+            expectDidReceiveMandateAdditionalInfo,
             expectMandateCompletion,
             expectDidResumePayment,
             expectCheckoutDidCompleteWithData

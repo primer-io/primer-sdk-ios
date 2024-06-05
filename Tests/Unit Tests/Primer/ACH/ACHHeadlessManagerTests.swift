@@ -62,7 +62,6 @@ extension ACHHeadlessManagerTests {
         mockApiClient.fetchConfigurationResult = (apiConfiguration, nil)
 
         AppState.current.clientToken = MockAppState.mockClientToken
-        VaultService.apiClient = mockApiClient
         PrimerAPIConfigurationModule.apiClient = mockApiClient
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
@@ -98,9 +97,6 @@ extension ACHHeadlessManagerTests {
         PrimerAPIConfigurationModule.apiClient = nil
         PrimerAPIConfigurationModule.clientToken = nil
         PrimerAPIConfigurationModule.apiConfiguration = nil
-        VaultService.apiClient = nil
-        
-        
     }
 
     private func getInvalidTokenError() -> PrimerError {

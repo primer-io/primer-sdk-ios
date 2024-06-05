@@ -172,7 +172,6 @@ extension ACHTokenizationServiceTests {
             AppState.current.clientToken = MockAppState.mockClientToken
         }
         
-        VaultService.apiClient = mockApiClient
         PrimerAPIConfigurationModule.apiClient = mockApiClient
         
         if hasDecodedToken {
@@ -229,7 +228,6 @@ extension ACHTokenizationServiceTests {
         PrimerAPIConfigurationModule.clientToken = nil
         PrimerAPIConfigurationModule.apiConfiguration = nil
         TokenizationService.apiClient = nil
-        VaultService.apiClient = nil
         
         tokenizationService = nil
     }
