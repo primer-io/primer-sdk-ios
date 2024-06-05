@@ -19,6 +19,10 @@ inputs:
   fastlane-session:
     description: Fastlane session
     required: true
+  fastlane-test-lane:
+    description: The fastlane test lane to run
+    required: false
+    default: test_sdk 
   match-keychain-name:
     description: Match keychain name
     required: true
@@ -28,9 +32,13 @@ inputs:
   source-branch:
     description: Source branch
     required: true
-  coverage-file-name:
-    description: Name of the generic coverage file
-    required: true
+  sdk-name:
+    description: The name of the SDK, if running SDK tests
+    required: false
+  package-swift:
+    description: The swift package file to use, if not default
+    required: false
+
 runs:
   using: "composite"
   steps:
@@ -51,10 +59,16 @@ runs:
       with:
         ruby-version: "3.2"
         bundler-cache: true
+    - name: Setup Package.swift
+      shell: bash
+      if: ${{ inputs.package-swift != '' }}
+      run: |
+        mv Package.swift Package.swift.orig
+        cp "${{ inputs.package-swift }}" Package.swift
     - name: Build SPM App
       shell: bash
       run: |
-        bundle exec fastlane test_spm
+        bundle exec fastlane ${{ inputs.fastlane-test-lane }}
       env:
         MATCH_PASSWORD: ${{ inputs.match-password }}
         MATCH_GIT_PRIVATE_KEY: ${{ inputs.ssh-private-key }}
@@ -63,19 +77,13 @@ runs:
         MATCH_KEYCHAIN_NAME: ${{ inputs.match-keychain-name }}
         MATCH_KEYCHAIN_PASSWORD: ${{ inputs.match-password }}
         SOURCE_BRANCH: ${{ inputs.source-branch }}
-    - name: Archive log
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: fastlane-logs
-        path: /Users/runner/Library/Logs/scan/PrimerSDKTests.log
-        retention-days: 1
     - name: Prepare coverage reports
       shell: bash
+      if: ${{ inputs.sdk-name != '' }}
       run: |
         bash Scripts/xccov-to-sonarqube-generic.sh fastlane/test_output/PrimerSDKTests.xcresult/ > coverage.xml
-        sed "s#$PWD/##g" coverage.xml > ${{ inputs.coverage-file-name }}
+        sed "s#$PWD/##g" coverage.xml > sonar-coverage-${{ inputs.sdk-name }}.xml
     - uses: actions/upload-artifact@master
       with:
-        name: coverage-file
-        path: ${{ inputs.coverage-file-name }}
+        name: coverage-file-${{ inputs.sdk-name }}
+        path: sonar-coverage-${{ inputs.sdk-name }}.xml

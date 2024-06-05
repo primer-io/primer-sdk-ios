@@ -9,8 +9,6 @@
 import XCTest
 @testable import PrimerSDK
 
-typealias RawDataManager = PrimerHeadlessUniversalCheckout.RawDataManager
-
 final class CardValidationServiceTests: XCTestCase {
 
     var rawDataManager: RawDataManager!

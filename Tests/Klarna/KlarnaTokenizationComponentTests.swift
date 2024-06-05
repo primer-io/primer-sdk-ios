@@ -191,8 +191,8 @@ extension KlarnaTokenizationComponentTests {
     func getInvalidSettingError(
         name: String
     ) -> PrimerError {
-        let error = PrimerError.invalidSetting(
-            name: name,
+        let error = PrimerError.invalidValue(
+            key: name,
             value: nil,
             userInfo: self.getErrorUserInfo(),
             diagnosticsId: UUID().uuidString

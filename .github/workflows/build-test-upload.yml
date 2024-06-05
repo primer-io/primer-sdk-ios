@@ -11,10 +11,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  unit-tests:
+  unit-tests-sdk:
     runs-on: macos-13-large
     timeout-minutes: 20
-    name: "Unit Tests"
+    name: "Unit Tests - SDK"
     steps:
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
@@ -35,20 +35,81 @@ jobs:
           fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
           match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-          coverage-file-name: sonar-coverage.xml
+          sdk-name: sdk
+
+  optional-sdk-tests:
+    name: Optional SDK Tests
+    runs-on: macos-13-large
+    strategy:
+      max-parallel: 3
+      matrix:
+        package-swift:
+          - { name: 'nol-pay', file: 'Package.NolPay.swift' }
+          - { name: 'klarna', file: Package.Klarna.swift }
+          - { name: '3DS', file: Package.3DS.swift }
+    steps:
+      - name: Cancel previous jobs
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
+        with:
+          access_token: ${{ github.token }}
+      - name: Git - Checkout
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        with:
+          ref: ${{ github.ref }}
+      - name: Run SDK tests
+        uses: ./.github/actions/sdk-tests
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+          known-hosts: ${{ secrets.KNOWN_HOSTS }}
+          match-password: ${{ secrets.MATCH_PASSWORD }}
+          match-git-private-key: ${{ secrets.FASTLANE_PASSWORD }}
+          fastlane-session: ${{ secrets.FASTLANE_SESSION }}
+          fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
+          match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
+          match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          sdk-name: ${{ matrix.package-swift.name }}
+          package-swift: ${{  matrix.package-swift.file }}
+
+  unit-tests-debug-app:
+    runs-on: macos-13-large
+    timeout-minutes: 20
+    name: "Unit Tests - Debug App"
+    steps:
+      - name: Cancel previous jobs
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
+        with:
+          access_token: ${{ github.token }}
+      - name: Git - Checkout
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        with:
+          ref: ${{ github.ref }}
+      - name: Run debug app tests
+        uses: ./.github/actions/sdk-tests
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+          known-hosts: ${{ secrets.KNOWN_HOSTS }}
+          match-password: ${{ secrets.MATCH_PASSWORD }}
+          match-git-private-key: ${{ secrets.FASTLANE_PASSWORD }}
+          fastlane-session: ${{ secrets.FASTLANE_SESSION }}
+          fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
+          match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
+          match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          fastlane-test-lane: test_debug_app
 
   sonarcloud:
     needs:
-      - unit-tests
+      - unit-tests-sdk
+      - optional-sdk-tests
     name: SonarCloud
     runs-on: macos-13
     steps:
       - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
-      - uses: actions/download-artifact@master
+      - uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e  #v4.1.7
         with:
-          name: coverage-file
+          pattern: coverage-file-*
+      - run: mv coverage-file-*/sonar-coverage-*.xml ./
       - name: SonarCloud Scan
         uses: ./.github/actions/sonar
         with:
@@ -59,11 +120,12 @@ jobs:
           branch: ${{ github.head_ref }}
           base-branch: ${{ github.base_ref }}
           pull-request-sha: ${{ github.event.pull_request.head.sha }}
-          coverage-file-name: sonar-coverage.xml
+          coverage-file-names: sonar-coverage-sdk.xml,sonar-coverage-3DS.xml,sonar-coverage-nol-pay.xml,sonar-coverage-klarna.xml
           
   build-and-upload-to-appetize:
     needs:
-      - unit-tests
+      - unit-tests-sdk
+      - unit-tests-debug-app
     runs-on: macos-13-large
     timeout-minutes: 45
     name: "Build and upload app to Appetize"

@@ -9,6 +9,8 @@
 import Foundation
 @testable import PrimerSDK
 
+typealias RawDataManager = PrimerHeadlessUniversalCheckout.RawDataManager
+
 class MockRawDataManagerDelegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
 
     // MARK: metadataDidChange

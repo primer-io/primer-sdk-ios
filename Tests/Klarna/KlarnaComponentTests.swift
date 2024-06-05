@@ -47,6 +47,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         XCTAssertNotNil(sut.klarnaProvider)
     }
 
+    // TODO: Disabled - Fix: KlarnaMobileSDK interfaces should be mocked
     func test_CreatePaymentView() {
         XCTAssertNotNil(sut.createPaymentView())
     }
@@ -96,6 +97,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         XCTAssertEqual(error.diagnosticsId, errorResult.diagnosticsId)
     }
 
+    // TODO: Disabled - Fix: KlarnaMobileSDK interfaces should be mocked
     func test_updateCollectable_invalid() {
         let collectableData = KlarnaCollectableData.paymentCategory(KlarnaTestsMocks.paymentCategory, clientToken: KlarnaTestsMocks.clientToken)
         sut?.updateCollectedData(collectableData: collectableData)
@@ -108,6 +110,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         }
     }
 
+    // TODO: Disabled - Fix: KlarnaMobileSDK interfaces should be mocked
     func test_updateCollectable_valid() {
         sut.availableCategories = [KlarnaTestsMocks.paymentCategory]
         let expectedValidationType: PrimerSDK.PrimerValidationStatus = .valid
@@ -117,6 +120,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         XCTAssertEqual(expectedValidationType, validationResult)
     }
 
+    // TODO: Disabled - Fix: KlarnaMobileSDK interfaces should be mocked
     func test_updateCollectable_error() {
         let expectedValidationType: PrimerSDK.PrimerValidationStatus = .error(error: KlarnaTestsMocks.invalidTokenError)
         let collectableData = KlarnaCollectableData.paymentCategory(KlarnaTestsMocks.paymentCategory, clientToken: nil)
