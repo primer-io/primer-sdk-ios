@@ -629,7 +629,7 @@ extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
         if let error = error {
             switch error {
             case .iPay88Error(let description, _):
-                let err = PrimerError.paymentFailed(
+                let err = PrimerError.failedToCreatePayment(
                     paymentMethodType: PrimerPaymentMethodType.iPay88Card.rawValue,
                     description: "iPay88 payment (transId: \(self.primerIPay88Payment.transId ?? "nil"), refNo: \(self.primerIPay88Payment.refNo ) failed with error '\(description)'",
                     userInfo: .errorUserInfoDictionary(),

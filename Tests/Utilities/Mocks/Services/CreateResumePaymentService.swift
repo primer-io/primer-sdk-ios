@@ -40,6 +40,4 @@ class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
             }
         }
     }
-    
-
 }

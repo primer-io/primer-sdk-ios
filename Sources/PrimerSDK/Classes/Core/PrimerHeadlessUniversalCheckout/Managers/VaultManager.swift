@@ -233,7 +233,7 @@ extension PrimerHeadlessUniversalCheckout {
                                         guard let checkoutData = self.paymentCheckoutData,
                                               PrimerSettings.current.paymentHandling == .auto
                                         else {
-                                            let err = PrimerError.paymentFailed(
+                                            let err = PrimerError.failedToResumePayment(
                                                 paymentMethodType: self.paymentMethodType,
                                                 description: "Failed to find checkout data after resuming payment",
                                                 userInfo: .errorUserInfoDictionary(),
@@ -273,7 +273,7 @@ extension PrimerHeadlessUniversalCheckout {
                         } else {
                             DispatchQueue.main.async {
                                 guard let checkoutData = self.paymentCheckoutData else {
-                                    let err = PrimerError.paymentFailed(
+                                    let err = PrimerError.failedToCreatePayment(
                                         paymentMethodType: self.paymentMethodType,
                                         description: "Failed to find checkout data after completing payment",
                                         userInfo: .errorUserInfoDictionary(),
@@ -316,7 +316,7 @@ extension PrimerHeadlessUniversalCheckout {
                             guard let checkoutData = self.paymentCheckoutData,
                                   PrimerSettings.current.paymentHandling == .auto
                             else {
-                                let err = PrimerError.paymentFailed(
+                                let err = PrimerError.failedToCreatePayment(
                                     paymentMethodType: self.paymentMethodType,
                                     description: "Failed to find checkout data after completing payment",
                                     userInfo: .errorUserInfoDictionary(),

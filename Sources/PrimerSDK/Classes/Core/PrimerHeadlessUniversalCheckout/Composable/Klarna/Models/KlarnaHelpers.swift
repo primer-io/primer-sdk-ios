@@ -219,20 +219,9 @@ struct KlarnaHelpers {
     }
 
     static func getPaymentFailedError() -> PrimerError {
-        let error = PrimerError.paymentFailed(
+        let error = PrimerError.failedToCreatePayment(
             paymentMethodType: "KLARNA",
             description: "Failed to create payment",
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: error)
-        return error
-    }
-
-    static func getFailedToProcessPaymentError(paymentResponse: Response.Body.Payment) -> PrimerError {
-        let error = PrimerError.failedToProcessPayment(
-            paymentMethodType: "KLARNA",
-            paymentId: paymentResponse.id ?? "nil",
-            status: paymentResponse.status.rawValue,
             userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: error)

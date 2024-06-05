@@ -96,7 +96,7 @@ extension PrimerHeadlessKlarnaComponent {
                 diagnosticsId: UUID().uuidString
             )
         case .sessionAuthorizationFailed(error: let error):
-            primerError = PrimerError.paymentFailed(
+            primerError = PrimerError.failedToCreatePayment(
                 paymentMethodType: "KLARNA",
                 description: error.localizedDescription,
                 userInfo: .errorUserInfoDictionary(),
