@@ -24,7 +24,7 @@ protocol KlarnaTokenizationManagerProtocol {
 class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
 
     // MARK: - Properties
-    
+
     private let tokenizationService: TokenizationServiceProtocol
 
     private let createResumePaymentService: CreateResumePaymentServiceProtocol

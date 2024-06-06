@@ -5,6 +5,7 @@
 //  Created by Evangelos Pittas on 31/7/21.
 //
 
+// swiftlint:disable file_length
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
@@ -318,7 +319,6 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                     place: .cvvRecapture
                 )
                 Analytics.Service.record(event: submitEvent)
-
             }
 
             PrimerUIManager.primerRootViewController?.show(viewController: cvvViewController, animated: true)
@@ -400,3 +400,4 @@ extension PrimerUniversalCheckoutViewController: ReloadDelegate {
 // swiftlint:enable cyclomatic_complexity
 // swiftlint:enable function_body_length
 // swiftlint:enable type_body_length
+// swiftlint:enable file_length
