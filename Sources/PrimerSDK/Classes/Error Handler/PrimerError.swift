@@ -55,15 +55,19 @@ public enum PrimerError: PrimerErrorProtocol {
     case underlyingErrors(errors: [Error], userInfo: [String: String]?, diagnosticsId: String)
     case missingSDK(paymentMethodType: String, sdkName: String, userInfo: [String: String]?, diagnosticsId: String)
     case merchantError(message: String, userInfo: [String: String]?, diagnosticsId: String)
-    case paymentFailed(paymentMethodType: String,
-                       description: String,
+    case paymentFailed(paymentMethodType: String?,
+                       paymentId: String,
+                       status: String,
                        userInfo: [String: String]?,
                        diagnosticsId: String)
-    case failedToProcessPayment(paymentMethodType: String?,
-                                paymentId: String,
-                                status: String,
-                                userInfo: [String: String]?,
-                                diagnosticsId: String)
+    case failedToCreatePayment(paymentMethodType: String,
+                               description: String,
+                               userInfo: [String: String]?,
+                               diagnosticsId: String)
+    case failedToResumePayment(paymentMethodType: String,
+                               description: String,
+                               userInfo: [String: String]?,
+                               diagnosticsId: String)
     case applePayTimedOut(userInfo: [String: String]?, diagnosticsId: String)
     case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, userInfo: [String: String]?, diagnosticsId: String)
     case nolError(code: String?, message: String?, userInfo: [String: String]?, diagnosticsId: String)
@@ -117,8 +121,10 @@ public enum PrimerError: PrimerErrorProtocol {
             return PrimerPaymentErrorCode.failed.rawValue
         case .applePayTimedOut:
             return "apple-pay-timed-out"
-        case .failedToProcessPayment:
-            return "failed-to-process-payment"
+        case .failedToCreatePayment:
+            return "failed-to-create-payment"
+        case .failedToResumePayment:
+            return "failed-to-resume-payment"
         case .invalidVaultedPaymentMethodId:
             return "invalid-vaulted-payment-method-id"
         case .nolError:
@@ -185,11 +191,13 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .merchantError(_, _, let diagnosticsId):
             return diagnosticsId
-        case .paymentFailed(_, _, _, let diagnosticsId):
+        case .paymentFailed(_, _, _, _, let diagnosticsId):
             return diagnosticsId
         case .applePayTimedOut(_, let diagnosticsId):
             return diagnosticsId
-        case .failedToProcessPayment(_, _, _, _, let diagnosticsId):
+        case .failedToCreatePayment(_, _, _, let diagnosticsId):
+            return diagnosticsId
+        case .failedToResumePayment(_, _, _, let diagnosticsId):
             return diagnosticsId
         case .invalidVaultedPaymentMethodId(_, _, let diagnosticsId):
             return diagnosticsId
@@ -244,12 +252,14 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Payment method \(paymentMethodType) is not supported on \(category) manager"
         case .merchantError(let message, _, _):
             return message
-        case .paymentFailed(_, let description, _, _):
-            return "\(description)"
+        case .paymentFailed(_, let paymentId, let status, _, _):
+            return "The payment with id \(paymentId) was created or resumed but ended up in a \(status) status."
         case .applePayTimedOut:
             return "Apple Pay timed out"
-        case .failedToProcessPayment(_, let paymentId, let status, _, _):
-            return "The payment with id \(paymentId) was created but ended up in a \(status) status."
+        case .failedToCreatePayment(_, let description, _, _):
+            return "\(description)"
+        case .failedToResumePayment(_, let description, _, _):
+            return "\(description)"
         case .invalidVaultedPaymentMethodId(let vaultedPaymentMethodId, _, _):
             return "The vaulted payment method with id '\(vaultedPaymentMethodId)' doesn't exist."
         case .nolError(let code, let message, _, _):
@@ -291,9 +301,10 @@ public enum PrimerError: PrimerErrorProtocol {
              .underlyingErrors(_, let userInfo, _),
              .missingSDK(_, _, let userInfo, _),
              .merchantError(_, let userInfo, _),
-             .paymentFailed(_, _, let userInfo, _),
+             .paymentFailed(_, _, _, let userInfo, _),
              .applePayTimedOut(let userInfo, _),
-             .failedToProcessPayment(_, _, _, let userInfo, _),
+             .failedToCreatePayment(_, _, let userInfo, _),
+             .failedToResumePayment(_, _, let userInfo, _),
              .invalidVaultedPaymentMethodId(_, let userInfo, _),
              .nolError(_, _, let userInfo, _),
              .klarnaError(_, let userInfo, _),
@@ -379,7 +390,7 @@ Check if all necessary values have been provided on your client session.\
             return nil
         case .applePayTimedOut:
             return "Make sure you have an active internet connection and your Apple Pay configuration is correct."
-        case .failedToProcessPayment:
+        case .failedToCreatePayment, .failedToResumePayment:
             return nil
         case .invalidVaultedPaymentMethodId:
             return "Please provide the id of one of the vaulted payment methods that have been returned by the 'fetchVaultedPaymentMethods' function."
@@ -417,7 +428,9 @@ and other parameters are set correctly for the current environment.
              .unableToPresentPaymentMethod(let paymentMethodType, _, _),
              .unsupportedPaymentMethod(let paymentMethodType, _, _),
              .missingSDK(let paymentMethodType, _, _, _),
-             .failedToProcessPayment(let paymentMethodType?, _, _, _, _):
+             .paymentFailed(let paymentMethodType?, _, _, _, _),
+             .failedToCreatePayment(let paymentMethodType, _, _, _),
+             .failedToResumePayment(let paymentMethodType, _, _, _):
             return paymentMethodType
         case .applePayTimedOut,
              .unableToMakePaymentsOnProvidedNetworks:

@@ -64,7 +64,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
     }
 
     func test_sessionAuthorization_error() {
-        let error = PrimerError.paymentFailed(
+        let error = PrimerError.failedToCreatePayment(
             paymentMethodType: "KLARNA",
             description: "",
             userInfo: [:],

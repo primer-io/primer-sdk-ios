@@ -342,18 +342,10 @@ extension PaymentMethodTokenizationViewModel {
                     self.handleCreatePaymentEvent(token)
                 }
                 .done { paymentResponse -> Void in
-                    guard paymentResponse != nil else {
-                        let err = PrimerError.invalidValue(key: "paymentResponse",
-                                                           value: nil,
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                        throw err
-                    }
+                    self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
+                    self.resumePaymentId = paymentResponse.id
 
-                    self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse!))
-                    self.resumePaymentId = paymentResponse!.id
-
-                    if let requiredAction = paymentResponse!.requiredAction {
+                    if let requiredAction = paymentResponse.requiredAction {
                         let apiConfigurationModule = PrimerAPIConfigurationModule()
 
                         firstly {
@@ -437,15 +429,6 @@ extension PaymentMethodTokenizationViewModel {
                     self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                 }
                 .done { paymentResponse -> Void in
-                    guard let paymentResponse = paymentResponse else {
-                        let err = PrimerError.invalidValue(key: "paymentResponse",
-                                                           value: nil,
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        throw err
-                    }
-
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     seal.fulfill(self.paymentCheckoutData)
                 }
@@ -506,104 +489,16 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
     // Create payment with Payment method token
 
-    private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
-        return Promise { seal in
-            let body = Request.Body.Payment.Create(token: paymentMethodData)
-            createResumePaymentService.createPayment(paymentRequest: body) { paymentResponse, error in
-
-                if let error = error {
-                    if let paymentResponse {
-                        self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
-                    }
-
-                    seal.reject(error)
-
-                } else if let paymentResponse = paymentResponse {
-                    if paymentResponse.id == nil {
-                        let err = PrimerError.paymentFailed(
-                            paymentMethodType: self.paymentMethodType,
-                            description: "Failed to create payment",
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
-
-                    } else if paymentResponse.status == .failed {
-                        let err = PrimerError.failedToProcessPayment(
-                            paymentMethodType: self.paymentMethodType,
-                            paymentId: paymentResponse.id ?? "nil",
-                            status: paymentResponse.status.rawValue,
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
-
-                    } else {
-                        seal.fulfill(paymentResponse)
-                    }
-
-                } else {
-                    let err = PrimerError.paymentFailed(
-                        paymentMethodType: self.paymentMethodType,
-                        description: "Failed to create payment",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                }
-            }
-        }
+    private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
+        let body = Request.Body.Payment.Create(token: paymentMethodData)
+        return createResumePaymentService.createPayment(paymentRequest: body)
     }
 
     // Resume payment with Resume payment ID
 
-    private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
-        return Promise { seal in
-            let body = Request.Body.Payment.Resume(token: resumeToken)
-            createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: body) { paymentResponse, error in
-
-                if let error = error {
-                    if let paymentResponse {
-                        self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
-                    }
-
-                    seal.reject(error)
-
-                } else if let paymentResponse = paymentResponse {
-                    if paymentResponse.id == nil {
-                        let err = PrimerError.paymentFailed(
-                            paymentMethodType: self.paymentMethodType,
-                            description: "Failed to resume payment",
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
-
-                    } else if paymentResponse.status == .failed {
-                        let err = PrimerError.failedToProcessPayment(
-                            paymentMethodType: self.paymentMethodType,
-                            paymentId: paymentResponse.id ?? "nil",
-                            status: paymentResponse.status.rawValue,
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
-
-                    } else {
-                        seal.fulfill(paymentResponse)
-                    }
-
-                } else {
-                    let err = PrimerError.paymentFailed(
-                        paymentMethodType: self.paymentMethodType,
-                        description: "Failed to resume payment",
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                }
-            }
-        }
+    private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment> {
+        let body = Request.Body.Payment.Resume(token: resumeToken)
+        return createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId, paymentResumeRequest: body)
     }
 
     func validateReturningPromise() -> Promise<Void> {
