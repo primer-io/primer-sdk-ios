@@ -32,7 +32,7 @@ class KlarnaTokenizationComponent: KlarnaTokenizationManager, KlarnaTokenization
         self.clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
         let klarnaOptions = PrimerSettings.current.paymentMethodOptions.klarnaOptions
         self.recurringPaymentDescription = klarnaOptions?.recurringPaymentDescription
-        super.init()
+        super.init(createResumePaymentService: CreateResumePaymentService(paymentMethodType: paymentMethod.type))
     }
 }
 

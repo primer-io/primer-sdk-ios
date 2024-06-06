@@ -158,7 +158,10 @@ extension KlarnaTokenizationManagerTests {
 class MockKlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
     var mockedSuccessValue: Bool = false
 
-    let primerError = PrimerError.paymentFailed(paymentMethodType: "KLARNA", description: "payment_failed", userInfo: nil, diagnosticsId: UUID().uuidString)
+    let primerError = PrimerError.failedToCreatePayment(paymentMethodType: "KLARNA",
+                                                        description: "payment_failed",
+                                                        userInfo: nil,
+                                                        diagnosticsId: UUID().uuidString)
 
     func tokenizeHeadless(customerToken: PrimerSDK.Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> PrimerSDK.Promise<PrimerSDK.PrimerCheckoutData> {
         return Promise { seal in
