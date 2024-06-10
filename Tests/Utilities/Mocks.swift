@@ -107,6 +107,7 @@ class Mocks {
             static var paymentCardPaymentMethodId = "mock_payment_card_payment_method_id"
             static var nolPaymentMethodId = "mock_nol_payment_method_id"
             static var paypalPaymentMethodId = "mock_paypal_method_id"
+            static var xenditPaymentMethodId = "mock_xendit_method_id"
 
             static var webRedirectPaymentMethodType = "MOCK_WEB_REDIRECT_PAYMENT_METHOD_TYPE"
             static var adyenGiroPayRedirectPaymentMethodType = "MOCK_ADYEN_GIROPAY_PAYMENT_METHOD_TYPE"
@@ -120,6 +121,7 @@ class Mocks {
             static var klarnaPaymentMethodName = "Mock Klarna Payment Method"
             static var paymentCardPaymentMethodName = "Mock Payment Card Payment Method"
             static var nolPaymentMethodName = "Mock NOL Payment Method"
+            static var xenditPaymentMethodName = "Mock Xendit Payment Method"
 
             static var processorConfigId = "mock_processor_config_id"
             static var idealPaymentMethodId = "ADYEN_IDEAL"
@@ -224,6 +226,16 @@ class Mocks {
             implementationType: .nativeSdk,
             type: "PAYPAL",
             name: "PAYPAL",
+            processorConfigId: Mocks.Static.Strings.processorConfigId,
+            surcharge: 0,
+            options: nil,
+            displayMetadata: nil)
+
+        static var xenditPaymentMethod = PrimerPaymentMethod(
+            id: Mocks.Static.Strings.xenditPaymentMethodId,
+            implementationType: .nativeSdk,
+            type: "XENDIT_RETAIL_OUTLETS",
+            name: Mocks.Static.Strings.xenditPaymentMethodName,
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 0,
             options: nil,

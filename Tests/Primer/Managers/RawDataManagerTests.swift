@@ -42,11 +42,6 @@ final class RawDataManagerTests: XCTestCase {
     }
 
     func testFullPaymentFlow() throws {
-        let expectDidStart = self.expectation(description: "Headless checkout did start")
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { paymentMethods, err in
-            expectDidStart.fulfill()
-        }
-
         let expectDidCompleteCheckout = self.expectation(description: "Headless checkout completed")
         headlessCheckoutDelegate.onDidCompleteCheckoutWithData = { _ in
             expectDidCompleteCheckout.fulfill()
@@ -84,6 +79,95 @@ final class RawDataManagerTests: XCTestCase {
         waitForExpectations(timeout: 5.0)
     }
 
+    func testFullPaymentFlowWithRequiredActionResume() throws {
+        let apiClient = MockPrimerAPIClient()
+        PrimerAPIConfigurationModule.apiClient = apiClient
+        PollingModule.apiClient = apiClient
+        apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
+        apiClient.pollingResults = [
+            (PollingResponse(status: .pending, id: "0", source: "src"), nil),
+            (PollingResponse(status: .pending, id: "0", source: "src"), nil),
+            (PollingResponse(status: .complete, id: "4321", source: "src"), nil)
+        ]
+
+        let expectDidCompleteCheckout = self.expectation(description: "Headless checkout completed")
+        headlessCheckoutDelegate.onDidCompleteCheckoutWithData = { _ in
+            expectDidCompleteCheckout.fulfill()
+        }
+
+        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
+        headlessCheckoutDelegate.onWillCreatePaymentWithData = { data, decisionHandler in
+            expectWillCreatePaymentWithData.fulfill()
+            decisionHandler(.continuePaymentCreation())
+        }
+
+        let expectOnTokenize = self.expectation(description: "On tokenization complete")
+        tokenizationService.onTokenize = { body in
+            expectOnTokenize.fulfill()
+            return Promise.fulfilled(self.tokenizationResponseBody)
+        }
+
+        let expectCreatePayment = self.expectation(description: "On create payment")
+        createResumePaymentService.onCreatePayment = { _ in
+            expectCreatePayment.fulfill()
+            return self.paymentResponseBodyWithRedirectAction
+        }
+
+        let expectResumePayment = self.expectation(description: "On resume payment")
+        createResumePaymentService.onResumePayment = { paymentId, request in
+            XCTAssertEqual(paymentId, "id")
+            XCTAssertEqual(request.resumeToken, "4321")
+            expectResumePayment.fulfill()
+            return self.paymentResponseAfterResume
+        }
+
+        headlessCheckoutDelegate.onDidFail = { error in
+            XCTFail("Failed with error: \(error.localizedDescription)")
+        }
+
+        sut.rawData = PrimerCardData(cardNumber: "4111 1111 1111 1111",
+                                     expiryDate: "03/2030",
+                                     cvv: "123",
+                                     cardholderName: "John Appleseed")
+
+        sut.submit()
+
+        waitForExpectations(timeout: 45.0)
+    }
+
+    func testAbortPaymentFlow() throws {
+        let expectDidStart = self.expectation(description: "Headless checkout did start")
+        PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { paymentMethods, err in
+            expectDidStart.fulfill()
+        }
+
+        let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
+        headlessCheckoutDelegate.onWillCreatePaymentWithData = { data, decisionHandler in
+            expectWillCreatePaymentWithData.fulfill()
+            decisionHandler(.abortPaymentCreation())
+        }
+
+        let expectDidFail = self.expectation(description: "Did fail with merchant error")
+        headlessCheckoutDelegate.onDidFail = { error in
+            switch error {
+            case PrimerError.merchantError:
+                break
+            default:
+                XCTFail("Expected merchant error")
+            }
+            expectDidFail.fulfill()
+        }
+
+        sut.rawData = PrimerCardData(cardNumber: "4111 1111 1111 1111",
+                                     expiryDate: "03/2030",
+                                     cvv: "123",
+                                     cardholderName: "John Appleseed")
+
+        sut.submit()
+
+        waitForExpectations(timeout: 5.0)
+    }
+
     func testNoRawDataSubmit() {
 
         let expectDidFail = self.expectation(description: "Did fail")
@@ -109,6 +193,38 @@ final class RawDataManagerTests: XCTestCase {
         }
 
         sut.submit()
+
+        waitForExpectations(timeout: 5.0)
+    }
+
+    func testConfigureAfterSetup() throws {
+        SDKSessionHelper.setUp(withPaymentMethods: [Mocks.PaymentMethods.xenditPaymentMethod])
+        sut = try RawDataManager(paymentMethodType: "XENDIT_RETAIL_OUTLETS", delegate: rawDataManagerDelegate)
+
+        let expectDidStart = self.expectation(description: "Headless checkout did start")
+        PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { paymentMethods, err in
+            expectDidStart.fulfill()
+        }
+
+        let result = RetailOutletsList(result: [
+            .init(id: "id", name: "name", iconUrl: nil, disabled: false)
+        ])
+        let apiClient = MockXenditAPIClient()
+        apiClient.onListRetailOutlets = { _, _ in
+            return result
+        }
+        sut.apiClient = apiClient
+
+        let expectConfigureSuccess = self.expectation(description: "Configured successfully")
+        sut.configure { data, error in
+            XCTAssertNil(error)
+            XCTAssertNotNil(data as? RetailOutletsList)
+            let list = data as! RetailOutletsList
+            XCTAssertNotNil(list.result.first)
+            XCTAssertEqual(list.result.first!.id, "id")
+            XCTAssertEqual(list.result.first!.name, "name")
+            expectConfigureSuccess.fulfill()
+        }
 
         waitForExpectations(timeout: 5.0)
     }
@@ -161,5 +277,69 @@ final class RawDataManagerTests: XCTestCase {
                      requiredAction: nil,
                      status: .success,
                      paymentFailureReason: nil)
+    }
+
+    var paymentResponseBodyWithRedirectAction: Response.Body.Payment {
+        return .init(id: "id",
+                     paymentId: "payment_id",
+                     amount: 123,
+                     currencyCode: "GBP",
+                     customer: .init(firstName: "first_name",
+                                     lastName: "last_name",
+                                     emailAddress: "email_address",
+                                     mobileNumber: "+44(0)7891234567",
+                                     billingAddress: .init(firstName: "billing_first_name",
+                                                           lastName: "billing_last_name",
+                                                           addressLine1: "billing_line_1",
+                                                           addressLine2: "billing_line_2",
+                                                           city: "billing_city",
+                                                           state: "billing_state",
+                                                           countryCode: "billing_country_code",
+                                                           postalCode: "billing_postal_code"),
+                                     shippingAddress: .init(firstName: "shipping_first_name",
+                                                            lastName: "shipping_last_name",
+                                                            addressLine1: "shipping_line_1",
+                                                            addressLine2: "shipping_line_2",
+                                                            city: "shipping_city",
+                                                            state: "shipping_state",
+                                                            countryCode: "shipping_country_code",
+                                                            postalCode: "shipping_postal_code")),
+                     customerId: "customer_id",
+                     dateStr: nil,
+                     order: nil,
+                     orderId: "order_id",
+                     requiredAction: .init(clientToken: MockAppState.mockClientTokenWithRedirect,
+                                           name: .checkout,
+                                           description: "description"),
+                     status: .success,
+                     paymentFailureReason: nil)
+    }
+
+    var paymentResponseAfterResume: Response.Body.Payment {
+        .init(id: "id",
+                     paymentId: "payment_id",
+                     amount: 1234,
+                     currencyCode: "GBP",
+                     customer: nil,
+                     customerId: "customer_id",
+                     dateStr: nil,
+                     order: nil,
+                     orderId: "order_id",
+                     requiredAction: nil,
+                     status: .success,
+                     paymentFailureReason: nil)
+    }
+}
+
+private class MockXenditAPIClient: PrimerAPIClientXenditProtocol {
+    
+    var onListRetailOutlets: ((DecodedJWTToken, String) -> RetailOutletsList)?
+
+    func listRetailOutlets(clientToken: DecodedJWTToken, paymentMethodId: String, completion: @escaping PrimerSDK.APICompletion<PrimerSDK.RetailOutletsList>) {
+        if let onListRetailOutlets = onListRetailOutlets {
+            completion(.success(onListRetailOutlets(clientToken, paymentMethodId)))
+        } else {
+            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
+        }
     }
 }

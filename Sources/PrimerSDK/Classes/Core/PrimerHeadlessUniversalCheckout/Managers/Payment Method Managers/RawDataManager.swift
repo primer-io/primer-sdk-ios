@@ -82,13 +82,15 @@ extension PrimerHeadlessUniversalCheckout {
         private var rawDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol
         public private(set) var paymentCheckoutData: PrimerCheckoutData?
         public private(set) var isDataValid: Bool = false
-        private var webViewController: SFSafariViewController?
+        var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
         var initializationData: PrimerInitializationData?
 
         var tokenizationService: TokenizationServiceProtocol = TokenizationService()
 
         var createResumePaymentService: CreateResumePaymentServiceProtocol
+
+        var apiClient: PrimerAPIClientXenditProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
 
         required public init(paymentMethodType: String, delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? = nil) throws {
             PrimerInternal.shared.sdkIntegrationType = .headless
@@ -175,8 +177,9 @@ extension PrimerHeadlessUniversalCheckout {
 
             switch paymentMethodType {
             case .xenditRetailOutlets:
-                fetchRetailOutlets { data, error in completion(data, error) }
+                fetchRetailOutlets(completion: completion)
             default:
+                logger.warn(message: "Attempted to configure additional info for unsupported payment method type '\(paymentMethodType)'")
                 completion(nil, nil)
             }
         }
@@ -805,6 +808,16 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     }
                 }
 
+                #if DEBUG
+                // This ensures that the presentation completion is correctly handled in headless unit tests
+                guard UIApplication.shared.windows.count > 0 else {
+                    DispatchQueue.main.async {
+                        seal.fulfill()
+                    }
+                    return
+                }
+                #endif
+
                 DispatchQueue.main.async {
                     if PrimerUIManager.primerRootViewController == nil {
                         firstly {
@@ -877,7 +890,7 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager {
             return
         }
 
-        let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
+//        let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
         apiClient.listRetailOutlets(clientToken: decodedJWTToken, paymentMethodId: paymentMethodId) { result in
             switch result {
             case .failure(let err):
