@@ -16,7 +16,8 @@ final class SDKSessionHelper {
     static func setUp(withPaymentMethods paymentMethods: [PrimerPaymentMethod]? = nil,
                       order: ClientSession.Order? = nil,
                       paymentMethodOptions: [[String: Any]]? = nil,
-                      checkoutModules: [PrimerAPIConfiguration.CheckoutModule]? = nil) {
+                      checkoutModules: [PrimerAPIConfiguration.CheckoutModule]? = nil,
+                      configureAppState: (MockAppState) -> Void = { _ in }) {
         let paymentMethods = paymentMethods ?? [
             Mocks.PaymentMethods.paymentCardPaymentMethod
         ]
@@ -41,6 +42,7 @@ final class SDKSessionHelper {
 
         let mockAppState = MockAppState(clientToken: MockAppState.mockClientToken,
                                         apiConfiguration: apiConfig)
+        configureAppState(mockAppState)
         DependencyContainer.register(mockAppState as AppStateProtocol)
     }
 

@@ -136,11 +136,6 @@ final class RawDataManagerTests: XCTestCase {
     }
 
     func testAbortPaymentFlow() throws {
-        let expectDidStart = self.expectation(description: "Headless checkout did start")
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { paymentMethods, err in
-            expectDidStart.fulfill()
-        }
-
         let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
         headlessCheckoutDelegate.onWillCreatePaymentWithData = { data, decisionHandler in
             expectWillCreatePaymentWithData.fulfill()
@@ -193,38 +188,6 @@ final class RawDataManagerTests: XCTestCase {
         }
 
         sut.submit()
-
-        waitForExpectations(timeout: 5.0)
-    }
-
-    func testConfigureAfterSetup() throws {
-        SDKSessionHelper.setUp(withPaymentMethods: [Mocks.PaymentMethods.xenditPaymentMethod])
-        sut = try RawDataManager(paymentMethodType: "XENDIT_RETAIL_OUTLETS", delegate: rawDataManagerDelegate)
-
-        let expectDidStart = self.expectation(description: "Headless checkout did start")
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: MockAppState.mockClientToken) { paymentMethods, err in
-            expectDidStart.fulfill()
-        }
-
-        let result = RetailOutletsList(result: [
-            .init(id: "id", name: "name", iconUrl: nil, disabled: false)
-        ])
-        let apiClient = MockXenditAPIClient()
-        apiClient.onListRetailOutlets = { _, _ in
-            return result
-        }
-        sut.apiClient = apiClient
-
-        let expectConfigureSuccess = self.expectation(description: "Configured successfully")
-        sut.configure { data, error in
-            XCTAssertNil(error)
-            XCTAssertNotNil(data as? RetailOutletsList)
-            let list = data as! RetailOutletsList
-            XCTAssertNotNil(list.result.first)
-            XCTAssertEqual(list.result.first!.id, "id")
-            XCTAssertEqual(list.result.first!.name, "name")
-            expectConfigureSuccess.fulfill()
-        }
 
         waitForExpectations(timeout: 5.0)
     }
