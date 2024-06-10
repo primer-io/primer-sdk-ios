@@ -86,6 +86,10 @@ extension PrimerHeadlessUniversalCheckout {
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
         var initializationData: PrimerInitializationData?
 
+        var tokenizationService: TokenizationServiceProtocol = TokenizationService()
+
+        var createResumePaymentService: CreateResumePaymentServiceProtocol
+
         required public init(paymentMethodType: String, delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? = nil) throws {
             PrimerInternal.shared.sdkIntegrationType = .headless
 
@@ -100,6 +104,7 @@ extension PrimerHeadlessUniversalCheckout {
             Analytics.Service.record(events: [sdkEvent])
 
             self.delegate = delegate
+            self.createResumePaymentService = CreateResumePaymentService(paymentMethodType: paymentMethodType)
 
             guard PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) != nil else {
                 let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
@@ -225,8 +230,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
             .then { requestBody -> Promise<PrimerPaymentMethodTokenData> in
                 PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.paymentMethodType)
-                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
-                return tokenizationService.tokenize(requestBody: requestBody)
+                return self.tokenizationService.tokenize(requestBody: requestBody)
             }
             .then { paymentMethodTokenData -> Promise<PrimerCheckoutData?> in
                 self.paymentMethodTokenData = paymentMethodTokenData
@@ -780,16 +784,14 @@ Make sure you call the decision handler otherwise the SDK will hang."
         }
 
         private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
-            let createResumePaymentService = CreateResumePaymentService(paymentMethodType: paymentMethodType)
             let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
             return createResumePaymentService.createPayment(paymentRequest: paymentRequest)
         }
 
         private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment> {
-                let createResumePaymentService = CreateResumePaymentService(paymentMethodType: paymentMethodType)
-                let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
-                return createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
-                                                                             paymentResumeRequest: resumeRequest)
+            let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
+            return createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
+                                                                         paymentResumeRequest: resumeRequest)
         }
 
         private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) -> Promise<Void> {

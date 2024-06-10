@@ -38,6 +38,10 @@ final class SDKSessionHelper {
                                                checkoutModules: checkoutModules)
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfig
+
+        let mockAppState = MockAppState(clientToken: MockAppState.mockClientToken,
+                                        apiConfiguration: apiConfig)
+        DependencyContainer.register(mockAppState as AppStateProtocol)
     }
 
     static func tearDown() {
