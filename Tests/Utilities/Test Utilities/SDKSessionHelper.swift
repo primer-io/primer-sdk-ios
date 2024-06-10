@@ -15,6 +15,7 @@ final class SDKSessionHelper {
 
     static func setUp(withPaymentMethods paymentMethods: [PrimerPaymentMethod]? = nil,
                       order: ClientSession.Order? = nil,
+                      customer: ClientSession.Customer? = nil,
                       paymentMethodOptions: [[String: Any]]? = nil,
                       checkoutModules: [PrimerAPIConfiguration.CheckoutModule]? = nil,
                       configureAppState: (MockAppState) -> Void = { _ in }) {
@@ -26,7 +27,7 @@ final class SDKSessionHelper {
                                                                      options: paymentMethodOptions,
                                                                      orderedAllowedCardNetworks: nil),
                                                 order: order,
-                                                customer: nil,
+                                                customer: customer,
                                                 testId: nil)
         let apiConfig = PrimerAPIConfiguration(coreUrl: "core_url",
                                                pciUrl: "pci_url",

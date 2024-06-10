@@ -26,6 +26,12 @@ extension PrimerHeadlessUniversalCheckout {
         private var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
 
+        lazy var createResumePaymentService: CreateResumePaymentServiceProtocol = {
+            CreateResumePaymentService(paymentMethodType: paymentMethodType)
+        }()
+
+        var tokenizationService: TokenizationServiceProtocol = TokenizationService()
+
         // MARK: Public functions
 
         public override init() {
@@ -206,7 +212,6 @@ extension PrimerHeadlessUniversalCheckout {
 
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: vaultedPaymentMethod.paymentMethodType)
 
-            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             firstly {
                 tokenizationService.exchangePaymentMethodToken(vaultedPaymentMethod.id,
                                                                vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData)
@@ -723,13 +728,11 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService(paymentMethodType: paymentMethodType)
             let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
             return createResumePaymentService.createPayment(paymentRequest: paymentRequest)
         }
 
         private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment> {
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService(paymentMethodType: paymentMethodType)
             let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
             return createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
                                                                          paymentResumeRequest: resumeRequest)
@@ -745,6 +748,16 @@ extension PrimerHeadlessUniversalCheckout {
                         seal.reject(err)
                     }
                 }
+
+                #if DEBUG
+                // This ensures that the presentation completion is correctly handled in headless unit tests
+                guard UIApplication.shared.windows.count > 0 else {
+                    DispatchQueue.main.async {
+                        seal.fulfill()
+                    }
+                    return
+                }
+                #endif
 
                 DispatchQueue.main.async {
                     if PrimerUIManager.primerRootViewController == nil {

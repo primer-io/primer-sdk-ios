@@ -52,6 +52,30 @@ class Mocks {
         tokenType: .singleUse,
         vaultData: nil)
 
+    static var primerPaymentMethodInstrumentationData = Response.Body.Tokenization.PaymentInstrumentData(
+        paypalBillingAgreementId: nil,
+        first6Digits: "378282",
+        last4Digits: "0005",
+        expirationMonth: "03",
+        expirationYear: "2030",
+        cardholderName: "John Smith",
+        network: "Amex",
+        isNetworkTokenized: nil,
+        klarnaCustomerToken: nil,
+        sessionData: nil,
+        externalPayerInfo: nil,
+        shippingAddress: nil,
+        binData: BinData(network: "AMEX"),
+        threeDSecureAuthentication: nil,
+        gocardlessMandateId: nil,
+        authorizationToken: nil,
+        mx: nil,
+        currencyCode: nil,
+        productId: nil,
+        paymentMethodConfigId: nil,
+        paymentMethodType: nil,
+        sessionInfo: nil)
+
     static var payment = Response.Body.Payment(
         id: "mock_id",
         paymentId: "mock_payment_id",
