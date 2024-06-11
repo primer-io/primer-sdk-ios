@@ -36,9 +36,6 @@ final class MerchantResultViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        responseStatus.font = .systemFont(ofSize: 17, weight: .medium)
-        responseStatus.textColor = .green
-
         var error: PrimerErrorEncodable?
 
         if let primerError = self.error as? PrimerError {
@@ -62,6 +59,24 @@ final class MerchantResultViewController: UIViewController {
             responseTextView.text = "[\"No checkout data or error received\"]"
         }
 
+        
+        responseStatus.font = .systemFont(ofSize: 17, weight: .medium)
+        responseStatus.textColor = error != nil ? .green : .red
+        responseStatus.text = error != nil ? "Success" : "Failure"
+
+        if logs.count > 0 {
+            if let data = try? JSONSerialization.data(withJSONObject: logs) {
+                if let prettyNSStr = data.prettyPrintedJSONString as? String {
+                    logsTextView.text = prettyNSStr
+                } else {
+                    logsTextView.text = "[\"Failed to create pretty string from logs\"]"
+                }
+            } else {
+                logsTextView.text = "[\"Failed to convert logs to data\"]"
+            }
+        } else {
+            logsTextView.text = "[\"No logs received\"]"
+        }
     }
 }
 
