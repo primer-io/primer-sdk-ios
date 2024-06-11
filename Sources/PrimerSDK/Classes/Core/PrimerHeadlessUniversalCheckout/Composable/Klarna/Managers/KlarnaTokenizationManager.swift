@@ -30,8 +30,9 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
     private let createResumePaymentService: CreateResumePaymentServiceProtocol
 
     // MARK: - Init
-    init(createResumePaymentService: CreateResumePaymentServiceProtocol) {
-        self.tokenizationService = TokenizationService()
+    init(createResumePaymentService: CreateResumePaymentServiceProtocol,
+         tokenizationService: TokenizationServiceProtocol = TokenizationService()) {
+        self.tokenizationService = tokenizationService
         self.createResumePaymentService = createResumePaymentService
     }
 
