@@ -39,7 +39,7 @@
 "UBX-3r-gzK.text" = "Status";
 
 /* Class = "UILabel"; text = "Response"; ObjectID = "UZP-tB-OYk"; */
-"UZP-tB-OYk.text" = "Response";
+"UZP-tB-OYk.text" = "Logs";
 
 /* Class = "UIButton"; normalTitle = "Initialize Primer SDK"; ObjectID = "Uou-Rn-KOH"; */
 "Uou-Rn-KOH.normalTitle" = "Initialize Primer SDK";
