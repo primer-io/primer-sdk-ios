@@ -1,3 +1,15 @@
+## 2.26.5 (2024-06-05)
+
+### Fix
+
+- Align remaining mis-aligned PrimerError errors with android (#886)
+- Refactor error handling for url schemes (#871)
+
+### Refactor
+
+- Rework HUC tests (#854)
+- Prevent klarna breaking debug app when not imported (#857)
+
 ## 2.26.4 (2024-05-04)
 
 ### Fix
