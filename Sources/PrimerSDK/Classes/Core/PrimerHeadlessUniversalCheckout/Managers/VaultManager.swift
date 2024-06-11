@@ -687,8 +687,8 @@ extension PrimerHeadlessUniversalCheckout {
                             }
 
                         } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
-                            // Fulfill regardless of decision - both succeed
-                            seal.fulfill(self.paymentCheckoutData)
+                            // No need to continue if manually handling resume
+                            self.paymentCheckoutData = nil
                         } else {
                             assertionFailure("A relevant decision type was not found - decision type was: \(type(of: resumeDecision.type))")
                         }

@@ -58,6 +58,12 @@ final class VaultManagerTests: XCTestCase {
         rawDataManagerDelegate = nil
 
         SDKSessionHelper.tearDown()
+
+        PrimerAPIConfigurationModule.apiClient = nil
+        PollingModule.apiClient = nil
+
+        let settings = PrimerSettings()
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
     }
 
     func testFullPaymentFlow_auto() throws {
@@ -115,25 +121,6 @@ final class VaultManagerTests: XCTestCase {
         }
         waitForExpectations(timeout: 2.0)
 
-//        let expectDidCompleteCheckout = self.expectation(description: "Headless checkout completed")
-//        headlessCheckoutDelegate.onDidCompleteCheckoutWithData = { _ in
-//            expectDidCompleteCheckout.fulfill()
-//        }
-
-//        let expectCreatePayment = self.expectation(description: "On create payment")
-//        createResumePaymentService.onCreatePayment = { _ in
-//            expectCreatePayment.fulfill()
-//            return self.paymentResponseBody
-//        }
-
-//        let expectResumePayment = self.expectation(description: "On resume payment")
-//        createResumePaymentService.onResumePayment = { paymentId, request in
-//            XCTAssertEqual(paymentId, "id")
-//            XCTAssertEqual(request.resumeToken, "4321")
-//            expectResumePayment.fulfill()
-//            return self.paymentResponseAfterResume
-//        }
-
         let expectDidResumeWith = self.expectation(description: "On did resume with token and decision")
         headlessCheckoutDelegate.onDidResumeWith = { token, decisionHandler in
             XCTAssertEqual(token, "4321")
@@ -172,6 +159,9 @@ final class VaultManagerTests: XCTestCase {
             (PollingResponse(status: .pending, id: "0", source: "src"), nil),
             (PollingResponse(status: .complete, id: "4321", source: "src"), nil)
         ]
+
+        let settings = PrimerSettings(paymentHandling: .auto)
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
 
         let expectDidFetchVaultedPaymentMethods = self.expectation(description: "Did fetch vaulted payment methods")
         sut.fetchVaultedPaymentMethods { _, _ in
