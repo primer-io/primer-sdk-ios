@@ -40,8 +40,8 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         return Promise { seal in
             apiClient.createPayment(clientToken: clientToken, paymentRequestBody: paymentRequest) { result in
                 switch result {
-                case .failure:
-                    seal.reject(self.error(forCallType: .create))
+                case .failure(let error):
+                    seal.reject(error)
                 case .success(let paymentResponse):
                     do {
                         try self.validateResponse(paymentResponse: paymentResponse, callType: "create")
@@ -97,8 +97,8 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                                     paymentId: paymentId,
                                     paymentResumeRequest: paymentResumeRequest) { result in
                 switch result {
-                case .failure:
-                    seal.reject(self.error(forCallType: .resume))
+                case .failure(let error):
+                    seal.reject(error)
                 case .success(let paymentResponse):
                     do {
                         try self.validateResponse(paymentResponse: paymentResponse, callType: "resume")
