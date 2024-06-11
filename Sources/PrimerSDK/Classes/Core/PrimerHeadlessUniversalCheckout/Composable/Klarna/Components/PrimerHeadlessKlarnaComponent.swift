@@ -156,6 +156,7 @@ extension PrimerHeadlessKlarnaComponent {
                 let step = KlarnaStep.paymentSessionFinalized(authToken: token, checkoutData: checkoutData)
                 self.stepDelegate?.didReceiveStep(step: step)
             }
+            PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
             self.resetKlarnaSessionVariables()
         }
         .catch { error in

@@ -57,14 +57,14 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessErrorableD
                 }
 
             case .paymentSessionAuthorized( _, let checkoutData):
-                presentResultsVC(checkoutData: checkoutData, error: nil)
+                showResultsVC(checkoutData: checkoutData, error: nil)
 
             case .paymentSessionFinalizationRequired:
                 klarnaInitializationViewModel.updatSnackBar(with: "Finalizing in 2 seconds")
                 finalizeSession()
 
             case .paymentSessionFinalized( _, let checkoutData):
-                presentResultsVC(checkoutData: checkoutData, error: nil)
+                showResultsVC(checkoutData: checkoutData, error: nil)
 
             case .viewLoaded(let view):
                 hideLoader()
@@ -79,10 +79,64 @@ extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessErrorableD
         }
     }
 
+    private func showResultsVC(checkoutData: PrimerCheckoutData?, error: Error?) {
+        // If the checkout flow was set for Manual Handling then we want to show the manualHandlingCheckoutData
+        if manualHandlingCheckoutData != nil {
+            presentResultsVC(checkoutData: manualHandlingCheckoutData, error: nil)
+            return
+        }
+        presentResultsVC(checkoutData: checkoutData, error: nil)
+    }
+    
     private func presentResultsVC(checkoutData: PrimerCheckoutData?, error: Error?) {
         let rvc = MerchantResultViewController.instantiate(checkoutData: checkoutData, error: error, logs: logs)
         navigationController?.popToRootViewController(animated: true)
         navigationController?.pushViewController(rvc, animated: true)
+    }
+}
+
+extension MerchantHeadlessCheckoutKlarnaViewController: PrimerHeadlessUniversalCheckoutDelegate {
+    
+    func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
+        print("\n\nMERCHANT APP\n\(#function)\ndata: \(data)")
+        decisionHandler(.continuePaymentCreation())
+    }
+    
+    func primerHeadlessUniversalCheckoutDidStartTokenization(for paymentMethodType: String) {
+        print("\n\nMERCHANT APP\n\(#function)\npaymentMethodType: \(paymentMethodType)")
+    }
+    
+    func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void) {
+        print("\n\nMERCHANT APP\n\(#function)\npaymentMethodTokenData: \(paymentMethodTokenData)")
+
+        Networking.createPayment(with: paymentMethodTokenData) { (res, err) in
+            if let err = err {
+                self.showErrorMessage(err.localizedDescription)
+                self.showLoader()
+
+            } else if let res = res {
+                //self.paymentId = res.id
+
+                if res.requiredAction?.clientToken != nil {
+                    decisionHandler(.continueWithNewClientToken(res.requiredAction!.clientToken))
+                } else {
+                    DispatchQueue.main.async {
+                        self.hideLoader()
+                    }
+                    self.manualHandlingCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(id: res.id,
+                                                                                              orderId: res.orderId,
+                                                                                              paymentFailureReason: nil))
+                    decisionHandler(.complete())
+                }
+
+            } else {
+                assert(true)
+            }
+        }
+    }
+    
+    func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerSDK.PrimerCheckoutData) {
+        print("\n\nMERCHANT APP\n\(#function)\ndata: \(data)")
     }
 }
 

@@ -38,6 +38,8 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
     // MARK: - Tokenize Headless
     func tokenizeHeadless(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerCheckoutData> {
         return Promise { seal in
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: PrimerPaymentMethodType.klarna.rawValue)
+            
             firstly {
                 getRequestBody(customerToken: customerToken, offSessionAuthorizationId: offSessionAuthorizationId)
             }
@@ -78,19 +80,37 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
 extension KlarnaTokenizationManager {
     func startPaymentFlow(with paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData> {
         return Promise { seal in
-            guard let token = paymentMethodTokenData.token else {
-                seal.reject(KlarnaHelpers.getInvalidTokenError())
-                return
-            }
-            firstly {
-                self.createPaymentEvent(token)
-            }
-            .done { paymentResponse -> Void in
-                let paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
-                seal.fulfill(paymentCheckoutData)
-            }
-            .catch { error in
-                seal.reject(error)
+            if PrimerSettings.current.paymentHandling == .manual {
+                PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { resumeDecision in
+                    if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
+                        switch resumeDecisionType {
+                        case .continueWithNewClientToken:
+                            break
+                            
+                        case .complete:
+                            let checkoutData = PrimerCheckoutData(payment: nil)
+                            seal.fulfill(checkoutData)
+                        }
+                        
+                    } else {
+                        seal.reject(KlarnaHelpers.getPaymentFailedError())
+                    }
+                }
+            } else {
+                guard let token = paymentMethodTokenData.token else {
+                    seal.reject(KlarnaHelpers.getInvalidTokenError())
+                    return
+                }
+                firstly {
+                    self.createPaymentEvent(token)
+                }
+                .done { paymentResponse -> Void in
+                    let paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
+                    seal.fulfill(paymentCheckoutData)
+                }
+                .catch { error in
+                    seal.reject(error)
+                }
             }
         }
     }
