@@ -890,7 +890,6 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager {
             return
         }
 
-//        let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
         apiClient.listRetailOutlets(clientToken: decodedJWTToken, paymentMethodId: paymentMethodId) { result in
             switch result {
             case .failure(let err):
