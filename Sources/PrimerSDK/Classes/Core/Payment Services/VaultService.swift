@@ -29,17 +29,8 @@ internal class VaultService: VaultServiceProtocol {
                 fetchVaultedPaymentMethods(clientToken: clientToken)
             }
             .done { paymentMethods in
-                AppState.current.selectedPaymentMethodId = paymentMethods.data.first?.id
                 state.paymentMethods = paymentMethods.data
-
-                if state.selectedPaymentMethodId == nil && !state.paymentMethods.isEmpty {
-                    guard let firstPaymentMethodToken = state.paymentMethods.first?.id else {
-                        seal.fulfill()
-                        return
-                    }
-                    state.selectedPaymentMethodId = firstPaymentMethodToken
-                }
-
+                state.selectedPaymentMethodId = paymentMethods.data.first?.id
                 seal.fulfill()
             }
             .catch { err in

@@ -1,5 +1,5 @@
 //
-//  RawDataManagerTests.swift
+//  RawDataManagerValidationTests.swift
 //  Debug App Tests
 //
 //  Created by Evangelos Pittas on 1/6/23.
@@ -9,7 +9,7 @@
 import XCTest
 @testable import PrimerSDK
 
-class RawDataManagerTests: XCTestCase {
+class RawDataManagerValidationTests: XCTestCase {
 
     private static let validationTimeout = 3.0
 
@@ -642,7 +642,7 @@ class RawDataManagerTests: XCTestCase {
     }
 }
 
-extension RawDataManagerTests {
+extension RawDataManagerValidationTests {
 
     // MARK: Helpers
 

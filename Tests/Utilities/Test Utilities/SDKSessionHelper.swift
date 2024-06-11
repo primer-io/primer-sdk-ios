@@ -15,8 +15,10 @@ final class SDKSessionHelper {
 
     static func setUp(withPaymentMethods paymentMethods: [PrimerPaymentMethod]? = nil,
                       order: ClientSession.Order? = nil,
+                      customer: ClientSession.Customer? = nil,
                       paymentMethodOptions: [[String: Any]]? = nil,
-                      checkoutModules: [PrimerAPIConfiguration.CheckoutModule]? = nil) {
+                      checkoutModules: [PrimerAPIConfiguration.CheckoutModule]? = nil,
+                      configureAppState: (MockAppState) -> Void = { _ in }) {
         let paymentMethods = paymentMethods ?? [
             Mocks.PaymentMethods.paymentCardPaymentMethod
         ]
@@ -25,7 +27,7 @@ final class SDKSessionHelper {
                                                                      options: paymentMethodOptions,
                                                                      orderedAllowedCardNetworks: nil),
                                                 order: order,
-                                                customer: nil,
+                                                customer: customer,
                                                 testId: nil)
         let apiConfig = PrimerAPIConfiguration(coreUrl: "core_url",
                                                pciUrl: "pci_url",
@@ -38,6 +40,11 @@ final class SDKSessionHelper {
                                                checkoutModules: checkoutModules)
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfig
+
+        let mockAppState = MockAppState(clientToken: MockAppState.mockClientToken,
+                                        apiConfiguration: apiConfig)
+        configureAppState(mockAppState)
+        DependencyContainer.register(mockAppState as AppStateProtocol)
     }
 
     static func tearDown() {

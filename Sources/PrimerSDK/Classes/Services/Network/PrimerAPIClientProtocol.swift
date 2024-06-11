@@ -15,7 +15,8 @@ protocol PrimerAPIClientProtocol:
     PrimerAPIClientBINDataProtocol,
     PrimerAPIClientBanksProtocol,
     PrimerAPIClientPayPalProtocol,
-    PrimerAPIClientVaultProtocol {
+    PrimerAPIClientVaultProtocol,
+    PrimerAPIClientXenditProtocol {
 
     // MARK: Configuration
 
@@ -74,13 +75,6 @@ protocol PrimerAPIClientProtocol:
         threeDSTokenId: String,
         continueInfo: ThreeDS.ContinueInfo,
         completion: @escaping APICompletion<ThreeDS.PostAuthResponse>)
-
-    // MARK: Retail Outlets
-
-    func listRetailOutlets(
-        clientToken: DecodedJWTToken,
-        paymentMethodId: String,
-        completion: @escaping APICompletion<RetailOutletsList>)
 
     // MARK: General
 
