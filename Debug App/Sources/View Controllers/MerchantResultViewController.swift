@@ -64,9 +64,29 @@ final class MerchantResultViewController: UIViewController {
                 responseTextView.text = "[\"Failed to convert logs to data\"]"
             }
         } else if let error = self.error {
-            responseTextView.text = "[\"\(error.localizedDescription)\"]"
+            if let primerError = error as? PrimerError {
+                let encodable = PrimerErrorEncodable(errorId: primerError.errorId,
+                                                     errorDescription: primerError.localizedDescription,
+                                                     diagnosticId: primerError.diagnosticsId,
+                                                     recoverySuggestion: primerError.recoverySuggestion)
+                guard let data = try? JSONEncoder().encode(encodable), let string = String(data: data, encoding: .utf8) else {
+                    responseTextView.text = "[\"\(error.localizedDescription)\"]"
+                    return
+                }
+
+                responseTextView.text = string
+            } else {
+                responseTextView.text = "[\"\(error.localizedDescription)\"]"
+            }
         } else {
             responseTextView.text = "[\"No checkout data or error received\"]"
         }
     }
+}
+
+private struct PrimerErrorEncodable: Encodable {
+    let errorId: String
+    let errorDescription: String
+    let diagnosticId: String
+    let recoverySuggestion: String?
 }
