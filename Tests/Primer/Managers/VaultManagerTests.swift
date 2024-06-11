@@ -60,7 +60,7 @@ final class VaultManagerTests: XCTestCase {
         SDKSessionHelper.tearDown()
     }
 
-    func testFullPaymentFlow() throws {
+    func testFullPaymentFlow_auto() throws {
 
         let expectDidFetchVaultedPaymentMethods = self.expectation(description: "Did fetch vaulted payment methods")
         sut.fetchVaultedPaymentMethods { _, _ in
@@ -92,6 +92,74 @@ final class VaultManagerTests: XCTestCase {
         sut.startPaymentFlow(vaultedPaymentMethodId: Mocks.primerPaymentMethodTokenData.id!)
 
         waitForExpectations(timeout: 5.0)
+    }
+
+    func testFullPaymentFlow_manual() throws {
+        let apiClient = MockPrimerAPIClient()
+        PrimerAPIConfigurationModule.apiClient = apiClient
+        PollingModule.apiClient = apiClient
+        apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
+        apiClient.pollingResults = [
+            (PollingResponse(status: .pending, id: "0", source: "src"), nil),
+            (PollingResponse(status: .pending, id: "0", source: "src"), nil),
+            (PollingResponse(status: .complete, id: "4321", source: "src"), nil)
+        ]
+        apiClient.validateClientTokenResult = (SuccessResponse(), nil)
+
+        let settings = PrimerSettings(paymentHandling: .manual)
+        DependencyContainer.register(settings as PrimerSettingsProtocol)
+
+        let expectDidFetchVaultedPaymentMethods = self.expectation(description: "Did fetch vaulted payment methods")
+        sut.fetchVaultedPaymentMethods { _, _ in
+            expectDidFetchVaultedPaymentMethods.fulfill()
+        }
+        waitForExpectations(timeout: 2.0)
+
+//        let expectDidCompleteCheckout = self.expectation(description: "Headless checkout completed")
+//        headlessCheckoutDelegate.onDidCompleteCheckoutWithData = { _ in
+//            expectDidCompleteCheckout.fulfill()
+//        }
+
+//        let expectCreatePayment = self.expectation(description: "On create payment")
+//        createResumePaymentService.onCreatePayment = { _ in
+//            expectCreatePayment.fulfill()
+//            return self.paymentResponseBody
+//        }
+
+//        let expectResumePayment = self.expectation(description: "On resume payment")
+//        createResumePaymentService.onResumePayment = { paymentId, request in
+//            XCTAssertEqual(paymentId, "id")
+//            XCTAssertEqual(request.resumeToken, "4321")
+//            expectResumePayment.fulfill()
+//            return self.paymentResponseAfterResume
+//        }
+
+        let expectDidResumeWith = self.expectation(description: "On did resume with token and decision")
+        headlessCheckoutDelegate.onDidResumeWith = { token, decisionHandler in
+            XCTAssertEqual(token, "4321")
+            decisionHandler(.complete())
+            expectDidResumeWith.fulfill()
+        }
+
+        let expectDidTokenize = self.expectation(description: "On did tokenize")
+        headlessCheckoutDelegate.onDidTokenizePaymentMethod = { _, decisionHandler in
+            expectDidTokenize.fulfill()
+            decisionHandler(.continueWithNewClientToken(MockAppState.mockResumeToken))
+        }
+
+        let expectExchangeTokenData = self.expectation(description: "Token data exchanged")
+        tokenizationService.onExchangePaymentMethodToken = { id, data in
+            expectExchangeTokenData.fulfill()
+            return Promise.fulfilled(Mocks.primerPaymentMethodTokenData)
+        }
+
+        headlessCheckoutDelegate.onDidFail = { error in
+            XCTFail("Failed with error: \(error.localizedDescription)")
+        }
+
+        sut.startPaymentFlow(vaultedPaymentMethodId: Mocks.primerPaymentMethodTokenData.id!)
+
+        waitForExpectations(timeout: 15.0)
     }
 
     func testFullPaymentFlowWithRequiredActionResume() throws {

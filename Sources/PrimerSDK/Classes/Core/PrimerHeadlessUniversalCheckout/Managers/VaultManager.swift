@@ -235,9 +235,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                                 DispatchQueue.main.async {
                                     if PrimerSettings.current.paymentHandling == .auto {
-                                        guard let checkoutData = self.paymentCheckoutData,
-                                              PrimerSettings.current.paymentHandling == .auto
-                                        else {
+                                        guard let checkoutData = self.paymentCheckoutData else {
                                             let err = PrimerError.failedToResumePayment(
                                                 paymentMethodType: self.paymentMethodType,
                                                 description: "Failed to find checkout data after resuming payment",
@@ -315,28 +313,29 @@ extension PrimerHeadlessUniversalCheckout {
                             }
                         }
                     }
-                } else {
+                } else if PrimerSettings.current.paymentHandling == .auto {
                     DispatchQueue.main.async {
-                        if PrimerSettings.current.paymentHandling == .auto {
-                            guard let checkoutData = self.paymentCheckoutData,
-                                  PrimerSettings.current.paymentHandling == .auto
-                            else {
-                                let err = PrimerError.failedToCreatePayment(
-                                    paymentMethodType: self.paymentMethodType,
-                                    description: "Failed to find checkout data after completing payment",
-                                    userInfo: .errorUserInfoDictionary(),
-                                    diagnosticsId: UUID().uuidString
-                                )
-                                ErrorHandler.handle(error: err)
-                                PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { _ in
-                                    // No need to pass anything
-                                }
-                                return
-                            }
 
-                            PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+                        guard let checkoutData = self.paymentCheckoutData,
+                              PrimerSettings.current.paymentHandling == .auto
+                        else {
+                            let err = PrimerError.failedToCreatePayment(
+                                paymentMethodType: self.paymentMethodType,
+                                description: "Failed to find checkout data after completing payment",
+                                userInfo: .errorUserInfoDictionary(),
+                                diagnosticsId: UUID().uuidString
+                            )
+                            ErrorHandler.handle(error: err)
+                            PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { _ in
+                                // No need to pass anything
+                            }
+                            return
                         }
+
+                        PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                     }
+                } else {
+                    assertionFailure("payload was not set but payment handling type was not set")
                 }
             }
             .catch { err in
@@ -688,16 +687,10 @@ extension PrimerHeadlessUniversalCheckout {
                             }
 
                         } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
-                            switch resumeDecisionType {
-                            case .continueWithNewClientToken:
-                                seal.fulfill(self.paymentCheckoutData)
-
-                            case .complete:
-                                seal.fulfill(self.paymentCheckoutData)
-                            }
-
+                            // Fulfill regardless of decision - both succeed
+                            seal.fulfill(self.paymentCheckoutData)
                         } else {
-                            precondition(false)
+                            assertionFailure("A relevant decision type was not found - decision type was: \(type(of: resumeDecision.type))")
                         }
                     }
 
