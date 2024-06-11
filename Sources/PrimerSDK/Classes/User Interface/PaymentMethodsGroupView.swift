@@ -28,7 +28,9 @@ class PaymentMethodsGroupView: PrimerView {
         render()
     }
 
-    convenience init(frame: CGRect = .zero, title: String?, paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol]) {
+    convenience init(frame: CGRect = .zero, 
+                     title: String?,
+                     paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol]) {
         self.init(frame: frame)
         self.title = title
         self.paymentMethodTokenizationViewModels = paymentMethodTokenizationViewModels
