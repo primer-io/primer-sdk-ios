@@ -149,6 +149,22 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
+            
+            var isMockBE = false
+
+            #if DEBUG
+            if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
+                isMockBE = true
+            }
+            #endif
+
+            if isMockBE {
+            #if DEBUG
+                seal.fulfill()
+                return
+            #endif
+            }
+            
             firstly {
                 getPublishableKey()
             }
@@ -184,7 +200,21 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             firstly {
-                awaitStripeBankAccountCollectorResponse()
+                
+                var isMockBE = false
+
+                #if DEBUG
+                if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
+                    isMockBE = true
+                }
+                #endif
+
+                if isMockBE {
+                     return showTestResponse()
+                } else {
+                    return awaitStripeBankAccountCollectorResponse()
+                }
+
             }
             .then { () -> Promise<Void> in
                 return self.sendAdditionalInfoEvent()
@@ -227,9 +257,9 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
                 } else {
                     PrimerUIManager.primerRootViewController?.show(viewController: collectorViewController)
+                    seal.fulfill()
                 }
-                
-                seal.fulfill()
+
 #else
                 var isMockBE = false
 
@@ -242,6 +272,7 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 if isMockBE {
                 #if DEBUG
                     seal.fulfill()
+                    return
                 #endif
                 }
 
@@ -385,6 +416,12 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
             } catch let error {
                 seal.reject(error)
             }
+        }
+    }
+
+    private func showTestResponse() -> Promise<Void> {
+        return Promise { seal in
+            seal.fulfill()
         }
     }
 }

@@ -132,7 +132,9 @@ extension MerchantHeadlessCheckoutStripeAchViewController {
     func showAlert(title: String, message: String, okHandler: (() -> Void)? = nil, cancelHandler: (() -> Void)? = nil) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: "OK", style: .default) { _ in okHandler?() }
+        okAction.accessibilityIdentifier = AccessibilityIdentifier.StripeAchUserDetailsComponent.acceptMandateButton.rawValue
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in cancelHandler?() }
+        cancelAction.accessibilityIdentifier = AccessibilityIdentifier.StripeAchUserDetailsComponent.declineMandateButton.rawValue
         alert.addAction(okAction)
         alert.addAction(cancelAction)
         present(alert, animated: true, completion: nil)
@@ -152,7 +154,7 @@ extension MerchantHeadlessCheckoutStripeAchViewController {
     }
     
     func showMandate() {
-        showAlert(title: "Mandate acceptance", message: "Do you accept the mandate?") {
+        showAlert(title: "Mandate acceptance", message: "Would you like to accept this mandate?") {
             self.manager.mandateDelegate?.mandateAccepted()
         } cancelHandler: {
             self.manager.mandateDelegate?.mandateDeclined()

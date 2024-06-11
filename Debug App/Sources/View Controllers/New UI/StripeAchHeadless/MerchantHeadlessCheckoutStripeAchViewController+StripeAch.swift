@@ -18,7 +18,6 @@ extension MerchantHeadlessCheckoutStripeAchViewController: PrimerHeadlessErrorab
         case .stripeError:
             showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
         default:
-            logs.removeAll()
             logs.append("primerHeadlessUniversalCheckoutDidFail(withError:checkoutData:)")
             presentResultsVC(checkoutData: nil, error: error)
         }
@@ -80,6 +79,11 @@ extension MerchantHeadlessCheckoutStripeAchViewController {
 
 // MARK: - PrimerHeadlessUniversalCheckoutDelegate
 extension MerchantHeadlessCheckoutStripeAchViewController: PrimerHeadlessUniversalCheckoutDelegate {
+    func primerHeadlessUniversalCheckoutDidStartTokenization(for paymentMethodType: String) {
+        print("\n\nMERCHANT APP\n\(#function)\npaymentMethodType: \(paymentMethodType)")
+        self.logs.append(#function)
+    }
+    
     func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerSDK.PrimerCheckoutData) {
         print("\n\nMERCHANT APP\n\(#function)\ndata: \(data)")
         logs.append(#function)

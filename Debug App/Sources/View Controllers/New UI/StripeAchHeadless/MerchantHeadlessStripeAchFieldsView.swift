@@ -8,6 +8,7 @@
 
 import UIKit
 import SwiftUI
+import PrimerSDK
 
 struct StripeAchFieldsView: View {
     @ObservedObject var viewModel = StripeAchFieldsViewModel()
@@ -18,12 +19,14 @@ struct StripeAchFieldsView: View {
             Text("Stripe ACH session")
                 .font(.title)
                 .padding(.bottom, 20)
+                .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.title.rawValue)
             
             VStack(alignment: .leading) {
                 TextField("First name", text: $viewModel.firstName)
                     .textFieldStyle(.roundedBorder)
                     .border(viewModel.isFirstNameValid ? Color.clear : Color.red, width: 2)
                     .padding(.horizontal)
+                    .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.firstNameTextField.rawValue)
                 
                 Text(viewModel.firstNameErrorDescription)
                     .foregroundColor(.red)
@@ -36,6 +39,7 @@ struct StripeAchFieldsView: View {
                     .textFieldStyle(.roundedBorder)
                     .border(viewModel.isLastNameValid ? Color.clear : Color.red, width: 2)
                     .padding(.horizontal)
+                    .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.lastNameTextField.rawValue)
                 
                 Text(viewModel.lastNameErrorDescription)
                     .foregroundColor(.red)
@@ -48,6 +52,7 @@ struct StripeAchFieldsView: View {
                     .textFieldStyle(.roundedBorder)
                     .border(viewModel.isEmailAddressValid ? Color.clear : Color.red, width: 2)
                     .padding([.horizontal])
+                    .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.emailAddressTextField.rawValue)
                 
                 Text(viewModel.emailErrorDescription)
                     .foregroundColor(.red)
@@ -66,6 +71,7 @@ struct StripeAchFieldsView: View {
             }
             .disabled(!viewModel.isValidForm)
             .padding(.horizontal)
+            .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.submitButton.rawValue)
         }
     }
     
