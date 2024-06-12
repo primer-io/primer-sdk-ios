@@ -8,7 +8,6 @@
 import Foundation
 
 internal protocol CreateResumePaymentServiceProtocol {
-    static var apiClient: PrimerAPIClientProtocol? { get set }
     func createPayment(paymentRequest: Request.Body.Payment.Create) -> Promise<Response.Body.Payment>
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) -> Promise<Response.Body.Payment>
 }
@@ -20,12 +19,14 @@ private enum CreateResumePaymentCallType: String {
 
 internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
 
-    static var apiClient: PrimerAPIClientProtocol?
+    let apiClient: PrimerAPIClientProtocol
 
     let paymentMethodType: String
 
-    init(paymentMethodType: String) {
+    init(paymentMethodType: String,
+         apiClient: PrimerAPIClientProtocol = PrimerAPIClient()) {
         self.paymentMethodType = paymentMethodType
+        self.apiClient = apiClient
     }
 
     func createPayment(paymentRequest: Request.Body.Payment.Create) -> Promise<Response.Body.Payment> {
@@ -36,9 +37,9 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             return Promise(error: err)
         }
 
-        let apiClient: PrimerAPIClientProtocol = CreateResumePaymentService.apiClient ?? PrimerAPIClient()
         return Promise { seal in
-            apiClient.createPayment(clientToken: clientToken, paymentRequestBody: paymentRequest) { result in
+            self.apiClient.createPayment(clientToken: clientToken, 
+                                         paymentRequestBody: paymentRequest) { result in
                 switch result {
                 case .failure(let error):
                     seal.reject(error)
@@ -92,10 +93,9 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         }
 
         return Promise { seal in
-            let apiClient: PrimerAPIClientProtocol = CreateResumePaymentService.apiClient ?? PrimerAPIClient()
-            apiClient.resumePayment(clientToken: clientToken,
-                                    paymentId: paymentId,
-                                    paymentResumeRequest: paymentResumeRequest) { result in
+            self.apiClient.resumePayment(clientToken: clientToken,
+                                         paymentId: paymentId,
+                                         paymentResumeRequest: paymentResumeRequest) { result in
                 switch result {
                 case .failure(let error):
                     seal.reject(error)

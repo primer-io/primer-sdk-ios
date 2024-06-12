@@ -16,6 +16,8 @@ final class BankSelectionTokenizationViewModelTests: XCTestCase {
 
     var createResumePaymentService: MockCreateResumePaymentService!
 
+    var banksApiClient: MockBanksAPIClient!
+
     var sut: BankSelectorTokenizationViewModel!
 
     override func setUpWithError() throws {
@@ -23,11 +25,13 @@ final class BankSelectionTokenizationViewModelTests: XCTestCase {
         uiManager = MockPrimerUIManager()
         tokenizationService = MockTokenizationService()
         createResumePaymentService = MockCreateResumePaymentService()
+        banksApiClient = MockBanksAPIClient()
 
         sut = BankSelectorTokenizationViewModel(config: Mocks.PaymentMethods.adyenIDealPaymentMethod,
                                                 uiManager: uiManager,
                                                 tokenizationService: tokenizationService,
-                                                createResumePaymentService: createResumePaymentService)
+                                                createResumePaymentService: createResumePaymentService,
+                                                apiClient: banksApiClient)
     }
 
     override func tearDownWithError() throws {
@@ -158,12 +162,10 @@ final class BankSelectionTokenizationViewModelTests: XCTestCase {
     // MARK: Helpers
 
     func setupBanksAPIClient() -> BanksListSessionResponse {
-        let banksApiClient = MockBanksAPIClient()
         let banks: BanksListSessionResponse = .init(
             result: [.init(id: "id", name: "name", iconUrlStr: "icon", disabled: false)]
         )
         banksApiClient.result = banks
-        sut.apiClient = banksApiClient
 
         return banks
     }

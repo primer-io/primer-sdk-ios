@@ -28,8 +28,6 @@ internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
 
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol, LogReporter {
 
-    static var apiClient: PrimerAPIClientProtocol?
-
     // Events
     let checkoutEventsNotifierModule = CheckoutEventsNotifierModule()
     var didStartPayment: (() -> Void)?
@@ -55,11 +53,13 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
 
     let createResumePaymentService: CreateResumePaymentServiceProtocol
 
-    convenience init(config: PrimerPaymentMethod) {
+    convenience init(config: PrimerPaymentMethod,
+                     apiClient: PrimerAPIClientProtocol = PrimerAPIClient()) {
         self.init(config: config,
                   uiManager: PrimerUIManager.shared,
-                  tokenizationService: TokenizationService(),
-                  createResumePaymentService: CreateResumePaymentService(paymentMethodType: config.type)
+                  tokenizationService: TokenizationService(apiClient: apiClient),
+                  createResumePaymentService: CreateResumePaymentService(paymentMethodType: config.type,
+                                                                         apiClient: apiClient)
         )
     }
 

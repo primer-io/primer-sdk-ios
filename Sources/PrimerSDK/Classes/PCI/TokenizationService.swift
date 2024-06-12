@@ -3,15 +3,20 @@
 import Foundation
 
 internal protocol TokenizationServiceProtocol {
-    static var apiClient: PrimerAPIClientProtocol? { get set }
     var paymentMethodTokenData: PrimerPaymentMethodTokenData? { get set }
     func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData>
     func exchangePaymentMethodToken(_ paymentMethodTokenId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?) -> Promise<PrimerPaymentMethodTokenData>
 }
 
 internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
-    static var apiClient: PrimerAPIClientProtocol?
     var paymentMethodTokenData: PrimerPaymentMethodTokenData?
+
+    let apiClient: PrimerAPIClientProtocol
+
+    init(apiClient: PrimerAPIClientProtocol = PrimerAPIClient()) {
+        self.apiClient = apiClient
+    }
+
     func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
@@ -48,8 +53,7 @@ internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
                 return
             }
             self.logger.debug(message: "URL: \(url)")
-            let apiClient: PrimerAPIClientProtocol = TokenizationService.apiClient ?? PrimerAPIClient()
-            apiClient.tokenizePaymentMethod(clientToken: decodedJWTToken, tokenizationRequestBody: requestBody) { (result) in
+            self.apiClient.tokenizePaymentMethod(clientToken: decodedJWTToken, tokenizationRequestBody: requestBody) { (result) in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
@@ -70,8 +74,7 @@ internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
                 seal.reject(err)
                 return
             }
-            let apiClient: PrimerAPIClientProtocol = CheckoutWithVaultedPaymentMethodViewModel.apiClient ?? PrimerAPIClient()
-            apiClient.exchangePaymentMethodToken(
+            self.apiClient.exchangePaymentMethodToken(
                 clientToken: decodedJWTToken,
                 vaultedPaymentMethodId: vaultedPaymentMethodId,
                 vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData) { result in

@@ -8,15 +8,12 @@
 import Foundation
 
 protocol CardValidationService {
-    static var apiClient: PrimerAPIClientProtocol? { get set }
     func validateCardNetworks(withCardNumber cardNumber: String)
 }
 
 class DefaultCardValidationService: CardValidationService, LogReporter {
 
     static let maximumBinLength = 8
-
-    static var apiClient: PrimerAPIClientProtocol?
 
     private var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? {
         return self.rawDataManager.delegate
@@ -215,7 +212,6 @@ would have been preferred (max BIN length exceeded).
                 cancellable.cancel()
             }
 
-            let apiClient = Self.apiClient ?? apiClient
             validateCardNetworksCancellable = apiClient.listCardNetworks(clientToken: decodedJWTToken,
                                                                          bin: cardNumber) { result in
                 switch result {
