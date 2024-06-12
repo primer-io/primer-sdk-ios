@@ -55,8 +55,8 @@ final class MerchantResultViewController: UIViewController {
                 return
             }
             responseTextView.text = string
-        } else if self.error != nil {
-            responseTextView.text = "[\"\(error?.errorDescription ?? "unknown")\"]"
+        } else if let error = self.error {
+            responseTextView.text = "[\"\(error.localizedDescription)\"]"
         } else {
             responseTextView.text = "[\"No checkout data or error received\"]"
         }
