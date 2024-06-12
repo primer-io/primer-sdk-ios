@@ -192,7 +192,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
 
         let expectError = self.expectation(description: "Failed to create session error is thrown")
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            XCTAssertEqual(errorResult.errorId, "failed-to-create-session")
+            XCTAssertEqual(self.errorResult.errorId, "failed-to-create-session")
             expectError.fulfill()
         }
 
@@ -218,7 +218,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         
         let expectStep = self.expectation(description: "Session creation step is received")
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            switch stepType {
+            switch self.stepType {
             case .creationStep:
                 break
             default:
