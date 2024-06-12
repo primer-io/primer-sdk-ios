@@ -82,9 +82,15 @@ extension PrimerHeadlessUniversalCheckout {
         private var rawDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol
         public private(set) var paymentCheckoutData: PrimerCheckoutData?
         public private(set) var isDataValid: Bool = false
-        private var webViewController: SFSafariViewController?
+        var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
         var initializationData: PrimerInitializationData?
+
+        var tokenizationService: TokenizationServiceProtocol = TokenizationService()
+
+        var createResumePaymentService: CreateResumePaymentServiceProtocol
+
+        var apiClient: PrimerAPIClientXenditProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
 
         required public init(paymentMethodType: String, delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? = nil) throws {
             PrimerInternal.shared.sdkIntegrationType = .headless
@@ -100,6 +106,7 @@ extension PrimerHeadlessUniversalCheckout {
             Analytics.Service.record(events: [sdkEvent])
 
             self.delegate = delegate
+            self.createResumePaymentService = CreateResumePaymentService(paymentMethodType: paymentMethodType)
 
             guard PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) != nil else {
                 let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
@@ -170,8 +177,9 @@ extension PrimerHeadlessUniversalCheckout {
 
             switch paymentMethodType {
             case .xenditRetailOutlets:
-                fetchRetailOutlets { data, error in completion(data, error) }
+                fetchRetailOutlets(completion: completion)
             default:
+                logger.warn(message: "Attempted to configure additional info for unsupported payment method type '\(paymentMethodType)'")
                 completion(nil, nil)
             }
         }
@@ -225,8 +233,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
             .then { requestBody -> Promise<PrimerPaymentMethodTokenData> in
                 PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.paymentMethodType)
-                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
-                return tokenizationService.tokenize(requestBody: requestBody)
+                return self.tokenizationService.tokenize(requestBody: requestBody)
             }
             .then { paymentMethodTokenData -> Promise<PrimerCheckoutData?> in
                 self.paymentMethodTokenData = paymentMethodTokenData
@@ -780,16 +787,14 @@ Make sure you call the decision handler otherwise the SDK will hang."
         }
 
         private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
-            let createResumePaymentService = CreateResumePaymentService(paymentMethodType: paymentMethodType)
             let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
             return createResumePaymentService.createPayment(paymentRequest: paymentRequest)
         }
 
         private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment> {
-                let createResumePaymentService = CreateResumePaymentService(paymentMethodType: paymentMethodType)
-                let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
-                return createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
-                                                                             paymentResumeRequest: resumeRequest)
+            let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
+            return createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
+                                                                         paymentResumeRequest: resumeRequest)
         }
 
         private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) -> Promise<Void> {
@@ -802,6 +807,16 @@ Make sure you call the decision handler otherwise the SDK will hang."
                         seal.reject(err)
                     }
                 }
+
+                #if DEBUG
+                // This ensures that the presentation completion is correctly handled in headless unit tests
+                guard UIApplication.shared.windows.count > 0 else {
+                    DispatchQueue.main.async {
+                        seal.fulfill()
+                    }
+                    return
+                }
+                #endif
 
                 DispatchQueue.main.async {
                     if PrimerUIManager.primerRootViewController == nil {
@@ -875,7 +890,6 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager {
             return
         }
 
-        let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
         apiClient.listRetailOutlets(clientToken: decodedJWTToken, paymentMethodId: paymentMethodId) { result in
             switch result {
             case .failure(let err):

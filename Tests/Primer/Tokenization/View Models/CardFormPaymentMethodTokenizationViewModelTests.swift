@@ -52,8 +52,10 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
     }
 
     func testStartWithPreTokenizationAndAbort() throws {
-        setupAppState(amount: 1234, currencyCode: "GBP")
-        SDKSessionHelper.setUp()
+        SDKSessionHelper.setUp { mockAppState in
+            mockAppState.amount = 1234
+            mockAppState.currency = Currency(code: "GBP", decimalDigits: 2)
+        }
 
         let apiClient = MockPrimerAPIClient()
         PrimerAPIConfigurationModule.apiClient = apiClient
@@ -89,8 +91,10 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
     }
 
     func testStartWithFullCheckoutFlow() throws {
-        setupAppState(amount: 1234, currencyCode: "GBP")
-        SDKSessionHelper.setUp(checkoutModules: [checkoutModule])
+        SDKSessionHelper.setUp(checkoutModules: [checkoutModule]) { mockAppState in
+            mockAppState.amount = 1234
+            mockAppState.currency = Currency(code: "GBP", decimalDigits: 2)
+        }
 
         let apiClient = MockPrimerAPIClient()
         PrimerAPIConfigurationModule.apiClient = apiClient

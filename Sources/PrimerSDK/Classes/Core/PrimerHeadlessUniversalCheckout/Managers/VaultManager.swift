@@ -26,6 +26,12 @@ extension PrimerHeadlessUniversalCheckout {
         private var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
 
+        lazy var createResumePaymentService: CreateResumePaymentServiceProtocol = {
+            CreateResumePaymentService(paymentMethodType: paymentMethodType)
+        }()
+
+        var tokenizationService: TokenizationServiceProtocol = TokenizationService()
+
         // MARK: Public functions
 
         public override init() {
@@ -206,7 +212,6 @@ extension PrimerHeadlessUniversalCheckout {
 
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: vaultedPaymentMethod.paymentMethodType)
 
-            let tokenizationService: TokenizationServiceProtocol = TokenizationService()
             firstly {
                 tokenizationService.exchangePaymentMethodToken(vaultedPaymentMethod.id,
                                                                vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData)
@@ -230,9 +235,7 @@ extension PrimerHeadlessUniversalCheckout {
 
                                 DispatchQueue.main.async {
                                     if PrimerSettings.current.paymentHandling == .auto {
-                                        guard let checkoutData = self.paymentCheckoutData,
-                                              PrimerSettings.current.paymentHandling == .auto
-                                        else {
+                                        guard let checkoutData = self.paymentCheckoutData else {
                                             let err = PrimerError.failedToResumePayment(
                                                 paymentMethodType: self.paymentMethodType,
                                                 description: "Failed to find checkout data after resuming payment",
@@ -310,28 +313,29 @@ extension PrimerHeadlessUniversalCheckout {
                             }
                         }
                     }
-                } else {
+                } else if PrimerSettings.current.paymentHandling == .auto {
                     DispatchQueue.main.async {
-                        if PrimerSettings.current.paymentHandling == .auto {
-                            guard let checkoutData = self.paymentCheckoutData,
-                                  PrimerSettings.current.paymentHandling == .auto
-                            else {
-                                let err = PrimerError.failedToCreatePayment(
-                                    paymentMethodType: self.paymentMethodType,
-                                    description: "Failed to find checkout data after completing payment",
-                                    userInfo: .errorUserInfoDictionary(),
-                                    diagnosticsId: UUID().uuidString
-                                )
-                                ErrorHandler.handle(error: err)
-                                PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { _ in
-                                    // No need to pass anything
-                                }
-                                return
-                            }
 
-                            PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+                        guard let checkoutData = self.paymentCheckoutData,
+                              PrimerSettings.current.paymentHandling == .auto
+                        else {
+                            let err = PrimerError.failedToCreatePayment(
+                                paymentMethodType: self.paymentMethodType,
+                                description: "Failed to find checkout data after completing payment",
+                                userInfo: .errorUserInfoDictionary(),
+                                diagnosticsId: UUID().uuidString
+                            )
+                            ErrorHandler.handle(error: err)
+                            PrimerDelegateProxy.primerDidFailWithError(err, data: self.paymentCheckoutData) { _ in
+                                // No need to pass anything
+                            }
+                            return
                         }
+
+                        PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                     }
+                } else {
+                    assertionFailure("payload was not set but payment handling type was not set")
                 }
             }
             .catch { err in
@@ -683,16 +687,10 @@ extension PrimerHeadlessUniversalCheckout {
                             }
 
                         } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
-                            switch resumeDecisionType {
-                            case .continueWithNewClientToken:
-                                seal.fulfill(self.paymentCheckoutData)
-
-                            case .complete:
-                                seal.fulfill(self.paymentCheckoutData)
-                            }
-
+                            // No need to continue if manually handling resume
+                            self.paymentCheckoutData = nil
                         } else {
-                            precondition(false)
+                            assertionFailure("A relevant decision type was not found - decision type was: \(type(of: resumeDecision.type))")
                         }
                     }
 
@@ -723,13 +721,11 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService(paymentMethodType: paymentMethodType)
             let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
             return createResumePaymentService.createPayment(paymentRequest: paymentRequest)
         }
 
         private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment> {
-            let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService(paymentMethodType: paymentMethodType)
             let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
             return createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
                                                                          paymentResumeRequest: resumeRequest)
@@ -745,6 +741,16 @@ extension PrimerHeadlessUniversalCheckout {
                         seal.reject(err)
                     }
                 }
+
+                #if DEBUG
+                // This ensures that the presentation completion is correctly handled in headless unit tests
+                guard UIApplication.shared.windows.count > 0 else {
+                    DispatchQueue.main.async {
+                        seal.fulfill()
+                    }
+                    return
+                }
+                #endif
 
                 DispatchQueue.main.async {
                     if PrimerUIManager.primerRootViewController == nil {

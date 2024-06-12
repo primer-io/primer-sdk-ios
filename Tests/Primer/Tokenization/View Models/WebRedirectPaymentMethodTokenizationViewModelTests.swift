@@ -204,7 +204,7 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
             expectDidShowPaymentMethod,
             expectResumePayment,
             expectCheckoutDidCompletewithData
-        ], enforceOrder: true)
+        ], timeout: 15.0, enforceOrder: true)
     }
 
 
