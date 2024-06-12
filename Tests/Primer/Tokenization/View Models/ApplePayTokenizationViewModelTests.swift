@@ -63,9 +63,10 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
 
         // without currency
         try SDKSessionHelper.test(order: order) {
-            appState.currency = nil
+            let appState: AppStateProtocol = DependencyContainer.resolve()
+            (appState as! MockAppState).currency = nil
             XCTAssertThrowsError(try sut.validate())
-            appState.currency = Currency(code: "GBP", decimalDigits: 2)
+            (appState as! MockAppState).currency = Currency(code: "GBP", decimalDigits: 2)
         }
 
         // without apple pay options

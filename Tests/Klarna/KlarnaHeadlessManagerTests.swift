@@ -36,6 +36,41 @@ final class PrimerHeadlessUniversalCheckoutKlarnaManagerTests: XCTestCase {
 
         XCTAssertNotNil(klarnaComponent)
     }
+
+    func test_klarnaComponent_initialization_failure_noPaymentMethod() {
+        PrimerAPIConfigurationModule.apiConfiguration = Mocks.apiConfiguration
+        let sessionIntent: PrimerSessionIntent = .checkout
+
+        do {
+            klarnaComponent = try manager.provideKlarnaComponent(with: sessionIntent)
+            XCTFail("Should throw error")
+        } catch {
+            switch error {
+            case PrimerError.unsupportedPaymentMethod(let paymentMethodType, _, _):
+                XCTAssertEqual(paymentMethodType, "KLARNA")
+            default:
+                XCTFail("Expected PrimerError.unsupportedPaymentMethod")
+            }
+        }
+    }
+
+    func test_klarnaComponent_initialization_failure_vaultingNotEnabled() {
+        let sessionIntent: PrimerSessionIntent = .vault
+        PrimerAPIConfiguration.paymentMethodConfigs?
+            .first(where: { $0.type == "KLARNA" })?.baseLogoImage = nil
+
+        do {
+            klarnaComponent = try manager.provideKlarnaComponent(with: sessionIntent)
+            XCTFail("Should throw error")
+        } catch {
+            switch error {
+            case PrimerError.unsupportedIntent(let intent, _, _):
+                XCTAssertEqual(intent, .vault)
+            default:
+                XCTFail("Expected PrimerError.unsupportedPaymentMethod")
+            }
+        }
+    }
 }
 
 extension PrimerHeadlessUniversalCheckoutKlarnaManagerTests {
