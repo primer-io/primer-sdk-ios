@@ -47,7 +47,9 @@ final class MerchantResultViewController: UIViewController {
         }
 
         if error != nil || checkoutData != nil {
-            let encodable = PrimerResultEncodable(payment: self.checkoutData, error: error)
+            let paymentEncodable = PrimerPaymentResultEncodable(id: checkoutData?.payment?.id, 
+                                                          orderId: checkoutData?.payment?.orderId)
+            let encodable = PrimerResultEncodable(payment: paymentEncodable, error: error)
             guard let data = try? JSONEncoder().encode(encodable), let string = String(data: data, encoding: .utf8) else {
                 responseTextView.text = "[\"Couldn't encode result to JSON\"]"
                 return
@@ -81,7 +83,7 @@ final class MerchantResultViewController: UIViewController {
 }
 
 private struct PrimerResultEncodable: Encodable {
-    let payment: PrimerCheckoutData?
+    let payment: PrimerPaymentResultEncodable?
     let error: PrimerErrorEncodable?
 }
 
@@ -90,4 +92,9 @@ private struct PrimerErrorEncodable: Encodable {
     let errorDescription: String
     let diagnosticId: String
     let recoverySuggestion: String?
+}
+
+private struct PrimerPaymentResultEncodable: Encodable {
+    let id: String?
+    let orderId: String?
 }
