@@ -40,7 +40,7 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
     func tokenizeHeadless(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerCheckoutData> {
         return Promise { seal in
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: PrimerPaymentMethodType.klarna.rawValue)
-            
+
             firstly {
                 getRequestBody(customerToken: customerToken, offSessionAuthorizationId: offSessionAuthorizationId)
             }
@@ -87,12 +87,12 @@ extension KlarnaTokenizationManager {
                         switch resumeDecisionType {
                         case .continueWithNewClientToken:
                             break
-                            
+
                         case .complete:
                             let checkoutData = PrimerCheckoutData(payment: nil)
                             seal.fulfill(checkoutData)
                         }
-                        
+
                     } else {
                         seal.reject(KlarnaHelpers.getPaymentFailedError())
                     }

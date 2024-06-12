@@ -120,7 +120,7 @@ extension PrimerHeadlessKlarnaComponent: LogReporter {
         }
         errorDelegate?.didReceiveError(error: primerError)
     }
-    
+
     func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
         return Promise { seal in
             if PrimerInternal.shared.intent == .vault {
