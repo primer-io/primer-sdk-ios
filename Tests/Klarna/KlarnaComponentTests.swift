@@ -177,6 +177,63 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
 
         XCTAssertNotNil(extraMerchantDataString)
     }
+    
+    func test_handlePrimerWillCreatePayment_fail() throws {
+        SDKSessionHelper.setUp()
+        let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
+        PrimerHeadlessUniversalCheckout.current.delegate = delegate
+        
+        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        delegate.onWillCreatePaymentWithData = { data, decision in
+            XCTAssertEqual(data.paymentMethodType.type, "KLARNA")
+            decision(.abortPaymentCreation())
+            expectWillCreatePaymentData.fulfill()
+        }
+
+        let expectError = self.expectation(description: "Failed to create session error is thrown")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            XCTAssertEqual(errorResult.errorId, "failed-to-create-session")
+            expectError.fulfill()
+        }
+
+        sut.start()
+
+        wait(for: [
+            expectWillCreatePaymentData,
+            expectError
+        ], timeout: 10.0, enforceOrder: true)
+    }
+    
+    func test_handlePrimerWillCreatePayment_success() throws {
+        SDKSessionHelper.setUp()
+        let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
+        PrimerHeadlessUniversalCheckout.current.delegate = delegate
+        
+        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        delegate.onWillCreatePaymentWithData = { data, decision in
+            XCTAssertEqual(data.paymentMethodType.type, "KLARNA")
+            decision(.continuePaymentCreation())
+            expectWillCreatePaymentData.fulfill()
+        }
+        
+        let expectStep = self.expectation(description: "Session creation step is received")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            switch stepType {
+            case .creationStep:
+                break
+            default:
+                XCTFail()
+            }
+            expectStep.fulfill()
+        }
+
+        sut.start()
+
+        wait(for: [
+            expectWillCreatePaymentData,
+            expectStep
+        ], timeout: 10.0, enforceOrder: true)
+    }
 }
 
 extension PrimerHeadlessKlarnaComponentTests: PrimerHeadlessErrorableDelegate,
