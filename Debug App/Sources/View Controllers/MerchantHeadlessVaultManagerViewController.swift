@@ -49,7 +49,7 @@ class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadle
 
         if let clientToken = clientToken {
             self.clientToken = clientToken
-
+            self.startPrimerHeadlessUniversalCheckout(with: clientToken)
         } else if let clientSession = clientSession {
             Networking.requestClientSession(requestBody: clientSession) { (clientToken, err) in
                 if let err = err {
