@@ -71,25 +71,6 @@ final class ACHHelpersTests: XCTestCase {
         XCTAssertEqual(error.plainDescription, "Payment method \(expectedPaymentMethodType) cancelled")
     }
 
-    func test_get_payment_failed_error() {
-        let expectedPaymentMethodType = "STRIPE_ACH"
-        let error = ACHHelpers.getPaymentFailedError(paymentMethodType: expectedPaymentMethodType)
-        
-        XCTAssertEqual(error.errorId, PrimerPaymentErrorCode.failed.rawValue)
-        XCTAssertEqual(error.plainDescription, "Failed to create payment")
-    }
-
-    func test_get_failed_to_process_payment_error() {
-        let expectedId = "test-failed-id"
-        let expectedStatus: Response.Body.Payment.Status = .failed
-        let paymentResponse = ACHMocks.getPayment(id: expectedId, status: expectedStatus)
-        let error = ACHHelpers.getFailedToProcessPaymentError(paymentMethodType: ACHMocks.stripeACHPaymentMethodType,
-                                                              paymentResponse: paymentResponse)
-        
-        XCTAssertEqual(error.errorId, "failed-to-process-payment")
-        XCTAssertEqual(error.plainDescription, "The payment with id \(expectedId) was created but ended up in a \(expectedStatus.rawValue) status.")
-    }
-
     func test_get_missing_SDK_error() {
         let expectedSDKName = "test-sdk"
         let expectedPaymentMethodType = ACHMocks.stripeACHPaymentMethodType

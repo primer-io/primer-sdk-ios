@@ -77,27 +77,6 @@ struct ACHHelpers {
         return error
     }
     
-    static func getPaymentFailedError(paymentMethodType: String) -> PrimerError {
-        let error = PrimerError.paymentFailed(
-            paymentMethodType: paymentMethodType,
-            description: "Failed to create payment",
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: error)
-        return error
-    }
-    
-    static func getFailedToProcessPaymentError(paymentMethodType: String, paymentResponse: Response.Body.Payment) -> PrimerError {
-        let error = PrimerError.failedToProcessPayment(
-            paymentMethodType: paymentMethodType,
-            paymentId: paymentResponse.id ?? "nil",
-            status: paymentResponse.status.rawValue,
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString)
-        ErrorHandler.handle(error: error)
-        return error
-    }
-    
     static func getMissingSDKError(sdk: String) -> PrimerError {
         let error = PrimerError.missingSDK(
             paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue,
