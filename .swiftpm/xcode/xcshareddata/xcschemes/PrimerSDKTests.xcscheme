@@ -17,16 +17,6 @@
                reference = "container:Debug App/Tests/UnitTestsTestPlan.xctestplan">
             </TestPlanReference>
          </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
-            <TestPlanReference
-               reference = "container:Debug App/Tests/DebugAppTestPlan.xctestplan">
-            </TestPlanReference>
-         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction

@@ -36,8 +36,35 @@ final class MerchantResultViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        var error: PrimerErrorEncodable?
+
+        if let primerError = self.error as? PrimerError {
+            let encodable = PrimerErrorEncodable(errorId: primerError.errorId,
+                                                 errorDescription: primerError.localizedDescription,
+                                                 diagnosticId: primerError.diagnosticsId,
+                                                 recoverySuggestion: primerError.recoverySuggestion)
+            error = encodable
+        }
+
+        if error != nil || checkoutData != nil {
+            let paymentEncodable = PrimerPaymentResultEncodable(id: checkoutData?.payment?.id, 
+                                                          orderId: checkoutData?.payment?.orderId)
+            let encodable = PrimerResultEncodable(payment: paymentEncodable, error: error)
+            guard let data = try? JSONEncoder().encode(encodable), let string = String(data: data, encoding: .utf8) else {
+                responseTextView.text = "[\"Couldn't encode result to JSON\"]"
+                return
+            }
+            responseTextView.text = string
+        } else if let error = self.error {
+            responseTextView.text = "[\"\(error.localizedDescription)\"]"
+        } else {
+            responseTextView.text = "[\"No checkout data or error received\"]"
+        }
+
+        
         responseStatus.font = .systemFont(ofSize: 17, weight: .medium)
-        responseStatus.textColor = .green
+        responseStatus.textColor = error != nil ? .green : .red
+        responseStatus.text = error != nil ? "Success" : "Failure"
 
         if logs.count > 0 {
             if let data = try? JSONSerialization.data(withJSONObject: logs) {
@@ -52,21 +79,22 @@ final class MerchantResultViewController: UIViewController {
         } else {
             logsTextView.text = "[\"No logs received\"]"
         }
-
-        if let checkoutData {
-            if let data = try? JSONEncoder().encode(checkoutData) {
-                if let prettyNSStr = data.prettyPrintedJSONString as? String {
-                    responseTextView.text = prettyNSStr
-                } else {
-                    responseTextView.text = "[\"Failed to create pretty string from checkout data\"]"
-                }
-            } else {
-                responseTextView.text = "[\"Failed to convert logs to data\"]"
-            }
-        } else if let error = self.error {
-            responseTextView.text = "[\"\(error.localizedDescription)\"]"
-        } else {
-            responseTextView.text = "[\"No checkout data or error received\"]"
-        }
     }
+}
+
+private struct PrimerResultEncodable: Encodable {
+    let payment: PrimerPaymentResultEncodable?
+    let error: PrimerErrorEncodable?
+}
+
+private struct PrimerErrorEncodable: Encodable {
+    let errorId: String
+    let errorDescription: String
+    let diagnosticId: String
+    let recoverySuggestion: String?
+}
+
+private struct PrimerPaymentResultEncodable: Encodable {
+    let id: String?
+    let orderId: String?
 }

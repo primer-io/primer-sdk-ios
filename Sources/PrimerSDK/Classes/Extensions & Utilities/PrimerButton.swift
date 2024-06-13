@@ -63,8 +63,6 @@ import UIKit
         }
     }
 
-    internal var onPressed: PrimerAction?
-
     override open var isHighlighted: Bool {
         didSet {
             if !oldValue {
@@ -119,16 +117,6 @@ import UIKit
         self.setupView(theme: theme, title: title, imageLogo: imageLogo)
     }
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        addTarget(self, action: #selector(onButtonPressed), for: .touchUpInside)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        addTarget(self, action: #selector(onButtonPressed), for: .touchUpInside)
-    }
-
     public override func layoutSubviews() {
         super.layoutSubviews()
         setupStyleBasedOnCustomThemeIfNeeded()
@@ -160,17 +148,6 @@ extension PrimerButton {
         cornerRadius = theme.cornerRadius
         borderWidth = theme.border.width
     }
-}
-
-// MARK: - Action
-
-extension PrimerButton {
-
-    @objc
-    private func onButtonPressed() {
-        onPressed?()
-    }
-
 }
 
 // MARK: Activity Indicator

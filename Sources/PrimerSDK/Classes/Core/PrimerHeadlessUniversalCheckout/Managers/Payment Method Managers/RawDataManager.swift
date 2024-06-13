@@ -82,9 +82,15 @@ extension PrimerHeadlessUniversalCheckout {
         private var rawDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol
         public private(set) var paymentCheckoutData: PrimerCheckoutData?
         public private(set) var isDataValid: Bool = false
-        private var webViewController: SFSafariViewController?
+        var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
         var initializationData: PrimerInitializationData?
+
+        var tokenizationService: TokenizationServiceProtocol = TokenizationService()
+
+        var createResumePaymentService: CreateResumePaymentServiceProtocol
+
+        var apiClient: PrimerAPIClientXenditProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
 
         required public init(paymentMethodType: String, delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? = nil) throws {
             PrimerInternal.shared.sdkIntegrationType = .headless
@@ -100,6 +106,7 @@ extension PrimerHeadlessUniversalCheckout {
             Analytics.Service.record(events: [sdkEvent])
 
             self.delegate = delegate
+            self.createResumePaymentService = CreateResumePaymentService(paymentMethodType: paymentMethodType)
 
             guard PrimerPaymentMethod.getPaymentMethod(withType: paymentMethodType) != nil else {
                 let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType, userInfo: .errorUserInfoDictionary(),
@@ -170,8 +177,9 @@ extension PrimerHeadlessUniversalCheckout {
 
             switch paymentMethodType {
             case .xenditRetailOutlets:
-                fetchRetailOutlets { data, error in completion(data, error) }
+                fetchRetailOutlets(completion: completion)
             default:
+                logger.warn(message: "Attempted to configure additional info for unsupported payment method type '\(paymentMethodType)'")
                 completion(nil, nil)
             }
         }
@@ -225,8 +233,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
             .then { requestBody -> Promise<PrimerPaymentMethodTokenData> in
                 PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.paymentMethodType)
-                let tokenizationService: TokenizationServiceProtocol = TokenizationService()
-                return tokenizationService.tokenize(requestBody: requestBody)
+                return self.tokenizationService.tokenize(requestBody: requestBody)
             }
             .then { paymentMethodTokenData -> Promise<PrimerCheckoutData?> in
                 self.paymentMethodTokenData = paymentMethodTokenData
@@ -461,18 +468,10 @@ Make sure you call the decision handler otherwise the SDK will hang."
                         self.handleCreatePaymentEvent(token)
                     }
                     .done { paymentResponse -> Void in
-                        guard paymentResponse != nil else {
-                            let err = PrimerError.invalidValue(key: "paymentResponse",
-                                                               value: nil,
-                                                               userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                            throw err
-                        }
+                        self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
+                        self.resumePaymentId = paymentResponse.id
 
-                        self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse!))
-                        self.resumePaymentId = paymentResponse!.id
-
-                        if let requiredAction = paymentResponse!.requiredAction {
+                        if let requiredAction = paymentResponse.requiredAction {
                             let apiConfigurationModule = PrimerAPIConfigurationModule()
 
                             firstly {
@@ -776,14 +775,6 @@ Make sure you call the decision handler otherwise the SDK will hang."
                         self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                     }
                     .done { paymentResponse -> Void in
-                        guard let paymentResponse = paymentResponse else {
-                            let err = PrimerError.invalidValue(key: "paymentResponse",
-                                                               value: nil,
-                                                               userInfo: .errorUserInfoDictionary(),
-                                                               diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: err)
-                            throw err
-                        }
                         let paymentData = PrimerCheckoutDataPayment(from: paymentResponse)
                         self.paymentCheckoutData = PrimerCheckoutData(payment: paymentData)
                         seal.fulfill(self.paymentCheckoutData)
@@ -795,105 +786,15 @@ Make sure you call the decision handler otherwise the SDK will hang."
             }
         }
 
-        private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment?> {
-            return Promise { seal in
-                let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-                let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
-                createResumePaymentService.createPayment(paymentRequest: paymentRequest) { paymentResponse, error in
-
-                    if let error = error {
-                        if let paymentResponse {
-                            self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
-                        }
-
-                        seal.reject(error)
-
-                    } else if let paymentResponse = paymentResponse {
-                        if paymentResponse.id == nil {
-                            let err = PrimerError.paymentFailed(
-                                paymentMethodType: self.paymentMethodType,
-                                description: "Failed to create payment",
-                                userInfo: .errorUserInfoDictionary(),
-                                diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: err)
-                            seal.reject(err)
-
-                        } else if paymentResponse.status == .failed {
-                            let err = PrimerError.failedToProcessPayment(
-                                paymentMethodType: self.paymentMethodType,
-                                paymentId: paymentResponse.id ?? "nil",
-                                status: paymentResponse.status.rawValue,
-                                userInfo: .errorUserInfoDictionary(),
-                                diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: err)
-                            seal.reject(err)
-
-                        } else {
-                            seal.fulfill(paymentResponse)
-                        }
-
-                    } else {
-                        let err = PrimerError.paymentFailed(
-                            paymentMethodType: self.paymentMethodType,
-                            description: "Failed to create payment",
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
-                    }
-                }
-            }
+        private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
+            let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
+            return createResumePaymentService.createPayment(paymentRequest: paymentRequest)
         }
 
-        private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment?> {
-            return Promise { seal in
-                let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService()
-                let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
-                createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
-                                                                      paymentResumeRequest: resumeRequest) { paymentResponse, error in
-
-                    if let error = error {
-                        if let paymentResponse {
-                            self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
-                        }
-
-                        seal.reject(error)
-
-                    } else if let paymentResponse = paymentResponse {
-                        if paymentResponse.id == nil {
-                            let err = PrimerError.paymentFailed(
-                                paymentMethodType: self.paymentMethodType,
-                                description: "Failed to resume payment",
-                                userInfo: .errorUserInfoDictionary(),
-                                diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: err)
-                            seal.reject(err)
-
-                        } else if paymentResponse.status == .failed {
-                            let err = PrimerError.failedToProcessPayment(
-                                paymentMethodType: self.paymentMethodType,
-                                paymentId: paymentResponse.id ?? "nil",
-                                status: paymentResponse.status.rawValue,
-                                userInfo: .errorUserInfoDictionary(),
-                                diagnosticsId: UUID().uuidString)
-                            ErrorHandler.handle(error: err)
-                            seal.reject(err)
-
-                        } else {
-                            seal.fulfill(paymentResponse)
-                        }
-
-                    } else {
-                        let err = PrimerError.paymentFailed(
-                            paymentMethodType: self.paymentMethodType,
-                            description: "Failed to resume payment",
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString)
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
-                    }
-                }
-            }
+        private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment> {
+            let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
+            return createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
+                                                                         paymentResumeRequest: resumeRequest)
         }
 
         private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) -> Promise<Void> {
@@ -906,6 +807,16 @@ Make sure you call the decision handler otherwise the SDK will hang."
                         seal.reject(err)
                     }
                 }
+
+                #if DEBUG
+                // This ensures that the presentation completion is correctly handled in headless unit tests
+                guard UIApplication.shared.windows.count > 0 else {
+                    DispatchQueue.main.async {
+                        seal.fulfill()
+                    }
+                    return
+                }
+                #endif
 
                 DispatchQueue.main.async {
                     if PrimerUIManager.primerRootViewController == nil {
@@ -979,7 +890,6 @@ extension PrimerHeadlessUniversalCheckout.RawDataManager {
             return
         }
 
-        let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
         apiClient.listRetailOutlets(clientToken: decodedJWTToken, paymentMethodId: paymentMethodId) { result in
             switch result {
             case .failure(let err):

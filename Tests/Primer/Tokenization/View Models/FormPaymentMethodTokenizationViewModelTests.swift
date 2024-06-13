@@ -36,7 +36,10 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
     }
 
     func testStartWithPreTokenizationAndAbort() throws {
-        SDKSessionHelper.setUp()
+        SDKSessionHelper.setUp() { mockAppState in
+            mockAppState.amount = 1234
+            mockAppState.currency = Currency(code: "GBP", decimalDigits: 2)
+        }
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
         let uiDelegate = MockPrimerHeadlessUniversalCheckoutUIDelegate()
@@ -82,7 +85,10 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
     }
 
     func testStartWithFullCheckoutFlow() throws {
-        SDKSessionHelper.setUp()
+        SDKSessionHelper.setUp() { mockAppState in
+            mockAppState.amount = 1234
+            mockAppState.currency = Currency(code: "GBP", decimalDigits: 2)
+        }
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
         let uiDelegate = MockPrimerHeadlessUniversalCheckoutUIDelegate()

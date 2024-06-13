@@ -59,7 +59,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         self.init(config: config,
                   uiManager: PrimerUIManager.shared,
                   tokenizationService: TokenizationService(),
-                  createResumePaymentService: CreateResumePaymentService()
+                  createResumePaymentService: CreateResumePaymentService(paymentMethodType: config.type)
         )
     }
 

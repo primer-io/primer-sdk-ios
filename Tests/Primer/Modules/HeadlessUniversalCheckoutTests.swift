@@ -357,6 +357,10 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
             orderedExpectations.append(expectOnDismiss)
         }
 
+        delegate.onDidFail = { err in
+            print(err)
+        }
+
         return orderedExpectations
     }
 
