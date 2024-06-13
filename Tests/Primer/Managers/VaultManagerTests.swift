@@ -111,6 +111,7 @@ final class VaultManagerTests: XCTestCase {
             (PollingResponse(status: .complete, id: "4321", source: "src"), nil)
         ]
         apiClient.validateClientTokenResult = (SuccessResponse(), nil)
+        apiClient.listCardNetworksResult = (.init(networks: []), nil)
 
         let settings = PrimerSettings(paymentHandling: .manual)
         DependencyContainer.register(settings as PrimerSettingsProtocol)

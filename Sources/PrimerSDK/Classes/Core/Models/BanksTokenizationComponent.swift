@@ -27,8 +27,6 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     var willPresentPaymentMethodUI: (() -> Void)?
     var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
 
-    static var apiClient: PrimerAPIClientProtocol?
-
     private var redirectUrl: URL!
     private var statusUrl: URL!
     private var resumeToken: String!
@@ -53,20 +51,24 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
     let tokenizationService: TokenizationServiceProtocol
 
-    var apiClient: PrimerAPIClientBanksProtocol! = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+    let apiClient: PrimerAPIClientBanksProtocol
 
-    convenience init(config: PrimerPaymentMethod) {
+    convenience init(config: PrimerPaymentMethod,
+                     apiClient: PrimerAPIClientBanksProtocol = PrimerAPIClient()) {
         self.init(config: config,
                   uiManager: PrimerUIManager.shared,
-                  tokenizationService: TokenizationService())
+                  tokenizationService: TokenizationService(),
+                  apiClient: apiClient)
     }
 
     init(config: PrimerPaymentMethod,
          uiManager: PrimerUIManaging,
-         tokenizationService: TokenizationServiceProtocol) {
+         tokenizationService: TokenizationServiceProtocol,
+         apiClient: PrimerAPIClientBanksProtocol) {
         self.config = config
         self.uiManager = uiManager
         self.tokenizationService = tokenizationService
+        self.apiClient = apiClient
         self.paymentMethodType = config.internalPaymentMethodType!
     }
 

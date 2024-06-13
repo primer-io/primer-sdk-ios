@@ -15,8 +15,6 @@ import Foundation
 
 class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
 
-    static var apiClient: PrimerAPIClientProtocol?
-
     let tokenizationService: TokenizationServiceProtocol
 
     let createResumePaymentService: CreateResumePaymentServiceProtocol

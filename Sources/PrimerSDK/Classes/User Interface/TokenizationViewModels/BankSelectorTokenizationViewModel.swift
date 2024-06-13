@@ -23,14 +23,26 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
 
     let paymentMethodType: PrimerPaymentMethodType
 
-    var apiClient: PrimerAPIClientBanksProtocol = PaymentMethodTokenizationViewModel.apiClient ?? PrimerAPIClient()
+    let apiClient: PrimerAPIClientBanksProtocol
 
-    override init(config: PrimerPaymentMethod,
-                  uiManager: PrimerUIManaging,
-                  tokenizationService: TokenizationServiceProtocol,
-                  createResumePaymentService: CreateResumePaymentServiceProtocol
+    convenience init(config: PrimerPaymentMethod,
+                     apiClient: PrimerAPIClientBanksProtocol = PrimerAPIClient()) {
+        self.init(config: config,
+                  uiManager: PrimerUIManager.shared,
+                  tokenizationService: TokenizationService(),
+                  createResumePaymentService: CreateResumePaymentService(paymentMethodType: config.type),
+                  apiClient: apiClient
+        )
+    }
+
+    init(config: PrimerPaymentMethod,
+         uiManager: PrimerUIManaging,
+         tokenizationService: TokenizationServiceProtocol,
+         createResumePaymentService: CreateResumePaymentServiceProtocol,
+         apiClient: PrimerAPIClientBanksProtocol
     ) {
         self.paymentMethodType = config.internalPaymentMethodType!
+        self.apiClient = apiClient
         super.init(config: config,
                    uiManager: uiManager,
                    tokenizationService: tokenizationService,

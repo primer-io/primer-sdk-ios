@@ -69,11 +69,13 @@ class PrimerPaymentMethod: Codable, LogReporter {
 
     var hasUnknownSurcharge: Bool = false
     lazy var tokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? = {
+        let apiClient = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
+
         if implementationType == .webRedirect {
-            return WebRedirectPaymentMethodTokenizationViewModel(config: self)
+            return WebRedirectPaymentMethodTokenizationViewModel(config: self, apiClient: apiClient)
 
         } else if implementationType == .iPay88Sdk {
-            return IPay88TokenizationViewModel(config: self)
+            return IPay88TokenizationViewModel(config: self, apiClient: apiClient)
 
         } else if let internalPaymentMethodType = internalPaymentMethodType {
             switch internalPaymentMethodType {
@@ -81,38 +83,38 @@ class PrimerPaymentMethod: Codable, LogReporter {
                  PrimerPaymentMethodType.rapydFast,
                  PrimerPaymentMethodType.adyenMBWay,
                  PrimerPaymentMethodType.adyenMultibanco:
-                return FormPaymentMethodTokenizationViewModel(config: self)
+                return FormPaymentMethodTokenizationViewModel(config: self, apiClient: apiClient)
 
             case PrimerPaymentMethodType.adyenDotPay,
                  PrimerPaymentMethodType.adyenIDeal:
-                return BankSelectorTokenizationViewModel(config: self)
+                return BankSelectorTokenizationViewModel(config: self, apiClient: apiClient)
 
             case PrimerPaymentMethodType.applePay:
-                return ApplePayTokenizationViewModel(config: self)
+                return ApplePayTokenizationViewModel(config: self, apiClient: apiClient)
 
             case PrimerPaymentMethodType.klarna:
                 if #available(iOS 13.0, *) {
-                    return KlarnaTokenizationViewModel(config: self)
+                    return KlarnaTokenizationViewModel(config: self, apiClient: apiClient)
                 }
 
             case PrimerPaymentMethodType.paymentCard,
                  PrimerPaymentMethodType.adyenBancontactCard:
-                return CardFormPaymentMethodTokenizationViewModel(config: self)
+                return CardFormPaymentMethodTokenizationViewModel(config: self, apiClient: apiClient)
 
             case PrimerPaymentMethodType.payPal:
-                return PayPalTokenizationViewModel(config: self)
+                return PayPalTokenizationViewModel(config: self, apiClient: apiClient)
 
             case PrimerPaymentMethodType.primerTestKlarna,
                  PrimerPaymentMethodType.primerTestPayPal,
                  PrimerPaymentMethodType.primerTestSofort:
-                return PrimerTestPaymentMethodTokenizationViewModel(config: self)
+                return PrimerTestPaymentMethodTokenizationViewModel(config: self, apiClient: apiClient)
 
             case PrimerPaymentMethodType.xfersPayNow,
                  PrimerPaymentMethodType.rapydPromptPay,
                  PrimerPaymentMethodType.omisePromptPay:
-                return QRCodeTokenizationViewModel(config: self)
+                return QRCodeTokenizationViewModel(config: self, apiClient: apiClient)
             case PrimerPaymentMethodType.nolPay:
-                return NolPayTokenizationViewModel(config: self)
+                return NolPayTokenizationViewModel(config: self, apiClient: apiClient)
 
             default:
                 break
