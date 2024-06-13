@@ -29,6 +29,7 @@ class RawDataManagerValidationTests: XCTestCase {
     override func tearDown() {
         delegate = nil
         rawDataManager = nil
+
     }
 
     // MARK: suite-wide setUp and tearDown
@@ -673,8 +674,8 @@ extension RawDataManagerValidationTests {
 
             let rawDataTokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: paymentMethodType)
             rawDataTokenizationBuilder.rawDataManager = rawDataManager
-            rawDataTokenizationBuilder.cardValidationService = DefaultCardValidationService(rawDataManager: rawDataManager,
-                                                                                            apiClient: Self.mockApiClient)
+            rawDataTokenizationBuilder.cardValidationService = nil
+
             self.rawDataManager.rawDataTokenizationBuilder = rawDataTokenizationBuilder
         } catch {
             print("ERROR: \(error.localizedDescription)")
