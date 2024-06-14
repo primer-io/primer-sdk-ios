@@ -88,7 +88,9 @@ enum PrimerAPI: Endpoint, Equatable {
     case listCardNetworks(clientToken: DecodedJWTToken, bin: String)
     case getNolSdkSecret(clientToken: DecodedJWTToken, request: Request.Body.NolPay.NolPaySecretDataRequest)
     case getPhoneMetadata(clientToken: DecodedJWTToken, request: Request.Body.PhoneMetadata.PhoneMetadataDataRequest)
-
+    
+    // ACH - Complete Payment
+    case completePayment(clientToken: DecodedJWTToken, url: URL, paymentRequest: Request.Body.Payment.Complete)
 }
 
 internal extension PrimerAPI {
@@ -134,7 +136,8 @@ internal extension PrimerAPI {
              .resumePayment(let clientToken, _, _),
              .testFinalizePolling(let clientToken, _),
              .listCardNetworks(let clientToken, _),
-             .getPhoneMetadata(let clientToken, _):
+             .getPhoneMetadata(let clientToken, _),
+             .completePayment(let clientToken, _, _):
             if let token = clientToken.accessToken {
                 tmpHeaders["Primer-Client-Token"] = token
             }
@@ -217,6 +220,8 @@ internal extension PrimerAPI {
             break
         case .getPhoneMetadata:
             break
+        case .completePayment:
+            break
         }
 
         return tmpHeaders
@@ -263,6 +268,8 @@ internal extension PrimerAPI {
         case .validateClientToken(let request):
             return request.clientToken.decodedJWTToken?.pciUrl
         case .redirect(_, let url):
+            return url.absoluteString
+        case .completePayment(_, let url, _):
             return url.absoluteString
         }
     }
@@ -320,7 +327,7 @@ internal extension PrimerAPI {
             return "/v1/bin-data/\(bin)/networks"
         case .getNolSdkSecret:
             return "/nol-pay/sdk-secrets"
-        case .redirect:
+        case .redirect, .completePayment:
             return ""
         case .getPhoneMetadata(_, let request):
             return "/phone-number-lookups/\(request.phoneNumber)"
@@ -365,7 +372,8 @@ internal extension PrimerAPI {
              .createPayment,
              .resumePayment,
              .testFinalizePolling,
-             .getNolSdkSecret:
+             .getNolSdkSecret,
+             .completePayment:
             return .post
         case .poll:
             return .get
@@ -439,6 +447,8 @@ internal extension PrimerAPI {
             return try? JSONEncoder().encode(requestBody)
         case .getPhoneMetadata:
             return nil
+        case .completePayment(_, _, let paymentRequest):
+            return try? JSONEncoder().encode(paymentRequest)
         }
     }
 

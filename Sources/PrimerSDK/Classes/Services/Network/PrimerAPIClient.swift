@@ -198,6 +198,14 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         let endpoint = PrimerAPI.resumePayment(clientToken: clientToken, paymentId: paymentId, paymentResumeRequest: paymentResumeRequest)
         execute(endpoint, completion: completion)
     }
+    
+    func completePayment(clientToken: DecodedJWTToken,
+                         url: URL,
+                         paymentRequest: Request.Body.Payment.Complete,
+                         completion: @escaping APICompletion<Response.Body.Payment>) {
+        let endpoint = PrimerAPI.completePayment(clientToken: clientToken, url: url, paymentRequest: paymentRequest)
+        execute(endpoint, completion: completion)
+    }
 
     func testFinalizePolling(clientToken: DecodedJWTToken, testId: String, completion: @escaping APICompletion<Void>) {
         let endpoint = PrimerAPI.testFinalizePolling(clientToken: clientToken, testId: testId)

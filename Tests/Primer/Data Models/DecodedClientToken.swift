@@ -33,7 +33,8 @@ internal extension DecodedJWTToken {
         supportedCurrencyCode: String? = "GBP",
         supportedCountry: String? = "GB",
         nolPayTransactionNo: String? = "1714577102659239937",
-        clientSecret: String? = "client_secret_token"
+        clientSecret: String? = "client_secret_token",
+        sdkCompleteUrl: String? = "sdkCompleteUrl"
     ) throws -> DecodedJWTToken {
         let decodedClientToken = DecodedJWTToken(
             accessToken: accessToken,
@@ -58,7 +59,8 @@ internal extension DecodedJWTToken {
             supportedCurrencyCode: supportedCurrencyCode,
             supportedCountry: supportedCountry,
             nolPayTransactionNo: nolPayTransactionNo,
-            stripeClientSecret: clientSecret)
+            stripeClientSecret: clientSecret,
+            sdkCompleteUrl: sdkCompleteUrl)
         return decodedClientToken
     }
 

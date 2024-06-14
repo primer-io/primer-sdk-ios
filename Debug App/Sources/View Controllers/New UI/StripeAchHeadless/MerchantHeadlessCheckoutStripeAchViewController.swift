@@ -159,6 +159,5 @@ extension MerchantHeadlessCheckoutStripeAchViewController {
         } cancelHandler: {
             self.manager.mandateDelegate?.mandateDeclined()
         }
-        
     }
 }

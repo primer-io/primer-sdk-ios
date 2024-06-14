@@ -42,6 +42,7 @@ struct DecodedJWTToken: Codable {
     
     // StripeACH
     var stripeClientSecret: String?
+    var sdkCompleteUrl: String?
 
     // Voucher info
     var expiresAt: Date?
@@ -95,6 +96,7 @@ struct DecodedJWTToken: Codable {
         case nolPayTransactionNo
         // StripeACH
         case stripeClientSecret
+        case sdkCompleteUrl
     }
 
     init(
@@ -120,7 +122,8 @@ struct DecodedJWTToken: Codable {
         supportedCurrencyCode: String?,
         supportedCountry: String?,
         nolPayTransactionNo: String?,
-        stripeClientSecret: String?
+        stripeClientSecret: String?,
+        sdkCompleteUrl: String?
     ) {
         self.accessToken = accessToken
         self.expDate = expDate
@@ -145,6 +148,7 @@ struct DecodedJWTToken: Codable {
         self.supportedCountry = supportedCountry
         self.nolPayTransactionNo = nolPayTransactionNo
         self.stripeClientSecret = stripeClientSecret
+        self.sdkCompleteUrl = sdkCompleteUrl
     }
 
     init(from decoder: Decoder) throws {
@@ -169,6 +173,7 @@ struct DecodedJWTToken: Codable {
         self.accountNumber = try? container.decode(String.self, forKey: .accountNumber)
         self.nolPayTransactionNo = try? container.decode(String.self, forKey: .nolPayTransactionNo)
         self.stripeClientSecret = try? container.decode(String.self, forKey: .stripeClientSecret)
+        self.sdkCompleteUrl = try? container.decode(String.self, forKey: .sdkCompleteUrl)
         // For some APMs we receive another value out of the client token `expiration`
         // They may have different values.
         // We understand this should be changed in the future
@@ -261,6 +266,7 @@ struct DecodedJWTToken: Codable {
         
         // StripeACH
         try? container.encode(stripeClientSecret, forKey: .stripeClientSecret)
+        try? container.encode(sdkCompleteUrl, forKey: .sdkCompleteUrl)
     }
 }
 

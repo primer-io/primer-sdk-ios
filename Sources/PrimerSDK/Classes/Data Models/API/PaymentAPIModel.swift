@@ -91,16 +91,21 @@ extension Request.Body.Payment {
     }
 
     public struct Resume: Encodable {
-        let resumeToken: String?
-        let mandateSignatureTimestamp: String?
-        let paymentMethodId: String?
-
-        public init(token: String? = nil,
-                    paymentMethodId: String? = nil,
-                    timeStamp: String? = nil) {
+        let resumeToken: String
+        
+        public init(token: String) {
             self.resumeToken = token
+        }
+    }
+    
+    public struct Complete: Encodable {
+        let mandateSignatureTimestamp: String
+        let paymentMethodId: String
+        
+        public init(mandateSignatureTimestamp: String,
+                    paymentMethodId: String) {
+            self.mandateSignatureTimestamp = mandateSignatureTimestamp
             self.paymentMethodId = paymentMethodId
-            self.mandateSignatureTimestamp = timeStamp
         }
     }
 }
