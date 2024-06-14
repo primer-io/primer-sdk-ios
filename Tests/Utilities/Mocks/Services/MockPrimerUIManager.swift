@@ -24,6 +24,16 @@ class MockPrimerUIManager: PrimerUIManaging {
     func prepareRootViewController() -> PrimerSDK.Promise<Void> {
         return onPrepareViewController?() ?? Promise { $0.resolve(.success(()))}
     }
+
+    // MARK: dismissOrShowResultScreen
+
+    var onDismissOrShowResultScreen: ((PrimerResultViewController.ScreenType,
+                                       [PrimerPaymentMethodManagerCategory],
+                                       String?) -> Void)?
+
+    func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType, paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory], withMessage message: String?) {
+        onDismissOrShowResultScreen?(type, paymentMethodManagerCategories, message)
+    }
 }
 
 class MockPrimerRootViewController: PrimerRootViewController {

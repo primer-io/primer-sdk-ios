@@ -51,23 +51,19 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
     let tokenizationService: TokenizationServiceProtocol
 
-    let apiClient: PrimerAPIClientBanksProtocol
+    let createResumePaymentService: CreateResumePaymentServiceProtocol
 
-    convenience init(config: PrimerPaymentMethod,
-                     apiClient: PrimerAPIClientBanksProtocol = PrimerAPIClient()) {
-        self.init(config: config,
-                  uiManager: PrimerUIManager.shared,
-                  tokenizationService: TokenizationService(),
-                  apiClient: apiClient)
-    }
+    let apiClient: PrimerAPIClientBanksProtocol
 
     init(config: PrimerPaymentMethod,
          uiManager: PrimerUIManaging,
          tokenizationService: TokenizationServiceProtocol,
+         createResumePaymentService: CreateResumePaymentServiceProtocol,
          apiClient: PrimerAPIClientBanksProtocol) {
         self.config = config
         self.uiManager = uiManager
         self.tokenizationService = tokenizationService
+        self.createResumePaymentService = createResumePaymentService
         self.apiClient = apiClient
         self.paymentMethodType = config.internalPaymentMethodType!
     }
@@ -131,7 +127,6 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             }
             .done { checkoutData in
                 self.didFinishPayment?(nil)
-                self.nullifyEventCallbacks()
 
                 if PrimerSettings.current.paymentHandling == .auto, let checkoutData = checkoutData {
                     PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
@@ -140,7 +135,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 self.handleSuccessfulFlow()
             }
             .ensure {
-                PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+                self.uiManager.primerRootViewController?.enableUserInteraction(true)
             }
             .catch { err in
                 self.didFinishPayment?(err)
@@ -160,7 +155,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                         clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                     }
                     .done { _ in
-                        PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
+                        self.uiManager.primerRootViewController?.popToMainScreen(completion: nil)
                     }
                     // The above promises will never end up on error.
                     .catch { _ in }
@@ -408,7 +403,6 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
     // Create payment with Payment method token
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
-        let createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService(paymentMethodType: paymentMethodType.rawValue)
         let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
         return createResumePaymentService.createPayment(paymentRequest: paymentRequest)
     }
@@ -424,7 +418,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                    decodedJWTToken.intent != nil {
 
                     DispatchQueue.main.async {
-                        PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+                        self.uiManager.primerRootViewController?.enableUserInteraction(true)
                     }
 
                     self.redirectUrl = redirectUrl
@@ -489,23 +483,25 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 )
 
                 Analytics.Service.record(events: [presentEvent, networkEvent])
-                if PrimerUIManager.primerRootViewController == nil {
+                if uiManager.primerRootViewController == nil {
                     firstly {
-                        PrimerUIManager.prepareRootViewController()
+                        uiManager.prepareRootViewController()
                     }
                     .done {
-                        PrimerUIManager.primerRootViewController?.present(self.webViewController!,
-                                                                          animated: true,
-                                                                          completion: {
-                                                                            DispatchQueue.main.async {
-                                                                                self.handleWebViewControlllerPresentedCompletion()
-                                                                                seal.fulfill()
-                                                                            }
-                                                                          })
+                        self.uiManager.primerRootViewController?.present(
+                            self.webViewController!,
+                            animated: true,
+                            completion: {
+                                DispatchQueue.main.async {
+                                    self.handleWebViewControlllerPresentedCompletion()
+                                    seal.fulfill()
+                                }
+                            }
+                        )
                     }
                     .catch { _ in }
                 } else {
-                    PrimerUIManager.primerRootViewController?.present(self.webViewController!,
+                    uiManager.primerRootViewController?.present(self.webViewController!,
                                                                       animated: true,
                                                                       completion: {
                                                                         DispatchQueue.main.async {
@@ -610,9 +606,9 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
     func handleFailureFlow(errorMessage: String?) {
         let categories = self.config.paymentMethodManagerCategories
-        PrimerUIManager.dismissOrShowResultScreen(type: .failure,
-                                                  paymentMethodManagerCategories: categories ?? [],
-                                                  withMessage: errorMessage)
+        uiManager.dismissOrShowResultScreen(type: .failure,
+                                            paymentMethodManagerCategories: categories ?? [],
+                                            withMessage: errorMessage)
     }
 
     func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
@@ -762,6 +758,7 @@ extension BanksTokenizationComponent: BankSelectorTokenizationProviding {
     }
 
     func cleanup() {
+        self.nullifyEventCallbacks()
 
     }
 
@@ -829,7 +826,7 @@ extension BanksTokenizationComponent: SFSafariViewControllerDelegate {
 
         if URL.absoluteString.hasSuffix("primer.io/static/loading.html") || URL.absoluteString.hasSuffix("primer.io/static/loading-spinner.html") {
             self.webViewController?.dismiss(animated: true)
-            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+            uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         }
     }
 }
@@ -848,13 +845,13 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
     @objc func receivedNotification(_ notification: Notification) {
         switch notification.name.rawValue {
         case Notification.Name.receivedUrlSchemeRedirect.rawValue:
-            self.webViewController?.dismiss(animated: true)
-            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+            webViewController?.dismiss(animated: true)
+            uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
 
         case Notification.Name.receivedUrlSchemeCancellation.rawValue:
-            self.webViewController?.dismiss(animated: true)
-            self.didCancel?()
-            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+            webViewController?.dismiss(animated: true)
+            didCancel?()
+            uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         default: break
         }
     }
@@ -880,7 +877,7 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
     func performPreTokenizationSteps() -> Promise<Void> {
         if !PrimerInternal.isInHeadlessMode {
             DispatchQueue.main.async {
-                PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+                self.uiManager.primerRootViewController?.enableUserInteraction(true)
             }
         }
 

@@ -130,7 +130,11 @@ class PrimerPaymentMethod: Codable, LogReporter {
     lazy var tokenizationModel: PaymentMethodTokenizationModelProtocol? = {
         switch internalPaymentMethodType {
         case .adyenIDeal:
-            return BanksTokenizationComponent(config: self)
+            return BanksTokenizationComponent(config: self,
+                                              uiManager: PrimerUIManager.shared,
+                                              tokenizationService: TokenizationService(),
+                                              createResumePaymentService: CreateResumePaymentService(paymentMethodType: self.type),
+                                              apiClient: PrimerAPIClient())
         default: return nil
         }
     }()
