@@ -63,8 +63,8 @@ final class MerchantResultViewController: UIViewController {
 
         
         responseStatus.font = .systemFont(ofSize: 17, weight: .medium)
-        responseStatus.textColor = error != nil ? .green : .red
-        responseStatus.text = error != nil ? "Success" : "Failure"
+        responseStatus.textColor = error == nil ? .green : .red
+        responseStatus.text = error == nil ? "Success" : "Failure"
 
         if logs.count > 0 {
             if let data = try? JSONSerialization.data(withJSONObject: logs) {
