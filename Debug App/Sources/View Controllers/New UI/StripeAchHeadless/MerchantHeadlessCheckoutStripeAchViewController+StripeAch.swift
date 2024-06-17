@@ -45,6 +45,7 @@ extension MerchantHeadlessCheckoutStripeAchViewController: PrimerHeadlessErrorab
             stripeFormViewModel.firstName = userDetails.firstName
             stripeFormViewModel.lastName = userDetails.lastName
             stripeFormViewModel.emailAddress = userDetails.emailAddress
+            initObservables()
         default:
             break
         }

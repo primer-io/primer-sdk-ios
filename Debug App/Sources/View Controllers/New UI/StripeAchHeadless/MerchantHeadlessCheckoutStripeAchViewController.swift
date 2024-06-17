@@ -33,12 +33,12 @@ class MerchantHeadlessCheckoutStripeAchViewController: UIViewController {
         setupLayout()
         addStripeFormView()
         addHUCDelegate()
-        initObservables()
         initializeStripeAchComponent()
     }
     
-    private func initObservables() {
+    func initObservables() {
         stripeFormViewModel.$firstName
+            .dropFirst()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] firstName in
                 let firstNameCollectedData = ACHUserDetailsCollectableData.firstName(firstName)
@@ -47,6 +47,7 @@ class MerchantHeadlessCheckoutStripeAchViewController: UIViewController {
             .store(in: &cancellables)
         
         stripeFormViewModel.$lastName
+            .dropFirst()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] lastName in
                 let lastNameCollectedData = ACHUserDetailsCollectableData.lastName(lastName)
@@ -55,6 +56,7 @@ class MerchantHeadlessCheckoutStripeAchViewController: UIViewController {
             .store(in: &cancellables)
         
         stripeFormViewModel.$emailAddress
+            .dropFirst()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] emailAddress in
                 let emailCollectedData = ACHUserDetailsCollectableData.emailAddress(emailAddress)

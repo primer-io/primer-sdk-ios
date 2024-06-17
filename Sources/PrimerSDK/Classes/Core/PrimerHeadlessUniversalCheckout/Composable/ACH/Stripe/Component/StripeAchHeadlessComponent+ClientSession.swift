@@ -21,11 +21,24 @@ extension StripeAchHeadlessComponent {
             clientSessionService.getClientSessionUserDetails()
         }
         .done { stripeAchUserDetails in
+            self.inputUserDetails = stripeAchUserDetails
             self.clientSessionUserDetails = stripeAchUserDetails
+            self.updateAndValidateSessionUserDetails()
             let step = ACHUserDetailsStep.retrievedUserDetails(stripeAchUserDetails)
             self.stepDelegate?.didReceiveStep(step: step)
         }
         .catch { _ in }
+    }
+    
+    private func updateAndValidateSessionUserDetails() {
+        let sessionCollectableDataArray = [ACHUserDetailsCollectableData.firstName(clientSessionUserDetails.firstName),
+                                           ACHUserDetailsCollectableData.lastName(clientSessionUserDetails.lastName),
+                                           ACHUserDetailsCollectableData.emailAddress(clientSessionUserDetails.emailAddress)]
+        
+        
+        sessionCollectableDataArray.forEach { collectableData in
+            updateCollectedData(collectableData: collectableData)
+        }
     }
 
     /**
