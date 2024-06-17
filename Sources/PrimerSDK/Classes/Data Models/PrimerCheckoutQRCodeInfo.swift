@@ -15,9 +15,9 @@ import Foundation
 
 @objc public class PromptPayCheckoutAdditionalInfo: PrimerCheckoutQRCodeInfo {
 
-    let expiresAt: String
-    let qrCodeUrl: String?
-    let qrCodeBase64: String?
+    public let expiresAt: String
+    public let qrCodeUrl: String?
+    public let qrCodeBase64: String?
 
     private enum CodingKeys: String, CodingKey {
         case expiresAt
