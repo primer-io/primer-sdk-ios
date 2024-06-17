@@ -94,6 +94,12 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
             self.activityIndicator = nil
         }
     }
+    
+    private func resetVariables() {
+        logs.removeAll(keepingCapacity: false)
+        primerError = nil
+        checkoutData = nil
+    }
 }
 
 extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITableViewDataSource, UITableViewDelegate {
@@ -112,6 +118,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let paymentMethod = self.availablePaymentMethods[indexPath.row]
+        resetVariables()
         let paymentMethodType = paymentMethod.paymentMethodType
         switch paymentMethodType {
         case "PAYMENT_CARD", "ADYEN_BANCONTACT_CARD":
@@ -168,6 +175,12 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
         self.logs.append(#function)
         self.checkoutData = data
         self.hideLoadingOverlay()
+
+        if let lastViewController = navigationController?.children.last {
+            if lastViewController is MerchantHeadlessCheckoutKlarnaViewController {
+                navigationController?.popViewController(animated: false)
+            }
+        }
 
         let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
         self.navigationController?.pushViewController(rvc, animated: true)
@@ -274,9 +287,14 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
         self.logs.append(#function)
         self.primerError = err
         self.hideLoadingOverlay()
-        if navigationController?.children.last is MerchantHeadlessCheckoutBankViewController {
-            navigationController?.popViewController(animated: false)
+
+        if let lastViewController = navigationController?.children.last {
+            if lastViewController is MerchantHeadlessCheckoutBankViewController ||
+               lastViewController is MerchantHeadlessCheckoutKlarnaViewController {
+                navigationController?.popViewController(animated: false)
+            }
         }
+
         DispatchQueue.main.async {
             let rvc = MerchantResultViewController.instantiate(checkoutData: nil, error: self.primerError, logs: self.logs)
             self.navigationController?.pushViewController(rvc, animated: true)

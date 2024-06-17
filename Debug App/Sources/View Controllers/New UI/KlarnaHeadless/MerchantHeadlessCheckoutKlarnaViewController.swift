@@ -16,8 +16,6 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     let activityIndicator = UIActivityIndicatorView(style: .large)
 
     // MARK: - Properties
-    var logs: [String] = []
-    var manualHandlingCheckoutData: PrimerCheckoutData?
     var clientToken: String?
     var autoFinalize: Bool = false
     var finalizePayment: Bool = false
@@ -63,7 +61,6 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
         setupUI()
         setupLayout()
         addKlarnaView()
-        addHUCDelegate()
         startPaymentSession()
     }
 
@@ -90,10 +87,6 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
                 multiplier: 1
             )
         ])
-    }
-    
-    private func addHUCDelegate() {
-        PrimerHeadlessUniversalCheckout.current.delegate = self
     }
 
     func passRenderedKlarnaView(_ renderedKlarnaView: UIView) {

@@ -118,7 +118,7 @@ extension PrimerHeadlessKlarnaComponent: LogReporter {
                 diagnosticsId: UUID().uuidString
             )
         }
-        errorDelegate?.didReceiveError(error: primerError)
+        handleReceivedError(error: primerError)
     }
 
     func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
