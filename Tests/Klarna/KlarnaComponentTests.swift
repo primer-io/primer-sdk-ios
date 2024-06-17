@@ -179,7 +179,8 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
     }
     
     func test_handlePrimerWillCreatePayment_fail() throws {
-        SDKSessionHelper.setUp()
+        let mockedSession = KlarnaTestsMocks.getClientSession()
+        SDKSessionHelper.setUp(order: mockedSession.order)
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
         
@@ -205,7 +206,8 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
     }
     
     func test_handlePrimerWillCreatePayment_success() throws {
-        SDKSessionHelper.setUp()
+        let mockedSession = KlarnaTestsMocks.getClientSession()
+        SDKSessionHelper.setUp(order: mockedSession.order)
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
         
