@@ -31,6 +31,7 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
     var phoneNumber: String?
     private var paymentId: String?
     var checkoutData: PrimerCheckoutData?
+    var manualHandlingCheckoutData: PrimerCheckoutData?
     var primerError: Error?
 
     var redirectManager: PrimerHeadlessUniversalCheckout.NativeUIManager?
@@ -99,6 +100,13 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
         logs.removeAll(keepingCapacity: false)
         primerError = nil
         checkoutData = nil
+        manualHandlingCheckoutData = nil
+    }
+    
+    private func presentResultsVC() {
+        let resultsCheckoutData = manualHandlingCheckoutData != nil ? manualHandlingCheckoutData : checkoutData
+        let rvc = MerchantResultViewController.instantiate(checkoutData: resultsCheckoutData, error: primerError, logs: logs)
+        self.navigationController?.pushViewController(rvc, animated: true)
     }
 }
 
@@ -182,8 +190,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
             }
         }
 
-        let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
-        self.navigationController?.pushViewController(rvc, animated: true)
+        presentResultsVC()
     }
 
     func primerHeadlessUniversalCheckoutDidStartTokenization(for paymentMethodType: String) {
@@ -210,9 +217,18 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
                         self.hideLoadingOverlay()
                     }
                     decisionHandler(.complete())
-
-                    let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
-                    self.navigationController?.pushViewController(rvc, animated: true)
+                    
+                    if let lastViewController = self.navigationController?.children.last {
+                        if lastViewController is MerchantHeadlessCheckoutKlarnaViewController {
+                            self.manualHandlingCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(id: res.id,
+                                                                                                      orderId: res.orderId,
+                                                                                                      paymentFailureReason: nil))
+                        } else {
+                            self.presentResultsVC()
+                        }
+                    } else {
+                        self.presentResultsVC()
+                    }
                 }
 
             } else {
@@ -237,8 +253,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
                 decisionHandler(.complete())
             }
 
-            let rvc = MerchantResultViewController.instantiate(checkoutData: nil, error: self.primerError, logs: self.logs)
-            self.navigationController?.pushViewController(rvc, animated: true)
+            self.presentResultsVC()
         }
     }
 }
@@ -296,8 +311,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
         }
 
         DispatchQueue.main.async {
-            let rvc = MerchantResultViewController.instantiate(checkoutData: nil, error: self.primerError, logs: self.logs)
-            self.navigationController?.pushViewController(rvc, animated: true)
+            self.presentResultsVC()
         }
     }
 
