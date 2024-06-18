@@ -100,10 +100,10 @@ extension Request.Body.Payment {
     
     public struct Complete: Encodable {
         let mandateSignatureTimestamp: String
-        let paymentMethodId: String
+        let paymentMethodId: String?
         
         public init(mandateSignatureTimestamp: String,
-                    paymentMethodId: String) {
+                    paymentMethodId: String? = nil) {
             self.mandateSignatureTimestamp = mandateSignatureTimestamp
             self.paymentMethodId = paymentMethodId
         }
@@ -149,6 +149,10 @@ extension Response.Body {
             case pending = "PENDING"
             case success = "SUCCESS"
         }
+    }
+    
+    public struct Complete: Codable {
+        public let success: Bool
     }
 }
 

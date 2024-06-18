@@ -116,7 +116,7 @@ class PrimerPaymentMethod: Codable, LogReporter {
             case PrimerPaymentMethodType.nolPay:
                 return NolPayTokenizationViewModel(config: self, apiClient: apiClient)
             case PrimerPaymentMethodType.stripeAch:
-                return StripeAchTokenizationViewModel(config: self)
+                return StripeAchTokenizationViewModel(config: self, apiClient: apiClient)
 
             default:
                 break

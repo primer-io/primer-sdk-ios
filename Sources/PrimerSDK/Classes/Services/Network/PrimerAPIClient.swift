@@ -202,7 +202,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
     func completePayment(clientToken: DecodedJWTToken,
                          url: URL,
                          paymentRequest: Request.Body.Payment.Complete,
-                         completion: @escaping APICompletion<Response.Body.Payment>) {
+                         completion: @escaping APICompletion<Response.Body.Complete>) {
         let endpoint = PrimerAPI.completePayment(clientToken: clientToken, url: url, paymentRequest: paymentRequest)
         execute(endpoint, completion: completion)
     }

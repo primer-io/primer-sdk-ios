@@ -25,6 +25,7 @@ extension PrimerHeadlessUniversalCheckout {
         private(set) var resumePaymentId: String?
         private var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
+        private var achMandateCompletion: ((_ success: Bool, _ error: PrimerError?) -> Void)?
 
         lazy var createResumePaymentService: CreateResumePaymentServiceProtocol = {
             CreateResumePaymentService(paymentMethodType: paymentMethodType)
@@ -506,7 +507,37 @@ extension PrimerHeadlessUniversalCheckout {
         private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
                                                       paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
             return Promise { seal in
-                if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
+                if decodedJWTToken.intent?.contains("STRIPE_ACH") == true {
+                    if let sdkCompleteUrlString = decodedJWTToken.completeUrl,
+                       let sdkCompleteUrl = URL(string: sdkCompleteUrlString) {
+                        
+                        DispatchQueue.main.async {
+                            PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+                        }
+                        
+                        firstly {
+                            sendAdditionalInfoEvent()
+                        }
+                        .then { () -> Promise<Void> in
+                            return self.awaitShowMandateResponse()
+                        }
+                        .then { () -> Promise<Void> in
+                            return self.completePayment(clientToken: decodedJWTToken, completeUrl: sdkCompleteUrl)
+                        }
+                        .done {
+                            seal.fulfill(nil)
+                        }
+                        .catch { err in
+                            seal.reject(err)
+                        }
+                        
+                    } else {
+                        let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                                 diagnosticsId: UUID().uuidString)
+                        ErrorHandler.handle(error: err)
+                        seal.reject(err)
+                    }
+                } else if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
 
                     let threeDSService = ThreeDSService()
                     threeDSService.perform3DS(
@@ -780,6 +811,112 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
         }
+        
+        /**
+         * Completes a payment using the provided JWT token and URL.
+         *
+         * This private method performs an API call to complete a payment, using a decoded JWT token for authentication
+         * and a URL indicating where the completion request should be sent.
+         *
+         * - Parameters:
+         *   - clientToken: A `DecodedJWTToken` representing the client's authentication token.
+         *   - completeUrl: An `URL` indicating the endpoint for completing the ACH payment.
+         *
+         * - Returns: A `Promise<Void>` that resolves if the payment is completed successfully, or rejects if there is
+         *            an error during the API call.
+         */
+        private func completePayment(clientToken: DecodedJWTToken, completeUrl: URL) -> Promise<Void> {
+            return Promise { seal in
+                let apiclient = PrimerAPIClient()
+                let timeZone = TimeZone(abbreviation: "UTC")
+                let timeStamp = Date().toString(timeZone: timeZone)
+                
+                let body = Request.Body.Payment.Complete(mandateSignatureTimestamp: timeStamp)
+                apiclient.completePayment(clientToken: clientToken, url: completeUrl, paymentRequest: body) { result in
+                    switch result {
+                    case .success:
+                        seal.fulfill()
+                    case .failure(let error):
+                        seal.reject(error)
+                    }
+                }
+            }
+        }
+        
+        /**
+         * Sends additional information via delegate `PrimerHeadlessUniversalCheckoutDelegate` if implemented in the headless checkout context.
+         *
+         * This private method checks if the checkout is being conducted in a headless mode and whether the delegate
+         * for handling additional information is implemented. It ensures that additional information events are only
+         * sent if the delegate and its respective method are available, otherwise, it handles the absence of the delegate
+         * method by logging an error and rejecting the promise.
+         *
+         * - Returns: A promise that resolves if additional information is successfully handled or sent, or rejects if
+         *            there are issues with the delegate implementation or if the delegate method is not implemented.
+         */
+        private func sendAdditionalInfoEvent() -> Promise<Void> {
+            return Promise { seal in
+                guard PrimerHeadlessUniversalCheckout.current.delegate != nil else {
+                    seal.fulfill()
+                    return
+                }
+                
+                let delegate = PrimerHeadlessUniversalCheckout.current.delegate
+                let isAdditionalInfoImplemented = delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo != nil
+                
+                guard isAdditionalInfoImplemented else {
+                    let logMessage =
+                        """
+    Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)'\
+     hasn't been implemented. No events will be sent to your delegate instance.
+    """
+                    logger.warn(message: logMessage)
+
+                    let message = "Couldn't continue as due to unimplemented delegate method `primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo`"
+                    let error = PrimerError.unableToPresentPaymentMethod(paymentMethodType: self.paymentMethodType,
+                                                                         userInfo: .errorUserInfoDictionary(additionalInfo: [
+                                                                            "message": message
+                                                                         ]),
+                                                                         diagnosticsId: UUID().uuidString)
+                    
+                    seal.reject(error)
+                    return
+                }
+                
+                let additionalInfo = ACHMandateAdditionalInfo()
+                PrimerDelegateProxy.primerDidReceiveAdditionalInfo(additionalInfo)
+                seal.fulfill()
+            }
+        }
+        
+        /**
+         * Waits for a response from the ACHMandateDelegate method.
+         * The response is returned in stripeMandateCompletion handler.
+         */
+        private func awaitShowMandateResponse() -> Promise<Void> {
+            return Promise { seal in
+                self.achMandateCompletion = { succeeded, error in
+                    if succeeded {
+                        seal.fulfill()
+                    } else {
+                        if let error {
+                            seal.reject(error)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+extension PrimerHeadlessUniversalCheckout.VaultManager: ACHMandateDelegate {
+    public func mandateAccepted() {
+        achMandateCompletion?(true, nil)
+    }
+    
+    public func mandateDeclined() {
+        let error = ACHHelpers.getCancelledError(paymentMethodType: paymentMethodType)
+        achMandateCompletion?(false, error)
     }
 }
 
