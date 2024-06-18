@@ -3,7 +3,6 @@ import UIKit
 // swiftlint:disable identifier_name
 #if DEBUG
 private var __isRunningTests__: Bool = false
-#endif
 
 var TEST: Bool {
     #if DEBUG
@@ -12,6 +11,7 @@ var TEST: Bool {
     false
     #endif
 }
+#endif
 
 private let _Primer: Primer = {
     #if DEBUG
