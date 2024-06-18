@@ -96,7 +96,7 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
         }
     }
     
-    private func resetVariables() {
+    private func resetPaymentResultState() {
         logs.removeAll(keepingCapacity: false)
         primerError = nil
         checkoutData = nil
@@ -126,7 +126,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let paymentMethod = self.availablePaymentMethods[indexPath.row]
-        resetVariables()
+        resetPaymentResultState()
         let paymentMethodType = paymentMethod.paymentMethodType
         switch paymentMethodType {
         case "PAYMENT_CARD", "ADYEN_BANCONTACT_CARD":
