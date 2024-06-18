@@ -11,8 +11,6 @@ import XCTest
 
 class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol {
 
-    static var apiClient: PrimerAPIClientProtocol?
-
     let config: PrimerPaymentMethod
 
     let uiManager: PrimerUIManaging

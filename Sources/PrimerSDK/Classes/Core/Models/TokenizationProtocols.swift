@@ -7,8 +7,6 @@
 
 import Foundation
 internal protocol PaymentMethodTokenizationModelProtocol: NSObject {
-    static var apiClient: PrimerAPIClientProtocol? { get set }
-
     var checkoutEventsNotifierModule: CheckoutEventsNotifierModule { get }
 
     // Events
