@@ -17,6 +17,8 @@ class RawDataManagerValidationTests: XCTestCase {
 
     var delegate: MockRawDataManagerDelegate!
 
+    static let mockApiClient = MockPrimerAPIClient()
+
     // MARK: Per-test setUp and tearDown
 
     override func setUp() {
@@ -27,6 +29,7 @@ class RawDataManagerValidationTests: XCTestCase {
     override func tearDown() {
         delegate = nil
         rawDataManager = nil
+
     }
 
     // MARK: suite-wide setUp and tearDown
@@ -92,16 +95,16 @@ class RawDataManagerValidationTests: XCTestCase {
 
         let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(data: [])
 
-        let mockApiClient = MockPrimerAPIClient()
         mockApiClient.fetchVaultedPaymentMethodsResult = (vaultedPaymentMethods, nil)
         mockApiClient.fetchConfigurationResult = (mockPrimerApiConfiguration, nil)
         mockApiClient.listCardNetworksResult = (Mocks.listCardNetworksData, nil)
-        DefaultCardValidationService.apiClient = mockApiClient
         PrimerAPIConfigurationModule.apiClient = mockApiClient
     }
 
     override class func tearDown() {
-        DefaultCardValidationService.apiClient = nil
+        mockApiClient.fetchVaultedPaymentMethodsResult = nil
+        mockApiClient.fetchConfigurationResult = nil
+        mockApiClient.listCardNetworksResult = nil
         PrimerAPIConfigurationModule.apiClient = nil
     }
 
@@ -664,9 +667,18 @@ extension RawDataManagerValidationTests {
         wait(for: expectationsToBeFulfilled, timeout: 30)
 
         do {
-            self.rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: "PAYMENT_CARD")
+            let paymentMethodType = "PAYMENT_CARD"
+            self.rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: paymentMethodType)
             self.rawDataManager.delegate = delegate
+            self.rawDataManager.tokenizationService = TokenizationService(apiClient: Self.mockApiClient)
+
+            let rawDataTokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: paymentMethodType)
+            rawDataTokenizationBuilder.rawDataManager = rawDataManager
+            rawDataTokenizationBuilder.cardValidationService = nil
+
+            self.rawDataManager.rawDataTokenizationBuilder = rawDataTokenizationBuilder
         } catch {
+            print("ERROR: \(error.localizedDescription)")
             XCTAssert(false, "Raw Data Manager should had been initialized")
         }
     }

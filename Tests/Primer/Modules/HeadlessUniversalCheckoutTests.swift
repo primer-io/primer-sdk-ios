@@ -43,11 +43,7 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
         PrimerHeadlessUniversalCheckout.current.uiDelegate = nil
 
         PrimerAPIConfigurationModule.apiClient = nil
-        PaymentMethodTokenizationViewModel.apiClient = nil
-        TokenizationService.apiClient = nil
         PollingModule.apiClient = nil
-        CreateResumePaymentService.apiClient = nil
-        DefaultCardValidationService.apiClient = nil
     }
 
     // MARK: NativeUIManager Tests
@@ -222,6 +218,18 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
         do {
             let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: paymentMethod.type,
                                                                                     delegate: rawDataManagerDelegate)
+
+            let mockApiClient = PrimerAPIConfigurationModule.apiClient!
+
+            rawDataManager.tokenizationService = TokenizationService(apiClient: mockApiClient)
+            rawDataManager.createResumePaymentService = CreateResumePaymentService(paymentMethodType: paymentMethod.type,
+                                                                                   apiClient: mockApiClient)
+
+            let rawDataTokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: paymentMethod.type)
+            rawDataTokenizationBuilder.rawDataManager = rawDataManager
+            rawDataTokenizationBuilder.cardValidationService = DefaultCardValidationService(rawDataManager: rawDataManager,
+                                                                                            apiClient: mockApiClient)
+            rawDataManager.rawDataTokenizationBuilder = rawDataTokenizationBuilder
 
             let rawCardData = PrimerCardData(
                 cardNumber: "4111 1111 1111 1111",
@@ -414,11 +422,7 @@ extension HeadlessUniversalCheckoutTests {
         mockApiClient.listCardNetworksResult = (Mocks.listCardNetworksData, nil)
 
         PrimerAPIConfigurationModule.apiClient = mockApiClient
-        PaymentMethodTokenizationViewModel.apiClient = mockApiClient
-        TokenizationService.apiClient = mockApiClient
         PollingModule.apiClient = mockApiClient
-        CreateResumePaymentService.apiClient = mockApiClient
-        DefaultCardValidationService.apiClient = mockApiClient
     }
 
     private func setupSettings(handling: PrimerPaymentHandling) {

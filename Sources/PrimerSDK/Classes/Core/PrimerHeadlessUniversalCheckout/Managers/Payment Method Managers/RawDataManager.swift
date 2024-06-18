@@ -79,12 +79,13 @@ extension PrimerHeadlessUniversalCheckout {
             return self.rawDataTokenizationBuilder.requiredInputElementTypes
         }
         private var resumePaymentId: String?
-        private var rawDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol
         public private(set) var paymentCheckoutData: PrimerCheckoutData?
         public private(set) var isDataValid: Bool = false
         var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
         var initializationData: PrimerInitializationData?
+
+        var rawDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol
 
         var tokenizationService: TokenizationServiceProtocol = TokenizationService()
 

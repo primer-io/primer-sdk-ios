@@ -15,6 +15,9 @@ protocol PrimerUIManaging {
     var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol? { get }
 
     func prepareRootViewController() -> Promise<Void>
+    func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType,
+                                   paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
+                                   withMessage message: String?)
 }
 
 internal class PrimerUIManager: PrimerUIManaging {
