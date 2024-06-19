@@ -32,12 +32,12 @@ final class ACHHeadlessManagerTests: XCTestCase {
         XCTAssertNotNil(manager)
     }
 
-    func test_klarnaComponent_initialization_succeed() {
+    func test_stripeACHComponent_initialization_succeed() {
         stripeACHComponent = try? manager.provide(paymentMethodType: ACHMocks.stripeACHPaymentMethodType)
         XCTAssertNotNil(stripeACHComponent)
     }
     
-    func test_klarnaComponent_initialization_with_inexistent_payment_method() {
+    func test_stripeACHComponent_initialization_with_inexistent_payment_method() {
         do {
             stripeACHComponent = try manager.provide(paymentMethodType: ACHMocks.inexistentPaymentMethod)
         } catch {
@@ -45,7 +45,7 @@ final class ACHHeadlessManagerTests: XCTestCase {
         }
     }
     
-    func test_klarnaComponent_initialization_with_wrong_payment_method() {
+    func test_stripeACHComponent_initialization_with_wrong_payment_method() {
         do {
             stripeACHComponent = try manager.provide(paymentMethodType: ACHMocks.klarnaPaymentMethodType)
         } catch {

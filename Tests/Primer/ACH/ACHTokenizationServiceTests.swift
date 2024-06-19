@@ -11,7 +11,7 @@ import XCTest
 
 final class ACHTokenizationServiceTests: XCTestCase {
 
-    var tokenizationService: ACHTokenizationService!
+    var achTokenizationService: ACHTokenizationService!
     var mockApiClient: MockPrimerAPIClient!
 
     override func setUp() {
@@ -30,7 +30,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Successful Tokenize StripeACH Payment Session")
 
         firstly {
-            tokenizationService.tokenize()
+            achTokenizationService.tokenize()
         }
         .done { tokenData in
             XCTAssertNotNil(tokenData, "Result should not be nil")
@@ -51,7 +51,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Failure Tokenize StripeACH Payment Session")
 
         firstly {
-            tokenizationService.tokenize()
+            achTokenizationService.tokenize()
         }
         .done { _ in
             XCTFail("Result should be nil")
@@ -68,7 +68,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
     func test_tokenization_validation_success() {
         prepareConfigurations()
         do {
-            try tokenizationService.validate()
+            try achTokenizationService.validate()
         } catch {
             XCTFail("Result should not fail with error")
         }
@@ -77,7 +77,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
     func test_tokenization_validation_decodedToken_failure() {
         prepareConfigurations(isClientSessionEmpty: false, hasDecodedToken: false)
         do {
-            try tokenizationService.validate()
+            try achTokenizationService.validate()
         } catch {
             //XCTFail("Result should not fail with error")
         }
@@ -86,7 +86,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
     func test_tokenization_validation_amount_failure() {
         prepareConfigurations(isClientSessionEmpty: true, emptyMerchantAmmount: true, emptyTotalOrderAmmount: true)
         do {
-            try tokenizationService.validate()
+            try achTokenizationService.validate()
         } catch {
             guard let primerError = error as? PrimerError else {
                 XCTFail("Error should be of type PrimerError")
@@ -105,7 +105,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
     func test_tokenization_validation_currency_failure() {
         prepareConfigurations(isClientSessionEmpty: true, emptyCurrencyCode: true)
         do {
-            try tokenizationService.validate()
+            try achTokenizationService.validate()
         } catch {
             guard let primerError = error as? PrimerError else {
                 XCTFail("Error should be of type PrimerError")
@@ -124,7 +124,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
     func test_tokenization_validation_lineItems_failure() {
         prepareConfigurations(isClientSessionEmpty: true, emptyLineItems: true)
         do {
-            try tokenizationService.validate()
+            try achTokenizationService.validate()
         } catch {
             guard let primerError = error as? PrimerError else {
                 XCTFail("Error should be of type PrimerError")
@@ -143,7 +143,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
     func test_tokenization_validation_lineItems_total_failure() {
         prepareConfigurations(isClientSessionEmpty: true, emptyOrderAmount: true)
         do {
-            try tokenizationService.validate()
+            try achTokenizationService.validate()
         } catch {
             guard let primerError = error as? PrimerError else {
                 XCTFail("Error should be of type PrimerError")
@@ -179,9 +179,9 @@ extension ACHTokenizationServiceTests {
         }
         
         PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
-        TokenizationService.apiClient = mockApiClient
+        let tokenizationService = TokenizationService(apiClient: mockApiClient)
         
-        tokenizationService = ACHTokenizationService(paymentMethod: paymentMethod)
+        achTokenizationService = ACHTokenizationService(paymentMethod: paymentMethod, tokenizationService: tokenizationService)
     }
 
     private func prepareConfigurations(isClientSessionEmpty: Bool = false,
@@ -227,9 +227,8 @@ extension ACHTokenizationServiceTests {
         PrimerAPIConfigurationModule.apiClient = nil
         PrimerAPIConfigurationModule.clientToken = nil
         PrimerAPIConfigurationModule.apiConfiguration = nil
-        TokenizationService.apiClient = nil
         
-        tokenizationService = nil
+        achTokenizationService = nil
     }
     
     private func getInvalidTokenError() -> PrimerError {
