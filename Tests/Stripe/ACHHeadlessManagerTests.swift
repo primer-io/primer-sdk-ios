@@ -5,6 +5,7 @@
 //  Created by Stefan Vrancianu on 28.05.2024.
 //
 
+#if canImport(PrimerStripeSDK)
 import Foundation
 import XCTest
 @testable import PrimerSDK
@@ -117,3 +118,4 @@ extension ACHHeadlessManagerTests {
         ]
     }
 }
+#endif

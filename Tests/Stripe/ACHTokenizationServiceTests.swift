@@ -5,6 +5,7 @@
 //  Created by Stefan Vrancianu on 16.05.2024.
 //
 
+#if canImport(PrimerStripeSDK)
 import Foundation
 import XCTest
 @testable import PrimerSDK
@@ -249,3 +250,4 @@ extension ACHTokenizationServiceTests {
         ]
     }
 }
+#endif
