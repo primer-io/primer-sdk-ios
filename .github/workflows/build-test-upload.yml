@@ -145,7 +145,7 @@ jobs:
       - name: Test, Build, and Distribute app to Appetize 🚀
         shell: bash
         run: |
-          bundle exec fastlane build_cococapods
+          bundle exec fastlane build_cocoapods
       - name: Clone and launch Browserstack tests via Appium 🧪
         run: |
             git clone -b 'jn/ui-tests-pr-check' https://project_41483872_bot:$GITLAB_TEMP_PATH@gitlab.com/primer-io/dx/mobile-appium-tests.git
