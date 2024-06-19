@@ -164,7 +164,7 @@ jobs:
         working-directory: mobile-appium-tests
         run: |
           npm install
-          npx wdio config/wdio.ios.conf.js
+          npx wdio config/wdio.ios.gha.conf.js
 
   # build-and-upload-to-appetize:
   #   needs:
