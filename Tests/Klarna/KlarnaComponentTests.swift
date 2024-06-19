@@ -15,9 +15,26 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
     var sut: PrimerHeadlessKlarnaComponent!
     var tokenizationComponent: KlarnaTokenizationComponent!
 
-    var errorResult: PrimerSDK.PrimerError!
-    var stepType: StepDelegationType = .none
+    
     var validationResult: PrimerSDK.PrimerValidationStatus = .validating
+    var stepTypeDecisionHandler: ((StepDelegationType) -> Void)?
+    var receiveErrorDecisionHandler: ((PrimerSDK.PrimerError) -> Void)?
+    
+    var errorResult: PrimerSDK.PrimerError? {
+        didSet {
+            guard let errorResult = errorResult,
+                  let handler = receiveErrorDecisionHandler else { return }
+            handler(errorResult)
+        }
+    }
+    
+    var stepType: StepDelegationType? {
+        didSet {
+            guard let stepType = stepType,
+                  let handler = stepTypeDecisionHandler else { return }
+            handler(stepType)
+        }
+    }
 
     override func setUp() {
         super.setUp()
@@ -33,6 +50,8 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
 
     override func tearDown() {
         sut = nil
+        stepTypeDecisionHandler = nil
+        stepType = nil
         tokenizationComponent = nil
         restartPrimerConfiguration()
         super.tearDown()
@@ -60,7 +79,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         )
 
         sut?.errorDelegate?.didReceiveError(error: error)
-        XCTAssertEqual(error.diagnosticsId, errorResult.diagnosticsId)
+        XCTAssertEqual(error.diagnosticsId, errorResult?.diagnosticsId)
     }
 
     func test_sessionAuthorization_error() {
@@ -72,7 +91,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         )
 
         sut?.errorDelegate?.didReceiveError(error: error)
-        XCTAssertEqual(error.diagnosticsId, errorResult.diagnosticsId)
+        XCTAssertEqual(error.diagnosticsId, errorResult?.diagnosticsId)
     }
 
     func test_klarnaAuthorization_error() {
@@ -83,7 +102,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         )
 
         sut?.errorDelegate?.didReceiveError(error: error)
-        XCTAssertEqual(error.diagnosticsId, errorResult.diagnosticsId)
+        XCTAssertEqual(error.diagnosticsId, errorResult?.diagnosticsId)
     }
 
     func test_klarnaFinalization_error() {
@@ -94,7 +113,7 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         )
 
         sut?.errorDelegate?.didReceiveError(error: error)
-        XCTAssertEqual(error.diagnosticsId, errorResult.diagnosticsId)
+        XCTAssertEqual(error.diagnosticsId, errorResult?.diagnosticsId)
     }
 
     // TODO: Disabled - Fix: KlarnaMobileSDK interfaces should be mocked
@@ -176,6 +195,64 @@ final class PrimerHeadlessKlarnaComponentTests: XCTestCase {
         }
 
         XCTAssertNotNil(extraMerchantDataString)
+    }
+    
+    func test_handlePrimerWillCreatePayment_fail() throws {
+        let mockedSession = KlarnaTestsMocks.getClientSession()
+        SDKSessionHelper.setUp(order: mockedSession.order)
+        let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
+        PrimerHeadlessUniversalCheckout.current.delegate = delegate
+        
+        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        delegate.onWillCreatePaymentWithData = { data, decision in
+            XCTAssertEqual(data.paymentMethodType.type, "KLARNA")
+            decision(.abortPaymentCreation())
+            expectWillCreatePaymentData.fulfill()
+        }
+        
+        let expectError = self.expectation(description: "Failed to create session error is thrown")
+        receiveErrorDecisionHandler = { _ in
+            XCTAssertEqual(self.errorResult?.errorId, "failed-to-create-session")
+            expectError.fulfill()
+        }
+
+        sut.start()
+
+        wait(for: [
+            expectWillCreatePaymentData,
+            expectError
+        ], timeout: 10.0, enforceOrder: true)
+    }
+    
+    func test_handlePrimerWillCreatePayment_success() throws {
+        let mockedSession = KlarnaTestsMocks.getClientSession()
+        SDKSessionHelper.setUp(order: mockedSession.order)
+        let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
+        PrimerHeadlessUniversalCheckout.current.delegate = delegate
+        
+        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        delegate.onWillCreatePaymentWithData = { data, decision in
+            XCTAssertEqual(data.paymentMethodType.type, "KLARNA")
+            decision(.continuePaymentCreation())
+            expectWillCreatePaymentData.fulfill()
+        }
+        
+        let expectStep = self.expectation(description: "Session creation step is received")
+        stepTypeDecisionHandler = { stepType in
+            switch self.stepType {
+            case .creationStep:
+                expectStep.fulfill()
+            default:
+                XCTFail("Unexpected step type: \(stepType)")
+            }
+        }
+
+        sut.start()
+
+        wait(for: [
+            expectWillCreatePaymentData,
+            expectStep
+        ], timeout: 10.0, enforceOrder: true)
     }
 }
 

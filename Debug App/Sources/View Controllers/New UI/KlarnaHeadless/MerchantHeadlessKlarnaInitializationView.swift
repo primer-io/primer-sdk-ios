@@ -43,7 +43,7 @@ struct MerchantHeadlessKlarnaInitializationView: View {
 
             VStack {
                 DynamicUIViewRepresentable(wrapper: sharedWrapper)
-                    .frame(height: 200)
+                    .frame(height: 250)
                     .onReceive(sharedWrapper.$uiView) { _ in
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                             shouldShowKlarnaView = initializePressed
