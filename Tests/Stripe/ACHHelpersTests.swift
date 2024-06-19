@@ -5,7 +5,6 @@
 //  Created by Stefan Vrancianu on 28.05.2024.
 //
 
-#if canImport(PrimerStripeSDK)
 import Foundation
 import XCTest
 @testable import PrimerSDK
@@ -81,4 +80,3 @@ final class ACHHelpersTests: XCTestCase {
         XCTAssertEqual(error.plainDescription, "\(expectedPaymentMethodType) configuration has been found, but dependency \(expectedSDKName) is missing")
     }
 }
-#endif
