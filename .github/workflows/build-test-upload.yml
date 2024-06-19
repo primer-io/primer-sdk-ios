@@ -157,6 +157,7 @@ jobs:
       - name: Run Appium Test
         working-directory: mobile-appium-tests
         run: |
+          npm install
           npx wdio config/wdio.ios.conf.js
 
   # build-and-upload-to-appetize:
