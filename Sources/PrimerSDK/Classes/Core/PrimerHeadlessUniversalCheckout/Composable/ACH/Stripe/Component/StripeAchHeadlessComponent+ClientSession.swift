@@ -21,7 +21,6 @@ extension StripeAchHeadlessComponent {
             clientSessionService.getClientSessionUserDetails()
         }
         .done { stripeAchUserDetails in
-            self.inputUserDetails = stripeAchUserDetails
             self.clientSessionUserDetails = stripeAchUserDetails
             self.updateAndValidateSessionUserDetails()
             let step = ACHUserDetailsStep.retrievedUserDetails(stripeAchUserDetails)
