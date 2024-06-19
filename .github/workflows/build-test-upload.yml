@@ -155,6 +155,7 @@ jobs:
         env:
           GITLAB_TEMP_PATH: ${{ secrets.GITLAB_APPIUM_PULL_KEY }}
       - name: Run Appium Test
+        working-directory: mobile-appium-tests
         run: |
           npx wdio config/wdio.ios.conf.js
 
