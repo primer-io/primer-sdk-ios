@@ -15,18 +15,12 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/primer-io/primer-sdk-3ds-ios", from: "2.3.1"),
-        .package(url: "https://github.com/primer-io/primer-klarna-sdk-ios", from: "1.1.1"),
-        .package(url: "https://github.com/primer-io/primer-nol-pay-sdk-ios", from: "1.0.2")
         .package(url: "https://github.com/primer-io/primer-stripe-sdk-ios", .branch("nq/initial_setup"))
     ],
     targets: [
         .target(
             name: "PrimerSDK",
             dependencies: [
-                .product(name: "Primer3DS", package: "primer-sdk-3ds-ios"),
-                .product(name: "PrimerKlarnaSDK", package: "primer-klarna-sdk-ios"),
-                .product(name: "PrimerNolPaySDK", package: "primer-nol-pay-sdk-ios")
                 .product(name: "PrimerStripeSDK", package: "primer-stripe-sdk-ios")
             ],
             path: "Sources/PrimerSDK",
@@ -38,13 +32,14 @@ let package = Package(
         .testTarget(
             name: "Tests",
             dependencies: [
-                .product(name: "Primer3DS", package: "primer-sdk-3ds-ios"),
-                .product(name: "PrimerKlarnaSDK", package: "primer-klarna-sdk-ios"),
-                .product(name: "PrimerNolPaySDK", package: "primer-nol-pay-sdk-ios"),
                 .product(name: "PrimerStripeSDK", package: "primer-stripe-sdk-ios"),
                 .byName(name: "PrimerSDK")
             ],
-            path: "Tests/"
+            path: "Tests/",
+            sources: [
+                "Stripe/",
+                "Utilities/"
+            ]
         )
     ],
     swiftLanguageVersions: [.v5]
