@@ -158,8 +158,6 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
-#if canImport(PrimerStripeSDK)
-
             // Checking if we are running UI(E2E) tests here.
             var isMockBE = false
 
@@ -191,10 +189,6 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     seal.reject(err)
                 }
             }
-#else
-            let error = ACHHelpers.getMissingSDKError(sdk: "PrimerStripeSDK")
-            seal.reject(error)
-#endif
         }
     }
     
@@ -420,6 +414,7 @@ extension StripeAchTokenizationViewModel {
     private func getPublishableKey() -> Promise<Void> {
         return Promise { seal in
             guard let publishableKey = PrimerSettings.current.paymentMethodOptions.stripeOptions?.publishableKey else {
+#if canImport(PrimerStripeSDK)
                 let error = PrimerStripeError.stripeInvalidPublishableKeyError
                 let primerError = PrimerError.stripeError(
                     key: error.errorId,
@@ -429,6 +424,11 @@ extension StripeAchTokenizationViewModel {
                 )
                 seal.reject(primerError)
                 return
+#else
+            let error = ACHHelpers.getMissingSDKError(sdk: "PrimerStripeSDK")
+            seal.reject(error)
+            return
+#endif
             }
             self.publishableKey = publishableKey
             seal.fulfill()
