@@ -277,6 +277,7 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     private func showCollector(urlScheme: String) -> Promise<Void> {
         return Promise { seal in
+#if canImport(PrimerStripeSDK)
             let fullName = "\(self.userDetails.firstName) \(self.userDetails.lastName)"
             let stripeParams = PrimerStripeParams(publishableKey: self.publishableKey,
                                                   clientSecret: self.clientSecret,
@@ -302,6 +303,10 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 PrimerUIManager.primerRootViewController?.show(viewController: collectorViewController)
                 seal.fulfill()
             }
+#else
+            let error = ACHHelpers.getMissingSDKError(sdk: "PrimerStripeSDK")
+            seal.reject(error)
+#endif
         }
     }
 
