@@ -158,40 +158,43 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
-            
+#if canImport(PrimerStripeSDK)
+
+            // Checking if we are running UI(E2E) tests here.
             var isMockBE = false
 
-            #if DEBUG
+#if DEBUG
             if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
                 isMockBE = true
             }
-            #endif
+#endif
 
             if isMockBE {
-            #if DEBUG
                 seal.fulfill()
-                return
-            #endif
+            } else {
+                firstly {
+                    getPublishableKey()
+                }
+                .then { () -> Promise<Void> in
+                    return self.getClientSessionUserDetails()
+                }
+                .then { () -> Promise<String> in
+                    return self.getUrlScheme()
+                }
+                .then { urlScheme -> Promise<Void> in
+                    return self.showCollector(urlScheme: urlScheme)
+                }
+                .done {
+                    seal.fulfill()
+                }
+                .catch { err in
+                    seal.reject(err)
+                }
             }
-            
-            firstly {
-                getPublishableKey()
-            }
-            .then { () -> Promise<Void> in
-                return self.getClientSessionUserDetails()
-            }
-            .then { () -> Promise<String> in
-                return self.getUrlScheme()
-            }
-            .then { urlScheme -> Promise<Void> in
-                return self.showCollector(urlScheme: urlScheme)
-            }
-            .done {
-                seal.fulfill()
-            }
-            .catch { err in
-                seal.reject(err)
-            }
+#else
+            let error = ACHHelpers.getMissingSDKError(sdk: "PrimerStripeSDK")
+            seal.reject(error)
+#endif
         }
     }
     
@@ -209,21 +212,22 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             firstly {
-                
+
+                // Checking if we are running UI(E2E) tests here.
                 var isMockBE = false
 
-                #if DEBUG
+#if DEBUG
                 if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
                     isMockBE = true
                 }
-                #endif
-
+#endif
                 if isMockBE {
-                     return showTestResponse()
+                    return Promise { seal in
+                        seal.fulfill()
+                    }
                 } else {
                     return awaitStripeBankAccountCollectorResponse()
                 }
-
             }
             .then { () -> Promise<Void> in
                 return self.sendAdditionalInfoEvent()
@@ -273,52 +277,31 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     private func showCollector(urlScheme: String) -> Promise<Void> {
         return Promise { seal in
-#if canImport(PrimerStripeSDK)
-                let fullName = "\(self.userDetails.firstName) \(self.userDetails.lastName)"
-                let stripeParams = PrimerStripeParams(publishableKey: self.publishableKey,
-                                                      clientSecret: self.clientSecret,
-                                                      returnUrl: urlScheme,
-                                                      fullName: fullName,
-                                                      emailAddress: self.userDetails.emailAddress)
-                
-                let collectorViewController = PrimerStripeCollectorViewController.getCollectorViewController(params: stripeParams,
-                                                                                                             delegate: self)
-                if PrimerInternal.shared.sdkIntegrationType == .headless {
+            let fullName = "\(self.userDetails.firstName) \(self.userDetails.lastName)"
+            let stripeParams = PrimerStripeParams(publishableKey: self.publishableKey,
+                                                  clientSecret: self.clientSecret,
+                                                  returnUrl: urlScheme,
+                                                  fullName: fullName,
+                                                  emailAddress: self.userDetails.emailAddress)
 
-                    firstly {
-                        sendAdditionalInfoEvent(stripeCollector: collectorViewController)
-                    }
-                    .done {
-                        seal.fulfill()
-                    }
-                    .catch { err in
-                        seal.reject(err)
-                    }
+            let collectorViewController = PrimerStripeCollectorViewController.getCollectorViewController(params: stripeParams,
+                                                                                                         delegate: self)
+            if PrimerInternal.shared.sdkIntegrationType == .headless {
 
-                } else {
-                    PrimerUIManager.primerRootViewController?.show(viewController: collectorViewController)
+                firstly {
+                    sendAdditionalInfoEvent(stripeCollector: collectorViewController)
+                }
+                .done {
                     seal.fulfill()
                 }
-
-#else
-                var isMockBE = false
-
-                #if DEBUG
-                if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
-                    isMockBE = true
-                }
-                #endif
-
-                if isMockBE {
-                #if DEBUG
-                    seal.fulfill()
-                    return
-                #endif
+                .catch { err in
+                    seal.reject(err)
                 }
 
-                let error = ACHHelpers.getMissingSDKError(sdk: "PrimerStripeSDK")
-                seal.reject(error)
-#endif
+            } else {
+                PrimerUIManager.primerRootViewController?.show(viewController: collectorViewController)
+                seal.fulfill()
+            }
         }
     }
 
@@ -432,7 +415,6 @@ extension StripeAchTokenizationViewModel {
     private func getPublishableKey() -> Promise<Void> {
         return Promise { seal in
             guard let publishableKey = PrimerSettings.current.paymentMethodOptions.stripeOptions?.publishableKey else {
-#if canImport(PrimerStripeSDK)
                 let error = PrimerStripeError.stripeInvalidPublishableKeyError
                 let primerError = PrimerError.stripeError(
                     key: error.errorId,
@@ -441,7 +423,6 @@ extension StripeAchTokenizationViewModel {
                     diagnosticsId: error.diagnosticsId
                 )
                 seal.reject(primerError)
-#endif
                 return
             }
             self.publishableKey = publishableKey
@@ -457,12 +438,6 @@ extension StripeAchTokenizationViewModel {
             } catch let error {
                 seal.reject(error)
             }
-        }
-    }
-
-    private func showTestResponse() -> Promise<Void> {
-        return Promise { seal in
-            seal.fulfill()
         }
     }
 }

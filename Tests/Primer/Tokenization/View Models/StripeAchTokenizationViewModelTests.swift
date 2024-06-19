@@ -79,7 +79,7 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
     }
     
     func test_full_flow_checkout() throws {
-        SDKSessionHelper.setUp(order: order, showTestId: true)
+        SDKSessionHelper.setUp(order: order)
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
@@ -112,35 +112,27 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
             return self.paymentResponseBody
         }
         
-        let expectStripeCollectorCompletion = self.expectation(description: "stripeCollectorCompletion called")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            self.sut.stripeBankAccountCollectorCompletion?(true, nil)
-            expectStripeCollectorCompletion.fulfill()
-        }
-        
+        let expectDidReceiveStripeCollectorAdditionalInfo = self.expectation(description: "didReceiveStripeCollectorAdditionalInfo is called")
         let expectDidReceiveMandateAdditionalInfo = self.expectation(description: "didReceiveMandateAdditionalInfo is called")
-        delegate.onDidReceiveAdditionalInfo = { _ in
-            expectDidReceiveMandateAdditionalInfo.fulfill()
+        delegate.onDidReceiveAdditionalInfo = { additionalInfo in
+            if additionalInfo is StripeBankAccountCollectorAdditionalInfo {
+                expectDidReceiveStripeCollectorAdditionalInfo.fulfill()
+                self.sut.stripeBankAccountCollectorCompletion?(true, nil)
+            } else {
+                expectDidReceiveMandateAdditionalInfo.fulfill()
+                self.mandateDelegate?.mandateAccepted()
+            }
         }
         
-        let expectMandateCompletion = self.expectation(description: "mandateCompletion called")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-            self.mandateDelegate?.mandateAccepted()
-            expectMandateCompletion.fulfill()
-        }
+        // TODO: - After BE will be ready for /complete call we need to add expectCompletePayment expectation
         
-        let expectDidResumePayment = self.expectation(description: "didResumePayment called")
-        createResumePaymentService.onResumePayment = { paymentId, body in
-            expectDidResumePayment.fulfill()
-            return self.paymentResponseBody
-        }
-        
-        let expectCheckoutDidCompleteWithData = self.expectation(description: "didCompleteCheckout is called")
-        delegate.onDidCompleteCheckoutWithData = { data in
-            XCTAssertEqual(data.payment?.id, "id")
-            XCTAssertEqual(data.payment?.orderId, "order_id")
-            expectCheckoutDidCompleteWithData.fulfill()
-        }
+        // TODO: - Uncoment this in order to complete the flow
+//        let expectCheckoutDidCompleteWithData = self.expectation(description: "didCompleteCheckout is called")
+//        delegate.onDidCompleteCheckoutWithData = { data in
+//            XCTAssertEqual(data.payment?.id, "id")
+//            XCTAssertEqual(data.payment?.orderId, "order_id")
+//            expectCheckoutDidCompleteWithData.fulfill()
+//        }
 
         sut.start()
         
@@ -149,11 +141,8 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
             expectDidStartTokenization,
             expectDidTokenize,
             expectDidCreatePayment,
-            expectStripeCollectorCompletion,
-            expectDidReceiveMandateAdditionalInfo,
-            expectMandateCompletion,
-            expectDidResumePayment,
-            expectCheckoutDidCompleteWithData
+            expectDidReceiveStripeCollectorAdditionalInfo,
+            expectDidReceiveMandateAdditionalInfo
         ], timeout: 20.0, enforceOrder: true)
     }
     
