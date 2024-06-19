@@ -144,6 +144,8 @@ jobs:
           node-version: 18.3.0
       - name: Test, Build, and Distribute app to Appetize 🚀
         shell: bash
+        env:
+          SKIP_SIGNING: true
         run: |
           bundle exec fastlane build_cocoapods
       - name: Clone and launch Browserstack tests via Appium 🧪
