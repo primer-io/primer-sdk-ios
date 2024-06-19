@@ -508,7 +508,7 @@ extension PrimerHeadlessUniversalCheckout {
                                                       paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
             return Promise { seal in
                 if decodedJWTToken.intent?.contains("STRIPE_ACH") == true {
-                    if let sdkCompleteUrlString = decodedJWTToken.completeUrl,
+                    if let sdkCompleteUrlString = decodedJWTToken.sdkCompleteUrl,
                        let sdkCompleteUrl = URL(string: sdkCompleteUrlString) {
                         
                         DispatchQueue.main.async {
