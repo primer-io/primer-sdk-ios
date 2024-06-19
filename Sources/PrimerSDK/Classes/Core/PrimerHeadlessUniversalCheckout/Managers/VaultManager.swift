@@ -743,12 +743,14 @@ extension PrimerHeadlessUniversalCheckout {
                 }
 
                 #if DEBUG
-                // This ensures that the presentation completion is correctly handled in headless unit tests
-                guard UIApplication.shared.windows.count > 0 else {
-                    DispatchQueue.main.async {
-                        seal.fulfill()
+                if TEST {
+                    // This ensures that the presentation completion is correctly handled in headless unit tests
+                    guard UIApplication.shared.windows.count > 0 else {
+                        DispatchQueue.main.async {
+                            seal.fulfill()
+                        }
+                        return
                     }
-                    return
                 }
                 #endif
 

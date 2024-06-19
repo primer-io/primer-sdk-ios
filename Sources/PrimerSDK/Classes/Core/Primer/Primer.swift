@@ -1,7 +1,26 @@
 import UIKit
 
 // swiftlint:disable identifier_name
-private let _Primer = Primer()
+#if DEBUG
+private var __isRunningTests__: Bool = false
+
+var TEST: Bool {
+    #if DEBUG
+    __isRunningTests__
+    #else
+    false
+    #endif
+}
+#endif
+
+private let _Primer: Primer = {
+    #if DEBUG
+    if ProcessInfo.processInfo.environment["UNIT_TESTS"] == "1" {
+        __isRunningTests__ = true
+    }
+    #endif
+    return Primer()
+}()
 // swiftlint:enable identifier_name
 
 public class Primer {
