@@ -143,11 +143,13 @@ jobs:
         with:
           node-version: 18.3.0
       - name: Setup Simulator Runtime
+        shell: bash
         run: |
           brew remove xcodes
           brew install phantomato/patched/xcodes
           xcodes runtimes install "iOS 16.2"
-          xcrun simctl create "iPhone X" "com.apple.CoreSimulator.SimDeviceType.iPhone-X" "com.apple.CoreSimulator.SimRuntime.iOS-16-2"
+          xcrun simctl create "iPhone X" "com.apple.CoreSimulator.SimDeviceType.iPhone-X" "com.apple.CoreSimulator.SimRuntime.iOS-16-2" > sim-id.txt
+          xcrun simctl boot "$(cat sim-id.txt)""
       - name: Test, Build, and Distribute app to Appetize 🚀
         shell: bash
         env:
@@ -164,6 +166,7 @@ jobs:
         working-directory: mobile-appium-tests
         run: |
           npm install
+          date
           npx wdio config/wdio.ios.gha.conf.js
 
   # build-and-upload-to-appetize:
