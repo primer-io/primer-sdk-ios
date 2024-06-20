@@ -25,7 +25,11 @@ class TestHelper {
     private static func dismissWebViewControllers() {
 
         let vcs = windows.compactMap { $0.rootViewController?.presentedViewController as? SFSafariViewController }
-        vcs.forEach { $0.dismiss(animated: true) }
+        vcs.forEach { vc in
+            vc.dismiss(animated: true) {
+                vc.delegate?.safariViewControllerDidFinish?(vc)
+            }
+        }
     }
 
     private static var windows: [UIWindow] {
