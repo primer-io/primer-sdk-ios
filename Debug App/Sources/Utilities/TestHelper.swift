@@ -12,6 +12,8 @@ import SafariServices
 
 class TestHelper {
 
+    // MARK: Deep linking
+
     static func handle(url: URL) {
         guard url.host == "ui-tests" else {
             return
@@ -34,5 +36,18 @@ class TestHelper {
 
     private static var windows: [UIWindow] {
         return UIApplication.shared.windows
+    }
+
+    // MARK: Client Token handling
+
+    static func updateClientTokenFromPasteboard(in textField: UITextField) {
+        let string = UIPasteboard.general.string
+        guard let jwtTokenPayload = string?.jwtTokenPayload else {
+            return
+        }
+        guard jwtTokenPayload.accessToken != nil else {
+            return
+        }
+        textField.text = string
     }
 }

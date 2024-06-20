@@ -304,9 +304,20 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         let totalAmount = lineItems.compactMap({ (($0.quantity ?? 0) * ($0.amount ?? 0)) }).reduce(0, +)
         totalAmountLabel.text = "\(totalAmount)"
 
+        clientTokenTextField.addTarget(
+            self,
+            action: #selector(clientTokenTextFieldDidBeginEditing(sender:)),
+            for: .editingDidBegin
+        )
     }
 
     // MARK: - ACTIONS
+
+    @objc func clientTokenTextFieldDidBeginEditing(sender: UITextField) {
+        #if DEBUG
+        TestHelper.updateClientTokenFromPasteboard(in: self.clientTokenTextField)
+        #endif
+    }
 
     @objc func lineItemTapped(_ sender: UITapGestureRecognizer) {
         guard let index = sender.view?.tag, lineItems.count > index else {
