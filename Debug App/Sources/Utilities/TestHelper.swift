@@ -20,19 +20,6 @@ class TestHelper {
         if url.pathComponents.count > 1, url.pathComponents[1] == "dismiss" {
             dismissWebViewControllers()
         }
-
-        let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
-        guard let queryItems = components?.queryItems else {
-            return
-        }
-
-        handle(queryItems: queryItems)
-    }
-
-    private static func handle(queryItems: [URLQueryItem]) {
-        if let item = queryItems.first(where: { $0.name == "set-pasteboard" }) {
-            UIPasteboard.general.string = item.value
-        }
     }
 
     private static func dismissWebViewControllers() {
