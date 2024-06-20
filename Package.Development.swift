@@ -18,7 +18,7 @@ let package = Package(
         .package(url: "https://github.com/primer-io/primer-sdk-3ds-ios", from: "2.3.1"),
         .package(url: "https://github.com/primer-io/primer-klarna-sdk-ios", from: "1.1.1"),
         .package(url: "https://github.com/primer-io/primer-nol-pay-sdk-ios", from: "1.0.2"),
-        .package(url: "https://github.com/primer-io/primer-stripe-sdk-ios", .branch("nq/initial_setup"))
+        .package(url: "git@github.com:primer-io/primer-stripe-sdk-ios", .branch("nq/initial_setup"))
     ],
     targets: [
         .target(
