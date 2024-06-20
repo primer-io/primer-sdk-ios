@@ -149,7 +149,7 @@ jobs:
           brew install phantomato/patched/xcodes
           xcodes runtimes install "iOS 16.2"
           xcrun simctl create "iPhone X" "com.apple.CoreSimulator.SimDeviceType.iPhone-X" "com.apple.CoreSimulator.SimRuntime.iOS-16-2" > sim-id.txt
-          xcrun simctl boot "$(cat sim-id.txt)""
+          xcrun simctl boot "$(cat sim-id.txt)"
       - name: Test, Build, and Distribute app to Appetize 🚀
         shell: bash
         env:
