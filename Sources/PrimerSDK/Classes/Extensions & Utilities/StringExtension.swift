@@ -66,7 +66,7 @@ internal extension String {
         }
 
         guard let date = _self.toDate(withFormat: "MMyy") else { return false }
-        let isValid = date.endOfMonth > Date()
+        let isValid = date.isValidExpiryDate
 
         if !isValid {
             let event = Analytics.Event.message(

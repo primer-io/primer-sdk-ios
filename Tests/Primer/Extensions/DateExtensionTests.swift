@@ -23,7 +23,8 @@ final class DateExtensionTests: XCTestCase {
     func testExpiryDateIsValid() {
         XCTAssertTrue(Date().isValidExpiryDate)
         XCTAssertTrue(Date().oneYearLater.isValidExpiryDate)
-        XCTAssertTrue((Date() - (60 * 60 * 24 * 360)).isValidExpiryDate)
+        XCTAssertFalse((Date() - (60 * 60 * 24 * 180)).isValidExpiryDate)
+        XCTAssertFalse((Date() - (60 * 60 * 24 * 360)).isValidExpiryDate)
         XCTAssertFalse((Date() - (60 * 60 * 24 * 400)).isValidExpiryDate)
     }
 
