@@ -232,7 +232,7 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertThrowsError(try "01/2022".validateExpiryDateString())
         XCTAssertThrowsError(try "08/2022".validateExpiryDateString())
         XCTAssertThrowsError(try "2022/2023".validateExpiryDateString())
-        XCTAssertNoThrow(try almostOneYearAgoDateString().validateExpiryDateString())
+        XCTAssertThrowsError(try almostOneYearAgoDateString().validateExpiryDateString())
         XCTAssertNoThrow(try "01/2028".validateExpiryDateString())
         XCTAssertNoThrow(try "02/2028".validateExpiryDateString())
         XCTAssertNoThrow(try "12/2028".validateExpiryDateString())
