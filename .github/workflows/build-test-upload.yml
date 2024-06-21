@@ -154,6 +154,9 @@ jobs:
             git show --summary
         env:
           GITLAB_TEMP_PATH: ${{ secrets.GITLAB_APPIUM_PULL_KEY }}
+      - name: List simulators
+        run: |
+          xcrun simctl list
       - name: Run Appium Test
         working-directory: mobile-appium-tests
         run: |
