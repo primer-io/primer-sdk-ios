@@ -142,14 +142,6 @@ jobs:
         uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 #v4.0.2
         with:
           node-version: 18.3.0
-      - name: Setup Simulator Runtime
-        shell: bash
-        run: |
-          brew remove xcodes
-          brew install phantomato/patched/xcodes
-          xcodes runtimes install "iOS 16.2"
-          xcrun simctl create "iPhone X" "com.apple.CoreSimulator.SimDeviceType.iPhone-X" "com.apple.CoreSimulator.SimRuntime.iOS-16-2" > sim-id.txt
-          xcrun simctl boot "$(cat sim-id.txt)"
       - name: Test, Build, and Distribute app to Appetize 🚀
         shell: bash
         env:
