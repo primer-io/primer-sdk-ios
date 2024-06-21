@@ -1,3 +1,9 @@
+## 2.26.6 (2024-06-20)
+
+### Fix
+
+- Manual Handling for Klarna Headless implementation (#899)
+
 ## 2.26.5 (2024-06-05)
 
 ### Fix
