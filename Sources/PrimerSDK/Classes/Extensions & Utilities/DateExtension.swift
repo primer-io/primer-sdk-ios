@@ -47,9 +47,7 @@ internal extension Date {
     }
 
     var isValidExpiryDate: Bool {
-        let oneYearLaterEndOfMonthDate = self.oneYearLater.endOfMonth
-        let now = Date()
-        return now < oneYearLaterEndOfMonthDate
+        return Date() < endOfMonth
     }
 
     var yearComponentAsString: String {
