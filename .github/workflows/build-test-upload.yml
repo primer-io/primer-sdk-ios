@@ -142,6 +142,11 @@ jobs:
         uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 #v4.0.2
         with:
           node-version: 18.3.0
+      - name: Pre-boot Simulator
+        shell: bash
+        run: |
+          SIM_UUID=$(xcrun xctrace list devices | grep "iPhone 15 Pro Simulator (17.2)" | head -1 | grep -Eo '[0-9A-Z\\-]{36}')
+          xcrun simctl boot "${SIM_UUID}"
       - name: Test, Build, and Distribute app to Appetize 🚀
         shell: bash
         env:
