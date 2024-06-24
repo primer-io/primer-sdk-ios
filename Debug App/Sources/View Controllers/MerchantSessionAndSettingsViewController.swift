@@ -541,7 +541,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     isCaptureBillingAddressEnabled: false,
                     showApplePayForUnsupportedDevice: false,
                     checkProvidedNetworks: false),
-                stripeOptions: PrimerStripeACHOptions(publishableKey: MerchantMockDataManager.stripePublishableKey)),
+                stripeOptions: PrimerStripeOptions(publishableKey: MerchantMockDataManager.stripePublishableKey)),
             uiOptions: uiOptions,
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
@@ -574,7 +574,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     isCaptureBillingAddressEnabled: false,
                     showApplePayForUnsupportedDevice: false,
                     checkProvidedNetworks: false),
-                stripeOptions: PrimerStripeACHOptions(publishableKey: MerchantMockDataManager.stripePublishableKey)),
+                stripeOptions: PrimerStripeOptions(publishableKey: MerchantMockDataManager.stripePublishableKey)),
             uiOptions: nil,
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )

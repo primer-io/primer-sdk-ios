@@ -52,7 +52,7 @@ internal protocol PrimerPaymentMethodOptionsProtocol {
     var applePayOptions: PrimerApplePayOptions? { get }
     var klarnaOptions: PrimerKlarnaOptions? { get }
     var threeDsOptions: PrimerThreeDsOptions? { get }
-    var stripeOptions: PrimerStripeACHOptions? { get }
+    var stripeOptions: PrimerStripeOptions? { get }
 
     func validUrlForUrlScheme() throws -> URL
     func validSchemeForUrlScheme() throws -> String
@@ -68,14 +68,14 @@ public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Cod
     // Was it intentional?
     var cardPaymentOptions: PrimerCardPaymentOptions = PrimerCardPaymentOptions()
     var threeDsOptions: PrimerThreeDsOptions?
-    var stripeOptions: PrimerStripeACHOptions?
+    var stripeOptions: PrimerStripeOptions?
 
     public init(
         urlScheme: String? = nil,
         applePayOptions: PrimerApplePayOptions? = nil,
         klarnaOptions: PrimerKlarnaOptions? = nil,
         threeDsOptions: PrimerThreeDsOptions? = nil,
-        stripeOptions: PrimerStripeACHOptions? = nil
+        stripeOptions: PrimerStripeOptions? = nil
     ) {
         self.urlScheme = urlScheme
         if let urlScheme = urlScheme, URL(string: urlScheme) == nil {
@@ -95,7 +95,7 @@ The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a 
         applePayOptions: PrimerApplePayOptions? = nil,
         klarnaOptions: PrimerKlarnaOptions? = nil,
         cardPaymentOptions: PrimerCardPaymentOptions? = nil,
-        stripeOptions: PrimerStripeACHOptions? = nil
+        stripeOptions: PrimerStripeOptions? = nil
     ) {
         self.urlScheme = urlScheme
         self.applePayOptions = applePayOptions
@@ -171,7 +171,7 @@ public class PrimerKlarnaOptions: Codable {
 }
 
 // MARK: Stripe ACH
-public class PrimerStripeACHOptions: Codable {
+public class PrimerStripeOptions: Codable {
     var publishableKey: String
 
     public init(publishableKey: String) {

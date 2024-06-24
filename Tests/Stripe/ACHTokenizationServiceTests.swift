@@ -195,7 +195,7 @@ extension ACHTokenizationServiceTests {
         
         let settings = PrimerSettings(paymentMethodOptions:
                                         PrimerPaymentMethodOptions(urlScheme: "test://primer.io",
-                                                                   stripeOptions: PrimerStripeACHOptions(publishableKey: "test-pk-1234")))
+                                                                   stripeOptions: PrimerStripeOptions(publishableKey: "test-pk-1234")))
         
         DependencyContainer.register(settings as PrimerSettingsProtocol)
         
