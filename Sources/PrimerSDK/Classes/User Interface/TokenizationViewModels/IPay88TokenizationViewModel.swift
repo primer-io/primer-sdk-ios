@@ -48,33 +48,16 @@ class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     }()
 
     override func validate() throws {
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
-            let err = PrimerError.invalidClientToken(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-
-        guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
+        try validator.validatePciUrl()
 
         var errors: [PrimerError] = []
 
         // Merchant info
 
-        if self.config.id == nil {
-            let err = PrimerError.invalidValue(
-                key: "configuration.id",
-                value: config.id,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            errors.append(err)
+        do {
+            try validator.validateId(in: config)
+        } catch let error as PrimerError {
+            errors.append(error)
         }
 
         if (self.config.options as? MerchantOptions)?.merchantId == nil {

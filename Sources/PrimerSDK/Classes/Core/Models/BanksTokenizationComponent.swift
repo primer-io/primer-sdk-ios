@@ -69,13 +69,9 @@ final class BanksTokenizationComponent: NSObject, PaymentFlowManaging, LogReport
     }
 
     func validate() throws {
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
+        try validator.validateClientToken()
     }
+
     private func fetchBanks() -> Promise<[AdyenBank]> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {

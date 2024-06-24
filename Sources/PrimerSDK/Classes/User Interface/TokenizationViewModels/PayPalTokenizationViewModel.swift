@@ -28,30 +28,9 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }()
 
     override func validate() throws {
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-
-        guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl",
-                                               value: decodedJWTToken.pciUrl,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-
-        guard config.id != nil else {
-            let err = PrimerError.invalidValue(key: "configuration.id",
-                                               value: config.id,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
+        let decodedJWTToken = try validator.validateClientToken()
+        try validator.validatePciUrl()
+        try validator.validateId(in: config)
 
         guard decodedJWTToken.coreUrl != nil else {
             let err = PrimerError.invalidValue(key: "decodedClientToken.coreUrl",

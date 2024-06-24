@@ -456,40 +456,11 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
     // MARK: - Payment Flow
 
     override func validate() throws {
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-
-        guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "clientToken.pciUrl",
-                                               value: decodedJWTToken.pciUrl,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
+        try validator.validatePciUrl()
 
         if PrimerInternal.shared.intent == .checkout {
-            if AppState.current.amount == nil {
-                let err = PrimerError.invalidValue(key: "amount",
-                                                   value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
-
-            if AppState.current.currency == nil {
-                let err = PrimerError.invalidValue(key: "currency",
-                                                   value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
+            try validator.validateAppStateAmount()
+            try validator.validateAppStateCurrency()
         }
     }
 

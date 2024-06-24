@@ -34,30 +34,9 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     var applePayPresentationManager: ApplePayPresenting = ApplePayPresentationManager()
 
     override func validate() throws {
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
+        try validator.validatePciUrl()
 
-        guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-
-        guard config.id != nil else {
-            let err = PrimerError.invalidValue(key: "configuration.id",
-                                               value: config.id,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
+        try validator.validateId(in: config)
 
         guard PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode != nil else {
             let err = PrimerError.invalidValue(key: "countryCode",
@@ -68,14 +47,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             throw err
         }
 
-        guard AppState.current.currency != nil else {
-            let err = PrimerError.invalidValue(key: "currency",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
+        try validator.validateAppStateCurrency()
 
         guard PrimerSettings.current.paymentMethodOptions.applePayOptions != nil else {
             let err = PrimerError.invalidMerchantIdentifier(merchantIdentifier: nil,

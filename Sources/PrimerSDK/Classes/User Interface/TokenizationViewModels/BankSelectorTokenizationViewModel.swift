@@ -50,12 +50,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     }
 
     override func validate() throws {
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
+        try validator.validateClientToken()
     }
 
     internal lazy var tableView: UITableView = {

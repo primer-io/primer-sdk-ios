@@ -255,4 +255,8 @@ Make sure you call the decision handler otherwise the SDK will hang.
             return self.createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
                                                                               paymentResumeRequest: resumeRequest)
     }
+
+    var validator: TokenizationValidationHelper {
+        .shared
+    }
 }
