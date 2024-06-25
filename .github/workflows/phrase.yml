@@ -1,0 +1,50 @@
+name: 'Manual Translation Update'
+description: 'Manually update translations from Phrase.com and create a PR'
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to update'
+        required: true
+        default: 'master'
+
+jobs:
+  update-translations:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_ACCESS_KEY }}
+
+      - name: Install Phrase CLI
+        uses: phrase/setup-cli@v1.0.2
+        with:
+          version: '2.19.0'
+
+      - name: Authenticate Phrase CLI
+        run: phrase auth login --access-token ${{ secrets.PHRASE_ACCESS_KEY }}
+
+      - name: Download Translations from Phrase
+        run: phrase pull --project-id ${{ secrets.PHRASE_PROJECT_ID }} --branch ${{ github.event.inputs.branch }}
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git checkout -b update-translations/${{ github.event.inputs.branch }}
+          git add .
+          git commit -m "Update translations"
+          git push origin update-translations/${{ github.event.inputs.branch }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6.0.5
+        with:
+          token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
+          base: ${{ github.event.inputs.branch }}
+          branch: update-translations/${{ github.event.inputs.branch }}
+          title: "chore: Translation Update"
+          body: "This PR updates the translations from Phrase.com."

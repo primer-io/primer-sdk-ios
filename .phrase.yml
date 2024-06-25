@@ -1,7 +1,4 @@
 phrase:
-  access_token: 53714836b06c9edbdab3c9ec50af817713384d600efb62aba7cd8ee864ebd8c4
-  project_id: 66e4cd0a47d3757772987928b586ffd2
-
   push:
     sources:
     - file: Sources/PrimerSDK/Resources/Localizable/ar.lproj/Localizable.strings
