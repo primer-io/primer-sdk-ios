@@ -414,21 +414,12 @@ extension StripeAchTokenizationViewModel {
     private func getPublishableKey() -> Promise<Void> {
         return Promise { seal in
             guard let publishableKey = PrimerSettings.current.paymentMethodOptions.stripeOptions?.publishableKey else {
-#if canImport(PrimerStripeSDK)
-                let error = PrimerStripeError.stripeInvalidPublishableKeyError
-                let primerError = PrimerError.stripeError(
-                    key: error.errorId,
-                    message: error.errorDescription,
-                    userInfo: error.userInfo,
-                    diagnosticsId: error.diagnosticsId
-                )
+                let primerError = PrimerError.merchantError(
+                    message: "Required value for PrimerSettings.current.paymentMethodOptions.stripeOptions?.publishableKey was nil or empty.",
+                    userInfo: .errorUserInfoDictionary(),
+                    diagnosticsId: UUID().uuidString)
                 seal.reject(primerError)
                 return
-#else
-            let error = ACHHelpers.getMissingSDKError(sdk: "PrimerStripeSDK")
-            seal.reject(error)
-            return
-#endif
             }
             self.publishableKey = publishableKey
             seal.fulfill()
