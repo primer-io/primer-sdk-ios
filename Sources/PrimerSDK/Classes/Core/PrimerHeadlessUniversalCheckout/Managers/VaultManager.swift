@@ -212,6 +212,8 @@ extension PrimerHeadlessUniversalCheckout {
 
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: vaultedPaymentMethod.paymentMethodType)
 
+            let isManualPaymentHandling = PrimerSettings.current.paymentHandling == .manual
+
             firstly {
                 tokenizationService.exchangePaymentMethodToken(vaultedPaymentMethod.id,
                                                                vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData)
@@ -233,6 +235,10 @@ extension PrimerHeadlessUniversalCheckout {
                                 self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
                             }
                             .done { checkoutData in
+                                if isManualPaymentHandling, checkoutData == nil {
+                                    // No need to continue if manually handling resume
+                                    return
+                                }
                                 self.paymentCheckoutData = checkoutData
 
                                 DispatchQueue.main.async {
