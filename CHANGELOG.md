@@ -1,3 +1,10 @@
+## 2.26.7 (2024-06-26)
+
+### Fix
+
+- Remove event duplication from Klarna Drop-In (#912)
+- Remove +1 year card expiry validation logic (#911)
+
 ## 2.26.6 (2024-06-20)
 
 ### Fix
