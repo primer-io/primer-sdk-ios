@@ -41,21 +41,21 @@ class PrimerDemo3DSViewController: UIViewController {
         self.stackView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
 
         let titleLabel = UILabel()
-        titleLabel.accessibilityIdentifier = "Demo 3DS Title Label"
+        titleLabel.accessibilityIdentifier = "test_payment_method_title"
         titleLabel.text = "Demo 3DS Title Label"
         titleLabel.font = UIFont.systemFont(ofSize: 30, weight: .heavy)
         self.stackView.addArrangedSubview(titleLabel)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
 
         let subtitleLabel = UILabel()
-        subtitleLabel.accessibilityIdentifier = "Demo 3DS  Subtitle Label"
+        subtitleLabel.accessibilityIdentifier = "test_payment_method_subtitle"
         subtitleLabel.text = "Awaiting 3DS Result"
         subtitleLabel.font = UIFont.systemFont(ofSize: 20, weight: .regular)
         self.stackView.addArrangedSubview(subtitleLabel)
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
 
         let sendCredentialsButton = UIButton()
-        sendCredentialsButton.accessibilityIdentifier = "Demo 3DS SDK Send Credentials Button"
+        sendCredentialsButton.accessibilityIdentifier = "send_credentials_btn"
         sendCredentialsButton.setTitle("Send Credentials", for: .normal)
         sendCredentialsButton.setTitleColor(.black, for: .normal)
         sendCredentialsButton.addTarget(self, action: #selector(sendCredentialsButtonTapped), for: .touchUpInside)
