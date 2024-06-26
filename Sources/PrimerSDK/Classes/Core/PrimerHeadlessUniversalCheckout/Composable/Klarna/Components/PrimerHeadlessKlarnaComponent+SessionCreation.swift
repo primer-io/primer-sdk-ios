@@ -31,7 +31,7 @@ enum KlarnaSessionError {
 }
 
 // MARK: - Start
-extension PrimerHeadlessKlarnaComponent {
+extension PrimerHeadlessKlarnaComponent: PaymentEventCreating {
     /**
      * Initiates the process of creating a payment session.
      * This method kicks off the payment session creation process by first recording the creation event for tracking or analytical purposes.

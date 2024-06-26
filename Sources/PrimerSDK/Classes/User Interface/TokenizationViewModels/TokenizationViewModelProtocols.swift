@@ -7,19 +7,26 @@
 
 import Foundation
 
-protocol PaymentFlowManaging: AnyObject, LogReporter {
+protocol PaymentFlowManaging: AnyObject, PaymentEventCreating {
     var createResumePaymentService: CreateResumePaymentServiceProtocol { get }
 
     var paymentCheckoutData: PrimerCheckoutData? { get set }
     var resumePaymentId: String? { get set }
 
-    func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?>
+    func startPaymentFlowAndFetchDecodedClientToken(
+        withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) -> Promise<DecodedJWTToken?>
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?>
+}
+
+protocol PaymentEventCreating: AnyObject, LogReporter {
     func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void>
 }
 
 extension PaymentFlowManaging {
-    func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?> {
+    func startPaymentFlowAndFetchDecodedClientToken(
+        withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) -> Promise<DecodedJWTToken?> {
         return Promise { seal in
             if PrimerSettings.current.paymentHandling == .manual {
                 PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { resumeDecision in
@@ -49,12 +56,11 @@ extension PaymentFlowManaging {
                             }
 
                         case .fail(let message):
-                            var merchantErr: Error!
+                            var merchantErr: Error
                             if let message = message {
-                                let err = PrimerError.merchantError(message: message,
-                                                                    userInfo: .errorUserInfoDictionary(),
-                                                                    diagnosticsId: UUID().uuidString)
-                                merchantErr = err
+                                merchantErr = PrimerError.merchantError(message: message,
+                                                                        userInfo: .errorUserInfoDictionary(),
+                                                                        diagnosticsId: UUID().uuidString)
                             } else {
                                 merchantErr = NSError.emptyDescriptionError
                             }
@@ -76,27 +82,23 @@ extension PaymentFlowManaging {
                                     ErrorHandler.handle(error: err)
                                     throw err
                                 }
-
                                 seal.fulfill(decodedJWTToken)
                             }
                             .catch { err in
                                 seal.reject(err)
                             }
-
                         case .complete:
                             seal.fulfill(nil)
                         }
 
                     } else {
-                        precondition(false)
+                        assertionFailure("Received an unknown decision type")
                     }
                 }
 
             } else {
                 guard let token = paymentMethodTokenData.token else {
-                    let err = PrimerError.invalidClientToken(
-                        userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
+                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -109,28 +111,27 @@ extension PaymentFlowManaging {
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     self.resumePaymentId = paymentResponse.id
 
-                    if let requiredAction = paymentResponse.requiredAction {
-                        let apiConfigurationModule = PrimerAPIConfigurationModule()
-
-                        firstly {
-                            apiConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
-                        }
-                        .done {
-                            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                                         diagnosticsId: UUID().uuidString)
-                                ErrorHandler.handle(error: err)
-                                throw err
-                            }
-
-                            seal.fulfill(decodedJWTToken)
-                        }
-                        .catch { err in
-                            seal.reject(err)
-                        }
-
-                    } else {
+                    guard let requiredAction = paymentResponse.requiredAction else {
                         seal.fulfill(nil)
+                        return
+                    }
+                    let apiConfigurationModule = PrimerAPIConfigurationModule()
+
+                    firstly {
+                        apiConfigurationModule.storeRequiredActionClientToken(requiredAction.clientToken)
+                    }
+                    .done {
+                        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+                            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                                     diagnosticsId: UUID().uuidString)
+                            ErrorHandler.handle(error: err)
+                            throw err
+                        }
+
+                        seal.fulfill(decodedJWTToken)
+                    }
+                    .catch { err in
+                        seal.reject(err)
                     }
                 }
                 .catch { err in
@@ -203,6 +204,27 @@ extension PaymentFlowManaging {
         }
     }
 
+    // MARK: Utilities
+
+    private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
+        let body = Request.Body.Payment.Create(token: paymentMethodData)
+        return createResumePaymentService.createPayment(paymentRequest: body)
+    }
+
+
+    private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment> {
+            let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
+            return self.createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
+                                                                              paymentResumeRequest: resumeRequest)
+    }
+
+    var validator: TokenizationValidationHelper {
+        .shared
+    }
+}
+
+extension PaymentEventCreating {
+
     func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
         return Promise { seal in
             if PrimerInternal.shared.intent == .vault {
@@ -240,23 +262,5 @@ Make sure you call the decision handler otherwise the SDK will hang.
                 }
             }
         }
-    }
-
-    // MARK: Utilities
-
-    private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
-        let body = Request.Body.Payment.Create(token: paymentMethodData)
-        return createResumePaymentService.createPayment(paymentRequest: body)
-    }
-
-
-    private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment> {
-            let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
-            return self.createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
-                                                                              paymentResumeRequest: resumeRequest)
-    }
-
-    var validator: TokenizationValidationHelper {
-        .shared
     }
 }
