@@ -1,5 +1,4 @@
 name: 'Manual Translation Update'
-description: 'Manually update translations from Phrase.com and create a PR'
 
 on:
   workflow_dispatch:
