@@ -1,2 +1,2 @@
 // swiftlint:disable:next identifier_name
-public let PrimerSDKVersion = "2.26.6"
+public let PrimerSDKVersion = "2.26.7"
