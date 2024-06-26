@@ -65,9 +65,6 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
                 return clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
             }
-            .then { () -> Promise<Void> in
-                return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
-            }
             .then { () -> Promise<Response.Body.Klarna.PaymentSession> in
                 return self.tokenizationComponent.createPaymentSession()
             }
