@@ -38,8 +38,12 @@ jobs:
         run: phrase pull
 
 
-      quit if no changes
-
+      - name: Check for changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes detected. Exiting."
+            exit 1
+          fi
 
       - name: Commit and Push Changes
         run: |
