@@ -382,10 +382,10 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
                 return
             }
             
-            var additionalInfo: PrimerStripeAchAdditionalInfo
+            var additionalInfo: ACHAdditionalInfo
             
             if let viewController = stripeCollector {
-                additionalInfo = StripeBankAccountCollectorAdditionalInfo(collectorViewController: viewController)
+                additionalInfo = ACHBankAccountCollectorAdditionalInfo(collectorViewController: viewController)
             } else {
                 additionalInfo = ACHMandateAdditionalInfo()
             }

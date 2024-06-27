@@ -99,7 +99,7 @@ extension MerchantHeadlessCheckoutStripeAchViewController: PrimerHeadlessUnivers
     
     func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
         print("\n\nMERCHANT APP\n\(#function)\nShow mandate")
-        if let stripeCollector = additionalInfo as? StripeBankAccountCollectorAdditionalInfo {
+        if let stripeCollector = additionalInfo as? ACHBankAccountCollectorAdditionalInfo {
             showStripeCollector(stripeCollector.collectorViewController)
         } else {
             showMandate()
