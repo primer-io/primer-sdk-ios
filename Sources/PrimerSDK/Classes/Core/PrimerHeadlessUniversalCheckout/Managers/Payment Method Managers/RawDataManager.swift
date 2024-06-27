@@ -267,7 +267,7 @@ extension PrimerHeadlessUniversalCheckout {
             return (rawDataTokenizationBuilder as? PrimerRawCardDataTokenizationBuilder)?
                 .validateRawData(rawData, cardNetworksMetadata: cardNetworksMetadata)
         }
-        
+
         private func makeRequestBody() -> Promise<Request.Body.Tokenization> {
 
             return Promise { seal in

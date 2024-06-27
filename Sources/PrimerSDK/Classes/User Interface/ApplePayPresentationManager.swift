@@ -78,21 +78,6 @@ class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
         return request
     }
 
-    @available(iOS 16.0, *)
-    func createDeferredPaymentRequest(for applePayRequest: ApplePayRequest) -> PKPaymentRequest {
-        let recurringPaymentRequest = PKRecurringPaymentRequest(paymentDescription: "Recurring request",
-                                                                regularBilling: .init(label: "My Label", amount: 10.00),
-                                                                managementURL: URL(string: "https://mysite.com/cancel-my-subscription")!)
-
-        recurringPaymentRequest.billingAgreement = "A billing agreement between a merchant and a customer"
-
-
-        let request = PKPaymentRequest()
-        request.recurringPaymentRequest = recurringPaymentRequest
-        request.multiTokenContexts
-        return request
-    }
-
     var errorForDisplay: Error {
         let errorMessage = "Cannot run ApplePay on this device"
 

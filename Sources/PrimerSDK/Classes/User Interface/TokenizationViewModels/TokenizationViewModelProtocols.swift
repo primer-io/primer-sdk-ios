@@ -23,6 +23,8 @@ protocol PaymentEventCreating: AnyObject, LogReporter {
     func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void>
 }
 
+// swiftlint:disable cyclomatic_complexity
+// swiftlint:disable function_body_length
 extension PaymentFlowManaging {
     func startPaymentFlowAndFetchDecodedClientToken(
         withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
@@ -264,3 +266,5 @@ Make sure you call the decision handler otherwise the SDK will hang.
         }
     }
 }
+// swiftlint:enable function_body_length
+// swiftlint:enable cyclomatic_complexity
