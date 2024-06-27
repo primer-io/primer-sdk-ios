@@ -7,10 +7,10 @@
 
 import UIKit
 
-@objc public class PrimerStripeAchAdditionalInfo: PrimerCheckoutAdditionalInfo {}
+@objc public class ACHAdditionalInfo: PrimerCheckoutAdditionalInfo {}
 
-// MARK: Stripe bank account collector view controller
-@objc public class StripeBankAccountCollectorAdditionalInfo: PrimerStripeAchAdditionalInfo {
+// MARK: ACH bank account collector view controller
+@objc public class ACHBankAccountCollectorAdditionalInfo: ACHAdditionalInfo {
 
     public var collectorViewController: UIViewController
 
@@ -24,5 +24,5 @@ import UIKit
     }
 }
 
-// MARK: Stripe bank account collector view controller
-@objc public class ACHMandateAdditionalInfo: PrimerStripeAchAdditionalInfo {}
+// MARK: ACH mandate info
+@objc public class ACHMandateAdditionalInfo: ACHAdditionalInfo {}
