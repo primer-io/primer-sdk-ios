@@ -37,10 +37,14 @@ jobs:
       - name: Download Translations from Phrase
         run: phrase pull
 
+
+      quit if no changes
+
+
       - name: Commit and Push Changes
         run: |
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Action"
+          git config user.email action@github.com
+          git config user.name "GitHub Action"
           git checkout -b update-translations/${{ github.event.inputs.branch }}
           git add Sources/PrimerSDK/Resources/Localizable
           git commit -m "Update translations"
