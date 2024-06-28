@@ -41,11 +41,14 @@ jobs:
         run: |
           rm .phrase.yml
 
-      - name: Check for changes
+      - name: Check for changes in translations folder
         run: |
-          if git diff --quiet; then
-            echo "No changes detected. Exiting."
+          if git diff --quiet Sources/PrimerSDK/Resources/Localizable; then
+            echo "No changes detected in translations folder. Exiting."
             exit 1
+          else
+            echo "Changes detected:"
+            git diff Sources/PrimerSDK/Resources/Localizable
           fi
 
       - name: Commit and Push Changes
