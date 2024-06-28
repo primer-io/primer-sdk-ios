@@ -37,6 +37,9 @@ jobs:
       - name: Download Translations from Phrase
         run: phrase pull
 
+      - name: Remove .phrase.yml file
+        run: |
+          rm .phrase.yml
 
       - name: Check for changes
         run: |
