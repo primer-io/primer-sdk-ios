@@ -303,7 +303,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
         let totalAmount = lineItems.compactMap({ (($0.quantity ?? 0) * ($0.amount ?? 0)) }).reduce(0, +)
         totalAmountLabel.text = "\(totalAmount)"
-
     }
 
     // MARK: - ACTIONS
