@@ -10,7 +10,6 @@ import UIKit
 class StripeAchHeadlessComponent {
     // MARK: - Tokenization
     var tokenizationViewModel: StripeAchTokenizationViewModel
-    var tokenizationService: ACHTokenizationService
     var clientSessionService: ACHClientSessionService
     
     /// Global settings for the payment process, injected as a dependency.
@@ -25,11 +24,8 @@ class StripeAchHeadlessComponent {
     public internal(set) var nextDataStep: ACHUserDetailsStep = .notInitialized
     
     // MARK: - Init
-    init(tokenizationService: ACHTokenizationService,
-         tokenizationViewModel: StripeAchTokenizationViewModel
-    ) {
+    init(tokenizationViewModel: StripeAchTokenizationViewModel) {
         self.tokenizationViewModel = tokenizationViewModel
-        self.tokenizationService = tokenizationService
         self.clientSessionService = ACHClientSessionService()
     }
     
@@ -45,7 +41,7 @@ class StripeAchHeadlessComponent {
     /// Validates the tokenization component, handling any errors that occur during the process.
     func validate() {
         do {
-            try tokenizationService.validate()
+            try tokenizationViewModel.validate()
         } catch {
             if let err = error as? PrimerError {
                 ErrorHandler.handle(error: error)
