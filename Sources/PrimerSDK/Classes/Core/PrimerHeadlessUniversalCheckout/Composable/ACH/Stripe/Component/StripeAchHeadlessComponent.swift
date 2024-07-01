@@ -29,23 +29,22 @@ class StripeAchHeadlessComponent {
         self.clientSessionService = ACHClientSessionService()
     }
     
-    /// Delegation
-    func setDelegate() {}
-    
     /// Reset some variables if needed
-    func resetVariables() {
+    func resetClientSessionDetails() {
         inputUserDetails = .emptyUserDetails()
         clientSessionUserDetails = .emptyUserDetails()
     }
     
     /// Validates the tokenization component, handling any errors that occur during the process.
     func validate() {
-        do {
-            try tokenizationViewModel.validate()
-        } catch {
-            if let err = error as? PrimerError {
-                ErrorHandler.handle(error: error)
-                errorDelegate?.didReceiveError(error: err)
+        if PrimerInternal.shared.sdkIntegrationType == .headless {
+            do {
+                try tokenizationViewModel.validate()
+            } catch {
+                if let err = error as? PrimerError {
+                    ErrorHandler.handle(error: error)
+                    errorDelegate?.didReceiveError(error: err)
+                }
             }
         }
     }

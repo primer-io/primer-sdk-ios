@@ -106,7 +106,9 @@ extension StripeAchHeadlessComponent {
      * If found, it triggers the start of the tokenization process in the corresponding view model and notifies the step delegate.
      */
     private func startVMTokenization() {
-        tokenizationViewModel.start()
+        if PrimerInternal.shared.sdkIntegrationType == .headless {
+            tokenizationViewModel.start()
+        }
         stepDelegate?.didReceiveStep(step: ACHUserDetailsStep.didCollectUserDetails)
     }
 
