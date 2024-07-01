@@ -47,6 +47,7 @@ jobs:
           - { name: 'nol-pay', file: 'Package.NolPay.swift' }
           - { name: 'klarna', file: Package.Klarna.swift }
           - { name: '3DS', file: Package.3DS.swift }
+          - { name: 'stripe', file: Package.Stripe.swift }
     steps:
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
@@ -116,7 +117,7 @@ jobs:
           branch: ${{ github.head_ref }}
           base-branch: ${{ github.base_ref }}
           pull-request-sha: ${{ github.event.pull_request.head.sha }}
-          coverage-file-names: sonar-coverage-sdk.xml,sonar-coverage-3DS.xml,sonar-coverage-nol-pay.xml,sonar-coverage-klarna.xml
+          coverage-file-names: sonar-coverage-sdk.xml,sonar-coverage-3DS.xml,sonar-coverage-nol-pay.xml,sonar-coverage-klarna.xml,sonar-coverage-stripe.xml
           
   build-and-upload-to-appetize:
     needs:

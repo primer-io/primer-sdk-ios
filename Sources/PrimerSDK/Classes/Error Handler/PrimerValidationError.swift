@@ -39,6 +39,8 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
     case sessionNotCreated(userInfo: [String: String]?, diagnosticsId: String)
     case invalidPaymentCategory(userInfo: [String: String]?, diagnosticsId: String)
     case paymentAlreadyFinalized(userInfo: [String: String]?, diagnosticsId: String)
+    case invalidValue(field: String, userInfo: [String: String]?, diagnosticsId: String)
+    
     public var diagnosticsId: String {
         switch self {
         case .invalidCardholderName(_, _, let diagnosticsId):
@@ -84,6 +86,8 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
         case .invalidPaymentCategory(userInfo: _, diagnosticsId: let diagnosticsId):
             return diagnosticsId
         case .paymentAlreadyFinalized(userInfo: _, diagnosticsId: let diagnosticsId):
+            return diagnosticsId
+        case .invalidValue(_, _, let diagnosticsId):
             return diagnosticsId
         }
     }
@@ -134,6 +138,8 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "invalid-payment-category"
         case .paymentAlreadyFinalized:
             return "payment-already-finalized"
+        case .invalidValue(let field, _, _):
+            return "invalid-customer-\(field)"
         }
     }
 
@@ -183,6 +189,8 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "Payment category is invalid."
         case .paymentAlreadyFinalized:
             return "This payment was configured to be finalized automatically."
+        case .invalidValue(let field, _, _):
+            return "The \(field) is not valid."
         }
     }
 
@@ -211,7 +219,8 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
              .banksNotLoaded(let userInfo, _),
              .sessionNotCreated(let userInfo, _),
              .invalidPaymentCategory(let userInfo, _),
-             .paymentAlreadyFinalized(let userInfo, _):
+             .paymentAlreadyFinalized(let userInfo, _),
+             .invalidValue(_, let userInfo, _):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
         }
 
@@ -261,6 +270,8 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
             return "BANKS"
         case .invalidBankId:
             return "BANK"
+        case .invalidValue:
+            return "USER_DETAILS"
         default:
             return nil
         }

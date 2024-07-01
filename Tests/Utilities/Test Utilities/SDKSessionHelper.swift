@@ -18,6 +18,7 @@ final class SDKSessionHelper {
                       customer: ClientSession.Customer? = nil,
                       paymentMethodOptions: [[String: Any]]? = nil,
                       checkoutModules: [PrimerAPIConfiguration.CheckoutModule]? = nil,
+                      showTestId: Bool = false,
                       configureAppState: (MockAppState) -> Void = { _ in }) {
         let paymentMethods = paymentMethods ?? [
             Mocks.PaymentMethods.paymentCardPaymentMethod
@@ -28,7 +29,7 @@ final class SDKSessionHelper {
                                                                      orderedAllowedCardNetworks: nil),
                                                 order: order,
                                                 customer: customer,
-                                                testId: nil)
+                                                testId: showTestId ? "test_id" : nil)
         let apiConfig = PrimerAPIConfiguration(coreUrl: "core_url",
                                                pciUrl: "pci_url",
                                                binDataUrl: "bindata_url",
