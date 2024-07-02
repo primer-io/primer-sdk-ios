@@ -25,31 +25,8 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     var triggerAsyncAction: ((String, ((Result<Bool, Error>) -> Void)?) -> Void)!
 
     override func validate() throws {
-
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken, decodedJWTToken.isValid else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-
-        guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "decodedClientToken.pciUrl",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-
-        guard config.id != nil else {
-            let err = PrimerError.invalidValue(key: "configuration.id",
-                                               value: config.id,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
+        try validator.validatePciUrl()
+        try validator.validateId(in: config)
     }
 
     override func performPreTokenizationSteps() -> Promise<Void> {
@@ -73,29 +50,6 @@ class NolPayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
             .then { () -> Promise<Void> in
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
-            }
-            .done {
-                seal.fulfill()
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
-    }
-
-    override func performTokenizationStep() -> Promise<Void> {
-        return Promise { seal in
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
-
-            firstly {
-                self.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
-            }
-            .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                return self.tokenize()
-            }
-            .then { paymentMethodTokenData -> Promise<Void> in
-                self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
             }
             .done {
                 seal.fulfill()

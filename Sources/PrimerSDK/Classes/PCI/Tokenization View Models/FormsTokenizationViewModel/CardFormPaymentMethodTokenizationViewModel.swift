@@ -332,40 +332,11 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
 
     override func validate() throws {
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-
-        guard decodedJWTToken.pciUrl != nil else {
-            let err = PrimerError.invalidValue(key: "clientToken.pciUrl",
-                                               value: decodedJWTToken.pciUrl,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
+        try validator.validatePciUrl()
 
         if PrimerInternal.shared.intent == .checkout {
-            if AppState.current.amount == nil {
-                let err = PrimerError.invalidValue(key: "amount",
-                                                   value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
-
-            if AppState.current.currency == nil {
-                let err = PrimerError.invalidValue(key: "currency",
-                                                   value: nil,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                throw err
-            }
+            try validator.validateAppStateAmount()
+            try validator.validateAppStateCurrency()
         }
     }
 
@@ -402,29 +373,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             }
             .done { paymentMethodTokenData in
                 seal.fulfill(paymentMethodTokenData)
-            }
-            .catch { err in
-                seal.reject(err)
-            }
-        }
-    }
-
-    override func performTokenizationStep() -> Promise<Void> {
-        return Promise { seal in
-            PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
-
-            firstly {
-                self.checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
-            }
-            .then { () -> Promise<PrimerPaymentMethodTokenData> in
-                return self.tokenize()
-            }
-            .then { paymentMethodTokenData -> Promise<Void> in
-                self.paymentMethodTokenData = paymentMethodTokenData
-                return self.checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
-            }
-            .done {
-                seal.fulfill()
             }
             .catch { err in
                 seal.reject(err)
