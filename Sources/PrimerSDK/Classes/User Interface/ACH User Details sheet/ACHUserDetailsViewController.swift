@@ -111,11 +111,8 @@ class ACHUserDetailsViewController: UIViewController {
         NSLayoutConstraint.activate([
             hostingViewController.view.topAnchor.constraint(equalTo: view.topAnchor),
             hostingViewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            hostingViewController.view.widthAnchor.constraint(equalTo: view.widthAnchor),
-            hostingViewController.view.heightAnchor.constraint(
-                equalTo: view.heightAnchor,
-                multiplier: 1
-            )
+            hostingViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            hostingViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
     
