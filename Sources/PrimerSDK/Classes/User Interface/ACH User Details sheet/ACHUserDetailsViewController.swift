@@ -41,14 +41,30 @@ class ACHUserDetailsViewController: UIViewController {
         
         setupUI()
         setupLayout()
-        setupStripeACHDelegates()
         addStripeFormView()
+        setupStripeACHDelegatesAndStart()
     }
     
-    func setupStripeACHDelegates() {
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if let parentVC = self.parent as? PrimerContainerViewController {
+            parentVC.mockedNavigationBar.hidesBackButton = true
+        }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let parentVC = self.parent as? PrimerContainerViewController {
+            parentVC.mockedNavigationBar.hidesBackButton = false
+        }
+    }
+    
+    func setupStripeACHDelegatesAndStart() {
         stripeAchComponent?.errorDelegate = self
         stripeAchComponent?.stepDelegate = self
         stripeAchComponent?.validationDelegate = self
+        stripeAchComponent?.start()
     }
     
     func initObservables() {
@@ -83,6 +99,8 @@ class ACHUserDetailsViewController: UIViewController {
     private func addStripeFormView() {
         stripeForm = StripeAchFieldsView(viewModel: stripeFormViewModel, onSubmitPressed: {
             self.stripeAchComponent?.submit()
+        }, onBackPressed: {
+            self.navigationController?.popViewController(animated: false)
         })
         
         let hostingViewController = UIHostingController(rootView: stripeForm)
@@ -180,14 +198,17 @@ extension ACHUserDetailsViewController {
         let isFieldValid = data.isValid
         switch data {
         case .firstName:
+            let firstNameErrorDescription = "Please enter a valid first name. Avoid using numbers or special characters."
             stripeFormViewModel.isFirstNameValid = isFieldValid
-            stripeFormViewModel.firstNameErrorDescription = error?.errorDescription ?? ""
+            stripeFormViewModel.firstNameErrorDescription = error != nil ? firstNameErrorDescription : ""
         case .lastName:
+            let lastNameErrorDescription = "Please enter a valid last name. Avoid using numbers or special characters."
             stripeFormViewModel.isLastNameValid = isFieldValid
-            stripeFormViewModel.lastNameErrorDescription = error?.errorDescription ?? ""
+            stripeFormViewModel.lastNameErrorDescription = error != nil ? lastNameErrorDescription : ""
         case .emailAddress:
+            let emailAddressErrorDescription = "The email address you entered doesn't look like a real email address. Please make sure it includes an '@' and a domain (like '@example.com')"
             stripeFormViewModel.isEmailAddressValid = isFieldValid
-            stripeFormViewModel.emailErrorDescription = error?.errorDescription ?? ""
+            stripeFormViewModel.emailErrorDescription = error != nil ? emailAddressErrorDescription : ""
         }
     }
 }

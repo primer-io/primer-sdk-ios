@@ -20,6 +20,12 @@ class StripeAchFieldsViewModel: ObservableObject {
     @Published var isLastNameValid: Bool = true
     @Published var isEmailAddressValid: Bool = true
     
+    let firstNameLocalizedString = "First name"
+    let lastNameLocalizedString = "Last name"
+    let emailAddressLocalizedString = "Email address"
+    let emailAddressInfoLocalizedString = "We'll only use this to keep you updated about your payment"
+    let descriptionTextSize: CGFloat = 13
+    
     var isValidForm: Bool {
         isFirstNameValid && isLastNameValid && isEmailAddressValid
     }
