@@ -221,6 +221,7 @@ platform :ios do
   desc 'Common build pre-action'
   private_lane :common_pre_build_action do
     next unless ENV["CI"]
+    next if ENV["SKIP_SIGNING"]
 
     set_version_and_build_number
 
