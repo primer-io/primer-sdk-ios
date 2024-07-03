@@ -20,7 +20,7 @@ class ACHUserDetailsViewController: UIViewController {
     let activityIndicator = UIActivityIndicatorView()
     
     // MARK: - Properties
-    var stripeForm: StripeAchFieldsView?
+    var stripeFormView: StripeAchFieldsView?
     var stripeFormViewModel: StripeAchFieldsViewModel = StripeAchFieldsViewModel()
     var stripeAchComponent: (any StripeAchUserDetailsComponent)?
     var cancellables: Set<AnyCancellable> = []
@@ -29,7 +29,7 @@ class ACHUserDetailsViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     init(tokenizationViewModel: StripeAchTokenizationViewModel, delegate: ACHUserDetailsDelegate) {
         self.stripeAchComponent = StripeAchHeadlessComponent(tokenizationViewModel: tokenizationViewModel)
         self.delegate = delegate
@@ -47,12 +47,12 @@ class ACHUserDetailsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        
         if let parentVC = self.parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = true
         }
     }
-
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if let parentVC = self.parent as? PrimerContainerViewController {
@@ -97,13 +97,13 @@ class ACHUserDetailsViewController: UIViewController {
     }
     
     private func addStripeFormView() {
-        stripeForm = StripeAchFieldsView(viewModel: stripeFormViewModel, onSubmitPressed: {
+        stripeFormView = StripeAchFieldsView(viewModel: stripeFormViewModel, onSubmitPressed: {
             self.stripeAchComponent?.submit()
         }, onBackPressed: {
             self.navigationController?.popViewController(animated: false)
         })
         
-        let hostingViewController = UIHostingController(rootView: stripeForm)
+        let hostingViewController = UIHostingController(rootView: stripeFormView)
         hostingViewController.view.translatesAutoresizingMaskIntoConstraints = false
         addChild(hostingViewController)
         view.addSubview(hostingViewController.view)

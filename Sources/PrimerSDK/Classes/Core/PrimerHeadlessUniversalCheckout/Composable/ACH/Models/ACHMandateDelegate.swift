@@ -16,7 +16,7 @@ import Foundation
  *  - `mandateAccepted()`: Called when the user accepts the mandate, enabling completion of transaction.
  *  - `mandateDeclined()`: Called when the user declines the mandate.
  */
-public protocol ACHMandateDelegate {
+public protocol ACHMandateDelegate: AnyObject {
     func mandateAccepted()
     func mandateDeclined()
 }
