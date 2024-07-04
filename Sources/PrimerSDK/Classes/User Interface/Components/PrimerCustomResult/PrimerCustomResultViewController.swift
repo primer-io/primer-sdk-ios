@@ -1,5 +1,5 @@
 //
-//  ACHMandateViewController.swift
+//  PrimerCustomResultViewController.swift
 //  PrimerSDK
 //
 //  Created by Stefan Vrancianu on 03.07.2024.
@@ -8,27 +8,39 @@
 import UIKit
 import SwiftUI
 
-class ACHMandateViewController: UIViewController {
+internal class PrimerCustomResultViewController: PrimerViewController {
 
-    // MARK: - Properties
-    var mandateView: ACHMandateView?
-    var mandateViewModel: ACHMandateViewModel = ACHMandateViewModel()
-    weak var delegate: ACHMandateDelegate?
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    internal enum PaymentStatus {
+        case success, failed, canceled
     }
-    
-    init(delegate: ACHMandateDelegate) {
-        self.delegate = delegate
+
+    private(set) internal var paymentStatusView: PrimerResultPaymentStatusView?
+    private(set) internal var message: String?
+    private(set) internal var paymentStatus: PaymentStatus
+
+    init(paymentStatus: PrimerCustomResultViewController.PaymentStatus, message: String?) {
+        self.message = message
+        self.paymentStatus = paymentStatus
         super.init(nibName: nil, bundle: nil)
     }
-    
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .white
-        addMandateView()
+        let viewEvent = Analytics.Event.ui(
+            action: .view,
+            context: nil,
+            extra: nil,
+            objectType: .view,
+            objectId: nil,
+            objectClass: "\(Self.self)",
+            place: .errorScreen
+        )
+        Analytics.Service.record(event: viewEvent)
+
+        addPaymentStatusView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -45,15 +57,11 @@ class ACHMandateViewController: UIViewController {
             parentVC.mockedNavigationBar.hidesBackButton = false
         }
     }
-    
-    private func addMandateView() {
-        mandateView = ACHMandateView(viewModel: mandateViewModel, businessName: "Primer Inc", onAcceptPressed: {
-            self.delegate?.mandateAccepted()
-        }, onCancelPressed: {
-            self.delegate?.mandateDeclined()
-        })
+
+    private func addPaymentStatusView() {
+        paymentStatusView = PrimerResultPaymentStatusView(status: paymentStatus, message: message ?? "")
         
-        let hostingViewController = UIHostingController(rootView: mandateView)
+        let hostingViewController = UIHostingController(rootView: paymentStatusView)
         hostingViewController.view.translatesAutoresizingMaskIntoConstraints = false
         addChild(hostingViewController)
         view.addSubview(hostingViewController.view)

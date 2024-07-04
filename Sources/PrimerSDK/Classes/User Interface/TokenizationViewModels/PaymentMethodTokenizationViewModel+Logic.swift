@@ -441,6 +441,12 @@ extension PaymentMethodTokenizationViewModel {
 
     func handleFailureFlow(errorMessage: String?) {
         let categories = self.config.paymentMethodManagerCategories
+
+        if config.internalPaymentMethodType == .stripeAch {
+            PrimerUIManager.showCustomResultScreenForResultType(type: .success, message: errorMessage)
+            return
+        }
+
         PrimerUIManager.dismissOrShowResultScreen(
             type: .failure,
             paymentMethodManagerCategories: categories ?? [],

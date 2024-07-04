@@ -28,7 +28,7 @@ struct StripeAchFieldsView: View {
                         .frame(width: 10, height: 10)
                         .foregroundColor(.black)
                         .padding(.leading, 15)
-                    Text("Back")
+                    Text(viewModel.backLocalizedString)
                         .font(.system(size: 16))
                         .foregroundColor(.black)
                     
@@ -40,7 +40,7 @@ struct StripeAchFieldsView: View {
         
         VStack {
             HStack {
-                Text("Pay with ACH")
+                Text(viewModel.payWithACHLocalizedString)
                     .font(.system(size: 20, weight: .medium))
                     .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.title.rawValue)
                 Spacer()
@@ -48,95 +48,43 @@ struct StripeAchFieldsView: View {
             .padding(.init(top: 10, leading: 15, bottom: 10, trailing: 15))
             
             HStack {
-                Text("Your personal details")
+                Text(viewModel.personalizedDetailsLocalizedString)
                     .font(.system(size: 16))
                 Spacer()
             }
             .padding(.init(top: 0, leading: 15, bottom: 10, trailing: 15))
             
             HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(viewModel.firstNameLocalizedString)
-                        .font(.system(size: viewModel.descriptionTextSize))
-                    
-                    TextField("", text: $viewModel.firstName)
-                        .padding(.horizontal, 10)
-                        .frame(height: 44)
-                        .background(Color.white)
-                        .cornerRadius(4)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 4)
-                                .stroke(viewModel.isFirstNameValid ? Color.gray.opacity(0.5) : Color.red, lineWidth: 1)
-                        )
-                        .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.firstNameTextField.rawValue)
-                    
-                    if !viewModel.firstNameErrorDescription.isEmpty {
-                        Text(viewModel.firstNameErrorDescription)
-                            .lineLimit(4)
-                            .foregroundColor(.red)
-                            .font(.system(size: viewModel.descriptionTextSize))
-                    }
-                }
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(viewModel.lastNameLocalizedString)
-                        .font(.system(size: viewModel.descriptionTextSize))
-                    
-                    TextField("", text: $viewModel.lastName)
-                        .padding(.horizontal, 10)
-                        .frame(height: 44)
-                        .background(Color.white)
-                        .cornerRadius(4)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 4)
-                                .stroke(viewModel.isLastNameValid ? Color.gray.opacity(0.5) : Color.red, lineWidth: 1)
-                        )
-                        .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.lastNameTextField.rawValue)
-                    
-                    if !viewModel.lastNameErrorDescription.isEmpty {
-                        Text(viewModel.lastNameErrorDescription)
-                            .lineLimit(4)
-                            .foregroundColor(.red)
-                            .font(.system(size: viewModel.descriptionTextSize))
-                    }
-                }
+                CustomTextFieldView(text: $viewModel.firstName,
+                                    title: viewModel.firstNameLocalizedString,
+                                    isValid: viewModel.isFirstNameValid,
+                                    errorDescription: viewModel.firstNameErrorDescription,
+                                    infoDescription: "",
+                                    accessibilityIdentifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.firstNameTextField.rawValue)
+
+                CustomTextFieldView(text: $viewModel.lastName,
+                                    title: viewModel.lastNameLocalizedString,
+                                    isValid: viewModel.isLastNameValid,
+                                    errorDescription: viewModel.lastNameErrorDescription,
+                                    infoDescription: "",
+                                    accessibilityIdentifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.lastNameTextField.rawValue)
             }
             .padding(.horizontal)
             .padding(.bottom, 5)
             
-            VStack(alignment: .leading, spacing: 4) {
-                Text(viewModel.emailAddressLocalizedString)
-                    .font(.system(size: viewModel.descriptionTextSize))
-                
-                TextField("", text: $viewModel.emailAddress)
-                    .padding(.horizontal, 10)
-                    .frame(height: 44)
-                    .background(Color.white)
-                    .cornerRadius(4)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(viewModel.isEmailAddressValid ? Color.gray.opacity(0.5) : Color.red, lineWidth: 1)
-                    )
-                    .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.emailAddressTextField.rawValue)
-                
-                if viewModel.emailErrorDescription.isEmpty {
-                    Text(viewModel.emailAddressInfoLocalizedString)
-                        .foregroundColor(.gray)
-                        .font(.system(size: viewModel.descriptionTextSize))
-                } else {
-                    Text(viewModel.emailErrorDescription)
-                        .lineLimit(4)
-                        .foregroundColor(.red)
-                        .font(.system(size: viewModel.descriptionTextSize))
-                }
-            }
+            CustomTextFieldView(text: $viewModel.emailAddress,
+                                title: viewModel.emailAddressLocalizedString,
+                                isValid: viewModel.isEmailAddressValid,
+                                errorDescription: viewModel.emailErrorDescription,
+                                infoDescription: viewModel.emailAddressInfoLocalizedString,
+                                accessibilityIdentifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.emailAddressTextField.rawValue)
             .padding([.horizontal, .bottom], 15)
             
             Spacer()
             
             Button(action: submitAction) {
-                Text("Continue")
-                    .font(.headline)
+                Text(viewModel.continueButtonTitleLocalizedString)
+                    .font(.system(size: 17))
                     .foregroundColor(viewModel.isValidForm ? Color.white : Color.gray)
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -147,10 +95,52 @@ struct StripeAchFieldsView: View {
             .padding(.horizontal)
             .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.submitButton.rawValue)
         }
+        .disabled(viewModel.shouldDisableViews)
         .frame(height: 410)
     }
     
     private func submitAction() {
         onSubmitPressed()
+        viewModel.shouldDisableViews = true
+    }
+}
+
+struct CustomTextFieldView: View {
+    @Binding var text: String
+
+    let title: String
+    let isValid: Bool
+    let errorDescription: String
+    let infoDescription: String
+    let accessibilityIdentifier: String
+    let descriptionTextSize: CGFloat = 13
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.system(size: descriptionTextSize))
+            
+            TextField("", text: $text)
+                .padding(.horizontal, 10)
+                .frame(height: 44)
+                .background(Color.white)
+                .cornerRadius(4)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(isValid ? Color.gray.opacity(0.5) : Color.red, lineWidth: 1)
+                )
+                .addAccessibilityIdentifier(identifier: accessibilityIdentifier)
+            
+            if !errorDescription.isEmpty {
+                Text(errorDescription)
+                    .lineLimit(4)
+                    .foregroundColor(.red)
+                    .font(.system(size: descriptionTextSize))
+            } else if !infoDescription.isEmpty {
+                Text(infoDescription)
+                    .foregroundColor(.gray)
+                    .font(.system(size: descriptionTextSize))
+            }
+        }
     }
 }

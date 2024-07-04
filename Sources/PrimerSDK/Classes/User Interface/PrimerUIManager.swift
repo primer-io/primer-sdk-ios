@@ -275,6 +275,11 @@ internal class PrimerUIManager: PrimerUIManaging {
             }
         }
     }
+    
+    fileprivate func showCustomResultScreen(paymentStatus: PrimerCustomResultViewController.PaymentStatus, message: String? = nil) {
+        let resultViewController = PrimerCustomResultViewController(paymentStatus: paymentStatus, message: message)
+        PrimerUIManager.primerRootViewController?.show(viewController: resultViewController)
+    }
 
     fileprivate func showResultScreenForResultType(type: PrimerResultViewController.ScreenType, message: String? = nil) {
         let resultViewController = PrimerResultViewController(screenType: type, message: message)
@@ -328,6 +333,11 @@ extension PrimerUIManager {
 
     static func handleErrorBasedOnSDKSettings(_ error: PrimerError) {
         shared.handleErrorBasedOnSDKSettings(error)
+    }
+    
+    static func showCustomResultScreenForResultType(type: PrimerCustomResultViewController.PaymentStatus,
+                                                          message: String? = nil) {
+        shared.showCustomResultScreen(paymentStatus: type, message: message)
     }
 
     static fileprivate func showResultScreenForResultType(type: PrimerResultViewController.ScreenType,

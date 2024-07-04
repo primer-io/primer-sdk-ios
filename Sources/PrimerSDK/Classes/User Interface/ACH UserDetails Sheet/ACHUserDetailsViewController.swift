@@ -15,10 +15,7 @@ protocol ACHUserDetailsDelegate: AnyObject {
 }
 
 class ACHUserDetailsViewController: UIViewController {
-    
-    // MARK: - Subviews
-    let activityIndicator = UIActivityIndicatorView()
-    
+
     // MARK: - Properties
     var stripeFormView: StripeAchFieldsView?
     var stripeFormViewModel: StripeAchFieldsViewModel = StripeAchFieldsViewModel()
@@ -39,8 +36,7 @@ class ACHUserDetailsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupUI()
-        setupLayout()
+        view.backgroundColor = .white
         addStripeFormView()
         setupStripeACHDelegatesAndStart()
     }
@@ -100,7 +96,7 @@ class ACHUserDetailsViewController: UIViewController {
         stripeFormView = StripeAchFieldsView(viewModel: stripeFormViewModel, onSubmitPressed: {
             self.stripeAchComponent?.submit()
         }, onBackPressed: {
-            self.navigationController?.popViewController(animated: false)
+            PrimerUIManager.primerRootViewController?.popViewController()
         })
         
         let hostingViewController = UIHostingController(rootView: stripeFormView)
@@ -118,35 +114,6 @@ class ACHUserDetailsViewController: UIViewController {
     
     deinit {
         cancellables.forEach { $0.cancel() }
-    }
-}
-
-// MARK: - Setup UI
-extension ACHUserDetailsViewController {
-    func setupUI() {
-        view.backgroundColor = .white
-        activityIndicator.hidesWhenStopped = true
-        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-    }
-    
-    func setupLayout() {
-        view.addSubview(activityIndicator)
-        NSLayoutConstraint.activate([
-            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        ])
-    }
-}
-
-// MARK: - Helpers
-extension ACHUserDetailsViewController {
-    func showLoader() {
-        view.bringSubviewToFront(activityIndicator)
-        activityIndicator.startAnimating()
-    }
-    
-    func hideLoader() {
-        activityIndicator.stopAnimating()
     }
 }
 

@@ -418,7 +418,8 @@ extension StripeAchTokenizationViewModel {
     private func sendAdditionalInfoEvent(stripeCollector: UIViewController? = nil) -> Promise<Void> {
         return Promise { seal in
             guard PrimerHeadlessUniversalCheckout.current.delegate != nil else {
-                // Present here the 
+                let mandateViewController = ACHMandateViewController(delegate: self)
+                PrimerUIManager.primerRootViewController?.show(viewController: mandateViewController)
                 seal.fulfill()
                 return
             }

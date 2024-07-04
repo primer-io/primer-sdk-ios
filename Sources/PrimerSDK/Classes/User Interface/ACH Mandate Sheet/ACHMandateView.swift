@@ -32,7 +32,7 @@ struct ACHMandateView: View {
                     onAcceptPressed()
                 }) {
                     Text("Accept")
-                        .font(.headline)
+                        .font(.system(size: 17))
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color.black)
@@ -43,7 +43,7 @@ struct ACHMandateView: View {
                     onCancelPressed()
                 }) {
                     Text("Cancel payment")
-                        .font(.headline)
+                        .font(.system(size: 17))
                         .frame(maxWidth: .infinity)
                         .padding()
                         .foregroundColor(.black)
