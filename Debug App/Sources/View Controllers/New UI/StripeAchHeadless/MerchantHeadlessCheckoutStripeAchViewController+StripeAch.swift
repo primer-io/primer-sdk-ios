@@ -18,7 +18,6 @@ extension MerchantHeadlessCheckoutStripeAchViewController: PrimerHeadlessErrorab
         case .stripeError:
             showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
         default:
-            logs.append("primerHeadlessUniversalCheckoutDidFail(withError:checkoutData:)")
             presentResultsVC(checkoutData: nil, error: error)
         }
     }
