@@ -63,9 +63,10 @@ class StripeAchHeadlessComponent {
             if let err = error as? PrimerError {
                 primerError = err
             } else {
+                let errorDescription = error?.localizedDescription ?? ""
                 primerError = PrimerError.failedToCreatePayment(
                     paymentMethodType: self.tokenizationViewModel.config.type,
-                    description: "Failed to complete the payment due to error: \(error?.localizedDescription)",
+                    description: "Failed to create the payment due to error: \(errorDescription)",
                     userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString)
             }
