@@ -309,10 +309,10 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
         self.logs.append(#function)
         self.primerError = err
         self.hideLoadingOverlay()
-        
+
         if let lastViewController = navigationController?.children.last {
             if lastViewController is MerchantHeadlessCheckoutBankViewController ||
-                lastViewController is MerchantHeadlessCheckoutKlarnaViewController {
+               lastViewController is MerchantHeadlessCheckoutKlarnaViewController {
                 navigationController?.popViewController(animated: false)
             }
         }
