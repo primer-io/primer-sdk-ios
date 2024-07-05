@@ -27,6 +27,7 @@ class StripeAchHeadlessComponent {
     init(tokenizationViewModel: StripeAchTokenizationViewModel) {
         self.tokenizationViewModel = tokenizationViewModel
         self.clientSessionService = ACHClientSessionService()
+        addTokenizationViewModelObservers()
     }
     
     /// Delegation
@@ -47,6 +48,29 @@ class StripeAchHeadlessComponent {
                 ErrorHandler.handle(error: error)
                 errorDelegate?.didReceiveError(error: err)
             }
+        }
+    }
+    
+    /// Error handling from tokenizationViewModel
+    func addTokenizationViewModelObservers() {
+        tokenizationViewModel.tokenizationDidFinish = { primerError in
+            self.errorDelegate?.didReceiveError(error: primerError)
+        }
+        
+        tokenizationViewModel.didFinishPayment = { error in
+            var primerError: PrimerError
+
+            if let err = error as? PrimerError {
+                primerError = err
+            } else {
+                primerError = PrimerError.failedToCreatePayment(
+                    paymentMethodType: self.tokenizationViewModel.config.type,
+                    description: "Failed to complete the payment due to error: \(error?.localizedDescription)",
+                    userInfo: .errorUserInfoDictionary(),
+                    diagnosticsId: UUID().uuidString)
+            }
+
+            self.errorDelegate?.didReceiveError(error: primerError)
         }
     }
 }
