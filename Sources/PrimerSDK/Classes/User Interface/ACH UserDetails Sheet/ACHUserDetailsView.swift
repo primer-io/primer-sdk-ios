@@ -8,8 +8,8 @@
 import UIKit
 import SwiftUI
 
-struct StripeAchFieldsView: View {
-    @ObservedObject var viewModel = StripeAchFieldsViewModel()
+struct ACHUserDetailsView: View {
+    @ObservedObject var viewModel = ACHUserDetailsViewModel()
     
     // Properties
     var onSubmitPressed: () -> Void

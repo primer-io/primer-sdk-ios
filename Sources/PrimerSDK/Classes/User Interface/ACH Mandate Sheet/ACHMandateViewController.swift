@@ -13,13 +13,15 @@ class ACHMandateViewController: UIViewController {
     // MARK: - Properties
     var mandateView: ACHMandateView?
     var mandateViewModel: ACHMandateViewModel = ACHMandateViewModel()
+    var mandateData: PrimerStripeOptions.MandateData
     weak var delegate: ACHMandateDelegate?
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    init(delegate: ACHMandateDelegate) {
+    init(delegate: ACHMandateDelegate, mandateData: PrimerStripeOptions.MandateData) {
+        self.mandateData = mandateData
         self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
     }
@@ -47,7 +49,8 @@ class ACHMandateViewController: UIViewController {
     }
     
     private func addMandateView() {
-        mandateView = ACHMandateView(viewModel: mandateViewModel, businessName: "Primer Inc", onAcceptPressed: {
+        let mandateText = mandateViewModel.getMandateText(for: mandateData)
+        mandateView = ACHMandateView(mandateText: mandateText, onAcceptPressed: {
             self.delegate?.mandateAccepted()
         }, onCancelPressed: {
             self.delegate?.mandateDeclined()

@@ -17,8 +17,8 @@ protocol ACHUserDetailsDelegate: AnyObject {
 class ACHUserDetailsViewController: UIViewController {
 
     // MARK: - Properties
-    var stripeFormView: StripeAchFieldsView?
-    var stripeFormViewModel: StripeAchFieldsViewModel = StripeAchFieldsViewModel()
+    var achUserDetailsView: ACHUserDetailsView?
+    var achUserDetailsViewModel: ACHUserDetailsViewModel = ACHUserDetailsViewModel()
     var stripeAchComponent: (any StripeAchUserDetailsComponent)?
     var cancellables: Set<AnyCancellable> = []
     weak var delegate: ACHUserDetailsDelegate?
@@ -64,7 +64,7 @@ class ACHUserDetailsViewController: UIViewController {
     }
     
     func initObservables() {
-        stripeFormViewModel.$firstName
+        achUserDetailsViewModel.$firstName
             .dropFirst()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] firstName in
@@ -73,7 +73,7 @@ class ACHUserDetailsViewController: UIViewController {
             }
             .store(in: &cancellables)
         
-        stripeFormViewModel.$lastName
+        achUserDetailsViewModel.$lastName
             .dropFirst()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] lastName in
@@ -82,7 +82,7 @@ class ACHUserDetailsViewController: UIViewController {
             }
             .store(in: &cancellables)
         
-        stripeFormViewModel.$emailAddress
+        achUserDetailsViewModel.$emailAddress
             .dropFirst()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] emailAddress in
@@ -93,13 +93,13 @@ class ACHUserDetailsViewController: UIViewController {
     }
     
     private func addStripeFormView() {
-        stripeFormView = StripeAchFieldsView(viewModel: stripeFormViewModel, onSubmitPressed: {
+        achUserDetailsView = ACHUserDetailsView(viewModel: achUserDetailsViewModel, onSubmitPressed: {
             self.stripeAchComponent?.submit()
         }, onBackPressed: {
             PrimerUIManager.primerRootViewController?.popViewController()
         })
         
-        let hostingViewController = UIHostingController(rootView: stripeFormView)
+        let hostingViewController = UIHostingController(rootView: achUserDetailsView)
         hostingViewController.view.translatesAutoresizingMaskIntoConstraints = false
         addChild(hostingViewController)
         view.addSubview(hostingViewController.view)
@@ -144,9 +144,9 @@ extension ACHUserDetailsViewController: PrimerHeadlessErrorableDelegate,
         guard let step = step as? ACHUserDetailsStep else { return }
         switch step {
         case .retrievedUserDetails(let userDetails):
-            stripeFormViewModel.firstName = userDetails.firstName
-            stripeFormViewModel.lastName = userDetails.lastName
-            stripeFormViewModel.emailAddress = userDetails.emailAddress
+            achUserDetailsViewModel.firstName = userDetails.firstName
+            achUserDetailsViewModel.lastName = userDetails.lastName
+            achUserDetailsViewModel.emailAddress = userDetails.emailAddress
             initObservables()
         case .didCollectUserDetails:
             delegate?.didSubmit()
@@ -163,16 +163,16 @@ extension ACHUserDetailsViewController {
         switch data {
         case .firstName:
             let firstNameErrorDescription = "Please enter a valid first name. Avoid using numbers or special characters."
-            stripeFormViewModel.isFirstNameValid = isFieldValid
-            stripeFormViewModel.firstNameErrorDescription = error != nil ? firstNameErrorDescription : ""
+            achUserDetailsViewModel.isFirstNameValid = isFieldValid
+            achUserDetailsViewModel.firstNameErrorDescription = error != nil ? firstNameErrorDescription : ""
         case .lastName:
             let lastNameErrorDescription = "Please enter a valid last name. Avoid using numbers or special characters."
-            stripeFormViewModel.isLastNameValid = isFieldValid
-            stripeFormViewModel.lastNameErrorDescription = error != nil ? lastNameErrorDescription : ""
+            achUserDetailsViewModel.isLastNameValid = isFieldValid
+            achUserDetailsViewModel.lastNameErrorDescription = error != nil ? lastNameErrorDescription : ""
         case .emailAddress:
             let emailAddressErrorDescription = "The email address you entered doesn't look like a real email address. Please make sure it includes an '@' and a domain (like '@example.com')"
-            stripeFormViewModel.isEmailAddressValid = isFieldValid
-            stripeFormViewModel.emailErrorDescription = error != nil ? emailAddressErrorDescription : ""
+            achUserDetailsViewModel.isEmailAddressValid = isFieldValid
+            achUserDetailsViewModel.emailErrorDescription = error != nil ? emailAddressErrorDescription : ""
         }
     }
 }

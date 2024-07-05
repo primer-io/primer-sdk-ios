@@ -418,9 +418,18 @@ extension StripeAchTokenizationViewModel {
     private func sendAdditionalInfoEvent(stripeCollector: UIViewController? = nil) -> Promise<Void> {
         return Promise { seal in
             guard PrimerHeadlessUniversalCheckout.current.delegate != nil else {
-                let mandateViewController = ACHMandateViewController(delegate: self)
-                PrimerUIManager.primerRootViewController?.show(viewController: mandateViewController)
-                seal.fulfill()
+
+                firstly {
+                    getMandateData()
+                }
+                .done { mandateData in
+                    let mandateViewController = ACHMandateViewController(delegate: self, mandateData: mandateData)
+                    PrimerUIManager.primerRootViewController?.show(viewController: mandateViewController)
+                    seal.fulfill()
+                }
+                .catch { error in
+                    seal.reject(error)
+                }
                 return
             }
             
@@ -487,6 +496,20 @@ extension StripeAchTokenizationViewModel {
             }
             self.publishableKey = publishableKey
             seal.fulfill()
+        }
+    }
+    
+    private func getMandateData() -> Promise<PrimerStripeOptions.MandateData> {
+        return Promise { seal in
+            guard let mandateData = PrimerSettings.current.paymentMethodOptions.stripeOptions?.mandateData else {
+                let primerError = PrimerError.merchantError(
+                    message: "Required value for PrimerSettings.current.paymentMethodOptions.stripeOptions?.mandateData was nil or empty.",
+                    userInfo: .errorUserInfoDictionary(),
+                    diagnosticsId: UUID().uuidString)
+                seal.reject(primerError)
+                return
+            }
+            seal.fulfill(mandateData)
         }
     }
 

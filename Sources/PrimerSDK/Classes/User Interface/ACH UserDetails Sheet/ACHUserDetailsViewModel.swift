@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class StripeAchFieldsViewModel: ObservableObject {
+class ACHUserDetailsViewModel: ObservableObject {
     @Published var firstName: String = ""
     @Published var lastName: String = ""
     @Published var emailAddress: String = ""
