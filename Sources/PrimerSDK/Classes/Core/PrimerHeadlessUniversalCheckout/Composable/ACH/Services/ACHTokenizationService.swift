@@ -42,13 +42,13 @@ class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelegate {
     func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             // Ensure the payment method has a valid ID
-            guard let paymentMethodConfigId = paymentMethod.id else {
+            guard paymentMethod.id != nil else {
                 seal.reject(ACHHelpers.getInvalidValueError(key: "configuration.id", value: paymentMethod.id))
                 return
             }
             
             firstly {
-                getRequestBody(paymentMethodConfigId: paymentMethodConfigId)
+                getRequestBody()
             }
             .then { requestBody in
                 self.tokenizationService.tokenize(requestBody: requestBody)
@@ -119,7 +119,7 @@ class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelegate {
  * - Returns: A promise that resolves with a `Request.Body.Tokenization` containing the payment instrument data.
  */
 extension ACHTokenizationService {
-    private func getRequestBody(paymentMethodConfigId: String) -> Promise<Request.Body.Tokenization> {
+    private func getRequestBody() -> Promise<Request.Body.Tokenization> {
         return Promise { seal in
             guard let paymentInstrument = ACHHelpers.getACHPaymentInstrument(paymentMethod: paymentMethod) else {
                 let error = ACHHelpers.getInvalidValueError(

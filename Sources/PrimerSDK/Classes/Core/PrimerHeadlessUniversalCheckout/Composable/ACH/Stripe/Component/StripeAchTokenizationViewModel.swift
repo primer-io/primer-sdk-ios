@@ -24,8 +24,9 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var userDetails: ACHUserDetails = .emptyUserDetails()
     
     var stripeMandateCompletion: ((_ success: Bool, _ error: PrimerError?) -> Void)?
-    var stripeBankAccountCollectorCompletion: ((_ success: Bool, _ error: Error?) -> Void)?
-    var achUserDetailsSubmitCompletion: ((_ success: Bool, _ error: Error?) -> Void)?
+    var stripeBankAccountCollectorCompletion: ((_ success: Bool, _ error: PrimerError?) -> Void)?
+    var tokenizationDidFinish: ((_ error: PrimerError) -> Void)?
+    var achUserDetailsSubmitCompletion: ((_ success: Bool, _ error: PrimerError?) -> Void)?
     
     // MARK: Init
     override init(config: PrimerPaymentMethod,
@@ -75,6 +76,9 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.fulfill()
             }
             .catch { err in
+                if let primerError = err as? PrimerError {
+                    self.tokenizationDidFinish?(primerError)
+                }
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
             }
@@ -99,6 +103,17 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.fulfill()
             }
             .catch { err in
+                if let primerError = err as? PrimerError {
+                    self.tokenizationDidFinish?(primerError)
+                } else {
+                    let primerError = PrimerError.failedToCreatePayment(
+                        paymentMethodType: self.config.type,
+                        description: "Failed to perform tokenization step due to error: \(err.localizedDescription)",
+                        userInfo: .errorUserInfoDictionary(),
+                        diagnosticsId: UUID().uuidString)
+                    self.tokenizationDidFinish?(primerError)
+                }
+
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
             }
@@ -157,7 +172,10 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     seal.reject(err)
                 }
             } else {
-                seal.fulfill(nil)
+                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                         diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
             }
         }
     }

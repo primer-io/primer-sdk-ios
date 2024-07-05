@@ -27,6 +27,9 @@ class StripeAchHeadlessComponent {
     init(tokenizationViewModel: StripeAchTokenizationViewModel) {
         self.tokenizationViewModel = tokenizationViewModel
         self.clientSessionService = ACHClientSessionService()
+        if PrimerInternal.shared.sdkIntegrationType == .headless {
+            addTokenizationViewModelObservers()
+        }
     }
     
     /// Reset some variables if needed
@@ -48,6 +51,30 @@ class StripeAchHeadlessComponent {
             }
         }
     }
+    
+    /// Error handling from tokenizationViewModel
+        func addTokenizationViewModelObservers() {
+            tokenizationViewModel.tokenizationDidFinish = { primerError in
+                self.errorDelegate?.didReceiveError(error: primerError)
+            }
+
+            tokenizationViewModel.didFinishPayment = { error in
+                var primerError: PrimerError
+
+                if let err = error as? PrimerError {
+                    primerError = err
+                } else {
+                    let errorDescription = error?.localizedDescription ?? ""
+                    primerError = PrimerError.failedToCreatePayment(
+                        paymentMethodType: self.tokenizationViewModel.config.type,
+                        description: "Failed to create the payment due to error: \(errorDescription)",
+                        userInfo: .errorUserInfoDictionary(),
+                        diagnosticsId: UUID().uuidString)
+                }
+
+                self.errorDelegate?.didReceiveError(error: primerError)
+            }
+        }
 }
 
 // MARK: - PrimerHeadlessMainComponent delegates
