@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct ACHMandateView: View {
-    var mandateText: String
+    @ObservedObject var viewModel: ACHMandateViewModel
+    
     var onAcceptPressed: () -> Void
     var onCancelPressed: () -> Void
     
@@ -18,7 +19,7 @@ struct ACHMandateView: View {
                 .font(.system(size: 20, weight: .medium))
                 .padding(.horizontal)
             
-            Text(mandateText)
+            Text(viewModel.mandateText)
                 .font(.system(size: 15))
                 .foregroundColor(.gray)
                 .padding(.horizontal)

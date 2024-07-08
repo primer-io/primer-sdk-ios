@@ -8,11 +8,18 @@
 import SwiftUI
 
 class ACHMandateViewModel: ObservableObject {
-    func getMandateText(for mandateData: PrimerStripeOptions.MandateData) -> String {
+
+    private var mandateData: PrimerStripeOptions.MandateData
+
+    init(mandateData: PrimerStripeOptions.MandateData) {
+        self.mandateData = mandateData
+    }
+
+    var mandateText: String {
         switch mandateData {
-        case .fullMandate(text: let text):
+        case .fullMandate(let text):
             return text
-        case .templateMandate(merchantName: let merchantName):
+        case .templateMandate(let merchantName):
             return """
                     By clicking [accept], you authorise [\(merchantName)] to debit the bank account specified above for any amount owed for charges arising from your use of [\(merchantName)]'s services and/or purchase of products from [\(merchantName)], pursuant to [\(merchantName)]'s website and terms, until this authorisation is revoked. You may amend or cancel this authorisation at any time by providing notice to [\(merchantName)] with 30 (thirty) days notice.
                     
