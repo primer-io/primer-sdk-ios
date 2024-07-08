@@ -191,11 +191,8 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
         self.checkoutData = data
         self.hideLoadingOverlay()
 
-        let viewControllersToPop = [MerchantHeadlessCheckoutKlarnaViewController.self,
-                                    MerchantHeadlessCheckoutStripeAchViewController.self]
-
         if let lastViewController = navigationController?.children.last {
-            if viewControllersToPop.contains(where: { $0 == type(of: lastViewController) }) {
+            if lastViewController is MerchantHeadlessCheckoutKlarnaViewController {
                 navigationController?.popViewController(animated: false)
             }
         }
@@ -227,7 +224,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
                         self.hideLoadingOverlay()
                     }
                     decisionHandler(.complete())
-
+                    
                     if let lastViewController = self.navigationController?.children.last {
                         if lastViewController is MerchantHeadlessCheckoutKlarnaViewController {
                             self.manualHandlingCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(id: res.id,
@@ -313,12 +310,9 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
         self.primerError = err
         self.hideLoadingOverlay()
 
-        let viewControllersToPop = [MerchantHeadlessCheckoutKlarnaViewController.self,
-                                    MerchantHeadlessCheckoutBankViewController.self,
-                                    MerchantHeadlessCheckoutStripeAchViewController.self]
-        
         if let lastViewController = navigationController?.children.last {
-            if viewControllersToPop.contains(where: { $0 == type(of: lastViewController) }) {
+            if lastViewController is MerchantHeadlessCheckoutBankViewController ||
+               lastViewController is MerchantHeadlessCheckoutKlarnaViewController {
                 navigationController?.popViewController(animated: false)
             }
         }
