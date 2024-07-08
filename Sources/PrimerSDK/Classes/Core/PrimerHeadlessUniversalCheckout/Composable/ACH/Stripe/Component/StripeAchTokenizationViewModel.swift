@@ -25,7 +25,6 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     
     var stripeMandateCompletion: ((_ success: Bool, _ error: PrimerError?) -> Void)?
     var stripeBankAccountCollectorCompletion: ((_ success: Bool, _ error: PrimerError?) -> Void)?
-    var tokenizationDidFinish: ((_ error: PrimerError) -> Void)?
     var achUserDetailsSubmitCompletion: ((_ success: Bool, _ error: PrimerError?) -> Void)?
     
     // MARK: Init
@@ -76,9 +75,6 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.fulfill()
             }
             .catch { err in
-                if let primerError = err as? PrimerError {
-                    self.tokenizationDidFinish?(primerError)
-                }
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
             }
@@ -103,19 +99,21 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.fulfill()
             }
             .catch { err in
-                if let primerError = err as? PrimerError {
-                    self.tokenizationDidFinish?(primerError)
+                var primerError: PrimerError
+
+                if let primerErr = err as? PrimerError {
+                    primerError = primerErr
                 } else {
-                    let primerError = PrimerError.failedToCreatePayment(
+                    let primerErr = PrimerError.failedToCreatePayment(
                         paymentMethodType: self.config.type,
                         description: "Failed to perform tokenization step due to error: \(err.localizedDescription)",
                         userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
-                    self.tokenizationDidFinish?(primerError)
+                    primerError = primerErr
                 }
 
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
+                ErrorHandler.handle(error: primerError)
+                seal.reject(primerError)
             }
         }
     }
