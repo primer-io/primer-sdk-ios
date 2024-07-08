@@ -8,34 +8,61 @@
 import SwiftUI
 
 struct PrimerResultPaymentStatusView: View {
-    var status: PrimerCustomResultViewController.PaymentStatus = .success
-    var message: String
-    
+    @ObservedObject var viewModel: PrimerResultPaymentStatusViewModel
+
+    var onRetry: () -> Void
+    var onChooseOtherPaymentMethod: () -> Void
+
     var body: some View {
         VStack {
-            switch status {
-            case .success:
-                PrimerResultSuccessView()
-            case .failed:
-                PrimerResultFailedView(
-                    errorTitle: "Payment failed",
-                    errorMessage: message,
-                    onRetry: {
-                        print("Retry")
-                    },
-                    onChooseOtherMethod: {
-                        print("Choose other pm")
-                    }
-                )
-            case .canceled:
-                PrimerResultFailedView(
-                    errorTitle: "Payment cancelled",
-                    errorMessage: message,
-                    onChooseOtherMethod: {
-                        print("Choose other pm")
-                    }
-                )
+            HStack {
+                Text(viewModel.title)
+                    .font(.system(size: 20, weight: .medium))
+                    .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.title.rawValue)
+                Spacer()
+            }
+            .padding(.init(top: -5, leading: 0, bottom: viewModel.bottomSpacing, trailing: 0))
+            
+            Image(systemName: viewModel.statusIconString)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 40, height: 40)
+                .foregroundColor(viewModel.statusIconColor)
+                .padding(.bottom, 15)
+            
+            Text(viewModel.subtitle)
+                .font(.system(size: 17))
+                .padding(.bottom, 3)
+            
+            Text(viewModel.paymentMessage)
+                .font(.system(size: 15))
+                .foregroundColor(.gray)
+                .padding(.bottom, viewModel.bottomSpacing)
+            
+            if viewModel.showOnRetry {
+                Button(action: onRetry) {
+                    Text("Retry")
+                        .font(.system(size: 17))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.black)
+                        .cornerRadius(8)
+                }
+            }
+            
+            if viewModel.showChooseOtherPaymentMethod {
+                Button(action: onChooseOtherPaymentMethod) {
+                    Text("Choose another payment method")
+                        .font(.system(size: 17))
+                        .foregroundColor(viewModel.showOnRetry ? .black : .white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(viewModel.showOnRetry ? Color.clear : .black)
+                        .cornerRadius(8)
+                }
             }
         }
+        .padding(.horizontal)
     }
 }

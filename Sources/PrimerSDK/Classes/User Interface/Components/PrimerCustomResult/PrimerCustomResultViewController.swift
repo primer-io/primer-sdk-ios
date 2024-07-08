@@ -15,12 +15,12 @@ internal class PrimerCustomResultViewController: PrimerViewController {
     }
 
     private(set) internal var paymentStatusView: PrimerResultPaymentStatusView?
-    private(set) internal var message: String?
-    private(set) internal var paymentStatus: PaymentStatus
+    private(set) internal var error: PrimerError?
+    private(set) internal var paymentMethodType: PrimerPaymentMethodType
 
-    init(paymentStatus: PrimerCustomResultViewController.PaymentStatus, message: String?) {
-        self.message = message
-        self.paymentStatus = paymentStatus
+    init(paymentMethodType: PrimerPaymentMethodType, error: PrimerError?) {
+        self.paymentMethodType = paymentMethodType
+        self.error = error
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -59,7 +59,12 @@ internal class PrimerCustomResultViewController: PrimerViewController {
     }
 
     private func addPaymentStatusView() {
-        paymentStatusView = PrimerResultPaymentStatusView(status: paymentStatus, message: message ?? "")
+        let viewModel = PrimerResultPaymentStatusViewModel(paymentMethodType: paymentMethodType, error: error)
+        paymentStatusView = PrimerResultPaymentStatusView(viewModel: viewModel, onRetry: {
+            print("onRetry")
+        }, onChooseOtherPaymentMethod: {
+            print("onPM")
+        })
         
         let hostingViewController = UIHostingController(rootView: paymentStatusView)
         hostingViewController.view.translatesAutoresizingMaskIntoConstraints = false
