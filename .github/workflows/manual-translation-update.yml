@@ -45,7 +45,6 @@ jobs:
         run: |
           if git diff --quiet; then
             echo "No changes detected in translations folder. Exiting."
-            exit 1
           else
             echo "Changes detected:"
             git diff

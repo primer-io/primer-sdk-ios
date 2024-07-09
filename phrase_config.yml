@@ -1,4 +1,5 @@
 
+# PUSH is currently not being used, leaving here for the sake of the future
   push:
     sources:
     - file: Sources/PrimerSDK/Resources/Localizable/ar.lproj/Localizable.strings
@@ -230,23 +231,26 @@
         tags: ios-sdk
         encoding: UTF-16
 
-    - file: Sources/PrimerSDK/Resources/Localizable/zh-CN.lproj/Localizable.strings
-      params:
-        file_format: strings
-        locale_id: Chinese
-        tags: ios-sdk
-        encoding: UTF-16LE
-
-    - file: Sources/PrimerSDK/Resources/Localizable/zh-HK.lproj/Localizable.strings
-      params:
-        file_format: strings
-        locale_id: Chinese-HongKong
-        tags: ios-sdk
-        encoding: UTF-16LE
-
-    - file: Sources/PrimerSDK/Resources/Localizable/zh-TW.lproj/Localizable.strings
-      params:
-        file_format: strings
-        locale_id: Chinese-Taiwanese
-        tags: ios-sdk
-        encoding: UTF-16LE
+# There is a bug on Phrase side when you download CHinese languages, key-values are doubled and
+# encoding does not work, we will ignore Chinese for now
+#
+#    - file: Sources/PrimerSDK/Resources/Localizable/zh-CN.lproj/Localizable.strings
+#      params:
+#        file_format: strings
+#        locale_id: Chinese
+#        tags: ios-sdk
+#        encoding: UTF-16LE
+#
+#    - file: Sources/PrimerSDK/Resources/Localizable/zh-HK.lproj/Localizable.strings
+#      params:
+#        file_format: strings
+#        locale_id: Chinese-HongKong
+#        tags: ios-sdk
+#        encoding: UTF-16LE
+#
+#    - file: Sources/PrimerSDK/Resources/Localizable/zh-TW.lproj/Localizable.strings
+#      params:
+#        file_format: strings
+#        locale_id: Chinese-Taiwanese
+#        tags: ios-sdk
+#        encoding: UTF-16LE
