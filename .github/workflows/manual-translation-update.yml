@@ -1,0 +1,70 @@
+name: 'Manual Translation Update'
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to update'
+        required: true
+        default: 'master'
+
+jobs:
+  update-translations:
+    runs-on: ubuntu-latest
+    name: "Download latest translations from Phrase.com and make a PR."
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
+
+      - name: Install Phrase CLI
+        uses: phrase/setup-cli@d1c415d0ff01efc1bb21287d60a547669d9331c5
+        with:
+          version: '2.29.0'
+
+      - name: Prepend Phrase configuration
+        run: |
+          echo "phrase:" > .phrase.yml
+          echo "  access_token: ${PHRASE_ACCESS_KEY}" >> .phrase.yml
+          echo "  project_id: ${PHRASE_PROJECT_ID}" >> .phrase.yml
+          cat phrase_config.yml >> .phrase.yml
+        env:
+          PHRASE_ACCESS_KEY: ${{ secrets.PHRASE_ACCESS_KEY }}
+          PHRASE_PROJECT_ID: ${{ secrets.PHRASE_PROJECT_ID }}
+
+      - name: Download Translations from Phrase
+        run: phrase pull
+
+      - name: Remove .phrase.yml file
+        run: |
+          rm .phrase.yml
+
+      - name: Check for changes in translations folder
+        run: |
+          if git diff --quiet; then
+            echo "No changes detected in translations folder. Exiting."
+            exit 1
+          else
+            echo "Changes detected:"
+            git diff
+          fi
+
+      - name: Commit and Push Changes
+        run: |
+          git config user.email action@github.com
+          git config user.name "GitHub Action"
+          git checkout -b update-translations/${{ github.event.inputs.branch }}
+          git add .
+          git commit -m "Update translations"
+          git push -u origin update-translations/${{ github.event.inputs.branch }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@6d6857d36972b65feb161a90e484f2984215f83e 
+        with:
+          token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
+          base: ${{ github.event.inputs.branch }}
+          branch: update-translations/${{ github.event.inputs.branch }}
+          title: "chore: Translation Update"
+          body: "This PR updates the translations from Phrase.com"
