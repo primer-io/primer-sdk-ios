@@ -206,7 +206,6 @@ class PrimerPaymentMethod: Codable, LogReporter {
 
         switch internalPaymentMethodType {
         case .adyenBancontactCard:
-            categories.append(PrimerPaymentMethodManagerCategory.cardComponents)
             categories.append(PrimerPaymentMethodManagerCategory.rawData)
 
         case .adyenMBWay:
@@ -219,7 +218,6 @@ class PrimerPaymentMethod: Codable, LogReporter {
             categories.append(PrimerPaymentMethodManagerCategory.nativeUI)
 
         case .paymentCard:
-            categories.append(PrimerPaymentMethodManagerCategory.cardComponents)
             categories.append(PrimerPaymentMethodManagerCategory.rawData)
 
         case .payPal:

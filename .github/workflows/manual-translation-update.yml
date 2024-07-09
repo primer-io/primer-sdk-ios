@@ -43,12 +43,12 @@ jobs:
 
       - name: Check for changes in translations folder
         run: |
-          if git diff --quiet Sources/PrimerSDK/Resources/Localizable; then
+          if git diff --quiet; then
             echo "No changes detected in translations folder. Exiting."
             exit 1
           else
             echo "Changes detected:"
-            git diff Sources/PrimerSDK/Resources/Localizable
+            git diff
           fi
 
       - name: Commit and Push Changes
@@ -56,7 +56,7 @@ jobs:
           git config user.email action@github.com
           git config user.name "GitHub Action"
           git checkout -b update-translations/${{ github.event.inputs.branch }}
-          git add Sources/PrimerSDK/Resources/Localizable
+          git add .
           git commit -m "Update translations"
           git push -u origin update-translations/${{ github.event.inputs.branch }}
 
