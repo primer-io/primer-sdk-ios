@@ -50,20 +50,20 @@ extension ACHUserDetailsCollectableData: ACHUserDetailsCollectableDataValidatabl
             guard !value.isEmpty else {
                 return false
             }
-            
+
             let allowedCharacters = CharacterSet.letters.union(.whitespaces)
             return value.unicodeScalars.allSatisfy { allowedCharacters.contains($0) }
         case .lastName(let value):
             guard !value.isEmpty else {
                 return false
             }
-            
+
             let allowedCharacters = CharacterSet.letters.union(.whitespaces)
             return value.unicodeScalars.allSatisfy { allowedCharacters.contains($0) }
         case .emailAddress(let value):
             let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
             let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-            
+
             return emailPred.evaluate(with: value)
         }
     }

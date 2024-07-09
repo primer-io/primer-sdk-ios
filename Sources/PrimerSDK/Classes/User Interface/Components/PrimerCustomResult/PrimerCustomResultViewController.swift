@@ -42,15 +42,15 @@ internal class PrimerCustomResultViewController: PrimerViewController {
 
         addPaymentStatusView()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         if let parentVC = self.parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = true
         }
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if let parentVC = self.parent as? PrimerContainerViewController {
@@ -59,13 +59,14 @@ internal class PrimerCustomResultViewController: PrimerViewController {
     }
 
     private func addPaymentStatusView() {
+        let paymentMethodViewControllerType = getOriginPaymentMethodScreenType()
         let viewModel = PrimerResultPaymentStatusViewModel(paymentMethodType: paymentMethodType, error: error)
         paymentStatusView = PrimerResultPaymentStatusView(viewModel: viewModel, onRetry: {
-            print("onRetry")
+            PrimerUIManager.primerRootViewController?.popToPaymentMethodViewController(type: paymentMethodViewControllerType)
         }, onChooseOtherPaymentMethod: {
-            print("onPM")
+            PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
         })
-        
+
         let hostingViewController = UIHostingController(rootView: paymentStatusView)
         hostingViewController.view.translatesAutoresizingMaskIntoConstraints = false
         addChild(hostingViewController)
@@ -77,5 +78,14 @@ internal class PrimerCustomResultViewController: PrimerViewController {
             hostingViewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             hostingViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+    }
+
+    private func getOriginPaymentMethodScreenType() -> PrimerViewController.Type {
+        switch paymentMethodType {
+        case .stripeAch:
+            return ACHUserDetailsViewController.self
+        default:
+            return PrimerViewController.self
+        }
     }
 }

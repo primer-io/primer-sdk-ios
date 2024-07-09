@@ -441,7 +441,7 @@ extension PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     // This method will show the new design for result screen with a specific state: e.g. Error state or Success state
     // For now we will use it only for STRIPE_ACH implementation
     func showResultScreenIfNeeded(error: PrimerError? = nil) {

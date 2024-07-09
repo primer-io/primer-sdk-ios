@@ -9,14 +9,14 @@ import UIKit
 import SwiftUI
 
 struct ACHUserDetailsView: View {
-    @ObservedObject var viewModel = ACHUserDetailsViewModel()
-    
+    @ObservedObject var viewModel: ACHUserDetailsViewModel
+
     // Properties
     var onSubmitPressed: () -> Void
     var onBackPressed: () -> Void
-    
+
     var body: some View {
-        
+    
         ZStack {
             Button {
                 onBackPressed()
@@ -31,13 +31,13 @@ struct ACHUserDetailsView: View {
                     Text(viewModel.backLocalizedString)
                         .font(.system(size: 16))
                         .foregroundColor(.black)
-                    
+
                     Spacer()
                 }
             }
         }
         .padding(.top, -3)
-        
+
         VStack {
             HStack {
                 Text(viewModel.payWithACHLocalizedString)
@@ -46,14 +46,14 @@ struct ACHUserDetailsView: View {
                 Spacer()
             }
             .padding(.init(top: 10, leading: 15, bottom: 10, trailing: 15))
-            
+
             HStack {
                 Text(viewModel.personalizedDetailsLocalizedString)
                     .font(.system(size: 16))
                 Spacer()
             }
             .padding(.init(top: 0, leading: 15, bottom: 10, trailing: 15))
-            
+
             HStack(alignment: .top) {
                 CustomTextFieldView(text: $viewModel.firstName,
                                     title: viewModel.firstNameLocalizedString,
@@ -71,7 +71,7 @@ struct ACHUserDetailsView: View {
             }
             .padding(.horizontal)
             .padding(.bottom, 5)
-            
+
             CustomTextFieldView(text: $viewModel.emailAddress,
                                 title: viewModel.emailAddressLocalizedString,
                                 isValid: viewModel.isEmailAddressValid,
@@ -79,9 +79,9 @@ struct ACHUserDetailsView: View {
                                 infoDescription: viewModel.emailAddressInfoLocalizedString,
                                 accessibilityIdentifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.emailAddressTextField.rawValue)
             .padding([.horizontal, .bottom], 15)
-            
+
             Spacer()
-            
+
             Button(action: submitAction) {
                 Text(viewModel.continueButtonTitleLocalizedString)
                     .font(.system(size: 17))
@@ -98,7 +98,7 @@ struct ACHUserDetailsView: View {
         .disabled(viewModel.shouldDisableViews)
         .frame(height: 410)
     }
-    
+
     private func submitAction() {
         onSubmitPressed()
         viewModel.shouldDisableViews = true
@@ -114,12 +114,12 @@ struct CustomTextFieldView: View {
     let infoDescription: String
     let accessibilityIdentifier: String
     let descriptionTextSize: CGFloat = 13
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
                 .font(.system(size: descriptionTextSize))
-            
+
             TextField("", text: $text)
                 .padding(.horizontal, 10)
                 .frame(height: 44)
@@ -130,7 +130,7 @@ struct CustomTextFieldView: View {
                         .stroke(isValid ? Color.gray.opacity(0.5) : Color.red, lineWidth: 1)
                 )
                 .addAccessibilityIdentifier(identifier: accessibilityIdentifier)
-            
+
             if !errorDescription.isEmpty {
                 Text(errorDescription)
                     .lineLimit(4)

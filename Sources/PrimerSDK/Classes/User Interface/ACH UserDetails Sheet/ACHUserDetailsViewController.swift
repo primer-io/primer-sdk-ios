@@ -10,11 +10,12 @@ import SwiftUI
 import Combine
 
 protocol ACHUserDetailsDelegate: AnyObject {
+    func restartSession()
     func didSubmit()
     func didReceivedError(error: PrimerError)
 }
 
-class ACHUserDetailsViewController: UIViewController {
+class ACHUserDetailsViewController: PrimerViewController {
 
     // MARK: - Properties
     var achUserDetailsView: ACHUserDetailsView?
@@ -22,47 +23,55 @@ class ACHUserDetailsViewController: UIViewController {
     var stripeAchComponent: (any StripeAchUserDetailsComponent)?
     var cancellables: Set<AnyCancellable> = []
     weak var delegate: ACHUserDetailsDelegate?
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     init(tokenizationViewModel: StripeAchTokenizationViewModel, delegate: ACHUserDetailsDelegate) {
         self.stripeAchComponent = StripeAchHeadlessComponent(tokenizationViewModel: tokenizationViewModel)
         self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         view.backgroundColor = .white
         addStripeFormView()
         setupStripeACHDelegatesAndStart()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         if let parentVC = self.parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = true
         }
     }
-    
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if achUserDetailsViewModel.shouldDisableViews {
+            achUserDetailsViewModel.shouldDisableViews = false
+            delegate?.restartSession()
+        }
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if let parentVC = self.parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = false
         }
     }
-    
+
     func setupStripeACHDelegatesAndStart() {
         stripeAchComponent?.errorDelegate = self
         stripeAchComponent?.stepDelegate = self
         stripeAchComponent?.validationDelegate = self
         stripeAchComponent?.start()
     }
-    
+
     func initObservables() {
         achUserDetailsViewModel.$firstName
             .dropFirst()
@@ -72,7 +81,7 @@ class ACHUserDetailsViewController: UIViewController {
                 self?.stripeAchComponent?.updateCollectedData(collectableData: firstNameCollectedData)
             }
             .store(in: &cancellables)
-        
+
         achUserDetailsViewModel.$lastName
             .dropFirst()
             .receive(on: DispatchQueue.main)
@@ -81,7 +90,7 @@ class ACHUserDetailsViewController: UIViewController {
                 self?.stripeAchComponent?.updateCollectedData(collectableData: lastNameCollectedData)
             }
             .store(in: &cancellables)
-        
+
         achUserDetailsViewModel.$emailAddress
             .dropFirst()
             .receive(on: DispatchQueue.main)
@@ -91,14 +100,14 @@ class ACHUserDetailsViewController: UIViewController {
             }
             .store(in: &cancellables)
     }
-    
+
     private func addStripeFormView() {
         achUserDetailsView = ACHUserDetailsView(viewModel: achUserDetailsViewModel, onSubmitPressed: {
             self.stripeAchComponent?.submit()
         }, onBackPressed: {
             PrimerUIManager.primerRootViewController?.popViewController()
         })
-        
+
         let hostingViewController = UIHostingController(rootView: achUserDetailsView)
         hostingViewController.view.translatesAutoresizingMaskIntoConstraints = false
         addChild(hostingViewController)
@@ -111,7 +120,7 @@ class ACHUserDetailsViewController: UIViewController {
             hostingViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-    
+
     deinit {
         cancellables.forEach { $0.cancel() }
     }
@@ -124,7 +133,7 @@ extension ACHUserDetailsViewController: PrimerHeadlessErrorableDelegate,
     func didReceiveError(error: PrimerSDK.PrimerError) {
         delegate?.didReceivedError(error: error)
     }
-    
+
     // MARK: - PrimerHeadlessValidatableDelegate
     func didUpdate(validationStatus: PrimerSDK.PrimerValidationStatus, for data: PrimerSDK.PrimerCollectableData?) {
         guard let data = data as? ACHUserDetailsCollectableData else { return }
@@ -138,7 +147,7 @@ extension ACHUserDetailsViewController: PrimerHeadlessErrorableDelegate,
             break
         }
     }
-    
+
     // MARK: - PrimerHeadlessSteppableDelegate
     func didReceiveStep(step: PrimerSDK.PrimerHeadlessStep) {
         guard let step = step as? ACHUserDetailsStep else { return }

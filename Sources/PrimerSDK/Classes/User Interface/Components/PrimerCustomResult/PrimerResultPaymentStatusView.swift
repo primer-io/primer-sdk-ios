@@ -22,23 +22,23 @@ struct PrimerResultPaymentStatusView: View {
                 Spacer()
             }
             .padding(.init(top: -5, leading: 0, bottom: viewModel.bottomSpacing, trailing: 0))
-            
+
             Image(systemName: viewModel.statusIconString)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 40, height: 40)
                 .foregroundColor(viewModel.statusIconColor)
                 .padding(.bottom, 15)
-            
+
             Text(viewModel.subtitle)
                 .font(.system(size: 17))
                 .padding(.bottom, 3)
-            
+
             Text(viewModel.paymentMessage)
                 .font(.system(size: 15))
                 .foregroundColor(.gray)
                 .padding(.bottom, viewModel.bottomSpacing)
-            
+
             if viewModel.showOnRetry {
                 Button(action: onRetry) {
                     Text("Retry")
@@ -50,7 +50,7 @@ struct PrimerResultPaymentStatusView: View {
                         .cornerRadius(8)
                 }
             }
-            
+
             if viewModel.showChooseOtherPaymentMethod {
                 Button(action: onChooseOtherPaymentMethod) {
                     Text("Choose another payment method")

@@ -28,13 +28,12 @@ extension StripeAchHeadlessComponent {
         }
         .catch { _ in }
     }
-    
+
     private func updateAndValidateSessionUserDetails() {
         let sessionCollectableDataArray = [ACHUserDetailsCollectableData.firstName(clientSessionUserDetails.firstName),
                                            ACHUserDetailsCollectableData.lastName(clientSessionUserDetails.lastName),
                                            ACHUserDetailsCollectableData.emailAddress(clientSessionUserDetails.emailAddress)]
-        
-        
+
         sessionCollectableDataArray.forEach { collectableData in
             updateCollectedData(collectableData: collectableData)
         }
