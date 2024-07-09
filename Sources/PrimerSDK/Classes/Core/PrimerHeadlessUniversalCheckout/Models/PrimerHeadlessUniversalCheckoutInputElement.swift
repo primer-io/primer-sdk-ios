@@ -184,13 +184,3 @@ public enum PrimerInputElementType: Int {
         }
     }
 }
-
-// swiftlint:disable type_name
-@objc
-public protocol PrimerHeadlessUniversalCheckoutInputElement {
-    var inputElementDelegate: PrimerInputElementDelegate! { get set }
-    var type: PrimerInputElementType { get set }
-    var isValid: Bool { get }
-}
-// swiftlint:enable type_name
-// swiftlint:enable cyclomatic_complexity
