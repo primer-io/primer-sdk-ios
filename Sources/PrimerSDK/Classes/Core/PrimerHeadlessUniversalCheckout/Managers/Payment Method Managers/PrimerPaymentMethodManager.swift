@@ -10,7 +10,6 @@ import Foundation
 public enum PrimerPaymentMethodManagerCategory: String {
     case nativeUI        = "NATIVE_UI"
     case rawData         = "RAW_DATA"
-    case cardComponents  = "CARD_COMPONENTS"
     case nolPay          = "NOL_PAY"
     case componentWithRedirect = "COMPONENT_WITH_REDIRECT"
 }
