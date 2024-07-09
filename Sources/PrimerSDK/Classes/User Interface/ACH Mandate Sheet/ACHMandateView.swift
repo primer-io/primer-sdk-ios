@@ -27,7 +27,9 @@ struct ACHMandateView: View {
             Spacer()
 
             VStack(spacing: 16) {
-                Button(action: { onAcceptPressed() }) {
+                Button {
+                    onAcceptPressed()
+                } label: {
                     Text("Accept")
                         .font(.system(size: 17))
                         .frame(maxWidth: .infinity)
@@ -36,7 +38,10 @@ struct ACHMandateView: View {
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
-                Button(action: { onCancelPressed() }) {
+
+                Button {
+                    onCancelPressed()
+                } label: {
                     Text("Cancel payment")
                         .font(.system(size: 17))
                         .frame(maxWidth: .infinity)

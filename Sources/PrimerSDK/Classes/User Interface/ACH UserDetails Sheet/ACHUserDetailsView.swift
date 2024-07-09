@@ -16,7 +16,7 @@ struct ACHUserDetailsView: View {
     var onBackPressed: () -> Void
 
     var body: some View {
-    
+
         ZStack {
             Button {
                 onBackPressed()

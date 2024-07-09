@@ -401,8 +401,8 @@ extension StripeAchTokenizationViewModel: ACHUserDetailsDelegate {
     // Checks if the ACHUserDetailsViewController is already presented in the navigation stack
     private func showACHUserDetailsViewController() -> Promise<Void> {
         return Promise { seal in
-            if let isCurrentViewController = PrimerUIManager.primerRootViewController?.isCurrentViewController(ofType: ACHUserDetailsViewController.self),
-               isCurrentViewController {
+            let isCurrentViewController = PrimerUIManager.primerRootViewController?.isCurrentViewController(ofType: ACHUserDetailsViewController.self) ?? false
+            if isCurrentViewController {
                 seal.fulfill()
             } else {
                 let achUserDetailsViewControlle = ACHUserDetailsViewController(tokenizationViewModel: self, delegate: self)
@@ -580,7 +580,6 @@ extension StripeAchTokenizationViewModel: PrimerStripeCollectorViewControllerDel
         case .succeeded(let paymentId):
             returnedStripeAchPaymentId = paymentId
             stripeBankAccountCollectorCompletion?(true, nil)
-            break
         case .canceled:
             let error = ACHHelpers.getCancelledError(paymentMethodType: config.type)
             stripeBankAccountCollectorCompletion?(false, error)
