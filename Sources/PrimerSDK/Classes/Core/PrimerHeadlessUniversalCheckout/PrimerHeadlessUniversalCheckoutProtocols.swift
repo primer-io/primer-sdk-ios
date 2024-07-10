@@ -35,17 +35,3 @@ public protocol PrimerHeadlessUniversalCheckoutDelegate {
     @objc optional func primerHeadlessUniversalCheckoutDidUpdateClientSession(_ clientSession: PrimerClientSession)
     @objc optional func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void)
 }
-
-@objc
-public protocol PrimerInputElementDelegate: AnyObject {
-
-    @objc optional func inputElementShouldFocus(_ sender: PrimerHeadlessUniversalCheckoutInputElement) -> Bool
-    @objc optional func inputElementDidFocus(_ sender: PrimerHeadlessUniversalCheckoutInputElement)
-    @objc optional func inputElementShouldBlur(_ sender: PrimerHeadlessUniversalCheckoutInputElement) -> Bool
-    @objc optional func inputElementDidBlur(_ sender: PrimerHeadlessUniversalCheckoutInputElement)
-    @objc optional func inputElementValueDidChange(_ sender: PrimerHeadlessUniversalCheckoutInputElement)
-    @objc optional func inputElementValueIsValid(_ sender: PrimerHeadlessUniversalCheckoutInputElement, isValid: Bool)
-    @objc optional func inputElementDidDetectType(_ sender: PrimerHeadlessUniversalCheckoutInputElement, type: Any?)
-}
-// swiftlint:enable type_name
-// swiftlint:enable line_length
