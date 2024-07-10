@@ -45,21 +45,11 @@ jobs:
         run: |
           if git diff --quiet; then
             echo "No changes detected in translations folder. Exiting."
-            exit 1
           else
             echo "Changes detected:"
             git diff
           fi
-
-      - name: Commit and Push Changes
-        run: |
-          git config user.email action@github.com
-          git config user.name "GitHub Action"
-          git checkout -b update-translations/${{ github.event.inputs.branch }}
-          git add .
-          git commit -m "Update translations"
-          git push -u origin update-translations/${{ github.event.inputs.branch }}
-
+          
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@6d6857d36972b65feb161a90e484f2984215f83e 
         with:
@@ -67,4 +57,5 @@ jobs:
           base: ${{ github.event.inputs.branch }}
           branch: update-translations/${{ github.event.inputs.branch }}
           title: "chore: Translation Update"
+          commit-message: "Update translations"
           body: "This PR updates the translations from Phrase.com"

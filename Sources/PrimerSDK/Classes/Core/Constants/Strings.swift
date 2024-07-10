@@ -949,7 +949,7 @@ extension Strings {
             "primer-cvv-recapture-explanation",
             tableName: nil,
             bundle: Bundle.primerResources,
-            value: "Input the %d digit security code on your card for a secure payment.",
+            value: "Input the %@ digit security code on your card for a secure payment.",
             comment: "Some cards have 3 or 4 digits for their CVV card")
 
         static let buttonTitle = NSLocalizedString(
