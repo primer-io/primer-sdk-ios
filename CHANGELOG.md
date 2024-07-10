@@ -1,3 +1,13 @@
+## 2.27.0 (2024-07-10)
+
+### Feat
+
+- Remove card components (#924)
+
+### Fix
+
+- prevent crash when formatting CVV recapture explanation string (#930)
+
 ## 2.26.7 (2024-06-26)
 
 ### Fix
