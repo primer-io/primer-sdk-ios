@@ -1,4 +1,5 @@
 import Foundation
+import PassKit
 
 // MARK: - PRIMER SETTINGS
 
@@ -139,17 +140,21 @@ public class PrimerApplePayOptions: Codable {
     /// canMakePayments(usingNetworks:) was returning false if there were no cards in the Wallet,
     /// we introduced this flag to continue supporting the old behaviour. Default value is `true`.
     let checkProvidedNetworks: Bool
+    /// An array of shipping method objects that describe the supported shipping methods.
+    let shippingMethods: [PKShippingMethod]
 
     public init(merchantIdentifier: String,
                 merchantName: String,
                 isCaptureBillingAddressEnabled: Bool = false,
                 showApplePayForUnsupportedDevice: Bool = true,
-                checkProvidedNetworks: Bool = true) {
+                checkProvidedNetworks: Bool = true,
+                shippingMethods: [PKShippingMethod] = []) {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
         self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
         self.checkProvidedNetworks = checkProvidedNetworks
+        self.shippingMethods = shippingMethods
     }
 }
 
