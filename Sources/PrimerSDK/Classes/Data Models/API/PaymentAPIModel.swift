@@ -151,9 +151,7 @@ extension Response.Body {
         }
     }
     
-    public struct Complete: Codable {
-        public let success: Bool
-    }
+    public struct Complete: Codable {}
 }
 
 public struct Payment {

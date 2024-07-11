@@ -129,7 +129,7 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
      *
      * This overridden method checks the intent of a decoded JWT token to determine if it involves STRIPE-ACH processing.
      * If it does, the method manages the workflow required for handling STRIPE-ACH transactions including presenting a
-     * payment method user interface, waiting for user input, and calling a completion URL upon success.
+     * payment method user interface, waiting for user input, and calling a completePayment API method at the end.
      *
      * - Parameter decodedJWTToken: A `DecodedJWTToken` object containing details extracted from a JWT token.
      * - Returns: A promise that resolves with an optional string.
@@ -412,6 +412,10 @@ extension StripeAchTokenizationViewModel: ACHUserDetailsDelegate {
         }
     }
 
+    /**
+     * Waits for a response from the ACHUserDetailsDelegate method.
+     * The response is returned in achUserDetailsSubmitCompletion handler.
+     */
     private func awaitSubmitUserOutput() -> Promise<Void> {
         return Promise { seal in
             self.achUserDetailsSubmitCompletion = { succeeded, error in
@@ -435,10 +439,10 @@ extension StripeAchTokenizationViewModel {
      * This private method checks if the checkout is being conducted in a headless mode and whether the delegate
      * for handling additional information is implemented. It ensures that additional information events are only
      * sent if the delegate and its respective method are available, otherwise, it handles the absence of the delegate
-     * method by logging an error and rejecting the promise.
+     * method by proceeding with the displaying of the custom ACHMandateViewController drop-in screen, that is part of the Drop-In Logic.
      *
      * - Returns: A promise that resolves if additional information is successfully handled or sent, or rejects if
-     *            there are issues with the delegate implementation or if the delegate method is not implemented.
+     *            there are issues with the delegate implementation.
      */
     private func sendAdditionalInfoEvent(stripeCollector: UIViewController? = nil) -> Promise<Void> {
         return Promise { seal in
