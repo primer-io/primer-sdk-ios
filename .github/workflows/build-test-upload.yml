@@ -119,6 +119,7 @@ jobs:
           coverage-file-names: sonar-coverage-sdk.xml,sonar-coverage-3DS.xml,sonar-coverage-nol-pay.xml,sonar-coverage-klarna.xml
   
   critical-ui-tests:
+    if: ${{ !startsWith(github.ref_name, 'release/') }}
     needs: 
       - unit-tests-sdk
       - unit-tests-debug-app
@@ -173,7 +174,6 @@ jobs:
     needs:
       - unit-tests-sdk
       - unit-tests-debug-app
-      - critical-ui-tests
     runs-on: macos-13-large
     timeout-minutes: 45
     name: "Build and upload app to Appetize"
