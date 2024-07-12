@@ -9,6 +9,12 @@
     }
   ],
   "defaultOptions" : {
+    "environmentVariableEntries" : [
+      {
+        "key" : "UNIT_TESTS",
+        "value" : "1"
+      }
+    ],
     "testTimeoutsEnabled" : true
   },
   "testTargets" : [

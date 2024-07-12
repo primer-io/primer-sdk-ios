@@ -46,13 +46,15 @@ class PrimerHeadlessKlarnaComponent {
     }
 
     /// Validates the tokenization component, handling any errors that occur during the process.
-    func validate() {
+    func validate() -> Bool {
         do {
             try tokenizationComponent.validate()
+            return true
         } catch {
             if let err = error as? PrimerError {
-                errorDelegate?.didReceiveError(error: err)
+                handleReceivedError(error: err)
             }
+            return false
         }
     }
 
@@ -121,9 +123,10 @@ extension PrimerHeadlessKlarnaComponent: KlarnaComponent {
 
     /// Initiates the creation of a Klarna payment session.
     public func start() {
-        validate()
-        trackStart()
-        startSession()
+        if validate() {
+            trackStart()
+            startSession()
+        }
     }
 }
 
@@ -156,6 +159,7 @@ extension PrimerHeadlessKlarnaComponent {
                 let step = KlarnaStep.paymentSessionFinalized(authToken: token, checkoutData: checkoutData)
                 self.stepDelegate?.didReceiveStep(step: step)
             }
+            PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
             self.resetKlarnaSessionVariables()
         }
         .catch { error in
@@ -174,7 +178,7 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderErrorDelegate {
             userInfo: error.info,
             diagnosticsId: error.diagnosticsId
         )
-        errorDelegate?.didReceiveError(error: primerError)
+        handleReceivedError(error: primerError)
     }
 }
 

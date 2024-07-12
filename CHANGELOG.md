@@ -1,3 +1,28 @@
+## 2.27.0 (2024-07-10)
+
+### Feat
+
+- Remove UI only used by card components (#931)
+- Remove card components (#924)
+
+### Fix
+
+- Handle non-200 2xx codes (#934)
+- prevent crash when formatting CVV recapture explanation string (#930)
+
+## 2.26.7 (2024-06-26)
+
+### Fix
+
+- Remove event duplication from Klarna Drop-In (#912)
+- Remove +1 year card expiry validation logic (#911)
+
+## 2.26.6 (2024-06-20)
+
+### Fix
+
+- Manual Handling for Klarna Headless implementation (#899)
+
 ## 2.26.5 (2024-06-05)
 
 ### Fix

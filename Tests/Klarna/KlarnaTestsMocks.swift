@@ -57,6 +57,28 @@ class KlarnaTestsMocks {
             ]
         ]
     ]
+    
+    static var klarnaOrder: ClientSession.Order {
+        .init(id: "order_id",
+              merchantAmount: 1234,
+              totalOrderAmount: 1234,
+              totalTaxAmount: nil,
+              countryCode: .de,
+              currencyCode: Currency(code: "EUR", decimalDigits: 2),
+              fees: nil,
+              lineItems: [
+                .init(itemId: "item_id",
+                      quantity: 1,
+                      amount: 1234,
+                      discountAmount: nil,
+                      name: "my_item",
+                      description: "item_description",
+                      taxAmount: nil,
+                      taxCode: nil,
+                      productType: nil)
+              ],
+              shippingAmount: nil)
+    }
 
     static func getClientSession(
         hasLineItemAmout: Bool = true,
@@ -128,8 +150,8 @@ class KlarnaTestsMocks {
             customerTokenId: isValid ? "mock-customer-token-id" : nil,
             sessionData: Response.Body.Klarna.SessionData(
                 recurringDescription: "Mock recurring description",
-                purchaseCountry: "SE",
-                purchaseCurrency: "SEK",
+                purchaseCountry: "DE",
+                purchaseCurrency: "EUR",
                 locale: "en-US",
                 orderAmount: 100,
                 orderTaxAmount: nil,
@@ -157,6 +179,56 @@ class KlarnaTestsMocks {
                     title: "Mock title"),
                 shippingAddress: nil,
                 tokenDetails: nil))
+    }
+    
+    static var tokenizationResponseBody: Response.Body.Tokenization {
+        .init(analyticsId: "analytics_id",
+              id: "id",
+              isVaulted: false,
+              isAlreadyVaulted: false,
+              paymentInstrumentType: .klarna,
+              paymentMethodType: "KLARNA",
+              paymentInstrumentData: nil,
+              threeDSecureAuthentication: nil,
+              token: "token",
+              tokenType: .singleUse,
+              vaultData: nil)
+    }
+    
+    static var paymentResponseBody: Response.Body.Payment {
+        return .init(id: "id",
+                     paymentId: "payment_id",
+                     amount: 123,
+                     currencyCode: "EUR",
+                     customer: .init(firstName: "first_name",
+                                     lastName: "last_name",
+                                     emailAddress: "email_address",
+                                     mobileNumber: "+44(0)7891234567",
+                                     billingAddress: .init(firstName: "billing_first_name",
+                                                           lastName: "billing_last_name",
+                                                           addressLine1: "billing_line_1",
+                                                           addressLine2: "billing_line_2",
+                                                           city: "billing_city",
+                                                           state: "billing_state",
+                                                           countryCode: "billing_country_code",
+                                                           postalCode: "billing_postal_code"),
+                                     shippingAddress: .init(firstName: "shipping_first_name",
+                                                            lastName: "shipping_last_name",
+                                                            addressLine1: "shipping_line_1",
+                                                            addressLine2: "shipping_line_2",
+                                                            city: "shipping_city",
+                                                            state: "shipping_state",
+                                                            countryCode: "shipping_country_code",
+                                                            postalCode: "shipping_postal_code")),
+                     customerId: "customer_id",
+                     dateStr: nil,
+                     order: nil,
+                     orderId: "order_id",
+                     requiredAction: .init(clientToken: MockAppState.mockClientToken,
+                                           name: .checkout,
+                                           description: "description"),
+                     status: .success,
+                     paymentFailureReason: nil)
     }
 }
 

@@ -9,7 +9,8 @@ on:
         default: develop
         type: string
   schedule:
-    - cron: '0 1 * * 1-5'
+    - cron: '0 21 * 4-10 1-5'
+    - cron: '0 22 * 11-12,1-3 1-5'
   push:
     branches:
       - 'release/**'
@@ -79,7 +80,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - uses: ruby/setup-ruby@943103cae7d3f1bb1e4951d5fcc7928b40e4b742  # v1.177.1
+      - uses: ruby/setup-ruby@78c01b705fd9d5ad960d432d3a0cfa341d50e410  # v1.179.1
         with:
           ruby-version: "3.2"
           bundler-cache: true
@@ -108,7 +109,7 @@ jobs:
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
           SOURCE_BRANCH: ${{ github.ref }}
       - name: Save Browserstack ID
-        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 #v4.3.3
+        uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b #v4.3.4
         id: save_browserstack_id_step
         with:
           name: browserstack_id
@@ -128,7 +129,7 @@ jobs:
             GITLAB_TEMP_PATH: ${{ secrets.GITLAB_APPIUM_PULL_KEY }}
 
         - name: Retrieve Browserstack ID
-          uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e  #v4.1.7
+          uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16  #v4.1.8
           with:
             name: browserstack_id
             path: /var/tmp

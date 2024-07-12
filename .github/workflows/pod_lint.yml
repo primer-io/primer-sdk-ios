@@ -21,9 +21,8 @@ jobs:
         uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
         with:
           access_token: ${{ github.token }}
-
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
-      - uses: ruby/setup-ruby@943103cae7d3f1bb1e4951d5fcc7928b40e4b742  # v1.177.1
+      - uses: ruby/setup-ruby@78c01b705fd9d5ad960d432d3a0cfa341d50e410  # v1.179.1
         with:
           ruby-version: "3.2"
           bundler-cache: true

@@ -16,7 +16,6 @@ class MerchantHeadlessCheckoutKlarnaViewController: UIViewController {
     let activityIndicator = UIActivityIndicatorView(style: .large)
 
     // MARK: - Properties
-    var logs: [String] = []
     var clientToken: String?
     var autoFinalize: Bool = false
     var finalizePayment: Bool = false

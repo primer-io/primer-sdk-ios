@@ -117,11 +117,63 @@ jobs:
           base-branch: ${{ github.base_ref }}
           pull-request-sha: ${{ github.event.pull_request.head.sha }}
           coverage-file-names: sonar-coverage-sdk.xml,sonar-coverage-3DS.xml,sonar-coverage-nol-pay.xml,sonar-coverage-klarna.xml
-          
+  
+  critical-ui-tests:
+    needs: 
+      - unit-tests-sdk
+      - unit-tests-debug-app
+    runs-on: macos-13-large
+    timeout-minutes: 45
+    name: "Run Critical Path UI Tests"
+    steps:
+      - name: Cancel previous jobs
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
+        with:
+          access_token: ${{ github.token }}
+      - name: Git - Checkout
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        with:
+          ref: ${{ github.ref }}
+      - uses: ruby/setup-ruby@d4526a55538b775af234ba4af27118ed6f8f6677  # v1.172.0
+        with:
+          ruby-version: "3.2"
+          bundler-cache: true
+      - name: Setup node
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 #v4.0.2
+        with:
+          node-version: 18.3.0
+      - name: Pre-boot Simulator
+        shell: bash
+        run: |
+          SIM_UUID=$(xcrun xctrace list devices | grep "iPhone 15 Pro Simulator (17.2)" | head -1 | grep -Eo '[0-9A-Z\\-]{36}')
+          xcrun simctl boot "${SIM_UUID}"
+      - name: Test, Build, and Distribute app to Appetize 🚀
+        shell: bash
+        env:
+          SKIP_SIGNING: true
+        run: |
+          bundle exec fastlane build_cocoapods
+      - name: Clone and launch Browserstack tests via Appium 🧪
+        run: |
+            git clone -b 'develop' https://project_41483872_bot:$GITLAB_TEMP_PATH@gitlab.com/primer-io/dx/mobile-appium-tests.git
+            git show --summary
+        env:
+          GITLAB_TEMP_PATH: ${{ secrets.GITLAB_APPIUM_PULL_KEY }}
+      - name: List simulators
+        run: |
+          xcrun simctl list
+      - name: Run Appium Test
+        working-directory: mobile-appium-tests
+        run: |
+          npm install
+          date
+          npx wdio config/wdio.ios.gha.conf.js
+
   build-and-upload-to-appetize:
     needs:
       - unit-tests-sdk
       - unit-tests-debug-app
+      - critical-ui-tests
     runs-on: macos-13-large
     timeout-minutes: 45
     name: "Build and upload app to Appetize"
