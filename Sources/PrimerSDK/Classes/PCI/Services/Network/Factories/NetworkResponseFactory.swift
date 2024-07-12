@@ -44,7 +44,7 @@ class JSONNetworkResponseFactory: NetworkResponseFactory, LogReporter {
         log(data: response, metadata: metadata)
 
         switch metadata.statusCode {
-        case 200:
+        case 200...299:
             do {
                 return try decoder.decode(T.self, from: response)
             } catch {

@@ -1,3 +1,15 @@
+## 2.27.0 (2024-07-10)
+
+### Feat
+
+- Remove UI only used by card components (#931)
+- Remove card components (#924)
+
+### Fix
+
+- Handle non-200 2xx codes (#934)
+- prevent crash when formatting CVV recapture explanation string (#930)
+
 ## 2.26.7 (2024-06-26)
 
 ### Fix
