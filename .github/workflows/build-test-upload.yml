@@ -174,7 +174,6 @@ jobs:
     needs:
       - unit-tests-sdk
       - unit-tests-debug-app
-      - critical-ui-tests
     runs-on: macos-13-large
     timeout-minutes: 45
     name: "Build and upload app to Appetize"
