@@ -169,6 +169,13 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
         }
     }
+    
+    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
+                                                   paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
+        return Promise { seal in
+            seal.fulfill(nil)
+        }
+    }
 
     override func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
