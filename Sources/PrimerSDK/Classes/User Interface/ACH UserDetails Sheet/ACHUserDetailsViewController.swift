@@ -23,6 +23,11 @@ class ACHUserDetailsViewController: PrimerViewController {
     var stripeAchComponent: (any StripeAchUserDetailsComponent)?
     var cancellables: Set<AnyCancellable> = []
     weak var delegate: ACHUserDetailsDelegate?
+    
+    // MARK: - Completions
+    var didReceiveErrorCompletion: ((_ error: PrimerError) -> Void)?
+    var didUpdateCompletion: (() -> Void)?
+    var didReceiveStepCompletion: ((_ step: PrimerSDK.ACHUserDetailsStep) -> Void)?
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -132,6 +137,7 @@ extension ACHUserDetailsViewController: PrimerHeadlessErrorableDelegate,
     // MARK: - PrimerHeadlessErrorableDelegate
     func didReceiveError(error: PrimerSDK.PrimerError) {
         delegate?.didReceivedError(error: error)
+        didReceiveErrorCompletion?(error)
     }
 
     // MARK: - PrimerHeadlessValidatableDelegate
@@ -162,6 +168,8 @@ extension ACHUserDetailsViewController: PrimerHeadlessErrorableDelegate,
         default:
             break
         }
+
+        didReceiveStepCompletion?(step)
     }
 }
 
@@ -183,5 +191,7 @@ extension ACHUserDetailsViewController {
             achUserDetailsViewModel.isEmailAddressValid = isFieldValid
             achUserDetailsViewModel.emailErrorDescription = error != nil ? emailAddressErrorDescription : ""
         }
+
+        didUpdateCompletion?()
     }
 }
