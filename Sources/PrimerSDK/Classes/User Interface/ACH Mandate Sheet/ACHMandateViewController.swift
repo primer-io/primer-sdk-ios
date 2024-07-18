@@ -11,8 +11,9 @@ import SwiftUI
 class ACHMandateViewController: PrimerViewController {
 
     // MARK: - Properties
-    var mandateView: ACHMandateView?
-    var mandateData: PrimerStripeOptions.MandateData
+    private(set) var mandateView: ACHMandateView?
+    private(set) var mandateData: PrimerStripeOptions.MandateData
+    private(set) var mandateViewModel: ACHMandateViewModel
     weak var delegate: ACHMandateDelegate?
 
     required init?(coder: NSCoder) {
@@ -22,6 +23,7 @@ class ACHMandateViewController: PrimerViewController {
     init(delegate: ACHMandateDelegate, mandateData: PrimerStripeOptions.MandateData) {
         self.mandateData = mandateData
         self.delegate = delegate
+        self.mandateViewModel = ACHMandateViewModel(mandateData: mandateData)
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -48,7 +50,6 @@ class ACHMandateViewController: PrimerViewController {
     }
 
     private func addMandateView() {
-        let mandateViewModel = ACHMandateViewModel(mandateData: mandateData)
         mandateView = ACHMandateView(viewModel: mandateViewModel, onAcceptPressed: {
             self.delegate?.mandateAccepted()
         }, onCancelPressed: {

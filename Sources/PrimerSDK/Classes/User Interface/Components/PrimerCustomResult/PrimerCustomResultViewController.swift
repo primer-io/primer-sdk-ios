@@ -15,12 +15,12 @@ internal class PrimerCustomResultViewController: PrimerViewController {
     }
 
     private(set) internal var paymentStatusView: PrimerResultPaymentStatusView?
-    private(set) internal var error: PrimerError?
     private(set) internal var paymentMethodType: PrimerPaymentMethodType
+    private(set) internal var paymentStatusViewModel: PrimerResultPaymentStatusViewModel
 
     init(paymentMethodType: PrimerPaymentMethodType, error: PrimerError?) {
         self.paymentMethodType = paymentMethodType
-        self.error = error
+        self.paymentStatusViewModel = PrimerResultPaymentStatusViewModel(paymentMethodType: paymentMethodType, error: error)
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -60,8 +60,7 @@ internal class PrimerCustomResultViewController: PrimerViewController {
 
     private func addPaymentStatusView() {
         let paymentMethodViewControllerType = getOriginPaymentMethodScreenType()
-        let viewModel = PrimerResultPaymentStatusViewModel(paymentMethodType: paymentMethodType, error: error)
-        paymentStatusView = PrimerResultPaymentStatusView(viewModel: viewModel, onRetry: {
+        paymentStatusView = PrimerResultPaymentStatusView(viewModel: paymentStatusViewModel, onRetry: {
             PrimerUIManager.primerRootViewController?.popToPaymentMethodViewController(type: paymentMethodViewControllerType)
         }, onChooseOtherPaymentMethod: {
             PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
