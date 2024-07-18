@@ -82,7 +82,8 @@ class CVVRecaptureViewController: UIViewController {
     }
 
     private func setupExplanationLabel() {
-        let explanationText = String(format: Strings.CVVRecapture.explanation, viewModel.cvvLength)
+        let explanationText = String(format: Strings.CVVRecapture.explanation,
+                                     viewModel.cvvLength as NSNumber)
         explanationLabel.text = explanationText
         explanationLabel.numberOfLines = 0
         explanationLabel.textColor = theme.text.body.color
