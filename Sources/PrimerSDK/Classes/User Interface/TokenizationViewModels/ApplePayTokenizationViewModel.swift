@@ -142,6 +142,10 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 let address = self.applePayPaymentResponse.shippingAddress
                 return self.updateShippingAddressViaClientSessionActionWithAddressIfNeeded(address)
             }
+            .then { () -> Promise<Void> in
+                let emailAddress = self.applePayPaymentResponse.emailAddress
+                return self.updateEmailAddressViaClientSessionActionWithEmailIfNeeded(emailAddress)
+            }
             .done {
                 seal.fulfill()
             }
@@ -329,6 +333,15 @@ extension ApplePayTokenizationViewModel {
                                      state: postalAddress.state,
                                      countryCode: CountryCode(rawValue: postalAddress.isoCountryCode))
     }
+    
+    private func clientSessionEmailFromApplePayContact(_ contact: PKContact?) -> String? {
+
+        guard let emailAddress = contact?.emailAddress else {
+            return nil
+        }
+
+        return emailAddress
+    }
 
     private func updateBillingAddressViaClientSessionActionWithAddressIfNeeded(_ address: ClientSession.Address?) -> Promise<Void> {
         return Promise { seal in
@@ -365,6 +378,28 @@ extension ApplePayTokenizationViewModel {
 
             firstly {
                 clientSessionActionsModule.dispatch(actions: [shippingAddressAction])
+            }.done {
+                seal.fulfill()
+            }
+            .catch { error in
+                seal.reject(error)
+            }
+        }
+    }
+    
+    private func updateEmailAddressViaClientSessionActionWithEmailIfNeeded(_ email: String?) -> Promise<Void> {
+        return Promise { seal in
+
+            guard let emailAddress = email else {
+                seal.fulfill()
+                return
+            }
+
+            let emailAddressAction: ClientSession.Action = .setEmailAddressActionWithParameters(["emailAddress": emailAddress])
+            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+
+            firstly {
+                clientSessionActionsModule.dispatch(actions: [emailAddressAction])
             }.done {
                 seal.fulfill()
             }
@@ -520,6 +555,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
 
             let billingAddress = clientSessionAddressFromApplePayContact(payment.billingContact)
             let shippingAddress = clientSessionAddressFromApplePayContact(payment.shippingContact)
+            let emailAddress = clientSessionEmailFromApplePayContact(payment.shippingContact)
 
             applePayPaymentResponse = ApplePayPaymentResponse(
                 token: ApplePayPaymentInstrument.PaymentResponseToken(
@@ -532,7 +568,8 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                     paymentData: tokenPaymentData
                 ),
                 billingAddress: billingAddress,
-                shippingAddress: shippingAddress
+                shippingAddress: shippingAddress,
+                emailAddress: emailAddress
             )
 
             completion(PKPaymentAuthorizationResult(status: .success, errors: nil))

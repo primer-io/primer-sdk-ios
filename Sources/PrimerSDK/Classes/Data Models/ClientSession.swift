@@ -40,6 +40,10 @@ internal class ClientSession {
             ClientSession.Action(type: .setShippingAddress,
                                  params: makeShippingAddressDictionaryRequestFromParameters(parameters))
         }
+        
+        static func setEmailAddressActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
+            ClientSession.Action(type: .setEmailAddress, params: parameters)
+        }
 
         // swiftlint:disable:next nesting
         internal enum ActionType: String {
@@ -48,6 +52,7 @@ internal class ClientSession {
             case setBillingAddress = "SET_BILLING_ADDRESS"
             case setShippingAddress = "SET_SHIPPING_ADDRESS"
             case setSurchargeFee = "SET_SURCHARGE_FEE"
+            case setEmailAddress = "SET_EMAIL_ADDRESS"
         }
 
         internal var type: ActionType
