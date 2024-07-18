@@ -44,6 +44,10 @@ internal class ClientSession {
         static func setEmailAddressActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
             ClientSession.Action(type: .setEmailAddress, params: parameters)
         }
+        
+        static func setMobileNumberActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
+            ClientSession.Action(type: .setMobileNumber, params: parameters)
+        }
 
         // swiftlint:disable:next nesting
         internal enum ActionType: String {
@@ -53,6 +57,7 @@ internal class ClientSession {
             case setShippingAddress = "SET_SHIPPING_ADDRESS"
             case setSurchargeFee = "SET_SURCHARGE_FEE"
             case setEmailAddress = "SET_EMAIL_ADDRESS"
+            case setMobileNumber = "SET_MOBILE_NUMBER"
         }
 
         internal var type: ActionType
