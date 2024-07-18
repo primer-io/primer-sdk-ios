@@ -168,7 +168,7 @@ jobs:
         run: |
           npm install
           date
-          npx wdio config/wdio.ios.gha.conf.js
+          testType=MOCKED npx wdio config/wdio.ios.gha.conf.js
 
   build-and-upload-to-appetize:
     needs:
