@@ -115,7 +115,7 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
         let expectDidReceiveStripeCollectorAdditionalInfo = self.expectation(description: "didReceiveStripeCollectorAdditionalInfo is called")
         let expectDidReceiveMandateAdditionalInfo = self.expectation(description: "didReceiveMandateAdditionalInfo is called")
         delegate.onDidReceiveAdditionalInfo = { additionalInfo in
-            if additionalInfo is StripeBankAccountCollectorAdditionalInfo {
+            if additionalInfo is ACHBankAccountCollectorAdditionalInfo {
                 expectDidReceiveStripeCollectorAdditionalInfo.fulfill()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     self.sut.stripeBankAccountCollectorCompletion?(true, nil)
