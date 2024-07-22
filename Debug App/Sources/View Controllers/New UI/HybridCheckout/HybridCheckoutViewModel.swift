@@ -108,6 +108,7 @@ class HybridCheckoutViewModel: ObservableObject {
     func presentResultsVC() {
         guard let checkoutData else {
             print("No Checkout Data")
+            return 
         }
         
     }
@@ -131,6 +132,6 @@ extension HybridCheckoutViewModel: PrimerDelegate {
     }
     
     func primerDidDismiss() {
-        self.configureHeadless()
+//        self.configureHeadless()
     }
 }
