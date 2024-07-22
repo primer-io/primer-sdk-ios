@@ -593,6 +593,38 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
+    
+    @IBAction func primerHybridCheckoutButtonTapped(_ sender: Any) {
+        customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
+
+        let settings = PrimerSettings(
+            paymentHandling: selectedPaymentHandling,
+            paymentMethodOptions: PrimerPaymentMethodOptions(
+                urlScheme: "merchant://primer.io",
+                applePayOptions: PrimerApplePayOptions(
+                    merchantIdentifier: "merchant.checkout.team",
+                    merchantName: merchantNameTextField.text ?? "Primer Merchant",
+                    isCaptureBillingAddressEnabled: false,
+                    showApplePayForUnsupportedDevice: false,
+                    checkProvidedNetworks: false)),
+            uiOptions: nil,
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
+        )
+
+        switch renderMode {
+        case .createClientSession, .testScenario:
+            configureClientSession()
+            if case .testScenario = renderMode {
+                configureTestScenario()
+            }
+            
+            let vc = MerchantHybridCheckoutViewController(settings: settings, clientSession: clientSession, clientToken: nil)
+            navigationController?.pushViewController(vc, animated: true)
+        case .clientToken:
+            let vc = MerchantHybridCheckoutViewController(settings: settings, clientSession: nil, clientToken: clientTokenTextField.text)
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
 
     @objc func customerIdChanged(_ textField: UITextField!) {
         guard let text = customerIdTextField.text else { return }
