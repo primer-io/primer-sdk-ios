@@ -21,6 +21,9 @@ final class MerchantHybridCheckoutViewController: UIViewController {
                                                  clientSession: clientSession,
                                                  clientToken: clientToken)
         super.init(nibName: nil, bundle: nil)
+        viewModel.shouldPushViewController = { viewController in
+            self.navigationController?.pushViewController(viewController, animated: true)
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -54,30 +57,97 @@ struct HybridCheckoutView: View {
     @StateObject var viewModel: HybridCheckoutViewModel
     
     var body: some View {
-        VStack {
+        VStack(spacing: 24) {
             Text("Hybrid Checkout")
                 .font(.headline)
-                .padding(.bottom, 32)
+            if viewModel.isLoading {
+                ProgressView("Loading...")
+                    .progressViewStyle(CircularProgressViewStyle())
+            }
             PaymentMethodsView(paymentMethods: $viewModel.availablePaymentMethods) { selectedPaymentMethod in
-                print(selectedPaymentMethod + " tapped.")
+                viewModel.selectedPaymentMethod(selectedPaymentMethod)
             }
         }
+        .padding()
     }
 }
 
 struct PaymentMethodsView: View {
     
-    @Binding var paymentMethods: [String]
-    var didSelectPaymentMethod: (String) -> Void
+    @Binding var paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]
+    var didSelectPaymentMethod: (PrimerHeadlessUniversalCheckout.PaymentMethod) -> Void
     
     var body: some View {
         VStack {
-            List(paymentMethods, id: \.self) { pm in
-                Text(pm).onTapGesture {
+            ForEach(paymentMethods, id: \.self) { pm in
+                PaymentMethodButton(paymentMethod: pm) {
                     didSelectPaymentMethod(pm)
                 }
             }
+            Spacer()
         }
     }
 }
 
+struct PaymentMethodButton: View {
+    let paymentMethod: PrimerHeadlessUniversalCheckout.PaymentMethod
+    let action: () -> Void
+    
+    @State private var backgroundColor = Color.blue
+    @State private var foregroundColor = Color.white
+    @State private var image: Image?
+    @State private var text: String = ""
+    
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                if image != nil {
+                    image!
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 24)
+                        .foregroundColor(.white)
+                }
+                Spacer()
+                Text(text)
+                    .foregroundColor(foregroundColor)
+            }
+            .padding(.horizontal, 32)
+            .padding(.vertical, 8)
+            .background(backgroundColor)
+            .cornerRadius(10)
+        }.onAppear(perform: {
+            configure()
+        })
+    }
+    
+    private func configure() {
+        if let paymentMethodAsset = try? PrimerHeadlessUniversalCheckout.AssetsManager.getPaymentMethodAsset(for: paymentMethod.paymentMethodType) {
+            let uiColor = ((paymentMethodAsset.paymentMethodBackgroundColor.colored ?? paymentMethodAsset.paymentMethodBackgroundColor.light) ?? paymentMethodAsset.paymentMethodBackgroundColor.dark) ?? UIColor.blue
+            
+            backgroundColor = Color(uiColor: uiColor)
+            
+            if let logoImage = (paymentMethodAsset.paymentMethodLogo.colored ?? paymentMethodAsset.paymentMethodLogo.light) ?? paymentMethodAsset.paymentMethodLogo.dark {
+                self.image = Image(uiImage: logoImage)
+            }
+            
+            if paymentMethod.paymentMethodType == "PAYMENT_CARD" {
+                self.foregroundColor = .black
+            }
+            
+            self.text = "Pay with \(paymentMethodAsset.paymentMethodName)"
+        }
+        else {
+            self.text = "Failed to find payment method asset for \(paymentMethod.paymentMethodType)"
+        }
+    }
+}
+
+extension Color {
+    init(uiColor: UIColor) {
+        self.init(red: Double(uiColor.cgColor.components?[0] ?? 0),
+                  green: Double(uiColor.cgColor.components?[1] ?? 0),
+                  blue: Double(uiColor.cgColor.components?[2] ?? 0),
+                  opacity: Double(uiColor.cgColor.components?[3] ?? 1))
+    }
+}
