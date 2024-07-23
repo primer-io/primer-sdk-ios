@@ -40,33 +40,37 @@ final internal class DependencyContainer {
 
     private func register<T>(_ dependency: T) {
         let key = String(describing: T.self)
-        Self.queue.async(flags: .barrier) { [weak self] in
-            self?.dependencies[key] = dependency as AnyObject
+        Self.queue.async(flags: .barrier) {
+            self.dependencies[key] = dependency as AnyObject
         }
     }
 
     private func resolve<T>() -> T {
         let key = String(describing: T.self)
-        
+
         if let dependency = Self.queue.sync(execute: { dependencies[key] as? T }) {
             return dependency
         }
-        
+
         return Self.queue.sync {
-            // Check again in case it was registered while we were waiting
             if let dependency = self.dependencies[key] as? T {
                 return dependency
             }
-            
-            // If still not found, create and register it
+
             let dependency: T? = self.createDependency(for: key)
             if let dependency = dependency {
                 self.dependencies[key] = dependency as AnyObject
             }
+
+            precondition(
+                dependency != nil,
+                "No dependency found for \(key)! must register a dependency before resolve."
+            )
+
             return dependency!
         }
     }
-    
+
     private func createDependency<T>(for key: String) -> T? {
         switch key {
         case String(describing: AppStateProtocol.self):
