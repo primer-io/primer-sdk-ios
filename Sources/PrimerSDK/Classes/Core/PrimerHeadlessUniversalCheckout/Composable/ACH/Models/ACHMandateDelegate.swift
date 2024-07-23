@@ -17,6 +17,6 @@ import Foundation
  *  - `mandateDeclined()`: Called when the user declines the mandate.
  */
 public protocol ACHMandateDelegate {
-    func mandateAccepted()
-    func mandateDeclined()
+    func acceptMandate()
+    func declineMandate()
 }

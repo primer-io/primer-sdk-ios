@@ -23,7 +23,6 @@ class ACHClientSessionService: ACHUserDetailsProviding {
 
     // MARK: - Properties
     private let apiClient: PrimerAPIClientProtocol
-    private var clientSession: ClientSession.APIResponse?
 
     // MARK: - Settings
     let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -31,7 +30,6 @@ class ACHClientSessionService: ACHUserDetailsProviding {
     // MARK: - Init
     init() {
         self.apiClient = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
-        self.clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
     }
 }
 
@@ -43,7 +41,7 @@ class ACHClientSessionService: ACHUserDetailsProviding {
  */
 extension ACHClientSessionService {
     func getClientSessionUserDetails() -> Promise<ACHUserDetails> {
-        let customerDetails = clientSession?.customer
+        let customerDetails = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer
         return Promise { seal in
             let userDetails = ACHUserDetails(firstName: customerDetails?.firstName ?? "",
                                                    lastName: customerDetails?.lastName ?? "",
@@ -96,7 +94,6 @@ private extension ACHClientSessionService {
                 switch result {
                 case .success(let configuration):
                     PrimerAPIConfigurationModule.apiConfiguration?.clientSession = configuration.clientSession
-                    self.clientSession = configuration.clientSession
                     seal.fulfill()
                 case .failure(let error):
                     seal.reject(error)

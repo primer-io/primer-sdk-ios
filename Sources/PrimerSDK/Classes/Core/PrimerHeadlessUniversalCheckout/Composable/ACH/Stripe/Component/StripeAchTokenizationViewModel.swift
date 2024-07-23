@@ -17,7 +17,6 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     // MARK: Variables
     private var achTokenizationService: ACHTokenizationService
     private var clientSessionService: ACHClientSessionService = ACHClientSessionService()
-    private var apiclient = PrimerAPIClient()
     private var publishableKey: String = ""
     private var clientSecret: String = ""
     private var returnedStripeAchPaymentId: String = ""
@@ -269,12 +268,12 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
      */
     private func completePayment(clientToken: DecodedJWTToken, completeUrl: URL) -> Promise<Void> {
         return Promise { seal in
-            let apiclient = PrimerAPIClient()
+            let apiClient: PrimerAPIClientAchProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
             let timeZone = TimeZone(abbreviation: "UTC")
             let timeStamp = Date().toString(timeZone: timeZone)
             
             let body = Request.Body.Payment.Complete(mandateSignatureTimestamp: timeStamp, paymentMethodId: returnedStripeAchPaymentId)
-            apiclient.completePayment(clientToken: clientToken, url: completeUrl, paymentRequest: body) { result in
+            apiClient.completePayment(clientToken: clientToken, url: completeUrl, paymentRequest: body) { result in
                 switch result {
                 case .success:
                     seal.fulfill()
@@ -456,11 +455,11 @@ extension StripeAchTokenizationViewModel {
 
 // MARK: - ACHMandateDelegate methods
 extension StripeAchTokenizationViewModel: ACHMandateDelegate {
-    func mandateAccepted() {
+    func acceptMandate() {
         stripeMandateCompletion?(true, nil)
     }
     
-    func mandateDeclined() {
+    func declineMandate() {
         let error = ACHHelpers.getCancelledError(paymentMethodType: config.type)
         stripeMandateCompletion?(false, error)
     }

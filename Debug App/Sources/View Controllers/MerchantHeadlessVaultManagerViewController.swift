@@ -138,9 +138,9 @@ class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadle
     
     private func showMandate() {
         showAlert(title: "Mandate acceptance", message: "Would you like to accept this mandate?") {
-            self.mandateDelegate?.mandateAccepted()
+            self.mandateDelegate?.acceptMandate()
         } cancelHandler: {
-            self.mandateDelegate?.mandateDeclined()
+            self.mandateDelegate?.declineMandate()
         }
     }
     

@@ -16,7 +16,8 @@ protocol PrimerAPIClientProtocol:
     PrimerAPIClientBanksProtocol,
     PrimerAPIClientPayPalProtocol,
     PrimerAPIClientVaultProtocol,
-    PrimerAPIClientXenditProtocol {
+    PrimerAPIClientXenditProtocol,
+    PrimerAPIClientAchProtocol {
 
     // MARK: Configuration
 
