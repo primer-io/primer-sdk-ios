@@ -5,6 +5,8 @@
 //  Created by Carl Eriksson on 10/02/2021.
 //
 
+import Foundation
+
 @propertyWrapper
 struct Dependency<T> {
     var wrappedValue: T
@@ -19,6 +21,8 @@ private let _DependencyContainer = DependencyContainer()
 // swiftlint:enable identifier_name
 
 final internal class DependencyContainer {
+    
+    private static let queue: DispatchQueue = DispatchQueue(label: "primer.dependencycontainer")
 
     private var dependencies = [String: AnyObject]()
 
@@ -36,36 +40,43 @@ final internal class DependencyContainer {
 
     private func register<T>(_ dependency: T) {
         let key = String(describing: T.self)
-        dependencies[key] = dependency as AnyObject
+        Self.queue.async(flags: .barrier) { [weak self] in
+            self?.dependencies[key] = dependency as AnyObject
+        }
     }
 
     private func resolve<T>() -> T {
         let key = String(describing: T.self)
-        let dependency = dependencies[key] as? T
-
-        if dependency == nil {
-            if key == String(describing: AppStateProtocol.self) {
-                let appState: AppStateProtocol = AppState()
-                DependencyContainer.register(appState)
-                return self.resolve()
-
-            } else if key == String(describing: PrimerSettingsProtocol.self) {
-                let primerSettings: PrimerSettingsProtocol = PrimerSettings()
-                DependencyContainer.register(primerSettings)
-                return self.resolve()
-
-            } else if key == String(describing: PrimerThemeProtocol.self) {
-                let primerTheme: PrimerThemeProtocol = PrimerTheme()
-                DependencyContainer.register(primerTheme)
-                return self.resolve()
-            }
+        
+        if let dependency = Self.queue.sync(execute: { dependencies[key] as? T }) {
+            return dependency
         }
-
-        precondition(
-            dependency != nil,
-            "No dependency found for \(key)! must register a dependency before resolve."
-        )
-
-        return dependency!
+        
+        return Self.queue.sync {
+            // Check again in case it was registered while we were waiting
+            if let dependency = self.dependencies[key] as? T {
+                return dependency
+            }
+            
+            // If still not found, create and register it
+            let dependency: T? = self.createDependency(for: key)
+            if let dependency = dependency {
+                self.dependencies[key] = dependency as AnyObject
+            }
+            return dependency!
+        }
+    }
+    
+    private func createDependency<T>(for key: String) -> T? {
+        switch key {
+        case String(describing: AppStateProtocol.self):
+            return AppState() as? T
+        case String(describing: PrimerSettingsProtocol.self):
+            return PrimerSettings() as? T
+        case String(describing: PrimerThemeProtocol.self):
+            return PrimerTheme() as? T
+        default:
+            return nil
+        }
     }
 }
