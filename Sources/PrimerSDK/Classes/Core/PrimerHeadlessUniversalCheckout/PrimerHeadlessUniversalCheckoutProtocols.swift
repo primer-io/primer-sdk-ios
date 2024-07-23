@@ -15,7 +15,9 @@ import UIKit
 public protocol PrimerHeadlessUniversalCheckoutUIDelegate {
     @objc optional func primerHeadlessUniversalCheckoutUIDidStartPreparation(for paymentMethodType: String)
     @objc optional func primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for paymentMethodType: String)
+    @available(*, deprecated, message: "use `primerHeadlessUniversalCheckoutUIDidDismissPaymentMethod` instead")
     @objc optional func primerHeadlessUniveraslCheckoutUIDidDismissPaymentMethod()
+    @objc optional func primerHeadlessUniversalCheckoutUIDidDismissPaymentMethod()
 }
 
 @objc
@@ -35,3 +37,5 @@ public protocol PrimerHeadlessUniversalCheckoutDelegate {
     @objc optional func primerHeadlessUniversalCheckoutDidUpdateClientSession(_ clientSession: PrimerClientSession)
     @objc optional func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void)
 }
+// swiftlint:enable type_name
+// swiftlint:enable line_length
