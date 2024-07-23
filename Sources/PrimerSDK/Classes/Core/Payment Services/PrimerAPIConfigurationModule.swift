@@ -8,6 +8,9 @@ internal protocol PrimerAPIConfigurationModuleProtocol {
     static var clientToken: JWTToken? { get }
     static var decodedJWTToken: DecodedJWTToken? { get }
     static var apiConfiguration: PrimerAPIConfiguration? { get }
+    
+//    static var cache: NSCache<NSString, AnyObject> { get }
+    
     static func resetSession()
 
     func setupSession(
@@ -23,7 +26,11 @@ internal protocol PrimerAPIConfigurationModuleProtocol {
 // swiftlint:disable type_body_length
 internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
 
+    private static let cache = NSCache<NSString, CachedData>()
     static var apiClient: PrimerAPIClientProtocol?
+
+    private static let queue = DispatchQueue(label: "com.primer.configurationQueue")
+    private static var pendingPromises: [String: Promise<PrimerAPIConfiguration>] = [:]
 
     static var clientToken: JWTToken? {
         get {
@@ -254,18 +261,67 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 return
             }
 
-            let requestParameters = Request.URLParameters.Configuration(
-                skipPaymentMethodTypes: [],
-                requestDisplayMetadata: requestDisplayMetadata)
+            let cacheKey = "\(clientToken)-\(requestDisplayMetadata)" as NSString
 
-            let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
-            apiClient.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters) { (result) in
-                switch result {
-                case .failure(let err):
-                    seal.reject(err)
-                case .success(let config):
-                    _ = ImageFileProcessor().process(configuration: config).ensure {
+            PrimerAPIConfigurationModule.queue.sync {
+                if let cachedConfig = PrimerAPIConfigurationModule.cache.object(forKey: cacheKey),
+                   validateCachedConfig(key: cacheKey, cachedData: cachedConfig) {
+                    
+                    print("CACHE HIT")
+                    let event = Analytics.Event.message(
+                        message: "Configuration cache hit with key: \(cacheKey)",
+                        messageType: .info,
+                        severity: .info
+                    )
+                    Analytics.Service.record(event: event)
+                    seal.fulfill(cachedConfig.config)
+                    return
+                } else {
+                    // New clientToken, clear the cache?
+                    Self.clearCache()
+                }
+
+                if let pendingPromise = PrimerAPIConfigurationModule.pendingPromises[cacheKey as String] {
+                    pendingPromise.done { config in
                         seal.fulfill(config)
+                    }.catch { error in
+                        seal.reject(error)
+                    }
+                    return
+                }
+
+                let promise = Promise<PrimerAPIConfiguration> { innerSeal in
+                    let requestParameters = Request.URLParameters.Configuration(
+                        skipPaymentMethodTypes: [],
+                        requestDisplayMetadata: requestDisplayMetadata)
+                    
+                    let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
+                    apiClient.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters) { (result) in
+                        switch result {
+                        case .failure(let err):
+                            innerSeal.reject(err)
+                        case .success(let config):
+                            _ = ImageFileProcessor().process(configuration: config).ensure {
+                                // Cache the result
+                                let cachedData = CachedData(config: config)
+                                PrimerAPIConfigurationModule.cache.setObject(cachedData, forKey: cacheKey)
+                                innerSeal.fulfill(config)
+                            }
+                        }
+                    }
+                }
+
+                PrimerAPIConfigurationModule.pendingPromises[cacheKey as String] = promise
+
+                promise.done { config in
+                    seal.fulfill(config)
+                }.catch { error in
+                    seal.reject(error)
+                }
+
+                promise.ensure {
+                    PrimerAPIConfigurationModule.queue.async {
+                        PrimerAPIConfigurationModule.pendingPromises.removeValue(forKey: cacheKey as String)
                     }
                 }
             }
@@ -306,6 +362,34 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             severity: .info
         )
         Analytics.Service.record(event: event)
+    }
+    
+    private static func clearCache() {
+        Self.cache.removeAllObjects()
+    }
+    
+    private static let CacheExpiration: TimeInterval = 60 * 60 * 1000
+    private func validateCachedConfig(key: NSString, cachedData: CachedData) -> Bool {
+        let timestamp = cachedData.timestamp
+        let now = Date().timeIntervalSince1970
+        let timeInterval = now - timestamp
+        
+        if (now - timestamp) > Self.CacheExpiration {
+            Self.cache.removeObject(forKey: key)
+            return false
+        }
+        
+        return true
+    }
+    
+    private class CachedData {
+        let config: PrimerAPIConfiguration
+        let timestamp: TimeInterval
+        
+        init(config: PrimerAPIConfiguration) {
+            self.config = config
+            self.timestamp = Date().timeIntervalSince1970
+        }
     }
 }
 // swiftlint:enable type_body_length
