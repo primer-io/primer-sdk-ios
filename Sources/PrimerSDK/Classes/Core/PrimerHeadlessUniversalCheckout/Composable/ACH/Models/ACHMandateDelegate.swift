@@ -13,8 +13,8 @@ import Foundation
  * Specifies methods for handling actions when a user accepts or declines an ACH mandate.
  *
  * Methods:
- *  - `mandateAccepted()`: Called when the user accepts the mandate, enabling completion of transaction.
- *  - `mandateDeclined()`: Called when the user declines the mandate.
+ *  - `acceptMandate()`: Called when the user accepts the mandate, enabling completion of transaction.
+ *  - `declineMandate()`: Called when the user declines the mandate.
  */
 public protocol ACHMandateDelegate {
     func acceptMandate()
