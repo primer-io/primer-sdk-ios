@@ -29,10 +29,6 @@ class RetryHandler: LogReporter {
         return min(exponentialPart + jitterPart, Double.greatestFiniteMagnitude)
     }
 
-    func logRetry(retryReason: String, backoffTime: TimeInterval) {
-        self.logger.debug(message: "Retry attempt \(self.retries)/\(self.retryConfig.maxRetries) due to: \(retryReason). Waiting for \(backoffTime)s before next attempt.")
-    }
-
     func handleRetry(responseModel: DispatcherResponseModel, error: Error?) {
         if self.shouldRetry(response: responseModel, error: error) {
             self.retries += 1
@@ -41,7 +37,7 @@ class RetryHandler: LogReporter {
                                                               maxJitter: self.retryConfig.maxJitter)
 
             let retryReason = error?.isNetworkError == true ? "Network error" : "HTTP \(responseModel.metadata.statusCode) error)"
-            self.logRetry(retryReason: retryReason, backoffTime: backoffTime)
+            self.logger.debug(message: "Retry attempt \(self.retries)/\(self.retryConfig.maxRetries) due to: \(retryReason). Waiting for \(backoffTime)s before next attempt.")
 
             DispatchQueue.global().asyncAfter(deadline: .now() + backoffTime) {
                 self.attempt()
@@ -52,20 +48,20 @@ class RetryHandler: LogReporter {
     }
 
     func handleFinalFailure(responseModel: DispatcherResponseModel, error: Error?) {
+        var errorMessage = "Failed after \(self.retries) retries.\n"
+
         if self.retries >= self.retryConfig.maxRetries {
-            let errorMessage = "Failed after \(self.retries) retries. Reached maximum retries (\(self.retryConfig.maxRetries)). Last error object: \(error?.localizedDescription ?? "nil")"
-            self.logger.debug(message: errorMessage)
-            self.completion(.failure(PrimerError.missingPrimerConfiguration(userInfo: .errorUserInfoDictionary(),
-                                                                            diagnosticsId: UUID().uuidString)))
+            errorMessage += "Reached maximum retries (\(self.retryConfig.maxRetries)).\nLast error object: \(error?.localizedDescription ?? "nil")"
         } else if responseModel.metadata.statusCode >= 500 {
-            let errorMessage = "Failed after \(self.retries) retries from server error: \(responseModel.metadata.statusCode)"
-            self.logger.debug(message: errorMessage)
-            self.completion(.failure(PrimerError.missingPrimerConfiguration(userInfo: .errorUserInfoDictionary(),
-                                                                            diagnosticsId: UUID().uuidString)))
+            errorMessage += "Server error: \(responseModel.metadata.statusCode)"
+        } else if let error = error {
+            errorMessage += "Last error object: \(error.localizedDescription)"
         } else {
-            self.completion(.failure(PrimerError.missingPrimerConfiguration(userInfo: .errorUserInfoDictionary(),
-                                                                            diagnosticsId: UUID().uuidString)))
+            errorMessage += "Status code: \(responseModel.metadata.statusCode)"
         }
+        self.logger.debug(message: errorMessage)
+        self.completion(.failure(PrimerError.missingPrimerConfiguration(userInfo: .errorUserInfoDictionary(),
+                                                                        diagnosticsId: UUID().uuidString)))
     }
 
     func attempt() {
@@ -84,6 +80,8 @@ class RetryHandler: LogReporter {
 
             // Check if the response is successful
             if (200...299).contains(responseModel.metadata.statusCode) {
+                let successMessage = "Request succedded after \(self.retries) retries. Status code: \(responseModel.metadata.statusCode)"
+                self.logger.debug(message: successMessage)
                 self.completion(.success(responseModel))
             } else {
                 self.handleRetry(responseModel: responseModel, error: error)

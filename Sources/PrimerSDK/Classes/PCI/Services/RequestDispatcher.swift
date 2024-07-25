@@ -11,7 +11,7 @@ typealias DispatcherCompletion = (Result<DispatcherResponse, Error>) -> Void
 
 protocol RequestDispatcher {
     func dispatch(request: URLRequest) async throws -> DispatcherResponse
-    func dispatch(request: URLRequest, completion: @escaping DispatcherCompletion) throws -> PrimerCancellable?
+    func dispatch(request: URLRequest, completion: @escaping DispatcherCompletion) -> PrimerCancellable?
     func dispatchWithRetry(request: URLRequest, retryConfig: RetryConfig, completion: @escaping DispatcherCompletion) -> PrimerCancellable?
 }
 

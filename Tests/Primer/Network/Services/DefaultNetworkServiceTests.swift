@@ -22,7 +22,16 @@ class MockRequestDispatcher: RequestDispatcher {
         return responseModel
     }
     
-    func dispatch(request: URLRequest, completion: @escaping PrimerSDK.DispatcherCompletion) throws -> (any PrimerSDK.PrimerCancellable)? {
+    func dispatch(request: URLRequest, completion: @escaping PrimerSDK.DispatcherCompletion) -> (any PrimerSDK.PrimerCancellable)? {
+        if let error = error {
+            completion(.failure(error))
+        } else {
+            completion(.success(responseModel))
+        }
+        return nil
+    }
+
+    func dispatchWithRetry(request: URLRequest, retryConfig: PrimerSDK.RetryConfig, completion: @escaping PrimerSDK.DispatcherCompletion) -> (any PrimerSDK.PrimerCancellable)? {
         if let error = error {
             completion(.failure(error))
         } else {

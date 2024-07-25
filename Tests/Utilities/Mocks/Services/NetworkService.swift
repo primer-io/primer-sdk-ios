@@ -36,4 +36,21 @@ class MockNetworkService: NetworkService {
 
         return nil
     }
+
+    func request<T>(_ endpoint: any PrimerSDK.Endpoint, retryConfig: PrimerSDK.RetryConfig?, completion: @escaping PrimerSDK.ResponseCompletion<T>) -> (any PrimerSDK.PrimerCancellable)? where T : Decodable {
+
+        onReceiveEndpoint?(endpoint)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
+            if let error = self.mockedError {
+                completion(.failure(error))
+            } else if let result = self.mockedResult as? T {
+                completion(.success(result))
+            } else {
+                XCTFail("Failed to produce either a valid result or an error for requested endpoint")
+            }
+        }
+
+        return nil
+    }
 }

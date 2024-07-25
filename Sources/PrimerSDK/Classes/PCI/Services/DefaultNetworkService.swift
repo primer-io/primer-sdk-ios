@@ -96,12 +96,7 @@ class DefaultNetworkService: NetworkService, LogReporter {
                                                                                                 retryConfig: retryConfig,
                                                                                                 completion: completion)
             } else {
-                do {
-                    return try self.requestDispatcher.dispatch(request: request, completion: completion)
-                } catch {
-                    completion(.failure(error))
-                    return nil
-                }
+                return self.requestDispatcher.dispatch(request: request, completion: completion)
             }
         }
     }
