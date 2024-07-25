@@ -351,6 +351,11 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: PrimerH
         print("\n\nMERCHANT APP\n\(#function)\npaymentMethodType: \(paymentMethodType)")
         self.logs.append(#function)
     }
+
+    func primerHeadlessUniversalCheckoutUIDidDismissPaymentMethod() {
+        print("\n\nMERCHANT APP\n\(#function)\nUIDidDismissPaymentMethod")
+        self.logs.append(#function)
+    }
 }
 
 extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {

@@ -96,6 +96,7 @@ internal class PrimerDelegateProxy: LogReporter {
                 Primer.shared.delegate?.primerDidDismiss?()
             } else if paymentMethodManagerCategories.contains(.nativeUI) {
                 PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniveraslCheckoutUIDidDismissPaymentMethod?()
+                PrimerHeadlessUniversalCheckout.current.uiDelegate?.primerHeadlessUniversalCheckoutUIDidDismissPaymentMethod?()
             }
         }
     }

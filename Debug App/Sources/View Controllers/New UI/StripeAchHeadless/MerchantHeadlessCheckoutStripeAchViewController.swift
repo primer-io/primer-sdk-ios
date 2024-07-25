@@ -157,9 +157,9 @@ extension MerchantHeadlessCheckoutStripeAchViewController {
     
     func showMandate() {
         showAlert(title: "Mandate acceptance", message: "Would you like to accept this mandate?") {
-            self.manager.mandateDelegate?.mandateAccepted()
+            self.manager.mandateDelegate?.acceptMandate()
         } cancelHandler: {
-            self.manager.mandateDelegate?.mandateDeclined()
+            self.manager.mandateDelegate?.declineMandate()
         }
     }
 }

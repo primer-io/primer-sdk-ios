@@ -150,7 +150,7 @@ jobs:
             BROWSERSTACK_ACCESS_KEY: ${{secrets.BROWSERSTACK_ACCESS_KEY}}
           run: |
             export BROWSERSTACK_APP_ID=$(cat /var/tmp/browserstack_id.txt)
-            npx wdio config/wdio.ios.bs.conf.js
+            testType=MOCKED npx wdio config/wdio.ios.bs.conf.js
             
         - name: Create Slack Report
           if: ${{ success() || failure() }}

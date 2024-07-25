@@ -17,7 +17,6 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     // MARK: Variables
     private var achTokenizationService: ACHTokenizationService
     private var clientSessionService: ACHClientSessionService = ACHClientSessionService()
-    private var apiclient = PrimerAPIClient()
     private var publishableKey: String = ""
     private var clientSecret: String = ""
     private var returnedStripeAchPaymentId: String = ""
@@ -556,11 +555,11 @@ extension StripeAchTokenizationViewModel {
 
 // MARK: - ACHMandateDelegate
 extension StripeAchTokenizationViewModel: ACHMandateDelegate {
-    func mandateAccepted() {
+    func acceptMandate() {
         stripeMandateCompletion?(true, nil)
     }
-
-    func mandateDeclined() {
+    
+    func declineMandate() {
         let error = ACHHelpers.getCancelledError(paymentMethodType: config.type)
         stripeMandateCompletion?(false, error)
     }

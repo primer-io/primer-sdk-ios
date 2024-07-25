@@ -912,11 +912,11 @@ extension PrimerHeadlessUniversalCheckout {
 }
 
 extension PrimerHeadlessUniversalCheckout.VaultManager: ACHMandateDelegate {
-    public func mandateAccepted() {
+    public func acceptMandate() {
         achMandateCompletion?(true, nil)
     }
     
-    public func mandateDeclined() {
+    public func declineMandate() {
         let error = ACHHelpers.getCancelledError(paymentMethodType: paymentMethodType)
         achMandateCompletion?(false, error)
     }

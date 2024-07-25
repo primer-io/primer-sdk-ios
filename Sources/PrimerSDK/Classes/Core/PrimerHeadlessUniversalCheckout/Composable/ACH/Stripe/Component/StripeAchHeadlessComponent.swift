@@ -50,7 +50,7 @@ class StripeAchHeadlessComponent {
     }
 }
 
-// MARK: - PrimerHeadlessMainComponent delegates
+// MARK: - PrimerHeadlessAchComponent delegates
 extension StripeAchHeadlessComponent: StripeAchUserDetailsComponent {
     public func updateCollectedData(collectableData: ACHUserDetailsCollectableData) {
         trackCollectableData()

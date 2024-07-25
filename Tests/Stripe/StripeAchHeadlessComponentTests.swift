@@ -392,7 +392,7 @@ extension StripeAchHeadlessComponentTests {
 
         tokenizationService = ACHTokenizationService(paymentMethod: ACHMocks.stripeACHPaymentMethod)
         tokenizationViewModel = StripeAchTokenizationViewModel(config: ACHMocks.stripeACHPaymentMethod)
-        sut = StripeAchHeadlessComponent(tokenizationService: tokenizationService, tokenizationViewModel: tokenizationViewModel)
+        sut = StripeAchHeadlessComponent(tokenizationViewModel: tokenizationViewModel)
         sut.stepDelegate = self
         sut.validationDelegate = self
         sut.errorDelegate = self
