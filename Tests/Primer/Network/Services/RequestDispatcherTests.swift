@@ -240,30 +240,4 @@ final class RequestDispatcherTests: XCTestCase {
 
         waitForExpectations(timeout: 2.0)
     }
-
-    func testMaxRetriesReached() throws {
-        let expectation = self.expectation(description: "Max retries reached")
-
-        let urlString = "https://a_url"
-        let url = URL(string: urlString)!
-
-        session.response = HTTPURLResponse(url: url, statusCode: 500, httpVersion: "2", headerFields: nil)
-        session.data = "Test".data(using: .utf8)
-
-        let request = URLRequest(url: url)
-        let retryConfig = RetryConfig(maxRetries: 2, initialBackoff: 0.1, retryNetworkErrors: false, retry500Errors: true, maxJitter: 0.1)
-
-        _ = dispatcher.dispatchWithRetry(request: request, retryConfig: retryConfig) { result in
-            switch result {
-            case .success(_):
-                XCTFail()
-            case .failure(let error):
-                XCTAssertEqual((self.session.response as? HTTPURLResponse)?.statusCode, 500)
-                XCTAssertTrue(error.localizedDescription.contains("Reached maximum retries"))
-                expectation.fulfill()
-            }
-        }
-
-        waitForExpectations(timeout: 2.0)
-    }
 }

@@ -72,7 +72,12 @@ class RetryHandler: LogReporter {
     }
 
     func attempt() {
+        let startTime = DispatchTime.now()
         currentTask = urlSession.dataTask(with: request) { data, urlResponse, error in
+
+            let endTime = DispatchTime.now()
+            let requestDuration = Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000 // Convert to milliseconds
+
             guard let httpResponse = urlResponse as? HTTPURLResponse else {
                 let error = InternalError.invalidResponse(userInfo: .errorUserInfoDictionary(),
                                                           diagnosticsId: UUID().uuidString)
@@ -83,7 +88,7 @@ class RetryHandler: LogReporter {
             let metadata = ResponseMetadataModel(responseUrl: httpResponse.url?.absoluteString,
                                                  statusCode: httpResponse.statusCode,
                                                  headers: httpResponse.allHeaderFields as? [String: String])
-            let responseModel = DispatcherResponseModel(metadata: metadata, data: data, error: error)
+            let responseModel = DispatcherResponseModel(metadata: metadata, requestDuration: requestDuration, data: data, error: error)
 
             // Check if the response is successful
             if (200...299).contains(responseModel.metadata.statusCode) {

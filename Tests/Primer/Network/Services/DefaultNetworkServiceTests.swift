@@ -75,7 +75,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
 
         let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
         let data = try JSONEncoder().encode(responseModel)
-        requestDispatcher.responseModel = DispatcherResponseModel(metadata: metadata, data: data, error: nil)
+        requestDispatcher.responseModel = DispatcherResponseModel(metadata: metadata, requestDuration: 1000, data: data, error: nil)
 
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken, requestParameters: nil)
         let cancellable = defaultNetworkService.request(endpoint) { (result: APIResult<PrimerAPIConfiguration>) in
@@ -107,7 +107,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
 
         let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
         let data = try JSONEncoder().encode("invalid")
-        requestDispatcher.responseModel = DispatcherResponseModel(metadata: metadata, data: data, error: nil)
+        requestDispatcher.responseModel = DispatcherResponseModel(metadata: metadata, requestDuration: 1000, data: data, error: nil)
 
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken, requestParameters: nil)
         let cancellable = defaultNetworkService.request(endpoint) { (result: APIResult<PrimerAPIConfiguration>) in
@@ -136,7 +136,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
 
         let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
         let data = Data()
-        requestDispatcher.responseModel = DispatcherResponseModel(metadata: metadata, data: data, error: nil)
+        requestDispatcher.responseModel = DispatcherResponseModel(metadata: metadata, requestDuration: 1000, data: data, error: nil)
 
         let endpoint = PrimerAPI.redirect(clientToken: Mocks.decodedJWTToken, url: URL(string: metadata.responseUrl!)!)
         let cancellable = defaultNetworkService.request(endpoint) { (result: APIResult<SuccessResponse>) in
@@ -158,7 +158,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
 
         let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
         let data = "<html><head></head><body><a>test</a></body></html>".data(using: .utf8)
-        requestDispatcher.responseModel = DispatcherResponseModel(metadata: metadata, data: data, error: nil)
+        requestDispatcher.responseModel = DispatcherResponseModel(metadata: metadata, requestDuration: 1000, data: data, error: nil)
 
         let endpoint = PrimerAPI.redirect(clientToken: Mocks.decodedJWTToken, url: URL(string: metadata.responseUrl!)!)
         let cancellable = defaultNetworkService.request(endpoint) { (result: APIResult<SuccessResponse>) in

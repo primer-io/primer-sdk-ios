@@ -117,7 +117,10 @@ class DefaultNetworkService: NetworkService, LogReporter {
                                              identifier: String,
                                              endpoint: Endpoint,
                                              completion: @escaping ResponseCompletion<T>) {
-        reportingService.report(eventType: .requestEnd(identifier: identifier, endpoint: endpoint, response: response.metadata))
+        reportingService.report(eventType: .requestEnd(identifier: identifier,
+                                                       endpoint: endpoint,
+                                                       response: response.metadata,
+                                                       duration: response.requestDuration))
 
         if let error = response.error {
             completion(.failure(InternalError.underlyingErrors(errors: [error],
