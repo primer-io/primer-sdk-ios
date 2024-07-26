@@ -116,6 +116,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 switch result {
                 case .success(let configuration):
                     PrimerAPIConfigurationModule.apiConfiguration?.clientSession = configuration.clientSession
+                    PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules = configuration.checkoutModules
                     seal.fulfill()
                 case .failure(let err):
                     seal.reject(err)

@@ -244,7 +244,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
         let paymentMethods: [PrimerPaymentMethod]?
         let primerAccountId: String?
         let keys: ThreeDS.Keys?
-        let checkoutModules: [Response.Body.Configuration.CheckoutModule]?
+        var checkoutModules: [Response.Body.Configuration.CheckoutModule]?
 
         var isSetByClientSession: Bool {
             return clientSession != nil
@@ -360,6 +360,18 @@ extension Response.Body.Configuration {
                 }
             }
         }
+        
+        struct ShippingMethodOptions: CheckoutModuleOptions {
+            let shippingMethods: [ShippingMethod]
+            let selectedShippingMethod: String
+            
+            struct ShippingMethod: Codable {
+                let name: String
+                let description: String
+                let amount: Int
+                let id: String
+            }
+        }
 
         // swiftlint:disable:next nesting
         struct PostalCodeOptions: CheckoutModuleOptions {
@@ -446,10 +458,12 @@ extension Response.Body.Configuration {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.type = try container.decode(String.self, forKey: .type)
             self.requestUrlStr = (try? container.decode(String?.self, forKey: .requestUrlStr)) ?? nil
-
+            
             if let options = (try? container.decode(CardInformationOptions.self, forKey: .options)) {
                 self.options = options
             } else if let options = (try? container.decode(PostalCodeOptions.self, forKey: .options)) {
+                self.options = options
+            } else if let options = (try? container.decode(ShippingMethodOptions.self, forKey: .options)) {
                 self.options = options
             } else {
                 self.options = nil
@@ -464,6 +478,8 @@ extension Response.Body.Configuration {
             if let options = options as? CardInformationOptions {
                 try container.encode(options, forKey: .options)
             } else if let options = options as? PostalCodeOptions {
+                try container.encode(options, forKey: .options)
+            } else if let options = options as? ShippingMethodOptions {
                 try container.encode(options, forKey: .options)
             }
         }

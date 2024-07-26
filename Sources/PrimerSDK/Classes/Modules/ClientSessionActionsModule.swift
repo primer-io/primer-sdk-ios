@@ -92,6 +92,40 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
         }
     }
 
+    static func selectShippingMethodIfNeeded(_ shippingMethodId: String) -> Promise<Void> {
+        return Promise { seal in
+            guard PrimerInternal.shared.intent == .checkout else {
+                seal.fulfill()
+                return
+            }
+
+
+            var params: [String: Any] = ["shipping_method_id": shippingMethodId]
+
+
+            let actions = [ClientSession.Action.selectShippingMethodActionWithParameters(params)]
+            let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
+
+            PrimerDelegateProxy.primerClientSessionWillUpdate()
+
+            let apiConfigurationModule = PrimerAPIConfigurationModule()
+
+            firstly {
+                apiConfigurationModule.updateSession(withActions: clientSessionActionsRequest)
+            }
+            .done {
+                if PrimerAPIConfigurationModule.apiConfiguration != nil {
+                    PrimerDelegateProxy.primerClientSessionDidUpdate(PrimerClientSession(from: PrimerAPIConfigurationModule.apiConfiguration!))
+                }
+
+                seal.fulfill()
+            }
+            .catch { error in
+                seal.reject(error)
+            }
+        }
+    }
+
     func dispatch(actions: [ClientSession.Action]) -> Promise<Void> {
         return Promise { seal in
             let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))

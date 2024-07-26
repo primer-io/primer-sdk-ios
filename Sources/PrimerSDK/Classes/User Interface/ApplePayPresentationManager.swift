@@ -74,6 +74,9 @@ class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
         request.merchantCapabilities = [.capability3DS]
         request.supportedNetworks = supportedNetworks
         request.paymentSummaryItems = applePayRequest.items.compactMap({ $0.applePayItem })
+        if let shippingMethods = applePayRequest.shippingMethods {
+            request.shippingMethods = shippingMethods
+        }
 
         return request
     }

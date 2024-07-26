@@ -32,12 +32,17 @@ internal class ClientSession {
                                  params: makeBillingAddressDictionaryRequestFromParameters(parameters))
         }
 
+        static func selectShippingMethodActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
+            ClientSession.Action(type: .selectShippingMethod, params: parameters)
+        }
+
         // swiftlint:disable:next nesting
         internal enum ActionType: String {
             case selectPaymentMethod = "SELECT_PAYMENT_METHOD"
             case unselectPaymentMethod = "UNSELECT_PAYMENT_METHOD"
             case setBillingAddress = "SET_BILLING_ADDRESS"
             case setSurchargeFee = "SET_SURCHARGE_FEE"
+            case selectShippingMethod = "SELECT_SHIPPING_METHOD"
         }
 
         internal var type: ActionType
@@ -164,6 +169,7 @@ internal class ClientSession {
         let fees: [ClientSession.Order.Fee]?
         let lineItems: [ClientSession.Order.LineItem]?
         let shippingAmount: Int?
+        let shippingMethod: ShippingMethod?
 
         // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
@@ -176,6 +182,7 @@ internal class ClientSession {
             case fees
             case lineItems
             case shippingAmount
+            case shippingMethod = "shipping"
         }
 
         internal init(
@@ -187,7 +194,8 @@ internal class ClientSession {
             currencyCode: Currency?,
             fees: [ClientSession.Order.Fee]?,
             lineItems: [ClientSession.Order.LineItem]?,
-            shippingAmount: Int?
+            shippingAmount: Int?,
+            shippingMethod: ShippingMethod?
         ) {
             self.id = id
             self.merchantAmount = merchantAmount
@@ -198,6 +206,7 @@ internal class ClientSession {
             self.fees = fees
             self.lineItems = lineItems
             self.shippingAmount = shippingAmount
+            self.shippingMethod = shippingMethod
         }
 
         internal init(from decoder: Decoder) throws {
@@ -217,6 +226,7 @@ internal class ClientSession {
             fees = (try? container.decode([ClientSession.Order.Fee]?.self, forKey: .fees)) ?? nil
             lineItems = (try? container.decode([ClientSession.Order.LineItem]?.self, forKey: .lineItems)) ?? nil
             shippingAmount = (try? container.decode(Int?.self, forKey: .shippingAmount)) ?? nil
+            shippingMethod = (try? container.decode(ShippingMethod?.self, forKey: .shippingMethod)) ?? nil
         }
 
         internal func encode(to encoder: Encoder) throws {
@@ -229,6 +239,7 @@ internal class ClientSession {
             try? container.encode(fees, forKey: .fees)
             try? container.encode(lineItems, forKey: .lineItems)
             try? container.encode(shippingAmount, forKey: .shippingAmount)
+            try? container.encode(shippingMethod, forKey: .shippingMethod)
         }
 
         // MARK: ClientSession.Order.LineItem
@@ -273,6 +284,20 @@ internal class ClientSession {
             // swiftlint:disable:next nesting
             enum FeeType: String, Codable {
                 case surcharge = "SURCHARGE"
+            }
+        }
+
+        internal struct ShippingMethod: Codable {
+            let amount: Int
+            let methodId: String?
+            let methodName: String?
+            let methodDescription: String?
+
+            enum CodingKeys: String, CodingKey {
+                case amount
+                case methodId
+                case methodName
+                case methodDescription
             }
         }
     }
