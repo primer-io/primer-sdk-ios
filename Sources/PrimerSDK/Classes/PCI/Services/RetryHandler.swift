@@ -37,7 +37,11 @@ class RetryHandler: LogReporter {
                                                               maxJitter: self.retryConfig.maxJitter)
 
             let retryReason = error?.isNetworkError == true ? "Network error" : "HTTP \(responseModel.metadata.statusCode) error)"
-            self.logger.debug(message: "Retry attempt \(self.retries)/\(self.retryConfig.maxRetries) due to: \(retryReason). Waiting for \(backoffTime)s before next attempt.")
+            let message = "Retry attempt \(self.retries)/\(self.retryConfig.maxRetries) due to: \(retryReason). Waiting for \(backoffTime)s before next attempt."
+            self.logger.debug(message: message)
+
+            let retryEvent = Analytics.Event.message(message: message, messageType: .info, severity: .info)
+            Analytics.Service.record(event: retryEvent)
 
             DispatchQueue.global().asyncAfter(deadline: .now() + backoffTime) {
                 self.attempt()
@@ -60,6 +64,9 @@ class RetryHandler: LogReporter {
             errorMessage += "Status code: \(responseModel.metadata.statusCode)"
         }
         self.logger.debug(message: errorMessage)
+        let retryEvent = Analytics.Event.message(message: errorMessage, messageType: .info, severity: .info)
+        Analytics.Service.record(event: retryEvent)
+
         self.completion(.failure(PrimerError.missingPrimerConfiguration(userInfo: .errorUserInfoDictionary(),
                                                                         diagnosticsId: UUID().uuidString)))
     }
@@ -80,8 +87,10 @@ class RetryHandler: LogReporter {
 
             // Check if the response is successful
             if (200...299).contains(responseModel.metadata.statusCode) {
-                let successMessage = "Request succedded after \(self.retries) retries. Status code: \(responseModel.metadata.statusCode)"
+                let successMessage = "Request succeeded after \(self.retries) retries. Status code: \(responseModel.metadata.statusCode)"
                 self.logger.debug(message: successMessage)
+                let retryEvent = Analytics.Event.message(message: successMessage, messageType: .info, severity: .info)
+                Analytics.Service.record(event: retryEvent)
                 self.completion(.success(responseModel))
             } else {
                 self.handleRetry(responseModel: responseModel, error: error)
@@ -110,6 +119,8 @@ class RetryHandler: LogReporter {
             }
 
             finalErrorMessage += " Last error: \(error?.localizedDescription ?? "Unknown error")"
+            let retryEvent = Analytics.Event.message(message: finalErrorMessage, messageType: .info, severity: .info)
+            Analytics.Service.record(event: retryEvent)
             self.logger.debug(message: finalErrorMessage)
         }
 
