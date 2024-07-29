@@ -25,34 +25,31 @@ struct ACHUserDetailsView: View {
                     Image(systemName: "chevron.left")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 10, height: 10)
-                        .foregroundColor(.black)
+                        .frame(width: 15, height: 15)
+                        .foregroundColor(.blue)
                         .padding(.leading, 15)
                     Text(viewModel.backLocalizedString)
-                        .font(.system(size: 16))
-                        .foregroundColor(.black)
+                        .font(.system(size: 17))
+                        .foregroundColor(.blue)
+                        .padding(.leading, -5)
 
                     Spacer()
                 }
             }
+
+            Text(viewModel.payWithACHLocalizedString)
+                .font(.system(size: 18, weight: .medium))
+                .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.title.rawValue)
         }
         .padding(.top, -3)
 
         VStack {
             HStack {
-                Text(viewModel.payWithACHLocalizedString)
-                    .font(.system(size: 20, weight: .medium))
-                    .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.title.rawValue)
-                Spacer()
-            }
-            .padding(.init(top: 10, leading: 15, bottom: 10, trailing: 15))
-
-            HStack {
                 Text(viewModel.personalizedDetailsLocalizedString)
-                    .font(.system(size: 16))
+                    .font(.system(size: 17))
                 Spacer()
             }
-            .padding(.init(top: 0, leading: 15, bottom: 10, trailing: 15))
+            .padding(.init(top: 20, leading: 15, bottom: 10, trailing: 15))
 
             HStack(alignment: .top) {
                 CustomTextFieldView(text: $viewModel.firstName,
@@ -84,11 +81,11 @@ struct ACHUserDetailsView: View {
 
             Button(action: submitAction) {
                 Text(viewModel.continueButtonTitleLocalizedString)
-                    .font(.system(size: 17))
+                    .font(.system(size: 17, weight: .medium))
                     .foregroundColor(viewModel.isValidForm ? Color.white : Color.gray)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(viewModel.isValidForm ? Color.black : Color.gray.opacity(0.2))
+                    .background(viewModel.isValidForm ? Color.blue : Color.gray.opacity(0.2))
                     .cornerRadius(10)
             }
             .disabled(!viewModel.isValidForm)
@@ -96,7 +93,7 @@ struct ACHUserDetailsView: View {
             .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.submitButton.rawValue)
         }
         .disabled(viewModel.shouldDisableViews)
-        .frame(height: 410)
+        .frame(height: 380)
     }
 
     private func submitAction() {

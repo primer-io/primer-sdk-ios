@@ -21,7 +21,7 @@ struct PrimerResultPaymentStatusView: View {
                     .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.title.rawValue)
                 Spacer()
             }
-            .padding(.init(top: -5, leading: 0, bottom: viewModel.bottomSpacing, trailing: 0))
+            .padding(.init(top: -5, leading: 0, bottom: viewModel.titleBottomSpacing, trailing: 0))
 
             Image(systemName: viewModel.statusIconString)
                 .resizable()
@@ -37,28 +37,28 @@ struct PrimerResultPaymentStatusView: View {
             Text(viewModel.paymentMessage)
                 .font(.system(size: 15))
                 .foregroundColor(.gray)
-                .padding(.bottom, viewModel.bottomSpacing)
+                .padding(.bottom, viewModel.paymentMessageBottomSpacing)
 
             if viewModel.showOnRetry {
                 Button(action: onRetry) {
                     Text("Retry")
-                        .font(.system(size: 17))
+                        .font(.system(size: 17, weight: .medium))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.black)
+                        .background(Color.blue)
                         .cornerRadius(8)
                 }
             }
 
             if viewModel.showChooseOtherPaymentMethod {
                 Button(action: onChooseOtherPaymentMethod) {
-                    Text("Choose another payment method")
-                        .font(.system(size: 17))
-                        .foregroundColor(viewModel.showOnRetry ? .black : .white)
+                    Text("Choose other payment method")
+                        .font(.system(size: 17, weight: .medium))
+                        .foregroundColor(viewModel.showOnRetry ? .blue : .white)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(viewModel.showOnRetry ? Color.clear : .black)
+                        .background(viewModel.showOnRetry ? Color.clear : .blue)
                         .cornerRadius(8)
                 }
             }

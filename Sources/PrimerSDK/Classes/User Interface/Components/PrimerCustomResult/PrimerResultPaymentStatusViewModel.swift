@@ -32,7 +32,7 @@ class PrimerResultPaymentStatusViewModel: ObservableObject {
     var subtitle: String {
         switch paymentStatus {
         case .success:
-            "Payment authorized"
+            "Payment successful"
         case .failed:
             "Payment failed"
         case .canceled:
@@ -54,7 +54,14 @@ class PrimerResultPaymentStatusViewModel: ObservableObject {
     }
 
     private var errorMessage: String {
-        return error?.localizedDescription ?? error.debugDescription
+        switch paymentStatus {
+        case .failed:
+            return error?.plainDescription ?? error.debugDescription
+        case .canceled:
+            return "Please try again or select another bank"
+        default:
+            return ""
+        }
     }
 
     private var paymentStatus: PrimerCustomResultViewController.PaymentStatus {
@@ -83,10 +90,14 @@ class PrimerResultPaymentStatusViewModel: ObservableObject {
     }
 
     var statusIconColor: Color {
-        return paymentStatus == .success ? .green.opacity(0.8) : .red.opacity(0.8)
+        return paymentStatus == .success ? .blue.opacity(0.8) : .red.opacity(0.8)
     }
 
-    var bottomSpacing: CGFloat {
+    var titleBottomSpacing: CGFloat {
+        return paymentStatus == .success ? 20 : 40
+    }
+    
+    var paymentMessageBottomSpacing: CGFloat {
         return paymentStatus == .success ? 60 : 40
     }
 }

@@ -16,7 +16,7 @@ struct ACHMandateView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Pay with ACH")
-                .font(.system(size: 20, weight: .medium))
+                .font(.system(size: 20))
                 .padding(.horizontal)
 
             Text(viewModel.mandateText)
@@ -29,27 +29,30 @@ struct ACHMandateView: View {
             VStack(spacing: 16) {
                 Button {
                     onAcceptPressed()
+                    viewModel.shouldDisableViews = true
                 } label: {
                     Text("Accept")
-                        .font(.system(size: 17))
+                        .font(.system(size: 17, weight: .medium))
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.black)
-                        .foregroundColor(.white)
+                        .background(viewModel.shouldDisableViews ? Color.gray.opacity(0.2) : Color.blue)
+                        .foregroundColor(viewModel.shouldDisableViews ? Color.gray : Color.white)
                         .cornerRadius(8)
                 }
 
                 Button {
                     onCancelPressed()
+                    viewModel.shouldDisableViews = true
                 } label: {
                     Text("Cancel payment")
-                        .font(.system(size: 17))
+                        .font(.system(size: 17, weight: .medium))
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .foregroundColor(.black)
+                        .foregroundColor(.blue)
                         .cornerRadius(8)
                 }
             }
+            .disabled(viewModel.shouldDisableViews)
             .padding([.horizontal, .bottom])
         }
     }

@@ -51,9 +51,9 @@ class ACHMandateViewController: PrimerViewController {
 
     private func addMandateView() {
         mandateView = ACHMandateView(viewModel: mandateViewModel, onAcceptPressed: {
-            self.delegate?.mandateAccepted()
+            self.delegate?.acceptMandate()
         }, onCancelPressed: {
-            self.delegate?.mandateDeclined()
+            self.delegate?.declineMandate()
         })
 
         let hostingViewController = UIHostingController(rootView: mandateView)
