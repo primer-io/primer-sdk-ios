@@ -118,10 +118,11 @@ extension Response.Body {
         public let requiredAction: Response.Body.Payment.RequiredAction?
         public let status: Status
         public let paymentFailureReason: PrimerPaymentErrorCode.RawValue?
+        public let showSuccessCheckoutOnPendingPayment: Bool? = false
 
         // swiftlint:disable:next nesting
         public enum CodingKeys: String, CodingKey {
-            case id, paymentId, amount, currencyCode, customer, customerId, order, orderId, requiredAction, status, paymentFailureReason
+            case id, paymentId, amount, currencyCode, customer, customerId, order, orderId, requiredAction, status, paymentFailureReason, showSuccessCheckoutOnPendingPayment
             case dateStr = "date"
         }
 
