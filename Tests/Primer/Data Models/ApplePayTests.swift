@@ -195,8 +195,10 @@ class ApplePayTests: XCTestCase {
                     shippingAmount: nil),
                 customer: nil,
                 testId: nil)
+            
+            let configurationApplePayOptions = ApplePayOptions(merchantName: "Test")
 
-            orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSession(clientSession)
+            orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSessionAndApplePayOptions(clientSession, applePayOptions: configurationApplePayOptions)
             XCTAssert(orderItems.count == 1, "Apple Pay order items should be 1, the summary order item")
 
             XCTAssert(orderItems[0].quantity == 1, "Order item's quantity should be 1, as there're no line items")
@@ -205,7 +207,7 @@ class ApplePayTests: XCTestCase {
 
             XCTAssert(orderItems.last!.quantity == 1)
             XCTAssert(orderItems.last!.unitAmount == clientSession.order?.merchantAmount ?? 0)
-            XCTAssert(orderItems.last!.name == settings.paymentMethodOptions.applePayOptions?.merchantName)
+            XCTAssert(orderItems.last!.name == configurationApplePayOptions.merchantName)
 
         } catch {
             XCTAssert(false, "Failed with error \(error.localizedDescription)")
@@ -304,7 +306,7 @@ class ApplePayTests: XCTestCase {
 
             DependencyContainer.register(mockAppState as AppStateProtocol)
 
-            let orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSession(clientSession)
+            var orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSessionAndApplePayOptions(clientSession, applePayOptions: nil)
             let applePayItems: [PKPaymentSummaryItem] = orderItems.compactMap({ $0.applePayItem })
             XCTAssert(applePayItems.count == (clientSession.order?.lineItems?.count ?? 0) + 1, "Apple Pay items should be \((clientSession.order?.lineItems?.count ?? 0) + 1)")
 
@@ -322,7 +324,12 @@ class ApplePayTests: XCTestCase {
 
             XCTAssert(applePayItems.last!.amount.doubleValue == NSDecimalNumber(floatLiteral: 302.02).doubleValue)
             XCTAssert(applePayItems.last!.label == settings.paymentMethodOptions.applePayOptions?.merchantName)
-
+            
+            
+            let configurationApplePayOptions = ApplePayOptions(merchantName: "Test")
+            orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSessionAndApplePayOptions(clientSession, applePayOptions: configurationApplePayOptions)
+            let applePayItems: [PKPaymentSummaryItem] = orderItems.compactMap({ $0.applePayItem })
+            XCTAssert(applePayItems.last!.label == configurationApplePayOptions.merchantName)
         } catch {
             XCTAssert(false, "Failed with error \(error.localizedDescription)")
         }
