@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct ACHMandateView: View {
     @ObservedObject var viewModel: ACHMandateViewModel
@@ -15,7 +16,7 @@ struct ACHMandateView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Pay with ACH")
+            Text(Strings.ResultView.getTitle(for: "ACH"))
                 .font(.system(size: 20))
                 .padding(.horizontal)
 
@@ -31,20 +32,26 @@ struct ACHMandateView: View {
                     onAcceptPressed()
                     viewModel.shouldDisableViews = true
                 } label: {
-                    Text("Accept")
-                        .font(.system(size: 17, weight: .medium))
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(viewModel.shouldDisableViews ? Color.gray.opacity(0.2) : Color.blue)
-                        .foregroundColor(viewModel.shouldDisableViews ? Color.gray : Color.white)
-                        .cornerRadius(8)
+                    ZStack {
+                        if viewModel.shouldDisableViews {
+                            ActivityIndicator(isAnimating: .constant(true), style: .medium, color: UIColor.white)
+                        } else {
+                            Text(Strings.Mandate.acceptButton)
+                                .font(.system(size: 17, weight: .medium))
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(Color.white)
+                    .cornerRadius(8)
                 }
 
                 Button {
                     onCancelPressed()
                     viewModel.shouldDisableViews = true
                 } label: {
-                    Text("Cancel payment")
+                    Text(Strings.Mandate.cancelButton)
                         .font(.system(size: 17, weight: .medium))
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -55,5 +62,21 @@ struct ACHMandateView: View {
             .disabled(viewModel.shouldDisableViews)
             .padding([.horizontal, .bottom])
         }
+    }
+}
+
+struct ActivityIndicator: UIViewRepresentable {
+    @Binding var isAnimating: Bool
+    var style: UIActivityIndicatorView.Style
+    var color: UIColor
+
+    func makeUIView(context: UIViewRepresentableContext<ActivityIndicator>) -> UIActivityIndicatorView {
+        let activity = UIActivityIndicatorView(style: style)
+        activity.color = color
+        return activity
+    }
+
+    func updateUIView(_ uiView: UIActivityIndicatorView, context: UIViewRepresentableContext<ActivityIndicator>) {
+        isAnimating ? uiView.startAnimating() : uiView.stopAnimating()
     }
 }

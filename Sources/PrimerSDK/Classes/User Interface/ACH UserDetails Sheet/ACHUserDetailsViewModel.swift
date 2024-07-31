@@ -22,14 +22,6 @@ class ACHUserDetailsViewModel: ObservableObject {
 
     @Published var shouldDisableViews: Bool = false
 
-    let firstNameLocalizedString = "First name"
-    let lastNameLocalizedString = "Last name"
-    let emailAddressLocalizedString = "Email address"
-    let backLocalizedString = "Back"
-    let payWithACHLocalizedString = "Pay with ACH"
-    let personalizedDetailsLocalizedString = "Your personal details"
-    let continueButtonTitleLocalizedString = "Continue"
-    let emailAddressInfoLocalizedString = "We'll only use this to keep you updated about your payment"
     let descriptionTextSize: CGFloat = 13
 
     var isValidForm: Bool {

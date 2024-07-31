@@ -1064,6 +1064,213 @@ extension Strings {
             comment: "The title of the mocked failed flow for a Test Payment Method")
     }
 }
+
+// MARK: - ACH
+
+extension Strings {
+
+    struct UserDetails {
+
+        static let subtitle = NSLocalizedString(
+            "user-details-subtitle-label",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Your personal details",
+            comment: "The subtitle label of User Details screen"
+        )
+
+        static let continueButton = NSLocalizedString(
+            "user-details-continue-button-label",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Continue",
+            comment: "The continue button title of User Details screen"
+        )
+
+        static let backButton = NSLocalizedString(
+            "user-details-back-button-label",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Back",
+            comment: "The back button title of User Details screen"
+        )
+
+        static let emailDisclaimer = NSLocalizedString(
+            "user-details-email-disclaimer-label",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "We'll only use this to keep you updated about your payment",
+            comment: "The email disclaimer label of User Details screen"
+        )
+
+        // swiftlint:disable:next nesting
+        enum FirstName {
+
+            static let label = NSLocalizedString(
+                "user-details-firstname-label",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "First name",
+                comment: "The first name textfield label"
+            )
+
+            static let errorDescriptorField = NSLocalizedString(
+                "user-details-firstname-error-field-descriptor",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Please enter a valid first name. Avoid using numbers or special characters.",
+                comment: "First name error descriptor - Form Validation"
+            )
+        }
+
+        // swiftlint:disable:next nesting
+        enum LastName {
+
+            static let label = NSLocalizedString(
+                "user-details-lastname-label",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Last name",
+                comment: "The last name textfield label"
+            )
+
+            static let errorDescriptorField = NSLocalizedString(
+                "user-details-lastname-error-field-descriptor",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Please enter a valid last name. Avoid using numbers or special characters.",
+                comment: "Last name error descriptor - Form Validation"
+            )
+        }
+
+        // swiftlint:disable:next nesting
+        enum EmailAddress {
+
+            static let label = NSLocalizedString(
+                "user-details-email-label",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Email address",
+                comment: "The email address textfield label"
+            )
+
+            static let errorDescriptorField = NSLocalizedString(
+                "user-details-email-error-field-descriptor",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "The email address you entered doesn't look like a real email address. Please make sure it includes an '@' and a domain (like '@example.com')",
+                comment: "Email address error descriptor - Form Validation"
+            )
+        }
+
+    }
+
+    struct Mandate {
+
+        static func getTemplateText(merchantName: String) -> String {
+            return NSLocalizedString(
+                "mandate-template-text",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "By clicking Accept, you authorize \(merchantName) to debit the bank account specified above for any amount owed for charges arising from your use of \(merchantName)'s services and/or purchase of products from \(merchantName), pursuant to \(merchantName)'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to \(merchantName) with 30 (thirty) days notice.\n\nIf you use \(merchantName)'s services or purchase additional products periodically pursuant to \(merchantName)'s terms, you authorize \(merchantName) to debit your bank account periodically. Payments that fall outside the regular debits authorized above will only be debited after your authorization is obtained.",
+                comment: "The template text for mandate info"
+            )
+        }
+
+        static let acceptButton = NSLocalizedString(
+            "mandate-accept-button-label",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Accept",
+            comment: "The accept button title for Mandate info"
+        )
+
+        static let cancelButton = NSLocalizedString(
+            "mandate-cancel-button-label",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Cancel payment",
+            comment: "The cancel button title for Mandate info"
+        )
+
+    }
+
+    struct ResultView {
+
+        static func getTitle(for paymentMethod: String) -> String {
+            return NSLocalizedString(
+                "result-view-title-label",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Pay with \(paymentMethod)",
+                comment: "The title for ResultView"
+            )
+        }
+
+        static let successMessage = NSLocalizedString(
+            "result-view-success-message-label",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "You have now authorised your bank account to be debited. You will be notified via email once the payment has been collected successfully.",
+            comment: "The success message for ResultView"
+        )
+
+        static let cancelMessage = NSLocalizedString(
+            "result-view-cancel-message-label",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Please try again or select another bank",
+            comment: "The cancel message for ResultView"
+        )
+
+        static let retryButton = NSLocalizedString(
+            "result-view-retry-button-label",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Retry",
+            comment: "The retry button title for ResultView"
+        )
+
+        static let chooseOtherPM = NSLocalizedString(
+            "result-view-choose-other-button-label",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Choose other payment method",
+            comment: "The choose other PM button title for ResultView"
+        )
+
+        enum Subtitle {
+
+            static let successful = NSLocalizedString(
+                "result-view-subtitle-label-success",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Payment successful",
+                comment: "The subtitle for ResultView - Success state"
+            )
+
+            static let cancelled = NSLocalizedString(
+                "result-view-subtitle-label-cancel",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Payment cancelled",
+                comment: "The subtitle for ResultView - Cancelled state"
+            )
+
+            static let failed = NSLocalizedString(
+                "result-view-subtitle-label-fail",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Payment failed",
+                comment: "The subtitle for ResultView - Failed state"
+            )
+
+        }
+
+    }
+
+}
+
 // swiftlint:enable type_body_length
 // swiftlint:enable line_length
 // swiftlint:enable file_length

@@ -179,15 +179,15 @@ extension ACHUserDetailsViewController {
         let isFieldValid = data.isValid
         switch data {
         case .firstName:
-            let firstNameErrorDescription = "Please enter a valid first name. Avoid using numbers or special characters."
+            let firstNameErrorDescription = Strings.UserDetails.FirstName.errorDescriptorField
             achUserDetailsViewModel.isFirstNameValid = isFieldValid
             achUserDetailsViewModel.firstNameErrorDescription = error != nil ? firstNameErrorDescription : ""
         case .lastName:
-            let lastNameErrorDescription = "Please enter a valid last name. Avoid using numbers or special characters."
+            let lastNameErrorDescription = Strings.UserDetails.LastName.errorDescriptorField
             achUserDetailsViewModel.isLastNameValid = isFieldValid
             achUserDetailsViewModel.lastNameErrorDescription = error != nil ? lastNameErrorDescription : ""
         case .emailAddress:
-            let emailAddressErrorDescription = "The email address you entered doesn't look like a real email address. Please make sure it includes an '@' and a domain (like '@example.com')"
+            let emailAddressErrorDescription = Strings.UserDetails.EmailAddress.errorDescriptorField
             achUserDetailsViewModel.isEmailAddressValid = isFieldValid
             achUserDetailsViewModel.emailErrorDescription = error != nil ? emailAddressErrorDescription : ""
         }

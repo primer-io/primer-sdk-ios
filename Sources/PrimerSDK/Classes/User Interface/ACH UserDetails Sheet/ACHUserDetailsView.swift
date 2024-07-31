@@ -28,7 +28,7 @@ struct ACHUserDetailsView: View {
                         .frame(width: 15, height: 15)
                         .foregroundColor(.blue)
                         .padding(.leading, 15)
-                    Text(viewModel.backLocalizedString)
+                    Text(Strings.UserDetails.backButton)
                         .font(.system(size: 17))
                         .foregroundColor(.blue)
                         .padding(.leading, -5)
@@ -37,7 +37,7 @@ struct ACHUserDetailsView: View {
                 }
             }
 
-            Text(viewModel.payWithACHLocalizedString)
+            Text(Strings.ResultView.getTitle(for: "ACH"))
                 .font(.system(size: 18, weight: .medium))
                 .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.title.rawValue)
         }
@@ -45,7 +45,7 @@ struct ACHUserDetailsView: View {
 
         VStack {
             HStack {
-                Text(viewModel.personalizedDetailsLocalizedString)
+                Text(Strings.UserDetails.subtitle)
                     .font(.system(size: 17))
                 Spacer()
             }
@@ -53,14 +53,14 @@ struct ACHUserDetailsView: View {
 
             HStack(alignment: .top) {
                 CustomTextFieldView(text: $viewModel.firstName,
-                                    title: viewModel.firstNameLocalizedString,
+                                    title: Strings.UserDetails.FirstName.label,
                                     isValid: viewModel.isFirstNameValid,
                                     errorDescription: viewModel.firstNameErrorDescription,
                                     infoDescription: "",
                                     accessibilityIdentifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.firstNameTextField.rawValue)
 
                 CustomTextFieldView(text: $viewModel.lastName,
-                                    title: viewModel.lastNameLocalizedString,
+                                    title: Strings.UserDetails.LastName.label,
                                     isValid: viewModel.isLastNameValid,
                                     errorDescription: viewModel.lastNameErrorDescription,
                                     infoDescription: "",
@@ -70,17 +70,17 @@ struct ACHUserDetailsView: View {
             .padding(.bottom, 5)
 
             CustomTextFieldView(text: $viewModel.emailAddress,
-                                title: viewModel.emailAddressLocalizedString,
+                                title: Strings.UserDetails.EmailAddress.label,
                                 isValid: viewModel.isEmailAddressValid,
                                 errorDescription: viewModel.emailErrorDescription,
-                                infoDescription: viewModel.emailAddressInfoLocalizedString,
+                                infoDescription: Strings.UserDetails.emailDisclaimer,
                                 accessibilityIdentifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.emailAddressTextField.rawValue)
             .padding([.horizontal, .bottom], 15)
 
             Spacer()
 
             Button(action: submitAction) {
-                Text(viewModel.continueButtonTitleLocalizedString)
+                Text(Strings.UserDetails.continueButton)
                     .font(.system(size: 17, weight: .medium))
                     .foregroundColor(viewModel.isValidForm ? Color.white : Color.gray)
                     .frame(maxWidth: .infinity)

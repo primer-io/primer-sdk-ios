@@ -11,7 +11,7 @@ import SwiftUI
 internal class PrimerCustomResultViewController: PrimerViewController {
 
     internal enum PaymentStatus {
-        case success, failed, canceled
+        case success, failed, cancelled
     }
 
     private(set) internal var paymentStatusView: PrimerResultPaymentStatusView?

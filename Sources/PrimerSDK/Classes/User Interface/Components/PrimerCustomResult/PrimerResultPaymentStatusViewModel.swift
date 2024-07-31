@@ -26,17 +26,17 @@ class PrimerResultPaymentStatusViewModel: ObservableObject {
             paymentMethod = ""
         }
 
-        return "Pay with \(paymentMethod)"
+        return Strings.ResultView.getTitle(for: paymentMethod)
     }
 
     var subtitle: String {
         switch paymentStatus {
         case .success:
-            "Payment successful"
+            Strings.ResultView.Subtitle.successful
         case .failed:
-            "Payment failed"
-        case .canceled:
-            "Payment cancelled"
+            Strings.ResultView.Subtitle.failed
+        case .cancelled:
+            Strings.ResultView.Subtitle.cancelled
         }
     }
 
@@ -47,7 +47,7 @@ class PrimerResultPaymentStatusViewModel: ObservableObject {
     private var successMessage: String {
         switch paymentMethodType {
         case .stripeAch:
-            return "You have now authorised your bank account to be debited. You will be notified via email once the payment has been collected successfully."
+            return Strings.ResultView.successMessage
         default:
             return ""
         }
@@ -57,8 +57,8 @@ class PrimerResultPaymentStatusViewModel: ObservableObject {
         switch paymentStatus {
         case .failed:
             return error?.plainDescription ?? error.debugDescription
-        case .canceled:
-            return "Please try again or select another bank"
+        case .cancelled:
+            return Strings.ResultView.cancelMessage
         default:
             return ""
         }
@@ -68,7 +68,7 @@ class PrimerResultPaymentStatusViewModel: ObservableObject {
         if let error {
             switch error {
             case .cancelled:
-                return .canceled
+                return .cancelled
             default:
                 return .failed
             }

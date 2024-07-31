@@ -41,7 +41,7 @@ struct PrimerResultPaymentStatusView: View {
 
             if viewModel.showOnRetry {
                 Button(action: onRetry) {
-                    Text("Retry")
+                    Text(Strings.ResultView.retryButton)
                         .font(.system(size: 17, weight: .medium))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
@@ -53,7 +53,7 @@ struct PrimerResultPaymentStatusView: View {
 
             if viewModel.showChooseOtherPaymentMethod {
                 Button(action: onChooseOtherPaymentMethod) {
-                    Text("Choose other payment method")
+                    Text(Strings.ResultView.chooseOtherPM)
                         .font(.system(size: 17, weight: .medium))
                         .foregroundColor(viewModel.showOnRetry ? .blue : .white)
                         .frame(maxWidth: .infinity)
