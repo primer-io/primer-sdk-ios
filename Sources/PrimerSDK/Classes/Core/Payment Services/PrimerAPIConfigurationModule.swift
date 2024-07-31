@@ -9,8 +9,6 @@ internal protocol PrimerAPIConfigurationModuleProtocol {
     static var decodedJWTToken: DecodedJWTToken? { get }
     static var apiConfiguration: PrimerAPIConfiguration? { get }
     
-//    static var cache: NSCache<NSString, AnyObject> { get }
-    
     static func resetSession()
 
     func setupSession(
@@ -26,11 +24,12 @@ internal protocol PrimerAPIConfigurationModuleProtocol {
 // swiftlint:disable type_body_length
 internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
 
-    private static let cache = NSCache<NSString, CachedData>()
     static var apiClient: PrimerAPIClientProtocol?
 
     private static let queue = DispatchQueue(label: "com.primer.configurationQueue")
     private static var pendingPromises: [String: Promise<PrimerAPIConfiguration>] = [:]
+
+    private let logger = PrimerLogging.shared.logger
 
     static var clientToken: JWTToken? {
         get {
@@ -73,6 +72,13 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         return decodedJWTToken
     }
 
+    static var cacheKey: String? {
+        guard let cacheKey = Self.clientToken else {
+            return nil
+        }
+        return cacheKey
+    }
+
     static func resetSession() {
         AppState.current.clientToken = nil
         AppState.current.apiConfiguration = nil
@@ -109,7 +115,8 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
 
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
         return Promise { seal in
-            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
+                  let cacheKey = Self.cacheKey else {
                 let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                          diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
@@ -119,10 +126,12 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
 
             let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
             apiClient.requestPrimerConfigurationWithActions(clientToken: decodedJWTToken,
-                                                            request: actionsRequest) { result in
+                                                            request: actionsRequest) { result, responseHeaders in
                 switch result {
                 case .success(let configuration):
                     PrimerAPIConfigurationModule.apiConfiguration?.clientSession = configuration.clientSession
+                    let cachedData = ConfigurationCachedData(config: configuration, headers: responseHeaders)
+                    ConfigurationCache.shared.setData(cachedData, forKey: cacheKey)
                     seal.fulfill()
                 case .failure(let err):
                     seal.reject(err)
@@ -251,9 +260,11 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         }
     }
 
+    // swiftlint:disable:next function_body_length
     private func fetchConfiguration(requestDisplayMetadata: Bool) -> Promise<PrimerAPIConfiguration> {
         return Promise { seal in
-            guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+            guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken,
+                    let cacheKey = Self.cacheKey else {
                 let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                          diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
@@ -261,24 +272,17 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 return
             }
 
-            let cacheKey = "\(clientToken)-\(requestDisplayMetadata)" as NSString
-
             PrimerAPIConfigurationModule.queue.sync {
-                if let cachedConfig = PrimerAPIConfigurationModule.cache.object(forKey: cacheKey),
-                   validateCachedConfig(key: cacheKey, cachedData: cachedConfig) {
-                    
-                    print("CACHE HIT")
+                if let cachedConfig = ConfigurationCache.shared.data(forKey: cacheKey) {
                     let event = Analytics.Event.message(
                         message: "Configuration cache hit with key: \(cacheKey)",
                         messageType: .info,
                         severity: .info
                     )
                     Analytics.Service.record(event: event)
+                    logger.debug(message: "Cached config used")
                     seal.fulfill(cachedConfig.config)
                     return
-                } else {
-                    // New clientToken, clear the cache?
-                    Self.clearCache()
                 }
 
                 if let pendingPromise = PrimerAPIConfigurationModule.pendingPromises[cacheKey as String] {
@@ -294,17 +298,17 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                     let requestParameters = Request.URLParameters.Configuration(
                         skipPaymentMethodTypes: [],
                         requestDisplayMetadata: requestDisplayMetadata)
-                    
+
                     let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
-                    apiClient.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters) { (result) in
+                    apiClient.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters) { (result, responseHeaders) in
                         switch result {
                         case .failure(let err):
                             innerSeal.reject(err)
                         case .success(let config):
                             _ = ImageFileProcessor().process(configuration: config).ensure {
                                 // Cache the result
-                                let cachedData = CachedData(config: config)
-                                PrimerAPIConfigurationModule.cache.setObject(cachedData, forKey: cacheKey)
+                                let cachedData = ConfigurationCachedData(config: config, headers: responseHeaders)
+                                ConfigurationCache.shared.setData(cachedData, forKey: cacheKey)
                                 innerSeal.fulfill(config)
                             }
                         }
@@ -362,34 +366,6 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             severity: .info
         )
         Analytics.Service.record(event: event)
-    }
-    
-    private static func clearCache() {
-        Self.cache.removeAllObjects()
-    }
-    
-    private static let CacheExpiration: TimeInterval = 60 * 60 * 1000
-    private func validateCachedConfig(key: NSString, cachedData: CachedData) -> Bool {
-        let timestamp = cachedData.timestamp
-        let now = Date().timeIntervalSince1970
-        let timeInterval = now - timestamp
-        
-        if (now - timestamp) > Self.CacheExpiration {
-            Self.cache.removeObject(forKey: key)
-            return false
-        }
-        
-        return true
-    }
-    
-    private class CachedData {
-        let config: PrimerAPIConfiguration
-        let timestamp: TimeInterval
-        
-        init(config: PrimerAPIConfiguration) {
-            self.config = config
-            self.timestamp = Date().timeIntervalSince1970
-        }
     }
 }
 // swiftlint:enable type_body_length
