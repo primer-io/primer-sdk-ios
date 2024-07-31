@@ -57,8 +57,7 @@ class DefaultNetworkService: NetworkService, LogReporter {
         self.reportingService = DefaultNetworkReportingService(analyticsService: analyticsService)
     }
 
-    func request<T>(_ endpoint: Endpoint, completion: @escaping ResponseCompletion<T>) -> PrimerCancellable? where T: Decodable {
-
+    func request<T>(_ endpoint: any Endpoint, completion: @escaping ResponseCompletionWithHeaders<T>) -> (any PrimerCancellable)? where T : Decodable {
         do {
             let request = try requestFactory.request(for: endpoint)
 
@@ -76,7 +75,7 @@ class DefaultNetworkService: NetworkService, LogReporter {
                 case .success(let theResponse):
                     response = theResponse
                 case .failure(let error):
-                    completion(.failure(error))
+                    completion(.failure(error), nil)
                     return
                 }
 
@@ -87,29 +86,36 @@ class DefaultNetworkService: NetworkService, LogReporter {
                 if let error = response.error {
                     completion(.failure(InternalError.underlyingErrors(errors: [error],
                                                                        userInfo: .errorUserInfoDictionary(),
-                                                                       diagnosticsId: UUID().uuidString)))
+                                                                       diagnosticsId: UUID().uuidString)), nil)
                     return
                 }
 
                 self.logger.debug(message: response.metadata.description)
                 guard let data = response.data else {
                     completion(.failure(InternalError.noData(userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)))
+                                                             diagnosticsId: UUID().uuidString)), nil)
                     return
                 }
 
                 do {
+                    let responseHeaders = response.metadata.headers
                     let response: T = try endpoint.responseFactory.model(for: data, forMetadata: response.metadata)
-                    completion(.success(response))
+                    completion(.success(response), responseHeaders)
                 } catch {
-                    completion(.failure(error))
+                    completion(.failure(error), nil)
                 }
 
             }
         } catch {
             ErrorHandler.handle(error: error)
-            completion(.failure(error))
+            completion(.failure(error), nil)
             return nil
+        }
+    }
+
+    func request<T>(_ endpoint: Endpoint, completion: @escaping ResponseCompletion<T>) -> PrimerCancellable? where T: Decodable {
+        request(endpoint) { result, _ in
+            completion(result)
         }
     }
 }
