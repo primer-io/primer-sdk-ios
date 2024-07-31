@@ -285,12 +285,14 @@ class PrimerPaymentMethod: Codable, LogReporter {
         surcharge = (try? container.decode(Int?.self, forKey: .surcharge)) ?? nil
         displayMetadata = (try? container.decode(PrimerPaymentMethod.DisplayMetadata?.self,
                                                  forKey: .displayMetadata)) ?? nil
-
+        
         switch type {
         case "PAYMENT_CARD":
             options = try? container.decode(CardOptions.self, forKey: .options)
         case "PAYPAL":
             options = try? container.decode(PayPalOptions.self, forKey: .options)
+        case "APPLE_PAY":
+            options = try? container.decode(ApplePayOptions.self, forKey: .options)
         default:
             options = try? container.decode(MerchantOptions.self, forKey: .options)
         }

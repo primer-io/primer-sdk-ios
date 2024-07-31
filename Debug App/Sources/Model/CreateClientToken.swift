@@ -349,6 +349,7 @@ struct ClientSessionRequestBody {
         struct PaymentMethodOptionGroup: Codable {
             var KLARNA: PaymentMethodOption?
             var PAYMENT_CARD: PaymentMethodOption?
+            var APPLE_PAY: PaymentMethodOption?
 
             var dictionaryValue: [String: Any]? {
                 var dic: [String: Any] = [:]
@@ -360,6 +361,10 @@ struct ClientSessionRequestBody {
                 if let PAYMENT_CARD = PAYMENT_CARD {
                     dic["PAYMENT_CARD"] = PAYMENT_CARD.dictionaryValue
                 }
+                
+                if let APPLE_PAY = APPLE_PAY {
+                    dic["APPLE_PAY"] = APPLE_PAY.dictionaryValue
+                }
 
                 return dic.keys.count == 0 ? nil : dic
             }
@@ -370,19 +375,22 @@ struct ClientSessionRequestBody {
             var instalmentDuration: String?
             var extraMerchantData: [String: Any]?
             var captureVaultedCardCvv: Bool?
+            var merchantName: String?
 
             enum CodingKeys: CodingKey {
-                case surcharge, instalmentDuration, extraMerchantData, captureVaultedCardCvv
+                case surcharge, instalmentDuration, extraMerchantData, captureVaultedCardCvv, merchantName
             }
 
             init(surcharge: SurchargeOption?,
                  instalmentDuration: String?,
                  extraMerchantData: [String: Any]?,
-                 captureVaultedCardCvv: Bool?) {
+                 captureVaultedCardCvv: Bool?,
+                 merchantName: String?) {
                 self.surcharge = surcharge
                 self.instalmentDuration = instalmentDuration
                 self.extraMerchantData = extraMerchantData
                 self.captureVaultedCardCvv = captureVaultedCardCvv
+                self.merchantName = merchantName
             }
 
             func encode(to encoder: Encoder) throws {
@@ -401,6 +409,10 @@ struct ClientSessionRequestBody {
                     let jsonString = String(data: jsonData, encoding: .utf8)
                     try container.encode(jsonString, forKey: .extraMerchantData)
                 }
+                
+                if let merchantName = merchantName {
+                    try container.encode(merchantName, forKey: .merchantName)
+                }
             }
 
             init(from decoder: Decoder) throws {
@@ -414,6 +426,8 @@ struct ClientSessionRequestBody {
                 } else {
                     extraMerchantData = nil
                 }
+                
+                merchantName = try container.decodeIfPresent(String.self, forKey: .merchantName)
 
                 captureVaultedCardCvv = try container.decodeIfPresent(Bool.self, forKey: .captureVaultedCardCvv) ?? false
             }
@@ -435,6 +449,10 @@ struct ClientSessionRequestBody {
 
                 if let captureVaultedCardCvv = captureVaultedCardCvv, captureVaultedCardCvv == true {
                     dic["captureVaultedCardCvv"] = captureVaultedCardCvv
+                }
+                
+                if let merchantName = merchantName {
+                    dic["merchantName"] = merchantName
                 }
 
                 return dic.keys.count == 0 ? nil : dic
