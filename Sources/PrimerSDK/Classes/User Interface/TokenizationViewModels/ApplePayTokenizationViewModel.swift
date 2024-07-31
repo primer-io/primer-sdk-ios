@@ -353,7 +353,7 @@ extension ApplePayTokenizationViewModel {
 
     internal func createOrderItemsFromClientSessionAndApplePayOptions(_ clientSession: ClientSession.APIResponse, applePayOptions: ApplePayOptions?) throws -> [ApplePayOrderItem] {
         var orderItems: [ApplePayOrderItem] = []
-        
+
         // For merchantName, we prefer data being passed from server rather than local settings.
         let merchantName = applePayOptions?.merchantName ?? PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? ""
 
