@@ -182,17 +182,22 @@ private extension KlarnaTokenizationComponent {
     /// - Sets the client session with updated primer configuration request data
     private func requestPrimerConfiguration(decodedJWTToken: DecodedJWTToken, request: ClientSessionUpdateRequest) -> Promise<Void> {
         return Promise { seal in
-            apiClient.requestPrimerConfigurationWithActions(clientToken: decodedJWTToken,
-                                                            request: request) { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case .success(let configuration):
-                    PrimerAPIConfigurationModule.apiConfiguration?.clientSession = configuration.clientSession
-                    self.clientSession = configuration.clientSession
-                    seal.fulfill()
-                case .failure(let error):
-                    seal.reject(error)
+            firstly {
+                PrimerAPIConfigurationModule().updateSession(withActions: request)
+            }
+            .done {
+                guard let clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession else {
+                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                             diagnosticsId: UUID().uuidString)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                    return
                 }
+                self.clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
+                seal.fulfill()
+            }
+            .catch { err in
+                seal.reject(err)
             }
         }
     }

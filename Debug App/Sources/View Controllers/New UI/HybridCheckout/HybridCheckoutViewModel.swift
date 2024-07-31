@@ -132,6 +132,6 @@ extension HybridCheckoutViewModel: PrimerDelegate {
     }
     
     func primerDidDismiss() {
-//        self.configureHeadless()
+        self.configureHeadless()
     }
 }

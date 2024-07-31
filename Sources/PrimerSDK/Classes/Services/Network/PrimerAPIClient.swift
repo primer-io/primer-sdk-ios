@@ -76,9 +76,17 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
 
     func fetchConfiguration(clientToken: DecodedJWTToken,
                             requestParameters: Request.URLParameters.Configuration?,
-                            completion: @escaping APICompletion<PrimerAPIConfiguration>) {
+                            completion: @escaping ConfigurationCompletion) {
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters)
-        execute(endpoint, completion: completion)
+        networkService.request(endpoint) { (result: Result<PrimerAPIConfiguration, Error>, headers) in
+            switch result {
+            case .success(let result):
+                completion(.success(result), headers)
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
+                completion(.failure(error), nil)
+            }
+        }
     }
 
     func createPayPalOrderSession(clientToken: DecodedJWTToken,
@@ -157,10 +165,18 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
 
     func requestPrimerConfigurationWithActions(clientToken: DecodedJWTToken,
                                                request: ClientSessionUpdateRequest,
-                                               completion: @escaping APICompletion<PrimerAPIConfiguration>) {
+                                               completion: @escaping ConfigurationCompletion) {
 
         let endpoint = PrimerAPI.requestPrimerConfigurationWithActions(clientToken: clientToken, request: request)
-        execute(endpoint, completion: completion)
+        networkService.request(endpoint) { (result: Result<PrimerAPIConfiguration, Error>, headers) in
+            switch result {
+            case .success(let result):
+                completion(.success(result), headers)
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
+                completion(.failure(error), nil)
+            }
+        }
     }
 
     func sendAnalyticsEvents(clientToken: DecodedJWTToken?,

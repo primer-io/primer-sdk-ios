@@ -125,6 +125,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         }
         .catch { err in
             DispatchQueue.main.async {
+                print(err)
                 completion(nil, err)
             }
         }
