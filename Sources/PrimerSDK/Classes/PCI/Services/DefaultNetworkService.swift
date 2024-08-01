@@ -57,7 +57,8 @@ class DefaultNetworkService: NetworkService, LogReporter {
         self.reportingService = DefaultNetworkReportingService(analyticsService: analyticsService)
     }
 
-    func request<T>(_ endpoint: any Endpoint, completion: @escaping ResponseCompletionWithHeaders<T>) -> (any PrimerCancellable)? where T : Decodable {
+    func request<T>(_ endpoint: any Endpoint, 
+                    completion: @escaping ResponseCompletionWithHeaders<T>) -> (any PrimerCancellable)? where T: Decodable {
         do {
             let request = try requestFactory.request(for: endpoint)
 
