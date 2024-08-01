@@ -64,7 +64,7 @@ class ConfigurationCachedData {
         self.ttl = Self.extractTtlFromHeaders(headers)
     }
 
-    static let FallbackCacheExpiration: TimeInterval = 3600
+    static let FallbackCacheExpiration: TimeInterval = 0
     static let CacheHeaderKey = "x-primer-session-cache-ttl"
 
     private static func extractTtlFromHeaders(_ headers: [String: String]?) -> TimeInterval {
