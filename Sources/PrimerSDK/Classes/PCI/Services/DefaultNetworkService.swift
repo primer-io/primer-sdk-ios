@@ -69,7 +69,11 @@ class DefaultNetworkService: NetworkService, LogReporter {
                                                              endpoint: endpoint,
                                                              request: request))
 
+            let startTime = DispatchTime.now()
+
             return try requestDispatcher.dispatch(request: request) { [reportingService] result in
+                let endTime = DispatchTime.now()
+                let timeElapsed = Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000 // Convert to milliseconds
 
                 let response: DispatcherResponse
                 switch result {
@@ -82,7 +86,8 @@ class DefaultNetworkService: NetworkService, LogReporter {
 
                 reportingService.report(eventType: .requestEnd(identifier: identifier,
                                                                endpoint: endpoint,
-                                                               response: response.metadata))
+                                                               response: response.metadata,
+                                                               duration: timeElapsed))
 
                 if let error = response.error {
                     completion(.failure(InternalError.underlyingErrors(errors: [error],

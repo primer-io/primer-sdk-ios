@@ -383,6 +383,7 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
     var errorBody: String?
     var responseCode: Int?
     var params: [String: AnyCodable]?
+    var duration: TimeInterval?
 
     private enum CodingKeys: String, CodingKey {
         case callType
@@ -392,6 +393,7 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
         case errorBody
         case responseCode
         case params
+        case duration
     }
 
     fileprivate init(
@@ -400,7 +402,8 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
         url: String,
         method: HTTPMethod,
         errorBody: String?,
-        responseCode: Int?
+        responseCode: Int?,
+        duration: TimeInterval? = nil
     ) {
         self.callType = callType
         self.id = id
@@ -408,6 +411,7 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
         self.method = method
         self.errorBody = errorBody
         self.responseCode = responseCode
+        self.duration = duration
 
         let sdkProperties = SDKProperties()
         if let sdkPropertiesDict = try? sdkProperties.asDictionary(),
@@ -430,6 +434,7 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
         self.errorBody = try container.decodeIfPresent(String.self, forKey: .errorBody)
         self.responseCode = try container.decodeIfPresent(Int.self, forKey: .responseCode)
         self.params = try container.decodeIfPresent([String: AnyCodable].self, forKey: .params)
+        self.duration = try container.decodeIfPresent(TimeInterval.self, forKey: .duration)
     }
 
     func encode(to encoder: Encoder) throws {
@@ -441,6 +446,7 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
         try container.encodeIfPresent(errorBody, forKey: .errorBody)
         try container.encodeIfPresent(responseCode, forKey: .responseCode)
         try container.encodeIfPresent(params, forKey: .params)
+        try container.encodeIfPresent(duration, forKey: .duration)
     }
 }
 
@@ -779,7 +785,8 @@ extension Analytics.Event {
                             url: String,
                             method: HTTPMethod,
                             errorBody: String?,
-                            responseCode: Int?) -> Self {
+                            responseCode: Int?,
+                            duration: TimeInterval? = nil) -> Self {
         return .init(
             eventType: .networkCall,
             properties: NetworkCallEventProperties(
@@ -788,7 +795,8 @@ extension Analytics.Event {
                 url: url,
                 method: method,
                 errorBody: errorBody,
-                responseCode: responseCode
+                responseCode: responseCode,
+                duration: duration
             )
         )
     }
