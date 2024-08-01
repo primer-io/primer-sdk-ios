@@ -9,6 +9,11 @@ import XCTest
 @testable import PrimerSDK
 
 final class ConfigurationCacheTests: XCTestCase {
+
+    override func tearDown() {
+        ConfigurationCache.shared.clearCache()
+    }
+    
     func test_useHeadersTTL() throws {
         let headers = [ConfigurationCachedData.CacheHeaderKey: "2000"]
         let cacheData = ConfigurationCachedData(config: PrimerAPIConfiguration.mock, headers: headers)
