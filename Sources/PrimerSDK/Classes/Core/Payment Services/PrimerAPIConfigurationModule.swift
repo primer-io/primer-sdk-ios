@@ -8,7 +8,7 @@ internal protocol PrimerAPIConfigurationModuleProtocol {
     static var clientToken: JWTToken? { get }
     static var decodedJWTToken: DecodedJWTToken? { get }
     static var apiConfiguration: PrimerAPIConfiguration? { get }
-    
+
     static func resetSession()
 
     func setupSession(
