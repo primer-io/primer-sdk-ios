@@ -16,7 +16,7 @@ struct ACHMandateView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text(Strings.ResultView.getTitle(for: "ACH"))
+            Text(String(format: Strings.ResultView.paymentTitle, "ACH"))
                 .font(.system(size: 20))
                 .padding(.horizontal)
 
@@ -46,6 +46,7 @@ struct ACHMandateView: View {
                     .foregroundColor(Color.white)
                     .cornerRadius(8)
                 }
+                .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.acceptMandateButton.rawValue)
 
                 Button {
                     onCancelPressed()
@@ -58,6 +59,7 @@ struct ACHMandateView: View {
                         .foregroundColor(.blue)
                         .cornerRadius(8)
                 }
+                .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.declineMandateButton.rawValue)
             }
             .disabled(viewModel.shouldDisableViews)
             .padding([.horizontal, .bottom])

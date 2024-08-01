@@ -18,7 +18,6 @@ struct PrimerResultPaymentStatusView: View {
             HStack {
                 Text(viewModel.title)
                     .font(.system(size: 20, weight: .medium))
-                    .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.title.rawValue)
                 Spacer()
             }
             .padding(.init(top: -5, leading: 0, bottom: viewModel.titleBottomSpacing, trailing: 0))
@@ -29,15 +28,18 @@ struct PrimerResultPaymentStatusView: View {
                 .frame(width: 40, height: 40)
                 .foregroundColor(viewModel.statusIconColor)
                 .padding(.bottom, 15)
+                .addAccessibilityIdentifier(identifier: viewModel.statusIconAccessibilityIdentifier)
 
             Text(viewModel.subtitle)
                 .font(.system(size: 17))
                 .padding(.bottom, 3)
+                .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.ResultScreen.descriptionLabel.rawValue)
 
             Text(viewModel.paymentMessage)
                 .font(.system(size: 15))
                 .foregroundColor(.gray)
                 .padding(.bottom, viewModel.paymentMessageBottomSpacing)
+                .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.ResultScreen.messageLabel.rawValue)
 
             if viewModel.showOnRetry {
                 Button(action: onRetry) {
@@ -49,6 +51,7 @@ struct PrimerResultPaymentStatusView: View {
                         .background(Color.blue)
                         .cornerRadius(8)
                 }
+                .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.ResultScreen.primaryButton.rawValue)
             }
 
             if viewModel.showChooseOtherPaymentMethod {
@@ -61,6 +64,7 @@ struct PrimerResultPaymentStatusView: View {
                         .background(viewModel.showOnRetry ? Color.clear : .blue)
                         .cornerRadius(8)
                 }
+                .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.ResultScreen.secondaryButton.rawValue)
             }
         }
         .padding(.horizontal)

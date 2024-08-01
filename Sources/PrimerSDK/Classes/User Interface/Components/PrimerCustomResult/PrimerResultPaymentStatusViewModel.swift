@@ -26,7 +26,7 @@ class PrimerResultPaymentStatusViewModel: ObservableObject {
             paymentMethod = ""
         }
 
-        return Strings.ResultView.getTitle(for: paymentMethod)
+        return String(format: Strings.ResultView.paymentTitle, paymentMethod)
     }
 
     var subtitle: String {
@@ -87,6 +87,10 @@ class PrimerResultPaymentStatusViewModel: ObservableObject {
 
     var statusIconString: String {
         return paymentStatus == .success ? "checkmark.circle" : "xmark.circle"
+    }
+    
+    var statusIconAccessibilityIdentifier: String {
+        return paymentStatus == .success ? AccessibilityIdentifier.ResultScreen.successImage.rawValue : AccessibilityIdentifier.ResultScreen.failureImage.rawValue
     }
 
     var statusIconColor: Color {

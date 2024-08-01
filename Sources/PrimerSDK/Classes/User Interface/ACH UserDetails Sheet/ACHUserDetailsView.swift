@@ -37,7 +37,7 @@ struct ACHUserDetailsView: View {
                 }
             }
 
-            Text(Strings.ResultView.getTitle(for: "ACH"))
+            Text(String(format: Strings.ResultView.paymentTitle, "ACH"))
                 .font(.system(size: 18, weight: .medium))
                 .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.title.rawValue)
         }
@@ -47,6 +47,7 @@ struct ACHUserDetailsView: View {
             HStack {
                 Text(Strings.UserDetails.subtitle)
                     .font(.system(size: 17))
+                    .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.subtitle.rawValue)
                 Spacer()
             }
             .padding(.init(top: 20, leading: 15, bottom: 10, trailing: 15))

@@ -22,7 +22,17 @@ class ACHMandateViewModel: ObservableObject {
         case .fullMandate(let text):
             return text
         case .templateMandate(let merchantName):
-            return Strings.Mandate.getTemplateText(merchantName: merchantName)
+            let arguments = getArgumentsList(argument: merchantName, template: Strings.Mandate.templateText)
+            return String(format: Strings.Mandate.templateText, arguments: arguments)
         }
+    }
+
+    private func getArgumentsList(argument: String, template: String) -> [String] {
+        var arguments: [String] = []
+
+        let placeholderCount = template.components(separatedBy: "%@").count - 1
+        arguments = Array(repeating: argument, count: placeholderCount)
+
+        return arguments
     }
 }

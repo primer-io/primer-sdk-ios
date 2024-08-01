@@ -530,7 +530,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             isErrorScreenEnabled: !disableErrorScreenSwitch.isOn,
             theme: applyThemingSwitch.isOn ? CheckoutTheme.tropical : nil)
 
-        let mandateData = PrimerStripeOptions.MandateData.templateMandate(merchantName: "Primer Inc")
+        let mandateData = PrimerStripeOptions.MandateData.templateMandate(merchantName: "Primer Inc.")
 
         let settings = PrimerSettings(
             paymentHandling: selectedPaymentHandling,

@@ -1072,7 +1072,7 @@ extension Strings {
     struct UserDetails {
 
         static let subtitle = NSLocalizedString(
-            "user-details-subtitle-label",
+            "stripe_ach_user_details_collection_subtitle_label",
             tableName: nil,
             bundle: Bundle.primerResources,
             value: "Your personal details",
@@ -1080,7 +1080,7 @@ extension Strings {
         )
 
         static let continueButton = NSLocalizedString(
-            "user-details-continue-button-label",
+            "stripe_ach_user_details_collection_continue_button",
             tableName: nil,
             bundle: Bundle.primerResources,
             value: "Continue",
@@ -1088,7 +1088,7 @@ extension Strings {
         )
 
         static let backButton = NSLocalizedString(
-            "user-details-back-button-label",
+            "back_button_label",
             tableName: nil,
             bundle: Bundle.primerResources,
             value: "Back",
@@ -1096,7 +1096,7 @@ extension Strings {
         )
 
         static let emailDisclaimer = NSLocalizedString(
-            "user-details-email-disclaimer-label",
+            "stripe_ach_user_details_collection_data_usage_label",
             tableName: nil,
             bundle: Bundle.primerResources,
             value: "We'll only use this to keep you updated about your payment",
@@ -1107,7 +1107,7 @@ extension Strings {
         enum FirstName {
 
             static let label = NSLocalizedString(
-                "user-details-firstname-label",
+                "stripe_ach_user_details_collection_first_name_label",
                 tableName: nil,
                 bundle: Bundle.primerResources,
                 value: "First name",
@@ -1115,7 +1115,7 @@ extension Strings {
             )
 
             static let errorDescriptorField = NSLocalizedString(
-                "user-details-firstname-error-field-descriptor",
+                "stripe_ach_user_details_collection_invalid_first_name",
                 tableName: nil,
                 bundle: Bundle.primerResources,
                 value: "Please enter a valid first name. Avoid using numbers or special characters.",
@@ -1127,7 +1127,7 @@ extension Strings {
         enum LastName {
 
             static let label = NSLocalizedString(
-                "user-details-lastname-label",
+                "stripe_ach_user_details_collection_last_name_label",
                 tableName: nil,
                 bundle: Bundle.primerResources,
                 value: "Last name",
@@ -1135,7 +1135,7 @@ extension Strings {
             )
 
             static let errorDescriptorField = NSLocalizedString(
-                "user-details-lastname-error-field-descriptor",
+                "stripe_ach_user_details_collection_invalid_last_name",
                 tableName: nil,
                 bundle: Bundle.primerResources,
                 value: "Please enter a valid last name. Avoid using numbers or special characters.",
@@ -1147,7 +1147,7 @@ extension Strings {
         enum EmailAddress {
 
             static let label = NSLocalizedString(
-                "user-details-email-label",
+                "stripe_ach_user_details_collection_email_address_label",
                 tableName: nil,
                 bundle: Bundle.primerResources,
                 value: "Email address",
@@ -1155,10 +1155,10 @@ extension Strings {
             )
 
             static let errorDescriptorField = NSLocalizedString(
-                "user-details-email-error-field-descriptor",
+                "stripe_ach_user_details_collection_invalid_email_address",
                 tableName: nil,
                 bundle: Bundle.primerResources,
-                value: "The email address you entered doesn't look like a real email address. Please make sure it includes an '@' and a domain (like '@example.com')",
+                value: "The email address you entered doesn't look like a real email address. Please make sure it includes an '@' and a domain (like '@example.com').",
                 comment: "Email address error descriptor - Form Validation"
             )
         }
@@ -1167,18 +1167,16 @@ extension Strings {
 
     struct Mandate {
 
-        static func getTemplateText(merchantName: String) -> String {
-            return NSLocalizedString(
-                "mandate-template-text",
-                tableName: nil,
-                bundle: Bundle.primerResources,
-                value: "By clicking Accept, you authorize \(merchantName) to debit the bank account specified above for any amount owed for charges arising from your use of \(merchantName)'s services and/or purchase of products from \(merchantName), pursuant to \(merchantName)'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to \(merchantName) with 30 (thirty) days notice.\n\nIf you use \(merchantName)'s services or purchase additional products periodically pursuant to \(merchantName)'s terms, you authorize \(merchantName) to debit your bank account periodically. Payments that fall outside the regular debits authorized above will only be debited after your authorization is obtained.",
-                comment: "The template text for mandate info"
-            )
-        }
+        static let templateText = NSLocalizedString(
+            "stripe_ach_mandate_template_ios",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "By clicking Accept, you authorize %@ to debit the bank account specified above for any amount owed for charges arising from your use of %@'s services and/or purchase of products from %@, pursuant to %@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %@ with 30 (thirty) days notice.\n\nIf you use %@'s services or purchase additional products periodically pursuant to %@'s terms, you authorize %@ to debit your bank account periodically. Payments that fall outside the regular debits authorized above will only be debited after your authorization is obtained.",
+            comment: "The template text for mandate info"
+        )
 
         static let acceptButton = NSLocalizedString(
-            "mandate-accept-button-label",
+            "stripe_ach_mandate_accept_button",
             tableName: nil,
             bundle: Bundle.primerResources,
             value: "Accept",
@@ -1186,7 +1184,7 @@ extension Strings {
         )
 
         static let cancelButton = NSLocalizedString(
-            "mandate-cancel-button-label",
+            "stripe_ach_mandate_cancel_payment_button",
             tableName: nil,
             bundle: Bundle.primerResources,
             value: "Cancel payment",
@@ -1197,26 +1195,24 @@ extension Strings {
 
     struct ResultView {
 
-        static func getTitle(for paymentMethod: String) -> String {
-            return NSLocalizedString(
-                "result-view-title-label",
-                tableName: nil,
-                bundle: Bundle.primerResources,
-                value: "Pay with \(paymentMethod)",
-                comment: "The title for ResultView"
-            )
-        }
-
-        static let successMessage = NSLocalizedString(
-            "result-view-success-message-label",
+        static let paymentTitle = NSLocalizedString(
+            "pay_with_payment_method",
             tableName: nil,
             bundle: Bundle.primerResources,
-            value: "You have now authorised your bank account to be debited. You will be notified via email once the payment has been collected successfully.",
+            value: "Pay with %@",
+            comment: "The payment method title"
+        )
+
+        static let successMessage = NSLocalizedString(
+            "stripe_ach_payment_request_completed_successfully",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "You have now authorized your bank account to be debited. You will be notified via email once the payment has been collected successfully.",
             comment: "The success message for ResultView"
         )
 
         static let cancelMessage = NSLocalizedString(
-            "result-view-cancel-message-label",
+            "stripe_ach_payment_request_cancelled",
             tableName: nil,
             bundle: Bundle.primerResources,
             value: "Please try again or select another bank",
@@ -1224,7 +1220,7 @@ extension Strings {
         )
 
         static let retryButton = NSLocalizedString(
-            "result-view-retry-button-label",
+            "retry_button",
             tableName: nil,
             bundle: Bundle.primerResources,
             value: "Retry",
@@ -1232,7 +1228,7 @@ extension Strings {
         )
 
         static let chooseOtherPM = NSLocalizedString(
-            "result-view-choose-other-button-label",
+            "choose_other_payment_method_button",
             tableName: nil,
             bundle: Bundle.primerResources,
             value: "Choose other payment method",
@@ -1242,15 +1238,15 @@ extension Strings {
         enum Subtitle {
 
             static let successful = NSLocalizedString(
-                "result-view-subtitle-label-success",
+                "session_complete_payment_success_title",
                 tableName: nil,
                 bundle: Bundle.primerResources,
-                value: "Payment successful",
+                value: "Payment authorized",
                 comment: "The subtitle for ResultView - Success state"
             )
 
             static let cancelled = NSLocalizedString(
-                "result-view-subtitle-label-cancel",
+                "session_complete_payment_cancellation_title",
                 tableName: nil,
                 bundle: Bundle.primerResources,
                 value: "Payment cancelled",
@@ -1258,7 +1254,7 @@ extension Strings {
             )
 
             static let failed = NSLocalizedString(
-                "result-view-subtitle-label-fail",
+                "session_complete_payment_failure_title",
                 tableName: nil,
                 bundle: Bundle.primerResources,
                 value: "Payment failed",
