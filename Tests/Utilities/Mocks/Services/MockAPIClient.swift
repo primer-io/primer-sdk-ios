@@ -39,6 +39,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     private var currentPollingIteration: Int = 0
     var testFetchNolSdkSecretResult: (Response.Body.NolPay.NolPaySecretDataResponse?, Error?)?
     var phoneMetadataResult = Response.Body.PhoneMetadata.PhoneMetadataDataResponse(isValid: true, countryCode: "+111", nationalNumber: "12341234")
+    var responseHeaders: [String: String]? = nil
 
     func validateClientToken(
         request: Request.Body.ClientTokenValidation,
@@ -74,7 +75,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             if let err = result.1 {
                 completion(.failure(err), nil)
             } else if let successResult = result.0 {
-                completion(.success(successResult), [:])
+                completion(.success(successResult), self.responseHeaders ?? [:])
             }
         }
     }
@@ -432,7 +433,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             if let err = result.1 {
                 completion(.failure(err), nil)
             } else if let successResult = result.0 {
-                completion(.success(successResult), [:])
+                completion(.success(successResult), self.responseHeaders ?? [:])
             }
         }
     }
