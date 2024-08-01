@@ -58,7 +58,7 @@ class ConfigurationCachedData {
     let ttl: TimeInterval
 
     init(config: PrimerAPIConfiguration, headers: [String: String]? = nil) {
-        //Extract ttl from headers
+        // Extract ttl from headers
         self.config = config
         self.timestamp = Date().timeIntervalSince1970
         self.ttl = Self.extractTtlFromHeaders(headers)
