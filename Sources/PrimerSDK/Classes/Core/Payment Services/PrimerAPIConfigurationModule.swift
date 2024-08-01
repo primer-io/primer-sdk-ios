@@ -129,10 +129,12 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                                                             request: actionsRequest) { result, responseHeaders in
                 switch result {
                 case .success(let configuration):
-                    PrimerAPIConfigurationModule.apiConfiguration?.clientSession = configuration.clientSession
-                    let cachedData = ConfigurationCachedData(config: configuration, headers: responseHeaders)
-                    ConfigurationCache.shared.setData(cachedData, forKey: cacheKey)
-                    seal.fulfill()
+                    _ = ImageFileProcessor().process(configuration: configuration).ensure {
+                        PrimerAPIConfigurationModule.apiConfiguration?.clientSession = configuration.clientSession
+                        let cachedData = ConfigurationCachedData(config: configuration, headers: responseHeaders)
+                        ConfigurationCache.shared.setData(cachedData, forKey: cacheKey)
+                        seal.fulfill()
+                    }
                 case .failure(let err):
                     seal.reject(err)
                 }
@@ -321,9 +323,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 PrimerAPIConfigurationModule.pendingPromises[cacheKey as String] = promise
 
                 promise.done { config in
-                    _ = ImageFileProcessor().process(configuration: config).ensure {
-                        seal.fulfill(config)
-                    }
+                    seal.fulfill(config)
                 }.catch { error in
                     seal.reject(error)
                 }
