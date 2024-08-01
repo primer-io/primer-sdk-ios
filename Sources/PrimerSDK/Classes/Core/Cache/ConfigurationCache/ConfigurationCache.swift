@@ -52,22 +52,27 @@ class ConfigurationCache: ConfigurationCaching {
 }
 
 class ConfigurationCachedData {
+
     let config: PrimerAPIConfiguration
     let timestamp: TimeInterval
     let ttl: TimeInterval
-
-    init(config: PrimerAPIConfiguration, ttl: TimeInterval) {
-        self.config = config
-        self.timestamp = Date().timeIntervalSince1970
-        self.ttl = ttl
-    }
 
     init(config: PrimerAPIConfiguration, headers: [String: String]? = nil) {
         //Extract ttl from headers
         self.config = config
         self.timestamp = Date().timeIntervalSince1970
-        self.ttl = Self.FallbackCacheExpiration
+        self.ttl = Self.extractTtlFromHeaders(headers)
     }
 
-    static let FallbackCacheExpiration: TimeInterval = 60 * 60 * 1000
+    static let FallbackCacheExpiration: TimeInterval = 3600
+    static let CacheHeaderKey = "x-primer-session-cache-ttl"
+
+    private static func extractTtlFromHeaders(_ headers: [String: String]?) -> TimeInterval {
+        guard let headers,
+              let ttlHeaderValue = headers[Self.CacheHeaderKey],
+              let ttlInt = Int(ttlHeaderValue) else {
+            return Self.FallbackCacheExpiration
+        }
+        return TimeInterval(ttlInt)
+    }
 }
