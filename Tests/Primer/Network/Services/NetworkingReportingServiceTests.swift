@@ -67,7 +67,8 @@ final class NetworkingReportingServiceTests: XCTestCase {
 
         networkReportingService.report(eventType: .requestEnd(identifier: "id",
                                                               endpoint: endpoint,
-                                                              response: responseMetadata))
+                                                              response: responseMetadata,
+                                                              duration: 1000))
 
         XCTAssertEqual(analyticsService.events.count, 1)
 
