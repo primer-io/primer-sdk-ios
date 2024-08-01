@@ -55,21 +55,6 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         }
     }
 
-    private func error(forCallType callType: CreateResumePaymentCallType) -> Error {
-        switch callType {
-        case .create:
-            return PrimerError.failedToCreatePayment(paymentMethodType: paymentMethodType,
-                                                     description: "Failed to create payment",
-                                                     userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-        case .resume:
-            return PrimerError.failedToResumePayment(paymentMethodType: paymentMethodType,
-                                                     description: "Failed to resume payment",
-                                                     userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-        }
-    }
-
     private func validateResponse(paymentResponse: Response.Body.Payment, callType: PaymentCallType) throws {
 
         if paymentResponse.id == nil || paymentResponse.status == .failed ||
@@ -82,7 +67,6 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
-
         }
     }
 
