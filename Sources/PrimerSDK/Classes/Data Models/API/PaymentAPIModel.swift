@@ -118,7 +118,7 @@ extension Response.Body {
         public let requiredAction: Response.Body.Payment.RequiredAction?
         public let status: Status
         public let paymentFailureReason: PrimerPaymentErrorCode.RawValue?
-        public let showSuccessCheckoutOnPendingPayment: Bool? = false
+        public var showSuccessCheckoutOnPendingPayment: Bool? = false
 
         // swiftlint:disable:next nesting
         public enum CodingKeys: String, CodingKey {
