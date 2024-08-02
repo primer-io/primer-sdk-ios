@@ -33,13 +33,13 @@ struct PrimerResultPaymentStatusView: View {
             Text(viewModel.subtitle)
                 .font(.system(size: 17))
                 .padding(.bottom, 3)
-                .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.ResultScreen.descriptionLabel.rawValue)
+                .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.ResultScreen.messageLabel.rawValue)
 
             Text(viewModel.paymentMessage)
                 .font(.system(size: 15))
                 .foregroundColor(.gray)
                 .padding(.bottom, viewModel.paymentMessageBottomSpacing)
-                .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.ResultScreen.messageLabel.rawValue)
+                .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.ResultScreen.descriptionLabel.rawValue)
 
             if viewModel.showOnRetry {
                 Button(action: onRetry) {
