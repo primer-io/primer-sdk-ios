@@ -9,13 +9,13 @@ import Foundation
 
 enum NetworkEventType {
     case requestStart(identifier: String, endpoint: Endpoint, request: URLRequest)
-    case requestEnd(identifier: String, endpoint: Endpoint, response: ResponseMetadata)
+    case requestEnd(identifier: String, endpoint: Endpoint, response: ResponseMetadata, duration: TimeInterval)
     case networkConnectivity(endpoint: Endpoint)
 
     var endpoint: Endpoint {
         switch self {
         case .requestStart(_, let endpoint, _),
-             .requestEnd(_, let endpoint, _),
+             .requestEnd(_, let endpoint, _, _),
              .networkConnectivity(let endpoint):
             return endpoint
         }
@@ -52,15 +52,17 @@ class DefaultNetworkReportingService: NetworkReportingService {
                 url: request.url?.absoluteString ?? "Unknown",
                 method: endpoint.method,
                 errorBody: nil,
-                responseCode: nil)
-        case .requestEnd(let id, let endpoint, let response):
+                responseCode: nil,
+                duration: nil)
+        case .requestEnd(let id, let endpoint, let response, let duration):
             event = Analytics.Event.networkCall(
                 callType: .requestEnd,
                 id: id,
                 url: response.responseUrl ?? "Unknown",
                 method: endpoint.method,
                 errorBody: nil,
-                responseCode: response.statusCode
+                responseCode: response.statusCode,
+                duration: duration
             )
         case .networkConnectivity:
             event = Analytics.Event.networkConnectivity()

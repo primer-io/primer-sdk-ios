@@ -1,3 +1,5 @@
+*                                         @primer-io/acceptance-mobile-ios
+
 .github/CODEOWNERS                        @primer-io/checkout-pci-reviewers
 .github/workflows                         @primer-io/checkout-pci-reviewers
 

@@ -180,6 +180,21 @@ platform :ios do
     )
   end
 
+  desc 'This action builds the app using the SPM integration'
+  lane :build_spm do
+    common_pre_build_action
+    build_app(workspace: app_workspace,
+              scheme: spm_app_scheme,
+              sdk: "iphonesimulator",
+              configuration: "Debug",
+              destination: "generic/platform=iOS Simulator",
+              xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
+              export_method: "development",
+              skip_package_ipa: true,
+              skip_package_pkg: true
+              )
+  end
+
   desc 'This action runs Unit Tests, builds the app and uploads it to Appetize'
   lane :appetize_build_and_upload do |options|
 
