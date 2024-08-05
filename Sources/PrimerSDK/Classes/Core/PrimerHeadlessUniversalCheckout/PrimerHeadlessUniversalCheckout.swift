@@ -132,6 +132,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
 
     public func cleanUp() {
         PrimerAPIConfigurationModule.resetSession()
+        PrimerInternal.shared.checkoutSessionId = nil
     }
 
     // MARK: - HELPERS
