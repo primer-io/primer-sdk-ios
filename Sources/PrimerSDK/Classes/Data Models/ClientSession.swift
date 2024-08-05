@@ -18,6 +18,10 @@ internal class ClientSession {
         static func makeBillingAddressDictionaryRequestFromParameters(_ parameters: [String: Any]) -> [String: Any] {
             return ["billingAddress": parameters]
         }
+        
+        static func makeShippingAddressDictionaryRequestFromParameters(_ parameters: [String: Any]) -> [String: Any] {
+            return ["shippingAddress": parameters]
+        }
 
         static func selectPaymentMethodActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
             ClientSession.Action(type: .selectPaymentMethod, params: parameters)
@@ -32,11 +36,17 @@ internal class ClientSession {
                                  params: makeBillingAddressDictionaryRequestFromParameters(parameters))
         }
 
+        static func setShippingAddressActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
+            ClientSession.Action(type: .setShippingAddress,
+                                 params: makeShippingAddressDictionaryRequestFromParameters(parameters))
+        }
+
         // swiftlint:disable:next nesting
         internal enum ActionType: String {
             case selectPaymentMethod = "SELECT_PAYMENT_METHOD"
             case unselectPaymentMethod = "UNSELECT_PAYMENT_METHOD"
             case setBillingAddress = "SET_BILLING_ADDRESS"
+            case setShippingAddress = "SET_SHIPPING_ADDRESS"
             case setSurchargeFee = "SET_SURCHARGE_FEE"
         }
 

@@ -138,6 +138,10 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 let address = self.applePayPaymentResponse.billingAddress
                 return self.updateBillingAddressViaClientSessionActionWithAddressIfNeeded(address)
             }
+            .then { () -> Promise<Void> in
+                let address = self.applePayPaymentResponse.shippingAddress
+                return self.updateShippingAddressViaClientSessionActionWithAddressIfNeeded(address)
+            }
             .done {
                 seal.fulfill()
             }
@@ -305,9 +309,9 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 @available(iOS 11.0, *)
 extension ApplePayTokenizationViewModel {
 
-    private func clientSessionBillingAddressFromApplePayBillingContact(_ billingContact: PKContact?) -> ClientSession.Address? {
+    private func clientSessionAddressFromApplePayContact(_ contact: PKContact?) -> ClientSession.Address? {
 
-        guard let postalAddress = billingContact?.postalAddress else {
+        guard let postalAddress = contact?.postalAddress else {
             return nil
         }
 
@@ -316,8 +320,8 @@ extension ApplePayTokenizationViewModel {
         let addressLine1 = addressLines.first
         let addressLine2 = addressLines.count > 1 ? addressLines[1] : nil
 
-        return ClientSession.Address(firstName: billingContact?.name?.givenName,
-                                     lastName: billingContact?.name?.familyName,
+        return ClientSession.Address(firstName: contact?.name?.givenName,
+                                     lastName: contact?.name?.familyName,
                                      addressLine1: addressLine1,
                                      addressLine2: addressLine2,
                                      city: postalAddress.city,
@@ -339,6 +343,28 @@ extension ApplePayTokenizationViewModel {
 
             firstly {
                 clientSessionActionsModule.dispatch(actions: [billingAddressAction])
+            }.done {
+                seal.fulfill()
+            }
+            .catch { error in
+                seal.reject(error)
+            }
+        }
+    }
+
+    private func updateShippingAddressViaClientSessionActionWithAddressIfNeeded(_ address: ClientSession.Address?) -> Promise<Void> {
+        return Promise { seal in
+
+            guard let unwrappedAddress = address, let shippingAddress = try? unwrappedAddress.asDictionary() else {
+                seal.fulfill()
+                return
+            }
+
+            let shippingAddressAction: ClientSession.Action = .setShippingAddressActionWithParameters(shippingAddress)
+            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+
+            firstly {
+                clientSessionActionsModule.dispatch(actions: [shippingAddressAction])
             }.done {
                 seal.fulfill()
             }
@@ -492,7 +518,8 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                                                             from: payment.token.paymentData)
             }
 
-            let billingAddress = clientSessionBillingAddressFromApplePayBillingContact(payment.billingContact)
+            let billingAddress = clientSessionAddressFromApplePayContact(payment.billingContact)
+            let shippingAddress = clientSessionAddressFromApplePayContact(payment.shippingContact)
 
             applePayPaymentResponse = ApplePayPaymentResponse(
                 token: ApplePayPaymentInstrument.PaymentResponseToken(
@@ -503,7 +530,10 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                     ),
                     transactionIdentifier: payment.token.transactionIdentifier,
                     paymentData: tokenPaymentData
-                ), billingAddress: billingAddress)
+                ),
+                billingAddress: billingAddress,
+                shippingAddress: shippingAddress
+            )
 
             completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
             controller.dismiss(completion: nil)
