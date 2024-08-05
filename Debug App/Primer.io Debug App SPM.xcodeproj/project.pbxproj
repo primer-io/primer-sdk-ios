@@ -775,8 +775,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/primer-io/primer-stripe-sdk-ios";
 			requirement = {
-				branch = nq/initial_setup;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
 			};
 		};
 		F01193FD2B28FD1700D0ABD9 /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */ = {
