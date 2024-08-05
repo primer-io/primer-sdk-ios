@@ -141,6 +141,7 @@ internal class PrimerInternal: LogReporter {
         events = [sdkEvent, connectivityEvent, timingStartEvent]
         Analytics.Service.record(events: events)
 
+        let start = Date().millisecondsSince1970
         firstly {
             PrimerUIManager.preparePresentation(clientToken: clientToken)
         }
@@ -149,6 +150,7 @@ internal class PrimerInternal: LogReporter {
             let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(),
                                                 networkService: CurrencyNetworkService())
             currencyLoader.updateCurrenciesFromAPI()
+            self.recordLoadedEvent(start, source: .universalCheckout)
             completion?(nil)
         }
         .catch { err in
@@ -230,11 +232,14 @@ internal class PrimerInternal: LogReporter {
         events = [sdkEvent, connectivityEvent, timingStartEvent]
         Analytics.Service.record(events: events)
 
+        let start = Date().millisecondsSince1970
+
         firstly {
             PrimerUIManager.preparePresentation(clientToken: clientToken)
         }
         .done {
             PrimerUIManager.presentPaymentUI()
+            self.recordLoadedEvent(start, source: .showPaymentMethod)
             completion?(nil)
         }
         .catch { err in
@@ -249,6 +254,13 @@ internal class PrimerInternal: LogReporter {
             PrimerUIManager.handleErrorBasedOnSDKSettings(primerErr)
             completion?(err)
         }
+    }
+
+    private func recordLoadedEvent(_ start: Int, source: Analytics.Event.DropInLoadingSource) {
+        let end = Date().millisecondsSince1970
+        let interval = end - start
+        let showEvent = Analytics.Event.dropInLoading(duration: interval, source: source)
+        Analytics.Service.record(events: [showEvent])
     }
 
     /** Dismisses any opened checkout sheet view. */
