@@ -14,7 +14,7 @@ class DependencyContainerTests: XCTestCase {
         super.setUp()
     }
     
-    func testConcurrentRegistrationAndResolution() {
+    func test_concurrentRegistrationAndResolution() {
         let expectation = self.expectation(description: "Concurrent operations completed")
         let operationsCount = 1000
         let queue = DispatchQueue(label: "testQueue", attributes: .concurrent)
@@ -38,7 +38,7 @@ class DependencyContainerTests: XCTestCase {
         waitForExpectations(timeout: 20, handler: nil)
     }
     
-    func testConcurrentRegistrationOfSameType() {
+    func test_concurrentRegistrationOfSameType() {
         let expectation = self.expectation(description: "Concurrent registrations completed")
         let operationsCount = 1000
         let queue = DispatchQueue(label: "testQueue", attributes: .concurrent)
@@ -62,7 +62,7 @@ class DependencyContainerTests: XCTestCase {
         XCTAssertNotNil(resolvedState)
     }
     
-    func testConcurrentResolutionOfNonExistentDependency() {
+    func test_concurrentResolutionOfNonExistentDependency() {
         let expectation = self.expectation(description: "Concurrent resolutions completed")
         let operationsCount = 1000
         let queue = DispatchQueue(label: "testQueue", attributes: .concurrent)
@@ -80,7 +80,7 @@ class DependencyContainerTests: XCTestCase {
         waitForExpectations(timeout: 5, handler: nil)
     }
     
-    func testConcurrentRegistrationAndResolutionOfMultipleTypes() {
+    func test_concurrentRegistrationAndResolutionOfMultipleTypes() {
         let expectation = self.expectation(description: "Concurrent operations completed")
         let operationsCount = 1000
         let queue = DispatchQueue(label: "testQueue", attributes: .concurrent)
@@ -118,4 +118,30 @@ class DependencyContainerTests: XCTestCase {
         XCTAssertNotNil(DependencyContainer.resolve() as AppStateProtocol)
         XCTAssertNotNil(DependencyContainer.resolve() as PrimerSettingsProtocol)
     }
+
+    func test_concurrentQueues() {
+            let expectation = XCTestExpectation(description: "Concurrent access")
+            let iterationCount = 1000
+            let concurrentQueues = 4
+
+            for _ in 0..<concurrentQueues {
+                DispatchQueue.global().async {
+                    for i in 0..<iterationCount {
+                        // Register a unique dependency
+                        let dependency = MockPrimerSettings()
+                        DependencyContainer.register(dependency)
+
+                        // Immediately resolve the dependency
+                        let resolved: MockPrimerSettings = DependencyContainer.resolve()
+
+                        // Verify that the resolved dependency matches the registered one
+                        XCTAssertEqual(dependency.paymentHandling, resolved.paymentHandling)
+                    }
+
+                    expectation.fulfill()
+                }
+            }
+
+            wait(for: [expectation], timeout: 10.0)
+        }
 }

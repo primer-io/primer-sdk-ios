@@ -48,11 +48,7 @@ final internal class DependencyContainer {
     private func resolve<T>() -> T {
         let key = String(describing: T.self)
 
-        if let dependency = Self.queue.sync(execute: { dependencies[key] as? T }) {
-            return dependency
-        }
-
-        return Self.queue.sync {
+        return Self.queue.sync(flags: .barrier) {
             if let dependency = self.dependencies[key] as? T {
                 return dependency
             }

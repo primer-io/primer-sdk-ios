@@ -38,7 +38,8 @@ let package = Package(
             path: "Tests/",
             sources: [
                 "3DS/",
-                "Utilities/"
+                "Utilities/",
+                "Primer/"
             ]
         )
     ],
