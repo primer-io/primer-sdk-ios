@@ -16,7 +16,8 @@ protocol PrimerAPIClientProtocol:
     PrimerAPIClientBanksProtocol,
     PrimerAPIClientPayPalProtocol,
     PrimerAPIClientVaultProtocol,
-    PrimerAPIClientXenditProtocol {
+    PrimerAPIClientXenditProtocol,
+    PrimerAPIClientCreateResumePaymentProtocol {
 
     // MARK: Configuration
 
@@ -90,19 +91,6 @@ protocol PrimerAPIClientProtocol:
     func genericAPICall(clientToken: DecodedJWTToken,
                         url: URL,
                         completion: @escaping APICompletion<Bool>)
-
-    // MARK: Payments
-
-    func createPayment(
-        clientToken: DecodedJWTToken,
-        paymentRequestBody: Request.Body.Payment.Create,
-        completion: @escaping APICompletion<Response.Body.Payment>)
-
-    func resumePayment(
-        clientToken: DecodedJWTToken,
-        paymentId: String,
-        paymentResumeRequest: Request.Body.Payment.Resume,
-        completion: @escaping APICompletion<Response.Body.Payment>)
 
     // MARK: NolPay
 

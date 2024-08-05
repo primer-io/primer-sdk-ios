@@ -19,12 +19,12 @@ private enum CreateResumePaymentCallType: String {
 
 internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
 
-    let apiClient: PrimerAPIClientProtocol
+    let apiClient: PrimerAPIClientCreateResumePaymentProtocol
 
     let paymentMethodType: String
 
     init(paymentMethodType: String,
-         apiClient: PrimerAPIClientProtocol = PrimerAPIClient()) {
+         apiClient: PrimerAPIClientCreateResumePaymentProtocol = PrimerAPIClient()) {
         self.paymentMethodType = paymentMethodType
         self.apiClient = apiClient
     }
