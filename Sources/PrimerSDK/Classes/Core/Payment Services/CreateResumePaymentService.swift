@@ -55,7 +55,7 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         }
     }
 
-    private func validateResponse(paymentResponse: Response.Body.Payment, callType: PaymentCallType) throws {
+    private func validateResponse(paymentResponse: Response.Body.Payment, callType: CreateResumePaymentCallType) throws {
 
         if paymentResponse.id == nil || paymentResponse.status == .failed ||
             (callType == .resume && paymentResponse.status == .pending && paymentResponse.showSuccessCheckoutOnPendingPayment == false) {
@@ -95,9 +95,5 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                 }
             }
         }
-    }
-
-    enum PaymentCallType: String {
-        case create, resume
     }
 }
