@@ -136,7 +136,8 @@ The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a 
 public class PrimerApplePayOptions: Codable {
 
     let merchantIdentifier: String
-    let merchantName: String
+    @available(*, deprecated, message: "Use Client Session API to provide merchant name value: https://primer.io/docs/payment-methods/apple-pay/direct-integration#prepare-the-client-session")
+    let merchantName: String?
     let isCaptureBillingAddressEnabled: Bool
     /// If in some cases you dont want to present ApplePay option if the device is not supporting it set this to `false`.
     /// Default value is `true`.
@@ -147,7 +148,7 @@ public class PrimerApplePayOptions: Codable {
     let checkProvidedNetworks: Bool
 
     public init(merchantIdentifier: String,
-                merchantName: String,
+                merchantName: String?,
                 isCaptureBillingAddressEnabled: Bool = false,
                 showApplePayForUnsupportedDevice: Bool = true,
                 checkProvidedNetworks: Bool = true) {

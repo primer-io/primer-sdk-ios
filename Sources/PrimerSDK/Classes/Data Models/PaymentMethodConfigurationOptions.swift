@@ -15,6 +15,10 @@ struct PayPalOptions: PaymentMethodOptions {
     let clientId: String
 }
 
+struct ApplePayOptions: PaymentMethodOptions {
+    let merchantName: String? // Apple Pay
+}
+
 struct CardOptions: PaymentMethodOptions {
     let threeDSecureEnabled: Bool
     let threeDSecureToken: String?
@@ -36,7 +40,7 @@ struct MerchantOptions: PaymentMethodOptions {
 
     init(merchantId: String, merchantAccountId: String, appId: String?, extraMerchantData: [String: Any]? = nil) {
         self.merchantId = merchantId
-        self .merchantAccountId = merchantAccountId
+        self.merchantAccountId = merchantAccountId
         self.appId = appId
         self.extraMerchantData = extraMerchantData
     }
