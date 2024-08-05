@@ -190,11 +190,14 @@ internal class PrimerInternal: LogReporter {
         events = [sdkEvent, connectivityEvent, timingStartEvent]
         Analytics.Service.record(events: events)
 
+        let start = Date().millisecondsSince1970
+
         firstly {
             PrimerUIManager.preparePresentation(clientToken: clientToken)
         }
         .done {
             PrimerUIManager.presentPaymentUI()
+            self.recordLoadedEvent(start, source: .vaultManager)
             completion?(nil)
         }
         .catch { err in

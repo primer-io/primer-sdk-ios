@@ -844,6 +844,7 @@ extension Analytics.Event {
     enum DropInLoadingSource: String {
         case universalCheckout = "UNIVERSAL_CHECKOUT"
         case showPaymentMethod = "SHOW_PAYMENT_METHOD"
+        case vaultManager = "VAULT_MANAGER"
     }
 
     static func dropInLoading(duration: Int,
