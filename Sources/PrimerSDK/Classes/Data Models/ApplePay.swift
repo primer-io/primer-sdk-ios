@@ -15,6 +15,9 @@ struct ApplePayRequest {
 struct ApplePayPaymentResponse {
     let token: ApplePayPaymentInstrument.PaymentResponseToken
     let billingAddress: ClientSession.Address?
+    let shippingAddress: ClientSession.Address?
+    let emailAddress: String?
+    let mobileNumber: String?
 }
 
 struct ApplePayPaymentResponsePaymentMethod: Codable {
