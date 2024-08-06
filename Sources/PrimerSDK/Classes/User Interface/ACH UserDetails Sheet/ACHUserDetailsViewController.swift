@@ -25,7 +25,6 @@ class ACHUserDetailsViewController: PrimerViewController {
     weak var delegate: ACHUserDetailsDelegate?
     
     // MARK: - Completions
-    var didReceiveErrorCompletion: ((_ error: PrimerError) -> Void)?
     var didUpdateCompletion: (() -> Void)?
     var didReceiveStepCompletion: ((_ step: PrimerSDK.ACHUserDetailsStep) -> Void)?
 
@@ -137,7 +136,6 @@ extension ACHUserDetailsViewController: PrimerHeadlessErrorableDelegate,
     // MARK: - PrimerHeadlessErrorableDelegate
     func didReceiveError(error: PrimerSDK.PrimerError) {
         delegate?.didReceivedError(error: error)
-        didReceiveErrorCompletion?(error)
     }
 
     // MARK: - PrimerHeadlessValidatableDelegate
