@@ -75,6 +75,7 @@ extension StripeAchHeadlessComponent: StripeAchUserDetailsComponent {
     public func start() {
         validate()
         trackStart()
+        setClientSessionActions()
         getClientSessionUserDetails()
     }
 
