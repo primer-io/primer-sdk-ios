@@ -26,7 +26,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           ref: ${{ github.ref }}
       - name: Upload preview to Appetize
@@ -60,7 +60,7 @@ jobs:
           access_token: ${{ github.token }}
 
       - name: Git - Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           ref: ${{ github.ref }}
 
@@ -109,7 +109,7 @@ jobs:
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
           SOURCE_BRANCH: ${{ github.ref }}
       - name: Save Browserstack ID
-        uses: actions/upload-artifact@0b2256b8c012f0828dc542b3febcab082c67f72b #v4.3.4
+        uses: actions/upload-artifact@89ef406dd8d7e03cfd12d9e0a4a378f454709029 #v4.3.5
         id: save_browserstack_id_step
         with:
           name: browserstack_id
@@ -123,7 +123,7 @@ jobs:
       steps:
         - name: Clone and launch Browserstack tests via Appium 🧪
           run: |
-             git clone -b ${{ inputs.appiumTestsBranch || 'develop' }} https://project_41483872_bot:$GITLAB_TEMP_PATH@gitlab.com/primer-io/dx/mobile-appium-tests.git .
+             git clone -b ${{ inputs.appiumTestsBranch || 'develop' }} https://project_41483872_bot:$GITLAB_TEMP_PATH@gitlab.com/primer-io/acceptance/mobile/mobile-appium-tests.git .
              git show --summary
           env:
             GITLAB_TEMP_PATH: ${{ secrets.GITLAB_APPIUM_PULL_KEY }}
@@ -150,7 +150,7 @@ jobs:
             BROWSERSTACK_ACCESS_KEY: ${{secrets.BROWSERSTACK_ACCESS_KEY}}
           run: |
             export BROWSERSTACK_APP_ID=$(cat /var/tmp/browserstack_id.txt)
-            npx wdio config/wdio.ios.bs.conf.js
+            testType=MOCKED npx wdio config/wdio.ios.bs.conf.js
             
         - name: Create Slack Report
           if: ${{ success() || failure() }}
