@@ -17,6 +17,8 @@ final class VaultManagerTests: XCTestCase {
     var tokenizationService: MockTokenizationService!
 
     var createResumePaymentService: MockCreateResumePaymentService!
+    
+    var mandateDelegate: ACHMandateDelegate?
 
     private var vaultService: MockVaultService!
 
@@ -47,6 +49,8 @@ final class VaultManagerTests: XCTestCase {
         sut.tokenizationService = tokenizationService
         sut.createResumePaymentService = createResumePaymentService
         sut.vaultService = vaultService
+        
+        mandateDelegate = sut
 
         PrimerHeadlessUniversalCheckout.current.delegate = headlessCheckoutDelegate
 
@@ -56,6 +60,7 @@ final class VaultManagerTests: XCTestCase {
     override func tearDownWithError() throws {
         sut = nil
         rawDataManagerDelegate = nil
+        mandateDelegate = nil
 
         SDKSessionHelper.tearDown()
 
@@ -204,6 +209,59 @@ final class VaultManagerTests: XCTestCase {
         waitForExpectations(timeout: 15.0)
     }
 
+    func testFullPaymentFlow_ACH() throws {
+
+        let apiClient = MockPrimerAPIClient()
+        apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
+        apiClient.sdkCompleteUrlResult = (Response.Body.Complete(), nil)
+        PrimerAPIConfigurationModule.apiClient = apiClient
+        
+        let expectDidFetchVaultedPaymentMethods = self.expectation(description: "Did fetch vaulted payment methods")
+        sut.fetchVaultedPaymentMethods { _, _ in
+            expectDidFetchVaultedPaymentMethods.fulfill()
+        }
+        
+        waitForExpectations(timeout: 2.0)
+        
+        let expectExchangeTokenData = self.expectation(description: "Token data exchanged")
+        tokenizationService.onExchangePaymentMethodToken = { id, data in
+            expectExchangeTokenData.fulfill()
+            return Promise.fulfilled(ACHMocks.primerPaymentMethodTokenData)
+        }
+
+        let expectCreatePayment = self.expectation(description: "On create payment")
+        createResumePaymentService.onCreatePayment = { _ in
+            expectCreatePayment.fulfill()
+            return self.paymentACHResponseBody
+        }
+        
+        let expectDidReceiveMandateAdditionalInfo = self.expectation(description: "didReceiveMandateAdditionalInfo is called")
+        headlessCheckoutDelegate.onDidReceiveAdditionalInfo = { additionalInfo in
+            expectDidReceiveMandateAdditionalInfo.fulfill()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.mandateDelegate?.acceptMandate()
+            }
+        }
+
+        let expectDidCompleteCheckout = self.expectation(description: "Headless checkout completed")
+        headlessCheckoutDelegate.onDidCompleteCheckoutWithData = { _ in
+            expectDidCompleteCheckout.fulfill()
+        }
+
+        headlessCheckoutDelegate.onDidFail = { error in
+            XCTFail("Failed with error: \(error.localizedDescription)")
+        }
+
+        sut.startPaymentFlow(vaultedPaymentMethodId: Mocks.primerPaymentMethodTokenData.id!)
+        
+        wait(for: [
+            expectExchangeTokenData,
+            expectCreatePayment,
+            expectDidReceiveMandateAdditionalInfo,
+            expectDidCompleteCheckout
+        ], timeout: 20.0, enforceOrder: true)
+    }
+    
     // MARK: Helpers
 
     var tokenizationResponseBody: Response.Body.Tokenization {
@@ -284,6 +342,42 @@ final class VaultManagerTests: XCTestCase {
                      order: nil,
                      orderId: "order_id",
                      requiredAction: .init(clientToken: MockAppState.mockClientTokenWithRedirect,
+                                           name: .checkout,
+                                           description: "description"),
+                     status: .success,
+                     paymentFailureReason: nil)
+    }
+    
+    var paymentACHResponseBody: Response.Body.Payment {
+        return .init(id: "id",
+                     paymentId: "payment_id",
+                     amount: 123,
+                     currencyCode: "USD",
+                     customer: .init(firstName: "first_name",
+                                     lastName: "last_name",
+                                     emailAddress: "email_address",
+                                     mobileNumber: "+44(0)7891234567",
+                                     billingAddress: .init(firstName: "billing_first_name",
+                                                           lastName: "billing_last_name",
+                                                           addressLine1: "billing_line_1",
+                                                           addressLine2: "billing_line_2",
+                                                           city: "billing_city",
+                                                           state: "billing_state",
+                                                           countryCode: "billing_country_code",
+                                                           postalCode: "billing_postal_code"),
+                                     shippingAddress: .init(firstName: "shipping_first_name",
+                                                            lastName: "shipping_last_name",
+                                                            addressLine1: "shipping_line_1",
+                                                            addressLine2: "shipping_line_2",
+                                                            city: "shipping_city",
+                                                            state: "shipping_state",
+                                                            countryCode: "shipping_country_code",
+                                                            postalCode: "shipping_postal_code")),
+                     customerId: "customer_id",
+                     dateStr: nil,
+                     order: nil,
+                     orderId: "order_id",
+                     requiredAction: .init(clientToken: MockAppState.stripeACHToken,
                                            name: .checkout,
                                            description: "description"),
                      status: .success,

@@ -829,12 +829,12 @@ extension PrimerHeadlessUniversalCheckout {
          */
         private func completePayment(clientToken: DecodedJWTToken, completeUrl: URL) -> Promise<Void> {
             return Promise { seal in
-                let apiclient = PrimerAPIClient()
+                let apiClient: PrimerAPIClientAchProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
                 let timeZone = TimeZone(abbreviation: "UTC")
                 let timeStamp = Date().toString(timeZone: timeZone)
                 
                 let body = Request.Body.Payment.Complete(mandateSignatureTimestamp: timeStamp)
-                apiclient.completePayment(clientToken: clientToken, url: completeUrl, paymentRequest: body) { result in
+                apiClient.completePayment(clientToken: clientToken, url: completeUrl, paymentRequest: body) { result in
                     switch result {
                     case .success:
                         seal.fulfill()
