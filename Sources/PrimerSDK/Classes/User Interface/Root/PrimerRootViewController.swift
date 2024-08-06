@@ -211,7 +211,7 @@ internal class PrimerRootViewController: PrimerViewController {
         self.tapGesture?.isEnabled = isUserInteractionEnabled
         self.view.isUserInteractionEnabled = isUserInteractionEnabled
     }
-    
+
     internal func enableDismissGestures(_ dismissGestures: Bool) {
         self.swipeGesture?.isEnabled = dismissGestures
         self.tapGesture?.isEnabled = dismissGestures

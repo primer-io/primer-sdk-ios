@@ -23,7 +23,7 @@ class ACHUserDetailsViewController: PrimerViewController {
     var stripeAchComponent: (any StripeAchUserDetailsComponent)?
     var cancellables: Set<AnyCancellable> = []
     weak var delegate: ACHUserDetailsDelegate?
-    
+
     // MARK: - Completions
     var didUpdateCompletion: (() -> Void)?
     var didReceiveStepCompletion: ((_ step: PrimerSDK.ACHUserDetailsStep) -> Void)?

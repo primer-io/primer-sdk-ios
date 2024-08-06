@@ -88,9 +88,11 @@ class PrimerResultPaymentStatusViewModel: ObservableObject {
     var statusIconString: String {
         return paymentStatus == .success ? "checkmark.circle" : "xmark.circle"
     }
-    
+
     var statusIconAccessibilityIdentifier: String {
-        return paymentStatus == .success ? AccessibilityIdentifier.ResultScreen.successImage.rawValue : AccessibilityIdentifier.ResultScreen.failureImage.rawValue
+        let successImage = AccessibilityIdentifier.ResultScreen.successImage.rawValue
+        let failureImage = AccessibilityIdentifier.ResultScreen.failureImage.rawValue
+        return paymentStatus == .success ? successImage : failureImage
     }
 
     var statusIconColor: Color {
@@ -100,7 +102,7 @@ class PrimerResultPaymentStatusViewModel: ObservableObject {
     var titleBottomSpacing: CGFloat {
         return paymentStatus == .success ? 20 : 40
     }
-    
+
     var paymentMessageBottomSpacing: CGFloat {
         return paymentStatus == .success ? 60 : 40
     }

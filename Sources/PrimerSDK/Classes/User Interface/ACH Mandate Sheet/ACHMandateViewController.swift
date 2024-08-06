@@ -40,7 +40,7 @@ class ACHMandateViewController: PrimerViewController {
         if let parentVC = self.parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = true
         }
-        
+
         DispatchQueue.main.async {
             PrimerUIManager.primerRootViewController?.enableDismissGestures(false)
         }
@@ -51,7 +51,7 @@ class ACHMandateViewController: PrimerViewController {
         if let parentVC = self.parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = false
         }
-        
+
         DispatchQueue.main.async {
             PrimerUIManager.primerRootViewController?.enableDismissGestures(true)
         }
