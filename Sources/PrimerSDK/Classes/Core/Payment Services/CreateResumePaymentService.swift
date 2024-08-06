@@ -19,12 +19,12 @@ private enum CreateResumePaymentCallType: String {
 
 internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
 
-    let apiClient: PrimerAPIClientProtocol
+    let apiClient: PrimerAPIClientCreateResumePaymentProtocol
 
     let paymentMethodType: String
 
     init(paymentMethodType: String,
-         apiClient: PrimerAPIClientProtocol = PrimerAPIClient()) {
+         apiClient: PrimerAPIClientCreateResumePaymentProtocol = PrimerAPIClient()) {
         self.paymentMethodType = paymentMethodType
         self.apiClient = apiClient
     }
@@ -45,7 +45,7 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                     seal.reject(error)
                 case .success(let paymentResponse):
                     do {
-                        try self.validateResponse(paymentResponse: paymentResponse, callType: "create")
+                        try self.validateResponse(paymentResponse: paymentResponse, callType: .create)
                         seal.fulfill(paymentResponse)
                     } catch {
                         seal.reject(error)
@@ -55,23 +55,10 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         }
     }
 
-    private func error(forCallType callType: CreateResumePaymentCallType) -> Error {
-        switch callType {
-        case .create:
-            return PrimerError.failedToCreatePayment(paymentMethodType: paymentMethodType,
-                                                     description: "Failed to create payment",
-                                                     userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-        case .resume:
-            return PrimerError.failedToResumePayment(paymentMethodType: paymentMethodType,
-                                                     description: "Failed to resume payment",
-                                                     userInfo: .errorUserInfoDictionary(),
-                                                     diagnosticsId: UUID().uuidString)
-        }
-    }
+    private func validateResponse(paymentResponse: Response.Body.Payment, callType: CreateResumePaymentCallType) throws {
 
-    private func validateResponse(paymentResponse: Response.Body.Payment, callType: String) throws {
-        if paymentResponse.id == nil || paymentResponse.status == .failed {
+        if paymentResponse.id == nil || paymentResponse.status == .failed ||
+            (callType == .resume && paymentResponse.status == .pending && paymentResponse.showSuccessCheckoutOnPendingPayment == false) {
             let err = PrimerError.paymentFailed(
                 paymentMethodType: self.paymentMethodType,
                 paymentId: paymentResponse.id ?? "unknown",
@@ -80,7 +67,6 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             throw err
-
         }
     }
 
@@ -101,7 +87,7 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                     seal.reject(error)
                 case .success(let paymentResponse):
                     do {
-                        try self.validateResponse(paymentResponse: paymentResponse, callType: "resume")
+                        try self.validateResponse(paymentResponse: paymentResponse, callType: .resume)
                         seal.fulfill(paymentResponse)
                     } catch {
                         seal.reject(error)
