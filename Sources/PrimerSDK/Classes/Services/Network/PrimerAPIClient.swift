@@ -77,8 +77,18 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
     func fetchConfiguration(clientToken: DecodedJWTToken,
                             requestParameters: Request.URLParameters.Configuration?,
                             completion: @escaping APICompletion<PrimerAPIConfiguration>) {
+
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters)
-        execute(endpoint, completion: completion)
+        let retryConfig = RetryConfig(enabled: true)
+        networkService.request(endpoint, retryConfig: retryConfig) { (result: Result<PrimerAPIConfiguration, Error>) in
+            switch result {
+            case .success(let configuration):
+                completion(.success(configuration))
+            case .failure(let error):
+                ErrorHandler.shared.handle(error: error)
+                completion(.failure(error))
+            }
+        }
     }
 
     func createPayPalOrderSession(clientToken: DecodedJWTToken,
@@ -248,5 +258,4 @@ extension PrimerAPIClient {
             }
         }
     }
-
 }

@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: OFF-SESSION PAYMENT INFO
 
-fileprivate func urlScheme() -> String? {
+private func urlScheme() -> String? {
     (try? PrimerSettings.current.paymentMethodOptions.validUrlForUrlScheme())?.absoluteString
 }
 
