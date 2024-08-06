@@ -226,7 +226,7 @@ final class VaultManagerTests: XCTestCase {
         let expectExchangeTokenData = self.expectation(description: "Token data exchanged")
         tokenizationService.onExchangePaymentMethodToken = { id, data in
             expectExchangeTokenData.fulfill()
-            return Promise.fulfilled(ACHMocks.primerPaymentMethodTokenData)
+            return Promise.fulfilled(self.primerPaymentMethodTokenData)
         }
 
         let expectCreatePayment = self.expectation(description: "On create payment")
@@ -398,6 +398,19 @@ final class VaultManagerTests: XCTestCase {
                      status: .success,
                      paymentFailureReason: nil)
     }
+    
+    var primerPaymentMethodTokenData = PrimerPaymentMethodTokenData(
+        analyticsId: "mock_analytics_id",
+        id: "mock_payment_method_token_data_id",
+        isVaulted: false,
+        isAlreadyVaulted: false,
+        paymentInstrumentType: .stripeAch,
+        paymentMethodType: "mock_payment_method_type",
+        paymentInstrumentData: nil,
+        threeDSecureAuthentication: nil,
+        token: "mock_payment_method_token",
+        tokenType: .singleUse,
+        vaultData: nil)
 }
 
 private class MockVaultService: VaultServiceProtocol {
