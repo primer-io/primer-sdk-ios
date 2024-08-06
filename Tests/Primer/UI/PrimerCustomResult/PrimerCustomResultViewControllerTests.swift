@@ -63,7 +63,7 @@ final class PrimerCustomResultViewControllerTests: XCTestCase {
     }
     
     func test_paymentStatusViewModel_paymentMessage_success() {
-        let successMessage = "You have now authorised your bank account to be debited. You will be notified via email once the payment has been collected successfully."
+        let successMessage = "You have now authorized your bank account to be debited. You will be notified via email once the payment has been collected successfully."
         
         XCTAssertEqual(sut.paymentStatusViewModel.paymentMessage, successMessage)
     }
@@ -74,7 +74,7 @@ final class PrimerCustomResultViewControllerTests: XCTestCase {
         sut = PrimerCustomResultViewController(paymentMethodType: .stripeAch, error: canceledError)
         sut.loadViewIfNeeded()
         
-        XCTAssertEqual(sut.paymentStatusViewModel.paymentMessage, canceledError.localizedDescription)
+        XCTAssertEqual(sut.paymentStatusViewModel.paymentMessage, "Please try again or select another bank")
     }
     
     func test_paymentStatusViewModel_ui_buttons_canceled() {
