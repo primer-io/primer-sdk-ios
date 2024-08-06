@@ -28,13 +28,30 @@ extension StripeAchHeadlessComponent {
         }
         .catch { _ in }
     }
-    
+
+    func setClientSessionActions() {
+        firstly {
+            let paymentMethodType = self.tokenizationViewModel.config.type
+            let actionsRequest = self.clientSessionService.prepareKlarnaClientSessionActionsRequestBody(paymentMethodType: paymentMethodType)
+            return clientSessionService.patchClientSession(with: actionsRequest)
+        }
+        .done {}
+        .catch { error in
+            let primerError = PrimerError.failedToCreateSession(
+                error: error,
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            
+            self.errorDelegate?.didReceiveError(error: primerError)
+        }
+    }
+
     private func updateAndValidateSessionUserDetails() {
         let sessionCollectableDataArray = [ACHUserDetailsCollectableData.firstName(clientSessionUserDetails.firstName),
                                            ACHUserDetailsCollectableData.lastName(clientSessionUserDetails.lastName),
                                            ACHUserDetailsCollectableData.emailAddress(clientSessionUserDetails.emailAddress)]
-        
-        
+
         sessionCollectableDataArray.forEach { collectableData in
             updateCollectedData(collectableData: collectableData)
         }
@@ -83,7 +100,7 @@ extension StripeAchHeadlessComponent {
                 actions: actions))
 
         firstly {
-            clientSessionService.patchClientSession(actionsRequest: clientSessionActionsRequest)
+            clientSessionService.patchClientSession(with: clientSessionActionsRequest)
         }
         .done { _ in
             self.startVMTokenization()
@@ -106,7 +123,9 @@ extension StripeAchHeadlessComponent {
      * If found, it triggers the start of the tokenization process in the corresponding view model and notifies the step delegate.
      */
     private func startVMTokenization() {
-        tokenizationViewModel.start()
+        if PrimerInternal.shared.sdkIntegrationType == .headless {
+            tokenizationViewModel.start()
+        }
         stepDelegate?.didReceiveStep(step: ACHUserDetailsStep.didCollectUserDetails)
     }
 
@@ -114,7 +133,7 @@ extension StripeAchHeadlessComponent {
      * Creates a specific action to update the client session based on the type of user details validation error.
      *
      * This method switches on the type of `StripeAchUserDetailsError` provided and returns an appropriate
-     * `ClientSession.Action` to correct the user details. 
+     * `ClientSession.Action` to correct the user details.
      * If the error type does not correspond to a specific action, it returns `nil`, indicating no action is required for the client session update.
      *
      * - Parameter validationError: The validation error encountered with user details.

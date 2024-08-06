@@ -1,5 +1,5 @@
 //
-//  ACHTokenizationComponent.swift
+//  ACHClientSessionService.swift
 //  PrimerSDK
 //
 //  Created by Stefan Vrancianu on 25.04.2024.
@@ -16,7 +16,7 @@ import Foundation
  */
 protocol ACHUserDetailsProviding {
     func getClientSessionUserDetails() -> Promise<ACHUserDetails>
-    func patchClientSession(actionsRequest: ClientSessionUpdateRequest) -> Promise<Void>
+    func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) -> Promise<Void>
 }
 
 class ACHClientSessionService: ACHUserDetailsProviding {
@@ -62,7 +62,7 @@ extension ACHClientSessionService {
  * - Returns: A promise that resolves when the session has been successfully updated or rejects if an error occurs.
  */
 extension ACHClientSessionService {
-    func patchClientSession(actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
+    func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
         return Promise { seal in
             firstly {
                 updateClientSession(with: actionsRequest)
@@ -76,9 +76,15 @@ extension ACHClientSessionService {
             
         }
     }
+    
+    func prepareKlarnaClientSessionActionsRequestBody(paymentMethodType: String) -> ClientSessionUpdateRequest {
+        let params: [String: Any] = ["paymentMethodType": paymentMethodType]
+        let actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
+        return ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
+    }
 }
 
-// MARK: - ACH client session API calls
+// MARK: - ACH client session API call
 private extension ACHClientSessionService {
     private func updateClientSession(with actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
         return Promise { seal in
@@ -89,8 +95,7 @@ private extension ACHClientSessionService {
             }
             
             apiClient.requestPrimerConfigurationWithActions(clientToken: decodedJWTToken,
-                                                            request: actionsRequest) { [weak self] result in
-                guard let self = self else { return }
+                                                            request: actionsRequest) { result in
                 switch result {
                 case .success(let configuration):
                     PrimerAPIConfigurationModule.apiConfiguration?.clientSession = configuration.clientSession
