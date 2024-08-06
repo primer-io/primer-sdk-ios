@@ -114,6 +114,6 @@ public class Primer {
      Checkout Session is active?
      */
     public func checkoutSessionIsActive() -> Bool {
-        PrimerInternal.shared.checkoutSessionId != nil
+        PrimerInternal.shared.checkoutSessionIsActive()
     }
 }
