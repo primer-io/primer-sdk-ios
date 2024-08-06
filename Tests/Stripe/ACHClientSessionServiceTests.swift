@@ -82,7 +82,7 @@ final class ACHClientSessionServiceTests: XCTestCase {
         let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actionsArray))
 
         firstly {
-            clientSessionService.patchClientSession(actionsRequest: clientSessionActionsRequest)
+            clientSessionService.patchClientSession(with: clientSessionActionsRequest)
         }
         .done { _ in
             let updatedCustomer = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer
@@ -130,7 +130,7 @@ final class ACHClientSessionServiceTests: XCTestCase {
         let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actionsArray))
 
         firstly {
-            clientSessionService.patchClientSession(actionsRequest: clientSessionActionsRequest)
+            clientSessionService.patchClientSession(with: clientSessionActionsRequest)
         }
         .done { _ in
             XCTFail("Result should be nil")

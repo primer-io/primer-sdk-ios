@@ -759,6 +759,8 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return nil
         case .stripeAch:
             return nil
+        case .fintechtureSmartTransfer, .fintechtureImmediateTransfer:
+            return nil
         }
     }
 
@@ -802,6 +804,12 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
         case PrimerPaymentMethodType.twoCtwoP.rawValue:
             return Strings.PaymentButton.payInInstallments
+
+        case PrimerPaymentMethodType.fintechtureSmartTransfer.rawValue:
+            return Strings.PaymentButton.payBySmartTransfer
+
+        case PrimerPaymentMethodType.fintechtureImmediateTransfer.rawValue:
+            return Strings.PaymentButton.payByImmediateTransfer
 
         default:
             return metadataButtonText

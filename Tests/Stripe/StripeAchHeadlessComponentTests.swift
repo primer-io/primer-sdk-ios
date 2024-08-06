@@ -384,6 +384,7 @@ extension StripeAchHeadlessComponentTests {
 
         mockApiClient.fetchVaultedPaymentMethodsResult = (vaultedPaymentMethods, nil)
         mockApiClient.fetchConfigurationResult = (apiConfiguration, nil)
+        mockApiClient.fetchConfigurationWithActionsResult = (apiConfiguration, nil)
 
         AppState.current.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiClient = mockApiClient
