@@ -273,7 +273,7 @@ platform :ios do
 
     match(
       type: options[:match_type],
-      readonly: true,
+      readonly: false,
       keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
       keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
     )
