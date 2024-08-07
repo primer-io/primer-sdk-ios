@@ -74,5 +74,15 @@ extension PrimerHeadlessUniversalCheckout {
                         .first(where: { $0.type == paymentMethodType })
             }
         }
+
+        #if DEBUG
+        init(type: String,
+             supportedPrimerSessionIntents: [PrimerSessionIntent] = [],
+             paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory] = [.nativeUI]) {
+            self.paymentMethodType = type
+            self.supportedPrimerSessionIntents = supportedPrimerSessionIntents
+            self.paymentMethodManagerCategories = paymentMethodManagerCategories
+        }
+        #endif
     }
 }
