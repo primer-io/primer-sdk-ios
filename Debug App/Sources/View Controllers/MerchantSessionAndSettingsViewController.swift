@@ -13,6 +13,7 @@ var environment: Environment = .sandbox
 var customDefinedApiKey: String?
 var performPaymentAfterVaulting: Bool = false
 var useNewWorkflows = true
+var enableConfigurationCaching = false
 var paymentSessionType: MerchantMockDataManager.SessionType = .generic
 
 class MerchantSessionAndSettingsViewController: UIViewController {
@@ -30,6 +31,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var apiKeyStackView: UIStackView!
     @IBOutlet weak var useNewWorkflowsStackView: UIStackView!
     @IBOutlet weak var klarnaEMDStackView: UIStackView!
+    @IBOutlet weak var configurationCachingStackView: UIStackView!
     @IBOutlet weak var clientTokenStackView: UIStackView!
     @IBOutlet weak var sdkSettingsStackView: UIStackView!
     @IBOutlet weak var orderStackView: UIStackView!
@@ -390,6 +392,10 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         populateSessionSettingsFields()
     }
 
+    @IBAction func enableConfigurationCachingValueChanged(_ sender: UISwitch) {
+        enableConfigurationCaching = sender.isOn
+    }
+
     func configureClientSession() {
         clientSession.currencyCode = CurrencyLoader().getCurrency(currencyTextField.text ?? "")
         clientSession.order?.countryCode = CountryCode(rawValue: countryCodeTextField.text ?? "")
@@ -550,7 +556,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     showApplePayForUnsupportedDevice: false,
                     checkProvidedNetworks: false)),
             uiOptions: uiOptions,
-            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
+            clientSessionCachingEnabled: enableConfigurationCaching
         )
 
         switch renderMode {
@@ -582,7 +589,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     showApplePayForUnsupportedDevice: false,
                     checkProvidedNetworks: false)),
             uiOptions: nil,
-            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
+            clientSessionCachingEnabled: enableConfigurationCaching
         )
 
         switch renderMode {
@@ -617,7 +625,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     showApplePayForUnsupportedDevice: false,
                     checkProvidedNetworks: false)),
             uiOptions: nil,
-            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
+            clientSessionCachingEnabled: enableConfigurationCaching
         )
 
         switch renderMode {

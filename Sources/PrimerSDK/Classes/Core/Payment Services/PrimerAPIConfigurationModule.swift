@@ -82,7 +82,6 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
     static func resetSession() {
         AppState.current.clientToken = nil
         AppState.current.apiConfiguration = nil
-        ConfigurationCache.shared.clearCache()
     }
 
     func setupSession(
