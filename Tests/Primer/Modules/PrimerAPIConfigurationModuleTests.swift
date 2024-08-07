@@ -56,9 +56,16 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
 
     func test_usesCachedConfig() throws {
         let expectation = XCTestExpectation(description: "Uses Cached Config")
+        let headlessExpectation = self.expectation(description: "Headless Loaded")
 
         let proxyId = "proxy-identifier"
 
+        let settings = PrimerSettings(clientSessionCachingEnabled: true)
+        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { paymentMethods, err in
+            headlessExpectation.fulfill()
+        }
+
+        wait(for: [headlessExpectation])
         let config_pre = PrimerAPIConfiguration(
             coreUrl: proxyId,
             pciUrl: "https://pci.primer.io",
