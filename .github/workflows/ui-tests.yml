@@ -148,7 +148,7 @@ jobs:
   test-via-browserstack-manual:
     runs-on: ubuntu-latest
     needs: build-and-upload-to-firebase-and-browserstack
-    name: "Browserstack test"
+    name: "Browserstack test (manual)"
     if: ${{ inputs.testType != '' }}
     steps:
       - name: Run UI Tests via Browserstack [${{ inputs.testType }}] 🧪

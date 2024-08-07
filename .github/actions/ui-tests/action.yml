@@ -5,32 +5,36 @@ inputs:
     description: The branch to run from mobile-appium-tests 
     required: true
     default: develop
-    type: string
   test-type:
     description: The type of test run, one of [MOCKED|E2E]
     required: true
     default: MOCKED
-    type: string
   gitlab-appium-pull-key:
+    description: The key used to fetch the appium repo
     required: true
-    type: string
   browserstack-user-name:
+    description: The browserstack username
     required: true
-    type: string
   browserstack-access-key:
+    description: The browserstack access key
     required: true
-    type: string
   slack-mobile-sdk-channel:
+    description: The channel to report results to
     required: true
-    type: string
   slack-reporter-bot-token:
+    description: The slack bot token for posting results to the channel
     required: true
-    type: string
 
 runs:
   using: "composite"
   steps:
+    - name: Git - Checkout
+      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      with:
+        ref: ${{ github.ref }}
+        sparse-checkout: .github
     - name: Clone and launch Browserstack tests via Appium 🧪
+      shell: bash
       run: |
           git clone -b ${{ inputs.appium-tests-branch || 'develop' }} https://project_41483872_bot:$GITLAB_TEMP_PATH@gitlab.com/primer-io/acceptance/mobile/mobile-appium-tests.git .
           git show --summary
@@ -48,12 +52,16 @@ runs:
       with:
         node-version: 18.3.0
 
-    - name: npm Install
+    - name: npm install - all deps
+      shell: bash
       run: npm install
     
-    - run: npm install --save slack-message-builder
+    - name: npm install - slack message builder
+      shell: bash
+      run: npm install --save slack-message-builder
 
     - name: Run Appium Test
+      shell: bash
       env:
         BROWSERSTACK_USERNAME: ${{ inputs.browserstack-user-name }} # secrets.BROWSERSTACK_USERNAME
         BROWSERSTACK_ACCESS_KEY: ${{ inputs.browserstack-access-key }} # secrets.BROWSERSTACK_ACCESS_KEY
@@ -62,6 +70,7 @@ runs:
         testType=${{ inputs.test-type }} npx wdio config/wdio.ios.bs.conf.js
         
     - name: Create Slack Report
+      shell: bash
       if: ${{ success() || failure() }}
       run: |
         node report-script/slack-report-script.js createSlackReport iOS
@@ -77,6 +86,7 @@ runs:
         SLACK_BOT_TOKEN: ${{ inputs.slack-reporter-bot-token }} # secrets.SLACK_REPORTER_BOT_TOKEN
 
     - name: Create Slack Failed Summary Report
+      shell: bash
       if: ${{ failure() }}
       run: |
         node report-script/slack-failed-report-script.js createSlackFailedSummaryReport ${{ steps.slack.outputs.thread_ts }}
@@ -95,6 +105,7 @@ runs:
         SLACK_BOT_TOKEN: ${{ inputs.slack-reporter-bot-token }} # secrets.SLACK_REPORTER_BOT_TOKEN
 
     - name: Create and post Github summary
+      shell: bash
       if: ${{ success() || failure() }}
       run: |
         node report-script/github-tests-summary-script.js createGithubSummaryReport
