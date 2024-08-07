@@ -142,6 +142,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
 
     public func cleanUp() {
         PrimerAPIConfigurationModule.resetSession()
+        ConfigurationCache.shared.clearCache()
         PrimerInternal.shared.checkoutSessionId = nil
     }
 
