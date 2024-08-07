@@ -10,7 +10,7 @@ on:
         type: string
       testType:
         description: The type of test run, one of [MOCKED|E2E]
-        required: true
+        required: false
         default: MOCKED
         type: string
   schedule:
