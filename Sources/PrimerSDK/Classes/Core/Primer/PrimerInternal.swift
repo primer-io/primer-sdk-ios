@@ -291,4 +291,8 @@ internal class PrimerInternal: LogReporter {
             }
         }
     }
+
+    internal func checkoutSessionIsActive() -> Bool {
+        checkoutSessionId != nil
+    }
 }
