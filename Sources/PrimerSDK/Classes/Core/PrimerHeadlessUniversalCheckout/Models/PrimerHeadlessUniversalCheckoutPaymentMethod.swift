@@ -38,7 +38,6 @@ extension PrimerHeadlessUniversalCheckout {
         public private(set) var paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory]
         public private(set) var requiredInputDataClass: PrimerRawData.Type?
 
-
         init?(paymentMethodType: String, paymentMethodProvider: PrimerPaymentMethodProviding = DefaultPaymentMethodProvider()) {
             guard let paymentMethod = paymentMethodProvider.paymentMethod(for: paymentMethodType)
             else {
