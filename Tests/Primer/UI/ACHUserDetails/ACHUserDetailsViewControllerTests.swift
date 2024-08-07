@@ -39,6 +39,29 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
         SDKSessionHelper.tearDown()
         super.tearDown()
     }
+    
+    func test_achUserDetails_viewWillAppear() {
+        sut.viewWillAppear(false)
+        
+        if let parentVC = sut.parent as? PrimerContainerViewController {
+            XCTAssertTrue(parentVC.mockedNavigationBar.hidesBackButton)
+        }
+    }
+    
+    func test_achUserDetails_viewDidAppear() {
+        sut.achUserDetailsViewModel.shouldDisableViews = true
+        sut.viewDidAppear(false)
+        
+        XCTAssertTrue(sessionRestarted)
+    }
+    
+    func test_achUserDetails_viewWillDisappear() {
+        sut.viewWillDisappear(false)
+        
+        if let parentVC = sut.parent as? PrimerContainerViewController {
+            XCTAssertFalse(parentVC.mockedNavigationBar.hidesBackButton)
+        }
+    }
 
     func test_achUserDetails_view_not_nil() {
         XCTAssertNotNil(sut.achUserDetailsView)
@@ -226,6 +249,10 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
             expectDidReceiveStep,
             expectUpdateFirstName
         ], timeout: 3.0, enforceOrder: true)
+    }
+    
+    func test_achUserDetails_isValidForm_true() {
+        XCTAssertTrue(sut.achUserDetailsViewModel.isValidForm)
     }
     
     func test_retrievedUserDetails_values() {

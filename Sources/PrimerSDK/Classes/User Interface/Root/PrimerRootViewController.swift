@@ -35,8 +35,8 @@ internal class PrimerRootViewController: PrimerViewController {
     }()
 
     // User Interaction
-    private var tapGesture: UITapGestureRecognizer?
-    private var swipeGesture: UISwipeGestureRecognizer?
+    private(set) var tapGesture: UITapGestureRecognizer?
+    private(set) var swipeGesture: UISwipeGestureRecognizer?
 
     // MARK: - INITIALIZATION LIFECYCLE
 

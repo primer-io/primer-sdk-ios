@@ -6,16 +6,19 @@
 //
 
 import XCTest
+import SwiftUI
 @testable import PrimerSDK
 
 final class PrimerCustomResultViewControllerTests: XCTestCase {
     
     var sut: PrimerCustomResultViewController!
+    var uiManager: MockPrimerUIManager!
 
     override func setUp() {
         super.setUp()
         
         sut = PrimerCustomResultViewController(paymentMethodType: .stripeAch, error: nil)
+        uiManager = MockPrimerUIManager()
         sut.loadViewIfNeeded()
     }
 
@@ -30,6 +33,22 @@ final class PrimerCustomResultViewControllerTests: XCTestCase {
     
     func test_paymentStatusViewModel_not_nil() {
         XCTAssertNotNil(sut.paymentStatusViewModel)
+    }
+    
+    func test_achUserDetails_viewWillAppear() {
+        sut.viewWillAppear(false)
+        
+        if let parentVC = sut.parent as? PrimerContainerViewController {
+            XCTAssertTrue(parentVC.mockedNavigationBar.hidesBackButton)
+        }
+    }
+    
+    func test_achUserDetails_viewWillDisappear() {
+        sut.viewWillDisappear(false)
+        
+        if let parentVC = sut.parent as? PrimerContainerViewController {
+            XCTAssertFalse(parentVC.mockedNavigationBar.hidesBackButton)
+        }
     }
     
     func test_paymentStatusViewModel_title() {
@@ -100,5 +119,51 @@ final class PrimerCustomResultViewControllerTests: XCTestCase {
     func test_paymentStatusViewModel_ui_buttons_success() {
         XCTAssertFalse(sut.paymentStatusViewModel.showOnRetry)
         XCTAssertFalse(sut.paymentStatusViewModel.showChooseOtherPaymentMethod)
+    }
+    
+    func test_paymentStatusViewModel_statusIcon_success() {
+        let successIcon = "checkmark.circle"
+        let successIconIdentifier = AccessibilityIdentifier.ResultScreen.successImage.rawValue
+        let iconColor = Color.blue.opacity(0.8)
+        
+        XCTAssertEqual(sut.paymentStatusViewModel.statusIconString, successIcon)
+        XCTAssertEqual(sut.paymentStatusViewModel.statusIconAccessibilityIdentifier, successIconIdentifier)
+        XCTAssertEqual(sut.paymentStatusViewModel.statusIconColor, iconColor)
+    }
+    
+    func test_paymentStatusViewModel_statusIcon_failure() {
+        tearDown()
+        let failedError = ACHHelpers.getInvalidSettingError(name: "test")
+        sut = PrimerCustomResultViewController(paymentMethodType: .stripeAch, error: failedError)
+        sut.loadViewIfNeeded()
+        
+        let failedIcon = "xmark.circle"
+        let failedIconIdentifier = AccessibilityIdentifier.ResultScreen.failureImage.rawValue
+        let iconColor = Color.red.opacity(0.8)
+        
+        XCTAssertEqual(sut.paymentStatusViewModel.statusIconString, failedIcon)
+        XCTAssertEqual(sut.paymentStatusViewModel.statusIconAccessibilityIdentifier, failedIconIdentifier)
+        XCTAssertEqual(sut.paymentStatusViewModel.statusIconColor, iconColor)
+    }
+    
+    func test_paymentStatusViewModel_bottomSpacings_success() {
+        let titleBottomSpacing: CGFloat = 20
+        let paymentMessageBottomSpacing: CGFloat = 60
+        
+        XCTAssertEqual(sut.paymentStatusViewModel.titleBottomSpacing, titleBottomSpacing)
+        XCTAssertEqual(sut.paymentStatusViewModel.paymentMessageBottomSpacing, paymentMessageBottomSpacing)
+    }
+    
+    func test_paymentStatusViewModel_bottomSpacings_failure() {
+        tearDown()
+        let failedError = ACHHelpers.getInvalidSettingError(name: "test")
+        sut = PrimerCustomResultViewController(paymentMethodType: .stripeAch, error: failedError)
+        sut.loadViewIfNeeded()
+        
+        let titleBottomSpacing: CGFloat = 40
+        let paymentMessageBottomSpacing: CGFloat = 40
+        
+        XCTAssertEqual(sut.paymentStatusViewModel.titleBottomSpacing, titleBottomSpacing)
+        XCTAssertEqual(sut.paymentStatusViewModel.paymentMessageBottomSpacing, paymentMessageBottomSpacing)
     }
 }

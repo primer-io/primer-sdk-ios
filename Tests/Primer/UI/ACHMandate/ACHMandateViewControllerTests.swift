@@ -38,6 +38,34 @@ final class ACHMandateViewControllerTests: XCTestCase {
         XCTAssertNotNil(sut.mandateViewModel)
     }
     
+    func test_achUserDetails_viewWillAppear() {
+        sut.viewWillAppear(false)
+        
+        if let parentVC = sut.parent as? PrimerContainerViewController {
+            XCTAssertTrue(parentVC.mockedNavigationBar.hidesBackButton)
+        }
+        
+        if let tapGesture = PrimerUIManager.primerRootViewController?.tapGesture,
+           let swipeGesture = PrimerUIManager.primerRootViewController?.swipeGesture {
+            XCTAssertFalse(tapGesture.isEnabled)
+            XCTAssertFalse(swipeGesture.isEnabled)
+        }
+    }
+    
+    func test_achUserDetails_viewWillDisappear() {
+        sut.viewWillDisappear(false)
+        
+        if let parentVC = sut.parent as? PrimerContainerViewController {
+            XCTAssertFalse(parentVC.mockedNavigationBar.hidesBackButton)
+        }
+        
+        if let tapGesture = PrimerUIManager.primerRootViewController?.tapGesture,
+           let swipeGesture = PrimerUIManager.primerRootViewController?.swipeGesture {
+            XCTAssertTrue(tapGesture.isEnabled)
+            XCTAssertTrue(swipeGesture.isEnabled)
+        }
+    }
+    
     func test_mandateViewModel_fullText() {
         XCTAssertEqual(sut.mandateViewModel.mandateText, "test-mandate-text")
     }
