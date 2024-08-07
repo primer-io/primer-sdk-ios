@@ -22,14 +22,12 @@ internal protocol PrimerAPIConfigurationModuleProtocol {
 }
 
 // swiftlint:disable type_body_length
-internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
+internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, LogReporter {
 
     static var apiClient: PrimerAPIClientProtocol?
 
     private static let queue = DispatchQueue(label: "com.primer.configurationQueue")
     private static var pendingPromises: [String: Promise<PrimerAPIConfiguration>] = [:]
-
-    private let logger = PrimerLogging.shared.logger
 
     static var clientToken: JWTToken? {
         get {
