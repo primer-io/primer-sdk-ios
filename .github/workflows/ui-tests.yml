@@ -135,7 +135,7 @@ jobs:
       steps:
         - name: Run UI Tests via Browserstack 🧪
           id: ui-tests-test-via-browserstack
-          uses: ./.github/actions/appetize-build
+          uses: ./.github/actions/ui-tests
           with:
             appium-tests-branch: ${{ inputs.appiumTestsBranch }}
             test-type: ${{ matrix.test-type }}
@@ -153,7 +153,7 @@ jobs:
     steps:
       - name: Run UI Tests via Browserstack [${{ inputs.testType }}] 🧪
         id: ui-tests-test-via-browserstack
-        uses: ./.github/actions/appetize-build
+        uses: ./.github/actions/ui-tests
         with:
           appium-tests-branch: ${{ inputs.appiumTestsBranch }}
           test-type: ${{ inputs.testType }}
