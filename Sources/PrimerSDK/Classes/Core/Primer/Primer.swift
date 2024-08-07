@@ -109,4 +109,11 @@ public class Primer {
     public func dismiss() {
         PrimerInternal.shared.dismiss()
     }
+
+    /**
+     Checkout Session is active?
+     */
+    public func checkoutSessionIsActive() -> Bool {
+        PrimerInternal.shared.checkoutSessionIsActive()
+    }
 }

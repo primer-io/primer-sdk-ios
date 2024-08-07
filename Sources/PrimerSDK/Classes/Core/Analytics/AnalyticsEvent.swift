@@ -383,6 +383,7 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
     var errorBody: String?
     var responseCode: Int?
     var params: [String: AnyCodable]?
+    var duration: TimeInterval?
 
     private enum CodingKeys: String, CodingKey {
         case callType
@@ -392,6 +393,7 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
         case errorBody
         case responseCode
         case params
+        case duration
     }
 
     fileprivate init(
@@ -400,7 +402,8 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
         url: String,
         method: HTTPMethod,
         errorBody: String?,
-        responseCode: Int?
+        responseCode: Int?,
+        duration: TimeInterval? = nil
     ) {
         self.callType = callType
         self.id = id
@@ -408,6 +411,7 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
         self.method = method
         self.errorBody = errorBody
         self.responseCode = responseCode
+        self.duration = duration
 
         let sdkProperties = SDKProperties()
         if let sdkPropertiesDict = try? sdkProperties.asDictionary(),
@@ -430,6 +434,7 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
         self.errorBody = try container.decodeIfPresent(String.self, forKey: .errorBody)
         self.responseCode = try container.decodeIfPresent(Int.self, forKey: .responseCode)
         self.params = try container.decodeIfPresent([String: AnyCodable].self, forKey: .params)
+        self.duration = try container.decodeIfPresent(TimeInterval.self, forKey: .duration)
     }
 
     func encode(to encoder: Encoder) throws {
@@ -441,6 +446,7 @@ struct NetworkCallEventProperties: AnalyticsEventProperties {
         try container.encodeIfPresent(errorBody, forKey: .errorBody)
         try container.encodeIfPresent(responseCode, forKey: .responseCode)
         try container.encodeIfPresent(params, forKey: .params)
+        try container.encodeIfPresent(duration, forKey: .duration)
     }
 }
 
@@ -531,19 +537,27 @@ struct TimerEventProperties: AnalyticsEventProperties {
     var momentType: Analytics.Event.Property.TimerType
     var id: String?
     var params: [String: AnyCodable]?
+    var duration: TimeInterval?
+    var context: [String: Any]?
 
     private enum CodingKeys: String, CodingKey {
         case momentType
         case id
         case params
+        case duration
+        case context
     }
 
     fileprivate init(
         momentType: Analytics.Event.Property.TimerType,
-        id: String?
+        id: String?,
+        duration: TimeInterval? = nil,
+        context: [String: Any]? = nil
     ) {
         self.momentType = momentType
         self.id = id
+        self.duration = duration
+        self.context = context
 
         let sdkProperties = SDKProperties()
         if let sdkPropertiesDict = try? sdkProperties.asDictionary(),
@@ -562,6 +576,8 @@ struct TimerEventProperties: AnalyticsEventProperties {
         self.momentType = try container.decode(Analytics.Event.Property.TimerType.self, forKey: .momentType)
         self.id = try container.decodeIfPresent(String.self, forKey: .id)
         self.params = try container.decodeIfPresent([String: AnyCodable].self, forKey: .params)
+        self.duration = try container.decodeIfPresent(TimeInterval.self, forKey: .duration)
+        self.context = try container.decodeIfPresent([String: Any].self, forKey: .context)
     }
 
     func encode(to encoder: Encoder) throws {
@@ -569,6 +585,8 @@ struct TimerEventProperties: AnalyticsEventProperties {
         try container.encode(momentType, forKey: .momentType)
         try container.encodeIfPresent(id, forKey: .id)
         try container.encodeIfPresent(params, forKey: .params)
+        try container.encodeIfPresent(duration, forKey: .duration)
+        try container.encodeIfPresent(context, forKey: .context)
     }
 }
 
@@ -655,6 +673,7 @@ struct SDKProperties: Codable {
     let sdkSettings: [String: AnyCodable]?
     let sdkType: String?
     let sdkVersion: String?
+    let context: [String: AnyCodable]?
 
     private enum CodingKeys: String, CodingKey {
         case clientToken
@@ -667,6 +686,7 @@ struct SDKProperties: Codable {
         case sdkSettings
         case sdkType
         case sdkVersion
+        case context
     }
 
     fileprivate init() {
@@ -684,6 +704,7 @@ struct SDKProperties: Codable {
 
         self.sdkType = Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS"
         self.sdkVersion = VersionUtils.releaseVersionNumber
+        self.context = nil
 
         if let settingsData = try? JSONEncoder().encode(PrimerSettings.current) {
             let decoder = JSONDecoder()
@@ -708,6 +729,8 @@ struct SDKProperties: Codable {
         self.sdkSettings = try container.decodeIfPresent([String: AnyCodable].self, forKey: .sdkSettings)
         self.sdkType = try container.decodeIfPresent(String.self, forKey: .sdkType)
         self.sdkVersion = try container.decodeIfPresent(String.self, forKey: .sdkVersion)
+        self.context = try container.decodeIfPresent([String: AnyCodable].self, forKey: .context)
+
     }
 
     func encode(to encoder: Encoder) throws {
@@ -722,6 +745,7 @@ struct SDKProperties: Codable {
         try container.encodeIfPresent(sdkSettings, forKey: .sdkSettings)
         try container.encodeIfPresent(sdkType, forKey: .sdkType)
         try container.encodeIfPresent(sdkVersion, forKey: .sdkVersion)
+        try container.encodeIfPresent(context, forKey: .context)
     }
 }
 
@@ -779,7 +803,8 @@ extension Analytics.Event {
                             url: String,
                             method: HTTPMethod,
                             errorBody: String?,
-                            responseCode: Int?) -> Self {
+                            responseCode: Int?,
+                            duration: TimeInterval? = nil) -> Self {
         return .init(
             eventType: .networkCall,
             properties: NetworkCallEventProperties(
@@ -788,7 +813,8 @@ extension Analytics.Event {
                 url: url,
                 method: method,
                 errorBody: errorBody,
-                responseCode: responseCode
+                responseCode: responseCode,
+                duration: duration
             )
         )
     }
@@ -801,15 +827,50 @@ extension Analytics.Event {
     }
 
     static func timer(momentType: Property.TimerType,
-                      id: String?) -> Self {
+                      id: String?,
+                      duration: TimeInterval? = nil,
+                      context: [String: Any]? = nil) -> Self {
         return .init(
             eventType: .timerEvent,
             properties: TimerEventProperties(
                 momentType: momentType,
-                id: id
+                id: id,
+                duration: duration,
+                context: context
             )
         )
     }
+
+    enum DropInLoadingSource: String {
+        case universalCheckout = "UNIVERSAL_CHECKOUT"
+        case showPaymentMethod = "SHOW_PAYMENT_METHOD"
+        case vaultManager = "VAULT_MANAGER"
+    }
+
+    static func dropInLoading(duration: Int,
+                              source: DropInLoadingSource) -> Self {
+        .timer(momentType: .end, 
+               id: "DROP_IN_LOADING",
+               duration: TimeInterval(duration),
+               context: ["source": source.rawValue])
+    }
+
+    static func headlessLoading(duration: Int) -> Self {
+        .timer(momentType: .end, id: "HEADLESS_LOADING", duration: TimeInterval(duration))
+    }
+
+    enum ConfigurationLoadingSource: String {
+        case cache = "CACHE"
+        case network = "NETWORK"
+    }
+
+    static func configurationLoading(duration: Int, 
+                                     source: ConfigurationLoadingSource) -> Self {
+        .timer(momentType: .end, id: "CONFIGURATION_LOADING",
+               duration: TimeInterval(duration),
+               context: ["source": source.rawValue])
+    }
+
 
     static func allImagesLoading(momentType: Property.TimerType,
                                  id: String?) -> Self {

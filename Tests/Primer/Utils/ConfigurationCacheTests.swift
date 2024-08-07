@@ -9,6 +9,11 @@ import XCTest
 @testable import PrimerSDK
 
 final class ConfigurationCacheTests: XCTestCase {
+
+    override func tearDown() {
+        ConfigurationCache.shared.clearCache()
+    }
+    
     func test_useHeadersTTL() throws {
         let headers = [ConfigurationCachedData.CacheHeaderKey: "2000"]
         let cacheData = ConfigurationCachedData(config: PrimerAPIConfiguration.mock, headers: headers)
@@ -25,6 +30,14 @@ final class ConfigurationCacheTests: XCTestCase {
     }
 
     func test_clearCache() throws {
+        let settings = PrimerSettings(clientSessionCachingEnabled: true)
+        let exp = self.expectation(description: "Wait for headless start")
+        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { paymentMethods, err in
+            exp.fulfill()
+        }
+
+        wait(for: [exp])
+
         let cache = ConfigurationCache()
 
         let headers = [ConfigurationCachedData.CacheHeaderKey: "2000"]
@@ -45,6 +58,25 @@ final class ConfigurationCacheTests: XCTestCase {
         let cacheData = ConfigurationCachedData(config: PrimerAPIConfiguration.mock, headers: headers)
         let cacheKey = "cache-key"
         
+        cache.setData(cacheData, forKey: cacheKey)
+
+        XCTAssertNil(cache.data(forKey: cacheKey))
+    }
+
+    func test_respectsPrimerSettingsFlag() {
+        let settings = PrimerSettings(clientSessionCachingEnabled: false)
+        let exp = self.expectation(description: "Wait for headless start")
+        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { paymentMethods, err in
+            exp.fulfill()
+        }
+
+        wait(for: [exp])
+
+        let cache = ConfigurationCache()
+
+        let headers = [ConfigurationCachedData.CacheHeaderKey: "2000"]
+        let cacheData = ConfigurationCachedData(config: PrimerAPIConfiguration.mock, headers: headers)
+        let cacheKey = "cache-key"
         cache.setData(cacheData, forKey: cacheKey)
 
         XCTAssertNil(cache.data(forKey: cacheKey))

@@ -205,7 +205,10 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
                 do {
                     let session = AppState.current.apiConfiguration!.clientSession!
-                    orderItems = try self.createOrderItemsFromClientSession(session)
+                    let applePayOptions = PrimerAPIConfiguration.current?.paymentMethods?
+                        .first(where: { $0.internalPaymentMethodType == .applePay})?
+                        .options as? ApplePayOptions
+                    orderItems = try self.createOrderItemsFromClientSessionAndApplePayOptions(session, applePayOptions: applePayOptions)
                 } catch {
                     seal.reject(error)
                     return
@@ -348,13 +351,16 @@ extension ApplePayTokenizationViewModel {
         }
     }
 
-    internal func createOrderItemsFromClientSession(_ clientSession: ClientSession.APIResponse) throws -> [ApplePayOrderItem] {
+    internal func createOrderItemsFromClientSessionAndApplePayOptions(_ clientSession: ClientSession.APIResponse, applePayOptions: ApplePayOptions?) throws -> [ApplePayOrderItem] {
         var orderItems: [ApplePayOrderItem] = []
+
+        // For merchantName, we prefer data being passed from server rather than local settings.
+        let merchantName = applePayOptions?.merchantName ?? PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? ""
 
         if let merchantAmount = clientSession.order?.merchantAmount {
             // If there's a hardcoded amount, create an order item with the merchant name as its title
             let summaryItem = try ApplePayOrderItem(
-                name: PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? "",
+                name: merchantName,
                 unitAmount: merchantAmount,
                 quantity: 1,
                 discountAmount: nil,
@@ -394,7 +400,7 @@ extension ApplePayTokenizationViewModel {
             }
 
             let summaryItem = try ApplePayOrderItem(
-                name: PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? "",
+                name: merchantName,
                 unitAmount: clientSession.order?.totalOrderAmount,
                 quantity: 1,
                 discountAmount: nil,

@@ -11,6 +11,10 @@ import XCTest
 
 class PrimerAPIConfigurationModuleTests: XCTestCase {
 
+    override func tearDown() {
+        ConfigurationCache.shared.clearCache()
+    }
+
     func test_successful_api_configuration_setup() throws {
         let expectation = XCTestExpectation(description: "Poll URL | Success")
 

@@ -21,7 +21,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           ref: ${{ github.ref }}
       - name: Run SDK tests
@@ -53,7 +53,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           ref: ${{ github.ref }}
       - name: Run SDK tests
@@ -80,7 +80,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           ref: ${{ github.ref }}
       - name: Run debug app tests
@@ -147,7 +147,7 @@ jobs:
     name: SonarCloud
     runs-on: macos-13
     steps:
-      - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
       - name: SonarCloud Scan
@@ -200,7 +200,7 @@ jobs:
           bundle exec fastlane build_cocoapods
       - name: Clone and launch Browserstack tests via Appium 🧪
         run: |
-            git clone -b 'develop' https://project_41483872_bot:$GITLAB_TEMP_PATH@gitlab.com/primer-io/dx/mobile-appium-tests.git
+            git clone -b 'develop' https://project_41483872_bot:$GITLAB_TEMP_PATH@gitlab.com/primer-io/acceptance/mobile/mobile-appium-tests.git
             git show --summary
         env:
           GITLAB_TEMP_PATH: ${{ secrets.GITLAB_APPIUM_PULL_KEY }}
@@ -227,7 +227,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           ref: ${{ github.ref }}
       - name: Upload preview to Appetize

@@ -82,6 +82,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
     static func resetSession() {
         AppState.current.clientToken = nil
         AppState.current.apiConfiguration = nil
+        ConfigurationCache.shared.clearCache()
     }
 
     func setupSession(
@@ -264,6 +265,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
 
     // swiftlint:disable:next function_body_length
     private func fetchConfiguration(requestDisplayMetadata: Bool) -> Promise<PrimerAPIConfiguration> {
+        let start = Date().millisecondsSince1970
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken,
                     let cacheKey = Self.cacheKey else {
@@ -275,7 +277,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             }
 
             PrimerAPIConfigurationModule.queue.sync {
-                if let cachedConfig = ConfigurationCache.shared.data(forKey: cacheKey) {
+                if cachingEnabled, let cachedConfig = ConfigurationCache.shared.data(forKey: cacheKey) {
                     let event = Analytics.Event.message(
                         message: "Configuration cache hit with key: \(cacheKey)",
                         messageType: .info,
@@ -283,6 +285,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                     )
                     Analytics.Service.record(event: event)
                     logger.debug(message: "Cached config used")
+                    self.recordLoadedEvent(start, source: .cache)
                     seal.fulfill(cachedConfig.config)
                     return
                 }
@@ -312,8 +315,11 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                         case .success(let config):
                             _ = ImageFileProcessor().process(configuration: config).ensure {
                                 // Cache the result
-                                let cachedData = ConfigurationCachedData(config: config, headers: responseHeaders)
-                                ConfigurationCache.shared.setData(cachedData, forKey: cacheKey)
+                                if self.cachingEnabled {
+                                    let cachedData = ConfigurationCachedData(config: config, headers: responseHeaders)
+                                    ConfigurationCache.shared.setData(cachedData, forKey: cacheKey)
+                                }
+                                self.recordLoadedEvent(start, source: .network)
                                 innerSeal.fulfill(config)
                             }
                         }
@@ -335,6 +341,13 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 }
             }
         }
+    }
+
+    private func recordLoadedEvent(_ start: Int, source: Analytics.Event.ConfigurationLoadingSource) {
+        let end = Date().millisecondsSince1970
+        let interval = end - start
+        let showEvent = Analytics.Event.configurationLoading(duration: interval, source: source)
+        Analytics.Service.record(events: [showEvent])
     }
 
     private func fetchConfigurationAndVaultedPaymentMethodsIfNeeded(
@@ -371,6 +384,10 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             severity: .info
         )
         Analytics.Service.record(event: event)
+    }
+
+    private var cachingEnabled: Bool {
+        PrimerSettings.current.clientSessionCachingEnabled
     }
 }
 // swiftlint:enable type_body_length

@@ -431,11 +431,20 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             let option = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(surcharge: nil,
                                                                                     instalmentDuration: nil,
                                                                                     extraMerchantData: nil,
-                                                                                    captureVaultedCardCvv: enableCVVRecaptureFlowSwitch.isOn)
+                                                                                    captureVaultedCardCvv: enableCVVRecaptureFlowSwitch.isOn,
+                                                                                    merchantName: nil)
 
-            let optionGroup = ClientSessionRequestBody.PaymentMethod.PaymentMethodOptionGroup(PAYMENT_CARD: option)
-            clientSession.paymentMethod?.options = optionGroup
+            clientSession.paymentMethod?.options?.PAYMENT_CARD = option
         }
+        
+        let applePayOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(surcharge: nil,
+                                                                                instalmentDuration: nil,
+                                                                                extraMerchantData: nil,
+                                                                                captureVaultedCardCvv: nil,
+                                                                                merchantName: "Primer Merchant iOS")
+
+        clientSession.paymentMethod?.options?.APPLE_PAY = applePayOptions
+        
         if let metadata = metadataTextField.text, !metadata.isEmpty {
             clientSession.metadata = MetadataParser().parse(metadata)
         }

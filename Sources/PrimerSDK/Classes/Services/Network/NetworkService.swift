@@ -13,7 +13,7 @@ typealias ResponseCompletionWithHeaders<T> = (Result<T, Error>, [String: String]
 internal protocol NetworkService {
     @discardableResult
     func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResponseCompletion<T>) -> PrimerCancellable?
-    
+
     @discardableResult
     func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResponseCompletionWithHeaders<T>) -> PrimerCancellable?
 }

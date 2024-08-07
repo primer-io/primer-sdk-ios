@@ -14,9 +14,15 @@ let package = Package(
             targets: ["PrimerSDK"]
         )
     ],
+    dependencies: [
+        .package(url: "https://github.com/primer-io/primer-sdk-3ds-ios", from: "2.3.1")
+    ],
     targets: [
         .target(
             name: "PrimerSDK",
+            dependencies: [
+                .product(name: "Primer3DS", package: "primer-sdk-3ds-ios")
+            ],
             path: "Sources/PrimerSDK",
             resources: [
                 .process("Resources"),
@@ -26,12 +32,14 @@ let package = Package(
         .testTarget(
             name: "Tests",
             dependencies: [
+                .product(name: "Primer3DS", package: "primer-sdk-3ds-ios"),
                 .byName(name: "PrimerSDK")
             ],
             path: "Tests/",
             sources: [
-                "Primer/",
-                "Utilities/"
+                "3DS/",
+                "Utilities/",
+                "Primer/"
             ]
         )
     ],
