@@ -276,6 +276,11 @@ internal class PrimerUIManager: PrimerUIManaging {
         }
     }
 
+    fileprivate func showResultScreen(for paymentMethodType: PrimerPaymentMethodType, error: PrimerError?) {
+        let resultViewController = PrimerCustomResultViewController(paymentMethodType: paymentMethodType, error: error)
+        PrimerUIManager.primerRootViewController?.show(viewController: resultViewController)
+    }
+
     fileprivate func showResultScreenForResultType(type: PrimerResultViewController.ScreenType, message: String? = nil) {
         let resultViewController = PrimerResultViewController(screenType: type, message: message)
         resultViewController.view.translatesAutoresizingMaskIntoConstraints = false
@@ -328,6 +333,10 @@ extension PrimerUIManager {
 
     static func handleErrorBasedOnSDKSettings(_ error: PrimerError) {
         shared.handleErrorBasedOnSDKSettings(error)
+    }
+
+    static func showResultScreen(for paymentMethodType: PrimerPaymentMethodType, error: PrimerError?) {
+        shared.showResultScreen(for: paymentMethodType, error: error)
     }
 
     static fileprivate func showResultScreenForResultType(type: PrimerResultViewController.ScreenType,

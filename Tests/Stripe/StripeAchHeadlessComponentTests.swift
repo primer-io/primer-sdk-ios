@@ -101,7 +101,7 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
     }
 
     func test_validationStatus_firstName_valid() {
-        let collectableData = ACHUserDetailsCollectableData.firstName("test-firstname")
+        let collectableData = ACHUserDetailsCollectableData.firstName("firstname")
         sut?.updateCollectedData(collectableData: collectableData)
 
         switch validationResult {
@@ -113,7 +113,7 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
     }
 
     func test_validationStatus_lastName_valid() {
-        let collectableData = ACHUserDetailsCollectableData.lastName("test-lastname")
+        let collectableData = ACHUserDetailsCollectableData.lastName("lastname")
         sut?.updateCollectedData(collectableData: collectableData)
 
         switch validationResult {
@@ -248,13 +248,13 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
         XCTAssertTrue(ACHUserDetails.compare(lhs: emptyUserDetails, rhs: expectedUserDetails).areEqual)
     }
     
-    func test_resetVariables() {
+    func test_resetClientSessionDetails() {
         let userDetails = ACHUserDetails(firstName: "firstname-1", lastName: "lastname-1", emailAddress: "email-1")
         sut.inputUserDetails = userDetails
         sut.clientSessionUserDetails = userDetails
         
         let emptyUserDetails = ACHUserDetails.emptyUserDetails()
-        sut.resetVariables()
+        sut.resetClientSessionDetails()
         
         XCTAssertTrue(ACHUserDetails.compare(lhs: sut.inputUserDetails, rhs: emptyUserDetails).areEqual)
         XCTAssertTrue(ACHUserDetails.compare(lhs: sut.clientSessionUserDetails, rhs: emptyUserDetails).areEqual)
