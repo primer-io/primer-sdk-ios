@@ -67,12 +67,14 @@ extension PrimerHeadlessUniversalCheckout {
             super.init()
         }
 
+        // swiftlint:disable nesting
         private class DefaultPaymentMethodProvider: PrimerPaymentMethodProviding {
             func paymentMethod(for paymentMethodType: String) -> PrimerPaymentMethod? {
                 PrimerAPIConfiguration.paymentMethodConfigs?
                         .first(where: { $0.type == paymentMethodType })
             }
         }
+        // swiftlint:enable nesting
 
         #if DEBUG
         init(type: String,
