@@ -22,6 +22,9 @@ class ConfigurationCache: ConfigurationCaching {
     }
 
     func data(forKey key: String) -> ConfigurationCachedData? {
+        guard cachingEnabled else {
+            return nil
+        }
         if let cachedData = cache.value(forKey: key) {
             if validateCachedConfig(key: key, cachedData: cachedData) == false {
                 cache.removeValue(forKey: key)
@@ -33,6 +36,9 @@ class ConfigurationCache: ConfigurationCaching {
     }
 
     func setData(_ data: ConfigurationCachedData, forKey key: String) {
+        guard cachingEnabled else {
+            return
+        }
         // Cache includes at most one cached configuration
         clearCache()
         cache.insert(data, forKey: key)
@@ -48,6 +54,10 @@ class ConfigurationCache: ConfigurationCaching {
         }
 
         return true
+    }
+
+    private var cachingEnabled: Bool {
+        PrimerSettings.current.clientSessionCachingEnabled
     }
 }
 

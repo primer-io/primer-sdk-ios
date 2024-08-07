@@ -277,7 +277,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             }
 
             PrimerAPIConfigurationModule.queue.sync {
-                if let cachedConfig = ConfigurationCache.shared.data(forKey: cacheKey) {
+                if cachingEnabled, let cachedConfig = ConfigurationCache.shared.data(forKey: cacheKey) {
                     let event = Analytics.Event.message(
                         message: "Configuration cache hit with key: \(cacheKey)",
                         messageType: .info,
@@ -312,8 +312,10 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                         case .success(let config):
                             _ = ImageFileProcessor().process(configuration: config).ensure {
                                 // Cache the result
-                                let cachedData = ConfigurationCachedData(config: config, headers: responseHeaders)
-                                ConfigurationCache.shared.setData(cachedData, forKey: cacheKey)
+                                if self.cachingEnabled {
+                                    let cachedData = ConfigurationCachedData(config: config, headers: responseHeaders)
+                                    ConfigurationCache.shared.setData(cachedData, forKey: cacheKey)
+                                }
                                 self.recordLoadedEvent(start, source: .network)
                                 innerSeal.fulfill(config)
                             }
@@ -379,6 +381,10 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             severity: .info
         )
         Analytics.Service.record(event: event)
+    }
+
+    private var cachingEnabled: Bool {
+        PrimerSettings.current.clientSessionCachingEnabled
     }
 }
 // swiftlint:enable type_body_length
