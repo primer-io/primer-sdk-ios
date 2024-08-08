@@ -9,6 +9,7 @@ import Foundation
 
 typealias APIResult<T> = Result<T, Error>
 typealias APICompletion<T> = (APIResult<T>) -> Void
+typealias ConfigurationCompletion = (Result<PrimerAPIConfiguration, Error>, [String: String]?) -> Void
 
 protocol PrimerAPIClientProtocol:
     PrimerAPIClientAnalyticsProtocol,
@@ -24,7 +25,7 @@ protocol PrimerAPIClientProtocol:
     func fetchConfiguration(
         clientToken: DecodedJWTToken,
         requestParameters: Request.URLParameters.Configuration?,
-        completion: @escaping APICompletion<Response.Body.Configuration>)
+        completion: @escaping ConfigurationCompletion)
 
     func validateClientToken(
         request: Request.Body.ClientTokenValidation,
@@ -32,7 +33,7 @@ protocol PrimerAPIClientProtocol:
 
     func requestPrimerConfigurationWithActions(clientToken: DecodedJWTToken,
                                                request: ClientSessionUpdateRequest,
-                                               completion: @escaping APICompletion<PrimerAPIConfiguration>)
+                                               completion: @escaping ConfigurationCompletion)
 
     // MARK: Klarna
 
