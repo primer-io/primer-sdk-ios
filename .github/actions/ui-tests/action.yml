@@ -28,6 +28,9 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Clean workspace
+      shell: bash 
+      run: rm -rf ./*
     - name: Clone and launch Browserstack tests via Appium 🧪
       shell: bash
       run: |
