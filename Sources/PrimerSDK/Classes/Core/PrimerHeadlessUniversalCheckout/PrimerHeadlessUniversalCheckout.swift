@@ -53,6 +53,8 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         uiDelegate: PrimerHeadlessUniversalCheckoutUIDelegate? = nil,
         completion: @escaping (_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]?, _ err: Error?) -> Void
     ) {
+        let start = Date().millisecondsSince1970
+
         PrimerInternal.shared.sdkIntegrationType = .headless
         PrimerInternal.shared.intent = .checkout
 
@@ -119,6 +121,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
                     let availablePaymentMethods = PrimerHeadlessUniversalCheckout.PaymentMethod.availablePaymentMethods
                     let delegate = PrimerHeadlessUniversalCheckout.current.delegate
                     delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods?(availablePaymentMethods)
+                    self.recordLoadedEvent(start)
                     completion(availablePaymentMethods, nil)
                 }
             }
@@ -130,8 +133,16 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         }
     }
 
+    private func recordLoadedEvent(_ start: Int) {
+        let end = Date().millisecondsSince1970
+        let interval = end - start
+        let showEvent = Analytics.Event.headlessLoading(duration: interval)
+        Analytics.Service.record(events: [showEvent])
+    }
+
     public func cleanUp() {
         PrimerAPIConfigurationModule.resetSession()
+        ConfigurationCache.shared.clearCache()
         PrimerInternal.shared.checkoutSessionId = nil
     }
 

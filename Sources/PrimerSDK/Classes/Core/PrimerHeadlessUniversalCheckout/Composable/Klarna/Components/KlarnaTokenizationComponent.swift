@@ -183,7 +183,7 @@ private extension KlarnaTokenizationComponent {
     private func requestPrimerConfiguration(decodedJWTToken: DecodedJWTToken, request: ClientSessionUpdateRequest) -> Promise<Void> {
         return Promise { seal in
             apiClient.requestPrimerConfigurationWithActions(clientToken: decodedJWTToken,
-                                                            request: request) { [weak self] result in
+                                                            request: request) { [weak self] result, _ in
                 guard let self = self else { return }
                 switch result {
                 case .success(let configuration):
