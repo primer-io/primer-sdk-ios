@@ -11,9 +11,9 @@ import Foundation
 
 @objc public class XenditCheckoutVoucherAdditionalInfo: PrimerCheckoutVoucherAdditionalInfo {
 
-    let expiresAt: String
-    let couponCode: String
-    let retailerName: String
+    public let expiresAt: String
+    public let couponCode: String
+    public let retailerName: String
 
     private enum CodingKeys: String, CodingKey {
         case expiresAt

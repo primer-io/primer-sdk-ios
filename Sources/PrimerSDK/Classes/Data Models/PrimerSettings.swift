@@ -55,6 +55,7 @@ internal protocol PrimerPaymentMethodOptionsProtocol {
     var applePayOptions: PrimerApplePayOptions? { get }
     var klarnaOptions: PrimerKlarnaOptions? { get }
     var threeDsOptions: PrimerThreeDsOptions? { get }
+    var stripeOptions: PrimerStripeOptions? { get }
 
     func validUrlForUrlScheme() throws -> URL
     func validSchemeForUrlScheme() throws -> String
@@ -70,12 +71,14 @@ public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Cod
     // Was it intentional?
     var cardPaymentOptions: PrimerCardPaymentOptions = PrimerCardPaymentOptions()
     var threeDsOptions: PrimerThreeDsOptions?
+    var stripeOptions: PrimerStripeOptions?
 
     public init(
         urlScheme: String? = nil,
         applePayOptions: PrimerApplePayOptions? = nil,
         klarnaOptions: PrimerKlarnaOptions? = nil,
-        threeDsOptions: PrimerThreeDsOptions? = nil
+        threeDsOptions: PrimerThreeDsOptions? = nil,
+        stripeOptions: PrimerStripeOptions? = nil
     ) {
         self.urlScheme = urlScheme
         if let urlScheme = urlScheme, URL(string: urlScheme) == nil {
@@ -86,6 +89,7 @@ The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a 
         self.applePayOptions = applePayOptions
         self.klarnaOptions = klarnaOptions
         self.threeDsOptions = threeDsOptions
+        self.stripeOptions = stripeOptions
     }
 
     @available(swift, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
@@ -93,11 +97,13 @@ The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a 
         urlScheme: String? = nil,
         applePayOptions: PrimerApplePayOptions? = nil,
         klarnaOptions: PrimerKlarnaOptions? = nil,
-        cardPaymentOptions: PrimerCardPaymentOptions? = nil
+        cardPaymentOptions: PrimerCardPaymentOptions? = nil,
+        stripeOptions: PrimerStripeOptions? = nil
     ) {
         self.urlScheme = urlScheme
         self.applePayOptions = applePayOptions
         self.klarnaOptions = klarnaOptions
+        self.stripeOptions = stripeOptions
     }
 
     func validUrlForUrlScheme() throws -> URL {
@@ -165,6 +171,15 @@ public class PrimerKlarnaOptions: Codable {
 
     public init(recurringPaymentDescription: String) {
         self.recurringPaymentDescription = recurringPaymentDescription
+    }
+}
+
+// MARK: Stripe ACH
+public class PrimerStripeOptions: Codable {
+    var publishableKey: String
+
+    public init(publishableKey: String) {
+        self.publishableKey = publishableKey
     }
 }
 

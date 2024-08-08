@@ -12,6 +12,7 @@ target 'Debug App' do
   pod 'PrimerKlarnaSDK'
   pod 'PrimerIPay88MYSDK'
   pod 'PrimerNolPaySDK'
+  pod 'PrimerStripeSDK'
   pod 'IQKeyboardManagerSwift'
 
   post_install do |installer|

@@ -55,6 +55,7 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
     case nolPay                         = "NOL_PAY"
     case fintechtureSmartTransfer       = "FINTECTURE_SMART_TRANSFER"
     case fintechtureImmediateTransfer   = "FINTECHTURE_IMMEDIATE_TRANSFER"
+    case stripeAch                      = "STRIPE_ACH"
 
     var provider: String {
         switch self {
@@ -132,6 +133,8 @@ internal enum PrimerPaymentMethodType: String, Codable, CaseIterable, Equatable,
             return "XFERS"
         case .nolPay:
             return "NOL_PAY"
+        case .stripeAch:
+            return "STRIPE"
 
         case .fintechtureSmartTransfer, .fintechtureImmediateTransfer:
             return "FINTECHTURE"
