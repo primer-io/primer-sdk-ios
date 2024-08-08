@@ -8,7 +8,6 @@ inputs:
   test-type:
     description: The type of test run, one of [MOCKED|E2E]
     required: true
-    default: MOCKED
   gitlab-appium-pull-key:
     description: The key used to fetch the appium repo
     required: true
