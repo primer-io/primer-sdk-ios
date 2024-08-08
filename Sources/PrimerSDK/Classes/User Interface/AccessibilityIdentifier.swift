@@ -23,11 +23,11 @@ public struct AccessibilityIdentifier {
     }
     public enum StripeAchUserDetailsComponent: String {
         case title = "title"
-        case firstNameTextField = "firstName"
-        case lastNameTextField = "lastName"
-        case emailAddressTextField = "emailAddress"
+        case firstNameTextField = "first_name_input"
+        case lastNameTextField = "last_name_input"
+        case emailAddressTextField = "email_address_input"
         case submitButton = "submit"
-        case acceptMandateButton = "ios:id/button1"
-        case declineMandateButton = "ios:id/button2"
+        case acceptMandateButton = "accept"
+        case declineMandateButton = "decline"
     }
 }

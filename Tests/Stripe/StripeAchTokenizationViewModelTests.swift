@@ -124,7 +124,7 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
             if additionalInfo is ACHBankAccountCollectorAdditionalInfo {
                 expectDidReceiveStripeCollectorAdditionalInfo.fulfill()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    self.sut.stripeBankAccountCollectorCompletion?(true, nil)
+                    self.sut.stripeBankAccountCollectorCompletion?(.success(()))
                 }
             } else {
                 expectDidReceiveMandateAdditionalInfo.fulfill()

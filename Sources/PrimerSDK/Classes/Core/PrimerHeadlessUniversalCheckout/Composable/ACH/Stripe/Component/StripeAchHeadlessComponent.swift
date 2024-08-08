@@ -63,7 +63,7 @@ extension StripeAchHeadlessComponent: StripeAchUserDetailsComponent {
         } else {
             let error = collectableData.invalidFieldError
             ErrorHandler.handle(error: error)
-            let validationError = PrimerValidationError.invalidValue(
+            let validationError = PrimerValidationError.invalidUserDetails(
                 field: error.fieldValueDescription,
                 userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString)

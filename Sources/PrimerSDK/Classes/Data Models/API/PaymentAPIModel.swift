@@ -92,7 +92,7 @@ extension Request.Body.Payment {
 
     public struct Resume: Encodable {
         let resumeToken: String
-        
+
         public init(token: String) {
             self.resumeToken = token
         }
@@ -101,7 +101,7 @@ extension Request.Body.Payment {
     public struct Complete: Encodable {
         let mandateSignatureTimestamp: String
         let paymentMethodId: String?
-        
+
         public init(mandateSignatureTimestamp: String,
                     paymentMethodId: String? = nil) {
             self.mandateSignatureTimestamp = mandateSignatureTimestamp

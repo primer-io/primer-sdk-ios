@@ -20,7 +20,7 @@ final class ACHHelpersTests: XCTestCase {
     }
     
     func test_construct_localeData() {
-        let sessionData = ACHHelpers.constructLocaleData()
+        let sessionData = ACHHelpers.constructLocaleData(paymentMethod: ACHMocks.stripeACHPaymentMethod)
         XCTAssertEqual(sessionData.locale, PrimerSettings.current.localeData.localeCode)
         XCTAssertEqual(sessionData.platform, "IOS")
     }

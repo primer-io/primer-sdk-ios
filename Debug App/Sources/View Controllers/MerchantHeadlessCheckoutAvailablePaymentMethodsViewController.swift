@@ -444,7 +444,7 @@ class MerchantPaymentMethodCell: UITableViewCell {
                 self.paymentMethodLabel.text = "Failed to find logo for \(paymentMethod.paymentMethodType)"
             }
 
-            paymentMethodLabel.text = "Pay with \(paymentMethodAsset.paymentMethodName.truncate(length: 15)) "
+            paymentMethodLabel.text = "Pay with \(paymentMethodAsset.paymentMethodName.prefix(15))... "
             paymentMethodLabel.lineBreakMode = .byTruncatingTail
 
         } else {
@@ -452,11 +452,5 @@ class MerchantPaymentMethodCell: UITableViewCell {
             self.paymentMethodLabel.isHidden = false
             self.paymentMethodLabel.text = "Failed to find payment method asset for \(paymentMethod.paymentMethodType)"
         }
-    }
-}
-
-extension String {
-    func truncate(length: Int, trailing: String = "...") -> String {
-        return count > length ? prefix(length) + trailing : self
     }
 }

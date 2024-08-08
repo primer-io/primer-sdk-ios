@@ -11,16 +11,22 @@ import UIKit
 struct ACHHelpers {
     
     /// - Helper function to construct locale data.
-    static func constructLocaleData() -> Request.Body.StripeAch.SessionData {
-        return Request.Body.StripeAch.SessionData(locale: PrimerSettings.current.localeData.localeCode,
-                                               platform: "IOS")
+    static func constructLocaleData(paymentMethod: PrimerPaymentMethod) -> Request.Body.StripeAch.SessionData {
+        switch paymentMethod.internalPaymentMethodType {
+        case .stripeAch:
+            return Request.Body.StripeAch.SessionData(locale: PrimerSettings.current.localeData.localeCode,
+                                                      platform: "IOS")
+        default:
+            return Request.Body.StripeAch.SessionData(locale: nil, platform: nil)
+        }
+        
     }
     
     static func getACHPaymentInstrument(paymentMethod: PrimerPaymentMethod) -> ACHPaymentInstrument? {
-        let sessionInfo = constructLocaleData()
+        let sessionInfo = constructLocaleData(paymentMethod: paymentMethod)
         
-        switch paymentMethod.type {
-        case "STRIPE_ACH":
+        switch paymentMethod.internalPaymentMethodType {
+        case .stripeAch:
             return ACHPaymentInstrument(paymentMethodConfigId: paymentMethod.id ?? "",
                                                                paymentMethodType: PrimerPaymentMethodType.stripeAch.rawValue,
                                                                authenticationProvider: PrimerPaymentMethodType.stripeAch.provider,

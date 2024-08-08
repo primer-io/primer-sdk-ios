@@ -22,14 +22,14 @@ protocol ACHUserDetailsProviding {
 class ACHClientSessionService: ACHUserDetailsProviding {
 
     // MARK: - Properties
-    private let apiClient: PrimerAPIClientProtocol
-
-    // MARK: - Settings
-    let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+    let apiClient: PrimerAPIClientProtocol
+    let settings: PrimerSettingsProtocol
 
     // MARK: - Init
-    init() {
-        self.apiClient = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
+    init(apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient(),
+         settings: PrimerSettingsProtocol = DependencyContainer.resolve()) {
+        self.apiClient = apiClient
+        self.settings = settings
     }
 }
 
@@ -65,7 +65,8 @@ extension ACHClientSessionService {
     func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
         return Promise { seal in
             firstly {
-                updateClientSession(with: actionsRequest)
+                let apiConfigurationModule = PrimerAPIConfigurationModule()
+                return apiConfigurationModule.updateSession(withActions: actionsRequest)
             }
             .done { _ in
                 seal.fulfill()
@@ -77,33 +78,9 @@ extension ACHClientSessionService {
         }
     }
     
-    func prepareKlarnaClientSessionActionsRequestBody(paymentMethodType: String) -> ClientSessionUpdateRequest {
+    func prepareClientSessionActionsRequestBody(paymentMethodType: String) -> ClientSessionUpdateRequest {
         let params: [String: Any] = ["paymentMethodType": paymentMethodType]
         let actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
         return ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
-    }
-}
-
-// MARK: - ACH client session API call
-private extension ACHClientSessionService {
-    private func updateClientSession(with actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
-        return Promise { seal in
-            // Verify if we have a valid decoded JWT token
-            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                seal.reject(ACHHelpers.getInvalidTokenError())
-                return
-            }
-            
-            apiClient.requestPrimerConfigurationWithActions(clientToken: decodedJWTToken,
-                                                            request: actionsRequest) { result in
-                switch result {
-                case .success(let configuration):
-                    PrimerAPIConfigurationModule.apiConfiguration?.clientSession = configuration.clientSession
-                    seal.fulfill()
-                case .failure(let error):
-                    seal.reject(error)
-                }
-            }
-        }
     }
 }

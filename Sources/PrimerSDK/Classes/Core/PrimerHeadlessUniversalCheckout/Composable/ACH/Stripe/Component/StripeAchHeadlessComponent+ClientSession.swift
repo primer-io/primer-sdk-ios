@@ -32,7 +32,7 @@ extension StripeAchHeadlessComponent {
     func setClientSessionActions() {
         firstly {
             let paymentMethodType = self.tokenizationViewModel.config.type
-            let actionsRequest = self.clientSessionService.prepareKlarnaClientSessionActionsRequestBody(paymentMethodType: paymentMethodType)
+            let actionsRequest = self.clientSessionService.prepareClientSessionActionsRequestBody(paymentMethodType: paymentMethodType)
             return clientSessionService.patchClientSession(with: actionsRequest)
         }
         .done {}
@@ -64,13 +64,13 @@ extension StripeAchHeadlessComponent {
      * discrepancy, it updates the client session; otherwise, it continues with the tokenization process.
      */
     func patchClientSessionIfNeeded() {
-        let shouldPatchUserDetails = ACHUserDetails.compare(lhs: inputUserDetails, rhs: clientSessionUserDetails)
+        let patchUserDetailsComparison = ACHUserDetails.compare(lhs: inputUserDetails, rhs: clientSessionUserDetails)
         var clientSessionActions: [ClientSession.Action] = []
 
-        if shouldPatchUserDetails.areEqual {
+        if patchUserDetailsComparison.areEqual {
             startVMTokenization()
         } else {
-            for differingField in shouldPatchUserDetails.differingFields {
+            for differingField in patchUserDetailsComparison.differingFields {
                 if let action = createAction(from: differingField) {
                     clientSessionActions.append(action)
                 }

@@ -36,7 +36,7 @@ class MerchantHeadlessCheckoutStripeAchViewController: UIViewController {
         initializeStripeAchComponent()
     }
     
-    func initObservables() {
+    func setupObservables() {
         stripeFormViewModel.$firstName
             .dropFirst()
             .receive(on: DispatchQueue.main)
