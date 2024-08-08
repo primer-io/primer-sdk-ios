@@ -39,6 +39,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     private var currentPollingIteration: Int = 0
     var testFetchNolSdkSecretResult: (Response.Body.NolPay.NolPaySecretDataResponse?, Error?)?
     var phoneMetadataResult = Response.Body.PhoneMetadata.PhoneMetadataDataResponse(isValid: true, countryCode: "+111", nationalNumber: "12341234")
+    var responseHeaders: [String: String]? = nil
 
     func validateClientToken(
         request: Request.Body.ClientTokenValidation,
@@ -60,11 +61,9 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func fetchConfiguration(
-        clientToken: DecodedJWTToken,
-        requestParameters: Request.URLParameters.Configuration?,
-        completion: @escaping (_ result: Result<Response.Body.Configuration, Error>) -> Void
-    ) {
+    func fetchConfiguration(clientToken: PrimerSDK.DecodedJWTToken, 
+                            requestParameters: PrimerSDK.Request.URLParameters.Configuration?,
+                            completion: @escaping PrimerSDK.ConfigurationCompletion) {
         guard let result = fetchConfigurationResult,
               result.0 != nil || result.1 != nil
         else {
@@ -74,9 +73,9 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
             if let err = result.1 {
-                completion(.failure(err))
+                completion(.failure(err), nil)
             } else if let successResult = result.0 {
-                completion(.success(successResult))
+                completion(.success(successResult), self.responseHeaders ?? [:])
             }
         }
     }
@@ -421,7 +420,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func requestPrimerConfigurationWithActions(
         clientToken: DecodedJWTToken,
         request: ClientSessionUpdateRequest,
-        completion: @escaping (_ result: Result<PrimerAPIConfiguration, Error>) -> Void
+        completion: @escaping PrimerSDK.ConfigurationCompletion
     ) {
         guard let result = fetchConfigurationWithActionsResult,
               result.0 != nil || result.1 != nil
@@ -432,9 +431,9 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
             if let err = result.1 {
-                completion(.failure(err))
+                completion(.failure(err), nil)
             } else if let successResult = result.0 {
-                completion(.success(successResult))
+                completion(.success(successResult), self.responseHeaders ?? [:])
             }
         }
     }
