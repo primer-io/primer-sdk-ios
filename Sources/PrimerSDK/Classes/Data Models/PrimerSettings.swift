@@ -22,6 +22,7 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
     let paymentMethodOptions: PrimerPaymentMethodOptions
     let uiOptions: PrimerUIOptions
     let debugOptions: PrimerDebugOptions
+    let clientSessionCachingEnabled: Bool
 
     public init(
         paymentHandling: PrimerPaymentHandling = .auto,
@@ -29,13 +30,15 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
         paymentMethodOptions: PrimerPaymentMethodOptions? = nil,
         uiOptions: PrimerUIOptions? = nil,
         threeDsOptions: PrimerThreeDsOptions? = nil,
-        debugOptions: PrimerDebugOptions? = nil
+        debugOptions: PrimerDebugOptions? = nil,
+        clientSessionCachingEnabled: Bool = false
     ) {
         self.paymentHandling = paymentHandling
         self.localeData = localeData ?? PrimerLocaleData()
         self.paymentMethodOptions = paymentMethodOptions ?? PrimerPaymentMethodOptions()
         self.uiOptions = uiOptions ?? PrimerUIOptions()
         self.debugOptions = debugOptions ?? PrimerDebugOptions()
+        self.clientSessionCachingEnabled = clientSessionCachingEnabled
     }
 }
 

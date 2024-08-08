@@ -184,6 +184,22 @@ final class PrimerPaymentMethodTests: XCTestCase {
         }
     }
 
+    func test_initializeHeadlessPaymentMethod_withProvider() throws {
+        let primerPaymentMethod = createPaymentMethod(withImplementationType: .nativeSdk)
+        let paymentMethodProvider = TestPaymentMethodProvider(paymentMethod: primerPaymentMethod)
+        let pm = PrimerHeadlessUniversalCheckout.PaymentMethod(paymentMethodType: primerPaymentMethod.type, paymentMethodProvider: paymentMethodProvider)
+
+
+        let headlessPaymentMethod = PrimerHeadlessUniversalCheckout.PaymentMethod(paymentMethodType: "PAYMENT_CARD")
+
+        XCTAssertNotNil(pm)
+    }
+
+    func test_initializeHeadlessPaymentMethod_raw() throws {
+        let headlessPaymentMethod = PrimerHeadlessUniversalCheckout.PaymentMethod(type: "PAYMENT_CARD")
+        XCTAssertEqual(headlessPaymentMethod.paymentMethodType, "PAYMENT_CARD")
+    }
+
     // MARK: Helpers
 
     private func createPaymentMethod(withImplementationType implementationType: PrimerPaymentMethod.ImplementationType,
@@ -198,5 +214,16 @@ final class PrimerPaymentMethodTests: XCTestCase {
             options: nil,
             displayMetadata: nil
         )
+    }
+
+    private struct TestPaymentMethodProvider: PrimerPaymentMethodProviding {
+        var paymentMethod: PrimerPaymentMethod
+        func paymentMethod(for paymentMethodType: String) -> PrimerPaymentMethod? {
+            if paymentMethod.type == paymentMethodType {
+                return paymentMethod
+            } else {
+                return nil
+            }
+        }
     }
 }
