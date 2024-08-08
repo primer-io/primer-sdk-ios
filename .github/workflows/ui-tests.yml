@@ -11,7 +11,6 @@ on:
       testType:
         description: The type of test run, one of [MOCKED|E2E]
         required: false
-        default: MOCKED
         type: string
   schedule:
     - cron: '0 21 * 4-10 1-5'
