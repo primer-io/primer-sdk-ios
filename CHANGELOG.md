@@ -1,3 +1,9 @@
+## 2.29.0 (2024-08-08)
+
+### Feat
+
+- Cache configuration for a given ClientSession (#959)
+
 ## 2.28.0 (2024-08-06)
 
 ### Feat
