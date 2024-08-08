@@ -133,6 +133,11 @@ jobs:
                 - "MOCKED"
                 - "E2E"
       steps:
+        - name: Git - Checkout
+          uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+          with:
+            ref: ${{ github.ref }}
+            sparse-checkout: .github
         - name: Run UI Tests via Browserstack 🧪
           id: ui-tests-test-via-browserstack
           uses: ./.github/actions/ui-tests
@@ -151,6 +156,11 @@ jobs:
     name: "Browserstack test (manual)"
     if: ${{ inputs.testType != '' }}
     steps:
+      - name: Git - Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          ref: ${{ github.ref }}
+          sparse-checkout: .github
       - name: Run UI Tests via Browserstack [${{ inputs.testType }}] 🧪
         id: ui-tests-test-via-browserstack
         uses: ./.github/actions/ui-tests
