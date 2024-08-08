@@ -28,13 +28,10 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Clean workspace
-      shell: bash 
-      run: rm -rf ./*
     - name: Clone and launch Browserstack tests via Appium 🧪
       shell: bash
       run: |
-          git clone -b ${{ inputs.appium-tests-branch || 'develop' }} https://project_41483872_bot:$GITLAB_TEMP_PATH@gitlab.com/primer-io/acceptance/mobile/mobile-appium-tests.git .
+          git clone -b ${{ inputs.appium-tests-branch || 'develop' }} https://project_41483872_bot:$GITLAB_TEMP_PATH@gitlab.com/primer-io/acceptance/mobile/mobile-appium-tests.git ./tests
           git show --summary
       env:
         GITLAB_TEMP_PATH: ${{ inputs.gitlab-appium-pull-key }} # secrets.GITLAB_APPIUM_PULL_KEY
@@ -51,14 +48,17 @@ runs:
         node-version: 18.3.0
 
     - name: npm install - all deps
+      working-directory: ./tests
       shell: bash
       run: npm install
     
     - name: npm install - slack message builder
+      working-directory: ./tests
       shell: bash
       run: npm install --save slack-message-builder
 
     - name: Run Appium Test
+      working-directory: ./tests
       shell: bash
       env:
         BROWSERSTACK_USERNAME: ${{ inputs.browserstack-user-name }} # secrets.BROWSERSTACK_USERNAME
@@ -68,6 +68,7 @@ runs:
         testType=${{ inputs.test-type }} npx wdio config/wdio.ios.bs.conf.js
         
     - name: Create Slack Report
+      working-directory: ./tests
       shell: bash
       if: ${{ success() || failure() }}
       run: |
@@ -84,6 +85,7 @@ runs:
         SLACK_BOT_TOKEN: ${{ inputs.slack-reporter-bot-token }} # secrets.SLACK_REPORTER_BOT_TOKEN
 
     - name: Create Slack Failed Summary Report
+      working-directory: ./tests
       shell: bash
       if: ${{ failure() }}
       run: |
@@ -103,6 +105,7 @@ runs:
         SLACK_BOT_TOKEN: ${{ inputs.slack-reporter-bot-token }} # secrets.SLACK_REPORTER_BOT_TOKEN
 
     - name: Create and post Github summary
+      working-directory: ./tests
       shell: bash
       if: ${{ success() || failure() }}
       run: |
