@@ -101,7 +101,7 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
     }
 
     func test_validationStatus_firstName_valid() {
-        let collectableData = ACHUserDetailsCollectableData.firstName("test-firstname")
+        let collectableData = ACHUserDetailsCollectableData.firstName("firstname")
         sut?.updateCollectedData(collectableData: collectableData)
 
         switch validationResult {
@@ -113,7 +113,7 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
     }
 
     func test_validationStatus_lastName_valid() {
-        let collectableData = ACHUserDetailsCollectableData.lastName("test-lastname")
+        let collectableData = ACHUserDetailsCollectableData.lastName("lastname")
         sut?.updateCollectedData(collectableData: collectableData)
 
         switch validationResult {
