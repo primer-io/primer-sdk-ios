@@ -125,6 +125,18 @@ extension Strings {
             value: "Confirm to pay",
             comment: "Confirm button title text")
 
+        static let payBySmartTransfer = NSLocalizedString("payBySmartTransfer",
+                                                          tableName: nil,
+                                                          bundle: Bundle.primerResources,
+                                                          value: "Pay by Smart transfer",
+                                                          comment: "Pay by Smart transfer button title text")
+
+        static let payByImmediateTransfer = NSLocalizedString("payByImmediateTransfer",
+                                                          tableName: nil,
+                                                          bundle: Bundle.primerResources,
+                                                          value: "Pay by Immediate transfer",
+                                                          comment: "Pay by Immediate transfer button title text")
+
     }
 }
 
@@ -949,7 +961,7 @@ extension Strings {
             "primer-cvv-recapture-explanation",
             tableName: nil,
             bundle: Bundle.primerResources,
-            value: "Input the %@ digit security code on your card for a secure payment.",
+            value: "Input the %d digit security code on your card for a secure payment.",
             comment: "Some cards have 3 or 4 digits for their CVV card")
 
         static let buttonTitle = NSLocalizedString(

@@ -60,7 +60,7 @@ final class NetworkRequestFactoryTests: XCTestCase {
 
         XCTAssertEqual(request.httpMethod, "GET")
         XCTAssertEqual(request.url?.absoluteString, (Mocks.decodedJWTToken.configurationUrl ?? "") + "?withDisplayMetadata=true")
-        XCTAssertEqual(request.allHTTPHeaderFields, defaultHeaders(jwt: "bla"))
+        XCTAssertEqual(request.allHTTPHeaderFields, defaultHeaders(apiVersion: "2.3", jwt: "bla"))
     }
 
     func testRequestCreation_paymentInstruments() throws {
