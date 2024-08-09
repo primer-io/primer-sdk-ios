@@ -25,7 +25,7 @@ extension PrimerHeadlessUniversalCheckout {
         private(set) var resumePaymentId: String?
         private var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
-        private var achMandateCompletion: ((_ success: Bool, _ error: PrimerError?) -> Void)?
+        private var achMandateCompletion: ((Result<Void, PrimerError>) -> Void)?
 
         lazy var createResumePaymentService: CreateResumePaymentServiceProtocol = {
             CreateResumePaymentService(paymentMethodType: paymentMethodType)
@@ -897,13 +897,12 @@ extension PrimerHeadlessUniversalCheckout {
          */
         private func awaitShowMandateResponse() -> Promise<Void> {
             return Promise { seal in
-                self.achMandateCompletion = { succeeded, error in
-                    if succeeded {
+                self.achMandateCompletion = { result in
+                    switch result {
+                    case .success:
                         seal.fulfill()
-                    } else {
-                        if let error {
-                            seal.reject(error)
-                        }
+                    case .failure(let error):
+                        seal.reject(error)
                     }
                 }
             }
@@ -913,12 +912,12 @@ extension PrimerHeadlessUniversalCheckout {
 
 extension PrimerHeadlessUniversalCheckout.VaultManager: ACHMandateDelegate {
     public func acceptMandate() {
-        achMandateCompletion?(true, nil)
+        achMandateCompletion?(.success(()))
     }
     
     public func declineMandate() {
         let error = ACHHelpers.getCancelledError(paymentMethodType: paymentMethodType)
-        achMandateCompletion?(false, error)
+        achMandateCompletion?(.failure(error))
     }
 }
 

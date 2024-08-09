@@ -20,46 +20,22 @@ struct StripeAchFieldsView: View {
                 .font(.title)
                 .padding(.bottom, 20)
                 .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.title.rawValue)
-            
-            VStack(alignment: .leading) {
-                TextField("First name", text: $viewModel.firstName)
-                    .textFieldStyle(.roundedBorder)
-                    .border(viewModel.isFirstNameValid ? Color.clear : Color.red, width: 2)
-                    .padding(.horizontal)
-                    .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.firstNameTextField.rawValue)
-                
-                Text(viewModel.firstNameErrorDescription)
-                    .foregroundColor(.red)
-                    .font(.caption)
-                    .padding(.horizontal)
-            }
-            
-            VStack(alignment: .leading) {
-                TextField("Last name", text: $viewModel.lastName)
-                    .textFieldStyle(.roundedBorder)
-                    .border(viewModel.isLastNameValid ? Color.clear : Color.red, width: 2)
-                    .padding(.horizontal)
-                    .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.lastNameTextField.rawValue)
-                
-                Text(viewModel.lastNameErrorDescription)
-                    .foregroundColor(.red)
-                    .font(.caption)
-                    .padding(.horizontal)
-            }
-            
-            VStack(alignment: .leading) {
-                TextField("Email address", text: $viewModel.emailAddress)
-                    .textFieldStyle(.roundedBorder)
-                    .border(viewModel.isEmailAddressValid ? Color.clear : Color.red, width: 2)
-                    .padding([.horizontal])
-                    .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.emailAddressTextField.rawValue)
-                
-                Text(viewModel.emailErrorDescription)
-                    .foregroundColor(.red)
-                    .font(.caption)
-                    .padding([.horizontal])
-            }
-            
+
+            CustomTextFieldView(text: $viewModel.firstName,
+                                isValid: viewModel.isFirstNameValid,
+                                errorDescription: viewModel.firstNameErrorDescription,
+                                accessibilityIdentifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.firstNameTextField.rawValue)
+
+            CustomTextFieldView(text: $viewModel.lastName,
+                                isValid: viewModel.isLastNameValid,
+                                errorDescription: viewModel.lastNameErrorDescription,
+                                accessibilityIdentifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.lastNameTextField.rawValue)
+
+            CustomTextFieldView(text: $viewModel.emailAddress,
+                                isValid: viewModel.isEmailAddressValid,
+                                errorDescription: viewModel.emailErrorDescription,
+                                accessibilityIdentifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.emailAddressTextField.rawValue)
+
             Button(action: submitAction) {
                 Text("SUBMIT")
                     .font(.headline)
@@ -80,3 +56,25 @@ struct StripeAchFieldsView: View {
     }
 }
 
+struct CustomTextFieldView: View {
+    @Binding var text: String
+
+    let isValid: Bool
+    let errorDescription: String
+    let accessibilityIdentifier: String
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            TextField("", text: $text)
+                .textFieldStyle(.roundedBorder)
+                .border(isValid ? Color.clear : Color.red, width: 2)
+                .padding(.horizontal)
+                .addAccessibilityIdentifier(identifier: accessibilityIdentifier)
+
+            Text(errorDescription)
+                .foregroundColor(.red)
+                .font(.caption)
+                .padding(.horizontal)
+        }
+    }
+}

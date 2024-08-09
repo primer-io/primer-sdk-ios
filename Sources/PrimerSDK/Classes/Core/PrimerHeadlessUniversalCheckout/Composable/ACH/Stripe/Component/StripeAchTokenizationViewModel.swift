@@ -22,8 +22,8 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var returnedStripeAchPaymentId: String = ""
     private var userDetails: ACHUserDetails = .emptyUserDetails()
 
-    var stripeMandateCompletion: ((_ success: Bool, _ error: PrimerError?) -> Void)?
-    var stripeBankAccountCollectorCompletion: ((_ success: Bool, _ error: PrimerError?) -> Void)?
+    var stripeMandateCompletion: ((Result<Void, PrimerError>) -> Void)?
+    var stripeBankAccountCollectorCompletion: ((Result<Void, PrimerError>) -> Void)?
     var achUserDetailsSubmitCompletion: ((_ success: Bool, _ error: PrimerError?) -> Void)?
 
     // MARK: Init
@@ -136,41 +136,45 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
                                                    paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         return Promise { seal in
-            if decodedJWTToken.intent?.contains("STRIPE_ACH") == true {
-                if let clientSecret = decodedJWTToken.stripeClientSecret,
-                   let sdkCompleteUrlString = decodedJWTToken.sdkCompleteUrl,
-                   let sdkCompleteUrl = URL(string: sdkCompleteUrlString) {
-                    self.clientSecret = clientSecret
 
-                    DispatchQueue.main.async {
-                        PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
-                    }
-
-                    firstly {
-                        presentPaymentMethodUserInterface()
-                    }
-                    .then { () -> Promise<Void> in
-                        return self.awaitUserInput()
-                    }
-                    .then { () -> Promise<Void> in
-                        return self.completePayment(clientToken: decodedJWTToken, completeUrl: sdkCompleteUrl)
-                    }
-                    .done {
-                        seal.fulfill(nil)
-                    }
-                    .catch { err in
-                        ErrorHandler.handle(error: err)
-                        seal.reject(err)
-                    }
-                } else {
-                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
-                                                             diagnosticsId: UUID().uuidString)
-                    ErrorHandler.handle(error: err)
-                    seal.reject(err)
-                }
-            } else {
+            guard let intent = decodedJWTToken.intent, intent.contains("STRIPE_ACH") else {
                 let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                          diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+
+            guard let clientSecret = decodedJWTToken.stripeClientSecret,
+                  let sdkCompleteUrlString = decodedJWTToken.sdkCompleteUrl,
+                  let sdkCompleteUrl = URL(string: sdkCompleteUrlString) else {
+
+                let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                         diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                seal.reject(err)
+                return
+            }
+
+            self.clientSecret = clientSecret
+
+            DispatchQueue.main.async {
+                PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+            }
+
+            firstly {
+                presentPaymentMethodUserInterface()
+            }
+            .then { () -> Promise<Void> in
+                return self.awaitUserInput()
+            }
+            .then { () -> Promise<Void> in
+                return self.completePayment(clientToken: decodedJWTToken, completeUrl: sdkCompleteUrl)
+            }
+            .done {
+                seal.fulfill(nil)
+            }
+            .catch { err in
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
             }
@@ -300,13 +304,12 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
      */
     private func awaitStripeBankAccountCollectorResponse() -> Promise<Void> {
         return Promise { seal in
-            self.stripeBankAccountCollectorCompletion = { succeeded, error in
-                if succeeded {
+            self.stripeBankAccountCollectorCompletion = { result in
+                switch result {
+                case .success:
                     seal.fulfill()
-                } else {
-                    if let error {
-                        seal.reject(error)
-                    }
+                case .failure(let error):
+                    seal.reject(error)
                 }
             }
         }
@@ -318,13 +321,12 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
      */
     private func awaitShowMandateResponse() -> Promise<Void> {
         return Promise { seal in
-            self.stripeMandateCompletion = { succeeded, error in
-                if succeeded {
+            self.stripeMandateCompletion = { result in
+                switch result {
+                case .success:
                     seal.fulfill()
-                } else {
-                    if let error {
-                        seal.reject(error)
-                    }
+                case .failure(let error):
+                    seal.reject(error)
                 }
             }
         }
@@ -556,12 +558,12 @@ extension StripeAchTokenizationViewModel {
 // MARK: - ACHMandateDelegate
 extension StripeAchTokenizationViewModel: ACHMandateDelegate {
     func acceptMandate() {
-        stripeMandateCompletion?(true, nil)
+        stripeMandateCompletion?(.success(()))
     }
     
     func declineMandate() {
         let error = ACHHelpers.getCancelledError(paymentMethodType: config.type)
-        stripeMandateCompletion?(false, error)
+        stripeMandateCompletion?(.failure(error))
     }
 }
 
@@ -582,10 +584,11 @@ extension StripeAchTokenizationViewModel: PrimerStripeCollectorViewControllerDel
         switch stripeStatus {
         case .succeeded(let paymentId):
             returnedStripeAchPaymentId = paymentId
-            stripeBankAccountCollectorCompletion?(true, nil)
+            stripeBankAccountCollectorCompletion?(.success(()))
+            break
         case .canceled:
             let error = ACHHelpers.getCancelledError(paymentMethodType: config.type)
-            stripeBankAccountCollectorCompletion?(false, error)
+            stripeBankAccountCollectorCompletion?(.failure(error))
         case .failed(let error):
             let primerError = PrimerError.stripeError(
                 key: error.errorId,
@@ -594,7 +597,7 @@ extension StripeAchTokenizationViewModel: PrimerStripeCollectorViewControllerDel
                 diagnosticsId: error.diagnosticsId
             )
             ErrorHandler.handle(error: primerError)
-            stripeBankAccountCollectorCompletion?(false, primerError)
+            stripeBankAccountCollectorCompletion?(.failure(primerError))
         }
     }
 }

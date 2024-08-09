@@ -8,6 +8,10 @@
 import Foundation
 import PassKit
 
+protocol PrimerPaymentMethodProviding {
+    func paymentMethod(for paymentMethodType: String) -> PrimerPaymentMethod?
+}
+
 extension PrimerHeadlessUniversalCheckout {
 
     public class PaymentMethod: NSObject {
@@ -34,9 +38,8 @@ extension PrimerHeadlessUniversalCheckout {
         public private(set) var paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory]
         public private(set) var requiredInputDataClass: PrimerRawData.Type?
 
-        init?(paymentMethodType: String) {
-            guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?
-                    .first(where: { $0.type == paymentMethodType })
+        init?(paymentMethodType: String, paymentMethodProvider: PrimerPaymentMethodProviding = DefaultPaymentMethodProvider()) {
+            guard let paymentMethod = paymentMethodProvider.paymentMethod(for: paymentMethodType)
             else {
                 return nil
             }
@@ -63,5 +66,24 @@ extension PrimerHeadlessUniversalCheckout {
 
             super.init()
         }
+
+        // swiftlint:disable nesting
+        private class DefaultPaymentMethodProvider: PrimerPaymentMethodProviding {
+            func paymentMethod(for paymentMethodType: String) -> PrimerPaymentMethod? {
+                PrimerAPIConfiguration.paymentMethodConfigs?
+                        .first(where: { $0.type == paymentMethodType })
+            }
+        }
+        // swiftlint:enable nesting
+
+        #if DEBUG
+        init(type: String,
+             supportedPrimerSessionIntents: [PrimerSessionIntent] = [],
+             paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory] = [.nativeUI]) {
+            self.paymentMethodType = type
+            self.supportedPrimerSessionIntents = supportedPrimerSessionIntents
+            self.paymentMethodManagerCategories = paymentMethodManagerCategories
+        }
+        #endif
     }
 }
