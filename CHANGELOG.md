@@ -1,3 +1,23 @@
+## 2.29.0 (2024-08-08)
+
+### Feat
+
+- Cache configuration for a given ClientSession (#959)
+
+## 2.28.0 (2024-08-06)
+
+### Feat
+
+- session is active (#962)
+- **apple-pay**: Prefer using merchantName from Configuration over th… (#958)
+
+### Fix
+
+- Validate PENDING in resume if showSuccessCheckoutOnPendingPayment flag is true (#957)
+- Concurrent dependency access (#950)
+- Add duration tracking for network requests (#952)
+- Fix crash when attempting to clean up 3DS prior to initialisation (#937)
+
 ## 2.27.0 (2024-07-10)
 
 ### Feat
