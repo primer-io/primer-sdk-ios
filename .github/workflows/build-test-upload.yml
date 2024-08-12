@@ -39,7 +39,7 @@ jobs:
 
   optional-sdk-tests:
     name: Optional SDK Tests
-    runs-on: macos-13-large
+    runs-on: macos-14-large
     strategy:
       max-parallel: 3
       matrix:
