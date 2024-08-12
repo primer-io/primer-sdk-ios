@@ -125,7 +125,7 @@ jobs:
       - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
-      - uses: ruby/setup-ruby@d4526a55538b775af234ba4af27118ed6f8f6677  # v1.172.0
+      - uses: ruby/setup-ruby@a6e6f86333f0a2523ece813039b8b4be04560854  # v1.190.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
@@ -180,12 +180,12 @@ jobs:
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
         with:
           ref: ${{ github.ref }}
-      - uses: ruby/setup-ruby@d4526a55538b775af234ba4af27118ed6f8f6677  # v1.172.0
+      - uses: ruby/setup-ruby@a6e6f86333f0a2523ece813039b8b4be04560854  # v1.190.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
       - name: Setup node
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 #v4.0.2
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b #v4.0.3
         with:
           node-version: 18.3.0
       - name: Pre-boot Simulator
