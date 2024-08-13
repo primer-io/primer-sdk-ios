@@ -6,6 +6,7 @@
 //
 
 // swiftlint:disable type_body_length
+// swiftlint:disable file_length
 
 import UIKit
 #if canImport(PrimerStripeSDK)
@@ -402,12 +403,13 @@ extension StripeAchTokenizationViewModel: ACHUserDetailsDelegate {
     // Checks if the ACHUserDetailsViewController is already presented in the navigation stack
     private func showACHUserDetailsViewController() -> Promise<Void> {
         return Promise { seal in
-            let isCurrentViewController = PrimerUIManager.primerRootViewController?.isCurrentViewController(ofType: ACHUserDetailsViewController.self) ?? false
+            let rootVC = self.uiManager.primerRootViewController
+            let isCurrentViewController = rootVC?.isCurrentViewController(ofType: ACHUserDetailsViewController.self) ?? false
             if isCurrentViewController {
                 seal.fulfill()
             } else {
-                let achUserDetailsViewControlle = ACHUserDetailsViewController(tokenizationViewModel: self, delegate: self)
-                PrimerUIManager.primerRootViewController?.show(viewController: achUserDetailsViewControlle)
+                let achUserDetailsViewController = ACHUserDetailsViewController(tokenizationViewModel: self, delegate: self)
+                PrimerUIManager.primerRootViewController?.show(viewController: achUserDetailsViewController)
                 seal.fulfill()
             }
         }
@@ -560,7 +562,7 @@ extension StripeAchTokenizationViewModel: ACHMandateDelegate {
     func acceptMandate() {
         stripeMandateCompletion?(.success(()))
     }
-    
+
     func declineMandate() {
         let error = ACHHelpers.getCancelledError(paymentMethodType: config.type)
         stripeMandateCompletion?(.failure(error))
@@ -585,7 +587,6 @@ extension StripeAchTokenizationViewModel: PrimerStripeCollectorViewControllerDel
         case .succeeded(let paymentId):
             returnedStripeAchPaymentId = paymentId
             stripeBankAccountCollectorCompletion?(.success(()))
-            break
         case .canceled:
             let error = ACHHelpers.getCancelledError(paymentMethodType: config.type)
             stripeBankAccountCollectorCompletion?(.failure(error))
@@ -602,4 +603,6 @@ extension StripeAchTokenizationViewModel: PrimerStripeCollectorViewControllerDel
     }
 }
 #endif
+
+// swiftlint:enable file_length
 // swiftlint:enable type_body_length
