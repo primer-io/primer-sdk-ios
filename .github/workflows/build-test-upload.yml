@@ -72,7 +72,7 @@ jobs:
           package-swift: ${{  matrix.package-swift.file }}
 
   unit-tests-debug-app:
-    runs-on: macos-13-large
+    runs-on: macos-14-large
     timeout-minutes: 20
     name: "Unit Tests - Debug App"
     steps:
