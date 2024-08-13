@@ -1280,7 +1280,7 @@ extension Strings {
 
 }
 
-// swiftlint:enable nesting
 // swiftlint:enable type_body_length
 // swiftlint:enable line_length
+// swiftlint:enable nesting
 // swiftlint:enable file_length

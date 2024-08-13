@@ -604,5 +604,5 @@ extension StripeAchTokenizationViewModel: PrimerStripeCollectorViewControllerDel
 }
 #endif
 
-// swiftlint:enable file_length
 // swiftlint:enable type_body_length
+// swiftlint:enable file_length
