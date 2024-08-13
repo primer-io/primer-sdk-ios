@@ -115,7 +115,7 @@ platform :ios do
   lane :test_sdk do |options|
     common_pre_build_action
 
-    sim_version = options[:sim_version] || "17.2"
+    sim_version = options[:sim_version] || "17.4"
 
     run_tests(
       package_path: ".",
