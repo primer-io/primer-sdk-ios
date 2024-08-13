@@ -8,6 +8,7 @@
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
 // swiftlint:disable line_length
+// swiftlint:disable nesting
 
 import Foundation
 
@@ -1279,6 +1280,7 @@ extension Strings {
 
 }
 
+// swiftlint:enable nesting
 // swiftlint:enable type_body_length
 // swiftlint:enable line_length
 // swiftlint:enable file_length
