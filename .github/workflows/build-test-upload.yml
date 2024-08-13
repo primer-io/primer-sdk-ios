@@ -100,7 +100,7 @@ jobs:
 
   spm-build:
     needs: unit-tests-debug-app
-    runs-on: macos-13
+    runs-on: macos-14-large
     timeout-minutes: 20
     name: "Build app with SPM Integration"
     steps:
