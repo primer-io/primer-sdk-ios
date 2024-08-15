@@ -8,6 +8,10 @@ on:
         required: true
         default: develop
         type: string
+      testType:
+        description: The type of test run, one of [MOCKED|E2E]
+        required: false
+        type: string
   schedule:
     - cron: '0 21 * 4-10 1-5'
     - cron: '0 22 * 11-12,1-3 1-5'
@@ -120,73 +124,50 @@ jobs:
       runs-on: ubuntu-latest
       needs: build-and-upload-to-firebase-and-browserstack
       name: "Browserstack test"
+      if: ${{ inputs.testType == '' }}
+      strategy:
+            max-parallel: 1
+            matrix:
+              test-type:
+                - "MOCKED"
+                - "E2E"
       steps:
-        - name: Clone and launch Browserstack tests via Appium 🧪
-          run: |
-             git clone -b ${{ inputs.appiumTestsBranch || 'develop' }} https://project_41483872_bot:$GITLAB_TEMP_PATH@gitlab.com/primer-io/acceptance/mobile/mobile-appium-tests.git .
-             git show --summary
-          env:
-            GITLAB_TEMP_PATH: ${{ secrets.GITLAB_APPIUM_PULL_KEY }}
-
-        - name: Retrieve Browserstack ID
-          uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16  #v4.1.8
+        - name: Git - Checkout
+          uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
           with:
-            name: browserstack_id
-            path: /var/tmp
-
-        - name: Setup node
-          uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b #v4.0.3
+            ref: ${{ github.ref }}
+            sparse-checkout: .github
+        - name: Run UI Tests via Browserstack 🧪
+          id: ui-tests-test-via-browserstack
+          uses: ./.github/actions/ui-tests
           with:
-            node-version: 18.3.0
-
-        - name: npm Install
-          run: npm install
-        
-        - run: npm install --save slack-message-builder
-
-        - name: Run Appium Test
-          env:
-            BROWSERSTACK_USERNAME: ${{secrets.BROWSERSTACK_USERNAME}}
-            BROWSERSTACK_ACCESS_KEY: ${{secrets.BROWSERSTACK_ACCESS_KEY}}
-          run: |
-            export BROWSERSTACK_APP_ID=$(cat /var/tmp/browserstack_id.txt)
-            testType=MOCKED npx wdio config/wdio.ios.bs.conf.js
-            
-        - name: Create Slack Report
-          if: ${{ success() || failure() }}
-          run: |
-            node report-script/slack-report-script.js createSlackReport iOS
-
-        - name: Post summary message to a Slack channel
-          if: ${{ success() || failure() }}
-          id: slack
-          uses: slackapi/slack-github-action@70cd7be8e40a46e8b0eced40b0de447bdb42f68e #v1.26.0
-          with:
-            channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
-            payload-file-path: '/var/tmp/slack-minimal_summary.json'
-          env:
-            SLACK_BOT_TOKEN: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
-
-        - name: Create Slack Failed Summary Report
-          if: ${{ failure() }}
-          run: |
-            node report-script/slack-failed-report-script.js createSlackFailedSummaryReport ${{ steps.slack.outputs.thread_ts }}
-          env:
-            BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-            BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-
-        - name: Post detailed summary to Slack channel thread
-          if: ${{ failure() }}
-          id: slack_thread
-          uses: slackapi/slack-github-action@70cd7be8e40a46e8b0eced40b0de447bdb42f68e #v1.26.0
-          with:
-            channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
-            payload-file-path: '/var/tmp/slack_failed_summary.json'
-          env:
-            SLACK_BOT_TOKEN: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
-
-        - name: Create and post Github summary
-          if: ${{ success() || failure() }}
-          run: |
-            node report-script/github-tests-summary-script.js createGithubSummaryReport
+            appium-tests-branch: ${{ inputs.appiumTestsBranch }}
+            test-type: ${{ matrix.test-type }}
+            gitlab-appium-pull-key: ${{ secrets.GITLAB_APPIUM_PULL_KEY }}
+            browserstack-user-name: ${{ secrets.BROWSERSTACK_USERNAME }}
+            browserstack-access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+            slack-mobile-sdk-channel: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
+            slack-reporter-bot-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
   
+  test-via-browserstack-manual:
+    runs-on: ubuntu-latest
+    needs: build-and-upload-to-firebase-and-browserstack
+    name: "Browserstack test (manual)"
+    if: ${{ inputs.testType != '' }}
+    steps:
+      - name: Git - Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          ref: ${{ github.ref }}
+          sparse-checkout: .github
+      - name: Run UI Tests via Browserstack [${{ inputs.testType }}] 🧪
+        id: ui-tests-test-via-browserstack
+        uses: ./.github/actions/ui-tests
+        with:
+          appium-tests-branch: ${{ inputs.appiumTestsBranch }}
+          test-type: ${{ inputs.testType }}
+          gitlab-appium-pull-key: ${{ secrets.GITLAB_APPIUM_PULL_KEY }}
+          browserstack-user-name: ${{ secrets.BROWSERSTACK_USERNAME }}
+          browserstack-access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+          slack-mobile-sdk-channel: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
+          slack-reporter-bot-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
