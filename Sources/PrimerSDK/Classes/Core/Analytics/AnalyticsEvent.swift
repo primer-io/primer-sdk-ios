@@ -236,6 +236,9 @@ extension Analytics.Event {
             case validationFailed                   = "VALIDATION_FAILED"
             case info                               = "INFO"
             case other                              = "OTHER"
+            case retry                              = "RETRY"
+            case retryFailed                        = "RETRY_FAILED"
+            case retrySuccess                       = "RETRY_SUCCESS"
         }
 
         enum TimerType: String, Codable {
