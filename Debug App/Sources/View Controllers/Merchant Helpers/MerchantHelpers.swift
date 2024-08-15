@@ -80,7 +80,7 @@ struct MerchantMockDataManager {
 
     static var genericPaymentMethod = ClientSessionRequestBody.PaymentMethod(
         vaultOnSuccess: false,
-        options: nil,
+        options: ClientSessionRequestBody.PaymentMethod.PaymentMethodOptionGroup(),
         descriptor: "Random descriptor",
         paymentType: nil
     )
@@ -97,7 +97,8 @@ struct MerchantMockDataManager {
             surcharge: ClientSessionRequestBody.PaymentMethod.SurchargeOption(amount: 140),
             instalmentDuration: "test",
             extraMerchantData: extraMerchantData,
-            captureVaultedCardCvv: false))
+            captureVaultedCardCvv: false,
+            merchantName: nil))
 
     static var extraMerchantData: [String: Any] = [
         "subscription": [

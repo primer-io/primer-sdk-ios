@@ -9,6 +9,7 @@ import Foundation
 
 typealias APIResult<T> = Result<T, Error>
 typealias APICompletion<T> = (APIResult<T>) -> Void
+typealias ConfigurationCompletion = (Result<PrimerAPIConfiguration, Error>, [String: String]?) -> Void
 
 protocol PrimerAPIClientProtocol:
     PrimerAPIClientAnalyticsProtocol,
@@ -16,14 +17,15 @@ protocol PrimerAPIClientProtocol:
     PrimerAPIClientBanksProtocol,
     PrimerAPIClientPayPalProtocol,
     PrimerAPIClientVaultProtocol,
-    PrimerAPIClientXenditProtocol {
+    PrimerAPIClientXenditProtocol,
+    PrimerAPIClientCreateResumePaymentProtocol {
 
     // MARK: Configuration
 
     func fetchConfiguration(
         clientToken: DecodedJWTToken,
         requestParameters: Request.URLParameters.Configuration?,
-        completion: @escaping APICompletion<Response.Body.Configuration>)
+        completion: @escaping ConfigurationCompletion)
 
     func validateClientToken(
         request: Request.Body.ClientTokenValidation,
@@ -31,7 +33,7 @@ protocol PrimerAPIClientProtocol:
 
     func requestPrimerConfigurationWithActions(clientToken: DecodedJWTToken,
                                                request: ClientSessionUpdateRequest,
-                                               completion: @escaping APICompletion<PrimerAPIConfiguration>)
+                                               completion: @escaping ConfigurationCompletion)
 
     // MARK: Klarna
 
@@ -90,19 +92,6 @@ protocol PrimerAPIClientProtocol:
     func genericAPICall(clientToken: DecodedJWTToken,
                         url: URL,
                         completion: @escaping APICompletion<Bool>)
-
-    // MARK: Payments
-
-    func createPayment(
-        clientToken: DecodedJWTToken,
-        paymentRequestBody: Request.Body.Payment.Create,
-        completion: @escaping APICompletion<Response.Body.Payment>)
-
-    func resumePayment(
-        clientToken: DecodedJWTToken,
-        paymentId: String,
-        paymentResumeRequest: Request.Body.Payment.Resume,
-        completion: @escaping APICompletion<Response.Body.Payment>)
 
     // MARK: NolPay
 

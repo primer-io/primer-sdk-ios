@@ -1,0 +1,111 @@
+name: 'Build and upload to Appetize'
+description: 'Build and upload to Appetize'
+inputs:
+  appium-tests-branch:
+    description: The branch to run from mobile-appium-tests 
+    required: true
+    default: develop
+  test-type:
+    description: The type of test run, one of [MOCKED|E2E]
+    required: true
+  gitlab-appium-pull-key:
+    description: The key used to fetch the appium repo
+    required: true
+  browserstack-user-name:
+    description: The browserstack username
+    required: true
+  browserstack-access-key:
+    description: The browserstack access key
+    required: true
+  slack-mobile-sdk-channel:
+    description: The channel to report results to
+    required: true
+  slack-reporter-bot-token:
+    description: The slack bot token for posting results to the channel
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Clone and launch Browserstack tests via Appium 🧪
+      shell: bash
+      run: |
+          git clone -b ${{ inputs.appium-tests-branch || 'develop' }} https://project_41483872_bot:$GITLAB_TEMP_PATH@gitlab.com/primer-io/acceptance/mobile/mobile-appium-tests.git ./tests
+          git show --summary
+      env:
+        GITLAB_TEMP_PATH: ${{ inputs.gitlab-appium-pull-key }} # secrets.GITLAB_APPIUM_PULL_KEY
+
+    - name: Retrieve Browserstack ID
+      uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16  #v4.1.8
+      with:
+        name: browserstack_id
+        path: /var/tmp
+
+    - name: Setup node
+      uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b #v4.0.3
+      with:
+        node-version: 18.3.0
+
+    - name: npm install - all deps
+      working-directory: ./tests
+      shell: bash
+      run: npm install
+    
+    - name: npm install - slack message builder
+      working-directory: ./tests
+      shell: bash
+      run: npm install --save slack-message-builder
+
+    - name: Run Appium Test
+      working-directory: ./tests
+      shell: bash
+      env:
+        BROWSERSTACK_USERNAME: ${{ inputs.browserstack-user-name }} # secrets.BROWSERSTACK_USERNAME
+        BROWSERSTACK_ACCESS_KEY: ${{ inputs.browserstack-access-key }} # secrets.BROWSERSTACK_ACCESS_KEY
+      run: |
+        export BROWSERSTACK_APP_ID=$(cat /var/tmp/browserstack_id.txt)
+        testType=${{ inputs.test-type }} npx wdio config/wdio.ios.bs.conf.js
+        
+    - name: Create Slack Report
+      working-directory: ./tests
+      shell: bash
+      if: ${{ success() || failure() }}
+      run: |
+        node report-script/slack-report-script.js createSlackReport iOS
+
+    - name: Post summary message to a Slack channel
+      if: ${{ success() || failure() }}
+      id: slack
+      uses: slackapi/slack-github-action@70cd7be8e40a46e8b0eced40b0de447bdb42f68e #v1.26.0
+      with:
+        channel-id: ${{ inputs.slack-mobile-sdk-channel }} # secrets.SLACK_MOBILE_SDK_CHANNEL
+        payload-file-path: '/var/tmp/slack-minimal_summary.json'
+      env:
+        SLACK_BOT_TOKEN: ${{ inputs.slack-reporter-bot-token }} # secrets.SLACK_REPORTER_BOT_TOKEN
+
+    - name: Create Slack Failed Summary Report
+      working-directory: ./tests
+      shell: bash
+      if: ${{ failure() }}
+      run: |
+        node report-script/slack-failed-report-script.js createSlackFailedSummaryReport ${{ steps.slack.outputs.thread_ts }}
+      env:
+        BROWSERSTACK_USERNAME: ${{ inputs.browserstack-user-name }} # secrets.BROWSERSTACK_USERNAME
+        BROWSERSTACK_ACCESS_KEY: ${{ inputs.browserstack-access-key }} # secrets.BROWSERSTACK_ACCESS_KEY
+
+    - name: Post detailed summary to Slack channel thread
+      if: ${{ failure() }}
+      id: slack_thread
+      uses: slackapi/slack-github-action@70cd7be8e40a46e8b0eced40b0de447bdb42f68e #v1.26.0
+      with:
+        channel-id: ${{ inputs.slack-mobile-sdk-channel }} # secrets.SLACK_MOBILE_SDK_CHANNEL
+        payload-file-path: '/var/tmp/slack_failed_summary.json'
+      env:
+        SLACK_BOT_TOKEN: ${{ inputs.slack-reporter-bot-token }} # secrets.SLACK_REPORTER_BOT_TOKEN
+
+    - name: Create and post Github summary
+      working-directory: ./tests
+      shell: bash
+      if: ${{ success() || failure() }}
+      run: |
+        node report-script/github-tests-summary-script.js createGithubSummaryReport

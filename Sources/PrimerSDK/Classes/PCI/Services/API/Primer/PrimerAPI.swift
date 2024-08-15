@@ -166,7 +166,7 @@ internal extension PrimerAPI {
         case .exchangePaymentMethodToken:
             tmpHeaders["X-Api-Version"] = "2.2"
         case .fetchConfiguration:
-            tmpHeaders["X-Api-Version"] = "2.2"
+            tmpHeaders["X-Api-Version"] = "2.3"
         case .fetchVaultedPaymentMethods:
             tmpHeaders["X-Api-Version"] = "2.2"
         case .deleteVaultedPaymentMethod:
@@ -190,7 +190,7 @@ internal extension PrimerAPI {
         case .listRetailOutlets:
             break
         case .requestPrimerConfigurationWithActions:
-            tmpHeaders["X-Api-Version"] = "2.2"
+            tmpHeaders["X-Api-Version"] = "2.3"
         case .begin3DSRemoteAuth:
             tmpHeaders["X-Api-Version"] = "2.1"
         case .continue3DSRemoteAuth:
