@@ -26,7 +26,7 @@ class RetryHandler: LogReporter {
     func calculateBackoffWithJitter(baseDelay: TimeInterval, retryCount: Int, maxJitter: TimeInterval) -> TimeInterval {
         let exponentialPart = baseDelay * pow(2.0, Double(retryCount - 1))
         let jitterPart = Double.random(in: 0...maxJitter)
-        return min(exponentialPart + jitterPart, Double.greatestFiniteMagnitude)
+        return exponentialPart + jitterPart
     }
 
     func handleRetry(responseModel: DispatcherResponseModel, error: Error?) {

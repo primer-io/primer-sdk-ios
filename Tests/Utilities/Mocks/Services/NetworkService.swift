@@ -10,6 +10,7 @@ import XCTest
 @testable import PrimerSDK
 
 class MockNetworkService: NetworkService {
+
     func request<T>(_ endpoint: any PrimerSDK.Endpoint, completion: @escaping PrimerSDK.ResponseCompletionWithHeaders<T>) -> (any PrimerSDK.PrimerCancellable)? where T : Decodable {
         onReceiveEndpoint?(endpoint)
 
@@ -53,15 +54,14 @@ class MockNetworkService: NetworkService {
         return nil
     }
 
-    func request<T>(_ endpoint: any PrimerSDK.Endpoint, retryConfig: PrimerSDK.RetryConfig?, completion: @escaping PrimerSDK.ResponseCompletion<T>) -> (any PrimerSDK.PrimerCancellable)? where T : Decodable {
-
+    func request<T>(_ endpoint: any PrimerSDK.Endpoint, retryConfig: PrimerSDK.RetryConfig?, completion: @escaping PrimerSDK.ResponseCompletionWithHeaders<T>) -> (any PrimerSDK.PrimerCancellable)? where T : Decodable {
         onReceiveEndpoint?(endpoint)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let error = self.mockedError {
-                completion(.failure(error))
+                completion(.failure(error), nil)
             } else if let result = self.mockedResult as? T {
-                completion(.success(result))
+                completion(.success(result), nil)
             } else {
                 XCTFail("Failed to produce either a valid result or an error for requested endpoint")
             }
