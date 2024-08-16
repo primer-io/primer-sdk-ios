@@ -26,7 +26,7 @@ class RetryHandler: LogReporter {
     func calculateBackoffWithJitter(baseDelay: TimeInterval, retryCount: Int, maxJitter: TimeInterval) -> TimeInterval {
         let exponentialPart = baseDelay * pow(2.0, Double(retryCount - 1))
         let jitterPart = Double.random(in: 0...maxJitter)
-        return min(exponentialPart + jitterPart, Double.greatestFiniteMagnitude)
+        return exponentialPart + jitterPart
     }
 
     func handleRetry(responseModel: DispatcherResponseModel, error: Error?) {
@@ -63,7 +63,7 @@ class RetryHandler: LogReporter {
         } else {
             errorMessage += "Status code: \(responseModel.metadata.statusCode)"
         }
-        self.logger.debug(message: errorMessage)
+        self.logger.error(message: errorMessage)
         let retryEvent = Analytics.Event.message(message: errorMessage, messageType: .retryFailed, severity: .error)
         Analytics.Service.record(event: retryEvent)
 
@@ -126,7 +126,7 @@ class RetryHandler: LogReporter {
             finalErrorMessage += "Last error: \(error?.localizedDescription ?? "Unknown error")"
             let retryEvent = Analytics.Event.message(message: finalErrorMessage, messageType: .retry, severity: .warning)
             Analytics.Service.record(event: retryEvent)
-            self.logger.debug(message: finalErrorMessage)
+            self.logger.warn(message: finalErrorMessage)
         }
 
         let shouldRetry = !isLastAttempt && ((isNetworkError && retryConfig.retryNetworkErrors) ||

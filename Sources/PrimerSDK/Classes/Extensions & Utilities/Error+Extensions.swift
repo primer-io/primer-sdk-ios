@@ -20,6 +20,40 @@ internal extension Error {
                 nsError.code == NSURLErrorInternationalRoamingOff ||
                 nsError.code == NSURLErrorCallIsActive ||
                 nsError.code == NSURLErrorDataNotAllowed ||
-                nsError.code == NSURLErrorRequestBodyStreamExhausted)
+                nsError.code == NSURLErrorRequestBodyStreamExhausted ||
+                nsError.code == NSURLErrorBadServerResponse ||
+                nsError.code == NSURLErrorBadURL ||
+                nsError.code == NSURLErrorCancelled ||
+                nsError.code == NSURLErrorCannotCloseFile ||
+                nsError.code == NSURLErrorCannotCreateFile ||
+                nsError.code == NSURLErrorCannotDecodeContentData ||
+                nsError.code == NSURLErrorCannotDecodeRawData ||
+                nsError.code == NSURLErrorCannotLoadFromNetwork ||
+                nsError.code == NSURLErrorCannotMoveFile ||
+                nsError.code == NSURLErrorCannotOpenFile ||
+                nsError.code == NSURLErrorCannotParseResponse ||
+                nsError.code == NSURLErrorCannotRemoveFile ||
+                nsError.code == NSURLErrorCannotWriteToFile ||
+                nsError.code == NSURLErrorClientCertificateRejected ||
+                nsError.code == NSURLErrorClientCertificateRequired ||
+                nsError.code == NSURLErrorDataLengthExceedsMaximum ||
+                nsError.code == NSURLErrorDownloadDecodingFailedMidStream ||
+                nsError.code == NSURLErrorDownloadDecodingFailedToComplete ||
+                nsError.code == NSURLErrorFileDoesNotExist ||
+                nsError.code == NSURLErrorFileIsDirectory ||
+                nsError.code == NSURLErrorHTTPTooManyRedirects ||
+                nsError.code == NSURLErrorNetworkConnectionLost ||
+                nsError.code == NSURLErrorNoPermissionsToReadFile ||
+                nsError.code == NSURLErrorRedirectToNonExistentLocation ||
+                nsError.code == NSURLErrorResourceUnavailable ||
+                nsError.code == NSURLErrorServerCertificateHasBadDate ||
+                nsError.code == NSURLErrorServerCertificateHasUnknownRoot ||
+                nsError.code == NSURLErrorServerCertificateNotYetValid ||
+                nsError.code == NSURLErrorServerCertificateUntrusted ||
+                nsError.code == NSURLErrorSecureConnectionFailed ||
+                nsError.code == NSURLErrorUnsupportedURL ||
+                nsError.code == NSURLErrorUserAuthenticationRequired ||
+                nsError.code == NSURLErrorUserCancelledAuthentication ||
+                nsError.code == NSURLErrorZeroByteResource)
     }
 }

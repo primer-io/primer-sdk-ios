@@ -58,19 +58,6 @@ class DefaultNetworkService: NetworkService, LogReporter {
     @discardableResult
     func request<T: Decodable>(_ endpoint: Endpoint,
                                completion: @escaping ResponseCompletion<T>) -> PrimerCancellable? {
-        return request(endpoint, retryConfig: nil, completion: completion)
-    }
-
-    @discardableResult
-    func request<T: Decodable>(_ endpoint: Endpoint,
-                               completion: @escaping ResponseCompletionWithHeaders<T>) -> PrimerCancellable? {
-        return request(endpoint, retryConfig: nil, completion: completion)
-    }
-
-    @discardableResult
-    func request<T: Decodable>(_ endpoint: Endpoint,
-                               retryConfig: RetryConfig?,
-                               completion: @escaping ResponseCompletion<T>) -> PrimerCancellable? {
         do {
             let request = try requestFactory.request(for: endpoint)
 
@@ -81,7 +68,7 @@ class DefaultNetworkService: NetworkService, LogReporter {
                                                              endpoint: endpoint,
                                                              request: request))
 
-            let dispatchFunction = createDispatchFunction(retryConfig: retryConfig)
+            let dispatchFunction = createDispatchFunction(retryConfig: nil)
 
             return dispatchFunction(request) { [weak self] result in
                 self?.handleDispatchResult(result, identifier: identifier, endpoint: endpoint, completion: completion)
@@ -91,6 +78,12 @@ class DefaultNetworkService: NetworkService, LogReporter {
             completion(.failure(error))
             return nil
         }
+    }
+
+    @discardableResult
+    func request<T: Decodable>(_ endpoint: Endpoint,
+                               completion: @escaping ResponseCompletionWithHeaders<T>) -> PrimerCancellable? {
+        return request(endpoint, retryConfig: nil, completion: completion)
     }
 
     @discardableResult
