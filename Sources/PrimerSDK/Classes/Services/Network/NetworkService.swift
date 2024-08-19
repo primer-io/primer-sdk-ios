@@ -16,4 +16,7 @@ internal protocol NetworkService {
 
     @discardableResult
     func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResponseCompletionWithHeaders<T>) -> PrimerCancellable?
+
+    @discardableResult
+    func request<T: Decodable>(_ endpoint: Endpoint, retryConfig: RetryConfig?, completion: @escaping ResponseCompletionWithHeaders<T>) -> PrimerCancellable?
 }
