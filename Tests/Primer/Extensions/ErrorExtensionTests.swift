@@ -116,4 +116,66 @@ final class ErrorExtensionTests: XCTestCase {
                        "[\(desc1) | \(desc2) | \(desc3)]")
     }
 
+    func testIsNetworkError_WithNetworkErrors_ShouldReturnTrue() {
+        let networkErrorCodes = [
+            NSURLErrorTimedOut,
+            NSURLErrorCannotFindHost,
+            NSURLErrorCannotConnectToHost,
+            NSURLErrorNetworkConnectionLost,
+            NSURLErrorDNSLookupFailed,
+            NSURLErrorNotConnectedToInternet,
+            NSURLErrorInternationalRoamingOff,
+            NSURLErrorCallIsActive,
+            NSURLErrorDataNotAllowed,
+            NSURLErrorRequestBodyStreamExhausted,
+            NSURLErrorBadServerResponse,
+            NSURLErrorBadURL,
+            NSURLErrorCancelled,
+            NSURLErrorCannotCloseFile,
+            NSURLErrorCannotCreateFile,
+            NSURLErrorCannotDecodeContentData,
+            NSURLErrorCannotDecodeRawData,
+            NSURLErrorCannotLoadFromNetwork,
+            NSURLErrorCannotMoveFile,
+            NSURLErrorCannotOpenFile,
+            NSURLErrorCannotParseResponse,
+            NSURLErrorCannotRemoveFile,
+            NSURLErrorCannotWriteToFile,
+            NSURLErrorClientCertificateRejected,
+            NSURLErrorClientCertificateRequired,
+            NSURLErrorDataLengthExceedsMaximum,
+            NSURLErrorDownloadDecodingFailedMidStream,
+            NSURLErrorDownloadDecodingFailedToComplete,
+            NSURLErrorFileDoesNotExist,
+            NSURLErrorFileIsDirectory,
+            NSURLErrorHTTPTooManyRedirects,
+            NSURLErrorNoPermissionsToReadFile,
+            NSURLErrorRedirectToNonExistentLocation,
+            NSURLErrorResourceUnavailable,
+            NSURLErrorServerCertificateHasBadDate,
+            NSURLErrorServerCertificateHasUnknownRoot,
+            NSURLErrorServerCertificateNotYetValid,
+            NSURLErrorServerCertificateUntrusted,
+            NSURLErrorSecureConnectionFailed,
+            NSURLErrorUnsupportedURL,
+            NSURLErrorUserAuthenticationRequired,
+            NSURLErrorUserCancelledAuthentication,
+            NSURLErrorZeroByteResource
+        ]
+
+        networkErrorCodes.forEach { code in
+            let nsError = NSError(domain: NSURLErrorDomain, code: code, userInfo: nil)
+            XCTAssertTrue(nsError.isNetworkError, "Expected error code \(code) to be identified as a network error")
+        }
+    }
+
+    func testIsNetworkError_WithNonNetworkError_ShouldReturnFalse() {
+        let nonNetworkError = NSError(domain: NSCocoaErrorDomain, code: 0, userInfo: nil)
+        XCTAssertFalse(nonNetworkError.isNetworkError, "Expected non-network error to not be identified as a network error")
+
+        let differentDomainError = NSError(domain: "CustomDomain", code: NSURLErrorTimedOut, userInfo: nil)
+        XCTAssertFalse(differentDomainError.isNetworkError, "Expected error from a different domain to not be identified as a network error")
+    }
+
+
 }
