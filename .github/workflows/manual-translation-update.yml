@@ -14,7 +14,7 @@ jobs:
     name: "Download latest translations from Phrase.com and make a PR."
     steps:
       - name: Check out repo
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
         with:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
@@ -51,7 +51,7 @@ jobs:
           fi
           
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@6d6857d36972b65feb161a90e484f2984215f83e 
+        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c 
         with:
           token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
           base: ${{ github.event.inputs.branch }}

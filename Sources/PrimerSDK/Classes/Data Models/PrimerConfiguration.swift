@@ -11,6 +11,7 @@ import Foundation
 import PassKit
 
 typealias PrimerAPIConfiguration = Response.Body.Configuration
+typealias PrimerAPIConfigurationResponse = (config: Response.Body.Configuration, ttl: TimeInterval)
 
 extension Request.URLParameters {
 

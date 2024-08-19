@@ -21,7 +21,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           ref: ${{ github.ref }}
       - name: Run SDK tests
@@ -53,7 +53,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           ref: ${{ github.ref }}
       - name: Run SDK tests
@@ -80,7 +80,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           ref: ${{ github.ref }}
       - name: Run debug app tests
@@ -108,7 +108,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           ref: ${{ github.ref }}
       - name: Select Xcode Version
@@ -124,7 +124,7 @@ jobs:
       - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
-      - uses: ruby/setup-ruby@d4526a55538b775af234ba4af27118ed6f8f6677  # v1.172.0
+      - uses: ruby/setup-ruby@a6e6f86333f0a2523ece813039b8b4be04560854  # v1.190.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
@@ -147,7 +147,7 @@ jobs:
     name: SonarCloud
     runs-on: macos-13
     steps:
-      - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
       - name: SonarCloud Scan
@@ -176,15 +176,15 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           ref: ${{ github.ref }}
-      - uses: ruby/setup-ruby@d4526a55538b775af234ba4af27118ed6f8f6677  # v1.172.0
+      - uses: ruby/setup-ruby@a6e6f86333f0a2523ece813039b8b4be04560854  # v1.190.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
       - name: Setup node
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 #v4.0.2
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b #v4.0.3
         with:
           node-version: 18.3.0
       - name: Pre-boot Simulator
@@ -200,7 +200,7 @@ jobs:
           bundle exec fastlane build_cocoapods
       - name: Clone and launch Browserstack tests via Appium 🧪
         run: |
-            git clone -b 'develop' https://project_41483872_bot:$GITLAB_TEMP_PATH@gitlab.com/primer-io/dx/mobile-appium-tests.git
+            git clone -b 'develop' https://project_41483872_bot:$GITLAB_TEMP_PATH@gitlab.com/primer-io/acceptance/mobile/mobile-appium-tests.git
             git show --summary
         env:
           GITLAB_TEMP_PATH: ${{ secrets.GITLAB_APPIUM_PULL_KEY }}
@@ -227,7 +227,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - name: Git - Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           ref: ${{ github.ref }}
       - name: Upload preview to Appetize
