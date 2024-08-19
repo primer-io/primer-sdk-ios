@@ -45,7 +45,7 @@ final class NetworkRequestFactoryTests: XCTestCase {
 
         let body = Request.Body.Payment.Create(token: "MY_TOKEN")
         let endpoint = PrimerAPI.createPayment(clientToken: Mocks.decodedJWTToken, paymentRequest: body)
-        let request = try networkRequestFactory.request(for: endpoint)
+        let request = try networkRequestFactory.request(for: endpoint, identifier: nil)
 
         XCTAssertEqual(request.httpMethod, "POST")
         XCTAssertEqual(request.url?.absoluteString, "pci_url/payments")
@@ -56,7 +56,7 @@ final class NetworkRequestFactoryTests: XCTestCase {
     func testRequestCreation_configuration() throws {
         let body = Request.URLParameters.Configuration(skipPaymentMethodTypes: nil, requestDisplayMetadata: true)
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken, requestParameters: body)
-        let request = try networkRequestFactory.request(for: endpoint)
+        let request = try networkRequestFactory.request(for: endpoint, identifier: nil)
 
         XCTAssertEqual(request.httpMethod, "GET")
         XCTAssertEqual(request.url?.absoluteString, (Mocks.decodedJWTToken.configurationUrl ?? "") + "?withDisplayMetadata=true")
@@ -65,7 +65,7 @@ final class NetworkRequestFactoryTests: XCTestCase {
 
     func testRequestCreation_paymentInstruments() throws {
         let endpoint = PrimerAPI.fetchVaultedPaymentMethods(clientToken: Mocks.decodedJWTToken)
-        let request = try networkRequestFactory.request(for: endpoint)
+        let request = try networkRequestFactory.request(for: endpoint, identifier: nil)
 
         XCTAssertEqual(request.httpMethod, "GET")
         XCTAssertEqual(request.url?.absoluteString, "pci_url/payment-instruments")
@@ -74,7 +74,7 @@ final class NetworkRequestFactoryTests: XCTestCase {
 
     func testRequestCreation_listCardNetworks() throws {
         let endpoint = PrimerAPI.listCardNetworks(clientToken: Mocks.decodedJWTToken, bin: "1234")
-        let request = try networkRequestFactory.request(for: endpoint)
+        let request = try networkRequestFactory.request(for: endpoint, identifier: nil)
 
         XCTAssertEqual(request.httpMethod, "GET")
         XCTAssertEqual(request.url?.absoluteString, "bindata_url/v1/bin-data/1234/networks")
@@ -85,7 +85,7 @@ final class NetworkRequestFactoryTests: XCTestCase {
         let endpoint = PrimerAPI.resumePayment(clientToken: Mocks.decodedJWTToken,
                                                paymentId: "payment_id",
                                                paymentResumeRequest: Request.Body.Payment.Resume(token: "token"))
-        let request = try networkRequestFactory.request(for: endpoint)
+        let request = try networkRequestFactory.request(for: endpoint, identifier: nil)
 
         XCTAssertEqual(request.httpMethod, "POST")
         XCTAssertEqual(request.url?.absoluteString, "pci_url/payments/payment_id/resume")
@@ -98,7 +98,7 @@ final class NetworkRequestFactoryTests: XCTestCase {
 
         let endpoint = PrimerAPI.listCardNetworks(clientToken: Mocks.decodedJWTToken, bin: "1234")
 
-        XCTAssertThrowsError(try networkRequestFactory.request(for: endpoint)) { error in
+        XCTAssertThrowsError(try networkRequestFactory.request(for: endpoint, identifier: nil)) { error in
             guard let error = error as? InternalError else {
                 XCTFail()
                 return
