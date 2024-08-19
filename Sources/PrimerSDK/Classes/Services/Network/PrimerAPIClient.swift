@@ -78,7 +78,8 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
                             requestParameters: Request.URLParameters.Configuration?,
                             completion: @escaping ConfigurationCompletion) {
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters)
-        networkService.request(endpoint) { (result: Result<PrimerAPIConfiguration, Error>, headers) in
+        let retryConfig = RetryConfig(enabled: true)
+        networkService.request(endpoint, retryConfig: retryConfig) { (result: Result<PrimerAPIConfiguration, Error>, headers) in
             switch result {
             case .success(let result):
                 completion(.success(result), headers)
@@ -264,5 +265,4 @@ extension PrimerAPIClient {
             }
         }
     }
-
 }

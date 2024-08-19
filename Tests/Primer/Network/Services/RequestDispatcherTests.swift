@@ -26,7 +26,7 @@ class MockURLSession: URLSessionProtocol {
 
         return StubURLSessionDataTask()
     }
-    
+
 
 }
 
@@ -57,7 +57,7 @@ final class RequestDispatcherTests: XCTestCase {
         session.data = "Test".data(using: .utf8)
 
         let request = URLRequest(url: url)
-        _ = try dispatcher.dispatch(request: request) { result in
+        dispatcher.dispatch(request: request) { result in
             switch result {
             case .success(let response):
                 XCTAssertEqual(response.metadata.responseUrl, "https://a_url")
@@ -83,7 +83,7 @@ final class RequestDispatcherTests: XCTestCase {
         session.data = "Test".data(using: .utf8)
 
         let request = URLRequest(url: url)
-        _ = try dispatcher.dispatch(request: request) { result in
+        dispatcher.dispatch(request: request) { result in
             switch result {
             case .success(let response):
                 XCTAssertEqual(response.metadata.responseUrl, "https://a_url")
@@ -107,7 +107,7 @@ final class RequestDispatcherTests: XCTestCase {
         session.error = PrimerError.unknown(userInfo: nil, diagnosticsId: "")
 
         let request = URLRequest(url: url)
-        _ = try dispatcher.dispatch(request: request) { result in
+        dispatcher.dispatch(request: request) { result in
             switch result {
             case .success(_):
                 XCTFail()
@@ -166,4 +166,78 @@ final class RequestDispatcherTests: XCTestCase {
         }
     }
 
+    func testRetryOnNetworkError() throws {
+        let expectation = self.expectation(description: "Retry on network error")
+
+        let urlString = "https://a_url"
+        let url = URL(string: urlString)!
+
+        session.error = URLError(.notConnectedToInternet)
+
+        let request = URLRequest(url: url)
+        let retryConfig = RetryConfig(maxRetries: 3, initialBackoff: 0.1, retryNetworkErrors: true, retry500Errors: false, maxJitter: 0.1)
+
+        _ = dispatcher.dispatchWithRetry(request: request, retryConfig: retryConfig) { result in
+            switch result {
+            case .success(_):
+                XCTFail()
+            case .failure(_):
+                XCTAssertEqual(self.session.error as? URLError, URLError(.notConnectedToInternet))
+                expectation.fulfill()
+            }
+        }
+
+        waitForExpectations(timeout: 2.0)
+    }
+
+    func testRetryOn500Error() throws {
+        let expectation = self.expectation(description: "Retry on 500 error")
+
+        let urlString = "https://a_url"
+        let url = URL(string: urlString)!
+
+        session.response = HTTPURLResponse(url: url, statusCode: 500, httpVersion: "2", headerFields: nil)
+        session.data = "Test".data(using: .utf8)
+
+        let request = URLRequest(url: url)
+        let retryConfig = RetryConfig(maxRetries: 3, initialBackoff: 0.1, retryNetworkErrors: false, retry500Errors: true, maxJitter: 0.1)
+
+        _ = dispatcher.dispatchWithRetry(request: request, retryConfig: retryConfig) { result in
+            switch result {
+            case .success(_):
+                XCTFail()
+            case .failure(_):
+                XCTAssertEqual((self.session.response as? HTTPURLResponse)?.statusCode, 500)
+                expectation.fulfill()
+            }
+        }
+
+        waitForExpectations(timeout: 2.0)
+    }
+
+    func testNoRetryOnSuccess() throws {
+        let expectation = self.expectation(description: "No retry on success")
+
+        let urlString = "https://a_url"
+        let url = URL(string: urlString)!
+
+        session.response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "2", headerFields: nil)
+        session.data = "Test".data(using: .utf8)
+
+        let request = URLRequest(url: url)
+        let retryConfig = RetryConfig(maxRetries: 3, initialBackoff: 0.1, retryNetworkErrors: true, retry500Errors: true, maxJitter: 0.1)
+
+        _ = dispatcher.dispatchWithRetry(request: request, retryConfig: retryConfig) { result in
+            switch result {
+            case .success(let response):
+                XCTAssertEqual(response.metadata.statusCode, 200)
+                XCTAssertEqual(response.data, self.session.data)
+                expectation.fulfill()
+            case .failure(_):
+                XCTFail()
+            }
+        }
+
+        waitForExpectations(timeout: 2.0)
+    }
 }
