@@ -20,7 +20,7 @@ class DefaultNetworkRequestFactory: NetworkRequestFactory, LogReporter {
         if let headers = endpoint.headers {
             request.allHTTPHeaderFields = headers
         }
-        
+
         if let id = identifier {
             request.addValue(id, forHTTPHeaderField: "X-Request-ID")
         }

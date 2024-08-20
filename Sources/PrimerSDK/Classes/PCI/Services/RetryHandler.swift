@@ -130,8 +130,8 @@ class RetryHandler: LogReporter {
         }
 
         let shouldRetry = !isLastAttempt && ((isNetworkError && retryConfig.retryNetworkErrors) ||
-                                  (is500Error && retryConfig.retry500Errors) ||
-                                  isSomeOtherError)
+                                                (is500Error && retryConfig.retry500Errors) ||
+                                                isSomeOtherError)
         return shouldRetry
     }
 }
