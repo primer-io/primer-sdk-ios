@@ -113,4 +113,29 @@ final class NetworkRequestFactoryTests: XCTestCase {
         }
     }
 
+    // Check if the X-Request-ID header is added correctly when identifier is provided
+    func testRequestCreation_withIdentifier_shouldAddRequestIDHeader() throws {
+        let identifier = "12345-request-id"
+        let body = Request.Body.Payment.Create(token: "MY_TOKEN")
+        let endpoint = PrimerAPI.createPayment(clientToken: Mocks.decodedJWTToken, paymentRequest: body)
+        let request = try networkRequestFactory.request(for: endpoint, identifier: identifier)
+
+        XCTAssertEqual(request.httpMethod, "POST")
+        XCTAssertEqual(request.url?.absoluteString, "pci_url/payments")
+        XCTAssertEqual(request.allHTTPHeaderFields?["X-Request-ID"], identifier)
+        XCTAssertEqual(request.allHTTPHeaderFields, defaultHeaders(isPost: true, jwt: "bla").merging(["X-Request-ID": identifier], uniquingKeysWith: { current, _ in current }))
+    }
+
+    // Check if the X-Request-ID header is not added when identifier is nil
+    func testRequestCreation_withoutIdentifier_shouldNotAddRequestIDHeader() throws {
+        let body = Request.Body.Payment.Create(token: "MY_TOKEN")
+        let endpoint = PrimerAPI.createPayment(clientToken: Mocks.decodedJWTToken, paymentRequest: body)
+        let request = try networkRequestFactory.request(for: endpoint, identifier: nil)
+
+        XCTAssertEqual(request.httpMethod, "POST")
+        XCTAssertEqual(request.url?.absoluteString, "pci_url/payments")
+        XCTAssertNil(request.allHTTPHeaderFields?["X-Request-ID"])
+        XCTAssertEqual(request.allHTTPHeaderFields, defaultHeaders(isPost: true, jwt: "bla"))
+    }
+
 }
