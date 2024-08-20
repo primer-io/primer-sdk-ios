@@ -231,6 +231,69 @@
         tags: ios-sdk
         encoding: UTF-16
 
+    - file: Sources/PrimerSDK/Resources/Localizable/fi-FI.lproj/Localizable.strings
+      params:
+        file_format: strings
+        locale_id: Finnish
+        tags: ios-sdk
+        encoding: UTF-16
+
+    - file: Sources/PrimerSDK/Resources/Localizable/ko.lproj/Localizable.strings
+      params:
+        file_format: strings
+        locale_id: Korean
+        tags: ios-sdk
+        encoding: UTF-16
+
+    - file: Sources/PrimerSDK/Resources/Localizable/lt-LT.lproj/Localizable.strings
+      params:
+        file_format: strings
+        locale_id: Lithuanian
+        tags: ios-sdk
+        encoding: UTF-16
+
+    - file: Sources/PrimerSDK/Resources/Localizable/ca.lproj/Localizable.strings
+      params:
+        file_format: strings
+        locale_id: Catalan
+        tags: ios-sdk
+        encoding: UTF-16
+
+    - file: Sources/PrimerSDK/Resources/Localizable/sr-RS.lproj/Localizable.strings
+      params:
+        file_format: strings
+        locale_id: Serbian
+        tags: ios-sdk
+        encoding: UTF-16
+
+    - file: Sources/PrimerSDK/Resources/Localizable/sl.lproj/Localizable.strings
+      params:
+        file_format: strings
+        locale_id: Slovenian
+        tags: ios-sdk
+        encoding: UTF-16
+
+    - file: Sources/PrimerSDK/Resources/Localizable/uk-UA.lproj/Localizable.strings
+      params:
+        file_format: strings
+        locale_id: Ukrainian
+        tags: ios-sdk
+        encoding: UTF-16
+
+    - file: Sources/PrimerSDK/Resources/Localizable/he.lproj/Localizable.strings
+      params:
+        file_format: strings
+        locale_id: Hebrew
+        tags: ios-sdk
+        encoding: UTF-16
+
+    - file: Sources/PrimerSDK/Resources/Localizable/id.lproj/Localizable.strings
+      params:
+        file_format: strings
+        locale_id: Indonesian
+        tags: ios-sdk
+        encoding: UTF-16
+
 # There is a bug on Phrase side when you download CHinese languages, key-values are doubled and
 # encoding does not work, we will ignore Chinese for now
 #

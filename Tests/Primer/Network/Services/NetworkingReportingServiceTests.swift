@@ -42,7 +42,7 @@ final class NetworkingReportingServiceTests: XCTestCase {
 
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken,
                                                     requestParameters: nil)
-        let request = try DefaultNetworkRequestFactory().request(for: endpoint)
+        let request = try DefaultNetworkRequestFactory().request(for: endpoint, identifier: nil)
 
         networkReportingService.report(eventType: .requestStart(identifier: "id", 
                                                                 endpoint: endpoint,
@@ -103,7 +103,7 @@ final class NetworkingReportingServiceTests: XCTestCase {
 
         let url = URL(string: "https://analytics_url/checkout/track")!
         let endpoint = PrimerAPI.sendAnalyticsEvents(clientToken: Mocks.decodedJWTToken, url: url, body: [])
-        let request = try DefaultNetworkRequestFactory().request(for: endpoint)
+        let request = try DefaultNetworkRequestFactory().request(for: endpoint, identifier: nil)
 
         networkReportingService.report(eventType: .requestStart(identifier: "id", endpoint: endpoint, request: request))
 
@@ -114,7 +114,7 @@ final class NetworkingReportingServiceTests: XCTestCase {
 
         let url = URL(string: "https://analytics_url/sdk-logs")!
         let endpoint = PrimerAPI.sendAnalyticsEvents(clientToken: Mocks.decodedJWTToken, url: url, body: [])
-        let request = try DefaultNetworkRequestFactory().request(for: endpoint)
+        let request = try DefaultNetworkRequestFactory().request(for: endpoint, identifier: nil)
 
         networkReportingService.report(eventType: .requestStart(identifier: "id", endpoint: endpoint, request: request))
 
