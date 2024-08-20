@@ -852,7 +852,7 @@ extension Analytics.Event {
 
     static func dropInLoading(duration: Int,
                               source: DropInLoadingSource) -> Self {
-        .timer(momentType: .end, 
+        .timer(momentType: .end,
                id: "DROP_IN_LOADING",
                duration: TimeInterval(duration),
                context: ["source": source.rawValue])
@@ -867,7 +867,7 @@ extension Analytics.Event {
         case network = "NETWORK"
     }
 
-    static func configurationLoading(duration: Int, 
+    static func configurationLoading(duration: Int,
                                      source: ConfigurationLoadingSource) -> Self {
         .timer(momentType: .end, id: "CONFIGURATION_LOADING",
                duration: TimeInterval(duration),

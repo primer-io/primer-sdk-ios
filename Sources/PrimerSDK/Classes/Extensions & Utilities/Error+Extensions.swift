@@ -11,7 +11,7 @@ internal extension Error {
     var isNetworkError: Bool {
         let nsError = self as NSError
         return nsError.domain == NSURLErrorDomain &&
-               (nsError.code == NSURLErrorTimedOut ||
+            (nsError.code == NSURLErrorTimedOut ||
                 nsError.code == NSURLErrorCannotFindHost ||
                 nsError.code == NSURLErrorCannotConnectToHost ||
                 nsError.code == NSURLErrorNetworkConnectionLost ||

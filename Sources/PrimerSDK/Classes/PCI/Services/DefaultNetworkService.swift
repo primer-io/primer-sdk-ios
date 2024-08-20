@@ -59,11 +59,12 @@ class DefaultNetworkService: NetworkService, LogReporter {
     func request<T: Decodable>(_ endpoint: Endpoint,
                                completion: @escaping ResponseCompletion<T>) -> PrimerCancellable? {
         do {
-            let request = try requestFactory.request(for: endpoint)
+            let identifier = String.randomString(length: 32)
+
+            let request = try requestFactory.request(for: endpoint, identifier: identifier)
 
             reportingService.report(eventType: .networkConnectivity(endpoint: endpoint))
 
-            let identifier = String.randomString(length: 32)
             reportingService.report(eventType: .requestStart(identifier: identifier,
                                                              endpoint: endpoint,
                                                              request: request))
@@ -91,11 +92,9 @@ class DefaultNetworkService: NetworkService, LogReporter {
                                retryConfig: RetryConfig?,
                                completion: @escaping ResponseCompletionWithHeaders<T>) -> PrimerCancellable? {
         do {
-            let request = try requestFactory.request(for: endpoint)
-
-            reportingService.report(eventType: .networkConnectivity(endpoint: endpoint))
-
             let identifier = String.randomString(length: 32)
+            let request = try requestFactory.request(for: endpoint, identifier: identifier)
+            reportingService.report(eventType: .networkConnectivity(endpoint: endpoint))
             reportingService.report(eventType: .requestStart(identifier: identifier,
                                                              endpoint: endpoint,
                                                              request: request))
