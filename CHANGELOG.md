@@ -1,3 +1,10 @@
+## 2.30.0 (2024-08-20)
+
+### Fix
+
+- apply uiDelegate when set in PrimerHeadlessUniversalCheckout.current.start (#975)
+- Switch %@ to %d for cvv recapture explanation string (#965)
+
 ## 2.29.0 (2024-08-08)
 
 ### Feat
