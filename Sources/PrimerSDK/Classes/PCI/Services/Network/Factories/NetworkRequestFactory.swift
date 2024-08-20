@@ -8,17 +8,21 @@
 import Foundation
 
 protocol NetworkRequestFactory {
-    func request(for endpoint: Endpoint) throws -> URLRequest
+    func request(for endpoint: Endpoint, identifier: String?) throws -> URLRequest
 }
 
 class DefaultNetworkRequestFactory: NetworkRequestFactory, LogReporter {
 
-    func request(for endpoint: Endpoint) throws -> URLRequest {
+    func request(for endpoint: Endpoint, identifier: String?) throws -> URLRequest {
         var request = try baseRequest(from: endpoint)
         request.httpMethod = endpoint.method.rawValue
 
         if let headers = endpoint.headers {
             request.allHTTPHeaderFields = headers
+        }
+        
+        if let id = identifier {
+            request.addValue(id, forHTTPHeaderField: "X-Request-ID")
         }
 
         if endpoint.method != .get, let body = endpoint.body {
