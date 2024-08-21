@@ -247,6 +247,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
                     orderItems = try self.createOrderItemsFromClientSession(
                         session,
+                        applePayOptions: self.getApplePayOptions(),
                         selectedShippingMethod: shippingMethodsInfo.selectedShippingMethod
                     )
 
@@ -463,12 +464,9 @@ extension ApplePayTokenizationViewModel {
     }
 
     internal func createOrderItemsFromClientSession(_ clientSession: ClientSession.APIResponse,
+                                                    applePayOptions: ApplePayOptions?,
                                                     selectedShippingMethod: PKShippingMethod? = nil) throws -> [ApplePayOrderItem] {
         var orderItems: [ApplePayOrderItem] = []
-
-        let applePayOptions = PrimerAPIConfiguration.current?.paymentMethods?
-            .first(where: { $0.internalPaymentMethodType == .applePay})?
-            .options as? ApplePayOptions
 
         // For merchantName, we prefer data being passed from server rather than local settings.
         let merchantName = applePayOptions?.merchantName ?? PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantName ?? ""
@@ -548,6 +546,12 @@ extension ApplePayTokenizationViewModel {
         return orderItems
     }
 
+    private func getApplePayOptions() -> ApplePayOptions? {
+        PrimerAPIConfiguration.current?.paymentMethods?
+            .first(where: { $0.internalPaymentMethodType == .applePay})?
+            .options as? ApplePayOptions
+    }
+
     typealias ShippingMethodOptions = Response.Body.Configuration.CheckoutModule.ShippingMethodOptions
 
 }
@@ -586,6 +590,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                     do {
                         let summaryItems = try self.createOrderItemsFromClientSession(
                             clientSession,
+                            applePayOptions: self.getApplePayOptions(),
                             selectedShippingMethod: shippingMethodsInfo.selectedShippingMethod
                         ).map { $0.applePayItem }
                         let update = PKPaymentRequestShippingMethodUpdate(paymentSummaryItems: summaryItems)

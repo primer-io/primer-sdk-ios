@@ -214,7 +214,7 @@ internal class ClientSession {
             fees: [ClientSession.Order.Fee]?,
             lineItems: [ClientSession.Order.LineItem]?,
             shippingAmount: Int?,
-            shippingMethod: ShippingMethod?
+            shippingMethod: ShippingMethod? = nil
         ) {
             self.id = id
             self.merchantAmount = merchantAmount
