@@ -245,8 +245,10 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 do {
                     let session = AppState.current.apiConfiguration!.clientSession!
 
-                    orderItems = try self.createOrderItemsFromClientSession(session,
-                                                                            selectedShippingMethod: shippingMethodsInfo.selectedShippingMethod)
+                    orderItems = try self.createOrderItemsFromClientSession(
+                        session,
+                        selectedShippingMethod: shippingMethodsInfo.selectedShippingMethod
+                    )
 
                 } catch {
                     seal.reject(error)
@@ -596,8 +598,6 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                 }
             }
         } catch {
-            // Handle any errors here. You might want to return a default update or throw an error
-            print("Error occurred: \(error)")
             return PKPaymentRequestShippingMethodUpdate(paymentSummaryItems: [])
         }
     }
