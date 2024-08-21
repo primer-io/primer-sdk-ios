@@ -69,7 +69,7 @@ class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
         let isBillingContactFieldsRequired = applePayOptions?.isCaptureBillingAddressEnabled == true
         let isShippingContactFieldsRequired = applePayOptions?.isCaptureShippingAddressEnabled == true
         request.requiredBillingContactFields = isBillingContactFieldsRequired ? [.postalAddress] : []
-        request.requiredShippingContactFields = isBillingContactFieldsRequired ? [.postalAddress, .emailAddress, .name, .phoneNumber] : []
+        request.requiredShippingContactFields = isShippingContactFieldsRequired ? [.postalAddress, .emailAddress, .name, .phoneNumber] : []
         request.currencyCode = applePayRequest.currency.code
         request.countryCode = applePayRequest.countryCode.rawValue
         request.merchantIdentifier = applePayRequest.merchantIdentifier
