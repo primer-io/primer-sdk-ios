@@ -314,7 +314,7 @@
 
 "stripe_ach_mandate_cancel_payment_button" = "Cancel payment";
 
-"stripe_ach_mandate_template_ios" = "By clicking Accept, you authorize %@ to debit the bank account specified above for any amount owed for charges arising from your use of %@'s services and/or purchase of products from %@, pursuant to %@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %@ with 30 (thirty) days notice.\n\nIf you use %@'s services or purchase additional products periodically pursuant to %@'s terms, you authorize %@ to debit your bank account periodically. Payments that fall outside the regular debits authorized above will only be debited after your authorization is obtained.";
+"stripe_ach_mandate_template_ios" = "By clicking Accept, you authorize %@ to debit the selected bank account for any amount owed for charges arising from your use of %@'s services and/or purchase of products from %@, pursuant to %@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %@ with 30 (thirty) days notice.\n\nIf you use %@'s services or purchase additional products periodically pursuant to %@'s terms, you authorize %@ to debit your bank account periodically. Payments that fall outside the regular debits authorized above will only be debited after your authorization is obtained.";
 
 "stripe_ach_payment_request_cancelled" = "Please try again or select another bank";
 
