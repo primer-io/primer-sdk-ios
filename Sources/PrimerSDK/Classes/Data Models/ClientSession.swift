@@ -19,6 +19,10 @@ internal class ClientSession {
             return ["billingAddress": parameters]
         }
 
+        static func makeShippingAddressDictionaryRequestFromParameters(_ parameters: [String: Any]) -> [String: Any] {
+            return ["shippingAddress": parameters]
+        }
+
         static func selectPaymentMethodActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
             ClientSession.Action(type: .selectPaymentMethod, params: parameters)
         }
@@ -32,8 +36,20 @@ internal class ClientSession {
                                  params: makeBillingAddressDictionaryRequestFromParameters(parameters))
         }
 
+        static func setShippingAddressActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
+            ClientSession.Action(type: .setShippingAddress, params: makeShippingAddressDictionaryRequestFromParameters(parameters))
+        }
+
         static func selectShippingMethodActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
             ClientSession.Action(type: .selectShippingMethod, params: parameters)
+        }
+
+        static func setMobileNumberAction(mobileNumber: String) -> ClientSession.Action {
+            ClientSession.Action(type: .setMobileNumber, params: ["mobileNumber": mobileNumber])
+        }
+
+        static func setEmailAction(emailAddress: String) -> ClientSession.Action {
+            ClientSession.Action(type: .setEmailAddress, params: ["emailAddress": emailAddress])
         }
 
         // swiftlint:disable:next nesting
@@ -41,8 +57,11 @@ internal class ClientSession {
             case selectPaymentMethod = "SELECT_PAYMENT_METHOD"
             case unselectPaymentMethod = "UNSELECT_PAYMENT_METHOD"
             case setBillingAddress = "SET_BILLING_ADDRESS"
+            case setShippingAddress = "SET_SHIPPING_ADDRESS"
             case setSurchargeFee = "SET_SURCHARGE_FEE"
             case selectShippingMethod = "SELECT_SHIPPING_METHOD"
+            case setMobileNumber = "SET_MOBILE_NUMBER"
+            case setEmailAddress = "SET_EMAIL_ADDRESS"
         }
 
         internal var type: ActionType
