@@ -1,0 +1,429 @@
+
+/* Class = "UIButton"; configuration.title = "Primer Headless"; ObjectID = "0FS-cB-H3t"; */
+"0FS-cB-H3t.configuration.title" = "Primer Headless";
+
+/* Class = "UIButton"; normalTitle = "Primer Headless"; ObjectID = "0FS-cB-H3t"; */
+"0FS-cB-H3t.normalTitle" = "Primer Headless";
+
+/* Class = "UITextField"; placeholder = "e.g. Primer Merchant"; ObjectID = "1I5-Ez-Jqq"; */
+"1I5-Ez-Jqq.placeholder" = "e.g. Primer Merchant";
+
+/* Class = "UILabel"; text = "Metadata"; ObjectID = "1IB-zd-L5S"; */
+"1IB-zd-L5S.text" = "Metadata";
+
+/* Class = "UITextField"; placeholder = "e.g. order_1234"; ObjectID = "1XS-HX-uUR"; */
+"1XS-HX-uUR.placeholder" = "e.g. order_1234";
+
+/* Class = "UILabel"; text = "Test scenario"; ObjectID = "1c7-Vg-v2o"; */
+"1c7-Vg-v2o.text" = "Test scenario";
+
+/* Class = "UILabel"; text = "Disable success screen"; ObjectID = "1kI-6E-8gK"; */
+"1kI-6E-8gK.text" = "Disable success screen";
+
+/* Class = "UIButton"; configuration.title = "Submit"; ObjectID = "2Eg-ST-l61"; */
+"2Eg-ST-l61.configuration.title" = "Submit";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "2Eg-ST-l61"; */
+"2Eg-ST-l61.normalTitle" = "Button";
+
+/* Class = "UILabel"; text = "Address line 1"; ObjectID = "2ck-NO-NPQ"; */
+"2ck-NO-NPQ.text" = "Address line 1";
+
+/* Class = "UILabel"; text = "Customer"; ObjectID = "3y1-pX-UrW"; */
+"3y1-pX-UrW.text" = "Customer";
+
+/* Class = "UILabel"; text = "Shipping Address"; ObjectID = "4lX-AX-ekU"; */
+"4lX-AX-ekU.text" = "Shipping Address";
+
+/* Class = "UILabel"; text = "State"; ObjectID = "5kw-ah-LlK"; */
+"5kw-ah-LlK.text" = "State";
+
+/* Class = "UILabel"; text = "Test"; ObjectID = "5m9-J2-Vfy"; */
+"5m9-J2-Vfy.text" = "Test";
+
+/* Class = "UIButton"; normalTitle = "Add Line Item"; ObjectID = "652-vX-1Kf"; */
+"652-vX-1Kf.normalTitle" = "Add Line Item";
+
+/* Class = "UILabel"; text = "Firstname"; ObjectID = "6dP-JK-1Z8"; */
+"6dP-JK-1Z8.text" = "Firstname";
+
+/* Class = "UITextField"; accessibilityLabel = "Payment method type"; ObjectID = "7ek-We-ggh"; */
+"7ek-We-ggh.accessibilityLabel" = "Payment method type";
+
+/* Class = "UITextField"; placeholder = "Payment method type"; ObjectID = "7ek-We-ggh"; */
+"7ek-We-ggh.placeholder" = "Payment method type";
+
+/* Class = "UIButton"; configuration.title = "Vault Manager"; ObjectID = "8I8-Gh-XJa"; */
+"8I8-Gh-XJa.configuration.title" = "Vault Manager";
+
+/* Class = "UIButton"; normalTitle = "Vault"; ObjectID = "8I8-Gh-XJa"; */
+"8I8-Gh-XJa.normalTitle" = "Vault";
+
+/* Class = "UITextField"; placeholder = "e.g."; ObjectID = "9XT-5Y-iB0"; */
+"9XT-5Y-iB0.placeholder" = "e.g.";
+
+/* Class = "UISwitch"; accessibilityLabel = "Disable Init Screen Switch"; ObjectID = "9ji-Ev-HnU"; */
+"9ji-Ev-HnU.accessibilityLabel" = "Disable Init Screen Switch";
+
+/* Class = "UILabel"; text = "Pay after vault success"; ObjectID = "AkJ-aG-BmV"; */
+"AkJ-aG-BmV.text" = "Pay after vault success";
+
+/* Class = "UILabel"; text = "Country code"; ObjectID = "Atm-lQ-dhM"; */
+"Atm-lQ-dhM.text" = "Country code";
+
+/* Class = "UILabel"; text = "Customer firstname"; ObjectID = "Byu-eQ-PHa"; */
+"Byu-eQ-PHa.text" = "Customer firstname";
+
+/* Class = "UILabel"; text = "City"; ObjectID = "Cqt-jx-GpC"; */
+"Cqt-jx-GpC.text" = "City";
+
+/* Class = "UILabel"; text = "Universal Checkout Options"; ObjectID = "Cr0-c7-SYM"; */
+"Cr0-c7-SYM.text" = "Universal Checkout Options";
+
+/* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet,\n                                            consectetaur cillium adipisicing pecu, sed do eiusmod\n                                            tempor incididunt ut labore et dolore magna aliqua. Ut\n                                            enim ad minim veniam, quis nostrud exercitation ullamco\n                                            laboris nisi ut aliquip ex ea commodo consequat. Duis\n                                            aute irure dolor in reprehenderit in voluptate velit\n                                            esse cillum dolore eu fugiat nulla pariatur. Excepteur\n                                            sint occaecat cupidatat non proident, sunt in culpa qui\n                                            officia deserunt mollit anim id est laborum. Nam liber\n                                            te conscient to factor tum poen legum odioque civiuda."; ObjectID = "D0B-I9-ACh"; */
+"D0B-I9-ACh.text" = "Lorem ipsum dolor sit er elit lamet,\n                                            consectetaur cillium adipisicing pecu, sed do eiusmod\n                                            tempor incididunt ut labore et dolore magna aliqua. Ut\n                                            enim ad minim veniam, quis nostrud exercitation ullamco\n                                            laboris nisi ut aliquip ex ea commodo consequat. Duis\n                                            aute irure dolor in reprehenderit in voluptate velit\n                                            esse cillum dolore eu fugiat nulla pariatur. Excepteur\n                                            sint occaecat cupidatat non proident, sunt in culpa qui\n                                            officia deserunt mollit anim id est laborum. Nam liber\n                                            te conscient to factor tum poen legum odioque civiuda.";
+
+/* Class = "UILabel"; text = "Merchant name"; ObjectID = "DQF-57-AQg"; */
+"DQF-57-AQg.text" = "Merchant name";
+
+/* Class = "UITextField"; placeholder = "e.g. John"; ObjectID = "DmO-J1-qpc"; */
+"DmO-J1-qpc.placeholder" = "e.g. John";
+
+/* Class = "UILabel"; text = "Name"; ObjectID = "E91-bK-UXg"; */
+"E91-bK-UXg.text" = "Name";
+
+/* Class = "UILabel"; text = "Result"; ObjectID = "Fpb-7j-u92"; */
+"Fpb-7j-u92.text" = "Result";
+
+/* Class = "UILabel"; text = "Address line 2"; ObjectID = "Fsc-Rt-7jI"; */
+"Fsc-Rt-7jI.text" = "Address line 2";
+
+/* Class = "UITextField"; placeholder = "e.g."; ObjectID = "Gxo-QT-E5X"; */
+"Gxo-QT-E5X.placeholder" = "e.g.";
+
+/* Class = "UILabel"; text = "Line Items"; ObjectID = "HQ3-nJ-Hls"; */
+"HQ3-nJ-Hls.text" = "Line Items";
+
+/* Class = "UILabel"; text = "SDK Settings"; ObjectID = "HZ9-hO-miI"; */
+"HZ9-hO-miI.text" = "SDK Settings";
+
+/* Class = "UITextField"; placeholder = "e.g. Fancy Shoes"; ObjectID = "JnY-Iq-Oj3"; */
+"JnY-Iq-Oj3.placeholder" = "e.g. Fancy Shoes";
+
+/* Class = "UILabel"; text = "Failure Parameters"; ObjectID = "K3N-kz-RSp"; */
+"K3N-kz-RSp.text" = "Failure Parameters";
+
+/* Class = "UITextField"; placeholder = "Enter your phone number"; ObjectID = "KNl-mr-49X"; */
+"KNl-mr-49X.placeholder" = "Enter your phone number";
+
+/* Class = "UILabel"; text = "Phonenumber"; ObjectID = "KWm-sv-YOy"; */
+"KWm-sv-YOy.text" = "Phonenumber";
+
+/* Class = "UILabel"; text = "Email"; ObjectID = "KZd-ik-EwH"; */
+"KZd-ik-EwH.text" = "Email";
+
+/* Class = "UITextField"; placeholder = "e.g."; ObjectID = "L7k-eG-AdP"; */
+"L7k-eG-AdP.placeholder" = "e.g.";
+
+/* Class = "UITextField"; placeholder = "e.g. 2"; ObjectID = "Lwg-Lc-CcZ"; */
+"Lwg-Lc-CcZ.placeholder" = "e.g. 2";
+
+/* Class = "UILabel"; text = "100"; ObjectID = "Lx7-hC-lz7"; */
+"Lx7-hC-lz7.text" = "100";
+
+/* Class = "UILabel"; text = "Firstname"; ObjectID = "MGg-u2-cM4"; */
+"MGg-u2-cM4.text" = "Firstname";
+
+/* Class = "UILabel"; text = "Address line 1"; ObjectID = "MiH-qy-mCR"; */
+"MiH-qy-mCR.text" = "Address line 1";
+
+/* Class = "UISegmentedControl"; Mp3-M5-t9x.segmentTitles[0] = "Auto"; ObjectID = "Mp3-M5-t9x"; */
+"Mp3-M5-t9x.segmentTitles[0]" = "Auto";
+
+/* Class = "UISegmentedControl"; Mp3-M5-t9x.segmentTitles[1] = "Manual"; ObjectID = "Mp3-M5-t9x"; */
+"Mp3-M5-t9x.segmentTitles[1]" = "Manual";
+
+/* Class = "UILabel"; text = "Address line 2"; ObjectID = "NIN-Lj-TN5"; */
+"NIN-Lj-TN5.text" = "Address line 2";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "NSy-AC-wir"; */
+"NSy-AC-wir.text" = "Label";
+
+/* Class = "UILabel"; text = "Apply theming"; ObjectID = "NrM-QC-Yfb"; */
+"NrM-QC-Yfb.text" = "Apply theming";
+
+/* Class = "UILabel"; text = "Use New Workflows"; ObjectID = "O64-8M-PSK"; */
+"O64-8M-PSK.text" = "Use New Workflows";
+
+/* Class = "UILabel"; text = "Disable error screen"; ObjectID = "OHe-89-28f"; */
+"OHe-89-28f.text" = "Disable error screen";
+
+/* Class = "UILabel"; text = "Order ID"; ObjectID = "OqG-XI-UxG"; */
+"OqG-XI-UxG.text" = "Order ID";
+
+/* Class = "UITextField"; placeholder = "Metadata"; ObjectID = "P7i-Zx-VF4"; */
+"P7i-Zx-VF4.placeholder" = "Metadata";
+
+/* Class = "UITextField"; placeholder = "e.g. Primer Merchant"; ObjectID = "PHb-NY-wz8"; */
+"PHb-NY-wz8.placeholder" = "e.g. Primer Merchant";
+
+/* Class = "UIButton"; configuration.title = "Universal Checkout"; ObjectID = "Pnm-Mo-3XH"; */
+"Pnm-Mo-3XH.configuration.title" = "Universal Checkout";
+
+/* Class = "UIButton"; normalTitle = "Universal Checkout"; ObjectID = "Pnm-Mo-3XH"; */
+"Pnm-Mo-3XH.normalTitle" = "Universal Checkout";
+
+/* Class = "UIButton"; configuration.title = "Primer SDK"; ObjectID = "QJ8-WE-cU8"; */
+"QJ8-WE-cU8.configuration.title" = "Primer SDK";
+
+/* Class = "UIButton"; normalTitle = "Primer SDK"; ObjectID = "QJ8-WE-cU8"; */
+"QJ8-WE-cU8.normalTitle" = "Primer SDK";
+
+/* Class = "UITextField"; placeholder = "e.g. GBP"; ObjectID = "QQA-bZ-5Uh"; */
+"QQA-bZ-5Uh.placeholder" = "e.g. GBP";
+
+/* Class = "UIButton"; normalTitle = "Delete Line Item"; ObjectID = "RMB-uD-dZc"; */
+"RMB-uD-dZc.normalTitle" = "Delete Line Item";
+
+/* Class = "UILabel"; text = "Quantity"; ObjectID = "Rf8-CC-EJO"; */
+"Rf8-CC-EJO.text" = "Quantity";
+
+/* Class = "UITextField"; placeholder = "Error ID"; ObjectID = "Thm-ON-myZ"; */
+"Thm-ON-myZ.placeholder" = "Error ID";
+
+/* Class = "UILabel"; text = "Customer ID"; ObjectID = "Tkm-tw-R4e"; */
+"Tkm-tw-R4e.text" = "Customer ID";
+
+/* Class = "UILabel"; text = "Vault payments"; ObjectID = "U0L-jF-Mgs"; */
+"U0L-jF-Mgs.text" = "Vault payments";
+
+/* Class = "UILabel"; text = "Status"; ObjectID = "UBX-3r-gzK"; */
+"UBX-3r-gzK.text" = "Status";
+
+/* Class = "UITextField"; placeholder = "e.g."; ObjectID = "UNe-1I-Gsa"; */
+"UNe-1I-Gsa.placeholder" = "e.g.";
+
+/* Class = "UILabel"; text = "Logs"; ObjectID = "UZP-tB-OYk"; */
+"UZP-tB-OYk.text" = "Logs";
+
+/* Class = "UILabel"; text = "Lastname"; ObjectID = "V7X-4o-yGM"; */
+"V7X-4o-yGM.text" = "Lastname";
+
+/* Class = "UITextField"; placeholder = "e.g."; ObjectID = "XML-E7-x7I"; */
+"XML-E7-x7I.placeholder" = "e.g.";
+
+/* Class = "UITextField"; placeholder = "e.g. customer_1234"; ObjectID = "XRQ-T7-rG4"; */
+"XRQ-T7-rG4.placeholder" = "e.g. customer_1234";
+
+/* Class = "UILabel"; text = "Client Token"; ObjectID = "YTV-vG-T4m"; */
+"YTV-vG-T4m.text" = "Client Token";
+
+/* Class = "UILabel"; text = "Postal code"; ObjectID = "Ygy-Mg-sji"; */
+"Ygy-Mg-sji.text" = "Postal code";
+
+/* Class = "UILabel"; text = "Checkout flow"; ObjectID = "YnN-Gz-z4B"; */
+"YnN-Gz-z4B.text" = "Checkout flow";
+
+/* Class = "UITextField"; placeholder = "e.g. John"; ObjectID = "Yr0-c1-nfg"; */
+"Yr0-c1-nfg.placeholder" = "e.g. John";
+
+/* Class = "UILabel"; text = "Country code"; ObjectID = "Ztg-iK-DYo"; */
+"Ztg-iK-DYo.text" = "Country code";
+
+/* Class = "UILabel"; text = "Vault Manager Options"; ObjectID = "a6o-tl-RK1"; */
+"a6o-tl-RK1.text" = "Vault Manager Options";
+
+/* Class = "UILabel"; text = "Customer lastname"; ObjectID = "ae2-l1-8Lq"; */
+"ae2-l1-8Lq.text" = "Customer lastname";
+
+/* Class = "UITextField"; placeholder = "e.g."; ObjectID = "b5P-Hi-W5c"; */
+"b5P-Hi-W5c.placeholder" = "e.g.";
+
+/* Class = "UITextField"; placeholder = "e.g."; ObjectID = "b68-sT-v40"; */
+"b68-sT-v40.placeholder" = "e.g.";
+
+/* Class = "UITextField"; placeholder = "e.g. 1000"; ObjectID = "bB9-S1-GVB"; */
+"bB9-S1-GVB.placeholder" = "e.g. 1000";
+
+/* Class = "UIButton"; configuration.title = "Vault"; ObjectID = "but-Bs-no4"; */
+"but-Bs-no4.configuration.title" = "Vault";
+
+/* Class = "UIButton"; normalTitle = "Vault"; ObjectID = "but-Bs-no4"; */
+"but-Bs-no4.normalTitle" = "Vault";
+
+/* Class = "UILabel"; text = "Country code"; ObjectID = "c7Z-53-h7s"; */
+"c7Z-53-h7s.text" = "Country code";
+
+/* Class = "UISegmentedControl"; cBP-Yr-tVe.segmentTitles[0] = "Checkout"; ObjectID = "cBP-Yr-tVe"; */
+"cBP-Yr-tVe.segmentTitles[0]" = "Checkout";
+
+/* Class = "UISegmentedControl"; cBP-Yr-tVe.segmentTitles[1] = "Vault"; ObjectID = "cBP-Yr-tVe"; */
+"cBP-Yr-tVe.segmentTitles[1]" = "Vault";
+
+/* Class = "UILabel"; text = "Show Payment Method Options"; ObjectID = "caV-rt-GuC"; */
+"caV-rt-GuC.text" = "Show Payment Method Options";
+
+/* Class = "UIButton"; configuration.title = "+Add"; ObjectID = "cet-73-Yol"; */
+"cet-73-Yol.configuration.title" = "+Add";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "cet-73-Yol"; */
+"cet-73-Yol.normalTitle" = "Button";
+
+/* Class = "UILabel"; text = "Lastname"; ObjectID = "d6I-Vs-W4t"; */
+"d6I-Vs-W4t.text" = "Lastname";
+
+/* Class = "UITextField"; placeholder = "Error description"; ObjectID = "dNP-tk-egr"; */
+"dNP-tk-egr.placeholder" = "Error description";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "dfL-QV-l1s"; */
+"dfL-QV-l1s.text" = "Label";
+
+/* Class = "UITextField"; placeholder = "e.g. GB"; ObjectID = "eAd-Sp-lf3"; */
+"eAd-Sp-lf3.placeholder" = "e.g. GB";
+
+/* Class = "UILabel"; text = "Apple Pay"; ObjectID = "eF4-2g-Y8U"; */
+"eF4-2g-Y8U.text" = "Apple Pay";
+
+/* Class = "UILabel"; text = "Surcharge"; ObjectID = "eJt-KT-yY5"; */
+"eJt-KT-yY5.text" = "Surcharge";
+
+/* Class = "UILabel"; text = "Enable Klarna EMD"; ObjectID = "eSy-Oz-Hfs"; */
+"eSy-Oz-Hfs.text" = "Enable Klarna EMD";
+
+/* Class = "UISegmentedControl"; ekZ-3s-TxK.segmentTitles[0] = "Dev"; ObjectID = "ekZ-3s-TxK"; */
+"ekZ-3s-TxK.segmentTitles[0]" = "Dev";
+
+/* Class = "UISegmentedControl"; ekZ-3s-TxK.segmentTitles[1] = "Staging"; ObjectID = "ekZ-3s-TxK"; */
+"ekZ-3s-TxK.segmentTitles[1]" = "Staging";
+
+/* Class = "UISegmentedControl"; ekZ-3s-TxK.segmentTitles[2] = "Sandbox"; ObjectID = "ekZ-3s-TxK"; */
+"ekZ-3s-TxK.segmentTitles[2]" = "Sandbox";
+
+/* Class = "UISegmentedControl"; ekZ-3s-TxK.segmentTitles[3] = "Production"; ObjectID = "ekZ-3s-TxK"; */
+"ekZ-3s-TxK.segmentTitles[3]" = "Production";
+
+/* Class = "UIButton"; accessibilityLabel = "Show Payment Method"; ObjectID = "fWt-IP-YOw"; */
+"fWt-IP-YOw.accessibilityLabel" = "Show Payment Method";
+
+/* Class = "UIButton"; configuration.title = "Show Payment Method"; ObjectID = "fWt-IP-YOw"; */
+"fWt-IP-YOw.configuration.title" = "Show Payment Method";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "fWt-IP-YOw"; */
+"fWt-IP-YOw.normalTitle" = "Button";
+
+/* Class = "UILabel"; text = "Billing Address"; ObjectID = "fbD-fh-9KO"; */
+"fbD-fh-9KO.text" = "Billing Address";
+
+/* Class = "UILabel"; text = "Price"; ObjectID = "g4V-oj-dil"; */
+"g4V-oj-dil.text" = "Price";
+
+/* Class = "UITextField"; placeholder = "e.g. customer_1234"; ObjectID = "gHt-Ga-o1z"; */
+"gHt-Ga-o1z.placeholder" = "e.g. customer_1234";
+
+/* Class = "UITextField"; placeholder = "API Key"; ObjectID = "h7R-0M-MoV"; */
+"h7R-0M-MoV.placeholder" = "API Key";
+
+/* Class = "UISegmentedControl"; hgd-Bd-Btv.segmentTitles[0] = "Create session"; ObjectID = "hgd-Bd-Btv"; */
+"hgd-Bd-Btv.segmentTitles[0]" = "Create session";
+
+/* Class = "UISegmentedControl"; hgd-Bd-Btv.segmentTitles[1] = "Client token"; ObjectID = "hgd-Bd-Btv"; */
+"hgd-Bd-Btv.segmentTitles[1]" = "Client token";
+
+/* Class = "UISegmentedControl"; hgd-Bd-Btv.segmentTitles[2] = "Test scenario"; ObjectID = "hgd-Bd-Btv"; */
+"hgd-Bd-Btv.segmentTitles[2]" = "Test scenario";
+
+/* Class = "UILabel"; text = "Enable CVV Recapture flow"; ObjectID = "hxC-Ql-YpN"; */
+"hxC-Ql-YpN.text" = "Enable CVV Recapture flow";
+
+/* Class = "UITextField"; placeholder = "3DS scenario"; ObjectID = "io7-2z-MxC"; */
+"io7-2z-MxC.placeholder" = "3DS scenario";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "ir2-Ws-Ayc"; */
+"ir2-Ws-Ayc.text" = "Label";
+
+/* Class = "UITextField"; placeholder = "e.g. +447811111111"; ObjectID = "jJ3-t3-3b1"; */
+"jJ3-t3-3b1.placeholder" = "e.g. +447811111111";
+
+/* Class = "UISegmentedControl"; jTw-JW-Dqe.segmentTitles[0] = "Checkout"; ObjectID = "jTw-JW-Dqe"; */
+"jTw-JW-Dqe.segmentTitles[0]" = "Checkout";
+
+/* Class = "UISegmentedControl"; jTw-JW-Dqe.segmentTitles[1] = "Vault"; ObjectID = "jTw-JW-Dqe"; */
+"jTw-JW-Dqe.segmentTitles[1]" = "Vault";
+
+/* Class = "UILabel"; text = "Total"; ObjectID = "juJ-AF-DZQ"; */
+"juJ-AF-DZQ.text" = "Total";
+
+/* Class = "UITextField"; placeholder = "Select flow"; ObjectID = "jxg-L7-ka5"; */
+"jxg-L7-ka5.placeholder" = "Select flow";
+
+/* Class = "UILabel"; text = "3DS"; ObjectID = "ki4-5q-thg"; */
+"ki4-5q-thg.text" = "3DS";
+
+/* Class = "UITextField"; placeholder = "e.g."; ObjectID = "ltv-HX-j76"; */
+"ltv-HX-j76.placeholder" = "e.g.";
+
+/* Class = "UITextField"; placeholder = "e.g. John"; ObjectID = "m6W-WP-25K"; */
+"m6W-WP-25K.placeholder" = "e.g. John";
+
+/* Class = "UILabel"; text = "City"; ObjectID = "pUL-Fs-Iwt"; */
+"pUL-Fs-Iwt.text" = "City";
+
+/* Class = "UILabel"; text = "API Key"; ObjectID = "puD-a7-qqQ"; */
+"puD-a7-qqQ.text" = "API Key";
+
+/* Class = "UITextField"; placeholder = "e.g."; ObjectID = "qBe-bI-2fS"; */
+"qBe-bI-2fS.placeholder" = "e.g.";
+
+/* Class = "UITextField"; placeholder = "e.g."; ObjectID = "qNx-20-sVq"; */
+"qNx-20-sVq.placeholder" = "e.g.";
+
+/* Class = "UITextField"; placeholder = "e.g."; ObjectID = "rca-mx-l9h"; */
+"rca-mx-l9h.placeholder" = "e.g.";
+
+/* Class = "UILabel"; text = "Postal code"; ObjectID = "rf6-jb-ajW"; */
+"rf6-jb-ajW.text" = "Postal code";
+
+/* Class = "UILabel"; text = "Order"; ObjectID = "rhW-8E-83f"; */
+"rhW-8E-83f.text" = "Order";
+
+/* Class = "UITextField"; placeholder = "e.g. Smith"; ObjectID = "u62-fS-hL9"; */
+"u62-fS-hL9.placeholder" = "e.g. Smith";
+
+/* Class = "UITextField"; placeholder = "e.g."; ObjectID = "ukZ-RM-0gG"; */
+"ukZ-RM-0gG.placeholder" = "e.g.";
+
+/* Class = "UITextField"; placeholder = "e.g. Smith"; ObjectID = "uud-sP-2h5"; */
+"uud-sP-2h5.placeholder" = "e.g. Smith";
+
+/* Class = "UITextField"; placeholder = "e.g. Smith"; ObjectID = "v0r-BU-fAd"; */
+"v0r-BU-fAd.placeholder" = "e.g. Smith";
+
+/* Class = "UITextField"; placeholder = "e.g. john@primer.io"; ObjectID = "vJv-xd-xfg"; */
+"vJv-xd-xfg.placeholder" = "e.g. john@primer.io";
+
+/* Class = "UILabel"; text = "State"; ObjectID = "vsM-JU-wyf"; */
+"vsM-JU-wyf.text" = "State";
+
+/* Class = "UILabel"; text = "Disable init screen"; ObjectID = "wt0-U1-U8V"; */
+"wt0-U1-U8V.text" = "Disable init screen";
+
+/* Class = "UITextField"; placeholder = "Client token"; ObjectID = "xjQ-Kj-2GL"; */
+"xjQ-Kj-2GL.placeholder" = "Client token";
+
+/* Class = "UISegmentedControl"; xoS-Dq-oqa.segmentTitles[0] = "SUCCESS"; ObjectID = "xoS-Dq-oqa"; */
+"xoS-Dq-oqa.segmentTitles[0]" = "SUCCESS";
+
+/* Class = "UISegmentedControl"; xoS-Dq-oqa.segmentTitles[1] = "FAILURE"; ObjectID = "xoS-Dq-oqa"; */
+"xoS-Dq-oqa.segmentTitles[1]" = "FAILURE";
+
+/* Class = "UILabel"; text = "Environment"; ObjectID = "yLn-q9-pMX"; */
+"yLn-q9-pMX.text" = "Environment";
+
+/* Class = "UILabel"; text = "Currency"; ObjectID = "zBH-9i-1Xk"; */
+"zBH-9i-1Xk.text" = "Currency";
+
+/* Class = "UITextView"; text = "Lorem ipsum dolor sit er elit lamet,\n                                            consectetaur cillium adipisicing pecu, sed do eiusmod\n                                            tempor incididunt ut labore et dolore magna aliqua. Ut\n                                            enim ad minim veniam, quis nostrud exercitation ullamco\n                                            laboris nisi ut aliquip ex ea commodo consequat. Duis\n                                            aute irure dolor in reprehenderit in voluptate velit\n                                            esse cillum dolore eu fugiat nulla pariatur. Excepteur\n                                            sint occaecat cupidatat non proident, sunt in culpa qui\n                                            officia deserunt mollit anim id est laborum. Nam liber\n                                            te conscient to factor tum poen legum odioque civiuda."; ObjectID = "zH0-YR-jKP"; */
+"zH0-YR-jKP.text" = "Lorem ipsum dolor sit er elit lamet,\n                                            consectetaur cillium adipisicing pecu, sed do eiusmod\n                                            tempor incididunt ut labore et dolore magna aliqua. Ut\n                                            enim ad minim veniam, quis nostrud exercitation ullamco\n                                            laboris nisi ut aliquip ex ea commodo consequat. Duis\n                                            aute irure dolor in reprehenderit in voluptate velit\n                                            esse cillum dolore eu fugiat nulla pariatur. Excepteur\n                                            sint occaecat cupidatat non proident, sunt in culpa qui\n                                            officia deserunt mollit anim id est laborum. Nam liber\n                                            te conscient to factor tum poen legum odioque civiuda.";
+
+/* Class = "UILabel"; text = "Response"; ObjectID = "zad-X5-UdM"; */
+"zad-X5-UdM.text" = "Response";

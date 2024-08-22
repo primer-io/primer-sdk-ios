@@ -1,0 +1,300 @@
+/* An error message displayed when the Address line 1 is not correct */
+"addressLine1ErrorInvalid" = "Virheellinen osoiterivi 1";
+
+/* State, Region or County is required - Form Validation */
+"addressLine1ErrorRequired" = "Osoiterivi 1 vaaditaan";
+
+/* The billing address Address line 1 container view label */
+"addressLine1Label" = "Osoiterivi 1";
+
+/* Form Text Field Placeholder (Address line 1) */
+"addressLine1Placeholder" = "Osoiterivi 1";
+
+/* An error message displayed when the Address line 2 is not correct */
+"addressLine2ErrorInvalid" = "Virheellinen osoiterivi 2";
+
+/* State, Region or County is required - Form Validation */
+"addressLine2ErrorRequired" = "Osoiterivi 2 vaaditaan";
+
+/* The billing address Address line 2 container view label */
+"addressLine2Label" = "Osoiterivi 1";
+
+/* Form Text Field Placeholder (Address line 2) */
+"addressLine2Placeholder" = "Osoiterivi 1";
+
+/* An error message displayed when the city field is not correct */
+"cardholderErrorInvalid" = "Virheellinen kortinhaltijan nimi";
+
+/* Choose your bank - Choose your bank title label */
+"choose-your-bank-title-label" = "Valitse pankkisi";
+
+/* An error message displayed when the city field is not correct */
+"cityErrorInvalid" = "Virheellinen paikkakunta";
+
+/* City is required - Form Validation */
+"cityErrorRequired" = "Kaupunki vaaditaan";
+
+/* The billing address city container view label */
+"cityLabel" = "Paikkakunta";
+
+/* Form Text Field Placeholder (Address city) */
+"cityPlaceholder" = "Cape Town";
+
+/* Complete your payment - Account info payment title label */
+"completeYourPayment" = "Suorita maksusi loppuun";
+
+/* Continue */
+"continue" = "Jatka";
+
+/* An error message displayed when the Country is not correct */
+"countryCodeErrorInvalid" = "Virheellinen maa";
+
+/* Country is required - Form Validation */
+"countryCodeErrorRequired" = "Maa on pakollinen";
+
+/* The billing address Country code container view label */
+"countryCodeLabel" = "Maakoodi";
+
+/* Form Text Field Placeholder (Country code) */
+"countryCodePlaceholder" = "Maakoodi";
+
+/* Select a country - Choose your country title label */
+"countrySelectPlaceholder" = "Valitse maa";
+
+/* The prefix copy we put before the expiration date */
+"dueAt" = "Erääntyy";
+
+/* An error message displayed when the First Name is not correct */
+"firstNameErrorInvalid" = "Virheellinen etunimi";
+
+/* First name is required - Form Validation */
+"firstNameErrorRequired" = "Etunimi on pakollinen";
+
+/* The billing address First name container view label */
+"firstNameLabel" = "Etunimi";
+
+/* Form Text Field Placeholder (First name) */
+"firstNamePlaceholder" = "Etunimi";
+
+/* Get the code from your banking app - Blik descriptor */
+"input_description_otp" = "Hae koodi pankkisovelluksestasi.";
+
+/* 6 digit code - Text field top placeholder */
+"input_hint_form_blik_otp" = "6-numeroinen koodi";
+
+/* An error message displayed when the Last Name is not correct */
+"lastNameErrorInvalid" = "Virheellinen sukunimi";
+
+/* Last name is required - Form Validation */
+"lastNameErrorRequired" = "Sukunimi on pakollinen";
+
+/* The billing address Last name container view label */
+"lastNameLabel" = "Sukunimi";
+
+/* Form Text Field Placeholder (Last name) */
+"lastNamePlaceholder" = "Sukunimi";
+
+/* No additional fee - Universal Checkout section text */
+"no_additional_fee" = "Ei lisämaksua";
+
+/* Enter your one time password - Text field placeholder */
+"payment_method_blik_loading_placeholder" = "Suorita maksu Blik-sovelluksessa";
+
+/* Pay with card - Payment Method Type (Card Not Vaulted */
+"payment-method-type-card-not-vaulted" = "Maksa kortilla";
+
+/* The message copy that tells the user how to transfer funds given a displayed account code */
+"pleaseTransferFunds" = "Siirrä varat annetulle DBS:n pankkitilille käyttämällä Singaporessa sijaitsevaa pankkitiliäsi jollakin seuraavista menetelmistä: FAST (suositeltava), MEPS tai GIRO.";
+
+/* An error message displayed when the postal code field is not correct */
+"postalCodeErrorInvalid" = "Virheellinen postinumero";
+
+/* Postal code is required - Form Validation */
+"postalCodeErrorRequired" = "Postinumero vaaditaan";
+
+/* The billing address postal code container view label */
+"postalCodeLabel" = "Postinumero";
+
+/* Form Text Field Placeholder (Address postal code) */
+"postalCodePlaceholder" = "90210";
+
+/* Cancel - Alert button cancel */
+"primer-alert-button-cancel" = "Peruuta";
+
+/* Delete - Alert button delete */
+"primer-alert-button-delete" = "Poista";
+
+/* The title of the primer 'pay in installments' button */
+"primer-button-title-pay-in-installments" = "Maksa erissä";
+
+/* 12/24 - Card Form (Expiry text field placeholder text) */
+"primer-card-form-12-24" = "12/24";
+
+/* Add card - Card Form (Vault title text) */
+"primer-card-form-add-card" = "Lisää kortti";
+
+/* Checkout - Card Form (Checkout Title Text) */
+"primer-card-form-checkout" = "Kassa";
+
+/* CVV - Card Form (CVV Text Field placeholder text) */
+"primer-card-form-cvv" = "CVV";
+
+/* Cardholder name */
+"primer-card-form-name" = "Nimi";
+
+/* Pay - Card Form (Checkout submit button text) */
+"primer-card-form-pay" = "Maksa";
+
+/* Save - Card Form (Vault submit button text) */
+"primer-card-form-save" = "Tallenna";
+
+/* Choose payment method - Vault Navigation Bar Title */
+"primer-checkout-nav-bar-title" = "Valitse maksutapa";
+
+/* Add Bank Account - Confirm Mandate (Top title text_ */
+"primer-confirm-mandate-add-bank-account" = "Lisää pankkitili";
+
+/* Confirm - Confirm Mandate (Button text) */
+"primer-confirm-mandate-confirm" = "Vahvista";
+
+/* Confirm SEPA Direct Debit - Confirm Mandate (Main title text) */
+"primer-confirm-mandate-confirm-sepa-direct-debit" = "Vahvista SEPA-suoraveloitus";
+
+/* CVV- CVV recapture explanation label */
+"primer-cvv-recapture-explanation" = "Syötä korttisi %d-numeroinen turvakoodi turvallista maksua varten.";
+
+/* CVV - CVV recapture screen title */
+"primer-cvv-recapture-title" = "Syötä CVV-numero";
+
+/* Do you want to delete this payment method? - Delete alert title */
+"primer-delete-alert-title" = "Haluatko poistaa tämän maksutavan?";
+
+/* Apple pay - Direct Checkout (Apple pay button text) */
+"primer-direct-checkout-apple-pay" = "Apple Pay";
+
+/* Pay by card - Direct Checkout (Card button text) */
+"primer-direct-checkout-pay-by-card" = "Maksa kortilla";
+
+/* PayPal - Direct Checkout (PayPal button text */
+"primer-direct-checkout-paypal" = "PayPal";
+
+/* An error message displayed when the cvv code is not correct */
+"primer-error-card-form-card-cvv" = "Virheellinen CVV-numero";
+
+/* An error message displayed when the card expiration date is not correct */
+"primer-error-card-form-card-expiration-date" = "Virheellinen päivämäärä";
+
+/* An error message displayed when the card number is not correct */
+"primer-error-card-form-card-number" = "Virheellinen kortin numero";
+
+/* A suffix to mark a required field or action being performed */
+"primer-error-is-required-suffix" = "on pakollinen";
+
+/* Something went wrong, please try again. - Error Screen Message */
+"primer-error-screen" = "Jotakin meni pieleen. Yritä uudelleen.";
+
+/* e.g. John Doe - Form Text Field Placeholder (Cardholder name) */
+"primer-form-text-field-placeholder-cardholder" = "esim. Etunimi Sukunimi";
+
+/* Card number - Form Text Field Title (Card number) */
+"primer-form-text-field-title-card-number" = "Kortin numero";
+
+/* Expiry date - Form Text Field Title (Expiry date) */
+"primer-form-text-field-title-expiry-date" = "Vanhenemispäivä";
+
+/* Enter your card details - Form Type Main Title (Card) */
+"primer-form-type-main-title-card-form" = "Syötä korttisi tiedot";
+
+/* Card form - Navigation Bar Title */
+"primer-form-type-nav-bar-title" = "Maksukortti";
+
+/* Add Bank Account - IBAN Form (Main title) */
+"primer-iban-form-add-bank-account" = "Lisää pankkitili";
+
+/* Enter IBAN - IBAN Form (Text field placeholder text */
+"primer-iban-form-enter-iban" = "Syötä IBAN";
+
+/* Your monthly fee will be automatically deducted from this account, using SEPA Core DirectDebit Mandate - IBAN Form (Subtitle text) */
+"primer-iban-form-monthly-fee-automatically-deducted" = "Kuukausimaksusi vähennetään automaattisesi tältä tililtä käyttäen SEPA-suoraveloituspalvelua";
+
+/* Next - IBAN Form (Button text) */
+"primer-iban-form-next" = "Seuraava";
+
+/* Use an account number instead - IBAN Form (Switch text) */
+"primer-iban-form-use-account-number-instead" = "Käytä tilin numeroa tämän sijaan";
+
+/* Expires - Saved card */
+"primer-saved-card" = "Vanhenee";
+
+/* Manual input - Scanner view (Button text) */
+"primer-scanner-view-manual-input" = "Manuaalinen syöttö";
+
+/* Scan card - Scanner view (Title text) */
+"primer-scanner-view-scan-card" = "Skannaa kortti";
+
+/* Scan the front of your card - Scanner view (Description text) */
+"primer-scanner-view-scan-front-card" = "Skannaa korttisi etupuoli";
+
+/* The title of the header for the flow decision view */
+"primer-test-header-description" = "Tämä on hiekkalaatikkoon tarkoitettu mallinnettu vuo. Valitse alla olevasta luettelosta tulos, jota haluat testata.";
+
+/* The title of the mocked declined flow for a Test Payment Method */
+"primer-test-payment-method-decline-flow-title" = "Hylätty";
+
+/* The title of the mocked failed flow for a Test Payment Method */
+"primer-test-payment-method-fail-flow-title" = "Epäonnistui";
+
+/* The title of the mocked successful flow for a Test Payment Method */
+"primer-test-payment-method-success-flow-title" = "Valtuutettu";
+
+/* SAVED CARD - Vault Checkout Card Title */
+"primer-vault-checkout-payment-method-title" = "TALLENNETTU MAKSUTAPA";
+
+/* Add payment method - Checkout Navigation Bar Title */
+"primer-vault-nav-bar-title" = "Lisää maksutapa";
+
+/* Add new card - Vault Payment Method (Button text) */
+"primer-vault-payment-method-add-new-card" = "Lisää uusi kortti";
+
+/* Available payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-available-payment-methods" = "Saatavilla olevat maksutavat";
+
+/* Edit - Vault Payment Method (Button text) */
+"primer-vault-payment-method-edit" = "Muokkaa";
+
+/* Saved payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-saved-payment-methods" = "Tallennetut maksutavat";
+
+/* QR Code - QR code screen subtitle label */
+"qrCode" = "QR-koodi";
+
+/* Scan to pay or take a screenshot - QR code screen title label */
+"scanToPay" = "Skannaa maksaaksesi tai ota ruutukaappaus";
+
+/* Search bank - Search bank textfield placeholder */
+"search-bank-placeholder" = "Hae pankkia";
+
+/* Search country - Search country textfield placeholder */
+"search-country-placeholder" = "Hae maata";
+
+/* See all - Universal checkout */
+"see-all" = "Näytä kaikki";
+
+/* An error message displayed when the State, Region or County field is not correct */
+"stateErrorInvalid" = "Virheellinen osavaltio, alue tai maakunta";
+
+/* State, Region or County is required - Form Validation */
+"stateErrorRequired" = "Osavaltio, alue tai maakunta on pakollinen";
+
+/* The billing address state container view label */
+"stateLabel" = "Osavaltio/alue/maakunta";
+
+/* Form Text Field Placeholder (Address State / Region / County) */
+"statePlaceholder" = "Osavaltio/alue/maakunta";
+
+/* Additional fee may apply - Surcharge (Label) */
+"surcharge-additional-fee" = "Lisämaksu saatetaan periä";
+
+/* Upload the screenshot in your banking app. - QR code screen subtitle label */
+"uploadScreenshot" = "Lataa ruutukaappaus pankkisovellukseesi";
+

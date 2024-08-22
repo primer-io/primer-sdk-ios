@@ -236,6 +236,9 @@ extension Analytics.Event {
             case validationFailed                   = "VALIDATION_FAILED"
             case info                               = "INFO"
             case other                              = "OTHER"
+            case retry                              = "RETRY"
+            case retryFailed                        = "RETRY_FAILED"
+            case retrySuccess                       = "RETRY_SUCCESS"
         }
 
         enum TimerType: String, Codable {
@@ -849,7 +852,7 @@ extension Analytics.Event {
 
     static func dropInLoading(duration: Int,
                               source: DropInLoadingSource) -> Self {
-        .timer(momentType: .end, 
+        .timer(momentType: .end,
                id: "DROP_IN_LOADING",
                duration: TimeInterval(duration),
                context: ["source": source.rawValue])
@@ -864,7 +867,7 @@ extension Analytics.Event {
         case network = "NETWORK"
     }
 
-    static func configurationLoading(duration: Int, 
+    static func configurationLoading(duration: Int,
                                      source: ConfigurationLoadingSource) -> Self {
         .timer(momentType: .end, id: "CONFIGURATION_LOADING",
                duration: TimeInterval(duration),

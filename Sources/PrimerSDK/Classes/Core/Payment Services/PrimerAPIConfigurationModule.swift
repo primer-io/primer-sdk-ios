@@ -266,7 +266,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         let start = Date().millisecondsSince1970
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken,
-                    let cacheKey = Self.cacheKey else {
+                  let cacheKey = Self.cacheKey else {
                 let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                          diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)

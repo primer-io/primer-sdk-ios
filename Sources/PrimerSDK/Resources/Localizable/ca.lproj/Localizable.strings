@@ -1,0 +1,300 @@
+/* An error message displayed when the Address line 1 is not correct */
+"addressLine1ErrorInvalid" = "Línia d'adreça 1 no vàlida";
+
+/* State, Region or County is required - Form Validation */
+"addressLine1ErrorRequired" = "La línia d'adreça 1 és obligatòria";
+
+/* The billing address Address line 1 container view label */
+"addressLine1Label" = "Línia d'adreça 1";
+
+/* Form Text Field Placeholder (Address line 1) */
+"addressLine1Placeholder" = "Línia d'adreça 1";
+
+/* An error message displayed when the Address line 2 is not correct */
+"addressLine2ErrorInvalid" = "Línia d'adreça 2 no vàlida";
+
+/* State, Region or County is required - Form Validation */
+"addressLine2ErrorRequired" = "La línia d'adreça 2 és obligatòria";
+
+/* The billing address Address line 2 container view label */
+"addressLine2Label" = "Línia d'adreça 2";
+
+/* Form Text Field Placeholder (Address line 2) */
+"addressLine2Placeholder" = "Línia d'adreça 2";
+
+/* An error message displayed when the city field is not correct */
+"cardholderErrorInvalid" = "Nom del titular de la targeta no vàlid";
+
+/* Choose your bank - Choose your bank title label */
+"choose-your-bank-title-label" = "Trieu el vostre banc";
+
+/* An error message displayed when the city field is not correct */
+"cityErrorInvalid" = "Ciutat no vàlida";
+
+/* City is required - Form Validation */
+"cityErrorRequired" = "La ciutat és obligatòria";
+
+/* The billing address city container view label */
+"cityLabel" = "Ciutat";
+
+/* Form Text Field Placeholder (Address city) */
+"cityPlaceholder" = "Ciutat del Cap";
+
+/* Complete your payment - Account info payment title label */
+"completeYourPayment" = "Completa el pagament";
+
+/* Continue */
+"continue" = "Continua";
+
+/* An error message displayed when the Country is not correct */
+"countryCodeErrorInvalid" = "País no vàlid";
+
+/* Country is required - Form Validation */
+"countryCodeErrorRequired" = "El país és obligatori";
+
+/* The billing address Country code container view label */
+"countryCodeLabel" = "Codi del país";
+
+/* Form Text Field Placeholder (Country code) */
+"countryCodePlaceholder" = "Codi del país";
+
+/* Select a country - Choose your country title label */
+"countrySelectPlaceholder" = "Seleccioneu un país";
+
+/* The prefix copy we put before the expiration date */
+"dueAt" = "Venç el dia";
+
+/* An error message displayed when the First Name is not correct */
+"firstNameErrorInvalid" = "Nom no vàlid";
+
+/* First name is required - Form Validation */
+"firstNameErrorRequired" = "El nom és obligatori";
+
+/* The billing address First name container view label */
+"firstNameLabel" = "Nom";
+
+/* Form Text Field Placeholder (First name) */
+"firstNamePlaceholder" = "Nom";
+
+/* Get the code from your banking app - Blik descriptor */
+"input_description_otp" = "Aconseguiu el codi des de la vostra aplicació bancària.";
+
+/* 6 digit code - Text field top placeholder */
+"input_hint_form_blik_otp" = "codi de 6 dígits";
+
+/* An error message displayed when the Last Name is not correct */
+"lastNameErrorInvalid" = "Cognom no vàlid";
+
+/* Last name is required - Form Validation */
+"lastNameErrorRequired" = "El cognom és obligatori";
+
+/* The billing address Last name container view label */
+"lastNameLabel" = "Cognom";
+
+/* Form Text Field Placeholder (Last name) */
+"lastNamePlaceholder" = "Cognom";
+
+/* No additional fee - Universal Checkout section text */
+"no_additional_fee" = "Sense recàrrec addicional";
+
+/* Enter your one time password - Text field placeholder */
+"payment_method_blik_loading_placeholder" = "Completeu el vostre pagament a l'aplicació Blik";
+
+/* Pay with card - Payment Method Type (Card Not Vaulted */
+"payment-method-type-card-not-vaulted" = "Paga amb targeta";
+
+/* The message copy that tells the user how to transfer funds given a displayed account code */
+"pleaseTransferFunds" = "Transfereix els fons al compte de DBS Bank proporcionat fent servir el teu compte bancari de Singapur mitjançant FAST (mètode preferit), MEPS o GIRO.";
+
+/* An error message displayed when the postal code field is not correct */
+"postalCodeErrorInvalid" = "Codi postal no vàlid";
+
+/* Postal code is required - Form Validation */
+"postalCodeErrorRequired" = "El codi postal és obligatori";
+
+/* The billing address postal code container view label */
+"postalCodeLabel" = "Codi postal";
+
+/* Form Text Field Placeholder (Address postal code) */
+"postalCodePlaceholder" = "90210";
+
+/* Cancel - Alert button cancel */
+"primer-alert-button-cancel" = "Cancel·lar";
+
+/* Delete - Alert button delete */
+"primer-alert-button-delete" = "Suprimir";
+
+/* The title of the primer 'pay in installments' button */
+"primer-button-title-pay-in-installments" = "Pagar a terminis";
+
+/* 12/24 - Card Form (Expiry text field placeholder text) */
+"primer-card-form-12-24" = "12/24";
+
+/* Add card - Card Form (Vault title text) */
+"primer-card-form-add-card" = "Afegeix una targeta";
+
+/* Checkout - Card Form (Checkout Title Text) */
+"primer-card-form-checkout" = "Pagament";
+
+/* CVV - Card Form (CVV Text Field placeholder text) */
+"primer-card-form-cvv" = "CVV";
+
+/* Cardholder name */
+"primer-card-form-name" = "Nom";
+
+/* Pay - Card Form (Checkout submit button text) */
+"primer-card-form-pay" = "Paga";
+
+/* Save - Card Form (Vault submit button text) */
+"primer-card-form-save" = "Desa";
+
+/* Choose payment method - Vault Navigation Bar Title */
+"primer-checkout-nav-bar-title" = "Trieu la forma de pagament";
+
+/* Add Bank Account - Confirm Mandate (Top title text_ */
+"primer-confirm-mandate-add-bank-account" = "Afegiu un compte bancari";
+
+/* Confirm - Confirm Mandate (Button text) */
+"primer-confirm-mandate-confirm" = "Confirma";
+
+/* Confirm SEPA Direct Debit - Confirm Mandate (Main title text) */
+"primer-confirm-mandate-confirm-sepa-direct-debit" = "Confirma la domiciliació de dèbit directe SEPA";
+
+/* CVV- CVV recapture explanation label */
+"primer-cvv-recapture-explanation" = "Introdueix el codi de seguretat de %d dígits a la teva targeta per garantir un pagament segur.";
+
+/* CVV - CVV recapture screen title */
+"primer-cvv-recapture-title" = "Introdueix el codi CVV";
+
+/* Do you want to delete this payment method? - Delete alert title */
+"primer-delete-alert-title" = "Voleu suprimir aquest mètode de pagament?";
+
+/* Apple pay - Direct Checkout (Apple pay button text) */
+"primer-direct-checkout-apple-pay" = "Apple Pay";
+
+/* Pay by card - Direct Checkout (Card button text) */
+"primer-direct-checkout-pay-by-card" = "Paga amb targeta";
+
+/* PayPal - Direct Checkout (PayPal button text */
+"primer-direct-checkout-paypal" = "PayPal";
+
+/* An error message displayed when the cvv code is not correct */
+"primer-error-card-form-card-cvv" = "CVV no vàlid";
+
+/* An error message displayed when the card expiration date is not correct */
+"primer-error-card-form-card-expiration-date" = "Data no vàlida";
+
+/* An error message displayed when the card number is not correct */
+"primer-error-card-form-card-number" = "Número de targeta no vàlid";
+
+/* A suffix to mark a required field or action being performed */
+"primer-error-is-required-suffix" = "es requereix";
+
+/* Something went wrong, please try again. - Error Screen Message */
+"primer-error-screen" = "S'ha produït un error, si us plau, torneu-ho a provar.";
+
+/* e.g. John Doe - Form Text Field Placeholder (Cardholder name) */
+"primer-form-text-field-placeholder-cardholder" = "p. ex., Pere Vila";
+
+/* Card number - Form Text Field Title (Card number) */
+"primer-form-text-field-title-card-number" = "Número de targeta";
+
+/* Expiry date - Form Text Field Title (Expiry date) */
+"primer-form-text-field-title-expiry-date" = "Data de caducitat";
+
+/* Enter your card details - Form Type Main Title (Card) */
+"primer-form-type-main-title-card-form" = "Introduïu les dades de la vostra targeta";
+
+/* Card form - Navigation Bar Title */
+"primer-form-type-nav-bar-title" = "Targeta de pagament";
+
+/* Add Bank Account - IBAN Form (Main title) */
+"primer-iban-form-add-bank-account" = "Afegiu un compte bancari";
+
+/* Enter IBAN - IBAN Form (Text field placeholder text */
+"primer-iban-form-enter-iban" = "Introduïu l'IBAN";
+
+/* Your monthly fee will be automatically deducted from this account, using SEPA Core DirectDebit Mandate - IBAN Form (Subtitle text) */
+"primer-iban-form-monthly-fee-automatically-deducted" = "La vostra quota mensual es deduirà automàticament d'aquest compte mitjançant el mandat de domiciliació bancària bàsica SEPA";
+
+/* Next - IBAN Form (Button text) */
+"primer-iban-form-next" = "Següent";
+
+/* Use an account number instead - IBAN Form (Switch text) */
+"primer-iban-form-use-account-number-instead" = "Utilitzeu un número de compte";
+
+/* Expires - Saved card */
+"primer-saved-card" = "Caduca";
+
+/* Manual input - Scanner view (Button text) */
+"primer-scanner-view-manual-input" = "Entrada manual";
+
+/* Scan card - Scanner view (Title text) */
+"primer-scanner-view-scan-card" = "Escanegeu la targeta";
+
+/* Scan the front of your card - Scanner view (Description text) */
+"primer-scanner-view-scan-front-card" = "Escanegeu la part davantera de la vostra targeta";
+
+/* The title of the header for the flow decision view */
+"primer-test-header-description" = "Això és un flux simulat en un entorn aïllat. Trieu el resultat que voleu provar de la llista següent.";
+
+/* The title of the mocked declined flow for a Test Payment Method */
+"primer-test-payment-method-decline-flow-title" = "S'ha declinat";
+
+/* The title of the mocked failed flow for a Test Payment Method */
+"primer-test-payment-method-fail-flow-title" = "Ha fallat";
+
+/* The title of the mocked successful flow for a Test Payment Method */
+"primer-test-payment-method-success-flow-title" = "S'ha autoritzat";
+
+/* SAVED CARD - Vault Checkout Card Title */
+"primer-vault-checkout-payment-method-title" = "MÈTODE DE PAGAMENT ESTAT";
+
+/* Add payment method - Checkout Navigation Bar Title */
+"primer-vault-nav-bar-title" = "Afegiu un mètode de pagament";
+
+/* Add new card - Vault Payment Method (Button text) */
+"primer-vault-payment-method-add-new-card" = "Afegiu una targeta nova";
+
+/* Available payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-available-payment-methods" = "Mètodes de pagament disponibles";
+
+/* Edit - Vault Payment Method (Button text) */
+"primer-vault-payment-method-edit" = "Editeu";
+
+/* Saved payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-saved-payment-methods" = "Mètodes de pagament desats";
+
+/* QR Code - QR code screen subtitle label */
+"qrCode" = "Codi QR";
+
+/* Scan to pay or take a screenshot - QR code screen title label */
+"scanToPay" = "Escanegeu per pagar o feu una captura de pantalla";
+
+/* Search bank - Search bank textfield placeholder */
+"search-bank-placeholder" = "Cercar banc";
+
+/* Search country - Search country textfield placeholder */
+"search-country-placeholder" = "Cerca el país";
+
+/* See all - Universal checkout */
+"see-all" = "Veure-ho tot";
+
+/* An error message displayed when the State, Region or County field is not correct */
+"stateErrorInvalid" = "Estat, regió o país no vàlid";
+
+/* State, Region or County is required - Form Validation */
+"stateErrorRequired" = "És obligatori l'estat, la regió o el comtat";
+
+/* The billing address state container view label */
+"stateLabel" = "Estat / Regió / Comtat";
+
+/* Form Text Field Placeholder (Address State / Region / County) */
+"statePlaceholder" = "Estat / Regió / Comtat";
+
+/* Additional fee may apply - Surcharge (Label) */
+"surcharge-additional-fee" = "És possible que s'apliqui un recàrrec addicional";
+
+/* Upload the screenshot in your banking app. - QR code screen subtitle label */
+"uploadScreenshot" = "Pengeu la captura de pantalla des de la vostra aplicació bancària";
+

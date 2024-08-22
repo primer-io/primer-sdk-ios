@@ -38,7 +38,7 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         }
 
         return Promise { seal in
-            self.apiClient.createPayment(clientToken: clientToken, 
+            self.apiClient.createPayment(clientToken: clientToken,
                                          paymentRequestBody: paymentRequest) { result in
                 switch result {
                 case .failure(let error):

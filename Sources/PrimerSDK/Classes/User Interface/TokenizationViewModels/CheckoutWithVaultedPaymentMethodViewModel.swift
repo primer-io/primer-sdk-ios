@@ -333,9 +333,9 @@ Make sure you call the decision handler otherwise the SDK will hang.
     // Resume payment with Resume payment ID
 
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment> {
-            let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
-            return self.createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
-                                                                              paymentResumeRequest: resumeRequest)
+        let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
+        return self.createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
+                                                                          paymentResumeRequest: resumeRequest)
     }
 
     func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?> {
