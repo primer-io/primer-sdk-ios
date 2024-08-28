@@ -150,7 +150,7 @@ extension PaymentMethodTokenizationViewModel {
                                                                  userInfo: .errorUserInfoDictionary(),
                                                                  diagnosticsId: UUID().uuidString)
                     }
-
+                    self.setCheckoutDataFromError(primerErr)
                     return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
                 }
                 .done { merchantErrorMessage in
@@ -515,6 +515,18 @@ Make sure you call the decision handler otherwise the SDK will hang.
     func nullifyEventCallbacks() {
         self.didStartPayment = nil
         self.didFinishPayment = nil
+    }
+
+    func setCheckoutDataFromError(_ error: PrimerError) {
+        switch error {
+        case .paymentFailed(_, let paymentId, _, _, _):
+            self.paymentCheckoutData = PrimerCheckoutData(
+                payment: PrimerCheckoutDataPayment(id: paymentId,
+                                                   orderId: nil,
+                                                   paymentFailureReason: PrimerPaymentErrorCode.failed))
+        default:
+            return
+        }
     }
 }
 
