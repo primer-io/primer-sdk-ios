@@ -1,3 +1,10 @@
+## 2.30.1 (2024-08-28)
+
+### Fix
+
+- Add some checkoutData in the case of error (#987)
+- Ensure paypal webview is displayed on correct window (#986)
+
 ## 2.30.0 (2024-08-20)
 
 ### Fix
