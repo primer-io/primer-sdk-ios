@@ -518,14 +518,22 @@ Make sure you call the decision handler otherwise the SDK will hang.
     }
 
     func setCheckoutDataFromError(_ error: PrimerError) {
-        switch error {
+        if let checkoutData = error.checkoutData {
+            self.paymentCheckoutData = checkoutData
+        }
+    }
+}
+
+extension PrimerError {
+    var checkoutData: PrimerCheckoutData? {
+        switch self {
         case .paymentFailed(_, let paymentId, _, _, _):
-            self.paymentCheckoutData = PrimerCheckoutData(
+            return PrimerCheckoutData(
                 payment: PrimerCheckoutDataPayment(id: paymentId,
                                                    orderId: nil,
                                                    paymentFailureReason: PrimerPaymentErrorCode.failed))
         default:
-            return
+            return nil
         }
     }
 }
