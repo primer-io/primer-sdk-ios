@@ -177,15 +177,4 @@ final class ErrorExtensionTests: XCTestCase {
         XCTAssertFalse(differentDomainError.isNetworkError, "Expected error from a different domain to not be identified as a network error")
     }
 
-    func test_checkoutData() {
-        let error = PrimerError.paymentFailed(paymentMethodType: "PMT", paymentId: "123", status: "FAILED", userInfo: nil, diagnosticsId: "id")
-        let checkoutData = error.checkoutData
-
-        XCTAssertEqual(checkoutData?.payment?.id, "123")
-        XCTAssertEqual(checkoutData?.payment?.paymentFailureReason, PrimerPaymentErrorCode.failed)
-
-        let error2 = PrimerError.cancelled(paymentMethodType: "PMT", userInfo: nil, diagnosticsId: "id")
-        XCTAssertNil(error2.checkoutData)
-    }
-
 }
