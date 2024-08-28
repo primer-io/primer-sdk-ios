@@ -2,7 +2,7 @@
 
 ### Fix
 
-- Add some checkoutData in the case of error (#987)
+- Add checkoutData which includes the paymentId (if available) in the case of error (#987)
 - Ensure paypal webview is displayed on correct window (#986)
 
 ## 2.30.0 (2024-08-20)
