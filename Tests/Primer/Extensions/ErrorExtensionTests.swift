@@ -177,5 +177,4 @@ final class ErrorExtensionTests: XCTestCase {
         XCTAssertFalse(differentDomainError.isNetworkError, "Expected error from a different domain to not be identified as a network error")
     }
 
-
 }
