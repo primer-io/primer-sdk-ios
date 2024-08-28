@@ -62,6 +62,7 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             let err = PrimerError.paymentFailed(
                 paymentMethodType: self.paymentMethodType,
                 paymentId: paymentResponse.id ?? "unknown",
+                orderId: paymentResponse.orderId ?? nil,
                 status: paymentResponse.status.rawValue,
                 userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString)
