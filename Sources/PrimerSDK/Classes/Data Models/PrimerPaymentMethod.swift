@@ -40,8 +40,8 @@ class PrimerPaymentMethod: Codable, LogReporter {
         let isDarkModeEnabled = UIScreen.isDarkModeEnabled
         return (
             (isDarkModeEnabled ? baseLogoImage.dark : baseLogoImage.colored) ??
-            (isDarkModeEnabled ? baseLogoImage.colored : baseLogoImage.light) ??
-            (isDarkModeEnabled ? baseLogoImage.light : baseLogoImage.dark)
+                (isDarkModeEnabled ? baseLogoImage.colored : baseLogoImage.light) ??
+                (isDarkModeEnabled ? baseLogoImage.light : baseLogoImage.dark)
         )
     }
 

@@ -502,13 +502,13 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                     .catch { _ in }
                 } else {
                     uiManager.primerRootViewController?.present(self.webViewController!,
-                                                                      animated: true,
-                                                                      completion: {
-                                                                        DispatchQueue.main.async {
-                                                                            self.handleWebViewControlllerPresentedCompletion()
-                                                                            seal.fulfill()
-                                                                        }
-                                                                      })
+                                                                animated: true,
+                                                                completion: {
+                                                                    DispatchQueue.main.async {
+                                                                        self.handleWebViewControlllerPresentedCompletion()
+                                                                        seal.fulfill()
+                                                                    }
+                                                                })
                 }
             }
         }

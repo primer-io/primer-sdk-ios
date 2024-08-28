@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 protocol PrimerAPIClientCreateResumePaymentProtocol {
     func createPayment(
         clientToken: DecodedJWTToken,
