@@ -57,6 +57,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case merchantError(message: String, userInfo: [String: String]?, diagnosticsId: String)
     case paymentFailed(paymentMethodType: String?,
                        paymentId: String,
+                       orderId: String?,
                        status: String,
                        userInfo: [String: String]?,
                        diagnosticsId: String)
@@ -191,7 +192,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .merchantError(_, _, let diagnosticsId):
             return diagnosticsId
-        case .paymentFailed(_, _, _, _, let diagnosticsId):
+        case .paymentFailed(_, _, _, _, _, let diagnosticsId):
             return diagnosticsId
         case .applePayTimedOut(_, let diagnosticsId):
             return diagnosticsId
@@ -252,7 +253,7 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Payment method \(paymentMethodType) is not supported on \(category) manager"
         case .merchantError(let message, _, _):
             return message
-        case .paymentFailed(_, let paymentId, let status, _, _):
+        case .paymentFailed(_, let paymentId, _, let status, _, _):
             return "The payment with id \(paymentId) was created or resumed but ended up in a \(status) status."
         case .applePayTimedOut:
             return "Apple Pay timed out"
@@ -301,7 +302,7 @@ public enum PrimerError: PrimerErrorProtocol {
              .underlyingErrors(_, let userInfo, _),
              .missingSDK(_, _, let userInfo, _),
              .merchantError(_, let userInfo, _),
-             .paymentFailed(_, _, _, let userInfo, _),
+             .paymentFailed(_, _, _, _, let userInfo, _),
              .applePayTimedOut(let userInfo, _),
              .failedToCreatePayment(_, _, let userInfo, _),
              .failedToResumePayment(_, _, let userInfo, _),
@@ -428,7 +429,7 @@ and other parameters are set correctly for the current environment.
              .unableToPresentPaymentMethod(let paymentMethodType, _, _),
              .unsupportedPaymentMethod(let paymentMethodType, _, _),
              .missingSDK(let paymentMethodType, _, _, _),
-             .paymentFailed(let paymentMethodType?, _, _, _, _),
+             .paymentFailed(let paymentMethodType?, _, _, _, _, _),
              .failedToCreatePayment(let paymentMethodType, _, _, _),
              .failedToResumePayment(let paymentMethodType, _, _, _):
             return paymentMethodType

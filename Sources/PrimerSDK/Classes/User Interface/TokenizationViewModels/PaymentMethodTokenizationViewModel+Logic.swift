@@ -527,10 +527,10 @@ Make sure you call the decision handler otherwise the SDK will hang.
 extension PrimerError {
     var checkoutData: PrimerCheckoutData? {
         switch self {
-        case .paymentFailed(_, let paymentId, _, _, _):
+        case .paymentFailed(_, let paymentId, let orderId, _, _, _):
             return PrimerCheckoutData(
                 payment: PrimerCheckoutDataPayment(id: paymentId,
-                                                   orderId: nil,
+                                                   orderId: orderId,
                                                    paymentFailureReason: PrimerPaymentErrorCode.failed))
         default:
             return nil
