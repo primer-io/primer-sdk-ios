@@ -64,6 +64,10 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
             PrimerHeadlessUniversalCheckout.current.delegate = delegate
         }
 
+        if uiDelegate != nil {
+            PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
+        }
+
         if PrimerHeadlessUniversalCheckout.current.delegate == nil {
             let message = """
                 PrimerHeadlessUniversalCheckout delegate has not been set, \

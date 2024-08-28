@@ -1,0 +1,300 @@
+/* An error message displayed when the Address line 1 is not correct */
+"addressLine1ErrorInvalid" = "Neveljavna 1. vrstica naslova";
+
+/* State, Region or County is required - Form Validation */
+"addressLine1ErrorRequired" = "1. vrstica naslova je obvezna";
+
+/* The billing address Address line 1 container view label */
+"addressLine1Label" = "1. vrstica naslova";
+
+/* Form Text Field Placeholder (Address line 1) */
+"addressLine1Placeholder" = "1. vrstica naslova";
+
+/* An error message displayed when the Address line 2 is not correct */
+"addressLine2ErrorInvalid" = "Neveljavna 2. vrstica naslova";
+
+/* State, Region or County is required - Form Validation */
+"addressLine2ErrorRequired" = "2. vrstica naslova je obvezna";
+
+/* The billing address Address line 2 container view label */
+"addressLine2Label" = "2. vrstica naslova";
+
+/* Form Text Field Placeholder (Address line 2) */
+"addressLine2Placeholder" = "2. vrstica naslova";
+
+/* An error message displayed when the city field is not correct */
+"cardholderErrorInvalid" = "Neveljavno ime imetnika kartice";
+
+/* Choose your bank - Choose your bank title label */
+"choose-your-bank-title-label" = "Izberite svojo banko";
+
+/* An error message displayed when the city field is not correct */
+"cityErrorInvalid" = "Neveljaven kraj";
+
+/* City is required - Form Validation */
+"cityErrorRequired" = "Kraj je obvezen";
+
+/* The billing address city container view label */
+"cityLabel" = "Kraj";
+
+/* Form Text Field Placeholder (Address city) */
+"cityPlaceholder" = "Cape Town";
+
+/* Complete your payment - Account info payment title label */
+"completeYourPayment" = "Dokončajte svoje plačilo";
+
+/* Continue */
+"continue" = "Nadaljuj";
+
+/* An error message displayed when the Country is not correct */
+"countryCodeErrorInvalid" = "Neveljavna država";
+
+/* Country is required - Form Validation */
+"countryCodeErrorRequired" = "Država je obvezna";
+
+/* The billing address Country code container view label */
+"countryCodeLabel" = "Koda države";
+
+/* Form Text Field Placeholder (Country code) */
+"countryCodePlaceholder" = "Koda države";
+
+/* Select a country - Choose your country title label */
+"countrySelectPlaceholder" = "Izberite državo";
+
+/* The prefix copy we put before the expiration date */
+"dueAt" = "Rok zapadlosti:";
+
+/* An error message displayed when the First Name is not correct */
+"firstNameErrorInvalid" = "Neveljavno ime";
+
+/* First name is required - Form Validation */
+"firstNameErrorRequired" = "Ime je obvezno";
+
+/* The billing address First name container view label */
+"firstNameLabel" = "Ime";
+
+/* Form Text Field Placeholder (First name) */
+"firstNamePlaceholder" = "Ime";
+
+/* Get the code from your banking app - Blik descriptor */
+"input_description_otp" = "Pridobite kodo iz svoje bančne aplikacije.";
+
+/* 6 digit code - Text field top placeholder */
+"input_hint_form_blik_otp" = "6 mestna koda";
+
+/* An error message displayed when the Last Name is not correct */
+"lastNameErrorInvalid" = "Neveljaven priimek";
+
+/* Last name is required - Form Validation */
+"lastNameErrorRequired" = "Priimek je obvezen";
+
+/* The billing address Last name container view label */
+"lastNameLabel" = "Priimek";
+
+/* Form Text Field Placeholder (Last name) */
+"lastNamePlaceholder" = "Priimek";
+
+/* No additional fee - Universal Checkout section text */
+"no_additional_fee" = "Brez dodatnih nadomestil";
+
+/* Enter your one time password - Text field placeholder */
+"payment_method_blik_loading_placeholder" = "Izvedite plačilo v aplikaciji Blik";
+
+/* Pay with card - Payment Method Type (Card Not Vaulted */
+"payment-method-type-card-not-vaulted" = "Plačajte s kartico";
+
+/* The message copy that tells the user how to transfer funds given a displayed account code */
+"pleaseTransferFunds" = "Prenesite sredstva na navedeni bančni račun DBS z uporabo svojega bančnega računa s sedežem v Singapurju prek FAST (priporočljivo), MEPS ali GIRO.";
+
+/* An error message displayed when the postal code field is not correct */
+"postalCodeErrorInvalid" = "Neveljavna poštna številka";
+
+/* Postal code is required - Form Validation */
+"postalCodeErrorRequired" = "Poštna številka je obvezna";
+
+/* The billing address postal code container view label */
+"postalCodeLabel" = "Poštna številka";
+
+/* Form Text Field Placeholder (Address postal code) */
+"postalCodePlaceholder" = "90210";
+
+/* Cancel - Alert button cancel */
+"primer-alert-button-cancel" = "Prekliči";
+
+/* Delete - Alert button delete */
+"primer-alert-button-delete" = "Izbriši";
+
+/* The title of the primer 'pay in installments' button */
+"primer-button-title-pay-in-installments" = "Plačajte na obroke";
+
+/* 12/24 - Card Form (Expiry text field placeholder text) */
+"primer-card-form-12-24" = "12/24";
+
+/* Add card - Card Form (Vault title text) */
+"primer-card-form-add-card" = "Dodajte kartico";
+
+/* Checkout - Card Form (Checkout Title Text) */
+"primer-card-form-checkout" = "Blagajna";
+
+/* CVV - Card Form (CVV Text Field placeholder text) */
+"primer-card-form-cvv" = "CVV";
+
+/* Cardholder name */
+"primer-card-form-name" = "Ime";
+
+/* Pay - Card Form (Checkout submit button text) */
+"primer-card-form-pay" = "Plačaj";
+
+/* Save - Card Form (Vault submit button text) */
+"primer-card-form-save" = "Shrani";
+
+/* Choose payment method - Vault Navigation Bar Title */
+"primer-checkout-nav-bar-title" = "Izberite način plačila";
+
+/* Add Bank Account - Confirm Mandate (Top title text_ */
+"primer-confirm-mandate-add-bank-account" = "Dodajte bančni račun";
+
+/* Confirm - Confirm Mandate (Button text) */
+"primer-confirm-mandate-confirm" = "Potrdi";
+
+/* Confirm SEPA Direct Debit - Confirm Mandate (Main title text) */
+"primer-confirm-mandate-confirm-sepa-direct-debit" = "Potrdite neposredno bremenitev SEPA";
+
+/* CVV- CVV recapture explanation label */
+"primer-cvv-recapture-explanation" = "Za varno plačilo vnesite %d-mestno varnostno kodo na kartici.";
+
+/* CVV - CVV recapture screen title */
+"primer-cvv-recapture-title" = "Vnesite številko CVV";
+
+/* Do you want to delete this payment method? - Delete alert title */
+"primer-delete-alert-title" = "Ali želite izbrisati to plačilno sredstvo?";
+
+/* Apple pay - Direct Checkout (Apple pay button text) */
+"primer-direct-checkout-apple-pay" = "Apple Pay";
+
+/* Pay by card - Direct Checkout (Card button text) */
+"primer-direct-checkout-pay-by-card" = "Plačajte s kartico";
+
+/* PayPal - Direct Checkout (PayPal button text */
+"primer-direct-checkout-paypal" = "PayPal";
+
+/* An error message displayed when the cvv code is not correct */
+"primer-error-card-form-card-cvv" = "Neveljavna številka CVV";
+
+/* An error message displayed when the card expiration date is not correct */
+"primer-error-card-form-card-expiration-date" = "Neveljaven datum";
+
+/* An error message displayed when the card number is not correct */
+"primer-error-card-form-card-number" = "Neveljavna številka kartice";
+
+/* A suffix to mark a required field or action being performed */
+"primer-error-is-required-suffix" = "obvezno";
+
+/* Something went wrong, please try again. - Error Screen Message */
+"primer-error-screen" = "Nekaj ​​je šlo narobe, poskusite znova.";
+
+/* e.g. John Doe - Form Text Field Placeholder (Cardholder name) */
+"primer-form-text-field-placeholder-cardholder" = "npr. Janez Novak";
+
+/* Card number - Form Text Field Title (Card number) */
+"primer-form-text-field-title-card-number" = "Številka kartice";
+
+/* Expiry date - Form Text Field Title (Expiry date) */
+"primer-form-text-field-title-expiry-date" = "Datum poteka";
+
+/* Enter your card details - Form Type Main Title (Card) */
+"primer-form-type-main-title-card-form" = "Vnesite podatke o kartici";
+
+/* Card form - Navigation Bar Title */
+"primer-form-type-nav-bar-title" = "Plačilna kartica";
+
+/* Add Bank Account - IBAN Form (Main title) */
+"primer-iban-form-add-bank-account" = "Dodajte bančni račun";
+
+/* Enter IBAN - IBAN Form (Text field placeholder text */
+"primer-iban-form-enter-iban" = "Vnesite IBAN";
+
+/* Your monthly fee will be automatically deducted from this account, using SEPA Core DirectDebit Mandate - IBAN Form (Subtitle text) */
+"primer-iban-form-monthly-fee-automatically-deducted" = "Vaše mesečno nadomestilo bo samodejno odšteto od tega računa z uporabo pooblastila za osnovno neposredno bremenitev SEPA.";
+
+/* Next - IBAN Form (Button text) */
+"primer-iban-form-next" = "Naprej";
+
+/* Use an account number instead - IBAN Form (Switch text) */
+"primer-iban-form-use-account-number-instead" = "Namesto tega uporabite številko računa";
+
+/* Expires - Saved card */
+"primer-saved-card" = "Poteče";
+
+/* Manual input - Scanner view (Button text) */
+"primer-scanner-view-manual-input" = "Ročni vnos";
+
+/* Scan card - Scanner view (Title text) */
+"primer-scanner-view-scan-card" = "Skenirajte kartico";
+
+/* Scan the front of your card - Scanner view (Description text) */
+"primer-scanner-view-scan-front-card" = "Skenirajte sprednjo stran kartice";
+
+/* The title of the header for the flow decision view */
+"primer-test-header-description" = "To je navidezni tok za peskovnik. Na spodnjem seznamu izberite rezultat, ki ga želite preskusiti.";
+
+/* The title of the mocked declined flow for a Test Payment Method */
+"primer-test-payment-method-decline-flow-title" = "Zavrnjeno";
+
+/* The title of the mocked failed flow for a Test Payment Method */
+"primer-test-payment-method-fail-flow-title" = "Ni uspelo";
+
+/* The title of the mocked successful flow for a Test Payment Method */
+"primer-test-payment-method-success-flow-title" = "Pooblaščeno";
+
+/* SAVED CARD - Vault Checkout Card Title */
+"primer-vault-checkout-payment-method-title" = "SHRANJEN NAČIN PLAČILA";
+
+/* Add payment method - Checkout Navigation Bar Title */
+"primer-vault-nav-bar-title" = "Dodajte način plačila";
+
+/* Add new card - Vault Payment Method (Button text) */
+"primer-vault-payment-method-add-new-card" = "Dodajte novo kartico";
+
+/* Available payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-available-payment-methods" = "Razpoložljivi načini plačila";
+
+/* Edit - Vault Payment Method (Button text) */
+"primer-vault-payment-method-edit" = "Uredi";
+
+/* Saved payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-saved-payment-methods" = "Shranjeni načini plačila";
+
+/* QR Code - QR code screen subtitle label */
+"qrCode" = "Koda QR";
+
+/* Scan to pay or take a screenshot - QR code screen title label */
+"scanToPay" = "Skenirajte za plačilo ali naredite posnetek zaslona";
+
+/* Search bank - Search bank textfield placeholder */
+"search-bank-placeholder" = "Išči banke";
+
+/* Search country - Search country textfield placeholder */
+"search-country-placeholder" = "Išči državo";
+
+/* See all - Universal checkout */
+"see-all" = "Poglej vse";
+
+/* An error message displayed when the State, Region or County field is not correct */
+"stateErrorInvalid" = "Neveljavna država, regija ali okrožje";
+
+/* State, Region or County is required - Form Validation */
+"stateErrorRequired" = "Obvezna je država, regija ali okrožje";
+
+/* The billing address state container view label */
+"stateLabel" = "Država/regija/okrožje";
+
+/* Form Text Field Placeholder (Address State / Region / County) */
+"statePlaceholder" = "Država/regija/okrožje";
+
+/* Additional fee may apply - Surcharge (Label) */
+"surcharge-additional-fee" = "Morda boste morali plačati dodatno pristojbino";
+
+/* Upload the screenshot in your banking app. - QR code screen subtitle label */
+"uploadScreenshot" = "Naložite posnetek zaslona v svojo bančno aplikacijo";
+

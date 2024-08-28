@@ -133,10 +133,10 @@ extension Strings {
                                                           comment: "Pay by Smart transfer button title text")
 
         static let payByImmediateTransfer = NSLocalizedString("payByImmediateTransfer",
-                                                          tableName: nil,
-                                                          bundle: Bundle.primerResources,
-                                                          value: "Pay by Immediate transfer",
-                                                          comment: "Pay by Immediate transfer button title text")
+                                                              tableName: nil,
+                                                              bundle: Bundle.primerResources,
+                                                              value: "Pay by Immediate transfer",
+                                                              comment: "Pay by Immediate transfer button title text")
 
     }
 }
