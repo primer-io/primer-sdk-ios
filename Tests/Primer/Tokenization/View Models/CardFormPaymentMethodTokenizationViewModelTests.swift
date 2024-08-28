@@ -185,6 +185,7 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
                                                                                  options: nil,
                                                                                  displayMetadata: nil))
 
+
         let error = PrimerError.paymentFailed(paymentMethodType: "PMT",
                                               paymentId: "123",
                                               orderId: "OrderId",

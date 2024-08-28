@@ -62,6 +62,6 @@ fileprivate extension UIApplication {
     }
 
     var keyWindow: UIWindow? {
-        return windows.first
+        return windows.last
     }
 }
