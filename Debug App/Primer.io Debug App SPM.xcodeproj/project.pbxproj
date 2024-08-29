@@ -10,6 +10,10 @@
 		041CD2FF2BFB7736009E6EF8 /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041CD2FE2BFB7736009E6EF8 /* MerchantHeadlessCheckoutNolPayViewController.swift */; };
 		043C7FA22C49749E0018929E /* TestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043C7FA12C49749E0018929E /* TestHelper.swift */; };
 		0442C4072B7CE1E900EAD8EE /* TapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0442C4062B7CE1E900EAD8EE /* TapGestureRecognizer.swift */; };
+		044F805A2C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044F80552C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController.swift */; };
+		044F805B2C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044F80562C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift */; };
+		044F805C2C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044F80572C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsView.swift */; };
+		044F805D2C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044F80582C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsViewModel.swift */; };
 		0498E1CF2BFB509F00EEF9EE /* PrimerNolPaySDK in Frameworks */ = {isa = PBXBuildFile; productRef = 0498E1CE2BFB509F00EEF9EE /* PrimerNolPaySDK */; };
 		049A055C2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055B2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
 		8723ADDD2B8E0F5100A5FE23 /* MerchantHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADDC2B8E0F5100A5FE23 /* MerchantHelpers.swift */; };
@@ -18,6 +22,7 @@
 		8723ADE62B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView+Elements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE12B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView+Elements.swift */; };
 		8723ADE72B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE22B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift */; };
 		8723ADE82B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723ADE32B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift */; };
+		87BD7B802C2350B900BE70E8 /* PrimerStripeSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 87BD7B7F2C2350B900BE70E8 /* PrimerStripeSDK */; };
 		E11F475C2B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47582B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift */; };
 		E11F475D2B06C5A40091C31F /* BanksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47592B06C5A40091C31F /* BanksListView.swift */; };
 		E11F475E2B06C5A40091C31F /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F475A2B06C5A40091C31F /* BanksListModel.swift */; };
@@ -76,6 +81,10 @@
 		041CD2FE2BFB7736009E6EF8 /* MerchantHeadlessCheckoutNolPayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutNolPayViewController.swift; sourceTree = "<group>"; };
 		043C7FA12C49749E0018929E /* TestHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestHelper.swift; sourceTree = "<group>"; };
 		0442C4062B7CE1E900EAD8EE /* TapGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapGestureRecognizer.swift; sourceTree = "<group>"; };
+		044F80552C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutStripeAchViewController.swift; sourceTree = "<group>"; };
+		044F80562C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift"; sourceTree = "<group>"; };
+		044F80572C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessStripeAchFieldsView.swift; sourceTree = "<group>"; };
+		044F80582C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessStripeAchFieldsViewModel.swift; sourceTree = "<group>"; };
 		049A055B2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessVaultManagerViewController.swift; sourceTree = "<group>"; };
 		04DFAADB2AAA01E60030FECE /* Debug App Tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Debug App Tests-Info.plist"; sourceTree = "<group>"; };
 		0DA32ABCF07A4EBED014327B /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -162,6 +171,7 @@
 				F04510E32ACD98E100A0A48C /* PrimerSDK in Frameworks */,
 				F04510E62ACD990A00A0A48C /* PrimerKlarnaSDK in Frameworks */,
 				0498E1CF2BFB509F00EEF9EE /* PrimerNolPaySDK in Frameworks */,
+				87BD7B802C2350B900BE70E8 /* PrimerStripeSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -185,6 +195,17 @@
 				0442C4062B7CE1E900EAD8EE /* TapGestureRecognizer.swift */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		044F80592C6B4F9800E9F878 /* StripeAchHeadless */ = {
+			isa = PBXGroup;
+			children = (
+				044F80552C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController.swift */,
+				044F80562C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift */,
+				044F80572C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsView.swift */,
+				044F80582C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsViewModel.swift */,
+			);
+			path = StripeAchHeadless;
 			sourceTree = "<group>";
 		};
 		094077DEFDC2739B10CF4183 /* Resources */ = {
@@ -342,6 +363,7 @@
 		EF5FBE3673FBCB40F55F4DC0 /* New UI */ = {
 			isa = PBXGroup;
 			children = (
+				044F80592C6B4F9800E9F878 /* StripeAchHeadless */,
 				041CD3002BFB7743009E6EF8 /* NolPayHeadless */,
 				8723ADDE2B8E0FAB00A5FE23 /* KlarnaHeadless */,
 				E11F47572B06C5A40091C31F /* FormWithRedirect */,
@@ -392,6 +414,7 @@
 				F04510E52ACD990A00A0A48C /* PrimerKlarnaSDK */,
 				F01193FE2B28FD1700D0ABD9 /* Primer3DS */,
 				0498E1CE2BFB509F00EEF9EE /* PrimerNolPaySDK */,
+				87BD7B7F2C2350B900BE70E8 /* PrimerStripeSDK */,
 			);
 			productName = "Debug App";
 			productReference = F00C661E2ACC67FA00187028 /* Debug App SPM.app */;
@@ -433,6 +456,7 @@
 				F04510E42ACD990A00A0A48C /* XCRemoteSwiftPackageReference "primer-klarna-sdk-ios" */,
 				F01193FD2B28FD1700D0ABD9 /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */,
 				0498E1CD2BFB509F00EEF9EE /* XCRemoteSwiftPackageReference "primer-nol-pay-sdk-ios" */,
+				87BD7B7E2C2350B900BE70E8 /* XCRemoteSwiftPackageReference "primer-stripe-sdk-ios" */,
 			);
 			productRefGroup = DF30711EB149C64C364BB79A /* Products */;
 			projectDirPath = "";
@@ -464,9 +488,11 @@
 			files = (
 				8723ADE42B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift in Sources */,
 				F08F63E42BA0BEAD006EF9A9 /* MetadataParser.swift in Sources */,
+				044F805D2C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsViewModel.swift in Sources */,
 				F00C65F82ACC67FA00187028 /* AppDelegate.swift in Sources */,
 				F00C65F92ACC67FA00187028 /* Data+Extensions.swift in Sources */,
 				F08F63E32BA0BEAD006EF9A9 /* AppetizeConfigProvider.swift in Sources */,
+				044F805A2C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController.swift in Sources */,
 				F00C65FA2ACC67FA00187028 /* Range+Extensions.swift in Sources */,
 				8723ADE72B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift in Sources */,
 				F00C65FB2ACC67FA00187028 /* String+Extensions.swift in Sources */,
@@ -493,6 +519,7 @@
 				F08F63E02BA0BE83006EF9A9 /* SessionConfiguration.swift in Sources */,
 				E11F475E2B06C5A40091C31F /* BanksListModel.swift in Sources */,
 				F00C660A2ACC67FA00187028 /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */,
+				044F805C2C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsView.swift in Sources */,
 				F00C660B2ACC67FA00187028 /* MerchantHeadlessCheckoutRawPhoneNumberDataViewController.swift in Sources */,
 				E11F475F2B06C5A40091C31F /* ImageViewWithUrl.swift in Sources */,
 				8723ADE62B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView+Elements.swift in Sources */,
@@ -502,6 +529,7 @@
 				F00C660E2ACC67FA00187028 /* MerchantSessionAndSettingsViewController.swift in Sources */,
 				F00C660F2ACC67FA00187028 /* MerchantNewLineItemViewController.swift in Sources */,
 				F00C66112ACC67FA00187028 /* PaymentMethodCell.swift in Sources */,
+				044F805B2C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -767,6 +795,14 @@
 				minimumVersion = 1.0.2;
 			};
 		};
+		87BD7B7E2C2350B900BE70E8 /* XCRemoteSwiftPackageReference "primer-stripe-sdk-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/primer-io/primer-stripe-sdk-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		F01193FD2B28FD1700D0ABD9 /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/primer-io/primer-sdk-3ds-ios";
@@ -790,6 +826,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0498E1CD2BFB509F00EEF9EE /* XCRemoteSwiftPackageReference "primer-nol-pay-sdk-ios" */;
 			productName = PrimerNolPaySDK;
+		};
+		87BD7B7F2C2350B900BE70E8 /* PrimerStripeSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 87BD7B7E2C2350B900BE70E8 /* XCRemoteSwiftPackageReference "primer-stripe-sdk-ios" */;
+			productName = PrimerStripeSDK;
 		};
 		F01193FE2B28FD1700D0ABD9 /* Primer3DS */ = {
 			isa = XCSwiftPackageProductDependency;

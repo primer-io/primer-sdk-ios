@@ -9,9 +9,9 @@ import Foundation
 
 @objc public class MultibancoCheckoutAdditionalInfo: PrimerCheckoutAdditionalInfo {
 
-    let expiresAt: String?
-    let entity: String?
-    let reference: String?
+    public let expiresAt: String?
+    public let entity: String?
+    public let reference: String?
 
     private enum CodingKeys: String, CodingKey {
         case expiresAt

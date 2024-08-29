@@ -27,6 +27,15 @@
           "revision": "ac3be93adcc4d054eef7baf0f4d364cd3525dbf7",
           "version": "2.3.2"
         }
+      },
+      {
+        "package": "PrimerStripeSDK",
+        "repositoryURL": "https://github.com/primer-io/primer-stripe-sdk-ios",
+        "state": {
+          "branch": null,
+          "revision": "86ea70db685a3362689121254364b6a86c5c1945",
+          "version": "1.0.0"
+        }
       }
     ]
   },

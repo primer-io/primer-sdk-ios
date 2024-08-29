@@ -22,6 +22,7 @@ class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadle
     var settings: PrimerSettings!
     var clientSession: ClientSessionRequestBody?
     var clientToken: String?
+    var mandateDelegate: ACHMandateDelegate?
 
     var logs: [String] = []
     var primerError: Error?
@@ -49,7 +50,7 @@ class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadle
 
         if let clientToken = clientToken {
             self.clientToken = clientToken
-
+            self.startPrimerHeadlessUniversalCheckout(with: clientToken)
         } else if let clientSession = clientSession {
             Networking.requestClientSession(requestBody: clientSession) { (clientToken, err) in
                 if let err = err {
@@ -74,6 +75,7 @@ class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadle
     private func startPrimerHeadlessUniversalCheckout(with clientToken: String) {
         PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: self.settings, completion: { (_, _) in
             self.vaultedManager = PrimerHeadlessUniversalCheckout.VaultManager()
+            self.mandateDelegate = self.vaultedManager
 
             do {
                 try self.vaultedManager?.configure()
@@ -132,6 +134,25 @@ class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadle
             self.activityIndicator?.removeFromSuperview()
             self.activityIndicator = nil
         }
+    }
+    
+    private func showMandate() {
+        showAlert(title: "Mandate acceptance", message: "Would you like to accept this mandate?") {
+            self.mandateDelegate?.acceptMandate()
+        } cancelHandler: {
+            self.mandateDelegate?.declineMandate()
+        }
+    }
+    
+    private func showAlert(title: String, message: String, okHandler: (() -> Void)? = nil, cancelHandler: (() -> Void)? = nil) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default) { _ in okHandler?() }
+        okAction.accessibilityIdentifier = AccessibilityIdentifier.StripeAchUserDetailsComponent.acceptMandateButton.rawValue
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in cancelHandler?() }
+        cancelAction.accessibilityIdentifier = AccessibilityIdentifier.StripeAchUserDetailsComponent.declineMandateButton.rawValue
+        alert.addAction(okAction)
+        alert.addAction(cancelAction)
+        present(alert, animated: true, completion: nil)
     }
 }
 
@@ -258,6 +279,10 @@ extension MerchantHeadlessVaultManagerViewController {
         self.logs.append(#function)
         DispatchQueue.main.async {
             self.hideLoadingOverlay()
+        }
+        
+        if additionalInfo is ACHMandateAdditionalInfo {
+            showMandate()
         }
     }
 

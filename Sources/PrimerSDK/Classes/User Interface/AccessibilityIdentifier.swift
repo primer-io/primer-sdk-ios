@@ -21,4 +21,13 @@ public struct AccessibilityIdentifier {
         case paymentViewContainer = "klarna_payment_view_container"
         case authorize = "authorize"
     }
+    public enum StripeAchUserDetailsComponent: String {
+        case title = "title"
+        case firstNameTextField = "first_name_input"
+        case lastNameTextField = "last_name_input"
+        case emailAddressTextField = "email_address_input"
+        case submitButton = "submit"
+        case acceptMandateButton = "accept"
+        case declineMandateButton = "decline"
+    }
 }
