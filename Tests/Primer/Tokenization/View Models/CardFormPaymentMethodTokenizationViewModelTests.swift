@@ -174,6 +174,34 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
         }
     }
 
+    func test_checkoutDataFromError() throws {
+
+        let sut = PaymentMethodTokenizationViewModel(config: PrimerPaymentMethod(id: "id",
+                                                                                 implementationType: .nativeSdk,
+                                                                                 type: "PMT",
+                                                                                 name: "",
+                                                                                 processorConfigId: nil,
+                                                                                 surcharge: nil,
+                                                                                 options: nil,
+                                                                                 displayMetadata: nil))
+
+
+        let error = PrimerError.paymentFailed(paymentMethodType: "PMT",
+                                              paymentId: "123",
+                                              orderId: "OrderId",
+                                              status: "FAILED",
+                                              userInfo: nil,
+                                              diagnosticsId: "id")
+        sut.setCheckoutDataFromError(error)
+
+        XCTAssertEqual(sut.paymentCheckoutData?.payment?.id, "123")
+        XCTAssertEqual(sut.paymentCheckoutData?.payment?.orderId, "OrderId")
+        XCTAssertEqual(sut.paymentCheckoutData?.payment?.paymentFailureReason, PrimerPaymentErrorCode.failed)
+
+        let error2 = PrimerError.cancelled(paymentMethodType: "PMT", userInfo: nil, diagnosticsId: "id")
+        XCTAssertNil(error2.checkoutData)
+    }
+
     // MARK: Helpers
 
     private var checkoutModule: PrimerAPIConfiguration.CheckoutModule {

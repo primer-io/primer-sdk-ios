@@ -14,7 +14,6 @@ import PrimerStripeSDK
 #endif
 
 class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
-
     // MARK: Variables
     private var achTokenizationService: ACHTokenizationService
     private var clientSessionService: ACHClientSessionService = ACHClientSessionService()
@@ -38,7 +37,6 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                    tokenizationService: tokenizationService,
                    createResumePaymentService: createResumePaymentService)
     }
-
     // MARK: Validate
     override func validate() throws {
         try achTokenizationService.validate()
@@ -111,19 +109,16 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                         diagnosticsId: UUID().uuidString)
                     primerError = primerErr
                 }
-
                 ErrorHandler.handle(error: primerError)
                 seal.reject(primerError)
             }
         }
     }
-
     override func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
         }
     }
-
     /**
      * Handles specific client token intents by orchestrating various operations based on the token content.
      *
@@ -181,7 +176,6 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
         }
     }
-
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
             // Checking if we are running UI(E2E) tests here.
@@ -351,7 +345,6 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
             let apiClient: PrimerAPIClientAchProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
             let timeZone = TimeZone(abbreviation: "UTC")
             let timeStamp = Date().toString(timeZone: timeZone)
-
             let body = Request.Body.Payment.Complete(mandateSignatureTimestamp: timeStamp, paymentMethodId: returnedStripeAchPaymentId)
             apiClient.completePayment(clientToken: clientToken, url: completeUrl, paymentRequest: body) { result in
                 switch result {
@@ -494,7 +487,6 @@ Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ add
             } else {
                 additionalInfo = ACHMandateAdditionalInfo()
             }
-
             PrimerDelegateProxy.primerDidReceiveAdditionalInfo(additionalInfo)
             seal.fulfill()
         }
@@ -562,7 +554,6 @@ extension StripeAchTokenizationViewModel: ACHMandateDelegate {
     func acceptMandate() {
         stripeMandateCompletion?(.success(()))
     }
-
     func declineMandate() {
         let error = ACHHelpers.getCancelledError(paymentMethodType: config.type)
         stripeMandateCompletion?(.failure(error))
