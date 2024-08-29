@@ -74,7 +74,7 @@ final class ACHMandateViewControllerTests: XCTestCase {
         tearDown()
         
         let merchantName = "Primer Inc"
-        let templateMandateText = "By clicking Accept, you authorize Primer Inc to debit the bank account specified above for any amount owed for charges arising from your use of Primer Inc's services and/or purchase of products from Primer Inc, pursuant to Primer Inc's website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to Primer Inc with 30 (thirty) days notice.\n\nIf you use Primer Inc's services or purchase additional products periodically pursuant to Primer Inc's terms, you authorize Primer Inc to debit your bank account periodically. Payments that fall outside the regular debits authorized above will only be debited after your authorization is obtained."
+        let templateMandateText = "By clicking Accept, you authorize Primer Inc to debit the selected bank account for any amount owed for charges arising from your use of Primer Inc's services and/or purchase of products from Primer Inc, pursuant to Primer Inc's website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to Primer Inc with 30 (thirty) days notice.\n\nIf you use Primer Inc's services or purchase additional products periodically pursuant to Primer Inc's terms, you authorize Primer Inc to debit your bank account periodically. Payments that fall outside the regular debits authorized above will only be debited after your authorization is obtained."
         
         mockDelegate = MockACHMandateViewController()
         mandateData = PrimerStripeOptions.MandateData.templateMandate(merchantName: merchantName)
