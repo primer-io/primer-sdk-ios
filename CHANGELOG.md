@@ -1,3 +1,10 @@
+## 2.31.0 (2024-08-29)
+
+### Feat
+
+- Stripe ACH Drop-in implementation  (#921)
+- Stripe ACH Headless implementation (#876)
+
 ## 2.30.1 (2024-08-28)
 
 ### Fix
