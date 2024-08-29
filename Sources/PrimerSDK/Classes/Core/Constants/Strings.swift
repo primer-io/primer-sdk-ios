@@ -8,6 +8,7 @@
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
 // swiftlint:disable line_length
+// swiftlint:disable nesting
 
 import Foundation
 
@@ -1076,6 +1077,210 @@ extension Strings {
             comment: "The title of the mocked failed flow for a Test Payment Method")
     }
 }
+
+// MARK: - ACH
+
+extension Strings {
+
+    struct UserDetails {
+
+        static let subtitle = NSLocalizedString(
+            "stripe_ach_user_details_collection_subtitle_label",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Your personal details",
+            comment: "The subtitle label of User Details screen"
+        )
+
+        static let continueButton = NSLocalizedString(
+            "stripe_ach_user_details_collection_continue_button",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Continue",
+            comment: "The continue button title of User Details screen"
+        )
+
+        static let backButton = NSLocalizedString(
+            "back_button_label",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Back",
+            comment: "The back button title of User Details screen"
+        )
+
+        static let emailDisclaimer = NSLocalizedString(
+            "stripe_ach_user_details_collection_data_usage_label",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "We'll only use this to keep you updated about your payment",
+            comment: "The email disclaimer label of User Details screen"
+        )
+
+        // swiftlint:disable:next nesting
+        enum FirstName {
+
+            static let label = NSLocalizedString(
+                "stripe_ach_user_details_collection_first_name_label",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "First name",
+                comment: "The first name textfield label"
+            )
+
+            static let errorDescriptorField = NSLocalizedString(
+                "stripe_ach_user_details_collection_invalid_first_name",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Please enter a valid first name. Avoid using numbers or special characters.",
+                comment: "First name error descriptor - Form Validation"
+            )
+        }
+
+        // swiftlint:disable:next nesting
+        enum LastName {
+
+            static let label = NSLocalizedString(
+                "stripe_ach_user_details_collection_last_name_label",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Last name",
+                comment: "The last name textfield label"
+            )
+
+            static let errorDescriptorField = NSLocalizedString(
+                "stripe_ach_user_details_collection_invalid_last_name",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Please enter a valid last name. Avoid using numbers or special characters.",
+                comment: "Last name error descriptor - Form Validation"
+            )
+        }
+
+        // swiftlint:disable:next nesting
+        enum EmailAddress {
+
+            static let label = NSLocalizedString(
+                "stripe_ach_user_details_collection_email_address_label",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Email address",
+                comment: "The email address textfield label"
+            )
+
+            static let errorDescriptorField = NSLocalizedString(
+                "stripe_ach_user_details_collection_invalid_email_address",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "The email address you entered doesn't look like a real email address. Please make sure it includes an '@' and a domain (like '@example.com').",
+                comment: "Email address error descriptor - Form Validation"
+            )
+        }
+
+    }
+
+    struct Mandate {
+
+        static let templateText = NSLocalizedString(
+            "stripe_ach_mandate_template_ios",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "By clicking Accept, you authorize %@ to debit the bank account specified above for any amount owed for charges arising from your use of %@'s services and/or purchase of products from %@, pursuant to %@'s website and terms, until this authorization is revoked. You may amend or cancel this authorization at any time by providing notice to %@ with 30 (thirty) days notice.\n\nIf you use %@'s services or purchase additional products periodically pursuant to %@'s terms, you authorize %@ to debit your bank account periodically. Payments that fall outside the regular debits authorized above will only be debited after your authorization is obtained.",
+            comment: "The template text for mandate info"
+        )
+
+        static let acceptButton = NSLocalizedString(
+            "stripe_ach_mandate_accept_button",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Accept",
+            comment: "The accept button title for Mandate info"
+        )
+
+        static let cancelButton = NSLocalizedString(
+            "stripe_ach_mandate_cancel_payment_button",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Cancel payment",
+            comment: "The cancel button title for Mandate info"
+        )
+
+    }
+
+    struct ResultView {
+
+        static let paymentTitle = NSLocalizedString(
+            "pay_with_payment_method",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Pay with %@",
+            comment: "The payment method title"
+        )
+
+        static let successMessage = NSLocalizedString(
+            "stripe_ach_payment_request_completed_successfully",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "You have now authorized your bank account to be debited. You will be notified via email once the payment has been collected successfully.",
+            comment: "The success message for ResultView"
+        )
+
+        static let cancelMessage = NSLocalizedString(
+            "stripe_ach_payment_request_cancelled",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Please try again or select another bank",
+            comment: "The cancel message for ResultView"
+        )
+
+        static let retryButton = NSLocalizedString(
+            "retry_button",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Retry",
+            comment: "The retry button title for ResultView"
+        )
+
+        static let chooseOtherPM = NSLocalizedString(
+            "choose_other_payment_method_button",
+            tableName: nil,
+            bundle: Bundle.primerResources,
+            value: "Choose other payment method",
+            comment: "The choose other PM button title for ResultView"
+        )
+
+        enum Subtitle {
+
+            static let successful = NSLocalizedString(
+                "session_complete_payment_success_title",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Payment authorized",
+                comment: "The subtitle for ResultView - Success state"
+            )
+
+            static let cancelled = NSLocalizedString(
+                "session_complete_payment_cancellation_title",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Payment cancelled",
+                comment: "The subtitle for ResultView - Cancelled state"
+            )
+
+            static let failed = NSLocalizedString(
+                "session_complete_payment_failure_title",
+                tableName: nil,
+                bundle: Bundle.primerResources,
+                value: "Payment failed",
+                comment: "The subtitle for ResultView - Failed state"
+            )
+
+        }
+
+    }
+
+}
+
 // swiftlint:enable type_body_length
 // swiftlint:enable line_length
+// swiftlint:enable nesting
 // swiftlint:enable file_length

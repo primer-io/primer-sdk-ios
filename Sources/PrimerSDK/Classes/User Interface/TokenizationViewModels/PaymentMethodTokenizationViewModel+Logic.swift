@@ -58,6 +58,7 @@ extension PaymentMethodTokenizationViewModel {
                                                                  diagnosticsId: UUID().uuidString)
                     }
 
+                    self.showResultScreenIfNeeded(error: primerErr)
                     return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
                 }
                 .done { merchantErrorMessage in
@@ -109,6 +110,7 @@ extension PaymentMethodTokenizationViewModel {
                 PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
             }
 
+            self.showResultScreenIfNeeded()
             self.handleSuccessfulFlow()
         }
         .ensure {
@@ -150,7 +152,8 @@ extension PaymentMethodTokenizationViewModel {
                                                                  userInfo: .errorUserInfoDictionary(),
                                                                  diagnosticsId: UUID().uuidString)
                     }
-                    self.setCheckoutDataFromError(primerErr)
+
+                    self.showResultScreenIfNeeded(error: primerErr)
                     return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
                 }
                 .done { merchantErrorMessage in
@@ -439,13 +442,25 @@ extension PaymentMethodTokenizationViewModel {
         }
     }
 
+    // This method will show the new design for result screen with a specific state: e.g. Error state or Success state
+    // For now we will use it only for STRIPE_ACH implementation
+    func showResultScreenIfNeeded(error: PrimerError? = nil) {
+        guard let paymentMethodType = config.internalPaymentMethodType,
+              paymentMethodType == .stripeAch else {
+            return
+        }
+        PrimerUIManager.showResultScreen(for: paymentMethodType, error: error)
+    }
+
     func handleFailureFlow(errorMessage: String?) {
-        let categories = self.config.paymentMethodManagerCategories
-        PrimerUIManager.dismissOrShowResultScreen(
-            type: .failure,
-            paymentMethodManagerCategories: categories ?? [],
-            withMessage: errorMessage
-        )
+        if config.internalPaymentMethodType != .stripeAch {
+            let categories = self.config.paymentMethodManagerCategories
+            PrimerUIManager.dismissOrShowResultScreen(
+                type: .failure,
+                paymentMethodManagerCategories: categories ?? [],
+                withMessage: errorMessage
+            )
+        }
     }
 
     internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {

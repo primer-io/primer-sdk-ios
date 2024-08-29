@@ -176,10 +176,18 @@ public class PrimerKlarnaOptions: Codable {
 
 // MARK: Stripe ACH
 public class PrimerStripeOptions: Codable {
-    var publishableKey: String
 
-    public init(publishableKey: String) {
+    public enum MandateData: Codable {
+        case fullMandate(text: String)
+        case templateMandate(merchantName: String)
+    }
+
+    var publishableKey: String
+    var mandateData: MandateData?
+
+    public init(publishableKey: String, mandateData: MandateData? = nil) {
         self.publishableKey = publishableKey
+        self.mandateData = mandateData
     }
 }
 

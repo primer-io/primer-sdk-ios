@@ -39,8 +39,7 @@ public class ACHUserDetails: Codable {
     public var firstName: String
     public var lastName: String
     public var emailAddress: String
-    
-    
+
     public init(firstName: String, lastName: String, emailAddress: String) {
         self.firstName = firstName
         self.lastName = lastName
@@ -59,7 +58,7 @@ extension ACHUserDetails: ACHUserDetailsHandling {
             emailAddress = value
         }
     }
-    
+
     public static func emptyUserDetails() -> ACHUserDetails {
         return ACHUserDetails(firstName: "", lastName: "", emailAddress: "")
     }
@@ -95,7 +94,7 @@ extension ACHUserDetails: Equatable {
             unequalFields.append(ACHUserDetailsError.invalidEmailAddress)
             areEqual = false
         }
-        
+
         return (areEqual, unequalFields)
     }
 }

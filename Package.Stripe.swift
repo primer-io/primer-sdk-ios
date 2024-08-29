@@ -15,7 +15,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "git@github.com:primer-io/primer-stripe-sdk-ios", .branch("nq/initial_setup"))
+        .package(url: "https://github.com/primer-io/primer-stripe-sdk-ios", from: "1.0.0")
     ],
     targets: [
         .target(
