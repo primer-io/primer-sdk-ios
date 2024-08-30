@@ -32,11 +32,11 @@ class PrimerResultPaymentStatusViewModel: ObservableObject {
     var subtitle: String {
         switch paymentStatus {
         case .success:
-            Strings.ResultView.Subtitle.successful
+            return Strings.ResultView.Subtitle.successful
         case .failed:
-            Strings.ResultView.Subtitle.failed
+            return Strings.ResultView.Subtitle.failed
         case .cancelled:
-            Strings.ResultView.Subtitle.cancelled
+            return Strings.ResultView.Subtitle.cancelled
         }
     }
 
