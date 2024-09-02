@@ -185,6 +185,27 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         ], timeout: 10.0, enforceOrder: true)
     }
 
+    private typealias ShippingMethodOptions = Response.Body.Configuration.CheckoutModule.ShippingMethodOptions
+    private typealias ShippingMethod = Response.Body.Configuration.CheckoutModule.ShippingMethodOptions.ShippingMethod
+
+    func test_getShippingMethodsInfo() throws {
+        PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules = checkoutModules
+
+        let sut = ApplePayTokenizationViewModel(config: PrimerPaymentMethod(id: "APPLE_PAY",
+                                                                            implementationType: .nativeSdk,
+                                                                            type: "APPLE_PAY",
+                                                                            name: "Apple Pay",
+                                                                            processorConfigId: nil,
+                                                                            surcharge: nil,
+                                                                            options: nil,
+                                                                            displayMetadata: nil))
+
+        let methods = sut.getShippingMethodsInfo()
+
+        XCTAssert(methods.shippingMethods?.count == 2)
+        XCTAssert(methods.selectedShippingMethod?.identifier == "default")
+    }
+
     // MARK: Helpers
 
     var order: ClientSession.Order {
@@ -256,6 +277,22 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
               tokenType: .singleUse,
               vaultData: nil)
     }
+
+    var checkoutModules = [
+        Response.Body.Configuration.CheckoutModule(type: "SHIPPING",
+                                                   requestUrlStr: nil,
+                                                   options: ShippingMethodOptions(shippingMethods: [
+                                                    ShippingMethod(name: "Default",
+                                                                   description: "The default method",
+                                                                   amount: 100,
+                                                                   id: "default"),
+                                                    ShippingMethod(name: "Next Day",
+                                                                   description: "Get your stuff next day",
+                                                                   amount: 200,
+                                                                   id: "nextDay")],
+                                                                                 selectedShippingMethod: "default")
+                                                  )
+    ]
 
 }
 

@@ -24,7 +24,7 @@ internal extension PKPaymentMethodType {
 @available(iOS 11.0, *)
 class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
-    private struct ShippingMethodsInfo {
+    struct ShippingMethodsInfo {
         let shippingMethods: [PKShippingMethod]?
         let selectedShippingMethod: PKShippingMethod?
     }
@@ -347,7 +347,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
-    private func getShippingMethodsInfo() -> ShippingMethodsInfo {
+    func getShippingMethodsInfo() -> ShippingMethodsInfo {
         guard let options = PrimerAPIConfigurationModule
             .apiConfiguration?
             .checkoutModules?
