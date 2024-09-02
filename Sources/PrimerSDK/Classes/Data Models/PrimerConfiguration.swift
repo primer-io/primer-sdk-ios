@@ -361,11 +361,11 @@ extension Response.Body.Configuration {
                 }
             }
         }
-        
+
         struct ShippingMethodOptions: CheckoutModuleOptions {
             let shippingMethods: [ShippingMethod]
             let selectedShippingMethod: String
-            
+
             struct ShippingMethod: Codable {
                 let name: String
                 let description: String
@@ -459,7 +459,7 @@ extension Response.Body.Configuration {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.type = try container.decode(String.self, forKey: .type)
             self.requestUrlStr = (try? container.decode(String?.self, forKey: .requestUrlStr)) ?? nil
-            
+
             if let options = (try? container.decode(CardInformationOptions.self, forKey: .options)) {
                 self.options = options
             } else if let options = (try? container.decode(PostalCodeOptions.self, forKey: .options)) {

@@ -35,17 +35,17 @@ internal class ClientSession {
             ClientSession.Action(type: .setBillingAddress,
                                  params: makeBillingAddressDictionaryRequestFromParameters(parameters))
         }
-        
+
         static func setCustomerFirstName(_ firstName: String) -> ClientSession.Action {
             ClientSession.Action(type: .setCustomerFirstName,
                                  params: ["firstName": firstName])
         }
-        
+
         static func setCustomerLastName(_ lastName: String) -> ClientSession.Action {
             ClientSession.Action(type: .setCustomerLastName,
                                  params: ["lastName": lastName])
         }
-        
+
         static func setCustomerEmailAddress(_ emailAddress: String) -> ClientSession.Action {
             ClientSession.Action(type: .setCustomerEmailAddress,
                                  params: ["emailAddress": emailAddress])

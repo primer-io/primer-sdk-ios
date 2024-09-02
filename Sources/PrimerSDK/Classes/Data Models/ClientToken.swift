@@ -39,7 +39,7 @@ struct DecodedJWTToken: Codable {
 
     // Nol
     var nolPayTransactionNo: String?
-    
+
     // StripeACH
     var stripeClientSecret: String?
     var sdkCompleteUrl: String?
@@ -263,7 +263,7 @@ struct DecodedJWTToken: Codable {
 
         // Nol
         try? container.encode(nolPayTransactionNo, forKey: .nolPayTransactionNo)
-        
+
         // StripeACH
         try? container.encode(stripeClientSecret, forKey: .stripeClientSecret)
         try? container.encode(sdkCompleteUrl, forKey: .sdkCompleteUrl)

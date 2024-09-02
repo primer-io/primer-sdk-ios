@@ -218,7 +218,6 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     return
                 }
 
-
                 guard let merchantIdentifier = PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantIdentifier else {
                     let err = PrimerError.invalidMerchantIdentifier(merchantIdentifier: "nil",
                                                                     userInfo: .errorUserInfoDictionary(),
@@ -695,7 +694,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                     ),
                     transactionIdentifier: payment.token.transactionIdentifier,
                     paymentData: tokenPaymentData
-                ), 
+                ),
                 billingAddress: billingAddress,
                 shippingAddress: shippingAddress,
                 mobileNumber: mobileNumber,
