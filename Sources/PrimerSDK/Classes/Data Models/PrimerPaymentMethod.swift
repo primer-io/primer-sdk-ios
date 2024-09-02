@@ -115,6 +115,8 @@ class PrimerPaymentMethod: Codable, LogReporter {
                 return QRCodeTokenizationViewModel(config: self, apiClient: apiClient)
             case PrimerPaymentMethodType.nolPay:
                 return NolPayTokenizationViewModel(config: self, apiClient: apiClient)
+            case PrimerPaymentMethodType.stripeAch:
+                return StripeAchTokenizationViewModel(config: self, apiClient: apiClient)
 
             default:
                 break
@@ -234,6 +236,9 @@ class PrimerPaymentMethod: Codable, LogReporter {
 
         case .adyenIDeal:
             categories.append(PrimerPaymentMethodManagerCategory.componentWithRedirect)
+            
+        case .stripeAch:
+            categories.append(PrimerPaymentMethodManagerCategory.nativeUI)
 
         default:
             break

@@ -35,8 +35,8 @@ internal class PrimerRootViewController: PrimerViewController {
     }()
 
     // User Interaction
-    private var tapGesture: UITapGestureRecognizer?
-    private var swipeGesture: UISwipeGestureRecognizer?
+    private(set) var tapGesture: UITapGestureRecognizer?
+    private(set) var swipeGesture: UISwipeGestureRecognizer?
 
     // MARK: - INITIALIZATION LIFECYCLE
 
@@ -212,6 +212,11 @@ internal class PrimerRootViewController: PrimerViewController {
         self.view.isUserInteractionEnabled = isUserInteractionEnabled
     }
 
+    internal func enableDismissGestures(_ dismissGestures: Bool) {
+        self.swipeGesture?.isEnabled = dismissGestures
+        self.tapGesture?.isEnabled = dismissGestures
+    }
+
     internal func layoutIfNeeded() {
         for viewController in navController.viewControllers {
             viewController.view.layoutIfNeeded()
@@ -219,6 +224,14 @@ internal class PrimerRootViewController: PrimerViewController {
 
         childView.layoutIfNeeded()
         view.layoutIfNeeded()
+    }
+
+    // This method checks if a viewController is currently presented in the navigation stack
+    internal func isCurrentViewController(ofType type: PrimerViewController.Type) -> Bool {
+        if let topViewContoller = navController.viewControllers.last as? PrimerContainerViewController {
+            return topViewContoller.childViewController.isKind(of: type)
+        }
+        return false
     }
 
     internal func show(viewController: UIViewController, animated: Bool = false) {
@@ -416,6 +429,30 @@ internal class PrimerRootViewController: PrimerViewController {
             })
 
         self.navController.popToViewController(mainScreenViewController, animated: true, completion: completion)
+    }
+
+    // This method is used to pop to the origin screen of the payment method that has been selected
+    internal func popToPaymentMethodViewController(type: PrimerViewController.Type, completion: (() -> Void)? = nil) {
+        for viewController in navController.viewControllers {
+            if let cvc = viewController as? PrimerContainerViewController,
+               cvc.childViewController.isKind(of: type) {
+                let navigationControllerHeight = calculateNavigationControllerHeight(for: cvc.childViewController)
+                self.childViewHeightConstraint.constant = navigationControllerHeight + bottomPadding
+
+                UIView.animate(
+                    withDuration: 0.3,
+                    delay: TimeInterval(0),
+                    options: .curveEaseInOut,
+                    animations: { self.view.layoutIfNeeded() },
+                    completion: { _ in
+                        completion?()
+                    })
+
+                self.navController.popToViewController(cvc, animated: true)
+                return
+            }
+        }
+        completion?()
     }
 
     internal func dismissPrimerRootViewController(animated flag: Bool, completion: (() -> Void)? = nil) {

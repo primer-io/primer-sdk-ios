@@ -2,11 +2,11 @@ name: Multi-Xcode Build
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 1 * * 1-5'
-  push:
-    branches:
-      - 'release/**'
+  # schedule:
+  #   - cron: '0 1 * * 1-5'
+  # push:
+  #   branches:
+  #     - 'release/**'
 
 jobs:
   build:

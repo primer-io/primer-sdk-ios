@@ -88,4 +88,4 @@ jobs:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           sonar-host: https://sonarcloud.io./
           branch: ${{ github.head_ref }}
-          coverage-file-names: sonar-coverage-sdk.xml,sonar-coverage-3DS.xml,sonar-coverage-nol-pay.xml,sonar-coverage-klarna.xml
+          coverage-file-names: sonar-coverage-sdk.xml,sonar-coverage-3DS.xml,sonar-coverage-nol-pay.xml,sonar-coverage-klarna.xml,sonar-coverage-stripe.xml

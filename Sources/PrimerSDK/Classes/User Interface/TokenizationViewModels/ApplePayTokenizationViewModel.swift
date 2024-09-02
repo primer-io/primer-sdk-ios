@@ -447,7 +447,7 @@ extension ApplePayTokenizationViewModel {
             }
 
             if let emailAddress {
-                let setEmailAddressAction: ClientSession.Action = .setEmailAction(emailAddress: emailAddress)
+                let setEmailAddressAction: ClientSession.Action = .setCustomerEmailAddress(emailAddress)
                 actions.append(setEmailAddressAction)
             }
 

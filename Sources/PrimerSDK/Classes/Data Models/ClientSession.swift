@@ -35,6 +35,21 @@ internal class ClientSession {
             ClientSession.Action(type: .setBillingAddress,
                                  params: makeBillingAddressDictionaryRequestFromParameters(parameters))
         }
+        
+        static func setCustomerFirstName(_ firstName: String) -> ClientSession.Action {
+            ClientSession.Action(type: .setCustomerFirstName,
+                                 params: ["firstName": firstName])
+        }
+        
+        static func setCustomerLastName(_ lastName: String) -> ClientSession.Action {
+            ClientSession.Action(type: .setCustomerLastName,
+                                 params: ["lastName": lastName])
+        }
+        
+        static func setCustomerEmailAddress(_ emailAddress: String) -> ClientSession.Action {
+            ClientSession.Action(type: .setCustomerEmailAddress,
+                                 params: ["emailAddress": emailAddress])
+        }
 
         static func setShippingAddressActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
             ClientSession.Action(type: .setShippingAddress, params: makeShippingAddressDictionaryRequestFromParameters(parameters))
@@ -48,10 +63,6 @@ internal class ClientSession {
             ClientSession.Action(type: .setMobileNumber, params: ["mobileNumber": mobileNumber])
         }
 
-        static func setEmailAction(emailAddress: String) -> ClientSession.Action {
-            ClientSession.Action(type: .setEmailAddress, params: ["emailAddress": emailAddress])
-        }
-
         // swiftlint:disable:next nesting
         internal enum ActionType: String {
             case selectPaymentMethod = "SELECT_PAYMENT_METHOD"
@@ -61,7 +72,9 @@ internal class ClientSession {
             case setSurchargeFee = "SET_SURCHARGE_FEE"
             case selectShippingMethod = "SELECT_SHIPPING_METHOD"
             case setMobileNumber = "SET_MOBILE_NUMBER"
-            case setEmailAddress = "SET_EMAIL_ADDRESS"
+            case setCustomerFirstName = "SET_CUSTOMER_FIRST_NAME"
+            case setCustomerLastName = "SET_CUSTOMER_LAST_NAME"
+            case setCustomerEmailAddress = "SET_EMAIL_ADDRESS"
         }
 
         internal var type: ActionType

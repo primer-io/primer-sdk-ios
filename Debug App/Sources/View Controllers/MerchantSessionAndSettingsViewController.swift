@@ -560,6 +560,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             isErrorScreenEnabled: !disableErrorScreenSwitch.isOn,
             theme: applyThemingSwitch.isOn ? CheckoutTheme.tropical : nil)
 
+        let mandateData = PrimerStripeOptions.MandateData.templateMandate(merchantName: "Primer Inc.")
+
         let settings = PrimerSettings(
             paymentHandling: selectedPaymentHandling,
             paymentMethodOptions: PrimerPaymentMethodOptions(
@@ -570,8 +572,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     isCaptureBillingAddressEnabled: applePayCaptureBillingAddress,
                     isCaptureShippingAddressEnabled: applePayCaptureShippingDetails,
                     showApplePayForUnsupportedDevice: false,
-                    checkProvidedNetworks: applePayCheckProvidedNetworks)
-            ),
+                    checkProvidedNetworks: applePayCheckProvidedNetworks),
+                stripeOptions: PrimerStripeOptions(publishableKey: MerchantMockDataManager.stripePublishableKey, mandateData: mandateData)),
             uiOptions: uiOptions,
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
@@ -604,8 +606,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     isCaptureBillingAddressEnabled: applePayCaptureBillingAddress,
                     isCaptureShippingAddressEnabled: applePayCaptureShippingDetails,
                     showApplePayForUnsupportedDevice: false,
-                    checkProvidedNetworks: applePayCheckProvidedNetworks)
-            ),
+                    checkProvidedNetworks: applePayCheckProvidedNetworks),
+                stripeOptions: PrimerStripeOptions(publishableKey: MerchantMockDataManager.stripePublishableKey)),
             uiOptions: nil,
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )

@@ -1,3 +1,18 @@
+## 2.31.0 (2024-08-29)
+
+### Feat
+
+- Stripe ACH Drop-in implementation  (#921)
+- Stripe ACH Headless implementation (#876)
+
+## 2.30.1 (2024-08-28)
+
+### Fix
+
+- Adds orderId to the PrimerCheckoutData in error case (#989)
+- Add some checkoutData in the case of error (#987)
+- Ensure paypal webview is displayed on correct window (#986)
+
 ## 2.30.0 (2024-08-20)
 
 ### Fix

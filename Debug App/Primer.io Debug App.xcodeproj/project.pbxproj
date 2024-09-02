@@ -38,6 +38,10 @@
 		876141082B8346650058CA8C /* MerchantHeadlessKlarnaInitializationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876141072B8346650058CA8C /* MerchantHeadlessKlarnaInitializationView.swift */; };
 		8761410A2B8355920058CA8C /* MerchantHeadlessKlarnaInitializationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876141092B8355920058CA8C /* MerchantHeadlessKlarnaInitializationViewModel.swift */; };
 		8761410C2B849A250058CA8C /* MerchantHeadlessKlarnaInitializationView+Elements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8761410B2B849A250058CA8C /* MerchantHeadlessKlarnaInitializationView+Elements.swift */; };
+		87FC1AC72BE50E0B00C9F474 /* MerchantHeadlessCheckoutStripeAchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87FC1AC62BE50E0B00C9F474 /* MerchantHeadlessCheckoutStripeAchViewController.swift */; };
+		87FC1AC92BE518BC00C9F474 /* MerchantHeadlessStripeAchFieldsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87FC1AC82BE518BC00C9F474 /* MerchantHeadlessStripeAchFieldsView.swift */; };
+		87FC1ACB2BE5194100C9F474 /* MerchantHeadlessStripeAchFieldsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87FC1ACA2BE5194100C9F474 /* MerchantHeadlessStripeAchFieldsViewModel.swift */; };
+		87FC1ACD2BE51DCA00C9F474 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87FC1ACC2BE51DCA00C9F474 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift */; };
 		949864026D1CDE6F5C62C66E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE259612A00F85709107B872 /* Main.storyboard */; };
 		A19EF5632B20E22E00A72F60 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = A19EF5622B20E22E00A72F60 /* .swiftlint.yml */; };
 		AAE3B30B64B6822A20987FCA /* CreateClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229849A3DBE0858EE90673B9 /* CreateClientToken.swift */; };
@@ -139,6 +143,10 @@
 		876141072B8346650058CA8C /* MerchantHeadlessKlarnaInitializationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessKlarnaInitializationView.swift; sourceTree = "<group>"; };
 		876141092B8355920058CA8C /* MerchantHeadlessKlarnaInitializationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessKlarnaInitializationViewModel.swift; sourceTree = "<group>"; };
 		8761410B2B849A250058CA8C /* MerchantHeadlessKlarnaInitializationView+Elements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MerchantHeadlessKlarnaInitializationView+Elements.swift"; sourceTree = "<group>"; };
+		87FC1AC62BE50E0B00C9F474 /* MerchantHeadlessCheckoutStripeAchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutStripeAchViewController.swift; sourceTree = "<group>"; };
+		87FC1AC82BE518BC00C9F474 /* MerchantHeadlessStripeAchFieldsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessStripeAchFieldsView.swift; sourceTree = "<group>"; };
+		87FC1ACA2BE5194100C9F474 /* MerchantHeadlessStripeAchFieldsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessStripeAchFieldsViewModel.swift; sourceTree = "<group>"; };
+		87FC1ACC2BE51DCA00C9F474 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift"; sourceTree = "<group>"; };
 		890C8423CA9B93A90032AB4E /* Pods-Debug App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Debug App.debug.xcconfig"; path = "Target Support Files/Pods-Debug App/Pods-Debug App.debug.xcconfig"; sourceTree = "<group>"; };
 		8A04139ABE5EC60A8554C826 /* Pods_Debug_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Debug_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A3FDC6FE0EB5AB5828D4D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -371,6 +379,17 @@
 			path = "Merchant Helpers";
 			sourceTree = "<group>";
 		};
+		87FC1AC52BE50DE400C9F474 /* StripeAchHeadless */ = {
+			isa = PBXGroup;
+			children = (
+				87FC1AC62BE50E0B00C9F474 /* MerchantHeadlessCheckoutStripeAchViewController.swift */,
+				87FC1ACC2BE51DCA00C9F474 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift */,
+				87FC1AC82BE518BC00C9F474 /* MerchantHeadlessStripeAchFieldsView.swift */,
+				87FC1ACA2BE5194100C9F474 /* MerchantHeadlessStripeAchFieldsViewModel.swift */,
+			);
+			path = StripeAchHeadless;
+            sourceTree = "<group>";
+        };
 		D9AC6F54A87D432982864A63 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -406,6 +425,7 @@
 		EF5FBE3673FBCB40F55F4DC0 /* New UI */ = {
 			isa = PBXGroup;
 			children = (
+				87FC1AC52BE50DE400C9F474 /* StripeAchHeadless */,
 				04921D0C2BFB79DC004DFB4D /* NolPayHeadless */,
 				876140D32B63F79E0058CA8C /* KlarnaHeadless */,
 				E11F474E2B06C5030091C31F /* FormWithRedirect */,
@@ -637,14 +657,18 @@
 				CE5E673A96BB5B96AE5EFC56 /* Range+Extensions.swift in Sources */,
 				85605C241F1CD45BA676D4A7 /* String+Extensions.swift in Sources */,
 				04F323662BD40A2300F5927C /* MerchantNewLineItemViewController.swift in Sources */,
+				87FC1AC72BE50E0B00C9F474 /* MerchantHeadlessCheckoutStripeAchViewController.swift in Sources */,
 				0BB8BB3F9A6AC28A0C107DC8 /* UIStackViewExtensions.swift in Sources */,
+				87FC1ACD2BE51DCA00C9F474 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift in Sources */,
 				DE53DA2D0AD108306C92E198 /* UIViewController+API.swift in Sources */,
 				85EDC3F175D699BFF6BD48EF /* ViewController+Primer.swift in Sources */,
 				60F6C3AFA11A7EDB0687856A /* ViewController+PrimerUIHelpers.swift in Sources */,
 				5E24CD5B3084FE3E8A3E85EC /* CheckoutTheme.swift in Sources */,
 				04F323642BD409FE00F5927C /* BanksListModel.swift in Sources */,
+				87FC1AC92BE518BC00C9F474 /* MerchantHeadlessStripeAchFieldsView.swift in Sources */,
 				AAE3B30B64B6822A20987FCA /* CreateClientToken.swift in Sources */,
 				F08F63D82B9B5A7C006EF9A9 /* SessionConfiguration.swift in Sources */,
+				87FC1ACB2BE5194100C9F474 /* MerchantHeadlessStripeAchFieldsViewModel.swift in Sources */,
 				04F323652BD40A0E00F5927C /* MerchantHeadlessCheckoutBankViewController.swift in Sources */,
 				876141082B8346650058CA8C /* MerchantHeadlessKlarnaInitializationView.swift in Sources */,
 				C75A11E6AEEFC2B7A29BBC04 /* TestScenario.swift in Sources */,
