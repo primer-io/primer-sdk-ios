@@ -306,6 +306,7 @@ internal class ClientSession {
             }
         }
 
+        // swiftlint:disable nesting
         internal struct ShippingMethod: Codable {
             let amount: Int
             let methodId: String?
@@ -319,6 +320,7 @@ internal class ClientSession {
                 case methodDescription
             }
         }
+        // swiftlint:enable nesting
     }
 
     // MARK: - ClientSession.PaymentMethod

@@ -99,9 +99,7 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
                 return
             }
 
-
             var params: [String: Any] = ["shipping_method_id": shippingMethodId]
-
 
             let actions = [ClientSession.Action.selectShippingMethodActionWithParameters(params)]
             let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))
