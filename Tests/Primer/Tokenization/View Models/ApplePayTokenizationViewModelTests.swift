@@ -116,14 +116,31 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         waitForExpectations(timeout: 2.0)
     }
 
-    func testStartWithFullCheckoutFlow() throws {
+    func testWithShippingModules() throws {
+        guard var config = PrimerAPIConfiguration.current else {
+            XCTFail("Unable to generate configuration")
+            return
+        }
+        config.checkoutModules = checkoutModules
+        testStartWithFullCheckoutFlow(config: config)
+    }
+
+    func testFullCheckoutFlow() throws {
+        guard let config = PrimerAPIConfiguration.current else {
+            XCTFail("Unable to generate configuration")
+            return
+        }
+        testStartWithFullCheckoutFlow(config: config)
+    }
+
+    private func testStartWithFullCheckoutFlow(config: PrimerAPIConfiguration) {
         SDKSessionHelper.setUp(order: order)
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
         let apiClient = MockPrimerAPIClient()
         PrimerAPIConfigurationModule.apiClient = apiClient
-        apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
+        apiClient.fetchConfigurationWithActionsResult = (config, nil)
 
         let applePayPresentationManager = MockApplePayPresentationManager()
         sut.applePayPresentationManager = applePayPresentationManager
