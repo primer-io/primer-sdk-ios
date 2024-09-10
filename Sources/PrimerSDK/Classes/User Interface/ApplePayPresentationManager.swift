@@ -67,20 +67,37 @@ class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
         let request = PKPaymentRequest()
         let applePayOptions = PrimerSettings.current.paymentMethodOptions.applePayOptions
         let isBillingContactFieldsRequired = applePayOptions?.isCaptureBillingAddressEnabled == true
-        let isShippingContactFieldsRequired = applePayOptions?.isCaptureShippingAddressEnabled == true
+
         request.requiredBillingContactFields = isBillingContactFieldsRequired ? [.postalAddress] : []
-        request.requiredShippingContactFields = isShippingContactFieldsRequired ? [.postalAddress, .emailAddress, .name, .phoneNumber] : []
+        request.requiredShippingContactFields = shippingContactFields(applePayOptions: applePayOptions)
         request.currencyCode = applePayRequest.currency.code
         request.countryCode = applePayRequest.countryCode.rawValue
         request.merchantIdentifier = applePayRequest.merchantIdentifier
         request.merchantCapabilities = [.capability3DS]
         request.supportedNetworks = supportedNetworks
         request.paymentSummaryItems = applePayRequest.items.compactMap({ $0.applePayItem })
+
         if let shippingMethods = applePayRequest.shippingMethods {
             request.shippingMethods = shippingMethods
         }
 
         return request
+    }
+
+    func shippingContactFields(applePayOptions: PrimerApplePayOptions?) -> Set<PKContactField> {
+        guard applePayOptions?.shippingOptions?.isCaptureShippingAddressEnabled == true else {
+            return []
+        }
+        
+        var fields: Set<PKContactField> = [.postalAddress]
+
+        if let additionalFields = applePayOptions?.shippingOptions?.additionalShippingContactFields {
+            additionalFields.forEach {
+                fields.insert($0.toPKContact())
+            }
+        }
+
+        return fields
     }
 
     var errorForDisplay: Error {
@@ -100,6 +117,19 @@ class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
                                                                userInfo: .errorUserInfoDictionary(additionalInfo: info),
                                                                diagnosticsId: UUID().uuidString)
             return err
+        }
+    }
+}
+
+extension PrimerApplePayOptions.ShippingOptions.AdditionalShippingContactField {
+    func toPKContact() -> PKContactField {
+        switch self {
+        case .name:
+            return .name
+        case .emailAddress:
+            return .emailAddress
+        case .phoneNumber:
+            return .phoneNumber
         }
     }
 }

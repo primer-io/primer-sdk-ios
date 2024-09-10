@@ -223,6 +223,87 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         XCTAssert(methods.selectedShippingMethod?.identifier == "default")
     }
 
+    func test_createOrderItems() throws {
+
+        let itemName = "Fancy Shoes"
+        let itemDescription = "Some nice shoes"
+        let itemAmount = 1000
+
+        let shippingMethodId = "ShippingMethodId"
+        let shippingMethodName = "Shipping Method"
+        let shippingMethodDescription = "Shipping Method Description"
+        let shippingAmount = 100
+
+        let merchantName = "Merchant Name"
+        let applePayOptions = ApplePayOptions(merchantName: merchantName)
+
+        let selectedShippingMethod = PKShippingMethod(label: shippingMethodName, amount: 100)
+        selectedShippingMethod.identifier = shippingMethodId
+
+        let apiResponse = ClientSession.APIResponse(
+            clientSessionId: nil,
+            paymentMethod: nil,
+            order: .init(id: "OrderId",
+                         merchantAmount: nil,
+                         totalOrderAmount: itemAmount + shippingAmount,
+                         totalTaxAmount: nil,
+                         countryCode: .init(rawValue: "GB"),
+                         currencyCode: .init(code: "GBP", decimalDigits: 2),
+                         fees: nil,
+                         lineItems: [
+                            .init(itemId: "123",
+                                  quantity: 1,
+                                  amount: itemAmount,
+                                  discountAmount: nil,
+                                  name: itemName,
+                                  description: itemDescription,
+                                  taxAmount: nil,
+                                  taxCode: nil,
+                                  productType: nil)
+                         ],
+                         shippingAmount: 100,
+                         shippingMethod:
+                            ClientSession.Order.ShippingMethod(amount: 100,
+                                                               methodId: shippingMethodId,
+                                                               methodName: shippingMethodName,
+                                                               methodDescription: shippingMethodDescription)
+                         ),
+            customer: nil,
+            testId: nil)
+
+        do {
+            let orderItems = try sut.createOrderItemsFromClientSession(apiResponse,
+                                                                       applePayOptions: applePayOptions,
+                                                                       selectedShippingMethod: selectedShippingMethod)
+
+            let expectedOrderItems = [
+                try! ApplePayOrderItem(name: itemDescription,
+                                  unitAmount: itemAmount,
+                                  quantity: 1,
+                                  discountAmount: nil, 
+                                  taxAmount: nil),
+                try! ApplePayOrderItem(name: "Shipping: \(shippingMethodName)",
+                                  unitAmount: shippingAmount,
+                                  quantity: 1,
+                                  discountAmount: nil,
+                                  taxAmount: nil),
+                try! ApplePayOrderItem(name: merchantName,
+                                  unitAmount: itemAmount + shippingAmount,
+                                  quantity: 1,
+                                  discountAmount: nil,
+                                  taxAmount: nil)
+            ]
+
+            XCTAssert(orderItems.count == 3)
+
+            XCTAssert(orderItems == expectedOrderItems)
+
+
+        } catch {
+            XCTFail("Failed with error: \(error.localizedDescription)")
+        }
+    }
+
     // MARK: Helpers
 
     var order: ClientSession.Order {

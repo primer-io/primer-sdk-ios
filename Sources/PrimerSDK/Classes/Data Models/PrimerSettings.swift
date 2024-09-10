@@ -1,4 +1,5 @@
 import Foundation
+import PassKit
 
 // MARK: - PRIMER SETTINGS
 
@@ -142,7 +143,7 @@ public class PrimerApplePayOptions: Codable {
     @available(*, deprecated, message: "Use Client Session API to provide merchant name value: https://primer.io/docs/payment-methods/apple-pay/direct-integration#prepare-the-client-session")
     let merchantName: String?
     let isCaptureBillingAddressEnabled: Bool
-    let isCaptureShippingAddressEnabled: Bool
+//    let requiredShippingFields:
     /// If in some cases you dont want to present ApplePay option if the device is not supporting it set this to `false`.
     /// Default value is `true`.
     let showApplePayForUnsupportedDevice: Bool
@@ -150,19 +151,39 @@ public class PrimerApplePayOptions: Codable {
     /// canMakePayments(usingNetworks:) was returning false if there were no cards in the Wallet,
     /// we introduced this flag to continue supporting the old behaviour. Default value is `true`.
     let checkProvidedNetworks: Bool
+    let shippingOptions: ShippingOptions?
+
 
     public init(merchantIdentifier: String,
                 merchantName: String?,
                 isCaptureBillingAddressEnabled: Bool = false,
-                isCaptureShippingAddressEnabled: Bool = false,
                 showApplePayForUnsupportedDevice: Bool = true,
-                checkProvidedNetworks: Bool = true) {
+                checkProvidedNetworks: Bool = true,
+                shippingOptions: ShippingOptions? = nil) {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
-        self.isCaptureShippingAddressEnabled = isCaptureShippingAddressEnabled
+        self.shippingOptions = shippingOptions
         self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
         self.checkProvidedNetworks = checkProvidedNetworks
+    }
+
+    public struct ShippingOptions: Codable {
+        let isCaptureShippingAddressEnabled: Bool
+        let additionalShippingContactFields: [AdditionalShippingContactField]?
+        let requireShippingMethod: Bool
+
+        public init(isCaptureShippingAddressEnabled: Bool,
+                    additionalShippingContactFields: [AdditionalShippingContactField]? = nil,
+                    requireShippingMethod: Bool) {
+            self.isCaptureShippingAddressEnabled = isCaptureShippingAddressEnabled
+            self.additionalShippingContactFields = additionalShippingContactFields
+            self.requireShippingMethod = requireShippingMethod
+        }
+
+        public enum AdditionalShippingContactField: Codable {
+            case name, emailAddress, phoneNumber
+        }
     }
 }
 

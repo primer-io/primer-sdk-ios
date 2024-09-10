@@ -562,6 +562,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
         let mandateData = PrimerStripeOptions.MandateData.templateMandate(merchantName: "Primer Inc.")
 
+        let shippingOptions = applePayCaptureShippingDetails ?
+        PrimerApplePayOptions.ShippingOptions(isCaptureShippingAddressEnabled: true,
+                                              additionalShippingContactFields: [.name, .email, .phoneNumber],
+                                              requireShippingMethod: true) : nil
+
         let settings = PrimerSettings(
             paymentHandling: selectedPaymentHandling,
             paymentMethodOptions: PrimerPaymentMethodOptions(
@@ -570,9 +575,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     merchantIdentifier: "merchant.checkout.team",
                     merchantName: merchantNameTextField.text ?? "Primer Merchant",
                     isCaptureBillingAddressEnabled: applePayCaptureBillingAddress,
-                    isCaptureShippingAddressEnabled: applePayCaptureShippingDetails,
                     showApplePayForUnsupportedDevice: false,
-                    checkProvidedNetworks: applePayCheckProvidedNetworks),
+                    checkProvidedNetworks: applePayCheckProvidedNetworks,
+                    shippingOptions: shippingOptions),
                 stripeOptions: PrimerStripeOptions(publishableKey: MerchantMockDataManager.stripePublishableKey, mandateData: mandateData)),
             uiOptions: uiOptions,
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
@@ -596,6 +601,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBAction func primerHeadlessButtonTapped(_ sender: Any) {
         customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
 
+        let shippingOptions = applePayCaptureShippingDetails ?
+        PrimerApplePayOptions.ShippingOptions(isCaptureShippingAddressEnabled: true,
+                                              additionalShippingContactFields: [.name, .email, .phoneNumber],
+                                              requireShippingMethod: true) : nil
+
         let settings = PrimerSettings(
             paymentHandling: selectedPaymentHandling,
             paymentMethodOptions: PrimerPaymentMethodOptions(
@@ -604,9 +614,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     merchantIdentifier: "merchant.checkout.team",
                     merchantName: merchantNameTextField.text ?? "Primer Merchant",
                     isCaptureBillingAddressEnabled: applePayCaptureBillingAddress,
-                    isCaptureShippingAddressEnabled: applePayCaptureShippingDetails,
                     showApplePayForUnsupportedDevice: false,
-                    checkProvidedNetworks: applePayCheckProvidedNetworks),
+                    checkProvidedNetworks: applePayCheckProvidedNetworks,
+                    shippingOptions: shippingOptions),
                 stripeOptions: PrimerStripeOptions(publishableKey: MerchantMockDataManager.stripePublishableKey)),
             uiOptions: nil,
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)

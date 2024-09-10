@@ -559,6 +559,59 @@ extension ApplePayTokenizationViewModel {
 @available(iOS 11.0, *)
 extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegate {
 
+    func paymentAuthorizationController(_ controller: PKPaymentAuthorizationController, 
+                                        didSelectShippingContact contact: PKContact) async -> PKPaymentRequestShippingContactUpdate {
+        do {
+            return try await withCheckedThrowingContinuation { continuation in
+                firstly {
+                    guard let address = self.clientSessionAddressFromApplePayShippingContact(contact) else {
+                        let err = PrimerError.invalidValue(key: "shippingContact",
+                                                           value: "nil",
+                                                           userInfo: .errorUserInfoDictionary(),
+                                                           diagnosticsId: UUID().uuidString)
+                        continuation.resume(throwing: err)
+                        throw(err)
+                    }
+                    return self.updateShippingDetailsViaClientSessionActionIfNeeded(address: address,
+                                                                             mobileNumber: nil,
+                                                                             emailAddress: nil)
+                }.done {
+                    let shippingMethodsInfo = self.getShippingMethodsInfo()
+
+                    guard let clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession else {
+                        assertionFailure()
+                        continuation.resume(throwing: PrimerError.invalidValue(key: "ClientSession",
+                                                                               value: nil,
+                                                                               userInfo: .errorUserInfoDictionary(),
+                                                                               diagnosticsId: UUID().uuidString))
+                        return
+                    }
+
+                    let orderItems = try self.createOrderItemsFromClientSession(clientSession,
+                                                                                applePayOptions: self.getApplePayOptions(),
+                                                                                selectedShippingMethod: shippingMethodsInfo.selectedShippingMethod)
+
+                    guard PrimerSettings.current.paymentMethodOptions.applePayOptions?.shippingOptions?.requireShippingMethod == true,
+                            let shippingMethods = shippingMethodsInfo.shippingMethods, shippingMethods.count > 0 else {
+                        continuation.resume(throwing: PKPaymentError(PKPaymentError.shippingAddressUnserviceableError))
+                        return
+                    }
+
+                    continuation.resume(returning: PKPaymentRequestShippingContactUpdate(errors: nil,
+                                                                                         paymentSummaryItems: orderItems.map { $0.applePayItem },
+                                                                                         shippingMethods: shippingMethodsInfo.shippingMethods ?? []))
+                }.catch { error in
+                    let error = PKPaymentError(PKPaymentError.shippingContactInvalidError)
+                    continuation.resume(throwing: error)
+                }
+            }
+        } catch {
+            return PKPaymentRequestShippingContactUpdate(errors: [error],
+                                                         paymentSummaryItems: [],
+                                                         shippingMethods: [])
+        }
+    }
+
     func paymentAuthorizationController(_ controller: PKPaymentAuthorizationController,
                                         didSelectShippingMethod shippingMethod: PKShippingMethod) async -> PKPaymentRequestShippingMethodUpdate {
         do {
