@@ -7,8 +7,8 @@ storage_mode("git")
 type("development") # The default type, can be: appstore, adhoc, enterprise or development
 
 app_identifier("com.primerapi.PrimerSDKExample")
-# username("security@primerapi.com") # Your Apple Developer Portal username
-api_key_path("./JM91JR5L1QGH.json")
+username("security@primerapi.com") # Your Apple Developer Portal username
+# api_key_path("./JM91JR5L1QGH.json")
 
 platform("ios")
 shallow_clone true
