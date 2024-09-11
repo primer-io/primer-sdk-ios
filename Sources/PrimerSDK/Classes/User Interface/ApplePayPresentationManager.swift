@@ -88,7 +88,7 @@ class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
         guard applePayOptions?.shippingOptions?.isCaptureShippingAddressEnabled == true else {
             return []
         }
-        
+
         var fields: Set<PKContactField> = [.postalAddress]
 
         if let additionalFields = applePayOptions?.shippingOptions?.additionalShippingContactFields {

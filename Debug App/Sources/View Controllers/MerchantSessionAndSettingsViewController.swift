@@ -564,7 +564,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
         let shippingOptions = applePayCaptureShippingDetails ?
         PrimerApplePayOptions.ShippingOptions(isCaptureShippingAddressEnabled: true,
-                                              additionalShippingContactFields: [.name, .email, .phoneNumber],
+                                              additionalShippingContactFields: [.name, .emailAddress, .phoneNumber],
                                               requireShippingMethod: true) : nil
 
         let settings = PrimerSettings(
@@ -603,7 +603,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
         let shippingOptions = applePayCaptureShippingDetails ?
         PrimerApplePayOptions.ShippingOptions(isCaptureShippingAddressEnabled: true,
-                                              additionalShippingContactFields: [.name, .email, .phoneNumber],
+                                              additionalShippingContactFields: [.name, .emailAddress, .phoneNumber],
                                               requireShippingMethod: true) : nil
 
         let settings = PrimerSettings(

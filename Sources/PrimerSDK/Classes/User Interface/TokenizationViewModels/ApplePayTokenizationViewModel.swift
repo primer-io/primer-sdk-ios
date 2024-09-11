@@ -26,7 +26,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     struct ShippingMethodsInfo {
         let shippingMethods: [PKShippingMethod]?
-        let selectedShippingMethod: PKShippingMethod?
+        let selectedShippingMethodOrderItem: ApplePayOrderItem?
     }
 
     private var applePayPaymentResponse: ApplePayPaymentResponse!
@@ -247,7 +247,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     orderItems = try self.createOrderItemsFromClientSession(
                         session,
                         applePayOptions: self.getApplePayOptions(),
-                        selectedShippingMethod: shippingMethodsInfo.selectedShippingMethod
+                        selectedShippingItem: shippingMethodsInfo.selectedShippingMethodOrderItem
                     )
 
                 } catch {
@@ -352,23 +352,41 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             .checkoutModules?
             .first(where: { $0.type == "SHIPPING"})?
             .options as? ShippingMethodOptions else {
-            return .init(shippingMethods: nil, selectedShippingMethod: nil)
+            return .init(shippingMethods: nil, selectedShippingMethodOrderItem: nil)
+        }
+
+        var factor: Double
+        if AppState.current.currency?.isZeroDecimal == true {
+            factor = 1
+        } else {
+            factor = 100
         }
 
         // Convert to PKShippingMethods
         let apShippingMethods = options.shippingMethods.map {
-            let method = PKShippingMethod(label: $0.name, amount: NSDecimalNumber(decimal: Decimal($0.amount/100)))
+            let amount: Double = Double($0.amount)/factor
+            let method = PKShippingMethod(label: $0.name, amount: NSDecimalNumber(value: amount))
             method.detail = $0.description
             method.identifier = $0.id
             return method
         }
 
-        let selectedShippingMethod = apShippingMethods.first(where: {
-            $0.identifier == options.selectedShippingMethod
-        })
+        var shippingItem: ApplePayOrderItem? = nil
+
+        if let selectedShippingMethod = options.shippingMethods.first(where: {
+            $0.id == options.selectedShippingMethod
+        }) {
+            shippingItem = try? ApplePayOrderItem(
+                name: "Shipping: \(selectedShippingMethod.name)",
+                unitAmount: selectedShippingMethod.amount,
+                quantity: 1,
+                discountAmount: nil,
+                taxAmount: nil
+            )
+        }
 
         return .init(shippingMethods: apShippingMethods,
-                     selectedShippingMethod: selectedShippingMethod)
+                     selectedShippingMethodOrderItem: shippingItem)
 
     }
 }
@@ -464,7 +482,7 @@ extension ApplePayTokenizationViewModel {
 
     internal func createOrderItemsFromClientSession(_ clientSession: ClientSession.APIResponse,
                                                     applePayOptions: ApplePayOptions?,
-                                                    selectedShippingMethod: PKShippingMethod? = nil) throws -> [ApplePayOrderItem] {
+                                                    selectedShippingItem: ApplePayOrderItem? = nil) throws -> [ApplePayOrderItem] {
         var orderItems: [ApplePayOrderItem] = []
 
         // For merchantName, we prefer data being passed from server rather than local settings.
@@ -513,15 +531,8 @@ extension ApplePayTokenizationViewModel {
             }
 
             // Add shipping, if present
-            if let selectedShippingMethod {
-                let shippingItem = try ApplePayOrderItem(
-                    name: "Shipping: \(selectedShippingMethod.label)",
-                    unitAmount: Int(truncating: selectedShippingMethod.amount),
-                    quantity: 1,
-                    discountAmount: nil,
-                    taxAmount: nil
-                )
-                orderItems.append(shippingItem)
+            if let selectedShippingItem {
+                orderItems.append(selectedShippingItem)
             }
 
             let summaryItem = try ApplePayOrderItem(
@@ -559,7 +570,7 @@ extension ApplePayTokenizationViewModel {
 @available(iOS 11.0, *)
 extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegate {
 
-    func paymentAuthorizationController(_ controller: PKPaymentAuthorizationController, 
+    func paymentAuthorizationController(_ controller: PKPaymentAuthorizationController,
                                         didSelectShippingContact contact: PKContact) async -> PKPaymentRequestShippingContactUpdate {
         do {
             return try await withCheckedThrowingContinuation { continuation in
@@ -576,10 +587,10 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                                                                              mobileNumber: nil,
                                                                              emailAddress: nil)
                 }.done {
+
                     let shippingMethodsInfo = self.getShippingMethodsInfo()
 
                     guard let clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession else {
-                        assertionFailure()
                         continuation.resume(throwing: PrimerError.invalidValue(key: "ClientSession",
                                                                                value: nil,
                                                                                userInfo: .errorUserInfoDictionary(),
@@ -587,10 +598,13 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                         return
                     }
 
-                    let orderItems = try self.createOrderItemsFromClientSession(clientSession,
-                                                                                applePayOptions: self.getApplePayOptions(),
-                                                                                selectedShippingMethod: shippingMethodsInfo.selectedShippingMethod)
+                    let orderItems = try self.createOrderItemsFromClientSession(
+                        clientSession,
+                        applePayOptions: self.getApplePayOptions(),
+                        selectedShippingItem: shippingMethodsInfo.selectedShippingMethodOrderItem
+                    )
 
+                    // If merchant denotes that a shipping method is required, throw an error if there are none
                     guard PrimerSettings.current.paymentMethodOptions.applePayOptions?.shippingOptions?.requireShippingMethod == true,
                             let shippingMethods = shippingMethodsInfo.shippingMethods, shippingMethods.count > 0 else {
                         continuation.resume(throwing: PKPaymentError(PKPaymentError.shippingAddressUnserviceableError))
@@ -622,7 +636,6 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                                                            value: "nil",
                                                            userInfo: .errorUserInfoDictionary(),
                                                            diagnosticsId: UUID().uuidString)
-                        continuation.resume(throwing: err)
                         throw(err)
                     }
 
@@ -633,9 +646,10 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
 
                     guard let clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession else {
                         assertionFailure()
-                        continuation.resume(throwing: NSError(domain: "YourErrorDomain",
-                                                              code: 0,
-                                                              userInfo: [NSLocalizedDescriptionKey: "Client session not available"]))
+                        continuation.resume(throwing: PrimerError.invalidValue(key: "ClientSession",
+                                                                               value: nil,
+                                                                               userInfo: .errorUserInfoDictionary(),
+                                                                               diagnosticsId: UUID().uuidString))
                         return
                     }
 
@@ -643,7 +657,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                         let summaryItems = try self.createOrderItemsFromClientSession(
                             clientSession,
                             applePayOptions: self.getApplePayOptions(),
-                            selectedShippingMethod: shippingMethodsInfo.selectedShippingMethod
+                            selectedShippingItem: shippingMethodsInfo.selectedShippingMethodOrderItem
                         ).map { $0.applePayItem }
                         let update = PKPaymentRequestShippingMethodUpdate(paymentSummaryItems: summaryItems)
                         continuation.resume(returning: update)
