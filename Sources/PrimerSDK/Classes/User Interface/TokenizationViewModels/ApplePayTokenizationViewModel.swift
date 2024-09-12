@@ -572,58 +572,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
 
     func paymentAuthorizationController(_ controller: PKPaymentAuthorizationController,
                                         didSelectShippingContact contact: PKContact) async -> PKPaymentRequestShippingContactUpdate {
-        do {
-            return try await withCheckedThrowingContinuation { continuation in
-                firstly {
-                    guard let address = self.clientSessionAddressFromApplePayShippingContact(contact) else {
-                        let err = PrimerError.invalidValue(key: "shippingContact",
-                                                           value: "nil",
-                                                           userInfo: .errorUserInfoDictionary(),
-                                                           diagnosticsId: UUID().uuidString)
-                        continuation.resume(throwing: err)
-                        throw(err)
-                    }
-                    return self.updateShippingDetailsViaClientSessionActionIfNeeded(address: address,
-                                                                             mobileNumber: nil,
-                                                                             emailAddress: nil)
-                }.done {
-
-                    let shippingMethodsInfo = self.getShippingMethodsInfo()
-
-                    guard let clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession else {
-                        continuation.resume(throwing: PrimerError.invalidValue(key: "ClientSession",
-                                                                               value: nil,
-                                                                               userInfo: .errorUserInfoDictionary(),
-                                                                               diagnosticsId: UUID().uuidString))
-                        return
-                    }
-
-                    let orderItems = try self.createOrderItemsFromClientSession(
-                        clientSession,
-                        applePayOptions: self.getApplePayOptions(),
-                        selectedShippingItem: shippingMethodsInfo.selectedShippingMethodOrderItem
-                    )
-
-                    // If merchant denotes that a shipping method is required, throw an error if there are none
-                    guard PrimerSettings.current.paymentMethodOptions.applePayOptions?.shippingOptions?.requireShippingMethod == true,
-                            let shippingMethods = shippingMethodsInfo.shippingMethods, shippingMethods.count > 0 else {
-                        continuation.resume(throwing: PKPaymentError(PKPaymentError.shippingAddressUnserviceableError))
-                        return
-                    }
-
-                    continuation.resume(returning: PKPaymentRequestShippingContactUpdate(errors: nil,
-                                                                                         paymentSummaryItems: orderItems.map { $0.applePayItem },
-                                                                                         shippingMethods: shippingMethodsInfo.shippingMethods ?? []))
-                }.catch { error in
-                    let error = PKPaymentError(PKPaymentError.shippingContactInvalidError)
-                    continuation.resume(throwing: error)
-                }
-            }
-        } catch {
-            return PKPaymentRequestShippingContactUpdate(errors: [error],
-                                                         paymentSummaryItems: [],
-                                                         shippingMethods: [])
-        }
+        await processShippingContactChange(contact)
     }
 
     func paymentAuthorizationController(_ controller: PKPaymentAuthorizationController,
@@ -777,6 +726,61 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
             controller.dismiss(completion: nil)
             applePayReceiveDataCompletion?(.failure(error))
             applePayReceiveDataCompletion = nil
+        }
+    }
+
+    func processShippingContactChange(_ contact: PKContact) async -> PKPaymentRequestShippingContactUpdate {
+        do {
+            return try await withCheckedThrowingContinuation { continuation in
+                firstly {
+                    guard let address = self.clientSessionAddressFromApplePayShippingContact(contact) else {
+                        let err = PrimerError.invalidValue(key: "shippingContact",
+                                                           value: "nil",
+                                                           userInfo: .errorUserInfoDictionary(),
+                                                           diagnosticsId: UUID().uuidString)
+                        throw(err)
+                    }
+                    return self.updateShippingDetailsViaClientSessionActionIfNeeded(address: address,
+                                                                             mobileNumber: nil,
+                                                                             emailAddress: nil)
+                }.done {
+
+                    let shippingMethodsInfo = self.getShippingMethodsInfo()
+
+                    guard let clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession else {
+                        continuation.resume(throwing: PrimerError.invalidValue(key: "ClientSession",
+                                                                               value: nil,
+                                                                               userInfo: .errorUserInfoDictionary(),
+                                                                               diagnosticsId: UUID().uuidString))
+                        return
+                    }
+
+                    let orderItems = try self.createOrderItemsFromClientSession(
+                        clientSession,
+                        applePayOptions: self.getApplePayOptions(),
+                        selectedShippingItem: shippingMethodsInfo.selectedShippingMethodOrderItem
+                    )
+
+                    // If merchant denotes that a shipping method is required, throw an error if there are none
+                    if PrimerSettings.current.paymentMethodOptions.applePayOptions?.shippingOptions?.requireShippingMethod == true {
+                        guard let shippingMethods = shippingMethodsInfo.shippingMethods, shippingMethods.count > 0 else {
+                            continuation.resume(throwing: PKPaymentError(PKPaymentError.shippingAddressUnserviceableError))
+                            return
+                        }
+                    }
+
+                    continuation.resume(returning: PKPaymentRequestShippingContactUpdate(errors: nil,
+                                                                                         paymentSummaryItems: orderItems.map { $0.applePayItem },
+                                                                                         shippingMethods: shippingMethodsInfo.shippingMethods ?? []))
+                }.catch { error in
+                    let error = PKPaymentError(PKPaymentError.shippingContactInvalidError)
+                    continuation.resume(throwing: error)
+                }
+            }
+        } catch {
+            return PKPaymentRequestShippingContactUpdate(errors: [error],
+                                                         paymentSummaryItems: [],
+                                                         shippingMethods: [])
         }
     }
 }
