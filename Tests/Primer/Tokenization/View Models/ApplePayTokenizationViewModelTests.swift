@@ -606,9 +606,7 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
 
         let update2 = await sut.processShippingMethodChange(shippingMethod2)
         XCTAssert(update2.paymentSummaryItems.count == 3)
-        guard let shippingItem = update2.paymentSummaryItems[1] as? PKPaymentSummaryItem else {
-            XCTFail()
-        }
+        let shippingItem = update2.paymentSummaryItems[1]
         XCTAssertEqual(shippingItem.amount, 2)
         XCTAssertEqual(shippingItem.label, "Shipping: Next Day")
     }

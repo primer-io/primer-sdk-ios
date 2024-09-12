@@ -371,7 +371,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             return method
         }
 
-        var shippingItem: ApplePayOrderItem? = nil
+        var shippingItem: ApplePayOrderItem?
 
         if let selectedShippingMethod = options.shippingMethods.first(where: {
             $0.id == options.selectedShippingMethod

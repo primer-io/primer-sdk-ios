@@ -362,6 +362,7 @@ extension Response.Body.Configuration {
             }
         }
 
+        // swiftlint:disable nesting
         struct ShippingMethodOptions: CheckoutModuleOptions {
             let shippingMethods: [ShippingMethod]
             let selectedShippingMethod: String
@@ -374,7 +375,7 @@ extension Response.Body.Configuration {
             }
         }
 
-        // swiftlint:disable:next nesting
+
         struct PostalCodeOptions: CheckoutModuleOptions {
             let firstName: Bool?
             let lastName: Bool?
@@ -386,7 +387,6 @@ extension Response.Body.Configuration {
             let phoneNumber: Bool?
             let state: Bool?
 
-            // swiftlint:disable:next nesting
             private enum CodingKeys: String, CodingKey {
                 case firstName
                 case lastName
@@ -487,3 +487,4 @@ extension Response.Body.Configuration {
     }
 }
 // swiftlint:enable file_length
+// swiftlint:enable nesting
