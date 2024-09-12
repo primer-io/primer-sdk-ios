@@ -13,6 +13,7 @@ import PassKit
 typealias PrimerAPIConfiguration = Response.Body.Configuration
 typealias PrimerAPIConfigurationResponse = (config: Response.Body.Configuration, ttl: TimeInterval)
 
+// swiftlint:disable file_length
 extension Request.URLParameters {
 
     class Configuration: Codable {
@@ -374,7 +375,6 @@ extension Response.Body.Configuration {
                 let id: String
             }
         }
-
 
         struct PostalCodeOptions: CheckoutModuleOptions {
             let firstName: Bool?
