@@ -731,7 +731,6 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                                                                                          paymentSummaryItems: orderItems.map { $0.applePayItem },
                                                                                          shippingMethods: shippingMethodsInfo.shippingMethods ?? []))
                 }.catch { error in
-                    let error = PKPaymentError(PKPaymentError.shippingContactInvalidError)
                     continuation.resume(throwing: error)
                 }
             }
