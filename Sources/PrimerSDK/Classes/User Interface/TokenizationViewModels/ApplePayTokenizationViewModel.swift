@@ -760,7 +760,6 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                     let shippingMethodsInfo = self.getShippingMethodsInfo()
 
                     guard let clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession else {
-                        assertionFailure()
                         continuation.resume(throwing: PrimerError.invalidValue(key: "ClientSession",
                                                                                value: nil,
                                                                                userInfo: .errorUserInfoDictionary(),

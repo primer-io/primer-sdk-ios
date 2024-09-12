@@ -545,6 +545,11 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         let update = await sut.processShippingMethodChange(shippingMethod)
         XCTAssert(update.paymentSummaryItems.isEmpty)
 
+        //Test no clientSession results in empty update
+        shippingMethod.identifier = "123"
+        let update2 = await sut.processShippingMethodChange(shippingMethod)
+        XCTAssert(update2.paymentSummaryItems.isEmpty)
+
         guard var config = PrimerAPIConfiguration.current else {
             XCTFail("Unable to generate configuration")
             return
@@ -604,9 +609,9 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         let shippingMethod2 = PKShippingMethod(label: "Next Day", amount: 200)
         shippingMethod2.identifier = "nextDay"
 
-        let update2 = await sut.processShippingMethodChange(shippingMethod2)
-        XCTAssert(update2.paymentSummaryItems.count == 3)
-        let shippingItem = update2.paymentSummaryItems[1]
+        let update3 = await sut.processShippingMethodChange(shippingMethod2)
+        XCTAssert(update3.paymentSummaryItems.count == 3)
+        let shippingItem = update3.paymentSummaryItems[1]
         XCTAssertEqual(shippingItem.amount, 2)
         XCTAssertEqual(shippingItem.label, "Shipping: Next Day")
     }
