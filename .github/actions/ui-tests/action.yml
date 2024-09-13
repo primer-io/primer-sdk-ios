@@ -23,7 +23,7 @@ inputs:
   slack-reporter-bot-token:
     description: The slack bot token for posting results to the channel
     required: true
-  e2e-secrets-api-key:
+  ui-tests-secrets-api-key:
     description: Key used to fetch secrets in E2E tests
     required: true
 
@@ -67,7 +67,7 @@ runs:
         BROWSERSTACK_ACCESS_KEY: ${{ inputs.browserstack-access-key }} # secrets.BROWSERSTACK_ACCESS_KEY
       run: |
         export BROWSERSTACK_APP_ID=$(cat /var/tmp/browserstack_id.txt)
-        export E2E_SECRET_API_KEY="${{ inputs.e2e-secrets-api-key }}"
+        export UI_TESTS_SECRETS_API_KEY="${{ inputs.ui-tests-secrets-api-key }}"
         testType=${{ inputs.test-type }} npx wdio config/wdio.ios.bs.conf.js
         
     - name: Create Slack Report
