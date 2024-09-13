@@ -129,6 +129,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 case .success(let configuration):
                     _ = ImageFileProcessor().process(configuration: configuration).ensure {
                         PrimerAPIConfigurationModule.apiConfiguration?.clientSession = configuration.clientSession
+                        PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules = configuration.checkoutModules
                         let cachedData = ConfigurationCachedData(config: configuration, headers: responseHeaders)
                         ConfigurationCache.shared.setData(cachedData, forKey: cacheKey)
                         seal.fulfill()

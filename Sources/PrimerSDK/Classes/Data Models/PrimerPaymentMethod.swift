@@ -236,7 +236,7 @@ class PrimerPaymentMethod: Codable, LogReporter {
 
         case .adyenIDeal:
             categories.append(PrimerPaymentMethodManagerCategory.componentWithRedirect)
-            
+
         case .stripeAch:
             categories.append(PrimerPaymentMethodManagerCategory.nativeUI)
 

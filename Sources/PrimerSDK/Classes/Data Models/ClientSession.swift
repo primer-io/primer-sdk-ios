@@ -6,6 +6,7 @@
 //
 
 // swiftlint:disable type_body_length
+// swiftlint:disable file_length
 
 import Foundation
 
@@ -17,6 +18,10 @@ internal class ClientSession {
 
         static func makeBillingAddressDictionaryRequestFromParameters(_ parameters: [String: Any]) -> [String: Any] {
             return ["billingAddress": parameters]
+        }
+
+        static func makeShippingAddressDictionaryRequestFromParameters(_ parameters: [String: Any]) -> [String: Any] {
+            return ["shippingAddress": parameters]
         }
 
         static func selectPaymentMethodActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
@@ -31,20 +36,32 @@ internal class ClientSession {
             ClientSession.Action(type: .setBillingAddress,
                                  params: makeBillingAddressDictionaryRequestFromParameters(parameters))
         }
-        
+
         static func setCustomerFirstName(_ firstName: String) -> ClientSession.Action {
             ClientSession.Action(type: .setCustomerFirstName,
                                  params: ["firstName": firstName])
         }
-        
+
         static func setCustomerLastName(_ lastName: String) -> ClientSession.Action {
             ClientSession.Action(type: .setCustomerLastName,
                                  params: ["lastName": lastName])
         }
-        
+
         static func setCustomerEmailAddress(_ emailAddress: String) -> ClientSession.Action {
             ClientSession.Action(type: .setCustomerEmailAddress,
                                  params: ["emailAddress": emailAddress])
+        }
+
+        static func setShippingAddressActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
+            ClientSession.Action(type: .setShippingAddress, params: makeShippingAddressDictionaryRequestFromParameters(parameters))
+        }
+
+        static func selectShippingMethodActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
+            ClientSession.Action(type: .selectShippingMethod, params: parameters)
+        }
+
+        static func setMobileNumberAction(mobileNumber: String) -> ClientSession.Action {
+            ClientSession.Action(type: .setMobileNumber, params: ["mobileNumber": mobileNumber])
         }
 
         // swiftlint:disable:next nesting
@@ -52,7 +69,10 @@ internal class ClientSession {
             case selectPaymentMethod = "SELECT_PAYMENT_METHOD"
             case unselectPaymentMethod = "UNSELECT_PAYMENT_METHOD"
             case setBillingAddress = "SET_BILLING_ADDRESS"
+            case setShippingAddress = "SET_SHIPPING_ADDRESS"
             case setSurchargeFee = "SET_SURCHARGE_FEE"
+            case selectShippingMethod = "SELECT_SHIPPING_METHOD"
+            case setMobileNumber = "SET_MOBILE_NUMBER"
             case setCustomerFirstName = "SET_CUSTOMER_FIRST_NAME"
             case setCustomerLastName = "SET_CUSTOMER_LAST_NAME"
             case setCustomerEmailAddress = "SET_EMAIL_ADDRESS"
@@ -182,6 +202,7 @@ internal class ClientSession {
         let fees: [ClientSession.Order.Fee]?
         let lineItems: [ClientSession.Order.LineItem]?
         let shippingAmount: Int?
+        let shippingMethod: ShippingMethod?
 
         // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
@@ -194,6 +215,7 @@ internal class ClientSession {
             case fees
             case lineItems
             case shippingAmount
+            case shippingMethod = "shipping"
         }
 
         internal init(
@@ -205,7 +227,8 @@ internal class ClientSession {
             currencyCode: Currency?,
             fees: [ClientSession.Order.Fee]?,
             lineItems: [ClientSession.Order.LineItem]?,
-            shippingAmount: Int?
+            shippingAmount: Int?,
+            shippingMethod: ShippingMethod? = nil
         ) {
             self.id = id
             self.merchantAmount = merchantAmount
@@ -216,6 +239,7 @@ internal class ClientSession {
             self.fees = fees
             self.lineItems = lineItems
             self.shippingAmount = shippingAmount
+            self.shippingMethod = shippingMethod
         }
 
         internal init(from decoder: Decoder) throws {
@@ -235,6 +259,7 @@ internal class ClientSession {
             fees = (try? container.decode([ClientSession.Order.Fee]?.self, forKey: .fees)) ?? nil
             lineItems = (try? container.decode([ClientSession.Order.LineItem]?.self, forKey: .lineItems)) ?? nil
             shippingAmount = (try? container.decode(Int?.self, forKey: .shippingAmount)) ?? nil
+            shippingMethod = (try? container.decode(ShippingMethod?.self, forKey: .shippingMethod)) ?? nil
         }
 
         internal func encode(to encoder: Encoder) throws {
@@ -247,6 +272,7 @@ internal class ClientSession {
             try? container.encode(fees, forKey: .fees)
             try? container.encode(lineItems, forKey: .lineItems)
             try? container.encode(shippingAmount, forKey: .shippingAmount)
+            try? container.encode(shippingMethod, forKey: .shippingMethod)
         }
 
         // MARK: ClientSession.Order.LineItem
@@ -293,6 +319,22 @@ internal class ClientSession {
                 case surcharge = "SURCHARGE"
             }
         }
+
+        // swiftlint:disable nesting
+        internal struct ShippingMethod: Codable {
+            let amount: Int
+            let methodId: String?
+            let methodName: String?
+            let methodDescription: String?
+
+            enum CodingKeys: String, CodingKey {
+                case amount
+                case methodId
+                case methodName
+                case methodDescription
+            }
+        }
+        // swiftlint:enable nesting
     }
 
     // MARK: - ClientSession.PaymentMethod

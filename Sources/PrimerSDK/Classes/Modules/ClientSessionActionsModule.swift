@@ -92,6 +92,89 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
         }
     }
 
+    static func selectShippingMethodIfNeeded(_ shippingMethodId: String) -> Promise<Void> {
+        return Promise { seal in
+            guard PrimerInternal.shared.intent == .checkout else {
+                seal.fulfill()
+                return
+            }
+
+            let params: [String: Any] = ["shipping_method_id": shippingMethodId]
+
+            let actions = [ClientSession.Action.selectShippingMethodActionWithParameters(params)]
+            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+
+            firstly {
+                clientSessionActionsModule.dispatch(actions: actions)
+            }
+            .done {
+                seal.fulfill()
+            }
+            .catch { error in
+                seal.reject(error)
+            }
+        }
+    }
+
+    static func updateBillingAddressViaClientSessionActionWithAddressIfNeeded(_ address: ClientSession.Address?) -> Promise<Void> {
+        return Promise { seal in
+
+            guard let unwrappedAddress = address, let billingAddress = try? unwrappedAddress.asDictionary() else {
+                seal.fulfill()
+                return
+            }
+
+            let billingAddressAction: ClientSession.Action = .setBillingAddressActionWithParameters(billingAddress)
+            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+
+            firstly {
+                clientSessionActionsModule.dispatch(actions: [billingAddressAction])
+            }.done {
+                seal.fulfill()
+            }
+            .catch { error in
+                seal.reject(error)
+            }
+        }
+    }
+
+    static func updateShippingDetailsViaClientSessionActionIfNeeded(address: ClientSession.Address?,
+                                                                    mobileNumber: String?,
+                                                                    emailAddress: String?) -> Promise<Void> {
+        return Promise { seal in
+
+            guard let unwrappedAddress = address, let shippingAddress = try? unwrappedAddress.asDictionary() else {
+                seal.fulfill()
+                return
+            }
+
+            var actions: [ClientSession.Action] = []
+
+            let setShippingAddressAction: ClientSession.Action = .setShippingAddressActionWithParameters(shippingAddress)
+            actions.append(setShippingAddressAction)
+
+            if let mobileNumber {
+                let setMobileNumberAction: ClientSession.Action = .setMobileNumberAction(mobileNumber: mobileNumber)
+                actions.append(setMobileNumberAction)
+            }
+
+            if let emailAddress {
+                let setEmailAddressAction: ClientSession.Action = .setCustomerEmailAddress(emailAddress)
+                actions.append(setEmailAddressAction)
+            }
+
+            let clientSessionActionsModule = ClientSessionActionsModule()
+
+            firstly {
+                clientSessionActionsModule.dispatch(actions: actions)
+            }.done {
+                seal.fulfill()
+            }.catch { error in
+                seal.reject(error)
+            }
+        }
+    }
+
     func dispatch(actions: [ClientSession.Action]) -> Promise<Void> {
         return Promise { seal in
             let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actions))

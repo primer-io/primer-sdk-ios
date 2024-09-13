@@ -30,7 +30,8 @@ final class ApplePayPresentationManagerTests: XCTestCase {
                                                           quantity: 1,
                                                           discountAmount: nil,
                                                           taxAmount: nil)
-                                              ])
+                                              ],
+                                              shippingMethods: [.init(label: "Shipping", amount: 100)])
         let request = sut.createRequest(for: applePayRequest)
 
         XCTAssertEqual(request.countryCode, "GB")
@@ -41,6 +42,8 @@ final class ApplePayPresentationManagerTests: XCTestCase {
         XCTAssertEqual(request.paymentSummaryItems.first!.amount.doubleValue, 1.23, accuracy: 0.01)
         XCTAssertEqual(request.paymentSummaryItems.first!.label, "line_item_name")
         XCTAssertEqual(request.paymentSummaryItems.first!.type, .final)
+
+        XCTAssertNotNil(request.shippingMethods)
     }
 
     func testIsPresentable() {
@@ -51,6 +54,29 @@ final class ApplePayPresentationManagerTests: XCTestCase {
 
         registerAllowedCardNetworks()
         XCTAssertTrue(sut.isPresentable)
+    }
+
+    func testShippingContactFields() throws {
+        let additionalFields: [PrimerApplePayOptions.ShippingOptions.AdditionalShippingContactField] = [.name, .emailAddress, .phoneNumber]
+
+        var applePayOptions = PrimerApplePayOptions(merchantIdentifier: "merchant_id",
+                                                    merchantName: "merchant_name",
+                                                    checkProvidedNetworks: true,
+                                                    shippingOptions: .init(isCaptureShippingAddressEnabled: true,
+                                                                           additionalShippingContactFields: additionalFields, requireShippingMethod: true))
+        var shippingFields = sut.shippingContactFields(applePayOptions: applePayOptions)
+
+        XCTAssertEqual(shippingFields, [.name, .postalAddress, .emailAddress, .phoneNumber])
+
+        applePayOptions = PrimerApplePayOptions(merchantIdentifier: "merchant_id",
+                                                    merchantName: "merchant_name",
+                                                    checkProvidedNetworks: true,
+                                                    shippingOptions: .init(isCaptureShippingAddressEnabled: true,
+                                                                           additionalShippingContactFields: nil, requireShippingMethod: true))
+
+        shippingFields = sut.shippingContactFields(applePayOptions: applePayOptions)
+
+        XCTAssertEqual(shippingFields, [.postalAddress])
     }
 
     func testErrorForDisplay() {

@@ -388,8 +388,8 @@
 				87FC1ACA2BE5194100C9F474 /* MerchantHeadlessStripeAchFieldsViewModel.swift */,
 			);
 			path = StripeAchHeadless;
-            sourceTree = "<group>";
-        };
+			sourceTree = "<group>";
+		};
 		D9AC6F54A87D432982864A63 /* Model */ = {
 			isa = PBXGroup;
 			children = (

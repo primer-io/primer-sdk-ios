@@ -8,7 +8,7 @@
 import Foundation
 import PassKit
 
-internal struct ApplePayOrderItem: Codable {
+internal struct ApplePayOrderItem: Codable, Equatable {
 
     public let name: String
     public let unitAmount: Int?

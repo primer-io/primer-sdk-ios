@@ -1,4 +1,5 @@
 import Foundation
+import PassKit
 
 // MARK: - PRIMER SETTINGS
 
@@ -149,17 +150,39 @@ public class PrimerApplePayOptions: Codable {
     /// canMakePayments(usingNetworks:) was returning false if there were no cards in the Wallet,
     /// we introduced this flag to continue supporting the old behaviour. Default value is `true`.
     let checkProvidedNetworks: Bool
+    let shippingOptions: ShippingOptions?
 
     public init(merchantIdentifier: String,
                 merchantName: String?,
                 isCaptureBillingAddressEnabled: Bool = false,
                 showApplePayForUnsupportedDevice: Bool = true,
-                checkProvidedNetworks: Bool = true) {
+                checkProvidedNetworks: Bool = true,
+                shippingOptions: ShippingOptions? = nil) {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
+        self.shippingOptions = shippingOptions
         self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
         self.checkProvidedNetworks = checkProvidedNetworks
+    }
+
+    public struct ShippingOptions: Codable {
+        let isCaptureShippingAddressEnabled: Bool
+        let additionalShippingContactFields: [AdditionalShippingContactField]?
+        let requireShippingMethod: Bool
+
+        public init(isCaptureShippingAddressEnabled: Bool,
+                    additionalShippingContactFields: [AdditionalShippingContactField]? = nil,
+                    requireShippingMethod: Bool) {
+            self.isCaptureShippingAddressEnabled = isCaptureShippingAddressEnabled
+            self.additionalShippingContactFields = additionalShippingContactFields
+            self.requireShippingMethod = requireShippingMethod
+        }
+
+// swiftlint:disable:next nesting
+        public enum AdditionalShippingContactField: Codable {
+            case name, emailAddress, phoneNumber
+        }
     }
 }
 

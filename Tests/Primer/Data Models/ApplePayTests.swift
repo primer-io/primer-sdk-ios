@@ -55,11 +55,12 @@ class ApplePayTests: XCTestCase {
                             taxCode: nil,
                             productType: nil)
                     ],
-                    shippingAmount: nil),
+                    shippingAmount: nil,
+                    shippingMethod: nil),
                 customer: nil,
                 testId: nil)
 
-            var orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSessionAndApplePayOptions(clientSession, applePayOptions: nil)
+            var orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSession(clientSession, applePayOptions: nil)
             XCTAssert(orderItems.count == (clientSession.order?.lineItems?.count ?? 0) + 1, "Apple Pay order items should be \((clientSession.order?.lineItems?.count ?? 0) + 1)")
 
             XCTAssert(orderItems[0].quantity == clientSession.order?.lineItems?[0].quantity, "Order item's quantity should be \(String(describing: clientSession.order?.lineItems?[0].quantity)), but it's \(orderItems[0].quantity)")
@@ -108,8 +109,8 @@ class ApplePayTests: XCTestCase {
                 customer: nil,
                 testId: nil)
 
-            orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSessionAndApplePayOptions(clientSession, applePayOptions: configurationApplePayOptions)
-    
+            orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSession(clientSession, applePayOptions: configurationApplePayOptions)
+
             XCTAssert(orderItems.count == (clientSession.order?.lineItems?.count ?? 0) + 1, "Apple Pay order items should be \((clientSession.order?.lineItems?.count ?? 0) + 1)")
 
             XCTAssert(orderItems[0].quantity == clientSession.order?.lineItems?[0].quantity, "Order item's quantity should be \(String(describing: clientSession.order?.lineItems?[0].quantity)), but it's \(orderItems[0].quantity)")
@@ -165,7 +166,7 @@ class ApplePayTests: XCTestCase {
                 customer: nil,
                 testId: nil)
 
-            var orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSessionAndApplePayOptions(clientSession, applePayOptions: nil)
+            var orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSession(clientSession, applePayOptions: nil)
             XCTAssert(orderItems.count == (clientSession.order?.lineItems?.count ?? 0) + 1, "Apple Pay order items should be \((clientSession.order?.lineItems?.count ?? 0) + 1)")
 
             XCTAssert(orderItems[0].quantity == 1, "Order item's quantity should be 1, the summary item")
@@ -198,7 +199,7 @@ class ApplePayTests: XCTestCase {
             
             let configurationApplePayOptions = ApplePayOptions(merchantName: "Test")
 
-            orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSessionAndApplePayOptions(clientSession, applePayOptions: configurationApplePayOptions)
+            orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSession(clientSession, applePayOptions: configurationApplePayOptions)
             XCTAssert(orderItems.count == 1, "Apple Pay order items should be 1, the summary order item")
 
             XCTAssert(orderItems[0].quantity == 1, "Order item's quantity should be 1, as there're no line items")
@@ -306,7 +307,7 @@ class ApplePayTests: XCTestCase {
 
             DependencyContainer.register(mockAppState as AppStateProtocol)
 
-            var orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSessionAndApplePayOptions(clientSession, applePayOptions: nil)
+            var orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSession(clientSession, applePayOptions: nil)
             var applePayItems: [PKPaymentSummaryItem] = orderItems.compactMap({ $0.applePayItem })
             XCTAssert(applePayItems.count == (clientSession.order?.lineItems?.count ?? 0) + 1, "Apple Pay items should be \((clientSession.order?.lineItems?.count ?? 0) + 1)")
 
@@ -326,7 +327,7 @@ class ApplePayTests: XCTestCase {
             XCTAssert(applePayItems.last!.label == settings.paymentMethodOptions.applePayOptions?.merchantName)
             
             let configurationApplePayOptions = ApplePayOptions(merchantName: "Test")
-            orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSessionAndApplePayOptions(clientSession, applePayOptions: configurationApplePayOptions)
+            orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSession(clientSession, applePayOptions: configurationApplePayOptions)
             applePayItems = orderItems.compactMap({ $0.applePayItem })
             XCTAssert(applePayItems.last!.label == configurationApplePayOptions.merchantName)
         } catch {

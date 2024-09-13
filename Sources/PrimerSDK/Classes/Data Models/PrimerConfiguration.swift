@@ -13,6 +13,7 @@ import PassKit
 typealias PrimerAPIConfiguration = Response.Body.Configuration
 typealias PrimerAPIConfigurationResponse = (config: Response.Body.Configuration, ttl: TimeInterval)
 
+// swiftlint:disable file_length
 extension Request.URLParameters {
 
     class Configuration: Codable {
@@ -245,7 +246,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
         let paymentMethods: [PrimerPaymentMethod]?
         let primerAccountId: String?
         let keys: ThreeDS.Keys?
-        let checkoutModules: [Response.Body.Configuration.CheckoutModule]?
+        var checkoutModules: [Response.Body.Configuration.CheckoutModule]?
 
         var isSetByClientSession: Bool {
             return clientSession != nil
@@ -362,7 +363,19 @@ extension Response.Body.Configuration {
             }
         }
 
-        // swiftlint:disable:next nesting
+        // swiftlint:disable nesting
+        struct ShippingMethodOptions: CheckoutModuleOptions {
+            let shippingMethods: [ShippingMethod]
+            let selectedShippingMethod: String
+
+            struct ShippingMethod: Codable {
+                let name: String
+                let description: String
+                let amount: Int
+                let id: String
+            }
+        }
+
         struct PostalCodeOptions: CheckoutModuleOptions {
             let firstName: Bool?
             let lastName: Bool?
@@ -374,7 +387,6 @@ extension Response.Body.Configuration {
             let phoneNumber: Bool?
             let state: Bool?
 
-            // swiftlint:disable:next nesting
             private enum CodingKeys: String, CodingKey {
                 case firstName
                 case lastName
@@ -452,6 +464,8 @@ extension Response.Body.Configuration {
                 self.options = options
             } else if let options = (try? container.decode(PostalCodeOptions.self, forKey: .options)) {
                 self.options = options
+            } else if let options = (try? container.decode(ShippingMethodOptions.self, forKey: .options)) {
+                self.options = options
             } else {
                 self.options = nil
             }
@@ -466,8 +480,11 @@ extension Response.Body.Configuration {
                 try container.encode(options, forKey: .options)
             } else if let options = options as? PostalCodeOptions {
                 try container.encode(options, forKey: .options)
+            } else if let options = options as? ShippingMethodOptions {
+                try container.encode(options, forKey: .options)
             }
         }
     }
 }
+// swiftlint:enable nesting
 // swiftlint:enable file_length

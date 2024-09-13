@@ -152,7 +152,7 @@ extension PaymentMethodTokenizationViewModel {
                                                                  userInfo: .errorUserInfoDictionary(),
                                                                  diagnosticsId: UUID().uuidString)
                     }
-
+                    self.setCheckoutDataFromError(primerErr)
                     self.showResultScreenIfNeeded(error: primerErr)
                     return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
                 }

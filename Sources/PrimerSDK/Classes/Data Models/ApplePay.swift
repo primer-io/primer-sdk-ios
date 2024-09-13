@@ -1,3 +1,5 @@
+import PassKit
+
 public enum MerchantCapability {
     case capability3DS
     case capabilityEMV
@@ -10,11 +12,15 @@ struct ApplePayRequest {
     var merchantIdentifier: String
     var countryCode: CountryCode
     var items: [ApplePayOrderItem]
+    var shippingMethods: [PKShippingMethod]?
 }
 
 struct ApplePayPaymentResponse {
     let token: ApplePayPaymentInstrument.PaymentResponseToken
     let billingAddress: ClientSession.Address?
+    let shippingAddress: ClientSession.Address?
+    let mobileNumber: String?
+    let emailAddress: String?
 }
 
 struct ApplePayPaymentResponsePaymentMethod: Codable {
