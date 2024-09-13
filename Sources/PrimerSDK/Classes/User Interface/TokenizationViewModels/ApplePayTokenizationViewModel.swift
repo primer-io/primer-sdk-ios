@@ -355,7 +355,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             return .init(shippingMethods: nil, selectedShippingMethodOrderItem: nil)
         }
 
-        var factor: Double
+        var factor: NSDecimalNumber
         if AppState.current.currency?.isZeroDecimal == true {
             factor = 1
         } else {
@@ -364,8 +364,8 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
         // Convert to PKShippingMethods
         let apShippingMethods = options.shippingMethods.map {
-            let amount: Double = Double($0.amount)/factor
-            let method = PKShippingMethod(label: $0.name, amount: NSDecimalNumber(value: amount))
+            let amount = NSDecimalNumber(value: $0.amount).dividing(by: factor)
+            let method = PKShippingMethod(label: $0.name, amount: amount)
             method.detail = $0.description
             method.identifier = $0.id
             return method
