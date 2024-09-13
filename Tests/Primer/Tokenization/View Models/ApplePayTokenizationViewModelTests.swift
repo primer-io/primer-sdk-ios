@@ -262,6 +262,10 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
 fileprivate class MockApplePayPresentationManager: ApplePayPresenting {
     var isPresentable: Bool = true
 
+    var errorForDisplay: Error = PrimerError.unableToPresentPaymentMethod(paymentMethodType: "APPLE_PAY",
+                                                                          userInfo: .errorUserInfoDictionary(),
+                                                                          diagnosticsId: UUID().uuidString)
+
     var onPresent: ((ApplePayRequest, PKPaymentAuthorizationControllerDelegate) -> Promise<Void>)?
 
     func present(withRequest applePayRequest: ApplePayRequest, delegate: PKPaymentAuthorizationControllerDelegate) -> Promise<Void> {
