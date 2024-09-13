@@ -59,7 +59,6 @@ class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
                     seal.fulfill()
                 }
             }
-
         }
     }
 

@@ -139,8 +139,8 @@ class ClientSessionActionsModule: ClientSessionActionsProtocol {
     }
 
     static func updateShippingDetailsViaClientSessionActionIfNeeded(address: ClientSession.Address?,
-                                                                     mobileNumber: String?,
-                                                                     emailAddress: String?) -> Promise<Void> {
+                                                                    mobileNumber: String?,
+                                                                    emailAddress: String?) -> Promise<Void> {
         return Promise { seal in
 
             guard let unwrappedAddress = address, let shippingAddress = try? unwrappedAddress.asDictionary() else {
