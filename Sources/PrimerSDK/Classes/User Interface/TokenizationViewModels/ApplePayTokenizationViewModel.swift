@@ -141,10 +141,10 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
             .then { () -> Promise<Void> in
                 let billingAddress = self.applePayPaymentResponse.billingAddress
-                return self.updateBillingAddressViaClientSessionActionWithAddressIfNeeded(billingAddress)
+                return ClientSessionActionsModule.updateBillingAddressViaClientSessionActionWithAddressIfNeeded(billingAddress)
             }
             .then { () -> Promise<Void> in
-                return self.updateShippingDetailsViaClientSessionActionIfNeeded(address: self.applePayPaymentResponse.shippingAddress,
+                return ClientSessionActionsModule.updateShippingDetailsViaClientSessionActionIfNeeded(address: self.applePayPaymentResponse.shippingAddress,
                                                                                 mobileNumber: self.applePayPaymentResponse.mobileNumber,
                                                                                 emailAddress: self.applePayPaymentResponse.emailAddress)
             }
@@ -421,64 +421,64 @@ extension ApplePayTokenizationViewModel {
                                      countryCode: CountryCode(rawValue: address.isoCountryCode))
     }
 
-    private func updateBillingAddressViaClientSessionActionWithAddressIfNeeded(_ address: ClientSession.Address?) -> Promise<Void> {
-        return Promise { seal in
-
-            guard let unwrappedAddress = address, let billingAddress = try? unwrappedAddress.asDictionary() else {
-                seal.fulfill()
-                return
-            }
-
-            let billingAddressAction: ClientSession.Action = .setBillingAddressActionWithParameters(billingAddress)
-            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-
-            firstly {
-                clientSessionActionsModule.dispatch(actions: [billingAddressAction])
-            }.done {
-                seal.fulfill()
-            }
-            .catch { error in
-                seal.reject(error)
-            }
-        }
-    }
-
-    private func updateShippingDetailsViaClientSessionActionIfNeeded(address: ClientSession.Address?,
-                                                                     mobileNumber: String?,
-                                                                     emailAddress: String?) -> Promise<Void> {
-        return Promise { seal in
-
-            guard let unwrappedAddress = address, let shippingAddress = try? unwrappedAddress.asDictionary() else {
-                seal.fulfill()
-                return
-            }
-
-            var actions: [ClientSession.Action] = []
-
-            let setShippingAddressAction: ClientSession.Action = .setShippingAddressActionWithParameters(shippingAddress)
-            actions.append(setShippingAddressAction)
-
-            if let mobileNumber {
-                let setMobileNumberAction: ClientSession.Action = .setMobileNumberAction(mobileNumber: mobileNumber)
-                actions.append(setMobileNumberAction)
-            }
-
-            if let emailAddress {
-                let setEmailAddressAction: ClientSession.Action = .setCustomerEmailAddress(emailAddress)
-                actions.append(setEmailAddressAction)
-            }
-
-            let clientSessionActionsModule = ClientSessionActionsModule()
-
-            firstly {
-                clientSessionActionsModule.dispatch(actions: actions)
-            }.done {
-                seal.fulfill()
-            }.catch { error in
-                seal.reject(error)
-            }
-        }
-    }
+//    private func updateBillingAddressViaClientSessionActionWithAddressIfNeeded(_ address: ClientSession.Address?) -> Promise<Void> {
+//        return Promise { seal in
+//
+//            guard let unwrappedAddress = address, let billingAddress = try? unwrappedAddress.asDictionary() else {
+//                seal.fulfill()
+//                return
+//            }
+//
+//            let billingAddressAction: ClientSession.Action = .setBillingAddressActionWithParameters(billingAddress)
+//            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+//
+//            firstly {
+//                clientSessionActionsModule.dispatch(actions: [billingAddressAction])
+//            }.done {
+//                seal.fulfill()
+//            }
+//            .catch { error in
+//                seal.reject(error)
+//            }
+//        }
+//    }
+//
+//    private func updateShippingDetailsViaClientSessionActionIfNeeded(address: ClientSession.Address?,
+//                                                                     mobileNumber: String?,
+//                                                                     emailAddress: String?) -> Promise<Void> {
+//        return Promise { seal in
+//
+//            guard let unwrappedAddress = address, let shippingAddress = try? unwrappedAddress.asDictionary() else {
+//                seal.fulfill()
+//                return
+//            }
+//
+//            var actions: [ClientSession.Action] = []
+//
+//            let setShippingAddressAction: ClientSession.Action = .setShippingAddressActionWithParameters(shippingAddress)
+//            actions.append(setShippingAddressAction)
+//
+//            if let mobileNumber {
+//                let setMobileNumberAction: ClientSession.Action = .setMobileNumberAction(mobileNumber: mobileNumber)
+//                actions.append(setMobileNumberAction)
+//            }
+//
+//            if let emailAddress {
+//                let setEmailAddressAction: ClientSession.Action = .setCustomerEmailAddress(emailAddress)
+//                actions.append(setEmailAddressAction)
+//            }
+//
+//            let clientSessionActionsModule = ClientSessionActionsModule()
+//
+//            firstly {
+//                clientSessionActionsModule.dispatch(actions: actions)
+//            }.done {
+//                seal.fulfill()
+//            }.catch { error in
+//                seal.reject(error)
+//            }
+//        }
+//    }
 
     internal func createOrderItemsFromClientSession(_ clientSession: ClientSession.APIResponse,
                                                     applePayOptions: ApplePayOptions?,
@@ -698,9 +698,9 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                                                            diagnosticsId: UUID().uuidString)
                         throw(err)
                     }
-                    return self.updateShippingDetailsViaClientSessionActionIfNeeded(address: address,
-                                                                             mobileNumber: nil,
-                                                                             emailAddress: nil)
+                    return ClientSessionActionsModule.updateShippingDetailsViaClientSessionActionIfNeeded(address: address,
+                                                                                                          mobileNumber: nil,
+                                                                                                          emailAddress: nil)
                 }.done {
 
                     let shippingMethodsInfo = self.getShippingMethodsInfo()
