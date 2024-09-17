@@ -172,3 +172,4 @@ jobs:
           browserstack-access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
           slack-mobile-sdk-channel: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           slack-reporter-bot-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
+          ui-tests-secrets-api-key: ${{ secrets.UI_TESTS_SECRETS_API_KEY }}
