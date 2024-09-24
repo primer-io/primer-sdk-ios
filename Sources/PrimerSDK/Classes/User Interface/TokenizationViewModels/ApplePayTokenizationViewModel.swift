@@ -274,6 +274,9 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                         }.catch { error in
                             seal.reject(error)
                         }
+                } else {
+                    ErrorHandler.handle(error: self.applePayPresentationManager.errorForDisplay)
+                    return
                 }
             }
         }

@@ -10,6 +10,7 @@ import PassKit
 
 protocol ApplePayPresenting {
     var isPresentable: Bool { get }
+    var errorForDisplay: Error { get }
     func present(withRequest applePayRequest: ApplePayRequest,
                  delegate: PKPaymentAuthorizationControllerDelegate) -> Promise<Void>
 }
@@ -33,13 +34,6 @@ class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
     func present(withRequest applePayRequest: ApplePayRequest,
                  delegate: PKPaymentAuthorizationControllerDelegate) -> Promise<Void> {
         Promise { seal in
-            guard isPresentable else {
-                let error = errorForDisplay
-                ErrorHandler.handle(error: error)
-                seal.reject(error)
-                return
-            }
-
             let request = createRequest(for: applePayRequest)
 
             let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
