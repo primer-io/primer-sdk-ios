@@ -144,9 +144,11 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return ClientSessionActionsModule.updateBillingAddressViaClientSessionActionWithAddressIfNeeded(billingAddress)
             }
             .then { () -> Promise<Void> in
-                return ClientSessionActionsModule.updateShippingDetailsViaClientSessionActionIfNeeded(address: self.applePayPaymentResponse.shippingAddress,
-                                                                                mobileNumber: self.applePayPaymentResponse.mobileNumber,
-                                                                                emailAddress: self.applePayPaymentResponse.emailAddress)
+                return ClientSessionActionsModule.updateShippingDetailsViaClientSessionActionIfNeeded(
+                    address: self.applePayPaymentResponse.shippingAddress,
+                    mobileNumber: self.applePayPaymentResponse.mobileNumber,
+                    emailAddress: self.applePayPaymentResponse.emailAddress
+                )
             }
             .done {
                 seal.fulfill()
@@ -671,8 +673,8 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                     continuation.resume(returning: PKPaymentRequestShippingContactUpdate(errors: nil,
                                                                                          paymentSummaryItems: orderItems.map { $0.applePayItem },
                                                                                          shippingMethods: shippingMethodsInfo.shippingMethods ?? []))
-                }.catch { error in
-                    continuation.resume(throwing: error)
+                }.catch { _ in
+                    continuation.resume(throwing: PKPaymentError(PKPaymentError.shippingContactInvalidError))
                 }
             }
         } catch {
@@ -718,8 +720,8 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                     } catch {
                         continuation.resume(throwing: error)
                     }
-                }.catch { error in
-                    continuation.resume(throwing: error)
+                }.catch { _ in
+                    continuation.resume(throwing: PKPaymentError(PKPaymentError.shippingContactInvalidError))
                 }
             }
         } catch {
