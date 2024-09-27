@@ -379,7 +379,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             $0.id == options.selectedShippingMethod
         }) {
             shippingItem = try? ApplePayOrderItem(
-                name: "Shipping: \(selectedShippingMethod.name)",
+                name: "Shipping:",
                 unitAmount: selectedShippingMethod.amount,
                 quantity: 1,
                 discountAmount: nil,
