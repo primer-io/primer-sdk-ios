@@ -220,7 +220,7 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         let methods = sut.getShippingMethodsInfo()
 
         XCTAssert(methods.shippingMethods?.count == 2)
-        XCTAssert(methods.selectedShippingMethodOrderItem?.name == "Shipping: Default")
+        XCTAssert(methods.selectedShippingMethodOrderItem?.name == "Shipping")
     }
 
 
@@ -613,7 +613,7 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         XCTAssert(update3.paymentSummaryItems.count == 3)
         let shippingItem = update3.paymentSummaryItems[1]
         XCTAssertEqual(shippingItem.amount, 2)
-        XCTAssertEqual(shippingItem.label, "Shipping: Next Day")
+        XCTAssertEqual(shippingItem.label, "Shipping")
     }
 
     // MARK: Helpers
