@@ -161,9 +161,10 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var applePayCaptureShippingDetails = false
     var applePayCheckProvidedNetworks = false
 
-    var applePayCaptureShippingAddress = false
-    var applePayRequireShippingMethod = false
-    var applePayAdditionalContactFields: [PrimerApplePayOptions.ShippingOptions.AdditionalShippingContactField]? = nil
+    //Below are gated by applePayCaptureShippingDetails, default to on when above is true
+    var applePayCaptureShippingAddress = true
+    var applePayRequireShippingMethod = true
+    var applePayAdditionalContactFields: [PrimerApplePayOptions.ShippingOptions.AdditionalShippingContactField]? = [.name, .emailAddress, .phoneNumber]
 
     func setAccessibilityIds() {
         self.view.accessibilityIdentifier = "Background View"
