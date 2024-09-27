@@ -8,7 +8,6 @@
 
 import PrimerSDK
 import UIKit
-import PassKit
 
 var environment: Environment = .sandbox
 var customDefinedApiKey: String?
