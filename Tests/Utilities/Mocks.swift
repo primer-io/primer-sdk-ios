@@ -132,6 +132,7 @@ class Mocks {
             static var nolPaymentMethodId = "mock_nol_payment_method_id"
             static var paypalPaymentMethodId = "mock_paypal_method_id"
             static var xenditPaymentMethodId = "mock_xendit_method_id"
+            static var adyenVippsPaymentMethodId = "adyen_vipps_method_id"
 
             static var webRedirectPaymentMethodType = "MOCK_WEB_REDIRECT_PAYMENT_METHOD_TYPE"
             static var adyenGiroPayRedirectPaymentMethodType = "MOCK_ADYEN_GIROPAY_PAYMENT_METHOD_TYPE"
@@ -141,6 +142,7 @@ class Mocks {
             static var webRedirectPaymentMethodName = "Mock Web Redirect Payment Method"
             static var adyenGiroPayRedirectPaymentMethodName = "Mock Adyen GiroPay Payment Method"
             static var adyenBlikPaymentMethodName = "Mock Adyen Blik Payment Method"
+            static var adyenVippsPaymentMethodName = "Mock Adyen Vipps Payment Method"
             static var adyenIDealPaymentMethodName = "Mock iDeal Blik Payment Method"
             static var klarnaPaymentMethodName = "Mock Klarna Payment Method"
             static var paymentCardPaymentMethodName = "Mock Payment Card Payment Method"
@@ -200,6 +202,16 @@ class Mocks {
             implementationType: .webRedirect,
             type: "ADYEN_BLIK", // Mocks.Static.Strings.adyenGiroPayRedirectPaymentMethodType,
             name: Mocks.Static.Strings.adyenBlikPaymentMethodName,
+            processorConfigId: Mocks.Static.Strings.processorConfigId,
+            surcharge: nil,
+            options: nil,
+            displayMetadata: nil)
+
+        static var adyenVippsPaymentMethod = PrimerPaymentMethod(
+            id: Mocks.Static.Strings.adyenVippsPaymentMethodId,
+            implementationType: .webRedirect,
+            type: "ADYEN_VIPPS", // Mocks.Static.Strings.adyenGiroPayRedirectPaymentMethodType,
+            name: Mocks.Static.Strings.adyenVippsPaymentMethodName,
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: nil,
             options: nil,

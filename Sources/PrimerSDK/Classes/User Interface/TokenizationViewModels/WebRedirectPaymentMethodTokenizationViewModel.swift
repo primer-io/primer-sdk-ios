@@ -29,6 +29,30 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
     private var redirectUrlRequestId: String?
     private var redirectUrlComponents: URLComponents?
+    private let deeplinkAbilityProvider: DeeplinkAbilityProviding
+
+    init(config: PrimerPaymentMethod,
+         uiManager: PrimerUIManaging,
+         tokenizationService: TokenizationServiceProtocol,
+         createResumePaymentService: CreateResumePaymentServiceProtocol,
+         deeplinkAbilityProvider: DeeplinkAbilityProviding = UIApplication.shared) {
+
+        self.deeplinkAbilityProvider = deeplinkAbilityProvider
+        super.init(config: config,
+                   uiManager: uiManager,
+                   tokenizationService: tokenizationService,
+                   createResumePaymentService: createResumePaymentService)
+    }
+
+    convenience init(config: PrimerPaymentMethod,
+        apiClient: PrimerAPIClientProtocol = PrimerAPIClient()) {
+        self.init(config: config,
+                  uiManager: PrimerUIManager.shared,
+                  tokenizationService: TokenizationService(apiClient: apiClient),
+                  createResumePaymentService: CreateResumePaymentService(paymentMethodType: config.type,
+                                                                         apiClient: apiClient)
+        )
+    }
 
     @objc
     override func receivedNotification(_ notification: Notification) {
@@ -368,7 +392,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     private static let adyenVippsDeeplinkUrl = "vipps://"
 #endif
 
-    private func sessionInfo() -> WebRedirectSessionInfo {
+    func sessionInfo() -> WebRedirectSessionInfo {
         switch config.type {
         case PrimerPaymentMethodType.adyenVipps.rawValue:
             /// See: [Vipps MobilePay Documentation](https://developer.vippsmobilepay.com/docs/knowledge-base/user-flow/#deep-link-flow)
@@ -376,7 +400,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             /// If the Vipps app is not installed, fall back to the Web flow.
             /// If changing these values - they must also be updated in `Info.plist` `LSApplicationQueriesSchemes` of the host App.
             if let deepLinkUrl = URL(string: Self.adyenVippsDeeplinkUrl),
-               UIApplication.shared.canOpenURL(deepLinkUrl) == true {
+               self.deeplinkAbilityProvider.canOpenURL(deepLinkUrl) == true {
                 return WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
             } else {
                 return WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode, platform: "WEB")
