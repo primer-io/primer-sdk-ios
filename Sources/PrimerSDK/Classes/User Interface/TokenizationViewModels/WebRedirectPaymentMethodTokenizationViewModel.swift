@@ -295,7 +295,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
                 return
             }
 
-            let sessionInfo = WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
+            let sessionInfo = sessionInfo()
 
             let paymentInstrument = OffSessionPaymentInstrument(
                 paymentMethodConfigId: configId,
@@ -360,6 +360,31 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         self.didCancelPolling?()
         self.didCancelPolling = nil
         super.cancel()
+    }
+
+#if DEBUG
+    private static let adyenVippsDeeplinkUrl = "vippsmt://"
+#else
+    private static let adyenVippsDeeplinkUrl = "vipps://"
+#endif
+
+    private func sessionInfo() -> WebRedirectSessionInfo {
+        switch config.type {
+        case PrimerPaymentMethodType.adyenVipps.rawValue:
+            /// See: [Vipps MobilePay Documentation](https://developer.vippsmobilepay.com/docs/knowledge-base/user-flow/#deep-link-flow)
+            ///
+            /// If the Vipps app is not installed, fall back to the Web flow.
+            /// If changing these values - they must also be updated in `Info.plist` `LSApplicationQueriesSchemes` of the host App.
+            if let deepLinkUrl = URL(string: Self.adyenVippsDeeplinkUrl),
+               UIApplication.shared.canOpenURL(deepLinkUrl) == true {
+                return WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
+            } else {
+                return WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode, platform: "WEB")
+            }
+        default:
+            return WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
+
+        }
     }
 }
 
