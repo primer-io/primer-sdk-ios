@@ -387,6 +387,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     }
 
 #if DEBUG
+    /// See: [Vipps MobilePay Documentation](https://developer.vippsmobilepay.com/docs/knowledge-base/user-flow/#deep-link-flow)
+    /// If changing these values - they must also be updated in `Info.plist` `LSApplicationQueriesSchemes` of the host App.
     private static let adyenVippsDeeplinkUrl = "vippsmt://"
 #else
     private static let adyenVippsDeeplinkUrl = "vipps://"
@@ -395,10 +397,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     func sessionInfo() -> WebRedirectSessionInfo {
         switch config.type {
         case PrimerPaymentMethodType.adyenVipps.rawValue:
-            /// See: [Vipps MobilePay Documentation](https://developer.vippsmobilepay.com/docs/knowledge-base/user-flow/#deep-link-flow)
-            ///
             /// If the Vipps app is not installed, fall back to the Web flow.
-            /// If changing these values - they must also be updated in `Info.plist` `LSApplicationQueriesSchemes` of the host App.
             if let deepLinkUrl = URL(string: Self.adyenVippsDeeplinkUrl),
                self.deeplinkAbilityProvider.canOpenURL(deepLinkUrl) == true {
                 return WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
