@@ -45,7 +45,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     }
 
     convenience init(config: PrimerPaymentMethod,
-        apiClient: PrimerAPIClientProtocol = PrimerAPIClient()) {
+                     apiClient: PrimerAPIClientProtocol = PrimerAPIClient()) {
         self.init(config: config,
                   uiManager: PrimerUIManager.shared,
                   tokenizationService: TokenizationService(apiClient: apiClient),
