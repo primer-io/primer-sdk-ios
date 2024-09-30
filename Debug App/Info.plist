@@ -36,6 +36,8 @@
 	<string>1</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>vippsmt</string>
+		<string>vipps</string>
 		<string>bankid</string>
 		<string>klarna</string>
 		<string>klarnaconsent</string>

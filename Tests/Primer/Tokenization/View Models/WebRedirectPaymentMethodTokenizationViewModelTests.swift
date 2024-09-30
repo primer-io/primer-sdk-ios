@@ -207,5 +207,32 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
         ], timeout: 15.0, enforceOrder: true)
     }
 
+    func test_adyenVippsSessionInfo() throws {
+        sut = WebRedirectPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.adyenVippsPaymentMethod,
+                                                            uiManager: uiManager,
+                                                            tokenizationService: tokenizationService,
+                                                            createResumePaymentService: createResumePaymentService,
+                                                            deeplinkAbilityProvider: MockDeeplinkAbilityProvider(isDeeplinkAvailable: true))
 
+        var sessionInfo = sut.sessionInfo()
+        XCTAssertEqual(sessionInfo.platform, "IOS")
+
+        sut = WebRedirectPaymentMethodTokenizationViewModel(config: Mocks.PaymentMethods.adyenVippsPaymentMethod,
+                                                            uiManager: uiManager,
+                                                            tokenizationService: tokenizationService,
+                                                            createResumePaymentService: createResumePaymentService,
+                                                            deeplinkAbilityProvider: MockDeeplinkAbilityProvider(isDeeplinkAvailable: false))
+
+        sessionInfo = sut.sessionInfo()
+        XCTAssertEqual(sessionInfo.platform, "WEB")
+    }
+
+}
+
+struct MockDeeplinkAbilityProvider: DeeplinkAbilityProviding {
+    var isDeeplinkAvailable: Bool = true
+
+    func canOpenURL(_ url: URL) -> Bool {
+        return isDeeplinkAvailable
+    }
 }
