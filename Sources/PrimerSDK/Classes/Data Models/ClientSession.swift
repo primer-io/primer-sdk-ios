@@ -213,7 +213,6 @@ internal class ClientSession {
             case currencyCode
             case fees
             case lineItems
-            case shippingAmount
             case shippingMethod = "shipping"
         }
 

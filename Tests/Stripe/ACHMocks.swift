@@ -55,8 +55,7 @@ final class ACHMocks {
                     taxAmount: 50,
                     taxCode: nil,
                     productType: nil)
-            ],
-                shippingAmount: nil),
+            ]),
             customer: getClientSessionCustomer(firstName: firstName, lastName: lastName, email: email),
             testId: nil)
     }
@@ -82,8 +81,7 @@ final class ACHMocks {
                 countryCode: .us,
                 currencyCode: emptyCurrencyCode ? nil : CurrencyLoader().getCurrency("USD"),
                 fees: nil,
-                lineItems: emptyLineItems ? nil : [getLineItem(hasAmount: !emptyOrderAmount)],
-                shippingAmount: nil),
+                lineItems: emptyLineItems ? nil : [getLineItem(hasAmount: !emptyOrderAmount)]),
             customer: getClientSessionCustomer(firstName: "firstname", lastName: "lastname", email: "email"),
             testId: nil)
     }
