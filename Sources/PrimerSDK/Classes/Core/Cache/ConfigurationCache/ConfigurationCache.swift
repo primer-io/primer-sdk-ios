@@ -18,10 +18,7 @@ class ConfigurationCache: ConfigurationCaching {
     private var cache = Cache<String, ConfigurationCachedData>()
 
     func clearCache() {
-        Self.queue.sync(flags: .barrier) { [weak self] in
-            guard let self = self else { return }
-            cache = Cache<String, ConfigurationCachedData>()
-        }
+        cache = Cache<String, ConfigurationCachedData>()
     }
 
     func data(forKey key: String) -> ConfigurationCachedData? {
