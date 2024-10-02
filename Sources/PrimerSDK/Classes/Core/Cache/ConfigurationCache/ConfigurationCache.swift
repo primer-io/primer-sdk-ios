@@ -22,26 +22,32 @@ class ConfigurationCache: ConfigurationCaching {
     }
 
     func data(forKey key: String) -> ConfigurationCachedData? {
-        guard cachingEnabled else {
-            return nil
-        }
-        if let cachedData = cache.value(forKey: key) {
-            if validateCachedConfig(key: key, cachedData: cachedData) == false {
-                cache.removeValue(forKey: key)
+        guard cachingEnabled else { return nil }
+        return Self.queue.sync(flags: .barrier) { [weak self] in
+            guard let self = self else {
                 return nil
             }
-            return cachedData
+            if let cachedData = cache.value(forKey: key) {
+                if validateCachedConfig(key: key, cachedData: cachedData) == false {
+                    cache.removeValue(forKey: key)
+                    return nil
+                }
+                return cachedData
+            }
+            return nil
         }
-        return nil
     }
 
     func setData(_ data: ConfigurationCachedData, forKey key: String) {
-        guard cachingEnabled else {
-            return
+        guard cachingEnabled else { return }
+        return Self.queue.sync(flags: .barrier) { [weak self] in
+            guard let self = self else {
+                return
+            }
+            // Cache includes at most one cached configuration
+            clearCache()
+            cache.insert(data, forKey: key)
         }
-        // Cache includes at most one cached configuration
-        clearCache()
-        cache.insert(data, forKey: key)
     }
 
     private func validateCachedConfig(key: String, cachedData: ConfigurationCachedData) -> Bool {
@@ -59,6 +65,8 @@ class ConfigurationCache: ConfigurationCaching {
     private var cachingEnabled: Bool {
         PrimerSettings.current.clientSessionCachingEnabled
     }
+
+    private static let queue: DispatchQueue = DispatchQueue(label: "primer.configurationCache", qos: .default)
 }
 
 class ConfigurationCachedData {

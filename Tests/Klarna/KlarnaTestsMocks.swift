@@ -76,8 +76,7 @@ class KlarnaTestsMocks {
                       taxAmount: nil,
                       taxCode: nil,
                       productType: nil)
-              ],
-              shippingAmount: nil)
+              ])
     }
 
     static func getClientSession(
@@ -100,8 +99,7 @@ class KlarnaTestsMocks {
                 countryCode: .de,
                 currencyCode: hasCurrency ? CurrencyLoader().getCurrency("EUR") : nil,
                 fees: nil,
-                lineItems: hasItems ? [getLineItem(hasAmount: hasLineItemAmout)] : nil,
-                shippingAmount: nil),
+                lineItems: hasItems ? [getLineItem(hasAmount: hasLineItemAmout)] : nil),
             customer: nil,
             testId: nil)
     }

@@ -55,7 +55,6 @@ class ApplePayTests: XCTestCase {
                             taxCode: nil,
                             productType: nil)
                     ],
-                    shippingAmount: nil,
                     shippingMethod: nil),
                 customer: nil,
                 testId: nil)
@@ -104,8 +103,7 @@ class ApplePayTests: XCTestCase {
                             taxAmount: nil,
                             taxCode: nil,
                             productType: nil)
-                    ],
-                    shippingAmount: nil),
+                    ]),
                 customer: nil,
                 testId: nil)
 
@@ -161,8 +159,7 @@ class ApplePayTests: XCTestCase {
                     countryCode: .gb,
                     currencyCode: CurrencyLoader().getCurrency("GBP"),
                     fees: nil,
-                    lineItems: nil,
-                    shippingAmount: nil),
+                    lineItems: nil),
                 customer: nil,
                 testId: nil)
 
@@ -192,8 +189,7 @@ class ApplePayTests: XCTestCase {
                             type: .surcharge,
                             amount: 19)
                     ],
-                    lineItems: nil,
-                    shippingAmount: nil),
+                    lineItems: nil),
                 customer: nil,
                 testId: nil)
             
@@ -287,8 +283,7 @@ class ApplePayTests: XCTestCase {
                             taxAmount: nil,
                             taxCode: nil,
                             productType: nil)
-                    ],
-                    shippingAmount: nil),
+                    ]),
                 customer: nil,
                 testId: nil)
 
