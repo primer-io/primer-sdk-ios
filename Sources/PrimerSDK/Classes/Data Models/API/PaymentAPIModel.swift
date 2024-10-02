@@ -281,9 +281,42 @@ extension PrimerCheckoutDataPayment {
 @objc public class PrimerOrder: NSObject, Codable {
 
     public let countryCode: String?
+    public let shipping: PrimerShipping?
 
-    public init(countryCode: String?) {
+    public init(countryCode: String?, shipping: PrimerShipping?) {
         self.countryCode = countryCode
+        self.shipping = shipping
+    }
+
+    convenience init(clientSessionOrder: ClientSession.Order?) {
+        if let shippingMethod = clientSessionOrder?.shippingMethod {
+            let shippingMethod = PrimerShipping(amount: shippingMethod.amount,
+                                                methodId: shippingMethod.methodId,
+                                                methodName: shippingMethod.methodName,
+                                                methodDescription: shippingMethod.methodDescription)
+            self.init(countryCode: clientSessionOrder?.countryCode?.rawValue, shipping: shippingMethod)
+            return
+        }
+        self.init(countryCode: clientSessionOrder?.countryCode?.rawValue, shipping: nil)
+    }
+}
+
+// MARK: Client Session Shipping
+
+@objc public class PrimerShipping: NSObject, Codable {
+    public let amount: Int?
+    public let methodId: String?
+    public let methodName: String?
+    public let methodDescription: String?
+
+    public init(amount: Int?,
+                methodId: String?,
+                methodName: String?,
+                methodDescription: String?) {
+        self.amount = amount
+        self.methodId = methodId
+        self.methodName = methodName
+        self.methodDescription = methodDescription
     }
 }
 

@@ -21,7 +21,8 @@ extension PrimerClientSession {
                                          taxCode: apiConfiguration.clientSession?.customer?.taxId,
                                          taxAmount: apiConfiguration.clientSession?.order?.totalTaxAmount) }
 
-        let orderDetails = PrimerOrder(countryCode: apiConfiguration.clientSession?.order?.countryCode?.rawValue)
+        
+        let orderDetails = PrimerOrder(clientSessionOrder: apiConfiguration.clientSession?.order)
 
         let billing = apiConfiguration.clientSession?.customer?.billingAddress
         let shipping = apiConfiguration.clientSession?.customer?.shippingAddress
