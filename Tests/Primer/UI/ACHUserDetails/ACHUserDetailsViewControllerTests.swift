@@ -324,8 +324,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                       taxAmount: nil,
                       taxCode: nil,
                       productType: nil)
-              ],
-              shippingAmount: nil)
+              ])
     }
     
     var customer = ClientSession.Customer(

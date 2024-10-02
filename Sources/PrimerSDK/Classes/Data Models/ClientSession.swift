@@ -201,7 +201,6 @@ internal class ClientSession {
         let currencyCode: Currency?
         let fees: [ClientSession.Order.Fee]?
         let lineItems: [ClientSession.Order.LineItem]?
-        let shippingAmount: Int?
         let shippingMethod: ShippingMethod?
 
         // swiftlint:disable:next nesting
@@ -214,7 +213,6 @@ internal class ClientSession {
             case currencyCode
             case fees
             case lineItems
-            case shippingAmount
             case shippingMethod = "shipping"
         }
 
@@ -227,7 +225,6 @@ internal class ClientSession {
             currencyCode: Currency?,
             fees: [ClientSession.Order.Fee]?,
             lineItems: [ClientSession.Order.LineItem]?,
-            shippingAmount: Int?,
             shippingMethod: ShippingMethod? = nil
         ) {
             self.id = id
@@ -238,7 +235,6 @@ internal class ClientSession {
             self.currencyCode = currencyCode
             self.fees = fees
             self.lineItems = lineItems
-            self.shippingAmount = shippingAmount
             self.shippingMethod = shippingMethod
         }
 
@@ -258,7 +254,6 @@ internal class ClientSession {
             }
             fees = (try? container.decode([ClientSession.Order.Fee]?.self, forKey: .fees)) ?? nil
             lineItems = (try? container.decode([ClientSession.Order.LineItem]?.self, forKey: .lineItems)) ?? nil
-            shippingAmount = (try? container.decode(Int?.self, forKey: .shippingAmount)) ?? nil
             shippingMethod = (try? container.decode(ShippingMethod?.self, forKey: .shippingMethod)) ?? nil
         }
 
@@ -271,7 +266,6 @@ internal class ClientSession {
             try? container.encode(currencyCode, forKey: .currencyCode)
             try? container.encode(fees, forKey: .fees)
             try? container.encode(lineItems, forKey: .lineItems)
-            try? container.encode(shippingAmount, forKey: .shippingAmount)
             try? container.encode(shippingMethod, forKey: .shippingMethod)
         }
 

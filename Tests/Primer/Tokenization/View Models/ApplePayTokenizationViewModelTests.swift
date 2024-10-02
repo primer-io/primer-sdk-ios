@@ -220,7 +220,7 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         let methods = sut.getShippingMethodsInfo()
 
         XCTAssert(methods.shippingMethods?.count == 2)
-        XCTAssert(methods.selectedShippingMethodOrderItem?.name == "Shipping: Default")
+        XCTAssert(methods.selectedShippingMethodOrderItem?.name == "Shipping")
     }
 
 
@@ -257,7 +257,6 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                                   taxCode: nil,
                                   productType: nil)
                          ],
-                         shippingAmount: nil,
                          shippingMethod: nil
                          ),
             customer: nil,
@@ -327,7 +326,6 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                                   taxCode: nil,
                                   productType: nil)
                          ],
-                         shippingAmount: nil,
                          shippingMethod: nil
                          ),
             customer: nil,
@@ -378,7 +376,6 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                                   taxCode: nil,
                                   productType: nil)
                          ],
-                         shippingAmount: 100,
                          shippingMethod:
                             ClientSession.Order.ShippingMethod(amount: 100,
                                                                methodId: shippingMethodId,
@@ -471,7 +468,6 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                                   taxCode: nil,
                                   productType: nil)
                          ],
-                         shippingAmount: 200,
                          shippingMethod:
                             ClientSession.Order.ShippingMethod(amount: 200,
                                                                methodId: "Shipping",
@@ -577,7 +573,6 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                                   taxCode: nil,
                                   productType: nil)
                          ],
-                         shippingAmount: 200,
                          shippingMethod:
                             ClientSession.Order.ShippingMethod(amount: 200,
                                                                methodId: "Shipping",
@@ -613,7 +608,7 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         XCTAssert(update3.paymentSummaryItems.count == 3)
         let shippingItem = update3.paymentSummaryItems[1]
         XCTAssertEqual(shippingItem.amount, 2)
-        XCTAssertEqual(shippingItem.label, "Shipping: Next Day")
+        XCTAssertEqual(shippingItem.label, "Shipping")
     }
 
     // MARK: Helpers
@@ -636,8 +631,7 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                       taxAmount: nil,
                       taxCode: nil,
                       productType: nil)
-              ],
-              shippingAmount: nil)
+              ])
     }
 
     var paymentResponseBody: Response.Body.Payment {
