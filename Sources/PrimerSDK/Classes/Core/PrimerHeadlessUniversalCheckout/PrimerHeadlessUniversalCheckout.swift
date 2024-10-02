@@ -145,9 +145,11 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
     }
 
     public func cleanUp() {
-        PrimerAPIConfigurationModule.resetSession()
-        ConfigurationCache.shared.clearCache()
-        PrimerInternal.shared.checkoutSessionId = nil
+        Self.queue.sync(flags: .barrier) {
+            PrimerAPIConfigurationModule.resetSession()
+            ConfigurationCache.shared.clearCache()
+            PrimerInternal.shared.checkoutSessionId = nil
+        }
     }
 
     // MARK: - HELPERS
@@ -280,6 +282,8 @@ Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in you
 
         return paymentMethods?.compactMap({ $0.type }).filter({ !unsupportedPaymentMethodTypes.contains($0) })
     }
+
+    private static let queue: DispatchQueue = DispatchQueue(label: "primer.headlessUniversalCheckout", qos: .default)
 }
 // swiftlint:enable function_body_length
 // swiftlint:enable type_body_length
