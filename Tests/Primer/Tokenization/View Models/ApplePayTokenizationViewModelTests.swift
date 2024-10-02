@@ -257,7 +257,6 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                                   taxCode: nil,
                                   productType: nil)
                          ],
-                         shippingAmount: nil,
                          shippingMethod: nil
                          ),
             customer: nil,
@@ -327,7 +326,6 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                                   taxCode: nil,
                                   productType: nil)
                          ],
-                         shippingAmount: nil,
                          shippingMethod: nil
                          ),
             customer: nil,
@@ -378,7 +376,6 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                                   taxCode: nil,
                                   productType: nil)
                          ],
-                         shippingAmount: 100,
                          shippingMethod:
                             ClientSession.Order.ShippingMethod(amount: 100,
                                                                methodId: shippingMethodId,
@@ -471,7 +468,6 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                                   taxCode: nil,
                                   productType: nil)
                          ],
-                         shippingAmount: 200,
                          shippingMethod:
                             ClientSession.Order.ShippingMethod(amount: 200,
                                                                methodId: "Shipping",
@@ -577,7 +573,6 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                                   taxCode: nil,
                                   productType: nil)
                          ],
-                         shippingAmount: 200,
                          shippingMethod:
                             ClientSession.Order.ShippingMethod(amount: 200,
                                                                methodId: "Shipping",
@@ -636,8 +631,7 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                       taxAmount: nil,
                       taxCode: nil,
                       productType: nil)
-              ],
-              shippingAmount: nil)
+              ])
     }
 
     var paymentResponseBody: Response.Body.Payment {

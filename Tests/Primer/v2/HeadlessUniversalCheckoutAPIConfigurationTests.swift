@@ -40,8 +40,7 @@ class HeadlessUniversalCheckoutAPIConfigurationTests: XCTestCase {
                         taxAmount: nil,
                         taxCode: nil,
                         productType: nil)
-                ],
-                shippingAmount: nil),
+                ]),
             customer: nil,
             testId: nil)
 
@@ -133,8 +132,7 @@ class HeadlessUniversalCheckoutAPIConfigurationTests: XCTestCase {
                         taxAmount: nil,
                         taxCode: nil,
                         productType: nil)
-                ],
-                shippingAmount: nil),
+                ]),
             customer: ClientSession.Customer(
                 id: "mock-customer-id",
                 firstName: "mock-first-name",
