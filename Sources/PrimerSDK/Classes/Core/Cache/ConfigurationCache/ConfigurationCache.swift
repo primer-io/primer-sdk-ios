@@ -22,9 +22,9 @@ class ConfigurationCache: ConfigurationCaching {
     }
 
     func data(forKey key: String) -> ConfigurationCachedData? {
-        Self.queue.sync(flags: .barrier) { [weak self] in
-            guard let self = self,
-                    cachingEnabled else {
+        guard cachingEnabled else { return nil }
+        return Self.queue.sync(flags: .barrier) { [weak self] in
+            guard let self = self else {
                 return nil
             }
             if let cachedData = cache.value(forKey: key) {
@@ -39,8 +39,9 @@ class ConfigurationCache: ConfigurationCaching {
     }
 
     func setData(_ data: ConfigurationCachedData, forKey key: String) {
-        Self.queue.sync(flags: .barrier) { [weak self] in
-            guard let self = self, cachingEnabled else {
+        guard cachingEnabled else { return }
+        return Self.queue.sync(flags: .barrier) { [weak self] in
+            guard let self = self else {
                 return
             }
             // Cache includes at most one cached configuration
