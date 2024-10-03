@@ -240,8 +240,10 @@ class PrimerPaymentMethod: Codable, LogReporter {
         case .stripeAch:
             categories.append(PrimerPaymentMethodManagerCategory.nativeUI)
 
-        default:
-            break
+        case .adyenBlik:
+            categories.append(PrimerPaymentMethodManagerCategory.rawData)
+
+        default: break
         }
 
         return categories.isEmpty ? nil : categories

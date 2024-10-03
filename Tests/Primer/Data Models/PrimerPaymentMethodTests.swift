@@ -56,6 +56,49 @@ final class PrimerPaymentMethodTests: XCTestCase {
         XCTAssertEqual(paymentMethod.logo!, UIImage(systemName: "sun.min"))
     }
 
+    func testInvertedLogo_NoImage() {
+        XCTAssertNil(paymentMethod.invertedLogo)
+    }
+
+    func testInvertedLogo_NilImages() {
+        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: nil, light: nil, dark: nil)
+        XCTAssertNil(paymentMethod.invertedLogo)
+    }
+
+    func testInvertedLogo_ReturnsCorrectImage() {
+        // Given
+        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(
+            colored: UIImage(systemName: "colored"),
+            light: UIImage(systemName: "light"),
+            dark: UIImage(systemName: "dark")
+        )
+        let isDarkModeEnabled = UIScreen.isDarkModeEnabled
+
+        // When
+        let invertedLogo = paymentMethod.invertedLogo
+
+        // Then
+        if isDarkModeEnabled {
+            // When dark mode is enabled, invertedLogo should return the light image if available
+            if let lightImage = paymentMethod.baseLogoImage?.light {
+                XCTAssertEqual(invertedLogo, lightImage)
+            } else if let coloredImage = paymentMethod.baseLogoImage?.colored {
+                XCTAssertEqual(invertedLogo, coloredImage)
+            } else {
+                XCTAssertNil(invertedLogo)
+            }
+        } else {
+            // When dark mode is disabled, invertedLogo should return the dark image if available
+            if let darkImage = paymentMethod.baseLogoImage?.dark {
+                XCTAssertEqual(invertedLogo, darkImage)
+            } else if let coloredImage = paymentMethod.baseLogoImage?.colored {
+                XCTAssertEqual(invertedLogo, coloredImage)
+            } else {
+                XCTAssertNil(invertedLogo)
+            }
+        }
+    }
+
     func testViewModels() {
         let nativeSDKPaymentMethod = createPaymentMethod(withImplementationType: .webRedirect)
         XCTAssertTrue(nativeSDKPaymentMethod.tokenizationViewModel is WebRedirectPaymentMethodTokenizationViewModel)
