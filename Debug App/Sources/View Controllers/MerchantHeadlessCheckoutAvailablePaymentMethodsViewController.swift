@@ -175,8 +175,12 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
             break
             #endif
         default:
-            redirectManager = try? PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethodType)
-            try? redirectManager?.showPaymentMethod(intent: sessionIntent)
+            do {
+                redirectManager = try PrimerHeadlessUniversalCheckout.NativeUIManager(paymentMethodType: paymentMethodType)
+                try redirectManager?.showPaymentMethod(intent: sessionIntent)
+            } catch {
+                print("\n\nMERCHANT APP\n\(#function)\nerror: \(error)")
+            }
         }
     }
 }
