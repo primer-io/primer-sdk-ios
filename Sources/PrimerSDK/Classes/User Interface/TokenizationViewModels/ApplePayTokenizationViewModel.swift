@@ -618,6 +618,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                 mobileNumber: mobileNumber,
                 emailAddress: emailAddress)
 
+            self.didTimeout = false
             completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
             controller.dismiss(completion: nil)
             applePayReceiveDataCompletion?(.success(applePayPaymentResponse))
