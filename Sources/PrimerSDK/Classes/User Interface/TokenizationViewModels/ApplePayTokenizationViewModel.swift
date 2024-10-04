@@ -144,9 +144,11 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return ClientSessionActionsModule.updateBillingAddressViaClientSessionActionWithAddressIfNeeded(billingAddress)
             }
             .then { () -> Promise<Void> in
-                return ClientSessionActionsModule.updateShippingDetailsViaClientSessionActionIfNeeded(address: self.applePayPaymentResponse.shippingAddress,
-                                                                                mobileNumber: self.applePayPaymentResponse.mobileNumber,
-                                                                                emailAddress: self.applePayPaymentResponse.emailAddress)
+                return ClientSessionActionsModule.updateShippingDetailsViaClientSessionActionIfNeeded(
+                    address: self.applePayPaymentResponse.shippingAddress,
+                    mobileNumber: self.applePayPaymentResponse.mobileNumber,
+                    emailAddress: self.applePayPaymentResponse.emailAddress
+                )
             }
             .done {
                 seal.fulfill()
@@ -380,7 +382,7 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             $0.id == options.selectedShippingMethod
         }) {
             shippingItem = try? ApplePayOrderItem(
-                name: "Shipping: \(selectedShippingMethod.name)",
+                name: "Shipping",
                 unitAmount: selectedShippingMethod.amount,
                 quantity: 1,
                 discountAmount: nil,
@@ -618,6 +620,7 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                 mobileNumber: mobileNumber,
                 emailAddress: emailAddress)
 
+            self.didTimeout = false
             completion(PKPaymentAuthorizationResult(status: .success, errors: nil))
             controller.dismiss(completion: nil)
             applePayReceiveDataCompletion?(.success(applePayPaymentResponse))
@@ -674,8 +677,8 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                     continuation.resume(returning: PKPaymentRequestShippingContactUpdate(errors: nil,
                                                                                          paymentSummaryItems: orderItems.map { $0.applePayItem },
                                                                                          shippingMethods: shippingMethodsInfo.shippingMethods ?? []))
-                }.catch { error in
-                    continuation.resume(throwing: error)
+                }.catch { _ in
+                    continuation.resume(throwing: PKPaymentError(PKPaymentError.shippingContactInvalidError))
                 }
             }
         } catch {
@@ -721,8 +724,8 @@ extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegat
                     } catch {
                         continuation.resume(throwing: error)
                     }
-                }.catch { error in
-                    continuation.resume(throwing: error)
+                }.catch { _ in
+                    continuation.resume(throwing: PKPaymentError(PKPaymentError.shippingContactInvalidError))
                 }
             }
         } catch {

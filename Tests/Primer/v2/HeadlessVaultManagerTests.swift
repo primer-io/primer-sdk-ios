@@ -40,8 +40,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
                         taxAmount: nil,
                         taxCode: nil,
                         productType: nil)
-                ],
-                shippingAmount: nil),
+                ]),
             customer: ClientSession.Customer(id: "testid"),
             testId: nil)
 
@@ -173,8 +172,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
                         taxAmount: nil,
                         taxCode: nil,
                         productType: nil)
-                ],
-                shippingAmount: nil),
+                ]),
             customer: nil,
             testId: nil)
 
@@ -241,8 +239,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
                         taxAmount: nil,
                         taxCode: nil,
                         productType: nil)
-                ],
-                shippingAmount: nil),
+                ]),
             customer: ClientSession.Customer(id: "testid"),
             testId: nil)
 

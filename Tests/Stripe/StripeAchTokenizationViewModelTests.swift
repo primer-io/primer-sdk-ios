@@ -186,8 +186,7 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
                       taxAmount: nil,
                       taxCode: nil,
                       productType: nil)
-              ],
-              shippingAmount: nil)
+              ])
     }
     
     var paymentResponseBody: Response.Body.Payment {

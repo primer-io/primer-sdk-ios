@@ -67,8 +67,7 @@ class RawDataManagerValidationTests: XCTestCase {
                         taxAmount: nil,
                         taxCode: nil,
                         productType: nil)
-                ],
-                shippingAmount: nil),
+                ]),
             customer: nil,
             testId: nil)
 
