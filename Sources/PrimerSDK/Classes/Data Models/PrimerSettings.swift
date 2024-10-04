@@ -153,19 +153,6 @@ public class PrimerApplePayOptions: Codable {
     let shippingOptions: ShippingOptions?
 
     public init(merchantIdentifier: String,
-                merchantName: String?,
-                isCaptureBillingAddressEnabled: Bool = false,
-                showApplePayForUnsupportedDevice: Bool = true,
-                checkProvidedNetworks: Bool = true) {
-        self.merchantIdentifier = merchantIdentifier
-        self.merchantName = merchantName
-        self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
-        self.shippingOptions = nil
-        self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
-        self.checkProvidedNetworks = checkProvidedNetworks
-    }
-
-    private init(merchantIdentifier: String,
                  merchantName: String?,
                  isCaptureBillingAddressEnabled: Bool = false,
                  showApplePayForUnsupportedDevice: Bool = true,
@@ -179,7 +166,7 @@ public class PrimerApplePayOptions: Codable {
         self.checkProvidedNetworks = checkProvidedNetworks
     }
 
-    internal struct ShippingOptions: Codable {
+    public struct ShippingOptions: Codable {
         let isCaptureShippingAddressEnabled: Bool
         let additionalShippingContactFields: [AdditionalShippingContactField]?
         let requireShippingMethod: Bool
@@ -193,7 +180,7 @@ public class PrimerApplePayOptions: Codable {
         }
 
 // swiftlint:disable:next nesting
-        internal enum AdditionalShippingContactField: Codable {
+        public enum AdditionalShippingContactField: Codable {
             case name, emailAddress, phoneNumber
         }
     }
