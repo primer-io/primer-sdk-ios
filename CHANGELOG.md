@@ -1,8 +1,4 @@
-## 2.32.0 (2024-10-04)
-
-### Feat
-
-- ApplePay Express Checkout (#985)
+## 2.31.1 (2024-10-04)
 
 ### Fix
 
@@ -16,7 +12,7 @@
 
 ### Feat
 
-- Stripe ACH Drop-in implementation  (#921)
+- Stripe ACH Drop-in implementation (#921)
 - Stripe ACH Headless implementation (#876)
 
 ## 2.30.1 (2024-08-28)
@@ -626,7 +622,7 @@ Fix crash with Primer’s raw data manager on HUC and processor 3DS
 
 ### Feature
 
-- This release changes the way that Klarna is integrated, and switches on Klarna’s native iOS SDK (with CocoaPods, SPM will soon follow). It also add **MultiBanco** and **MBWay** support on Headless Universal Checkout raw data manager. 
+- This release changes the way that Klarna is integrated, and switches on Klarna’s native iOS SDK (with CocoaPods, SPM will soon follow). It also add **MultiBanco** and **MBWay** support on Headless Universal Checkout raw data manager.
 
 ## 1.37.0 | 2022-09-01
 
@@ -691,5 +687,5 @@ Fix crash with Primer’s raw data manager on HUC and processor 3DS
 - The version 2 of the SDK is out! This includes a simplified way to integrate Primer
 - Payments created automatically
 
-***In the past, creating payments involved manual payment handling:***
+**_In the past, creating payments involved manual payment handling:_**
 On the **client side**, you would have had to implement the dreaded `clientTokenCallback`, `onTokenizeSuccess` and `onResumeSuccess` delegate functions:
