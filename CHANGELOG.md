@@ -1,13 +1,8 @@
-## 2.32.0 (2024-10-04)
-
-### Feat
-
-- ApplePay Express Checkout (#985)
+## 2.31.1 (2024-10-04)
 
 ### Fix
 
 - Apple Pay incorrect timeout reporting (#1010)
-- Apple Pay EC Updates (#1004)
 - Add additional rails to guard against crashes (#1009)
 - Fallback to Web flow when Vipps app is not installed (#1008)
 - Fix error reporting for apple pay display failure (#997)
