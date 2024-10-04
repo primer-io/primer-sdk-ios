@@ -152,7 +152,6 @@ public class PrimerApplePayOptions: Codable {
     let checkProvidedNetworks: Bool
     let shippingOptions: ShippingOptions?
 
-
     public init(merchantIdentifier: String,
                 merchantName: String?,
                 isCaptureBillingAddressEnabled: Bool = false,
@@ -165,7 +164,7 @@ public class PrimerApplePayOptions: Codable {
         self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
         self.checkProvidedNetworks = checkProvidedNetworks
     }
-    
+
     private init(merchantIdentifier: String,
                  merchantName: String?,
                  isCaptureBillingAddressEnabled: Bool = false,
