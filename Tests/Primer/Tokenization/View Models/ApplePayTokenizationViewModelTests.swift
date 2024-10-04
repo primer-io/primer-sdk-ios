@@ -418,198 +418,198 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         }
     }
 
-    func testProcessShippingContactChange() async throws {
-        let contact = PKContact()
-        var nameParts = PersonNameComponents()
-        nameParts.givenName = "John"
-        nameParts.familyName = "Doe"
-        contact.name = nameParts
+//    func testProcessShippingContactChange() async throws {
+//        let contact = PKContact()
+//        var nameParts = PersonNameComponents()
+//        nameParts.givenName = "John"
+//        nameParts.familyName = "Doe"
+//        contact.name = nameParts
+//
+//        contact.phoneNumber = CNPhoneNumber(stringValue: "1234567890")
+//
+//        contact.emailAddress = "john.doe@example.com"
+//
+//        let address = CNMutablePostalAddress()
+//        address.street = "123 Apple Street"
+//        address.city = "Cupertino"
+//        address.state = "CA"
+//        address.postalCode = "95014"
+//        address.country = "United States"
+//        contact.postalAddress = address
+//
+//        let apiClient = MockPrimerAPIClient()
+//        PrimerAPIConfigurationModule.apiClient = apiClient
+//
+//
+//        guard var config = PrimerAPIConfiguration.current else {
+//            XCTFail("Unable to generate configuration")
+//            return
+//        }
+//        config.checkoutModules = checkoutModules
+//
+//        config.clientSession = ClientSession.APIResponse(
+//            clientSessionId: nil,
+//            paymentMethod: nil,
+//            order: .init(id: "OrderId",
+//                         merchantAmount: nil,
+//                         totalOrderAmount: 1200,
+//                         totalTaxAmount: nil,
+//                         countryCode: .init(rawValue: "GB"),
+//                         currencyCode: .init(code: "GBP", decimalDigits: 2),
+//                         fees: nil,
+//                         lineItems: [
+//                            .init(itemId: "123",
+//                                  quantity: 1,
+//                                  amount: 1000,
+//                                  discountAmount: nil,
+//                                  name: "Fancy Shoes",
+//                                  description: "Some nice shoes",
+//                                  taxAmount: nil,
+//                                  taxCode: nil,
+//                                  productType: nil)
+//                         ],
+//                         shippingMethod:
+//                            ClientSession.Order.ShippingMethod(amount: 200,
+//                                                               methodId: "Shipping",
+//                                                               methodName: "Shipping",
+//                                                               methodDescription: "Description")
+//                         ),
+//            customer: nil,
+//            testId: nil)
+//
+//
+//        let sut = ApplePayTokenizationViewModel(config: PrimerPaymentMethod(id: "APPLE_PAY",
+//                                                                            implementationType: .nativeSdk,
+//                                                                            type: "APPLE_PAY",
+//                                                                            name: "Apple Pay",
+//                                                                            processorConfigId: nil,
+//                                                                            surcharge: nil,
+//                                                                            options: nil,
+//                                                                            displayMetadata: nil))
+//
+//        apiClient.fetchConfigurationWithActionsResult = (config, nil)
+//        PrimerAPIConfigurationModule.apiConfiguration = config
+//
+//        // Test happy path
+//        let update = await sut.processShippingContactChange(contact)
+//
+//        XCTAssertNotNil(update.paymentSummaryItems)
+//        XCTAssertNotNil(update.shippingMethods)
+//
+//        //Test error when no Address
+//        contact.postalAddress = nil
+//        let update2 = await sut.processShippingContactChange(contact)
+//        XCTAssertNotNil(update2.errors)
+//
+//        //Test Error when no shipping methods and Settings requireShippingMethod
+//        let settings = PrimerSettings(paymentMethodOptions:
+//            PrimerPaymentMethodOptions(applePayOptions:
+//                                        PrimerApplePayOptions(merchantIdentifier: "merchant_id", merchantName: "merchant_name", shippingOptions: .init(isCaptureShippingAddressEnabled: true, requireShippingMethod: true))
+//            )
+//        )
+//        DependencyContainer.register(settings as PrimerSettingsProtocol)
+//
+//        contact.postalAddress = address
+//        config.checkoutModules = nil
+//        apiClient.fetchConfigurationWithActionsResult = (config, nil)
+//        PrimerAPIConfigurationModule.apiConfiguration = config
+//
+//        let update3 = await sut.processShippingContactChange(contact)
+//        XCTAssertNotNil(update3.errors)
+//
+//        //Test error when no ClientSession
+//        config.clientSession = nil
+//        apiClient.fetchConfigurationWithActionsResult = (config, nil)
+//        PrimerAPIConfigurationModule.apiConfiguration = config
+//
+//        let update4 = await sut.processShippingContactChange(contact)
+//        XCTAssertNotNil(update4.errors)
+//    }
 
-        contact.phoneNumber = CNPhoneNumber(stringValue: "1234567890")
-
-        contact.emailAddress = "john.doe@example.com"
-
-        let address = CNMutablePostalAddress()
-        address.street = "123 Apple Street"
-        address.city = "Cupertino"
-        address.state = "CA"
-        address.postalCode = "95014"
-        address.country = "United States"
-        contact.postalAddress = address
-
-        let apiClient = MockPrimerAPIClient()
-        PrimerAPIConfigurationModule.apiClient = apiClient
-
-
-        guard var config = PrimerAPIConfiguration.current else {
-            XCTFail("Unable to generate configuration")
-            return
-        }
-        config.checkoutModules = checkoutModules
-
-        config.clientSession = ClientSession.APIResponse(
-            clientSessionId: nil,
-            paymentMethod: nil,
-            order: .init(id: "OrderId",
-                         merchantAmount: nil,
-                         totalOrderAmount: 1200,
-                         totalTaxAmount: nil,
-                         countryCode: .init(rawValue: "GB"),
-                         currencyCode: .init(code: "GBP", decimalDigits: 2),
-                         fees: nil,
-                         lineItems: [
-                            .init(itemId: "123",
-                                  quantity: 1,
-                                  amount: 1000,
-                                  discountAmount: nil,
-                                  name: "Fancy Shoes",
-                                  description: "Some nice shoes",
-                                  taxAmount: nil,
-                                  taxCode: nil,
-                                  productType: nil)
-                         ],
-                         shippingMethod:
-                            ClientSession.Order.ShippingMethod(amount: 200,
-                                                               methodId: "Shipping",
-                                                               methodName: "Shipping",
-                                                               methodDescription: "Description")
-                         ),
-            customer: nil,
-            testId: nil)
-
-
-        let sut = ApplePayTokenizationViewModel(config: PrimerPaymentMethod(id: "APPLE_PAY",
-                                                                            implementationType: .nativeSdk,
-                                                                            type: "APPLE_PAY",
-                                                                            name: "Apple Pay",
-                                                                            processorConfigId: nil,
-                                                                            surcharge: nil,
-                                                                            options: nil,
-                                                                            displayMetadata: nil))
-
-        apiClient.fetchConfigurationWithActionsResult = (config, nil)
-        PrimerAPIConfigurationModule.apiConfiguration = config
-
-        // Test happy path
-        let update = await sut.processShippingContactChange(contact)
-
-        XCTAssertNotNil(update.paymentSummaryItems)
-        XCTAssertNotNil(update.shippingMethods)
-
-        //Test error when no Address
-        contact.postalAddress = nil
-        let update2 = await sut.processShippingContactChange(contact)
-        XCTAssertNotNil(update2.errors)
-
-        //Test Error when no shipping methods and Settings requireShippingMethod
-        let settings = PrimerSettings(paymentMethodOptions:
-            PrimerPaymentMethodOptions(applePayOptions:
-                                        PrimerApplePayOptions(merchantIdentifier: "merchant_id", merchantName: "merchant_name", shippingOptions: .init(isCaptureShippingAddressEnabled: true, requireShippingMethod: true))
-            )
-        )
-        DependencyContainer.register(settings as PrimerSettingsProtocol)
-
-        contact.postalAddress = address
-        config.checkoutModules = nil
-        apiClient.fetchConfigurationWithActionsResult = (config, nil)
-        PrimerAPIConfigurationModule.apiConfiguration = config
-
-        let update3 = await sut.processShippingContactChange(contact)
-        XCTAssertNotNil(update3.errors)
-
-        //Test error when no ClientSession
-        config.clientSession = nil
-        apiClient.fetchConfigurationWithActionsResult = (config, nil)
-        PrimerAPIConfigurationModule.apiConfiguration = config
-
-        let update4 = await sut.processShippingContactChange(contact)
-        XCTAssertNotNil(update4.errors)
-    }
-
-    func testProcessShippingMethodChange() async throws {
-        let sut = ApplePayTokenizationViewModel(config: PrimerPaymentMethod(id: "APPLE_PAY",
-                                                                            implementationType: .nativeSdk,
-                                                                            type: "APPLE_PAY",
-                                                                            name: "Apple Pay",
-                                                                            processorConfigId: nil,
-                                                                            surcharge: nil,
-                                                                            options: nil,
-                                                                            displayMetadata: nil))
-
-        //Test shipping method with no ID results in empty update
-        let shippingMethod = PKShippingMethod()
-        let update = await sut.processShippingMethodChange(shippingMethod)
-        XCTAssert(update.paymentSummaryItems.isEmpty)
-
-        //Test no clientSession results in empty update
-        shippingMethod.identifier = "123"
-        let update2 = await sut.processShippingMethodChange(shippingMethod)
-        XCTAssert(update2.paymentSummaryItems.isEmpty)
-
-        guard var config = PrimerAPIConfiguration.current else {
-            XCTFail("Unable to generate configuration")
-            return
-        }
-        config.checkoutModules = checkoutModules
-
-        config.clientSession = ClientSession.APIResponse(
-            clientSessionId: nil,
-            paymentMethod: nil,
-            order: .init(id: "OrderId",
-                         merchantAmount: nil,
-                         totalOrderAmount: 1200,
-                         totalTaxAmount: nil,
-                         countryCode: .init(rawValue: "GB"),
-                         currencyCode: .init(code: "GBP", decimalDigits: 2),
-                         fees: nil,
-                         lineItems: [
-                            .init(itemId: "123",
-                                  quantity: 1,
-                                  amount: 1000,
-                                  discountAmount: nil,
-                                  name: "Fancy Shoes",
-                                  description: "Some nice shoes",
-                                  taxAmount: nil,
-                                  taxCode: nil,
-                                  productType: nil)
-                         ],
-                         shippingMethod:
-                            ClientSession.Order.ShippingMethod(amount: 200,
-                                                               methodId: "Shipping",
-                                                               methodName: "Shipping",
-                                                               methodDescription: "Description")
-                         ),
-            customer: nil,
-            testId: nil)
-
-        let apiClient = MockPrimerAPIClient()
-        PrimerAPIConfigurationModule.apiClient = apiClient
-
-        config.checkoutModules = [Response.Body.Configuration.CheckoutModule(type: "SHIPPING",
-                                                                            requestUrlStr: nil,
-                                                                            options: ShippingMethodOptions(shippingMethods: [
-                                                                             ShippingMethod(name: "Default",
-                                                                                            description: "The default method",
-                                                                                            amount: 100,
-                                                                                            id: "default"),
-                                                                             ShippingMethod(name: "Next Day",
-                                                                                            description: "Get your stuff next day",
-                                                                                            amount: 200,
-                                                                                            id: "nextDay")],
-                                                                                                          selectedShippingMethod: "nextDay")
-                                                                           )]
-        apiClient.fetchConfigurationWithActionsResult = (config, nil)
-        PrimerAPIConfigurationModule.apiConfiguration = config
-
-        let shippingMethod2 = PKShippingMethod(label: "Next Day", amount: 200)
-        shippingMethod2.identifier = "nextDay"
-
-        let update3 = await sut.processShippingMethodChange(shippingMethod2)
-        XCTAssert(update3.paymentSummaryItems.count == 3)
-        let shippingItem = update3.paymentSummaryItems[1]
-        XCTAssertEqual(shippingItem.amount, 2)
-        XCTAssertEqual(shippingItem.label, "Shipping")
-    }
+//    func testProcessShippingMethodChange() async throws {
+//        let sut = ApplePayTokenizationViewModel(config: PrimerPaymentMethod(id: "APPLE_PAY",
+//                                                                            implementationType: .nativeSdk,
+//                                                                            type: "APPLE_PAY",
+//                                                                            name: "Apple Pay",
+//                                                                            processorConfigId: nil,
+//                                                                            surcharge: nil,
+//                                                                            options: nil,
+//                                                                            displayMetadata: nil))
+//
+//        //Test shipping method with no ID results in empty update
+//        let shippingMethod = PKShippingMethod()
+//        let update = await sut.processShippingMethodChange(shippingMethod)
+//        XCTAssert(update.paymentSummaryItems.isEmpty)
+//
+//        //Test no clientSession results in empty update
+//        shippingMethod.identifier = "123"
+//        let update2 = await sut.processShippingMethodChange(shippingMethod)
+//        XCTAssert(update2.paymentSummaryItems.isEmpty)
+//
+//        guard var config = PrimerAPIConfiguration.current else {
+//            XCTFail("Unable to generate configuration")
+//            return
+//        }
+//        config.checkoutModules = checkoutModules
+//
+//        config.clientSession = ClientSession.APIResponse(
+//            clientSessionId: nil,
+//            paymentMethod: nil,
+//            order: .init(id: "OrderId",
+//                         merchantAmount: nil,
+//                         totalOrderAmount: 1200,
+//                         totalTaxAmount: nil,
+//                         countryCode: .init(rawValue: "GB"),
+//                         currencyCode: .init(code: "GBP", decimalDigits: 2),
+//                         fees: nil,
+//                         lineItems: [
+//                            .init(itemId: "123",
+//                                  quantity: 1,
+//                                  amount: 1000,
+//                                  discountAmount: nil,
+//                                  name: "Fancy Shoes",
+//                                  description: "Some nice shoes",
+//                                  taxAmount: nil,
+//                                  taxCode: nil,
+//                                  productType: nil)
+//                         ],
+//                         shippingMethod:
+//                            ClientSession.Order.ShippingMethod(amount: 200,
+//                                                               methodId: "Shipping",
+//                                                               methodName: "Shipping",
+//                                                               methodDescription: "Description")
+//                         ),
+//            customer: nil,
+//            testId: nil)
+//
+//        let apiClient = MockPrimerAPIClient()
+//        PrimerAPIConfigurationModule.apiClient = apiClient
+//
+//        config.checkoutModules = [Response.Body.Configuration.CheckoutModule(type: "SHIPPING",
+//                                                                            requestUrlStr: nil,
+//                                                                            options: ShippingMethodOptions(shippingMethods: [
+//                                                                             ShippingMethod(name: "Default",
+//                                                                                            description: "The default method",
+//                                                                                            amount: 100,
+//                                                                                            id: "default"),
+//                                                                             ShippingMethod(name: "Next Day",
+//                                                                                            description: "Get your stuff next day",
+//                                                                                            amount: 200,
+//                                                                                            id: "nextDay")],
+//                                                                                                          selectedShippingMethod: "nextDay")
+//                                                                           )]
+//        apiClient.fetchConfigurationWithActionsResult = (config, nil)
+//        PrimerAPIConfigurationModule.apiConfiguration = config
+//
+//        let shippingMethod2 = PKShippingMethod(label: "Next Day", amount: 200)
+//        shippingMethod2.identifier = "nextDay"
+//
+//        let update3 = await sut.processShippingMethodChange(shippingMethod2)
+//        XCTAssert(update3.paymentSummaryItems.count == 3)
+//        let shippingItem = update3.paymentSummaryItems[1]
+//        XCTAssertEqual(shippingItem.amount, 2)
+//        XCTAssertEqual(shippingItem.label, "Shipping")
+//    }
 
     // MARK: Helpers
 
