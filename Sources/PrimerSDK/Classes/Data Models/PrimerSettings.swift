@@ -152,12 +152,26 @@ public class PrimerApplePayOptions: Codable {
     let checkProvidedNetworks: Bool
     let shippingOptions: ShippingOptions?
 
+
     public init(merchantIdentifier: String,
                 merchantName: String?,
                 isCaptureBillingAddressEnabled: Bool = false,
                 showApplePayForUnsupportedDevice: Bool = true,
-                checkProvidedNetworks: Bool = true,
-                shippingOptions: ShippingOptions? = nil) {
+                checkProvidedNetworks: Bool = true) {
+        self.merchantIdentifier = merchantIdentifier
+        self.merchantName = merchantName
+        self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
+        self.shippingOptions = nil
+        self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
+        self.checkProvidedNetworks = checkProvidedNetworks
+    }
+    
+    private init(merchantIdentifier: String,
+                 merchantName: String?,
+                 isCaptureBillingAddressEnabled: Bool = false,
+                 showApplePayForUnsupportedDevice: Bool = true,
+                 checkProvidedNetworks: Bool = true,
+                 shippingOptions: ShippingOptions? = nil) {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
@@ -166,7 +180,7 @@ public class PrimerApplePayOptions: Codable {
         self.checkProvidedNetworks = checkProvidedNetworks
     }
 
-    public struct ShippingOptions: Codable {
+    internal struct ShippingOptions: Codable {
         let isCaptureShippingAddressEnabled: Bool
         let additionalShippingContactFields: [AdditionalShippingContactField]?
         let requireShippingMethod: Bool
@@ -180,7 +194,7 @@ public class PrimerApplePayOptions: Codable {
         }
 
 // swiftlint:disable:next nesting
-        public enum AdditionalShippingContactField: Codable {
+        internal enum AdditionalShippingContactField: Codable {
             case name, emailAddress, phoneNumber
         }
     }
