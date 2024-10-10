@@ -433,7 +433,14 @@ extension FormPaymentMethodTokenizationViewModel {
             let pcfvc = PrimerInputViewController(navigationBarLogo: uiModule.navigationBarLogo,
                                                   formPaymentMethodTokenizationViewModel: self,
                                                   inputsDistribution: .horizontal)
-            inputs.append(contentsOf: makeInputViews())
+
+            let newInputs = makeInputViews()
+
+            // Append only inputs that are not already in the array
+            for newInput in newInputs where !self.inputs.contains(where: { $0 === newInput }) { // Use reference comparison
+                self.inputs.append(newInput)
+            }
+
             self.uiManager.primerRootViewController?.show(viewController: pcfvc)
             seal.fulfill()
         }
