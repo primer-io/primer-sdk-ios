@@ -378,8 +378,16 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
             )
             pkShippingMethod.detail = shippingMethod.methodDescription
             pkShippingMethod.identifier = shippingMethod.methodId
+            
+            let selectedShippingMethod = try? ApplePayOrderItem(
+                name: shippingMethodName,
+                unitAmount: shippingMethod.amount,
+                quantity: 1,
+                discountAmount: nil,
+                taxAmount: nil
+            )
 
-            return .init(shippingMethods: [pkShippingMethod], selectedShippingMethodOrderItem: nil)
+            return .init(shippingMethods: [pkShippingMethod], selectedShippingMethodOrderItem: selectedShippingMethod)
         }
 
         // Convert to PKShippingMethods
