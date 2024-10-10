@@ -352,19 +352,34 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     func getShippingMethodsInfo() -> ShippingMethodsInfo {
-        guard let options = PrimerAPIConfigurationModule
-            .apiConfiguration?
-            .checkoutModules?
-            .first(where: { $0.type == "SHIPPING"})?
-            .options as? ShippingMethodOptions else {
-            return .init(shippingMethods: nil, selectedShippingMethodOrderItem: nil)
-        }
-
         var factor: NSDecimalNumber
         if AppState.current.currency?.isZeroDecimal == true {
             factor = 1
         } else {
             factor = 100
+        }
+        
+        guard let options = PrimerAPIConfigurationModule
+            .apiConfiguration?
+            .checkoutModules?
+            .first(where: { $0.type == "SHIPPING"})?
+            .options as? ShippingMethodOptions else {
+
+            guard let shippingMethod = PrimerAPIConfigurationModule
+                .apiConfiguration?
+                .clientSession?.order?.shippingMethod,
+                  let shippingMethodName = shippingMethod.methodName else {
+                return .init(shippingMethods: nil, selectedShippingMethodOrderItem: nil)
+            }
+
+            let pkShippingMethod = PKShippingMethod(
+                label: shippingMethodName,
+                amount: NSDecimalNumber(value: shippingMethod.amount).dividing(by: factor)
+            )
+            pkShippingMethod.detail = shippingMethod.methodDescription
+            pkShippingMethod.identifier = shippingMethod.methodId
+
+            return .init(shippingMethods: [pkShippingMethod], selectedShippingMethodOrderItem: nil)
         }
 
         // Convert to PKShippingMethods
