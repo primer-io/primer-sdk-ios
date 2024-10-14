@@ -455,6 +455,35 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
 
     // MARK: - Payment Flow
 
+    override func start() {
+
+        checkoutEventsNotifierModule.didStartTokenization = {
+            DispatchQueue.main.async {
+                self.uiManager.primerRootViewController?.enableUserInteraction(false)
+            }
+        }
+
+        checkoutEventsNotifierModule.didFinishTokenization = {
+            DispatchQueue.main.async {
+                self.uiManager.primerRootViewController?.enableUserInteraction(true)
+            }
+        }
+
+        didStartPayment = {
+            DispatchQueue.main.async {
+                self.uiManager.primerRootViewController?.enableUserInteraction(false)
+            }
+        }
+
+        didFinishPayment = { _ in
+            DispatchQueue.main.async {
+                self.uiManager.primerRootViewController?.enableUserInteraction(true)
+            }
+        }
+
+        super.start()
+    }
+
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
