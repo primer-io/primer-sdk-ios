@@ -372,8 +372,11 @@ extension FormPaymentMethodTokenizationViewModel {
     // MARK: Present appropriate View Controller
 
     func presentPaymentMethodAppropriateViewController(shouldCompletePaymentExternally: Bool = false) -> Promise<Void> {
-
         if shouldCompletePaymentExternally {
+            DispatchQueue.main.async {
+                self.uiManager.primerRootViewController?.enableUserInteraction(true)
+            }
+
             guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
                   let message = needingExternalCompletionPaymentMethodDictionary
                     .first(where: { $0.key == paymentMethodType })?
@@ -433,7 +436,14 @@ extension FormPaymentMethodTokenizationViewModel {
             let pcfvc = PrimerInputViewController(navigationBarLogo: uiModule.navigationBarLogo,
                                                   formPaymentMethodTokenizationViewModel: self,
                                                   inputsDistribution: .horizontal)
-            inputs.append(contentsOf: makeInputViews())
+
+            let newInputs = makeInputViews()
+
+            // Append only inputs that are not already in the array
+            for newInput in newInputs where !self.inputs.contains(where: { $0 === newInput }) { // Use reference comparison
+                self.inputs.append(newInput)
+            }
+
             self.uiManager.primerRootViewController?.show(viewController: pcfvc)
             seal.fulfill()
         }

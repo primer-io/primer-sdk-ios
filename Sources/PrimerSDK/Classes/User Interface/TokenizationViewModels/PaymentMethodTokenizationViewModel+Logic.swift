@@ -22,11 +22,10 @@ extension PaymentMethodTokenizationViewModel {
         .done { paymentMethodTokenData in
             self.paymentMethodTokenData = paymentMethodTokenData
             self.processPaymentMethodTokenData()
-        }
-        .ensure {
             self.uiManager.primerRootViewController?.enableUserInteraction(true)
         }
         .catch { err in
+            self.uiManager.primerRootViewController?.enableUserInteraction(true)
             let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
 
             if let primerErr = err as? PrimerError,
