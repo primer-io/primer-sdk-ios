@@ -116,4 +116,26 @@ final class PrimerCardNumberFieldViewTests: XCTestCase {
 
         waitForExpectations(timeout: 2.0)
     }
+
+    func testCursorMovesToEndAfterPasting() throws {
+        view.text = ""
+
+        // Simulate pasting a card number
+        _ = view.textField(view.textField,
+                           shouldChangeCharactersIn: NSRange(location: 0, length: 0),
+                           replacementString: "4242424242424242")
+
+        // Add a small delay to ensure the cursor movement code has executed
+        let expectation = XCTestExpectation(description: "Wait for cursor to move")
+
+        DispatchQueue.main.async {
+            // Check if the cursor is at the end of the text
+            let expectedPosition = self.view.textField.position(from: self.view.textField.endOfDocument, offset: 0)
+            XCTAssertEqual(self.view.textField.selectedTextRange?.start, expectedPosition)
+
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 0.3)
+    }
 }
