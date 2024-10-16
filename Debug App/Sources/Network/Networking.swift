@@ -50,7 +50,7 @@ class Networking {
         apiVersion: APIVersion?,
         url: URL,
         method: HTTPMethod,
-        headers: [String: String]?,
+        headers: [String: String]? = nil,
         queryParameters: [String: String]?,
         body: Data?,
         completion: @escaping (_ result: Result<Data, Error>) -> Void
@@ -292,7 +292,6 @@ class Networking {
             apiVersion: .v2_4,
             url: url,
             method: .post,
-            headers: URL.requestSessionHTTPHeaders(useNewWorkflows: useNewWorkflows),
             queryParameters: nil,
             body: bodyData
         ) { result in
