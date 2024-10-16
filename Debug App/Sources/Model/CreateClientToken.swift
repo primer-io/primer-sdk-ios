@@ -319,7 +319,7 @@ struct ClientSessionRequestBody {
     }
 
     struct PaymentMethod: Codable {
-        let vaultOnSuccess: Bool?
+        var vaultOnSuccess: Bool?
         var options: PaymentMethodOptionGroup?
         let descriptor: String?
         let paymentType: String?

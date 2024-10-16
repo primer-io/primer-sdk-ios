@@ -522,7 +522,10 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                                                                                 merchantName: "Primer Merchant iOS")
 
         clientSession.paymentMethod?.options?.APPLE_PAY = applePayOptions
-        
+
+        clientSession.paymentMethod?.vaultOnSuccess = vaultingFlowSegmentedControl.selectedSegmentIndex == 1
+        // JN TODO: update
+
         if let metadata = metadataTextField.text, !metadata.isEmpty {
             clientSession.metadata = MetadataParser().parse(metadata)
         }
