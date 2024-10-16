@@ -84,7 +84,7 @@ class Networking {
             // We have a dedicated argument that takes x-api-key into account
             // in case a custom one gets defined before SDK initialization
             // so in case this array contains the same key, it won't be added
-            for header in headers.filter({ $0.value != "x-api-key"}) {
+            for header in headers.filter({ $0.key != "x-api-key"}) {
                 request.addValue(header.value, forHTTPHeaderField: header.key)
             }
         }
