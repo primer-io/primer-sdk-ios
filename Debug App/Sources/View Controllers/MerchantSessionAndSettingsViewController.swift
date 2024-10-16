@@ -27,7 +27,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var environmentStackView: UIStackView!
     @IBOutlet weak var testParamsGroupStackView: UIStackView!
     @IBOutlet weak var apiKeyStackView: UIStackView!
-    @IBOutlet weak var useNewWorkflowsStackView: UIStackView!
     @IBOutlet weak var klarnaEMDStackView: UIStackView!
     @IBOutlet weak var clientTokenStackView: UIStackView!
     @IBOutlet weak var sdkSettingsStackView: UIStackView!
@@ -61,6 +60,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
     // MARK: SDK Settings Inputs
     @IBOutlet weak var checkoutFlowSegmentedControl: UISegmentedControl!
+    @IBOutlet weak var vaultingFlowSegmentedControl: UISegmentedControl!
     @IBOutlet weak var merchantNameTextField: UITextField!
     @IBOutlet weak var applyThemingSwitch: UISwitch!
     @IBOutlet weak var disableSuccessScreenSwitch: UISwitch!
