@@ -243,7 +243,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             orderStackView.isHidden = false
             customerStackView.isHidden = false
             surchargeGroupStackView.isHidden = false
-            useNewWorkflowsStackView.isHidden = false
             klarnaEMDStackView.isHidden = false
 
         case .clientToken:
@@ -255,7 +254,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             orderStackView.isHidden = true
             customerStackView.isHidden = true
             surchargeGroupStackView.isHidden = true
-            useNewWorkflowsStackView.isHidden = true
             klarnaEMDStackView.isHidden = true
 
         case .testScenario:
@@ -267,7 +265,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             orderStackView.isHidden = false
             customerStackView.isHidden = false
             surchargeGroupStackView.isHidden = false
-            useNewWorkflowsStackView.isHidden = true
             klarnaEMDStackView.isHidden = true
 
             testParamsStackView.isHidden = (selectedTestScenario == nil)
