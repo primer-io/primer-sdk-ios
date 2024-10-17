@@ -298,6 +298,9 @@
 
 "session_complete_payment_success_title" = "Payment authorized";
 
+/* "Shipping" label displayed next to the shipping amount, for example: "Shipping $2.50" */
+"shipping" = "Shipping";
+
 /* An error message displayed when the State, Region or County field is not correct */
 "stateErrorInvalid" = "Invalid State, Region or County";
 

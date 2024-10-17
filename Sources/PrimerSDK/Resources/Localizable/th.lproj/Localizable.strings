@@ -280,6 +280,9 @@
 /* See all - Universal checkout */
 "see-all" = "ดูทั้งหมด";
 
+/* "Shipping" label displayed next to the shipping amount, for example: "Shipping $2.50" */
+"shipping" = "การส่งสินค้า";
+
 /* An error message displayed when the State, Region or County field is not correct */
 "stateErrorInvalid" = "รัฐ ภูมิภาค หรือเทศมณฑลไม่ถูกต้อง";
 
