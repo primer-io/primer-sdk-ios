@@ -17,7 +17,6 @@ struct MerchantMockDataManager {
     }
 
     static let customerIdStorageKey = "io.primer.debug.customer-id"
-    static let stripePublishableKey = "pk_test_51O8zfQKUK6bXIdC2xPvSS6UvriE9kwpvttwB7H9PAzhNAZoGzLgiDOyd4WooozeWHxoRrKo6b2VjZYxNCMX3W7bk00rMDivjau"
 
     static var customerId: String {
         if let customerId = UserDefaults.standard.string(forKey: customerIdStorageKey) {
