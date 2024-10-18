@@ -280,6 +280,9 @@
 /* See all - Universal checkout */
 "see-all" = "הצג הכל";
 
+/* "Shipping" label displayed next to the shipping amount, for example: "Shipping $2.50" */
+"shipping" = "שילוח";
+
 /* An error message displayed when the State, Region or County field is not correct */
 "stateErrorInvalid" = "מדינה, אזור או מחוז לא תקינים";
 

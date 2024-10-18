@@ -179,16 +179,16 @@
 "primer-direct-checkout-paypal" = "PayPal";
 
 /* An error message displayed when the cvv code is not correct */
-"primer-error-card-form-card-cvv" = "Invalid CVV";
+"primer-error-card-form-card-cvv" = "Ugyldig CVV";
 
 /* An error message displayed when the card expiration date is not correct */
-"primer-error-card-form-card-expiration-date" = "Invalid date";
+"primer-error-card-form-card-expiration-date" = "Ugyldig dato";
 
 /* An error message displayed when the card number is not correct */
-"primer-error-card-form-card-number" = "Invalid card number";
+"primer-error-card-form-card-number" = "Kortnummer er ugyldigt";
 
 /* A suffix to mark a required field or action being performed */
-"primer-error-is-required-suffix" = "is required";
+"primer-error-is-required-suffix" = "er påkrævet";
 
 /* Something went wrong, please try again. - Error Screen Message */
 "primer-error-screen" = "Noget gik galt. Prøv igen.";
@@ -206,7 +206,7 @@
 "primer-form-type-main-title-card-form" = "Indtast dine kortdetaljer";
 
 /* Card form - Navigation Bar Title */
-"primer-form-type-nav-bar-title" = "Payment card";
+"primer-form-type-nav-bar-title" = "Betalingskort";
 
 /* Add Bank Account - IBAN Form (Main title) */
 "primer-iban-form-add-bank-account" = "Tilføj bankkonto";
@@ -280,8 +280,11 @@
 /* See all - Universal checkout */
 "see-all" = "Se alle";
 
+/* "Shipping" label displayed next to the shipping amount, for example: "Shipping $2.50" */
+"shipping" = "Forsendelse";
+
 /* An error message displayed when the State, Region or County field is not correct */
-"stateErrorInvalid" = "Invalid State, Region or County";
+"stateErrorInvalid" = "Ugyldig stat, region eller amt";
 
 /* State, Region or County is required - Form Validation */
 "stateErrorRequired" = "Stat, region eller land er påkrævet";
