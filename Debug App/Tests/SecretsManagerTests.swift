@@ -12,8 +12,11 @@ import XCTest
 final class SecretsManagerTests: XCTestCase {
 
     func testLoadFileAndGetSecret() throws {
-        let stripePublishableKey = SecretsManager.shared.value(forKey: .stripePublishableKey)
-        XCTAssertEqual(stripePublishableKey, "pk_test_...")
+        let manager = SecretsManager(bundle: Bundle(for: type(of: self)))
+        XCTAssertEqual(manager.properties.count, 1)
+
+        let stripePublishableKey = manager.value(forKey: .stripePublishableKey)
+        XCTAssertEqual(stripePublishableKey, "pk_test_123")
     }
 
 }

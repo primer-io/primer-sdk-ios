@@ -19,10 +19,14 @@ class SecretsManager {
 
     static let shared = SecretsManager()
 
-    private init() {}
+    let bundle: Bundle
 
-    lazy private var properties: [String: String] = {
-        guard let fileUrl = Bundle.main.url(forResource: "secrets.defaults", withExtension: "properties") else {
+    init(bundle: Bundle = .main) {
+        self.bundle = bundle
+    }
+
+    lazy var properties: [Keys: String] = {
+        guard let fileUrl = bundle.url(forResource: "secrets.defaults", withExtension: "properties") else {
             logger.warn(message: "Secrets file was not found in bundle. Check that `secrets.defaults.properties` is present in the root folder of the app.")
             return [:]
         }
@@ -34,15 +38,15 @@ class SecretsManager {
             logger.warn(message: "Failed to load secrets file as string. Check the file is a well formed and valid text file")
             return [:]
         }
-        var mapping: [String: String] = [:]
-        fileAsString.split(separator: "\n").forEach { item in
+        var mapping: [Keys: String] = [:]
+        fileAsString.components(separatedBy: "\n").forEach { item in
             // Allow skipping of comments lines
             guard !item.hasPrefix("#") else{
                 return
             }
-            let components = item.split(separator: "=")
-            if components.count == 2 {
-                mapping[String(components[0])] = String(components[1])
+            let components = item.components(separatedBy: "=")
+            if components.count == 2, let key = Keys(rawValue: components[0]) {
+                mapping[key] = components[1]
             } else {
                 logger.warn(message: "Tried to load poorly formed secret: \(item)")
             }
@@ -51,11 +55,7 @@ class SecretsManager {
     }()
 
     func value(forKey key: Keys) -> String? {
-        guard properties.keys.contains(key.rawValue) else {
-            logger.warn(message: "Tried to get secret `(key.rawValue)` but it wasn't present in the secrets file.")
-            return nil
-        }
-        return properties[key.rawValue]
+        properties.keys.contains(key) ? properties[key] : nil
     }
 
 }
