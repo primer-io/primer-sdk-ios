@@ -87,6 +87,21 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         }
 
         primerTextField.text = newText.withoutWhiteSpace.separate(every: 4, with: " ")
+
+        // Detect pasting of the card number
+        if string.count > 1 && (primerTextField.internalText?.count ?? 0) > 1 {
+            if let text = primerTextField.internalText {
+
+                // Get the position of the last character in the string
+                if let endPosition = primerTextField.position(from: primerTextField.beginningOfDocument, offset: text.count) {
+                    DispatchQueue.main.async {
+                        // Create a UITextRange from the endPosition to endPosition (for placing the cursor at the end)
+                        primerTextField.selectedTextRange = primerTextField.textRange(from: endPosition, to: endPosition)
+                    }
+                }
+            }
+        }
+
         return false
     }
 }
