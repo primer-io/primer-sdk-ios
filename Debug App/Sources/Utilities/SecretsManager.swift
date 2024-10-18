@@ -36,6 +36,10 @@ class SecretsManager {
         }
         var mapping: [String: String] = [:]
         fileAsString.split(separator: "\n").forEach { item in
+            // Allow skipping of comments lines
+            guard !item.hasPrefix("#") else{
+                return
+            }
             let components = item.split(separator: "=")
             if components.count == 2 {
                 mapping[String(components[0])] = String(components[1])
