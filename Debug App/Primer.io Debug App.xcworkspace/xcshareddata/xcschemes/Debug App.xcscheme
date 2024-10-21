@@ -10,7 +10,7 @@
             ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
             <ActionContent
                title = "Run Script"
-               scriptText = "SECRETS_PATH=&quot;${PROJECT_DIR}/secrets.defaults.properties&quot;&#10;cat &gt; &quot;${SECRETS_PATH}&quot; &lt;&lt;- EOM&#10;# Put secrets that are used by our SDK or third-party SDKs here&#10;#STRIPE_PUBLISHABLE_KEY=pk_test_*********&#10;EOM&#10;"
+               scriptText = "SECRETS_PATH=&quot;${PROJECT_DIR}/secrets.defaults.properties&quot;&#10;if [[ -f &quot;${SECRETS_PATH}&quot; ]]; then&#10;  exit 0;&#10;fi&#10;cat &gt; &quot;${SECRETS_PATH}&quot; &lt;&lt;- EOM&#10;# Put secrets that are used by our SDK or third-party SDKs here&#10;#STRIPE_PUBLISHABLE_KEY=pk_test_*********&#10;EOM&#10;"
                shellToInvoke = "/bin/bash">
                <EnvironmentBuildable>
                   <BuildableReference
