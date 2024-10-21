@@ -259,7 +259,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
         case .diners:
             return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
         case .discover:
-            return UIImage(named: "discover", in: Bundle.primerResources, compatibleWith: nil)
+            return UIImage(named: "discover-card-icon-colored", in: Bundle.primerResources, compatibleWith: nil)
         case .elo:
             return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
         case .hiper:
