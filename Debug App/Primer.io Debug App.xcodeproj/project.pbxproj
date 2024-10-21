@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 55;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		040F19962CC67AA7005C9707 /* secrets.defaults.properties in Resources */ = {isa = PBXBuildFile; fileRef = 040F19942CC67AA7005C9707 /* secrets.defaults.properties */; };
 		044DE11B2CBFF93F00AAE28A /* secrets.defaults.properties in Resources */ = {isa = PBXBuildFile; fileRef = 044DE11A2CBFF93F00AAE28A /* secrets.defaults.properties */; };
 		044DE11D2CBFF98100AAE28A /* SecretsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044DE11C2CBFF97D00AAE28A /* SecretsManager.swift */; };
 		044DE11F2CC0023200AAE28A /* SecretsManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044DE11E2CC0023200AAE28A /* SecretsManagerTests.swift */; };
@@ -103,6 +104,7 @@
 /* Begin PBXFileReference section */
 		00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantResultViewController.swift; sourceTree = "<group>"; };
 		01C09DEAB07F42004B26A278 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		040F19942CC67AA7005C9707 /* secrets.defaults.properties */ = {isa = PBXFileReference; lastKnownFileType = text; path = secrets.defaults.properties; sourceTree = "<group>"; };
 		044DE11A2CBFF93F00AAE28A /* secrets.defaults.properties */ = {isa = PBXFileReference; lastKnownFileType = text; path = secrets.defaults.properties; sourceTree = SOURCE_ROOT; };
 		044DE11C2CBFF97D00AAE28A /* SecretsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretsManager.swift; sourceTree = "<group>"; };
 		044DE11E2CC0023200AAE28A /* SecretsManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretsManagerTests.swift; sourceTree = "<group>"; };
@@ -214,10 +216,6 @@
 		FF4B1BBF378E48EBDBDCEE2A /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		044DE1202CC273FB00AAE28A /* Resources */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Resources; sourceTree = "<group>"; };
-/* End PBXFileSystemSynchronizedRootGroup section */
-
 /* Begin PBXFrameworksBuildPhase section */
 		70DF25A36D08F36CBD603C15 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -237,6 +235,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		040F19952CC67AA7005C9707 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				040F19942CC67AA7005C9707 /* secrets.defaults.properties */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		0489E2B92B68F70400FA0682 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
@@ -260,7 +266,7 @@
 		04F323602BD408C600F5927C /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				044DE1202CC273FB00AAE28A /* Resources */,
+				040F19952CC67AA7005C9707 /* Resources */,
 				0453CB3A2C0A08AD00C8C750 /* DebugAppTestPlan.xctestplan */,
 				04C1906F2BEA5B75009A225A /* UnitTestsTestPlan.xctestplan */,
 				04F3235E2BD408C600F5927C /* Debug App Tests-Info.plist */,
@@ -485,9 +491,6 @@
 			dependencies = (
 				0F2453263528C0A3659CD00A /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				044DE1202CC273FB00AAE28A /* Resources */,
-			);
 			name = "Debug App Tests";
 			productName = "Debug App Tests";
 			productReference = 483D2036DE3F89CA2C244C4F /* Debug App Tests.xctest */;
@@ -587,6 +590,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				040F19962CC67AA7005C9707 /* secrets.defaults.properties in Resources */,
 				0453CB3B2C0A08AD00C8C750 /* DebugAppTestPlan.xctestplan in Resources */,
 				04F323622BD408C600F5927C /* Debug App Tests-Info.plist in Resources */,
 			);
