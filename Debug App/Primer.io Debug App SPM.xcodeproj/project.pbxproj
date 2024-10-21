@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		040F19982CC69BE0005C9707 /* secrets.defaults.properties in Resources */ = {isa = PBXBuildFile; fileRef = 040F19972CC69BE0005C9707 /* secrets.defaults.properties */; };
 		041CD2FF2BFB7736009E6EF8 /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041CD2FE2BFB7736009E6EF8 /* MerchantHeadlessCheckoutNolPayViewController.swift */; };
 		043C7FA22C49749E0018929E /* TestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043C7FA12C49749E0018929E /* TestHelper.swift */; };
 		0442C4072B7CE1E900EAD8EE /* TapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0442C4062B7CE1E900EAD8EE /* TapGestureRecognizer.swift */; };
@@ -78,6 +79,7 @@
 /* Begin PBXFileReference section */
 		00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantResultViewController.swift; sourceTree = "<group>"; };
 		01C09DEAB07F42004B26A278 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		040F19972CC69BE0005C9707 /* secrets.defaults.properties */ = {isa = PBXFileReference; lastKnownFileType = text; path = secrets.defaults.properties; sourceTree = SOURCE_ROOT; };
 		041CD2FE2BFB7736009E6EF8 /* MerchantHeadlessCheckoutNolPayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutNolPayViewController.swift; sourceTree = "<group>"; };
 		043C7FA12C49749E0018929E /* TestHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestHelper.swift; sourceTree = "<group>"; };
 		0442C4062B7CE1E900EAD8EE /* TapGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapGestureRecognizer.swift; sourceTree = "<group>"; };
@@ -211,6 +213,7 @@
 		094077DEFDC2739B10CF4183 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				040F19972CC69BE0005C9707 /* secrets.defaults.properties */,
 				2A9F290E21D650154DEB2F19 /* Localized Views */,
 				B18D7E7738BF86467B0F1465 /* Images.xcassets */,
 			);
@@ -473,6 +476,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F00C66132ACC67FA00187028 /* Debug App Tests-Info.plist in Resources */,
+				040F19982CC69BE0005C9707 /* secrets.defaults.properties in Resources */,
 				F00C66142ACC67FA00187028 /* Images.xcassets in Resources */,
 				F00C66152ACC67FA00187028 /* LaunchScreen.xib in Resources */,
 				F00C66162ACC67FA00187028 /* Main.storyboard in Resources */,
