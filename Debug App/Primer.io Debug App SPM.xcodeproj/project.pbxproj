@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		040F19982CC69BE0005C9707 /* secrets.defaults.properties in Resources */ = {isa = PBXBuildFile; fileRef = 040F19972CC69BE0005C9707 /* secrets.defaults.properties */; };
+		040F199A2CC7A186005C9707 /* SecretsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040F19992CC7A186005C9707 /* SecretsManager.swift */; };
 		041CD2FF2BFB7736009E6EF8 /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041CD2FE2BFB7736009E6EF8 /* MerchantHeadlessCheckoutNolPayViewController.swift */; };
 		043C7FA22C49749E0018929E /* TestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043C7FA12C49749E0018929E /* TestHelper.swift */; };
 		0442C4072B7CE1E900EAD8EE /* TapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0442C4062B7CE1E900EAD8EE /* TapGestureRecognizer.swift */; };
@@ -80,6 +81,7 @@
 		00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantResultViewController.swift; sourceTree = "<group>"; };
 		01C09DEAB07F42004B26A278 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		040F19972CC69BE0005C9707 /* secrets.defaults.properties */ = {isa = PBXFileReference; lastKnownFileType = text; path = secrets.defaults.properties; sourceTree = SOURCE_ROOT; };
+		040F19992CC7A186005C9707 /* SecretsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretsManager.swift; sourceTree = "<group>"; };
 		041CD2FE2BFB7736009E6EF8 /* MerchantHeadlessCheckoutNolPayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessCheckoutNolPayViewController.swift; sourceTree = "<group>"; };
 		043C7FA12C49749E0018929E /* TestHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestHelper.swift; sourceTree = "<group>"; };
 		0442C4062B7CE1E900EAD8EE /* TapGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapGestureRecognizer.swift; sourceTree = "<group>"; };
@@ -191,6 +193,7 @@
 		0442C4052B7CE1E900EAD8EE /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				040F19992CC7A186005C9707 /* SecretsManager.swift */,
 				043C7FA12C49749E0018929E /* TestHelper.swift */,
 				F08F63E12BA0BEAD006EF9A9 /* AppetizeConfigProvider.swift */,
 				F08F63E22BA0BEAD006EF9A9 /* MetadataParser.swift */,
@@ -499,6 +502,7 @@
 				044F805A2C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController.swift in Sources */,
 				F00C65FA2ACC67FA00187028 /* Range+Extensions.swift in Sources */,
 				8723ADE72B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift in Sources */,
+				040F199A2CC7A186005C9707 /* SecretsManager.swift in Sources */,
 				F00C65FB2ACC67FA00187028 /* String+Extensions.swift in Sources */,
 				049A055C2B4BF044002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */,
 				F00C65FC2ACC67FA00187028 /* UIStackViewExtensions.swift in Sources */,
