@@ -1,3 +1,9 @@
+## 2.31.2 (2024-10-16)
+
+### Fix
+
+- Adyen Blik dismissal issue and small UI glitch (#1020)
+
 ## 2.31.1 (2024-10-04)
 
 ### Fix

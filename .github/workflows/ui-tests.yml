@@ -84,7 +84,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - uses: ruby/setup-ruby@f26937343756480a8cb3ae1f623b9c8d89ed6984  # v1.196.0
+      - uses: ruby/setup-ruby@7bae1d00b5db9166f4f0fc47985a3a5702cb58f0  # v1.197.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
@@ -113,7 +113,7 @@ jobs:
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
           SOURCE_BRANCH: ${{ github.ref }}
       - name: Save Browserstack ID
-        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 #v4.4.0
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 #v4.4.3
         id: save_browserstack_id_step
         with:
           name: browserstack_id
