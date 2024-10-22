@@ -389,7 +389,7 @@
                                                                 <segments>
                                                                     <segment title="None"/>
                                                                     <segment title="On Success"/>
-                                                                    <segment title="On Authorize"/>
+                                                                    <segment title="On Agreement"/>
                                                                 </segments>
                                                             </segmentedControl>
                                                         </subviews>
