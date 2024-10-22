@@ -55,161 +55,18 @@ enum Environment: String, Codable {
 
 }
 
-struct CreateClientTokenRequest: Codable {
-    let orderId: String
-    let amount: Int?
-    let currencyCode: String
-    let customerId: String?
-    let metadata: [String: String]?
-    let customer: Customer?
-    let order: Order?
-    let paymentMethod: PaymentMethod?
-}
-
-public struct Customer: Codable {
-    let firstName: String?
-    let lastName: String?
-    let emailAddress: String?
-    let billingAddress: Address?
-    let shippingAddress: Address?
-    let mobileNumber: String?
-    let nationalDocumentId: String?
-}
-
-public struct LineItem: Codable {
-    let itemId: String?
-    let description: String?
-    let amount: Int?
-    let discountAmount: Int?
-    let quantity: Int?
-    let taxAmount: Int?
-    let taxCode: String?
-
-    public init (
-        itemId: String?,
-        description: String?,
-        amount: Int?,
-        discountAmount: Int?,
-        quantity: Int?,
-        taxAmount: Int?,
-        taxCode: String?
-    ) {
-        self.itemId = itemId
-        self.description = description
-        self.amount = amount
-        self.discountAmount = discountAmount
-        self.quantity = quantity
-        self.taxAmount = taxAmount
-        self.taxCode = taxCode
-    }
-}
-
-public struct Order: Codable {
-    let countryCode: String?
-    //    let fees: Fees?
-    let lineItems: [LineItem]?
-    let shipping: Shipping?
-
-    public init (
-        countryCode: String?,
-        //        fees: Fees?,
-        lineItems: [LineItem]?,
-        shipping: Shipping?
-    ) {
-        self.countryCode = countryCode
-        //        self.fees = fees
-        self.lineItems = lineItems
-        self.shipping = shipping
-    }
-}
-
-public struct Fees: Codable {
-    let amount: UInt?
-    let description: String?
-
-    public init (
-        amount: UInt?,
-        description: String?
-    ) {
-        self.amount = amount
-        self.description = description
-    }
-}
-
-public struct Shipping: Codable {
-    let amount: UInt
-
-    public init(amount: UInt) {
-        self.amount = amount
-    }
-}
-
-public struct PaymentMethod: Codable {
-    let vaultOnSuccess: Bool
-
-    public init(vaultOnSuccess: Bool) {
-        self.vaultOnSuccess = vaultOnSuccess
-    }
-}
-
-struct ClientSessionRequestBody {
+struct ClientSessionRequestBody: Encodable {
 
     var clientToken: String?
     var customerId: String?
     var orderId: String?
-    var currencyCode: Currency?
+    var currencyCode: String?
     var amount: Int?
-    var metadata: [String: Any]?
+    var metadata: [String: String]?
     var customer: ClientSessionRequestBody.Customer?
     var order: ClientSessionRequestBody.Order?
     var paymentMethod: ClientSessionRequestBody.PaymentMethod?
     var testParams: Test.Params?
-
-    var dictionaryValue: [String: Any]? {
-        var dic: [String: Any] = [:]
-
-        if let clientToken = clientToken {
-            dic["clientToken"] = clientToken
-        }
-
-        if let customerId = customerId {
-            dic["customerId"] = customerId
-        }
-
-        if let orderId = orderId {
-            dic["orderId"] = orderId
-        }
-
-        if let currencyCode = currencyCode {
-            dic["currencyCode"] = currencyCode.code
-        }
-
-        if let amount = amount {
-            dic["amount"] = amount
-        }
-
-        if let metadata = metadata {
-            dic["metadata"] = metadata
-        }
-
-        if let customer = customer {
-            dic["customer"] = customer.dictionaryValue
-        }
-
-        if let order = order {
-            dic["order"] = order.dictionaryValue
-        }
-
-        if let paymentMethod = paymentMethod {
-            dic["paymentMethod"] = paymentMethod.dictionaryValue
-        }
-
-        if let testParams = testParams {
-            dic["testParams"] = try? testParams.asDictionary()
-        }
-
-        return dic.keys.count == 0 ? nil : dic
-    }
 
     struct Customer: Codable {
         var firstName: String?
@@ -218,59 +75,11 @@ struct ClientSessionRequestBody {
         var mobileNumber: String?
         var billingAddress: Address?
         var shippingAddress: Address?
-
-        var dictionaryValue: [String: Any]? {
-            var dic: [String: Any] = [:]
-
-            if let firstName = firstName {
-                dic["firstName"] = firstName
-            }
-
-            if let lastName = lastName {
-                dic["lastName"] = lastName
-            }
-
-            if let emailAddress = emailAddress {
-                dic["emailAddress"] = emailAddress
-            }
-
-            if let mobileNumber = mobileNumber {
-                dic["mobileNumber"] = mobileNumber
-            }
-
-            if let mobileNumber = mobileNumber {
-                dic["mobileNumber"] = mobileNumber
-            }
-
-            if let billingAddress = billingAddress {
-                dic["billingAddress"] = billingAddress.dictionaryValue
-            }
-
-            if let shippingAddress = shippingAddress {
-                dic["shippingAddress"] = shippingAddress.dictionaryValue
-            }
-
-            return dic.keys.count == 0 ? nil : dic
-        }
     }
 
     struct Order: Codable {
         var countryCode: CountryCode?
         var lineItems: [LineItem]?
-
-        var dictionaryValue: [String: Any]? {
-            var dic: [String: Any] = [:]
-
-            if let countryCode = countryCode {
-                dic["countryCode"] = countryCode.rawValue
-            }
-
-            if let lineItems = lineItems {
-                dic["lineItems"] = lineItems.compactMap({ $0.dictionaryValue })
-            }
-
-            return dic.keys.count == 0 ? nil : dic
-        }
 
         struct LineItem: Codable {
 
@@ -281,40 +90,6 @@ struct ClientSessionRequestBody {
             var discountAmount: Int?
             var taxAmount: Int?
             var productType: String?
-
-            var dictionaryValue: [String: Any]? {
-                var dic: [String: Any] = [:]
-
-                if let itemId = itemId {
-                    dic["itemId"] = itemId
-                }
-
-                if let description = description {
-                    dic["description"] = description
-                }
-
-                if let amount = amount {
-                    dic["amount"] = amount
-                }
-
-                if let quantity = quantity {
-                    dic["quantity"] = quantity
-                }
-
-                if let taxAmount = taxAmount {
-                    dic["taxAmount"] = taxAmount
-                }
-
-                if let discountAmount = discountAmount {
-                    dic["discountAmount"] = discountAmount
-                }
-
-                if let productType = productType {
-                    dic["productType"] = productType
-                }
-
-                return dic.keys.count == 0 ? nil : dic
-            }
         }
     }
 
@@ -324,50 +99,10 @@ struct ClientSessionRequestBody {
         let descriptor: String?
         let paymentType: String?
 
-        var dictionaryValue: [String: Any]? {
-            var dic: [String: Any] = [:]
-
-            if let vaultOnSuccess = vaultOnSuccess {
-                dic["vaultOnSuccess"] = vaultOnSuccess
-            }
-
-            if let options = options {
-                dic["options"] = options.dictionaryValue
-            }
-
-            if let descriptor = descriptor {
-                dic["descriptor"] = descriptor
-            }
-
-            if let paymentType = paymentType {
-                dic["paymentType"] = paymentType
-            }
-
-            return dic.keys.count == 0 ? nil : dic
-        }
-
         struct PaymentMethodOptionGroup: Codable {
             var KLARNA: PaymentMethodOption?
             var PAYMENT_CARD: PaymentMethodOption?
             var APPLE_PAY: PaymentMethodOption?
-
-            var dictionaryValue: [String: Any]? {
-                var dic: [String: Any] = [:]
-
-                if let KLARNA = KLARNA {
-                    dic["KLARNA"] = KLARNA.dictionaryValue
-                }
-
-                if let PAYMENT_CARD = PAYMENT_CARD {
-                    dic["PAYMENT_CARD"] = PAYMENT_CARD.dictionaryValue
-                }
-                
-                if let APPLE_PAY = APPLE_PAY {
-                    dic["APPLE_PAY"] = APPLE_PAY.dictionaryValue
-                }
-
-                return dic.keys.count == 0 ? nil : dic
-            }
         }
 
         struct PaymentMethodOption: Codable {
@@ -431,59 +166,13 @@ struct ClientSessionRequestBody {
 
                 captureVaultedCardCvv = try container.decodeIfPresent(Bool.self, forKey: .captureVaultedCardCvv) ?? false
             }
-
-            var dictionaryValue: [String: Any]? {
-                var dic: [String: Any] = [:]
-
-                if let surcharge = surcharge {
-                    dic["surcharge"] = surcharge.dictionaryValue
-                }
-
-                if let instalmentDuration = instalmentDuration {
-                    dic["instalmentDuration"] = instalmentDuration
-                }
-
-                if let extraMerchantData = extraMerchantData {
-                    dic["extraMerchantData"] = extraMerchantData
-                }
-
-                if let captureVaultedCardCvv = captureVaultedCardCvv, captureVaultedCardCvv == true {
-                    dic["captureVaultedCardCvv"] = captureVaultedCardCvv
-                }
-                
-                if let merchantName = merchantName {
-                    dic["merchantName"] = merchantName
-                }
-
-                return dic.keys.count == 0 ? nil : dic
-            }
         }
 
         struct  SurchargeOption: Codable {
             var amount: Int?
-
-            var dictionaryValue: [String: Any]? {
-                var dic: [String: Any] = [:]
-
-                if let amount = amount {
-                    dic["amount"] = amount
-                }
-
-                return dic.keys.count == 0 ? nil : dic
-            }
         }
     }
 
-}
-
-extension Encodable {
-    func asDictionary() throws -> [String: Any] {
-        let data = try JSONEncoder().encode(self)
-        guard let dictionary = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else {
-            throw NSError()
-        }
-        return dictionary
-    }
 }
 
 extension String {
