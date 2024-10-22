@@ -537,7 +537,18 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                                                                                 merchantName: "Primer Merchant iOS")
 
         clientSession.paymentMethod?.options?.APPLE_PAY = applePayOptions
-        
+
+        if vaultingFlowSegmentedControl.selectedSegmentIndex == 1 {
+            clientSession.paymentMethod?.vaultOnSuccess = true
+            clientSession.paymentMethod?.vaultOnAgreement = nil
+        } else if vaultingFlowSegmentedControl.selectedSegmentIndex == 2 {
+            clientSession.paymentMethod?.vaultOnAgreement = true
+            clientSession.paymentMethod?.vaultOnSuccess = nil
+        } else {
+            clientSession.paymentMethod?.vaultOnSuccess = nil
+            clientSession.paymentMethod?.vaultOnAgreement = nil
+        }
+
         if let metadata = metadataTextField.text, !metadata.isEmpty {
             clientSession.metadata = MetadataParser().parse(metadata)
         }

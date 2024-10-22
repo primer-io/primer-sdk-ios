@@ -94,7 +94,8 @@ struct ClientSessionRequestBody: Encodable {
     }
 
     struct PaymentMethod: Codable {
-        let vaultOnSuccess: Bool?
+        var vaultOnSuccess: Bool?
+        var vaultOnAgreement: Bool?
         var options: PaymentMethodOptionGroup?
         let descriptor: String?
         let paymentType: String?
