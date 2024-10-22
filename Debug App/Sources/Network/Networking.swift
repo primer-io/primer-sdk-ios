@@ -260,12 +260,8 @@ class Networking {
         var bodyData: Data!
 
         do {
-            if let requestBodyJson = requestBody.dictionaryValue {
-                bodyData = try JSONSerialization.data(withJSONObject: requestBodyJson, options: .fragmentsAllowed)
-            } else {
-                completion(nil, NetworkError.serializationError)
-                return
-            }
+            let encoder = JSONEncoder()
+            bodyData = try encoder.encode(requestBody)
         } catch {
             completion(nil, NetworkError.missingParams)
             return
@@ -307,12 +303,8 @@ class Networking {
         let bodyData: Data!
 
         do {
-            if let requestBodyJson = tmpRequestBody.dictionaryValue {
-                bodyData = try JSONSerialization.data(withJSONObject: requestBodyJson, options: .fragmentsAllowed)
-            } else {
-                completion(nil, NetworkError.serializationError)
-                return
-            }
+            let encoder = JSONEncoder()
+            bodyData = try encoder.encode(requestBody)
         } catch {
             completion(nil, NetworkError.missingParams)
             return

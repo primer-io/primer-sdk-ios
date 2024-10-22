@@ -469,7 +469,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     }
     
     func configureClientSession() {
-        clientSession.currencyCode = CurrencyLoader().getCurrency(currencyTextField.text ?? "")
+        clientSession.currencyCode = CurrencyLoader().getCurrency(currencyTextField.text ?? "")?.code
         clientSession.order?.countryCode = CountryCode(rawValue: countryCodeTextField.text ?? "")
         clientSession.orderId = orderIdTextField.text
         clientSession.customerId = customerIdTextField.text
@@ -544,7 +544,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
         enableCVVRecaptureFlowSwitch.isOn = clientSession.paymentMethod?.options?.PAYMENT_CARD?.captureVaultedCardCvv == true
 
-        currencyTextField.text = clientSession.currencyCode?.code
+        currencyTextField.text = clientSession.currencyCode
         countryCodeTextField.text = clientSession.order?.countryCode?.rawValue
         orderIdTextField.text = clientSession.orderId
 
