@@ -34,6 +34,21 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return manager
     }()
 
+    // Used for Co-Badged Cards feature
+    private let cardPaymentMethodName = "PAYMENT_CARD"
+    private lazy var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager? = {
+        // If the manager is not resolved (nil) Co-Badged cards feature will just not work and the card form should be working as before
+        let manager = try? PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: cardPaymentMethodName, delegate: self)
+        return manager
+    }()
+
+    private var rawCardData = PrimerCardData(cardNumber: "",
+                                             expiryDate: "",
+                                             cvv: "",
+                                             cardholderName: "")
+    fileprivate var currentModels: [PrimerCardNetwork]?
+
+
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
     var userInputCompletion: (() -> Void)?
@@ -860,6 +875,11 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?) {
         self.cardNetwork = cardNetwork
 
+        if let text = primerTextFieldView.textField.internalText {
+            rawCardData.cardNumber = text.replacingOccurrences(of: " ", with: "")
+            rawDataManager?.rawData = rawCardData
+        }
+
         var network = self.cardNetwork?.rawValue.uppercased()
         let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
 
@@ -984,6 +1004,78 @@ extension CardFormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
         dataSource = countries
         return true
+    }
+}
+
+// MARK: - PrimerHeadlessUniversalCheckoutRawDataManagerDelegate
+extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
+
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              dataIsValid isValid: Bool,
+                              errors: [Swift.Error]?) {
+        let errorsDescription = errors?.map { $0.localizedDescription }.joined(separator: ", ")
+        logger.debug(message: "dataIsValid: \(isValid), errors: \(errorsDescription ?? "none")")
+    }
+
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              metadataDidChange metadata: [String : Any]?) {
+        logger.debug(message: "metadataDidChange: \(metadata ?? [:])")
+    }
+
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              willFetchMetadataForState cardState: PrimerValidationState) {
+        guard let state = cardState as? PrimerCardNumberEntryState else {
+            logger.error(message: "Received non-card metadata. Ignoring ...")
+            return
+        }
+        logger.debug(message: "willFetchCardMetadataForState: \(state.cardNumber)")
+    }
+
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
+                              forState cardState: PrimerValidationState) {
+
+        guard let metadata = metadata as? PrimerCardNumberEntryMetadata,
+              let cardState = cardState as? PrimerCardNumberEntryState else {
+            logger.error(message: "Received non-card metadata. Ignoring ...")
+            return
+        }
+
+        let metadataDescription = metadata.selectableCardNetworks?.items.map { $0.displayName }.joined(separator: ", ") ?? "n/a"
+        logger.debug(message: "didReceiveCardMetadata: (selectable ->) \(metadataDescription), cardState: \(cardState.cardNumber)")
+
+        var isAllowed = true
+
+        if metadata.source == .remote, let networks = metadata.selectableCardNetworks?.items, !networks.isEmpty {
+            currentModels = metadata.selectableCardNetworks?.items
+        } else if let preferredDetectedNetwork = metadata.detectedCardNetworks.preferred {
+            currentModels = [preferredDetectedNetwork]
+        } else if let cardNetwork = metadata.detectedCardNetworks.items.first {
+            currentModels = [cardNetwork]
+            isAllowed = false
+        } else {
+            currentModels = []
+        }
+
+        print(currentModels ?? "no models")
+
+//        let models = currentModels?
+//            .filter { $0.displayName != "Unknown" }
+//            .enumerated()
+//            .map { index, model in
+//                CardDisplayModel(index: index,
+//                                 name: model.displayName,
+//                                 image: image(from: model),
+//                                 isAllowed: isAllowed,
+//                                 value: model.network)
+//            }
+//
+//        modelsDelegate?.didReceiveCardModels(models: models ?? [])
+    }
+
+    private func image(from model: PrimerCardNetwork) -> UIImage? {
+        let asset = PrimerHeadlessUniversalCheckout.AssetsManager.getCardNetworkAsset(for: model.network)
+        return asset?.cardImage
     }
 }
 
