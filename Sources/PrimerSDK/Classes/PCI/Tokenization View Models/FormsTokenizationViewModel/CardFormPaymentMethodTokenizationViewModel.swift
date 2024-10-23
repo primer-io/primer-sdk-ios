@@ -328,7 +328,58 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             })
         }
 
-        super.start()
+        firstly {
+            self.startTokenizationFlow()
+        }
+        .done { paymentMethodTokenData in
+            self.paymentMethodTokenData = paymentMethodTokenData
+            self.processPaymentMethodTokenData()
+        }
+        .catch { err in
+            self.uiManager.primerRootViewController?.enableUserInteraction(true)
+            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+
+            if let primerErr = err as? PrimerError,
+               case .cancelled = primerErr,
+               PrimerInternal.shared.sdkIntegrationType == .dropIn,
+               self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
+                self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
+                self.config.type == PrimerPaymentMethodType.payPal.rawValue {
+                firstly {
+                    clientSessionActionsModule.unselectPaymentMethodIfNeeded()
+                }
+                .done { _ in
+                    PrimerUIManager.primerRootViewController?.popToMainScreen(completion: nil)
+                }
+                // The above promises will never end up on error.
+                .catch { _ in }
+
+            } else {
+                firstly {
+                    clientSessionActionsModule.unselectPaymentMethodIfNeeded()
+                }
+                .then { () -> Promise<String?> in
+                    var primerErr: PrimerError!
+                    if let error = err as? PrimerError {
+                        primerErr = error
+                    } else {
+                        primerErr = PrimerError.underlyingErrors(errors: [err],
+                                                                 userInfo: .errorUserInfoDictionary(),
+                                                                 diagnosticsId: UUID().uuidString)
+                    }
+
+                    self.showResultScreenIfNeeded(error: primerErr)
+                    return PrimerDelegateProxy.raisePrimerDidFailWithError(primerErr, data: self.paymentCheckoutData)
+                }
+                .done { merchantErrorMessage in
+                    self.handleFailureFlow(errorMessage: merchantErrorMessage)
+                }
+                // The above promises will never end up on error.
+                .catch { _ in
+                    self.logger.error(message: "Unselection of payment method failed - this should never happen ...")
+                }
+            }
+        }
     }
 
     override func validate() throws {
@@ -460,6 +511,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             self.userInputCompletion = {
+                self.uiManager.primerRootViewController?.enableUserInteraction(false)
                 seal.fulfill()
             }
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
