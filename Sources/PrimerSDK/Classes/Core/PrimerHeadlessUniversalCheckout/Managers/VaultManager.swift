@@ -953,7 +953,7 @@ extension PrimerHeadlessUniversalCheckout {
         public let paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData
         public let analyticsId: String
 
-        init(
+        public init(
             id: String,
             paymentMethodType: String,
             paymentInstrumentType: PaymentInstrumentType,
