@@ -510,11 +510,11 @@ extension PrimerHeadlessUniversalCheckout {
                 if decodedJWTToken.intent?.contains("STRIPE_ACH") == true {
                     if let sdkCompleteUrlString = decodedJWTToken.sdkCompleteUrl,
                        let sdkCompleteUrl = URL(string: sdkCompleteUrlString) {
-                        
+
                         DispatchQueue.main.async {
                             PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
                         }
-                        
+
                         firstly {
                             sendAdditionalInfoEvent()
                         }
@@ -530,7 +530,7 @@ extension PrimerHeadlessUniversalCheckout {
                         .catch { err in
                             seal.reject(err)
                         }
-                        
+
                     } else {
                         let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                                  diagnosticsId: UUID().uuidString)
@@ -813,7 +813,7 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
         }
-        
+
         /**
          * Completes a payment using the provided JWT token and URL.
          *
@@ -832,7 +832,7 @@ extension PrimerHeadlessUniversalCheckout {
                 let apiClient: PrimerAPIClientAchProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
                 let timeZone = TimeZone(abbreviation: "UTC")
                 let timeStamp = Date().toString(timeZone: timeZone)
-                
+
                 let body = Request.Body.Payment.Complete(mandateSignatureTimestamp: timeStamp)
                 apiClient.completePayment(clientToken: clientToken, url: completeUrl, paymentRequest: body) { result in
                     switch result {
@@ -844,7 +844,7 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
         }
-        
+
         /**
          * Sends additional information via delegate `PrimerHeadlessUniversalCheckoutDelegate` if implemented in the headless checkout context.
          *
@@ -862,10 +862,10 @@ extension PrimerHeadlessUniversalCheckout {
                     seal.fulfill()
                     return
                 }
-                
+
                 let delegate = PrimerHeadlessUniversalCheckout.current.delegate
                 let isAdditionalInfoImplemented = delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo != nil
-                
+
                 guard isAdditionalInfoImplemented else {
                     let logMessage =
                         """
@@ -874,23 +874,23 @@ extension PrimerHeadlessUniversalCheckout {
     """
                     logger.warn(message: logMessage)
 
-                    let message = "Couldn't continue as due to unimplemented delegate method `primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo`"
+                    let message = "Couldn't continue due to unimplemented delegate method `primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo`"
                     let error = PrimerError.unableToPresentPaymentMethod(paymentMethodType: self.paymentMethodType,
                                                                          userInfo: .errorUserInfoDictionary(additionalInfo: [
                                                                             "message": message
                                                                          ]),
                                                                          diagnosticsId: UUID().uuidString)
-                    
+
                     seal.reject(error)
                     return
                 }
-                
+
                 let additionalInfo = ACHMandateAdditionalInfo()
                 PrimerDelegateProxy.primerDidReceiveAdditionalInfo(additionalInfo)
                 seal.fulfill()
             }
         }
-        
+
         /**
          * Waits for a response from the ACHMandateDelegate method.
          * The response is returned in stripeMandateCompletion handler.
@@ -914,7 +914,7 @@ extension PrimerHeadlessUniversalCheckout.VaultManager: ACHMandateDelegate {
     public func acceptMandate() {
         achMandateCompletion?(.success(()))
     }
-    
+
     public func declineMandate() {
         let error = ACHHelpers.getCancelledError(paymentMethodType: paymentMethodType)
         achMandateCompletion?(.failure(error))
