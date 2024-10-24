@@ -88,3 +88,4 @@ fastlane/report.xml
 ### Primer
 Debug App/Pods
 Debug App/Podfile.lock
+Debug App/secrets.defaults.properties
