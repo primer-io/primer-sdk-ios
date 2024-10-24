@@ -18,6 +18,11 @@ extension PrimerHeadlessUniversalCheckout {
             return UIImage(named: "\(cardNetwork.rawValue)-logo-colored", in: Bundle.primerResources, compatibleWith: nil)
         }
 
+        public static func getCardNetworkAsset(cardNetworkString: String?) -> PrimerCardNetworkAsset? {
+            guard let cardNetworkString else { return nil }
+            return Self.getCardNetworkAsset(for: CardNetwork(cardNetworkStr: cardNetworkString))
+        }
+
         public static func getCardNetworkAsset(for cardNetwork: CardNetwork) -> PrimerCardNetworkAsset? {
 
             let assetName = "\(cardNetwork.assetName.lowercased())-card-icon-colored"
