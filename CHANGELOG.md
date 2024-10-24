@@ -1,3 +1,12 @@
+## 2.31.3 (2024-10-24)
+
+### Fix
+
+- Expose VaultedPaymentMethod initialiser (#1032)
+- Prevent dismissal of Drop-in card form while a payment is active (#1031)
+- Discover card network image not showing (#1025)
+- Move the cursor to the end of the text after pasting the card number  (#1027)
+
 ## 2.31.2 (2024-10-16)
 
 ### Fix
