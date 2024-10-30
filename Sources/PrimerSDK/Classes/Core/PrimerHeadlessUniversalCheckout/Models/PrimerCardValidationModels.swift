@@ -54,6 +54,10 @@ public class PrimerCardNetwork: NSObject {
         guard let network = network else { return nil }
         self.init(network: network)
     }
+
+    override public var description: String {
+        return "PrimerCardNetwork(displayName: \(displayName), network: \(network), allowed: \(allowed))"
+    }
 }
 
 @objc

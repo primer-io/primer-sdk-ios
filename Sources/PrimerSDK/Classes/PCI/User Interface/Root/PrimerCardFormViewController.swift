@@ -13,11 +13,12 @@ class PrimerCardFormViewController: PrimerFormViewController {
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private let formPaymentMethodTokenizationViewModel: CardFormPaymentMethodTokenizationViewModel
 
-    init(navigationBarLogo: UIImage? = nil, viewModel: CardFormPaymentMethodTokenizationViewModel) {
-        self.formPaymentMethodTokenizationViewModel = viewModel
+    init(navigationBarLogo: UIImage? = nil,
+         viewModel: CardFormPaymentMethodTokenizationViewModel) {
+        formPaymentMethodTokenizationViewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = navigationBarLogo
-        if self.titleImage == nil {
+        titleImage = navigationBarLogo
+        if titleImage == nil {
             title = Strings.PrimerCardFormView.title
         }
     }
@@ -42,6 +43,10 @@ class PrimerCardFormViewController: PrimerFormViewController {
             place: .cardForm
         )
         Analytics.Service.record(event: viewEvent)
+
+        formPaymentMethodTokenizationViewModel.onCurrentCardNetworksUpdated = { networks in
+            print("Current card networks: \(String(describing: networks))")
+        }
 
         setupView()
     }

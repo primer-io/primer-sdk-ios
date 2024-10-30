@@ -46,7 +46,13 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                                              expiryDate: "",
                                              cvv: "",
                                              cardholderName: "")
-    fileprivate var currentModels: [PrimerCardNetwork]?
+    fileprivate var currentCardNetworks: [PrimerCardNetwork]? {
+        didSet {
+            // Trigger the closure to inform the view of the update
+            onCurrentCardNetworksUpdated?(currentCardNetworks)
+        }
+    }
+    var onCurrentCardNetworksUpdated: (([PrimerCardNetwork]?) -> Void)?
 
 
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
@@ -1099,30 +1105,18 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
         var isAllowed = true
 
         if metadata.source == .remote, let networks = metadata.selectableCardNetworks?.items, !networks.isEmpty {
-            currentModels = metadata.selectableCardNetworks?.items
+            currentCardNetworks = metadata.selectableCardNetworks?.items
         } else if let preferredDetectedNetwork = metadata.detectedCardNetworks.preferred {
-            currentModels = [preferredDetectedNetwork]
+            currentCardNetworks = [preferredDetectedNetwork]
         } else if let cardNetwork = metadata.detectedCardNetworks.items.first {
-            currentModels = [cardNetwork]
+            currentCardNetworks = [cardNetwork]
             isAllowed = false
         } else {
-            currentModels = []
+            currentCardNetworks = []
         }
 
-        print(currentModels ?? "no models")
-
-//        let models = currentModels?
-//            .filter { $0.displayName != "Unknown" }
-//            .enumerated()
-//            .map { index, model in
-//                CardDisplayModel(index: index,
-//                                 name: model.displayName,
-//                                 image: image(from: model),
-//                                 isAllowed: isAllowed,
-//                                 value: model.network)
-//            }
-//
-//        modelsDelegate?.didReceiveCardModels(models: models ?? [])
+        currentCardNetworks = currentCardNetworks?
+            .filter { $0.displayName != "Unknown" }
     }
 
     private func image(from model: PrimerCardNetwork) -> UIImage? {
