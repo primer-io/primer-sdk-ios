@@ -635,6 +635,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 //                                              additionalShippingContactFields: [.name, .emailAddress, .phoneNumber],
 //                                              requireShippingMethod: true) : nil
 
+        let stripePublishableKey = SecretsManager.shared.value(forKey: .stripePublishableKey)
+
         let settings = PrimerSettings(
             paymentHandling: selectedPaymentHandling,
             paymentMethodOptions: PrimerPaymentMethodOptions(
@@ -645,7 +647,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     isCaptureBillingAddressEnabled: applePayCaptureBillingAddress,
                     showApplePayForUnsupportedDevice: false,
                     checkProvidedNetworks: applePayCheckProvidedNetworks),
-                stripeOptions: PrimerStripeOptions(publishableKey: MerchantMockDataManager.stripePublishableKey, mandateData: mandateData)),
+                stripeOptions: stripePublishableKey == nil ? nil : PrimerStripeOptions(publishableKey: stripePublishableKey!, mandateData: mandateData)),
             uiOptions: uiOptions,
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
@@ -673,6 +675,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 //                                              additionalShippingContactFields: [.name, .emailAddress, .phoneNumber],
 //                                              requireShippingMethod: true) : nil
 
+        let stripePublishableKey = SecretsManager.shared.value(forKey: .stripePublishableKey)
+
         let settings = PrimerSettings(
             paymentHandling: selectedPaymentHandling,
             paymentMethodOptions: PrimerPaymentMethodOptions(
@@ -683,7 +687,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     isCaptureBillingAddressEnabled: applePayCaptureBillingAddress,
                     showApplePayForUnsupportedDevice: false,
                     checkProvidedNetworks: applePayCheckProvidedNetworks),
-                stripeOptions: PrimerStripeOptions(publishableKey: MerchantMockDataManager.stripePublishableKey)),
+                stripeOptions: stripePublishableKey == nil ? nil : PrimerStripeOptions(publishableKey: stripePublishableKey!)),
             uiOptions: nil,
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )

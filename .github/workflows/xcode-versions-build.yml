@@ -22,7 +22,7 @@ jobs:
           - 14.3.1
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ github.ref }}
       - name: Select Xcode Version
@@ -43,7 +43,7 @@ jobs:
           ruby-version: "3.2"
           bundler-cache: true
       - name: Setup node
-        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 #v4.0.4
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af #v4.1.0
         with:
           node-version: 18.3.0
       - run: npm install --save slack-message-builder
@@ -89,11 +89,11 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Git - Checkout
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ github.ref }}
       - name: Setup node
-        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 #v4.0.4
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af #v4.1.0
         with:
           node-version: 18.3.0
       - run: npm install --save slack-message-builder
