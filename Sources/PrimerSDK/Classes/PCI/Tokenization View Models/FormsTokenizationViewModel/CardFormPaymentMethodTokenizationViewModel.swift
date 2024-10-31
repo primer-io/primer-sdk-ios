@@ -46,14 +46,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                                              expiryDate: "",
                                              cvv: "",
                                              cardholderName: "")
-    fileprivate var currentCardNetworks: [PrimerCardNetwork]? {
-        didSet {
-            // Trigger the closure to inform the view of the update
-            onCurrentCardNetworksUpdated?(currentCardNetworks)
-        }
-    }
+    fileprivate var currentCardNetworks: [PrimerCardNetwork]?
     var onCurrentCardNetworksUpdated: (([PrimerCardNetwork]?) -> Void)?
-
 
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
@@ -943,12 +937,12 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
 
         if let cardNetwork = cardNetwork,
            cardNetwork != .unknown,
-           cardNumberContainerView.rightImage2 != cardNetwork.icon {
+           cardNumberContainerView.rightImage != cardNetwork.icon {
             if network == nil || network == "UNKNOWN" {
                 network = "OTHER"
             }
 
-            cardNumberContainerView.rightImage2 = cardNetwork.icon
+            cardNumberContainerView.rightImage = cardNetwork.icon
 
             firstly {
                 clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: network)
@@ -957,8 +951,8 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
                 self.updateButtonUI()
             }
             .catch { _ in }
-        } else if cardNumberContainerView.rightImage2 != nil && (cardNetwork?.icon == nil || cardNetwork == .unknown) {
-            cardNumberContainerView.rightImage2 = nil
+        } else if cardNumberContainerView.rightImage != nil && (cardNetwork?.icon == nil || cardNetwork == .unknown) {
+            cardNumberContainerView.rightImage = nil
 
             firstly {
                 clientSessionActionsModule.unselectPaymentMethodIfNeeded()
@@ -1102,21 +1096,21 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
         let metadataDescription = metadata.selectableCardNetworks?.items.map { $0.displayName }.joined(separator: ", ") ?? "n/a"
         logger.debug(message: "didReceiveCardMetadata: (selectable ->) \(metadataDescription), cardState: \(cardState.cardNumber)")
 
-        var isAllowed = true
-
         if metadata.source == .remote, let networks = metadata.selectableCardNetworks?.items, !networks.isEmpty {
             currentCardNetworks = metadata.selectableCardNetworks?.items
         } else if let preferredDetectedNetwork = metadata.detectedCardNetworks.preferred {
             currentCardNetworks = [preferredDetectedNetwork]
         } else if let cardNetwork = metadata.detectedCardNetworks.items.first {
             currentCardNetworks = [cardNetwork]
-            isAllowed = false
         } else {
             currentCardNetworks = []
         }
 
-        currentCardNetworks = currentCardNetworks?
-            .filter { $0.displayName != "Unknown" }
+        currentCardNetworks = currentCardNetworks?.filter { $0.displayName != "Unknown" }
+
+        // Trigger the closure to inform the view of the update
+        onCurrentCardNetworksUpdated?(currentCardNetworks)
+        cardNumberContainerView.cardNetworks = currentCardNetworks ?? []
     }
 
     private func image(from model: PrimerCardNetwork) -> UIImage? {
