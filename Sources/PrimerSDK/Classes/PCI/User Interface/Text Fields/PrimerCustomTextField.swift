@@ -11,7 +11,10 @@ class PrimerCustomFieldView: UIView {
 
     // MARK: - Properties
 
+    // Custom text field view for input
     var fieldView: PrimerTextFieldView!
+
+    // Array of supported card networks, updating the dropdown view visibility on change
     var cardNetworks: [PrimerCardNetwork] = [] {
         didSet {
             DispatchQueue.main.async { [weak self] in
@@ -20,51 +23,62 @@ class PrimerCustomFieldView: UIView {
             }
         }
     }
-    private var textFieldStackView: UIStackView!
-    var networksDropdownView: UIView?
-    private var presentationButton: UIButton!  // Button for presenting menu programmatically
+
+    private var textFieldStackView: UIStackView!  // Stack view containing the text field and dropdown
+    var networksDropdownView: UIView?  // Dropdown view for displaying available card networks
+    private var presentationButton: UIButton!  // Button used to trigger menu programmatically
+
+    // Callback triggered when a card network is selected
     var onCardNetworkSelected: ((PrimerCardNetwork) -> Void)?
     var selectedCardNetwork: PrimerCardNetwork?
 
-    override var tintColor: UIColor! {
+    override var tintColor: UIColor! {  // Updates label and line color on tint change
         didSet {
             topPlaceholderLabel.textColor = tintColor
             bottomLine.backgroundColor = tintColor
         }
     }
 
+    // Placeholder text for the top label
     var placeholderText: String?
+
+    // Image on the right side of the text field
     var rightImage: UIImage? {
         didSet {
             rightImageView.isHidden = rightImage == nil
             rightImageView.image = rightImage
         }
     }
+
+    // Tint color for the right image
     var rightImageTintColor: UIColor? {
         didSet {
             rightImageView.tintColor = rightImageTintColor
         }
     }
+
+    // Error text displayed below the text field
     var errorText: String? {
         didSet {
             errorLabel.text = errorText ?? ""
         }
     }
 
-    private var verticalStackView: UIStackView = UIStackView()
-    private let errorLabel = UILabel()
-    private let topPlaceholderLabel = UILabel()
-    private let rightImageViewContainer = UIView()
-    private let rightImageView = UIImageView()
-    private let bottomLine = UIView()
-    private var theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    private var verticalStackView: UIStackView = UIStackView()  // Main vertical stack view for layout
+    private let errorLabel = UILabel()  // Label to display error messages
+    private let topPlaceholderLabel = UILabel()  // Label for the placeholder text
+    private let rightImageViewContainer = UIView()  // Container for right-side image view
+    private let rightImageView = UIImageView()  // Right image view
+    private let bottomLine = UIView()  // Line below the text field
+    private var theme: PrimerThemeProtocol = DependencyContainer.resolve()  // Theme for styling
 
-    // References to image views inside the dropdown
+    // References for icon and chevron image views in the dropdown
     private var networkIconImageView: UIImageView?
     private var chevronImageView: UIImageView?
 
     // MARK: - Setup Methods
 
+    // Sets up the view hierarchy and layout
     func setup() {
         setupVerticalStackView()
         setupTopPlaceholderLabel()
@@ -74,12 +88,14 @@ class PrimerCustomFieldView: UIView {
         constrainVerticalStackView()
     }
 
+    // Sets up the main vertical stack view
     private func setupVerticalStackView() {
         addSubview(verticalStackView)
         verticalStackView.alignment = .fill
         verticalStackView.axis = .vertical
     }
 
+    // Configures the top label for the placeholder text
     private func setupTopPlaceholderLabel() {
         topPlaceholderLabel.font = UIFont.systemFont(ofSize: 10.0, weight: .medium)
         topPlaceholderLabel.text = placeholderText
@@ -87,30 +103,35 @@ class PrimerCustomFieldView: UIView {
         verticalStackView.addArrangedSubview(topPlaceholderLabel)
     }
 
+    // Configures the text field stack view with the field view and right image view
     private func setupTextFieldStackView() {
         textFieldStackView = UIStackView()
         textFieldStackView.alignment = .fill
         textFieldStackView.axis = .horizontal
         textFieldStackView.spacing = 6
 
-        // Add the fieldView
+        // Add the text field to the stack view
         textFieldStackView.addArrangedSubview(fieldView)
         fieldView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         fieldView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
+        // Adds the right image view container to the stack view
         setupRightImageViewContainer(in: textFieldStackView)
         verticalStackView.addArrangedSubview(textFieldStackView)
     }
 
+    // Configures the dropdown view to display available card networks
     private func setupNetworksDropdownView() {
         guard networksDropdownView == nil else { return }
 
         let dropdownView = createDropdownView()
         let iconAndChevronStack = createIconAndChevronStack()
 
+        // Add stack containing the icon and chevron to the dropdown view
         dropdownView.addSubview(iconAndChevronStack)
         activateConstraints(for: iconAndChevronStack, in: dropdownView)
 
+        // Sets up the hidden button used to present the dropdown options
         setupPresentationButton(in: dropdownView)
 
         networksDropdownView = dropdownView
@@ -120,23 +141,27 @@ class PrimerCustomFieldView: UIView {
 
     // MARK: - Helper Methods
 
+    // Creates the dropdown view container
     private func createDropdownView() -> UIView {
         let dropdownView = UIView()
         dropdownView.isUserInteractionEnabled = true
         return dropdownView
     }
 
+    // Creates a horizontal stack view with the network icon and chevron for the dropdown
     private func createIconAndChevronStack() -> UIStackView {
         let iconAndChevronStack = UIStackView()
         iconAndChevronStack.axis = .horizontal
         iconAndChevronStack.alignment = .center
         iconAndChevronStack.spacing = 4
 
+        // Creates and adds the network icon
         let networkIconImageView = UIImageView(image: cardNetworks.first?.network.icon)
         self.networkIconImageView = networkIconImageView
         networkIconImageView.contentMode = .scaleAspectFit
         iconAndChevronStack.addArrangedSubview(networkIconImageView)
 
+        // Creates and adds the chevron icon
         let chevronImageView = UIImageView(image: UIImage(systemName: "chevron.down", withConfiguration: UIImage.SymbolConfiguration(scale: .small)))
         self.chevronImageView = chevronImageView
         chevronImageView.contentMode = .scaleAspectFit
@@ -145,6 +170,7 @@ class PrimerCustomFieldView: UIView {
         return iconAndChevronStack
     }
 
+    // Activates constraints to pin the stack view within its container
     private func activateConstraints(for stackView: UIStackView, in containerView: UIView) {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -155,6 +181,7 @@ class PrimerCustomFieldView: UIView {
         ])
     }
 
+    // Configures the presentation button for triggering the dropdown options
     private func setupPresentationButton(in dropdownView: UIView) {
         presentationButton = UIButton(type: .system)
         presentationButton.alpha = 0.1
@@ -169,6 +196,7 @@ class PrimerCustomFieldView: UIView {
         dropdownView.addSubview(presentationButton)
     }
 
+    // Configures the UIMenu for iOS 15 and above
     @available(iOS 15.0, *)
     private func setupUIMenuForButton() {
         let uiActions = cardNetworks.map { network in
@@ -184,6 +212,7 @@ class PrimerCustomFieldView: UIView {
         presentationButton.showsMenuAsPrimaryAction = true
     }
 
+    // Sets constraints for the dropdown view and presentation button
     private func setDropdownViewConstraints(_ dropdownView: UIView) {
         dropdownView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -196,6 +225,7 @@ class PrimerCustomFieldView: UIView {
         dropdownView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
     }
 
+    // Updates dropdown visibility based on the number of card networks
     private func updateNetworksDropdownViewVisibility() {
         if cardNetworks.count > 1 {
             if networksDropdownView == nil {
@@ -209,9 +239,9 @@ class PrimerCustomFieldView: UIView {
         }
     }
 
+    // Configures the right image view container in the text field stack view
     private func setupRightImageViewContainer(in stackView: UIStackView) {
         rightImageView.contentMode = .scaleAspectFit
-
         stackView.addArrangedSubview(rightImageViewContainer)
         rightImageViewContainer.translatesAutoresizingMaskIntoConstraints = false
         rightImageViewContainer.addSubview(rightImageView)
@@ -225,12 +255,14 @@ class PrimerCustomFieldView: UIView {
         ])
     }
 
+    // Configures the bottom line beneath the text field
     private func setupBottomLine() {
         bottomLine.backgroundColor = theme.colors.primary
         bottomLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
         verticalStackView.addArrangedSubview(bottomLine)
     }
 
+    // Configures the error label below the text field
     private func setupErrorLabel() {
         errorLabel.textColor = theme.text.error.color
         errorLabel.heightAnchor.constraint(equalToConstant: 12.0).isActive = true
@@ -239,6 +271,7 @@ class PrimerCustomFieldView: UIView {
         verticalStackView.addArrangedSubview(errorLabel)
     }
 
+    // Sets up constraints for the main vertical stack view
     private func constrainVerticalStackView() {
         verticalStackView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -251,11 +284,10 @@ class PrimerCustomFieldView: UIView {
 
     // MARK: - Dropdown Actions
 
+    // Shows an alert for selecting a card network (for iOS < 15)
     @objc private func showCardNetworkSelectionAlert() {
-        // Use UIAlertController for earlier iOS versions
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
-        // Create UIAlertAction for each network and add to the alert
         cardNetworks.forEach { network in
             let action = UIAlertAction(title: network.displayName, style: .default) { _ in
                 self.selectedCardNetwork = network
@@ -266,7 +298,6 @@ class PrimerCustomFieldView: UIView {
             alertController.addAction(action)
         }
 
-        // Present the alert controller
         if let viewController = UIApplication.shared.keyWindow?.rootViewController {
             viewController.present(alertController, animated: true)
         }
