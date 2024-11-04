@@ -611,6 +611,12 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                         self.presentPaymentMethodAppropriateViewController(shouldCompletePaymentExternally: isPaymentMethodNeedingExternalCompletion)
                     }
                     .then { () -> Promise<String> in
+
+                        // Prevent dismissal of the Blik PM while polling
+                        if paymentMethodType == PrimerPaymentMethodType.adyenBlik {
+                            self.uiManager.primerRootViewController?.enableUserInteraction(false)
+                        }
+
                         let pollingModule = PollingModule(url: statusUrl)
                         self.didCancel = {
                             let err = PrimerError.cancelled(
@@ -619,6 +625,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                                 diagnosticsId: UUID().uuidString)
                             ErrorHandler.handle(error: err)
                             pollingModule.cancel(withError: err)
+                            self.uiManager.primerRootViewController?.enableUserInteraction(true)
                             return
                         }
 
@@ -628,6 +635,7 @@ class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel
                         seal.fulfill(resumeToken)
                     }
                     .ensure {
+                        self.uiManager.primerRootViewController?.enableUserInteraction(true)
                         self.didCancel = nil
                     }
                     .catch { err in
