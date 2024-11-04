@@ -12,7 +12,6 @@ import UIKit
 var environment: Environment = .sandbox
 var customDefinedApiKey: String?
 var performPaymentAfterVaulting: Bool = false
-var useNewWorkflows = true
 var paymentSessionType: MerchantMockDataManager.SessionType = .generic
 
 class MerchantSessionAndSettingsViewController: UIViewController {
@@ -28,7 +27,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var environmentStackView: UIStackView!
     @IBOutlet weak var testParamsGroupStackView: UIStackView!
     @IBOutlet weak var apiKeyStackView: UIStackView!
-    @IBOutlet weak var useNewWorkflowsStackView: UIStackView!
     @IBOutlet weak var klarnaEMDStackView: UIStackView!
     @IBOutlet weak var clientTokenStackView: UIStackView!
     @IBOutlet weak var sdkSettingsStackView: UIStackView!
@@ -61,11 +59,10 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var test3DSScenarioTextField: UITextField!
 
     // MARK: SDK Settings Inputs
-    @IBOutlet weak var useNewWorkflowsSwitch: UISwitch!
     @IBOutlet weak var checkoutFlowSegmentedControl: UISegmentedControl!
+    @IBOutlet weak var vaultingFlowSegmentedControl: UISegmentedControl!
     @IBOutlet weak var merchantNameTextField: UITextField!
     @IBOutlet weak var applyThemingSwitch: UISwitch!
-    @IBOutlet weak var vaultPaymentsSwitch: UISwitch!
     @IBOutlet weak var disableSuccessScreenSwitch: UISwitch!
     @IBOutlet weak var disableErrorScreenSwitch: UISwitch!
     @IBOutlet weak var disableInitScreenSwitch: UISwitch!
@@ -246,7 +243,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             orderStackView.isHidden = false
             customerStackView.isHidden = false
             surchargeGroupStackView.isHidden = false
-            useNewWorkflowsStackView.isHidden = false
             klarnaEMDStackView.isHidden = false
 
         case .clientToken:
@@ -258,7 +254,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             orderStackView.isHidden = true
             customerStackView.isHidden = true
             surchargeGroupStackView.isHidden = true
-            useNewWorkflowsStackView.isHidden = true
             klarnaEMDStackView.isHidden = true
 
         case .testScenario:
@@ -270,7 +265,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             orderStackView.isHidden = false
             customerStackView.isHidden = false
             surchargeGroupStackView.isHidden = false
-            useNewWorkflowsStackView.isHidden = true
             klarnaEMDStackView.isHidden = true
 
             testParamsStackView.isHidden = (selectedTestScenario == nil)
@@ -402,10 +396,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         surchargeStackView.isHidden = !sender.isOn
     }
 
-    @IBAction func useNewWorkflowsSwitchValueChanged(_ sender: UISwitch) {
-        useNewWorkflows = sender.isOn
-    }
-
     @IBAction func oneTimePaymentValueChanged(_ sender: UISwitch) {
         paymentSessionType = sender.isOn ? .klarnaWithEMD : .generic
         populateSessionSettingsFields()
@@ -479,7 +469,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     }
     
     func configureClientSession() {
-        clientSession.currencyCode = CurrencyLoader().getCurrency(currencyTextField.text ?? "")
+        clientSession.currencyCode = CurrencyLoader().getCurrency(currencyTextField.text ?? "")?.code
         clientSession.order?.countryCode = CountryCode(rawValue: countryCodeTextField.text ?? "")
         clientSession.orderId = orderIdTextField.text
         clientSession.customerId = customerIdTextField.text
@@ -532,7 +522,18 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                                                                                 merchantName: "Primer Merchant iOS")
 
         clientSession.paymentMethod?.options?.APPLE_PAY = applePayOptions
-        
+
+        if vaultingFlowSegmentedControl.selectedSegmentIndex == 1 {
+            clientSession.paymentMethod?.vaultOnSuccess = true
+            clientSession.paymentMethod?.vaultOnAgreement = nil
+        } else if vaultingFlowSegmentedControl.selectedSegmentIndex == 2 {
+            clientSession.paymentMethod?.vaultOnAgreement = true
+            clientSession.paymentMethod?.vaultOnSuccess = nil
+        } else {
+            clientSession.paymentMethod?.vaultOnSuccess = nil
+            clientSession.paymentMethod?.vaultOnAgreement = nil
+        }
+
         if let metadata = metadataTextField.text, !metadata.isEmpty {
             clientSession.metadata = MetadataParser().parse(metadata)
         }
@@ -543,7 +544,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
         enableCVVRecaptureFlowSwitch.isOn = clientSession.paymentMethod?.options?.PAYMENT_CARD?.captureVaultedCardCvv == true
 
-        currencyTextField.text = clientSession.currencyCode?.code
+        currencyTextField.text = clientSession.currencyCode
         countryCodeTextField.text = clientSession.order?.countryCode?.rawValue
         orderIdTextField.text = clientSession.orderId
 
@@ -820,7 +821,5 @@ extension MerchantSessionAndSettingsViewController {
         self.lineItems = [lineItem]
 
         metadataTextField.text = config.metadata
-        useNewWorkflows = config.newWorkflows
-        useNewWorkflowsSwitch.isOn = config.newWorkflows
     }
 }

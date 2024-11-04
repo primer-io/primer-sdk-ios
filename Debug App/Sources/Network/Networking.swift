@@ -53,7 +53,7 @@ class Networking {
         apiVersion: APIVersion?,
         url: URL,
         method: HTTPMethod,
-        headers: [String: String]?,
+        headers: [String: String]? = nil,
         queryParameters: [String: String]?,
         body: Data?,
         completion: @escaping (_ result: Result<Data, Error>) -> Void) {
@@ -84,7 +84,7 @@ class Networking {
             // We have a dedicated argument that takes x-api-key into account
             // in case a custom one gets defined before SDK initialization
             // so in case this array contains the same key, it won't be added
-            for header in headers.filter({ $0.value != "x-api-key"}) {
+            for header in headers.filter({ $0.key != "x-api-key"}) {
                 request.addValue(header.value, forHTTPHeaderField: header.key)
             }
         }
@@ -260,12 +260,8 @@ class Networking {
         var bodyData: Data!
 
         do {
-            if let requestBodyJson = requestBody.dictionaryValue {
-                bodyData = try JSONSerialization.data(withJSONObject: requestBodyJson, options: .fragmentsAllowed)
-            } else {
-                completion(nil, NetworkError.serializationError)
-                return
-            }
+            let encoder = JSONEncoder()
+            bodyData = try encoder.encode(requestBody)
         } catch {
             completion(nil, NetworkError.missingParams)
             return
@@ -276,7 +272,6 @@ class Networking {
             apiVersion: .v2_2,
             url: url,
             method: .post,
-            headers: URL.requestSessionHTTPHeaders(useNewWorkflows: useNewWorkflows),
             queryParameters: nil,
             body: bodyData
         ) { result in
@@ -308,12 +303,8 @@ class Networking {
         let bodyData: Data!
 
         do {
-            if let requestBodyJson = tmpRequestBody.dictionaryValue {
-                bodyData = try JSONSerialization.data(withJSONObject: requestBodyJson, options: .fragmentsAllowed)
-            } else {
-                completion(nil, NetworkError.serializationError)
-                return
-            }
+            let encoder = JSONEncoder()
+            bodyData = try encoder.encode(requestBody)
         } catch {
             completion(nil, NetworkError.missingParams)
             return
