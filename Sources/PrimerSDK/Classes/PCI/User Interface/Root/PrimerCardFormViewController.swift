@@ -44,10 +44,6 @@ class PrimerCardFormViewController: PrimerFormViewController {
         )
         Analytics.Service.record(event: viewEvent)
 
-        formPaymentMethodTokenizationViewModel.onCurrentCardNetworksUpdated = { networks in
-            print("Current card networks: \(String(describing: networks))")
-        }
-
         setupView()
     }
 

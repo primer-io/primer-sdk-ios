@@ -25,7 +25,7 @@ class PrimerCustomFieldView: UIView {
     }
 
     private var textFieldStackView: UIStackView!  // Stack view containing the text field and dropdown
-    var networksDropdownView: UIView?  // Dropdown view for displaying available card networks
+    private var networksDropdownView: UIView?  // Dropdown view for displaying available card networks
     private var presentationButton: UIButton!  // Button used to trigger menu programmatically
 
     // Callback triggered when a card network is selected
@@ -68,7 +68,7 @@ class PrimerCustomFieldView: UIView {
     private let errorLabel = UILabel()  // Label to display error messages
     private let topPlaceholderLabel = UILabel()  // Label for the placeholder text
     private let rightImageViewContainer = UIView()  // Container for right-side image view
-    private let rightImageView = UIImageView()  // Right image view
+    let rightImageView = UIImageView()  // Right image view
     private let bottomLine = UIView()  // Line below the text field
     private var theme: PrimerThemeProtocol = DependencyContainer.resolve()  // Theme for styling
 
@@ -86,6 +86,19 @@ class PrimerCustomFieldView: UIView {
         setupBottomLine()
         setupErrorLabel()
         constrainVerticalStackView()
+    }
+
+    // Function to reset the card network selection to the initial state
+    func resetCardNetworkSelection() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+
+            self.selectedCardNetwork = nil
+            self.networkIconImageView?.image = self.cardNetworks.first?.network.icon  // Reset to the first available icon
+            self.rightImageView.image = self.cardNetworks.first?.network.icon
+            // Update visibility based on card network count
+            self.updateNetworksDropdownViewVisibility()
+        }
     }
 
     // Sets up the main vertical stack view
@@ -155,13 +168,26 @@ class PrimerCustomFieldView: UIView {
         iconAndChevronStack.alignment = .center
         iconAndChevronStack.spacing = 4
 
-        // Creates and adds the network icon
-        let networkIconImageView = UIImageView(image: cardNetworks.first?.network.icon)
-        self.networkIconImageView = networkIconImageView
-        networkIconImageView.contentMode = .scaleAspectFit
-        iconAndChevronStack.addArrangedSubview(networkIconImageView)
+        // Creates and configures the network icon container
+        let networkIconContainer = UIView()
+        networkIconImageView = UIImageView(image: cardNetworks.first?.network.icon)
+        networkIconImageView?.contentMode = .scaleAspectFit
 
-        // Creates and adds the chevron icon
+        // Adds the network icon to the container
+        networkIconContainer.addSubview(networkIconImageView!)
+        networkIconImageView?.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            networkIconImageView!.topAnchor.constraint(equalTo: networkIconContainer.topAnchor, constant: 6),
+            networkIconImageView!.bottomAnchor.constraint(equalTo: networkIconContainer.bottomAnchor, constant: -6),
+            networkIconImageView!.leadingAnchor.constraint(equalTo: networkIconContainer.leadingAnchor),
+            networkIconImageView!.trailingAnchor.constraint(equalTo: networkIconContainer.trailingAnchor),
+            networkIconImageView!.widthAnchor.constraint(equalTo: networkIconContainer.heightAnchor)
+        ])
+
+        // Adds the network icon container to the stack
+        iconAndChevronStack.addArrangedSubview(networkIconContainer)
+
+        // Creates and configures the chevron icon
         let chevronImageView = UIImageView(image: UIImage(systemName: "chevron.down", withConfiguration: UIImage.SymbolConfiguration(scale: .small)))
         self.chevronImageView = chevronImageView
         chevronImageView.contentMode = .scaleAspectFit
@@ -208,8 +234,8 @@ class PrimerCustomFieldView: UIView {
         }
 
         let menu = UIMenu(options: .singleSelection, children: uiActions)
-        presentationButton.menu = menu
-        presentationButton.showsMenuAsPrimaryAction = true
+        presentationButton?.menu = menu
+        presentationButton?.showsMenuAsPrimaryAction = true
     }
 
     // Sets constraints for the dropdown view and presentation button
@@ -227,6 +253,11 @@ class PrimerCustomFieldView: UIView {
 
     // Updates dropdown visibility based on the number of card networks
     private func updateNetworksDropdownViewVisibility() {
+
+        if #available(iOS 15.0, *) {
+            setupUIMenuForButton()
+        }
+
         if cardNetworks.count > 1 {
             if networksDropdownView == nil {
                 setupNetworksDropdownView()
@@ -292,6 +323,7 @@ class PrimerCustomFieldView: UIView {
             let action = UIAlertAction(title: network.displayName, style: .default) { _ in
                 self.selectedCardNetwork = network
                 self.networkIconImageView?.image = network.network.icon
+                self.rightImageView.image = network.network.icon
                 self.onCardNetworkSelected?(network)
             }
             action.setValue(network.network.icon?.withRenderingMode(.alwaysOriginal), forKey: "image")
