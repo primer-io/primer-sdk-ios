@@ -38,6 +38,7 @@ class PrimerContainerViewController: PrimerViewController {
         mockedNavigationBar.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         mockedNavigationBar.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         mockedNavigationBar.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        mockedNavigationBar.addCancelButton()
 
         addChild(childViewController)
         scrollView.bounces = false
@@ -102,5 +103,4 @@ extension UIView {
         leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: leading).isActive = true
         trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: trailing).isActive = true
     }
-
 }
