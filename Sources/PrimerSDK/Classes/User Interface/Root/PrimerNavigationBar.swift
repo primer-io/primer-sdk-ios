@@ -119,14 +119,14 @@ class PrimerNavigationBar: PrimerView {
         PrimerUIManager.primerRootViewController?.popViewController()
     }
 
-    func addCancelButton() {
+    func addDismissButton() {
         // Add Close button to navigation bar
         if PrimerSettings.current.uiOptions.dismissalMechanism.contains(.closeButton) {
-            let cancelButton = UIButton(type: .system)
-            cancelButton.setTitle(Strings.Generic.close, for: .normal)
-            cancelButton.setTitleColor(UIColor.gray, for: .disabled)
-            cancelButton.addTarget(self, action: #selector(didTapCloseButton), for: .touchUpInside)
-            rightBarButton = cancelButton
+            let dismissButton = UIButton(type: .system)
+            dismissButton.setTitle(Strings.Generic.close, for: .normal)
+            dismissButton.setTitleColor(UIColor.gray, for: .disabled)
+            dismissButton.addTarget(self, action: #selector(didTapCloseButton), for: .touchUpInside)
+            rightBarButton = dismissButton
         }
     }
 

@@ -38,7 +38,7 @@ class PrimerContainerViewController: PrimerViewController {
         mockedNavigationBar.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         mockedNavigationBar.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         mockedNavigationBar.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        mockedNavigationBar.addCancelButton()
+        mockedNavigationBar.addDismissButton()
 
         addChild(childViewController)
         scrollView.bounces = false
