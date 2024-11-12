@@ -78,13 +78,9 @@ class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
     }
 
     func shippingContactFields(applePayOptions: PrimerApplePayOptions?) -> Set<PKContactField> {
-        guard applePayOptions?.shippingOptions?.isCaptureShippingAddressEnabled == true else {
-            return []
-        }
-
         var fields: Set<PKContactField> = [.postalAddress]
 
-        if let additionalFields = applePayOptions?.shippingOptions?.additionalShippingContactFields {
+        if let additionalFields = applePayOptions?.shippingOptions?.shippingContactFields {
             additionalFields.forEach {
                 fields.insert($0.toPKContact())
             }
@@ -114,7 +110,7 @@ class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
     }
 }
 
-extension PrimerApplePayOptions.ShippingOptions.AdditionalShippingContactField {
+extension PrimerApplePayOptions.RequiredContactField {
     func toPKContact() -> PKContactField {
         switch self {
         case .name:
@@ -123,6 +119,8 @@ extension PrimerApplePayOptions.ShippingOptions.AdditionalShippingContactField {
             return .emailAddress
         case .phoneNumber:
             return .phoneNumber
+        case .postalAddress:
+            return .postalAddress
         }
     }
 }

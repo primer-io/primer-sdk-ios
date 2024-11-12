@@ -160,40 +160,42 @@ public class PrimerApplePayOptions: Codable {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
-        self.shippingOptions = nil
         self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
         self.checkProvidedNetworks = checkProvidedNetworks
+        self.shippingOptions = nil
     }
 
-    private init(merchantIdentifier: String,
-                 merchantName: String?,
-                 isCaptureBillingAddressEnabled: Bool = false,
-                 showApplePayForUnsupportedDevice: Bool = true,
-                 checkProvidedNetworks: Bool = true,
-                 shippingOptions: ShippingOptions? = nil) {
+    public init(merchantIdentifier: String,
+                merchantName: String?,
+                isCaptureBillingAddressEnabled: Bool = false,
+                showApplePayForUnsupportedDevice: Bool = true,
+                checkProvidedNetworks: Bool = true,
+                shippingOptions: ShippingOptions? = nil) {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
-        self.shippingOptions = shippingOptions
         self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
         self.checkProvidedNetworks = checkProvidedNetworks
+        self.shippingOptions = shippingOptions
     }
 
-    internal struct ShippingOptions: Codable {
-        let isCaptureShippingAddressEnabled: Bool
-        let additionalShippingContactFields: [AdditionalShippingContactField]?
-        let requireShippingMethod: Bool
+    public struct ShippingOptions: Codable {
+        public let shippingContactFields: [RequiredContactField]?
+        public let requireShippingMethod: Bool
 
-        public init(isCaptureShippingAddressEnabled: Bool,
-                    additionalShippingContactFields: [AdditionalShippingContactField]? = nil,
+        public init(shippingContactFields: [RequiredContactField]? = nil,
                     requireShippingMethod: Bool) {
-            self.isCaptureShippingAddressEnabled = isCaptureShippingAddressEnabled
-            self.additionalShippingContactFields = additionalShippingContactFields
+            self.shippingContactFields = shippingContactFields
             self.requireShippingMethod = requireShippingMethod
         }
+    }
+
+    public enum RequiredContactField: Codable {
+        case name, emailAddress, phoneNumber, postalAddress
+    }
 
 // swiftlint:disable:next nesting
-        internal enum AdditionalShippingContactField: Codable {
+        public enum RequiredContactField: Codable {
             case name, emailAddress, phoneNumber
         }
     }
