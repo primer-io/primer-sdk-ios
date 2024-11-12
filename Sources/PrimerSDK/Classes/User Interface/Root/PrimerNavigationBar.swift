@@ -123,7 +123,7 @@ class PrimerNavigationBar: PrimerView {
         // Add Close button to navigation bar
         if PrimerSettings.current.uiOptions.dismissalMechanism.contains(.closeButton) {
             let dismissButton = UIButton(type: .system)
-            dismissButton.setTitle(Strings.Generic.close, for: .normal)
+            dismissButton.setTitle(Strings.Generic.cancel, for: .normal)
             dismissButton.setTitleColor(UIColor.gray, for: .disabled)
             dismissButton.addTarget(self, action: #selector(didTapCloseButton), for: .touchUpInside)
             rightBarButton = dismissButton
