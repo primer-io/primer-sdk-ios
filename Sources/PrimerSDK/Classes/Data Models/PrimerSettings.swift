@@ -142,7 +142,7 @@ public class PrimerApplePayOptions: Codable {
     let merchantIdentifier: String
     @available(*, deprecated, message: "Use Client Session API to provide merchant name value: https://primer.io/docs/payment-methods/apple-pay/direct-integration#prepare-the-client-session")
     let merchantName: String?
-    @available(*, deprecated, message: "Use BillingOptions and pass it to the init() to provide billing options.")
+    @available(*, deprecated, message: "Use BillingOptions configure required billing fields.")
     let isCaptureBillingAddressEnabled: Bool
     /// If in some cases you dont want to present ApplePay option if the device is not supporting it set this to `false`.
     /// Default value is `true`.
@@ -196,7 +196,7 @@ public class PrimerApplePayOptions: Codable {
     }
 
     public struct BillingOptions: Codable {
-        let requiredBillingContactFields: [RequiredContactField]?
+        public let requiredBillingContactFields: [RequiredContactField]?
 
         public init(requiredBillingContactFields: [RequiredContactField]? = nil) {
             self.requiredBillingContactFields = requiredBillingContactFields
