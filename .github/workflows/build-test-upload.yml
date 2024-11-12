@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   unit-tests-sdk:
-    runs-on: macos-14-large
+    runs-on: macos-15-large
     timeout-minutes: 20
     name: "Unit Tests - SDK"
     steps:
@@ -39,15 +39,15 @@ jobs:
 
   optional-sdk-tests:
     name: Optional SDK Tests
-    runs-on: macos-14-large
+    runs-on: acos-15-large
     strategy:
       max-parallel: 3
       matrix:
         package-swift:
-          - { name: 'nol-pay', file: 'Package.NolPay.swift' }
-          - { name: 'klarna', file: Package.Klarna.swift }
-          - { name: '3DS', file: Package.3DS.swift }
-          - { name: 'stripe', file: Package.Stripe.swift }
+          - { name: "nol-pay", file: "Package.NolPay.swift" }
+          - { name: "klarna", file: Package.Klarna.swift }
+          - { name: "3DS", file: Package.3DS.swift }
+          - { name: "stripe", file: Package.Stripe.swift }
     steps:
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
@@ -97,10 +97,9 @@ jobs:
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           fastlane-test-lane: test_debug_app
 
-
   spm-build:
     needs: unit-tests-debug-app
-    runs-on: macos-14-large
+    runs-on: macos-15-large
     timeout-minutes: 20
     name: "Build app with SPM Integration"
     steps:
@@ -115,7 +114,7 @@ jobs:
       - name: Select Xcode Version
         uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
         with:
-          xcode-version: '15.4'
+          xcode-version: "16.0"
       - name: Install SSH key
         uses: shimataro/ssh-key-action@d4fffb50872869abe2d9a9098a6d9c5aa7d16be4 #v2.7.0
         with:
@@ -125,7 +124,7 @@ jobs:
       - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
-      - uses: ruby/setup-ruby@7d3497fd78c07c0d84ebafa58d8dac60cd1f0763  # v1.199.0
+      - uses: ruby/setup-ruby@7d3497fd78c07c0d84ebafa58d8dac60cd1f0763 # v1.199.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
@@ -162,10 +161,10 @@ jobs:
           base-branch: ${{ github.base_ref }}
           pull-request-sha: ${{ github.event.pull_request.head.sha }}
           coverage-file-names: sonar-coverage-sdk.xml,sonar-coverage-3DS.xml,sonar-coverage-nol-pay.xml,sonar-coverage-klarna.xml,sonar-coverage-stripe.xml
-  
+
   critical-ui-tests:
     if: ${{ !startsWith(github.ref_name, 'release/') }}
-    needs: 
+    needs:
       - unit-tests-sdk
       - unit-tests-debug-app
     runs-on: macos-13-large
@@ -180,7 +179,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ github.ref }}
-      - uses: ruby/setup-ruby@7d3497fd78c07c0d84ebafa58d8dac60cd1f0763  # v1.199.0
+      - uses: ruby/setup-ruby@7d3497fd78c07c0d84ebafa58d8dac60cd1f0763 # v1.199.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
@@ -201,8 +200,8 @@ jobs:
           bundle exec fastlane build_cocoapods
       - name: Clone and launch Browserstack tests via Appium 🧪
         run: |
-            git clone -b 'develop' https://project_41483872_bot:$GITLAB_TEMP_PATH@gitlab.com/primer-io/acceptance/mobile/mobile-appium-tests.git
-            git show --summary
+          git clone -b 'develop' https://project_41483872_bot:$GITLAB_TEMP_PATH@gitlab.com/primer-io/acceptance/mobile/mobile-appium-tests.git
+          git show --summary
         env:
           GITLAB_TEMP_PATH: ${{ secrets.GITLAB_APPIUM_PULL_KEY }}
       - name: List simulators
@@ -235,7 +234,7 @@ jobs:
         id: appetize-upload
         uses: ./.github/actions/appetize-build
         with:
-          build_type: 'preview'
+          build_type: "preview"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           ssh-private-key: ${{ secrets.SSH_KEY }}
           known-hosts: ${{ secrets.KNOWN_HOSTS }}
