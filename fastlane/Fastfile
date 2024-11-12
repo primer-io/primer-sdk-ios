@@ -126,7 +126,12 @@ platform :ios do
       destination: "OS=#{sim_version},name=iPhone 16",
       result_bundle: true,
       code_coverage: true,
-      output_directory: Dir.pwd + "/test_output"
+      output_directory: Dir.pwd + "/test_output",
+      xcargs: {
+        "ENABLE_TESTABILITY" => "YES"
+      },
+      xcodebuild_formatter: "xcresult",
+      result_bundle_path: Dir.pwd + "/test_output/PrimerSDKTests.xcresult"
     )
   end
 
@@ -150,7 +155,12 @@ platform :ios do
       destination: "OS=#{sim_version},name=iPhone 16",
       result_bundle: true,
       code_coverage: true,
-      output_directory: Dir.pwd + "/test_output"
+      output_directory: Dir.pwd + "/test_output",
+      xcargs: {
+        "ENABLE_TESTABILITY" => "YES"
+      },
+      xcodebuild_formatter: "xcresult",
+      result_bundle_path: Dir.pwd + "/test_output/PrimerSDKTests.xcresult"
     )
   end
 
