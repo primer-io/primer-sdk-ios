@@ -142,6 +142,7 @@ public class PrimerApplePayOptions: Codable {
     let merchantIdentifier: String
     @available(*, deprecated, message: "Use Client Session API to provide merchant name value: https://primer.io/docs/payment-methods/apple-pay/direct-integration#prepare-the-client-session")
     let merchantName: String?
+    @available(*, deprecated, message: "Use BillingOptions and pass it to the init() to provide billing options.")
     let isCaptureBillingAddressEnabled: Bool
     /// If in some cases you dont want to present ApplePay option if the device is not supporting it set this to `false`.
     /// Default value is `true`.
@@ -151,6 +152,7 @@ public class PrimerApplePayOptions: Codable {
     /// we introduced this flag to continue supporting the old behaviour. Default value is `true`.
     let checkProvidedNetworks: Bool
     let shippingOptions: ShippingOptions?
+    let billingOptions: BillingOptions?
 
     public init(merchantIdentifier: String,
                 merchantName: String?,
@@ -163,6 +165,7 @@ public class PrimerApplePayOptions: Codable {
         self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
         self.checkProvidedNetworks = checkProvidedNetworks
         self.shippingOptions = nil
+        self.billingOptions = nil
     }
 
     public init(merchantIdentifier: String,
@@ -170,13 +173,15 @@ public class PrimerApplePayOptions: Codable {
                 isCaptureBillingAddressEnabled: Bool = false,
                 showApplePayForUnsupportedDevice: Bool = true,
                 checkProvidedNetworks: Bool = true,
-                shippingOptions: ShippingOptions? = nil) {
+                shippingOptions: ShippingOptions? = nil,
+                billingOptions: BillingOptions? = nil) {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
         self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
         self.checkProvidedNetworks = checkProvidedNetworks
         self.shippingOptions = shippingOptions
+        self.billingOptions = billingOptions
     }
 
     public struct ShippingOptions: Codable {
@@ -190,14 +195,16 @@ public class PrimerApplePayOptions: Codable {
         }
     }
 
-    public enum RequiredContactField: Codable {
-        case name, emailAddress, phoneNumber, postalAddress
+    public struct BillingOptions: Codable {
+        let requiredBillingContactFields: [RequiredContactField]?
+
+        public init(requiredBillingContactFields: [RequiredContactField]? = nil) {
+            self.requiredBillingContactFields = requiredBillingContactFields
+        }
     }
 
-// swiftlint:disable:next nesting
-        public enum RequiredContactField: Codable {
-            case name, emailAddress, phoneNumber
-        }
+    public enum RequiredContactField: Codable {
+        case name, emailAddress, phoneNumber, postalAddress
     }
 }
 
