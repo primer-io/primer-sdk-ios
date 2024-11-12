@@ -53,14 +53,14 @@ class PrimerNavigationBar: PrimerView {
                 view.removeFromSuperview()
             }
 
-            if let rightBarButton = leftBarButton {
-                leftView.addSubview(rightBarButton)
-                rightBarButton.translatesAutoresizingMaskIntoConstraints = false
+            if let leftBarButton = leftBarButton {
+                leftView.addSubview(leftBarButton)
+                leftBarButton.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
-                    rightBarButton.leadingAnchor.constraint(equalTo: leftView.leadingAnchor),
-                    rightBarButton.trailingAnchor.constraint(equalTo: leftView.trailingAnchor),
-                    rightBarButton.topAnchor.constraint(equalTo: leftView.topAnchor),
-                    rightBarButton.bottomAnchor.constraint(equalTo: leftView.bottomAnchor)
+                    leftBarButton.leadingAnchor.constraint(equalTo: leftView.leadingAnchor),
+                    leftBarButton.trailingAnchor.constraint(equalTo: leftView.trailingAnchor),
+                    leftBarButton.topAnchor.constraint(equalTo: leftView.topAnchor),
+                    leftBarButton.bottomAnchor.constraint(equalTo: leftView.bottomAnchor)
                 ])
             }
         }
