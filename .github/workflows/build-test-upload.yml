@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   unit-tests-sdk:
-    runs-on: macos-15-large
+    runs-on: macos-15
     timeout-minutes: 20
     name: "Unit Tests - SDK"
     steps:
@@ -39,7 +39,7 @@ jobs:
 
   optional-sdk-tests:
     name: Optional SDK Tests
-    runs-on: macos-latest-large
+    runs-on: macos-15-large
     strategy:
       max-parallel: 3
       matrix:
@@ -72,7 +72,7 @@ jobs:
           package-swift: ${{  matrix.package-swift.file }}
 
   unit-tests-debug-app:
-    runs-on: macos-15-large
+    runs-on: macos-15
     timeout-minutes: 20
     name: "Unit Tests - Debug App"
     steps:
@@ -99,7 +99,7 @@ jobs:
 
   spm-build:
     needs: unit-tests-debug-app
-    runs-on: macos-15-large
+    runs-on: macos-15
     timeout-minutes: 20
     name: "Build app with SPM Integration"
     steps:
