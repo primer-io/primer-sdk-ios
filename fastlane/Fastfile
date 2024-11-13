@@ -56,7 +56,7 @@ platform :ios do
 
     run_tests(workspace: app_workspace,
               scheme: "PrimerSDKTests",
-              destination: "platform=iOS Simulator,name=iPhone 16",
+              destination: "platform=iOS Simulator,name=iPhone 15",
               xcargs: "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64",
               skip_package_dependencies_resolution: true)
   end
@@ -123,7 +123,7 @@ platform :ios do
       package_path: ".",
       scheme: "PrimerSDKTests",
       sdk: "iphonesimulator#{sim_version}",
-      destination: "OS=#{sim_version},name=iPhone 16",
+      destination: "OS=#{sim_version},name=iPhone 15",
       result_bundle: true,
       code_coverage: true,
       output_directory: Dir.pwd + "/test_output",
@@ -152,7 +152,7 @@ platform :ios do
       scheme: app_scheme,
       configuration: "Debug",
       sdk: "iphonesimulator#{sim_version}",
-      destination: "OS=#{sim_version},name=iPhone 16",
+      destination: "OS=#{sim_version},name=iPhone 15",
       result_bundle: true,
       code_coverage: true,
       output_directory: Dir.pwd + "/test_output",
