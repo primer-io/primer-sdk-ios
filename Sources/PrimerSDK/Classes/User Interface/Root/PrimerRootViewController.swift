@@ -168,6 +168,7 @@ internal class PrimerRootViewController: PrimerViewController {
     }
 
     private func setupGestureRecognizers() {
+        guard PrimerSettings.current.uiOptions.dismissalMechanism.contains(.gestures) else { return }
         self.tapGesture = UITapGestureRecognizer(
             target: self,
             action: #selector(dismissGestureRecognizerAction))

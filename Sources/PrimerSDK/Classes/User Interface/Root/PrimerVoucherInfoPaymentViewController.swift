@@ -51,7 +51,7 @@ internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController 
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        (parent as? PrimerContainerViewController)?.mockedNavigationBar.rightBarButton = shareButton
+        (parent as? PrimerContainerViewController)?.mockedNavigationBar.leftBarButton = shareButton
     }
 
 }
