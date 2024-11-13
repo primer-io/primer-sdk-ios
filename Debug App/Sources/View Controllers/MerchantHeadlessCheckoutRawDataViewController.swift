@@ -215,7 +215,7 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
 extension MerchantHeadlessCheckoutRawDataViewController: UITextFieldDelegate {
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        print("TextField called")
+
         let text = textField.text
 
         var newText: String = ""

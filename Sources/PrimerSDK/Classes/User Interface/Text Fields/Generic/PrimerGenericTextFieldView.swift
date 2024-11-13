@@ -40,6 +40,11 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
             return false
         }
 
+        // Ensure range is within bounds
+        guard range.location <= currentText.count, range.length <= currentText.count - range.location else {
+            return false
+        }
+
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
 
         if let allowedCharacterSet = allowedCharacterSet {
