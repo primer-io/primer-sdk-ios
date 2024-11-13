@@ -123,7 +123,7 @@ platform :ios do
       package_path: ".",
       scheme: "PrimerSDKTests",
       sdk: "iphonesimulator#{sim_version}",
-      destination: "OS=#{sim_version},name=iPhone 14 Pro",
+      destination: "OS=#{sim_version},name=iPhone 15",
       result_bundle: true,
       code_coverage: true,
       output_directory: Dir.pwd + "/test_output"
@@ -147,9 +147,10 @@ platform :ios do
       scheme: app_scheme,
       configuration: "Debug",
       sdk: "iphonesimulator#{sim_version}",
-      destination: "OS=#{sim_version},name=iPhone 14 Pro",
+      destination: "OS=#{sim_version},name=iPhone 15",
       result_bundle: true,
       code_coverage: true,
+      clean: true,
       output_directory: Dir.pwd + "/test_output"
     )
   end
