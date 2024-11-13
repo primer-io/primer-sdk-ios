@@ -271,9 +271,9 @@ and 4 characters for expiry year separated by '/'.
     /// current year = "2022"
     /// first two digits = "20"
     private var cardExpirationYear: String? {
-        guard let expiryYear = self.expiryDateField.expiryYear
-        else { return nil }
+        guard let expiryYear = self.expiryDateField.expiryYear, expiryYear.count == 2 else { return nil }
         let currentYearAsString = Date().yearComponentAsString
+        guard currentYearAsString.count >= 2 else { return nil }
         let index = currentYearAsString.index(currentYearAsString.startIndex, offsetBy: 2)
         let milleniumAndCenturyOfCurrentYearAsString = currentYearAsString.prefix(upTo: index)
         return "\(milleniumAndCenturyOfCurrentYearAsString)\(expiryYear)"
