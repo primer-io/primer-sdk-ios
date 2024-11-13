@@ -1,5 +1,9 @@
 ## 2.32.0 (2024-11-13)
 
+### Feat
+
+- Add additional dismissal controls to PrimerUIOptions
+
 ### Fix
 
 - Range or index out of bounds crash (#1041)
