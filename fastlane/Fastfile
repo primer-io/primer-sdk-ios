@@ -150,6 +150,7 @@ platform :ios do
       destination: "OS=#{sim_version},name=iPhone 14 Pro",
       result_bundle: true,
       code_coverage: true,
+      clean: true,
       output_directory: Dir.pwd + "/test_output"
     )
   end
