@@ -163,13 +163,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var payAfterVaultSuccess: Bool = false
 
     var applePayCaptureBillingAddress = false
+    var applePayBillingAdditionalContactFields: [PrimerApplePayOptions.RequiredContactField]? = []
     var applePayCaptureShippingDetails = false
+    var applePayRequireShippingMethod = false
+    var applePayShippingAdditionalContactFields: [PrimerApplePayOptions.RequiredContactField]? = []
     var applePayCheckProvidedNetworks = false
-    var applePayBillingAdditionalContactFields: [PrimerApplePayOptions.RequiredContactField]? = [.name, .emailAddress]
-
-    //Below are gated by applePayCaptureShippingDetails, default to on when above is true
-    var applePayRequireShippingMethod = true
-    var applePayShippingAdditionalContactFields: [PrimerApplePayOptions.RequiredContactField]? = [.name, .emailAddress, .phoneNumber, .postalAddress]
 
     func setAccessibilityIds() {
         self.view.accessibilityIdentifier = "Background View"
@@ -709,11 +707,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         let mandateData = PrimerStripeOptions.MandateData.templateMandate(merchantName: "Primer Inc.")
 
         let shippingOptions = applePayCaptureShippingDetails ?
-        PrimerApplePayOptions.ShippingOptions(shippingContactFields: [.name, .emailAddress, .phoneNumber],
-                                              requireShippingMethod: true) : nil
+        PrimerApplePayOptions.ShippingOptions(shippingContactFields: applePayShippingAdditionalContactFields,
+                                              requireShippingMethod: applePayRequireShippingMethod) : nil
 
         let billingOptions = applePayCaptureBillingAddress ?
-        PrimerApplePayOptions.BillingOptions(requiredBillingContactFields: [.name, .emailAddress, .phoneNumber]) : nil
+        PrimerApplePayOptions.BillingOptions(requiredBillingContactFields: applePayBillingAdditionalContactFields) : nil
 
         let stripePublishableKey = SecretsManager.shared.value(forKey: .stripePublishableKey)
 
@@ -753,11 +751,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
 
         let shippingOptions = applePayCaptureShippingDetails ?
-        PrimerApplePayOptions.ShippingOptions(shippingContactFields: [.name, .emailAddress, .phoneNumber],
-                                              requireShippingMethod: true) : nil
+        PrimerApplePayOptions.ShippingOptions(shippingContactFields: applePayShippingAdditionalContactFields,
+                                              requireShippingMethod: applePayRequireShippingMethod) : nil
 
         let billingOptions = applePayCaptureBillingAddress ?
-        PrimerApplePayOptions.BillingOptions(requiredBillingContactFields: [.name, .emailAddress, .phoneNumber]) : nil
+        PrimerApplePayOptions.BillingOptions(requiredBillingContactFields: applePayBillingAdditionalContactFields) : nil
 
         let stripePublishableKey = SecretsManager.shared.value(forKey: .stripePublishableKey)
 

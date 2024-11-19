@@ -59,10 +59,12 @@ class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
     func createRequest(for applePayRequest: ApplePayRequest) -> PKPaymentRequest {
         let request = PKPaymentRequest()
         let applePayOptions = PrimerSettings.current.paymentMethodOptions.applePayOptions
-        let isBillingContactFieldsRequired = applePayOptions?.isCaptureBillingAddressEnabled == true
 
-        request.requiredBillingContactFields = isBillingContactFieldsRequired ? [.postalAddress] : []
-        request.requiredShippingContactFields = shippingContactFields(applePayOptions: applePayOptions)
+        // Map contact fields from options
+        let contactFields = mapContactFieldsFromOptions(applePayOptions: applePayOptions)
+        request.requiredShippingContactFields = contactFields.mappedShippingContactFields
+        request.requiredBillingContactFields = contactFields.mappedBillingContactFields
+
         request.currencyCode = applePayRequest.currency.code
         request.countryCode = applePayRequest.countryCode.rawValue
         request.merchantIdentifier = applePayRequest.merchantIdentifier
@@ -77,16 +79,48 @@ class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
         return request
     }
 
-    func shippingContactFields(applePayOptions: PrimerApplePayOptions?) -> Set<PKContactField> {
-        var fields: Set<PKContactField> = [.postalAddress]
+    func mapContactFieldsFromOptions(applePayOptions: PrimerApplePayOptions?) -> (mappedShippingContactFields: Set<PKContactField>, mappedBillingContactFields: Set<PKContactField>) {
 
-        if let additionalFields = applePayOptions?.shippingOptions?.shippingContactFields {
-            additionalFields.forEach {
-                fields.insert($0.toPKContact())
+        var requiredShippingContactFields = Set<PKContactField>()
+        var requiredBillingContactFields = Set<PKContactField>()
+
+        // Map required shipping contact fields
+        if let shippingContactFields = applePayOptions?.shippingOptions?.shippingContactFields, !shippingContactFields.isEmpty {
+            shippingContactFields.forEach {
+                requiredShippingContactFields.insert($0.toPKContact())
             }
         }
 
-        return fields
+        // Map required billing contact fields
+        if let billingContactFields = applePayOptions?.billingOptions?.requiredBillingContactFields {
+            billingContactFields.forEach {
+                requiredBillingContactFields.insert($0.toPKContact())
+            }
+        }
+
+        // Handle deprecated `isCaptureBillingAddressEnabled`
+        if requiredBillingContactFields.isEmpty, applePayOptions?.isCaptureBillingAddressEnabled == true {
+            requiredBillingContactFields.insert(.postalAddress)
+            requiredBillingContactFields.insert(.name)
+        }
+
+        // Move phone and email from billing to shipping if existing
+        let phoneField = PKContactField.phoneNumber
+        let emailField = PKContactField.emailAddress
+
+        if requiredBillingContactFields.contains(phoneField), !requiredShippingContactFields.contains(phoneField) {
+            requiredShippingContactFields.insert(phoneField)
+        }
+
+        if requiredBillingContactFields.contains(emailField), !requiredShippingContactFields.contains(emailField) {
+            requiredShippingContactFields.insert(emailField)
+        }
+
+        // Remove phone and email from billing fields
+        requiredBillingContactFields.remove(phoneField)
+        requiredBillingContactFields.remove(emailField)
+
+        return (requiredShippingContactFields, requiredBillingContactFields)
     }
 
     var errorForDisplay: Error {
