@@ -87,7 +87,16 @@ internal class PrimerUIManager: PrimerUIManaging {
     func presentPaymentMethod(type: String) {
         let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first
 
-        precondition(paymentMethodTokenizationViewModel != nil, "PrimerUIManager should have validated that the view model exists.")
+        guard let paymentMethodTokenizationViewModel else {
+            let error = PrimerError.unableToPresentPaymentMethod(
+                paymentMethodType: type,
+                userInfo: .errorUserInfoDictionary(
+                    additionalInfo: ["message": "paymentMethodTokenizationViewModel was not present when calling presentPaymentMethod"]
+                ),
+                diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: error)
+            return
+        }
 
         var imgView: UIImageView?
         if let squareLogo = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first?.uiModule.icon {
@@ -101,21 +110,21 @@ internal class PrimerUIManager: PrimerUIManaging {
 
         PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
 
-        paymentMethodTokenizationViewModel?.checkoutEventsNotifierModule.didStartTokenization = {
+        paymentMethodTokenizationViewModel.checkoutEventsNotifierModule.didStartTokenization = {
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
 
-        paymentMethodTokenizationViewModel?.willPresentPaymentMethodUI = {
+        paymentMethodTokenizationViewModel.willPresentPaymentMethodUI = {
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
 
-        paymentMethodTokenizationViewModel?.didPresentPaymentMethodUI = {}
+        paymentMethodTokenizationViewModel.didPresentPaymentMethodUI = {}
 
-        paymentMethodTokenizationViewModel?.willDismissPaymentMethodUI = {
+        paymentMethodTokenizationViewModel.willDismissPaymentMethodUI = {
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imgView, message: nil)
         }
 
-        paymentMethodTokenizationViewModel?.start()
+        paymentMethodTokenizationViewModel.start()
     }
 
     func prepareRootViewController() -> Promise<Void> {
