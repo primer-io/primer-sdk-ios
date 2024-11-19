@@ -88,11 +88,12 @@ internal class PrimerUIManager: PrimerUIManaging {
         let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first
 
         guard let paymentMethodTokenizationViewModel else {
-            let error = PrimerError.unableToPresentPaymentMethod(paymentMethodType: type,
-                                                                 userInfo: .errorUserInfoDictionary(
-                                                                    additionalInfo: ["message": "paymentMethodTokenizationViewModel was not present when calling presentPaymentMethod",]
-                                                                 ),
-                                                                 diagnosticsId: UUID().uuidString)
+            let error = PrimerError.unableToPresentPaymentMethod(
+                paymentMethodType: type,
+                userInfo: .errorUserInfoDictionary(
+                    additionalInfo: ["message": "paymentMethodTokenizationViewModel was not present when calling presentPaymentMethod"]
+                ),
+                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: error)
             return
         }
