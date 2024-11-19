@@ -1,6 +1,6 @@
 //
 //  ApplePayPresentationManagerTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 23/05/2024.
 //
@@ -57,26 +57,77 @@ final class ApplePayPresentationManagerTests: XCTestCase {
     }
 
     func testShippingContactFields() throws {
-        let additionalFields: [PrimerApplePayOptions.ShippingOptions.RequiredContactField] = [.name, .emailAddress, .phoneNumber]
+        let additionalFields: [PrimerApplePayOptions.RequiredContactField] = [.name, .emailAddress, .phoneNumber, .postalAddress,]
 
         var applePayOptions = PrimerApplePayOptions(merchantIdentifier: "merchant_id",
                                                     merchantName: "merchant_name",
                                                     checkProvidedNetworks: true,
-                                                    shippingOptions: .init(additionalShippingContactFields: additionalFields,
+                                                    shippingOptions: .init(shippingContactFields: additionalFields,
                                                                            requireShippingMethod: true))
-        var shippingFields = sut.shippingContactFields(applePayOptions: applePayOptions)
+        var shippingFields = sut.mapContactFieldsFromOptions(applePayOptions: applePayOptions).mappedShippingContactFields
 
-        XCTAssertEqual(shippingFields, [.name, .postalAddress, .emailAddress, .phoneNumber])
+        XCTAssertEqual(shippingFields, [.name, .emailAddress, .phoneNumber, .postalAddress])
 
         applePayOptions = PrimerApplePayOptions(merchantIdentifier: "merchant_id",
-                                                    merchantName: "merchant_name",
-                                                    checkProvidedNetworks: true,
-                                                    shippingOptions: .init(additionalShippingContactFields: nil,
-                                                                           requireShippingMethod: true))
+                                                merchantName: "merchant_name",
+                                                checkProvidedNetworks: true,
+                                                shippingOptions: .init(shippingContactFields: nil,
+                                                                       requireShippingMethod: true))
 
-        shippingFields = sut.shippingContactFields(applePayOptions: applePayOptions)
+        shippingFields = sut.mapContactFieldsFromOptions(applePayOptions: applePayOptions).mappedShippingContactFields
 
-        XCTAssertEqual(shippingFields, [.postalAddress])
+        XCTAssertEqual(shippingFields, [])
+    }
+
+    func testBillingContactFields() throws {
+        let additionalFields: [PrimerApplePayOptions.RequiredContactField] = [.name, .emailAddress, .phoneNumber, .postalAddress,]
+
+        var applePayOptions = PrimerApplePayOptions(
+            merchantIdentifier: "merchant_id",
+            merchantName: "merchant_name",
+            checkProvidedNetworks: true,
+            shippingOptions: .init(shippingContactFields: [], requireShippingMethod: true),
+            billingOptions: .init(requiredBillingContactFields: additionalFields)
+        )
+
+        let contactFields = sut.mapContactFieldsFromOptions(applePayOptions: applePayOptions)
+        let billingFields = contactFields.mappedBillingContactFields
+        let shippingFields = contactFields.mappedShippingContactFields
+
+        XCTAssertEqual(billingFields, [.name, .postalAddress])
+        XCTAssertEqual(shippingFields, [.emailAddress, .phoneNumber])
+
+        // Test with nil billing contact fields
+        applePayOptions = PrimerApplePayOptions(
+            merchantIdentifier: "merchant_id",
+            merchantName: "merchant_name",
+            checkProvidedNetworks: true,
+            shippingOptions: .init(shippingContactFields: [], requireShippingMethod: true),
+            billingOptions: .init(requiredBillingContactFields: nil)
+        )
+
+        let contactFields2 = sut.mapContactFieldsFromOptions(applePayOptions: applePayOptions)
+        let billingFields2 = contactFields2.mappedBillingContactFields
+        let shippingFields2 = contactFields2.mappedShippingContactFields
+
+        XCTAssertEqual(billingFields2, [])
+        XCTAssertEqual(shippingFields2, [])
+
+        // Test with deprecated `isCaptureBillingAddressEnabled`
+        applePayOptions = PrimerApplePayOptions(
+            merchantIdentifier: "merchant_id",
+            merchantName: "merchant_name",
+            isCaptureBillingAddressEnabled: true,
+            checkProvidedNetworks: true,
+            shippingOptions: .init(shippingContactFields: [], requireShippingMethod: true)
+        )
+
+        let contactFields3 = sut.mapContactFieldsFromOptions(applePayOptions: applePayOptions)
+        let billingFields3 = contactFields3.mappedBillingContactFields
+        let shippingFields3 = contactFields3.mappedShippingContactFields
+
+        XCTAssertEqual(billingFields3, [.name, .postalAddress])
+        XCTAssertEqual(shippingFields3, [])
     }
 
     func testErrorForDisplay() {
@@ -92,9 +143,9 @@ final class ApplePayPresentationManagerTests: XCTestCase {
 
     func registerApplePayOptions() {
         let settings = PrimerSettings(paymentMethodOptions:
-            .init(applePayOptions:
-                .init(merchantIdentifier: "merchant_id", merchantName: "merchant_name", checkProvidedNetworks: true)
-            )
+                .init(applePayOptions:
+                        .init(merchantIdentifier: "merchant_id", merchantName: "merchant_name", checkProvidedNetworks: true)
+                )
         )
         DependencyContainer.register(settings as PrimerSettingsProtocol)
     }
@@ -110,5 +161,95 @@ final class ApplePayPresentationManagerTests: XCTestCase {
                                                                              customer: nil,
                                                                              testId: nil)
 
+    }
+
+    func testDefaultContactFields() throws {
+        let applePayOptions = PrimerApplePayOptions(
+            merchantIdentifier: "merchant_id",
+            merchantName: "merchant_name",
+            checkProvidedNetworks: true,
+            shippingOptions: nil,
+            billingOptions: nil
+        )
+
+        let contactFields = sut.mapContactFieldsFromOptions(applePayOptions: applePayOptions)
+        let billingFields = contactFields.mappedBillingContactFields
+        let shippingFields = contactFields.mappedShippingContactFields
+
+        XCTAssertEqual(billingFields, [])
+        XCTAssertEqual(shippingFields, [])
+    }
+
+    func testMovingPhoneAndEmailToShipping() throws {
+        let additionalFields: [PrimerApplePayOptions.RequiredContactField] = [.name, .emailAddress, .phoneNumber]
+
+        let applePayOptions = PrimerApplePayOptions(
+            merchantIdentifier: "merchant_id",
+            merchantName: "merchant_name",
+            checkProvidedNetworks: true,
+            shippingOptions: .init(shippingContactFields: [], requireShippingMethod: true),
+            billingOptions: .init(requiredBillingContactFields: additionalFields)
+        )
+
+        let contactFields = sut.mapContactFieldsFromOptions(applePayOptions: applePayOptions)
+        let billingFields = contactFields.mappedBillingContactFields
+        let shippingFields = contactFields.mappedShippingContactFields
+
+        XCTAssertEqual(billingFields, [.name])
+        XCTAssertEqual(shippingFields, [.emailAddress, .phoneNumber])
+    }
+
+    func testDeprecatedCaptureBillingAddressEnabled() throws {
+        let applePayOptions = PrimerApplePayOptions(
+            merchantIdentifier: "merchant_id",
+            merchantName: "merchant_name",
+            isCaptureBillingAddressEnabled: true,
+            checkProvidedNetworks: true,
+            shippingOptions: .init(shippingContactFields: [], requireShippingMethod: true),
+            billingOptions: nil
+        )
+
+        let contactFields = sut.mapContactFieldsFromOptions(applePayOptions: applePayOptions)
+        let billingFields = contactFields.mappedBillingContactFields
+        let shippingFields = contactFields.mappedShippingContactFields
+
+        XCTAssertEqual(billingFields, [.name, .postalAddress])
+        XCTAssertEqual(shippingFields, [])
+    }
+
+    func testAllShippingFields() throws {
+        let additionalFields: [PrimerApplePayOptions.RequiredContactField] = [.name, .emailAddress, .phoneNumber, .postalAddress]
+
+        let applePayOptions = PrimerApplePayOptions(
+            merchantIdentifier: "merchant_id",
+            merchantName: "merchant_name",
+            checkProvidedNetworks: true,
+            shippingOptions: .init(shippingContactFields: additionalFields, requireShippingMethod: true),
+            billingOptions: nil
+        )
+
+        let contactFields = sut.mapContactFieldsFromOptions(applePayOptions: applePayOptions)
+        let billingFields = contactFields.mappedBillingContactFields
+        let shippingFields = contactFields.mappedShippingContactFields
+
+        XCTAssertEqual(billingFields, [])
+        XCTAssertEqual(shippingFields, [.name, .emailAddress, .phoneNumber, .postalAddress])
+    }
+
+    func testNoShippingOrBillingFields() throws {
+        let applePayOptions = PrimerApplePayOptions(
+            merchantIdentifier: "merchant_id",
+            merchantName: "merchant_name",
+            checkProvidedNetworks: true,
+            shippingOptions: nil,
+            billingOptions: nil
+        )
+        
+        let contactFields = sut.mapContactFieldsFromOptions(applePayOptions: applePayOptions)
+        let billingFields = contactFields.mappedBillingContactFields
+        let shippingFields = contactFields.mappedShippingContactFields
+
+        XCTAssertEqual(billingFields, [])
+        XCTAssertEqual(shippingFields, [])
     }
 }
