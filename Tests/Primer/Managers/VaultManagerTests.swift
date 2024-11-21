@@ -17,8 +17,6 @@ final class VaultManagerTests: XCTestCase {
     var tokenizationService: MockTokenizationService!
 
     var createResumePaymentService: MockCreateResumePaymentService!
-    
-    var mandateDelegate: ACHMandateDelegate?
 
     private var vaultService: MockVaultService!
 
@@ -49,8 +47,6 @@ final class VaultManagerTests: XCTestCase {
         sut.tokenizationService = tokenizationService
         sut.createResumePaymentService = createResumePaymentService
         sut.vaultService = vaultService
-        
-        mandateDelegate = sut
 
         PrimerHeadlessUniversalCheckout.current.delegate = headlessCheckoutDelegate
 
@@ -60,7 +56,6 @@ final class VaultManagerTests: XCTestCase {
     override func tearDownWithError() throws {
         sut = nil
         rawDataManagerDelegate = nil
-        mandateDelegate = nil
 
         SDKSessionHelper.tearDown()
 
@@ -234,14 +229,6 @@ final class VaultManagerTests: XCTestCase {
             expectCreatePayment.fulfill()
             return self.paymentACHResponseBody
         }
-        
-        let expectDidReceiveMandateAdditionalInfo = self.expectation(description: "didReceiveMandateAdditionalInfo is called")
-        headlessCheckoutDelegate.onDidReceiveAdditionalInfo = { additionalInfo in
-            expectDidReceiveMandateAdditionalInfo.fulfill()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.mandateDelegate?.acceptMandate()
-            }
-        }
 
         let expectDidCompleteCheckout = self.expectation(description: "Headless checkout completed")
         headlessCheckoutDelegate.onDidCompleteCheckoutWithData = { _ in
@@ -257,7 +244,6 @@ final class VaultManagerTests: XCTestCase {
         wait(for: [
             expectExchangeTokenData,
             expectCreatePayment,
-            expectDidReceiveMandateAdditionalInfo,
             expectDidCompleteCheckout
         ], timeout: 20.0, enforceOrder: true)
     }

@@ -516,13 +516,7 @@ extension PrimerHeadlessUniversalCheckout {
                         }
 
                         firstly {
-                            sendAdditionalInfoEvent()
-                        }
-                        .then { () -> Promise<Void> in
-                            return self.awaitShowMandateResponse()
-                        }
-                        .then { () -> Promise<Void> in
-                            return self.completePayment(clientToken: decodedJWTToken, completeUrl: sdkCompleteUrl)
+                            self.completePayment(clientToken: decodedJWTToken, completeUrl: sdkCompleteUrl)
                         }
                         .done {
                             seal.fulfill(nil)
@@ -844,80 +838,6 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
         }
-
-        /**
-         * Sends additional information via delegate `PrimerHeadlessUniversalCheckoutDelegate` if implemented in the headless checkout context.
-         *
-         * This private method checks if the checkout is being conducted in a headless mode and whether the delegate
-         * for handling additional information is implemented. It ensures that additional information events are only
-         * sent if the delegate and its respective method are available, otherwise, it handles the absence of the delegate
-         * method by logging an error and rejecting the promise.
-         *
-         * - Returns: A promise that resolves if additional information is successfully handled or sent, or rejects if
-         *            there are issues with the delegate implementation or if the delegate method is not implemented.
-         */
-        private func sendAdditionalInfoEvent() -> Promise<Void> {
-            return Promise { seal in
-                guard PrimerHeadlessUniversalCheckout.current.delegate != nil else {
-                    seal.fulfill()
-                    return
-                }
-
-                let delegate = PrimerHeadlessUniversalCheckout.current.delegate
-                let isAdditionalInfoImplemented = delegate?.primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo != nil
-
-                guard isAdditionalInfoImplemented else {
-                    let logMessage =
-                        """
-    Delegate function 'primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)'\
-     hasn't been implemented. No events will be sent to your delegate instance.
-    """
-                    logger.warn(message: logMessage)
-
-                    let message = "Couldn't continue due to unimplemented delegate method `primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo`"
-                    let error = PrimerError.unableToPresentPaymentMethod(paymentMethodType: self.paymentMethodType,
-                                                                         userInfo: .errorUserInfoDictionary(additionalInfo: [
-                                                                            "message": message
-                                                                         ]),
-                                                                         diagnosticsId: UUID().uuidString)
-
-                    seal.reject(error)
-                    return
-                }
-
-                let additionalInfo = ACHMandateAdditionalInfo()
-                PrimerDelegateProxy.primerDidReceiveAdditionalInfo(additionalInfo)
-                seal.fulfill()
-            }
-        }
-
-        /**
-         * Waits for a response from the ACHMandateDelegate method.
-         * The response is returned in stripeMandateCompletion handler.
-         */
-        private func awaitShowMandateResponse() -> Promise<Void> {
-            return Promise { seal in
-                self.achMandateCompletion = { result in
-                    switch result {
-                    case .success:
-                        seal.fulfill()
-                    case .failure(let error):
-                        seal.reject(error)
-                    }
-                }
-            }
-        }
-    }
-}
-
-extension PrimerHeadlessUniversalCheckout.VaultManager: ACHMandateDelegate {
-    public func acceptMandate() {
-        achMandateCompletion?(.success(()))
-    }
-
-    public func declineMandate() {
-        let error = ACHHelpers.getCancelledError(paymentMethodType: paymentMethodType)
-        achMandateCompletion?(.failure(error))
     }
 }
 

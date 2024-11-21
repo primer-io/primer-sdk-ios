@@ -22,7 +22,6 @@ class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadle
     var settings: PrimerSettings!
     var clientSession: ClientSessionRequestBody?
     var clientToken: String?
-    var mandateDelegate: ACHMandateDelegate?
 
     var logs: [String] = []
     var primerError: Error?
@@ -75,7 +74,6 @@ class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadle
     private func startPrimerHeadlessUniversalCheckout(with clientToken: String) {
         PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: self.settings, completion: { (_, _) in
             self.vaultedManager = PrimerHeadlessUniversalCheckout.VaultManager()
-            self.mandateDelegate = self.vaultedManager
 
             do {
                 try self.vaultedManager?.configure()
@@ -133,14 +131,6 @@ class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadle
             self.activityIndicator?.stopAnimating()
             self.activityIndicator?.removeFromSuperview()
             self.activityIndicator = nil
-        }
-    }
-    
-    private func showMandate() {
-        showAlert(title: "Mandate acceptance", message: "Would you like to accept this mandate?") {
-            self.mandateDelegate?.acceptMandate()
-        } cancelHandler: {
-            self.mandateDelegate?.declineMandate()
         }
     }
     
@@ -279,10 +269,6 @@ extension MerchantHeadlessVaultManagerViewController {
         self.logs.append(#function)
         DispatchQueue.main.async {
             self.hideLoadingOverlay()
-        }
-        
-        if additionalInfo is ACHMandateAdditionalInfo {
-            showMandate()
         }
     }
 
