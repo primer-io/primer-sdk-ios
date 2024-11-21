@@ -38,7 +38,7 @@ jobs:
       - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
-      - uses: ruby/setup-ruby@7bae1d00b5db9166f4f0fc47985a3a5702cb58f0  # v1.197.0
+      - uses: ruby/setup-ruby@a2bbe5b1b236842c1cb7dd11e8e3b51e0a616acc  # v1.202.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
@@ -77,7 +77,7 @@ jobs:
           node Report\ Scripts/multixcode-failure-report.js createMultiXcodeFailureReport ${{ github.head_ref || github.ref_name }} ${{ matrix.xcode}} ${{ matrix.variant }}
       - name: Slack Notification
         if: ${{ failure() }}
-        uses: slackapi/slack-github-action@37ebaef184d7626c5f204ab8d3baff4262dd30f0 #v1.27.0
+        uses: slackapi/slack-github-action@485a9d42d3a73031f12ec201c457e2162c45d02d #v2.0.0
         with:
           channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           payload-file-path: '/var/tmp/multixcode-failure-report.json'
@@ -103,7 +103,7 @@ jobs:
           node Report\ Scripts/multixcode-success-report.js createMultiXcodeSummaryReport ${{ github.head_ref || github.ref_name }} "14.3.1, 14.2, 14.1" "cocoapods, spm"
       - name: Slack Notification
         if: ${{ success() }}
-        uses: slackapi/slack-github-action@37ebaef184d7626c5f204ab8d3baff4262dd30f0 #v1.27.0
+        uses: slackapi/slack-github-action@485a9d42d3a73031f12ec201c457e2162c45d02d #v2.0.0
         with:
           channel-id: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           payload-file-path: '/var/tmp/multixcode-success-summary.json'

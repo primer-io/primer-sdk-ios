@@ -24,16 +24,44 @@ class PrimerNavigationBar: PrimerView {
         didSet {
             rightBarButton?.tintColor = theme.text.system.color
             rightBarButton?.setTitleColor(theme.text.system.color, for: .normal)
-            rightBarButton?.frame = CGRect(
-                x: 0, y: 0, width: rightView.bounds.size.width, height: rightView.bounds.size.height
-            )
 
+            // Remove any existing subviews from rightView
             rightView.subviews.forEach { view in
                 view.removeFromSuperview()
             }
 
             if let rightBarButton = rightBarButton {
                 rightView.addSubview(rightBarButton)
+                rightBarButton.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    rightBarButton.leadingAnchor.constraint(equalTo: rightView.leadingAnchor),
+                    rightBarButton.trailingAnchor.constraint(equalTo: rightView.trailingAnchor),
+                    rightBarButton.topAnchor.constraint(equalTo: rightView.topAnchor),
+                    rightBarButton.bottomAnchor.constraint(equalTo: rightView.bottomAnchor)
+                ])
+            }
+        }
+    }
+
+    var leftBarButton: UIButton? {
+        didSet {
+            leftBarButton?.tintColor = theme.text.system.color
+            leftBarButton?.setTitleColor(theme.text.system.color, for: .normal)
+
+            // Remove any existing subviews from rightView
+            leftView.subviews.forEach { view in
+                view.removeFromSuperview()
+            }
+
+            if let leftBarButton = leftBarButton {
+                leftView.addSubview(leftBarButton)
+                leftBarButton.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    leftBarButton.leadingAnchor.constraint(equalTo: leftView.leadingAnchor),
+                    leftBarButton.trailingAnchor.constraint(equalTo: leftView.trailingAnchor),
+                    leftBarButton.topAnchor.constraint(equalTo: leftView.topAnchor),
+                    leftBarButton.bottomAnchor.constraint(equalTo: leftView.bottomAnchor)
+                ])
             }
         }
     }
@@ -89,6 +117,21 @@ class PrimerNavigationBar: PrimerView {
         Analytics.Service.record(event: uiEvent)
 
         PrimerUIManager.primerRootViewController?.popViewController()
+    }
+
+    func addDismissButton() {
+        // Add Close button to navigation bar
+        if PrimerSettings.current.uiOptions.dismissalMechanism.contains(.closeButton) {
+            let dismissButton = UIButton(type: .system)
+            dismissButton.setTitle(Strings.Generic.cancel, for: .normal)
+            dismissButton.setTitleColor(UIColor.gray, for: .disabled)
+            dismissButton.addTarget(self, action: #selector(didTapCloseButton), for: .touchUpInside)
+            rightBarButton = dismissButton
+        }
+    }
+
+    @objc private func didTapCloseButton() {
+        PrimerInternal.shared.dismiss()
     }
 
     private func setup() {

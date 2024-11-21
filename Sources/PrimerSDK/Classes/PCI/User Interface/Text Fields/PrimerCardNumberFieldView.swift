@@ -34,6 +34,12 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField.internalText ?? ""
         if string != "" && currentText.withoutWhiteSpace.count == 19 { return false }
+
+        // Ensure range is within bounds
+        guard range.location <= currentText.count, range.length <= currentText.count - range.location else {
+            return false
+        }
+
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
         if !newText.withoutWhiteSpace.isNumeric && !string.isEmpty { return false }
         primerTextField.internalText = newText

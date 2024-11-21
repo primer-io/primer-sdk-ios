@@ -31,6 +31,12 @@ public class PrimerSimpleCardFormTextFieldView: PrimerTextFieldView {
 
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField.internalText ?? ""
+
+        // Ensure range is within bounds
+        guard range.location <= currentText.count, range.length <= currentText.count - range.location else {
+            return false
+        }
+
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
 
         switch self.isValid?(newText) {
