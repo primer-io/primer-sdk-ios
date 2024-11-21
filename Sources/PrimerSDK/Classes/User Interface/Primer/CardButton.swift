@@ -71,7 +71,7 @@ internal class CardButton: PrimerButton {
     private func addCardIcon(image: UIImage?) {
         iconView = UIImageView(image: image)
         iconView.clipsToBounds = true
-        iconView.contentMode = .scaleAspectFill
+        iconView.contentMode = .scaleAspectFit
 
         addSubview(iconView)
         iconView.translatesAutoresizingMaskIntoConstraints = false
@@ -90,7 +90,7 @@ internal class CardButton: PrimerButton {
             iconView.widthAnchor.constraint(equalToConstant: 56).isActive = true
         } else {
             iconView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
-            iconView.heightAnchor.constraint(equalToConstant: 38).isActive = true
+            iconView.heightAnchor.constraint(equalToConstant: 41).isActive = true
             iconView.widthAnchor.constraint(equalToConstant: 56).isActive = true
         }
     }
