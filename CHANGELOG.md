@@ -1,3 +1,14 @@
+## 2.32.0 (2024-11-13)
+
+### Feat
+
+- Add additional dismissal controls to PrimerUIOptions
+
+### Fix
+
+- Range or index out of bounds crash (#1041)
+- Crash in InternalCardComponentsManager (#1042)
+
 ## 2.31.3 (2024-10-24)
 
 ### Fix

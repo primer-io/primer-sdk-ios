@@ -34,6 +34,12 @@ public final class PrimerExpiryDateFieldView: PrimerTextFieldView {
                                    replacementString string: String) -> Bool {
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField.internalText ?? ""
+
+        // Ensure range is within bounds
+        guard range.location <= currentText.count, range.length <= currentText.count - range.location else {
+            return false
+        }
+
         var newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
         newText = newText.replacingOccurrences(of: "/", with: "")
         if !(newText.isNumeric || newText.isEmpty) { return false }

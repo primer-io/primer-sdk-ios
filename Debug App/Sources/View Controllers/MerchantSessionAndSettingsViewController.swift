@@ -68,6 +68,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var vaultPaymentsSwitch: UISwitch!
     @IBOutlet weak var disableSuccessScreenSwitch: UISwitch!
     @IBOutlet weak var disableErrorScreenSwitch: UISwitch!
+    @IBOutlet weak var gesturesDismissalSwitch: UISwitch!
+    @IBOutlet weak var closeButtonDismissalSwitch: UISwitch!
     @IBOutlet weak var disableInitScreenSwitch: UISwitch!
     @IBOutlet weak var enableCVVRecaptureFlowSwitch: UISwitch!
 
@@ -296,6 +298,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 test3DSStackView.isHidden = true
             }
         }
+
+        gesturesDismissalSwitch.isOn = true // Default value
+        closeButtonDismissalSwitch.isOn = false // Default false
 
         lineItemsStackView.removeAllArrangedSubviews()
         lineItemsStackView.alignment = .fill
@@ -698,10 +703,22 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBAction func primerSDKButtonTapped(_ sender: Any) {
         customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
 
+        let selectedDismissalMechanisms: [DismissalMechanism] = {
+            var mechanisms = [DismissalMechanism]()
+            if gesturesDismissalSwitch.isOn {
+                mechanisms.append(.gestures)
+            }
+            if closeButtonDismissalSwitch.isOn {
+                mechanisms.append(.closeButton)
+            }
+            return mechanisms
+        }()
+
         let uiOptions = PrimerUIOptions(
             isInitScreenEnabled: !disableInitScreenSwitch.isOn,
             isSuccessScreenEnabled: !disableSuccessScreenSwitch.isOn,
             isErrorScreenEnabled: !disableErrorScreenSwitch.isOn,
+            dismissalMechanism: selectedDismissalMechanisms,
             theme: applyThemingSwitch.isOn ? CheckoutTheme.tropical : nil)
 
         let mandateData = PrimerStripeOptions.MandateData.templateMandate(merchantName: "Primer Inc.")

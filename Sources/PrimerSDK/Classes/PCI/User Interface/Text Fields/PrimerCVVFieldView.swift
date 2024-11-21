@@ -36,6 +36,12 @@ public final class PrimerCVVFieldView: PrimerTextFieldView {
                                    replacementString string: String) -> Bool {
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField.internalText ?? ""
+
+        // Ensure range is within bounds
+        guard range.location <= currentText.count, range.length <= currentText.count - range.location else {
+            return false
+        }
+
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
         if !(newText.isNumeric || newText.isEmpty) { return false }
         if string != "" && newText.withoutWhiteSpace.count >= 5 { return false }

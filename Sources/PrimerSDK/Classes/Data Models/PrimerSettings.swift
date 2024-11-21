@@ -254,10 +254,15 @@ public class PrimerCardPaymentOptions: Codable {
 
 // MARK: - UI OPTIONS
 
+public enum DismissalMechanism: Codable {
+    case gestures, closeButton
+}
+
 internal protocol PrimerUIOptionsProtocol {
     var isInitScreenEnabled: Bool { get } // Default: true
     var isSuccessScreenEnabled: Bool { get } // Default: true
     var isErrorScreenEnabled: Bool { get } // Default: true
+    var dismissalMechanism: [DismissalMechanism] { get } // Default: .gestures
     var theme: PrimerTheme { get }
 }
 
@@ -266,21 +271,24 @@ public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
     public internal(set) var isInitScreenEnabled: Bool
     public internal(set) var isSuccessScreenEnabled: Bool
     public internal(set) var isErrorScreenEnabled: Bool
+    public internal(set) var dismissalMechanism: [DismissalMechanism]
     public let theme: PrimerTheme
 
     private enum CodingKeys: String, CodingKey {
-        case isInitScreenEnabled, isSuccessScreenEnabled, isErrorScreenEnabled, theme
+        case isInitScreenEnabled, isSuccessScreenEnabled, isErrorScreenEnabled, dismissalMechanism, theme
     }
 
     public init(
         isInitScreenEnabled: Bool? = nil,
         isSuccessScreenEnabled: Bool? = nil,
         isErrorScreenEnabled: Bool? = nil,
+        dismissalMechanism: [DismissalMechanism]? = [.gestures],
         theme: PrimerTheme? = nil
     ) {
         self.isInitScreenEnabled = isInitScreenEnabled != nil ? isInitScreenEnabled! : true
         self.isSuccessScreenEnabled = isSuccessScreenEnabled != nil ? isSuccessScreenEnabled! : true
         self.isErrorScreenEnabled = isErrorScreenEnabled != nil ? isErrorScreenEnabled! : true
+        self.dismissalMechanism = dismissalMechanism ?? [.gestures]
         self.theme = theme ?? PrimerTheme()
     }
 
@@ -289,6 +297,7 @@ public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
         self.isInitScreenEnabled = try container.decode(Bool.self, forKey: .isInitScreenEnabled)
         self.isSuccessScreenEnabled = try container.decode(Bool.self, forKey: .isSuccessScreenEnabled)
         self.isErrorScreenEnabled = try container.decode(Bool.self, forKey: .isErrorScreenEnabled)
+        self.dismissalMechanism = try container.decode([DismissalMechanism].self, forKey: .dismissalMechanism)
         self.theme = PrimerTheme()
     }
 
@@ -297,6 +306,7 @@ public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
         try container.encode(isInitScreenEnabled, forKey: .isInitScreenEnabled)
         try container.encode(isSuccessScreenEnabled, forKey: .isSuccessScreenEnabled)
         try container.encode(isErrorScreenEnabled, forKey: .isErrorScreenEnabled)
+        try container.encode(dismissalMechanism, forKey: .dismissalMechanism)
     }
 }
 
