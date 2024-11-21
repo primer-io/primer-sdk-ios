@@ -134,6 +134,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             self.alternativelySelectedCardNetwork = cardNetwork.network
             self.rawCardData.cardNetwork = cardNetwork.network
             self.rawDataManager?.rawData = self.rawCardData // TODO: (BNI) This does not work for unknown reason
+            self.cardComponentsManager.selectedCardNetwork = cardNetwork.network
 
             // Select payment method based on the detected card network
             let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
@@ -141,7 +142,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: cardNetwork.network.rawValue)
             }
             .done {
-                self.updateButtonUI()
+                self.configurePayButton(cardNetwork: cardNetwork.network)
             }
             .catch { _ in }
         }
@@ -696,6 +697,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
 
+
+    // TODO: (BNI) This one is not being used, but it could be used for new UI
     func configurePayButton(cardNetwork: CardNetwork?) {
         var amount: Int = AppState.current.amount ?? 0
 

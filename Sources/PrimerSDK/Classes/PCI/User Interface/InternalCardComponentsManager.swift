@@ -290,20 +290,20 @@ and 4 characters for expiry year separated by '/'.
 
         if isRequiringCVVInput {
 
-            let cardPaymentInstrument = CardPaymentInstrument(number: self.cardnumberField.cardnumber,
-                                                              cvv: self.cvvField.cvv,
+            let cardPaymentInstrument = CardPaymentInstrument(number: cardnumberField.cardnumber,
+                                                              cvv: cvvField.cvv,
                                                               expirationMonth: expiryMonth,
                                                               expirationYear: cardExpirationYear,
-                                                              cardholderName: self.cardholderField?.cardholderName,
-                                                              preferredNetwork: self.selectedCardNetwork?.rawValue)
+                                                              cardholderName: cardholderField?.cardholderName,
+                                                              preferredNetwork: selectedCardNetwork?.rawValue)
             return cardPaymentInstrument
 
-        } else if let configId = AppState.current.apiConfiguration?.getConfigId(for: self.primerPaymentMethodType.rawValue),
-                  let cardholderName = self.cardholderField?.cardholderName {
+        } else if let configId = AppState.current.apiConfiguration?.getConfigId(for: primerPaymentMethodType.rawValue),
+                  let cardholderName = cardholderField?.cardholderName {
 
             let cardOffSessionPaymentInstrument = CardOffSessionPaymentInstrument(paymentMethodConfigId: configId,
-                                                                                  paymentMethodType: self.primerPaymentMethodType.rawValue,
-                                                                                  number: self.cardnumberField.cardnumber,
+                                                                                  paymentMethodType: primerPaymentMethodType.rawValue,
+                                                                                  number: cardnumberField.cardnumber,
                                                                                   expirationMonth: expiryMonth,
                                                                                   expirationYear: cardExpirationYear,
                                                                                   cardholderName: cardholderName)
