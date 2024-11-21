@@ -1,3 +1,10 @@
+## 2.32.1 (2024-11-21)
+
+### Fix
+
+- Remove precondition on presentPaymentMethod (#1048)
+- Update 3DS SDK and PrimerSDK Versions (#1047)
+
 ## 2.32.0 (2024-11-13)
 
 ### Feat
