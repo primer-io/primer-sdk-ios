@@ -697,8 +697,6 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
 
-
-    // TODO: (BNI) This one is not being used, but it could be used for new UI
     func configurePayButton(cardNetwork: CardNetwork?) {
         var amount: Int = AppState.current.amount ?? 0
 
