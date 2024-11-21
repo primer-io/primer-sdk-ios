@@ -2,8 +2,8 @@
 
 ### Fix
 
-- Remove precondition on presentPaymentMethod (#1048)
-- Update 3DS SDK and PrimerSDK Versions (#1047)
+- Remove precondition on presentPaymentMethod
+- Update 3DS SDK to 2.4.1
 
 ## 2.32.0 (2024-11-13)
 
