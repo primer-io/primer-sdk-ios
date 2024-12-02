@@ -34,7 +34,7 @@ build_type = ENV['BUILD_TYPE'] || "preview"
 podfile_path = "Debug App/Podfile"
 pr_number = ENV['PR_NUMBER']
 
-sdk_demo_url = "https://primer-sdk-demo-git-demo-fixes-primer-io.vercel.app/"
+sdk_demo_url = "https://sdk-demo.primer.io/api/mobile/ios/"
 
 ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "120"
 
