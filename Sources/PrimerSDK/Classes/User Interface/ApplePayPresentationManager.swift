@@ -101,7 +101,6 @@ class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
         // Handle deprecated `isCaptureBillingAddressEnabled`
         if requiredBillingContactFields.isEmpty, applePayOptions?.isCaptureBillingAddressEnabled == true {
             requiredBillingContactFields.insert(.postalAddress)
-            requiredBillingContactFields.insert(.name)
         }
 
         // Move phone and email from billing to shipping if existing
