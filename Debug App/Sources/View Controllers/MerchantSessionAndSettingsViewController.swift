@@ -12,6 +12,7 @@ import UIKit
 var environment: Environment = .sandbox
 var customDefinedApiKey: String?
 var performPaymentAfterVaulting: Bool = false
+var useNewWorkflows = true
 var paymentSessionType: MerchantMockDataManager.SessionType = .generic
 
 class MerchantSessionAndSettingsViewController: UIViewController {
@@ -59,10 +60,12 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var test3DSScenarioTextField: UITextField!
 
     // MARK: SDK Settings Inputs
+    @IBOutlet weak var useNewWorkflowsSwitch: UISwitch!
     @IBOutlet weak var checkoutFlowSegmentedControl: UISegmentedControl!
     @IBOutlet weak var vaultingFlowSegmentedControl: UISegmentedControl!
     @IBOutlet weak var merchantNameTextField: UITextField!
     @IBOutlet weak var applyThemingSwitch: UISwitch!
+    @IBOutlet weak var vaultPaymentsSwitch: UISwitch!
     @IBOutlet weak var disableSuccessScreenSwitch: UISwitch!
     @IBOutlet weak var disableErrorScreenSwitch: UISwitch!
     @IBOutlet weak var gesturesDismissalSwitch: UISwitch!
@@ -399,6 +402,10 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
     @IBAction func surchargeSwitchValueChanged(_ sender: UISwitch) {
         surchargeStackView.isHidden = !sender.isOn
+    }
+
+    @IBAction func useNewWorkflowsSwitchValueChanged(_ sender: UISwitch) {
+        useNewWorkflows = sender.isOn
     }
 
     @IBAction func oneTimePaymentValueChanged(_ sender: UISwitch) {
@@ -838,5 +845,7 @@ extension MerchantSessionAndSettingsViewController {
         self.lineItems = [lineItem]
 
         metadataTextField.text = config.metadata
+        useNewWorkflows = config.newWorkflows
+        useNewWorkflowsSwitch.isOn = config.newWorkflows
     }
 }
