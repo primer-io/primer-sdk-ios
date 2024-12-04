@@ -62,7 +62,7 @@ struct ClientSessionRequestBody: Encodable {
     var orderId: String?
     var currencyCode: String?
     var amount: Int?
-    var metadata: [String: String]?
+    var metadata: Metadata?
     var customer: ClientSessionRequestBody.Customer?
     var order: ClientSessionRequestBody.Order?
     var paymentMethod: ClientSessionRequestBody.PaymentMethod?

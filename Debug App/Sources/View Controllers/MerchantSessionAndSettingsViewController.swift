@@ -544,9 +544,24 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             clientSession.paymentMethod?.vaultOnSuccess = nil
             clientSession.paymentMethod?.vaultOnAgreement = nil
         }
-        
-        if let metadata = metadataTextField.text, !metadata.isEmpty {
-            clientSession.metadata = MetadataParser().parse(metadata)
+
+        clientSession.metadata = .dictionary([
+            "deviceInfo": .dictionary([
+                "ipAddress": .string("127.0.0.1"),
+                "userAgent": .string("iOS")
+            ])
+        ])
+
+        if let metadata = metadataTextField.text, !metadata.isEmpty, var metadataDict = clientSession.metadata {
+            metadataTextField.text?.components(separatedBy: ",").forEach {
+                let tuple = String($0).components(separatedBy: "=")
+                guard tuple.count == 2
+                    else { return }
+                let key = tuple[0].trimmingCharacters(in: .whitespaces)
+                let value = tuple[1].trimmingCharacters(in: .whitespaces)
+                try? metadataDict.add(.string(value), forKey: key)
+            }
+            clientSession.metadata = metadataDict
         }
     }
     
