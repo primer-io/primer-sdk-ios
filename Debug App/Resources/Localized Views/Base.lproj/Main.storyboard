@@ -1235,13 +1235,13 @@
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="vYu-uC-Lwg" userLabel="Surcharge Stack View">
                                                         <rect key="frame" x="0.0" y="51" width="374" height="58"/>
                                                         <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Apple Pay" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eF4-2g-Y8U">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Card Network surcharge" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eF4-2g-Y8U" userLabel="Card Network">
                                                                 <rect key="frame" x="0.0" y="0.0" width="374" height="17"/>
                                                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                                                 <nil key="textColor"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="e.g. customer_1234" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="XRQ-T7-rG4">
+                                                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Amount " textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="XRQ-T7-rG4">
                                                                 <rect key="frame" x="0.0" y="24" width="374" height="34"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                 <textInputTraits key="textInputTraits"/>
@@ -1327,7 +1327,6 @@
                         <outlet property="applePayShippingContactPhoneSwitch" destination="5AD-oh-3KE" id="2lJ-0f-1Zm"/>
                         <outlet property="applePayShippingControlStackView" destination="hmd-vB-Ft9" id="LCC-bs-UVf"/>
                         <outlet property="applePayShippingDetailsSwitch" destination="l2a-lu-nlK" id="RbG-0x-lQg"/>
-                        <outlet property="applePaySurchargeTextField" destination="XRQ-T7-rG4" id="dnh-ml-Uz0"/>
                         <outlet property="applyThemingSwitch" destination="Xts-VY-QHZ" id="qQC-rP-kmS"/>
                         <outlet property="billingAddressCityTextField" destination="b68-sT-v40" id="537-Vp-BCo"/>
                         <outlet property="billingAddressCountryTextField" destination="Gxo-QT-E5X" id="8Yg-xu-Kez"/>
@@ -1380,6 +1379,7 @@
                         <outlet property="surchargeGroupStackView" destination="32O-OV-0ey" id="FDB-vq-q3D"/>
                         <outlet property="surchargeStackView" destination="vYu-uC-Lwg" id="7yI-tG-axF"/>
                         <outlet property="surchargeSwitch" destination="9eb-B5-B2t" id="bc9-Bn-FWV"/>
+                        <outlet property="surchargeTextField" destination="XRQ-T7-rG4" id="dnh-ml-Uz0"/>
                         <outlet property="test3DSScenarioTextField" destination="io7-2z-MxC" id="Cy0-nh-2P5"/>
                         <outlet property="test3DSStackView" destination="fxV-mt-ulz" id="65c-eM-qZo"/>
                         <outlet property="testErrorDescriptionTextField" destination="dNP-tk-egr" id="0np-AM-Wdo"/>
@@ -1910,13 +1910,13 @@
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="placeholderTextColor">
-            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.29803921570000003" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.29803921568627451" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

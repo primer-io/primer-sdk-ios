@@ -142,7 +142,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: cardNetwork.network.rawValue)
             }
             .done {
-                self.configurePayButton(cardNetwork: cardNetwork.network)
+                self.configureAmountLabels(cardNetwork: cardNetwork.network)
             }
             .catch { _ in }
         }
@@ -697,13 +697,16 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
 
-    func configurePayButton(cardNetwork: CardNetwork?) {
-        var amount: Int = AppState.current.amount ?? 0
+    func configureAmountLabels(cardNetwork: CardNetwork?) {
 
-        if let surcharge = alternativelySelectedCardNetwork?.surcharge ?? cardNetwork?.surcharge {
-            amount += surcharge
+        if let surcharge = alternativelySelectedCardNetwork?.surcharge ?? cardNetwork?.surcharge,
+        PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil {
+            configureSurchargeLabel(surchargetAmount: surcharge)
+        } else {
+            hideSurchargeLabel()
         }
 
+        var amount: Int = AppState.current.amount ?? 0
         configurePayButton(amount: amount)
     }
 
@@ -717,6 +720,18 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             var title = Strings.PaymentButton.pay
             title += " \(amount.toCurrencyString(currency: currency))"
             self.uiModule.submitButton?.setTitle(title, for: .normal)
+        }
+    }
+
+    func configureSurchargeLabel(surchargetAmount: Int) {
+        DispatchQueue.main.async {
+            print(surchargetAmount)
+        }
+    }
+
+    func hideSurchargeLabel() {
+        DispatchQueue.main.async {
+            print("hideSurchargeLabel")
         }
     }
 
@@ -985,7 +1000,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
                 clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: network)
             }
             .done {
-                self.updateButtonUI()
+                self.configureAmountLabels(cardNetwork: cardNetwork)
             }
             .catch { _ in }
 
@@ -997,18 +1012,9 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
                 clientSessionActionsModule.unselectPaymentMethodIfNeeded()
             }
             .done {
-                self.updateButtonUI()
+                self.configureAmountLabels(cardNetwork: cardNetwork)
             }
             .catch { _ in }
-        }
-    }
-}
-
-extension CardFormPaymentMethodTokenizationViewModel {
-
-    private func updateButtonUI() {
-        if let amount = AppState.current.amount, self.uiModule.isSubmitButtonAnimating == false {
-            self.configurePayButton(amount: amount)
         }
     }
 }

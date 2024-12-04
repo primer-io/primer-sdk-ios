@@ -127,7 +127,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
     @IBOutlet weak var surchargeSwitch: UISwitch!
     @IBOutlet weak var surchargeStackView: UIStackView!
-    @IBOutlet weak var applePaySurchargeTextField: UITextField!
+    @IBOutlet weak var surchargeTextField: UITextField!
 
     @IBOutlet weak var primerSDKButton: UIButton!
     @IBOutlet weak var primerHeadlessSDKButton: UIButton!
@@ -525,19 +525,35 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                                                                                     instalmentDuration: nil,
                                                                                     extraMerchantData: nil,
                                                                                     captureVaultedCardCvv: enableCVVRecaptureFlowSwitch.isOn,
-                                                                                    merchantName: nil)
+                                                                                    merchantName: nil,
+                                                                                    networks: nil)
 
             clientSession.paymentMethod?.options?.PAYMENT_CARD = option
         }
-        
-        let applePayOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(surcharge: nil,
-                                                                                instalmentDuration: nil,
-                                                                                extraMerchantData: nil,
-                                                                                captureVaultedCardCvv: nil,
-                                                                                merchantName: "Primer Merchant iOS")
 
+        let applePayOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(surcharge: nil,
+                                                                                         instalmentDuration: nil,
+                                                                                         extraMerchantData: nil,
+                                                                                         captureVaultedCardCvv: nil,
+                                                                                         merchantName: "Primer Merchant iOS",
+                                                                                         networks: nil)
         clientSession.paymentMethod?.options?.APPLE_PAY = applePayOptions
-        
+
+        if let text = surchargeTextField.text, let amount = Int(text), surchargeSwitch.isOn {
+            let surcharge = ClientSessionRequestBody.PaymentMethod.SurchargeOption(amount: amount)
+            var networkOptionGroup = ClientSessionRequestBody.PaymentMethod.NetworkOptionGroup()
+            networkOptionGroup.VISA = ClientSessionRequestBody.PaymentMethod.NetworkOption(surcharge: surcharge)
+            networkOptionGroup.JCB = ClientSessionRequestBody.PaymentMethod.NetworkOption(surcharge: surcharge)
+            networkOptionGroup.MASTERCARD = ClientSessionRequestBody.PaymentMethod.NetworkOption(surcharge: surcharge)
+            let paymentCardOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(surcharge: nil,
+                                                                                                instalmentDuration: nil,
+                                                                                                extraMerchantData: nil,
+                                                                                                captureVaultedCardCvv: nil,
+                                                                                                merchantName: "Primer Merchant iOS",
+                                                                                                networks: networkOptionGroup)
+            clientSession.paymentMethod?.options?.PAYMENT_CARD = paymentCardOptions
+        }
+
         if let metadata = metadataTextField.text, !metadata.isEmpty {
             clientSession.metadata = MetadataParser().parse(metadata)
         }

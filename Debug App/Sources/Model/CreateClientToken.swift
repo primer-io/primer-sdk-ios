@@ -376,21 +376,24 @@ struct ClientSessionRequestBody {
             var extraMerchantData: [String: Any]?
             var captureVaultedCardCvv: Bool?
             var merchantName: String?
+            var networks: NetworkOptionGroup?
 
             enum CodingKeys: CodingKey {
-                case surcharge, instalmentDuration, extraMerchantData, captureVaultedCardCvv, merchantName
+                case surcharge, instalmentDuration, extraMerchantData, captureVaultedCardCvv, merchantName, networks
             }
 
             init(surcharge: SurchargeOption?,
                  instalmentDuration: String?,
                  extraMerchantData: [String: Any]?,
                  captureVaultedCardCvv: Bool?,
-                 merchantName: String?) {
+                 merchantName: String?,
+                 networks: NetworkOptionGroup?) {
                 self.surcharge = surcharge
                 self.instalmentDuration = instalmentDuration
                 self.extraMerchantData = extraMerchantData
                 self.captureVaultedCardCvv = captureVaultedCardCvv
                 self.merchantName = merchantName
+                self.networks = networks
             }
 
             func encode(to encoder: Encoder) throws {
@@ -409,27 +412,36 @@ struct ClientSessionRequestBody {
                     let jsonString = String(data: jsonData, encoding: .utf8)
                     try container.encode(jsonString, forKey: .extraMerchantData)
                 }
-                
+
+                if let captureVaultedCardCvv = captureVaultedCardCvv {
+                    try container.encode(captureVaultedCardCvv, forKey: .captureVaultedCardCvv)
+                }
+
                 if let merchantName = merchantName {
                     try container.encode(merchantName, forKey: .merchantName)
+                }
+
+                if let networks = networks {
+                    try container.encode(networks, forKey: .networks)
                 }
             }
 
             init(from decoder: Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
+
                 surcharge = try container.decodeIfPresent(SurchargeOption.self, forKey: .surcharge)
                 instalmentDuration = try container.decodeIfPresent(String.self, forKey: .instalmentDuration)
 
-                let jsonString = try container.decodeIfPresent(String.self, forKey: .extraMerchantData)
-                if let jsonData = jsonString?.data(using: .utf8) {
+                if let jsonString = try container.decodeIfPresent(String.self, forKey: .extraMerchantData),
+                   let jsonData = jsonString.data(using: .utf8) {
                     extraMerchantData = try JSONSerialization.jsonObject(with: jsonData) as? [String: Any]
                 } else {
                     extraMerchantData = nil
                 }
-                
-                merchantName = try container.decodeIfPresent(String.self, forKey: .merchantName)
 
-                captureVaultedCardCvv = try container.decodeIfPresent(Bool.self, forKey: .captureVaultedCardCvv) ?? false
+                captureVaultedCardCvv = try container.decodeIfPresent(Bool.self, forKey: .captureVaultedCardCvv)
+                merchantName = try container.decodeIfPresent(String.self, forKey: .merchantName)
+                networks = try container.decodeIfPresent(NetworkOptionGroup.self, forKey: .networks)
             }
 
             var dictionaryValue: [String: Any]? {
@@ -447,15 +459,19 @@ struct ClientSessionRequestBody {
                     dic["extraMerchantData"] = extraMerchantData
                 }
 
-                if let captureVaultedCardCvv = captureVaultedCardCvv, captureVaultedCardCvv == true {
+                if let captureVaultedCardCvv = captureVaultedCardCvv {
                     dic["captureVaultedCardCvv"] = captureVaultedCardCvv
                 }
-                
+
                 if let merchantName = merchantName {
                     dic["merchantName"] = merchantName
                 }
 
-                return dic.keys.count == 0 ? nil : dic
+                if let networks = networks {
+                    dic["networks"] = networks.dictionaryValue
+                }
+
+                return dic.isEmpty ? nil : dic
             }
         }
 
@@ -472,8 +488,39 @@ struct ClientSessionRequestBody {
                 return dic.keys.count == 0 ? nil : dic
             }
         }
-    }
 
+        struct NetworkOptionGroup: Codable {
+            var VISA: NetworkOption?
+            var MASTERCARD: NetworkOption?
+            var JCB: NetworkOption?
+
+            var dictionaryValue: [String: Any]? {
+                var dic: [String: Any] = [:]
+
+                if let VISA = VISA {
+                    dic["VISA"] = VISA.dictionaryValue
+                }
+
+                if let MASTERCARD = MASTERCARD {
+                    dic["MASTERCARD"] = MASTERCARD.dictionaryValue
+                }
+
+                if let JCB = JCB {
+                    dic["JCB"] = JCB.dictionaryValue
+                }
+
+                return dic.isEmpty ? nil : dic
+            }
+        }
+
+        struct NetworkOption: Codable {
+            var surcharge: SurchargeOption
+
+            var dictionaryValue: [String: Any] {
+                return ["surcharge": surcharge.dictionaryValue ?? [:]]
+            }
+        }
+    }
 }
 
 extension Encodable {
