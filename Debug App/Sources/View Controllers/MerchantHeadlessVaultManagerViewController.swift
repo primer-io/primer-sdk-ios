@@ -133,7 +133,7 @@ class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadle
             self.activityIndicator = nil
         }
     }
-    
+
     private func showAlert(title: String, message: String, okHandler: (() -> Void)? = nil, cancelHandler: (() -> Void)? = nil) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: "OK", style: .default) { _ in okHandler?() }
