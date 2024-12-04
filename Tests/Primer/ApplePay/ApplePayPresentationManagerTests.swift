@@ -126,7 +126,7 @@ final class ApplePayPresentationManagerTests: XCTestCase {
         let billingFields3 = contactFields3.mappedBillingContactFields
         let shippingFields3 = contactFields3.mappedShippingContactFields
 
-        XCTAssertEqual(billingFields3, [.name, .postalAddress])
+        XCTAssertEqual(billingFields3, [.postalAddress])
         XCTAssertEqual(shippingFields3, [])
     }
 
@@ -213,7 +213,7 @@ final class ApplePayPresentationManagerTests: XCTestCase {
         let billingFields = contactFields.mappedBillingContactFields
         let shippingFields = contactFields.mappedShippingContactFields
 
-        XCTAssertEqual(billingFields, [.name, .postalAddress])
+        XCTAssertEqual(billingFields, [.postalAddress])
         XCTAssertEqual(shippingFields, [])
     }
 
