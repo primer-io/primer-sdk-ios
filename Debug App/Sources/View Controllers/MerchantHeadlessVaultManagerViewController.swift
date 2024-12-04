@@ -164,9 +164,12 @@ extension MerchantHeadlessVaultManagerViewController: UITableViewDataSource, UIT
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         showLoadingOverlay()
         let vaultedPaymentMethod = self.availablePaymentMethods[indexPath.row]
-        let vaultedCardAdditionalData = PrimerVaultedCardAdditionalData(cvv: "737")
+        if vaultedPaymentMethod.paymentMethodType == "PAYMENT_CARD" {
+            self.vaultedManager?.startPaymentFlow(vaultedPaymentMethodId: vaultedPaymentMethod.id, vaultedPaymentMethodAdditionalData: PrimerVaultedCardAdditionalData(cvv: "737"))
+            return
+        }
 
-        self.vaultedManager?.startPaymentFlow(vaultedPaymentMethodId: vaultedPaymentMethod.id, vaultedPaymentMethodAdditionalData: vaultedCardAdditionalData)
+        self.vaultedManager?.startPaymentFlow(vaultedPaymentMethodId: vaultedPaymentMethod.id)
     }
 }
 
