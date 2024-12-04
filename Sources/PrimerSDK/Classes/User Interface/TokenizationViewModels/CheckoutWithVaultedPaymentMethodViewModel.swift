@@ -61,6 +61,8 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             .done { checkoutData in
                 if let checkoutData = checkoutData {
                     PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+                } else if let checkoutData = self.paymentCheckoutData {
+                    PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                 }
 
                 self.handleSuccessfulFlow()
@@ -461,7 +463,32 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
     private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         return Promise { seal in
-            if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
+
+            if decodedJWTToken.intent?.contains("STRIPE_ACH") == true {
+                if let sdkCompleteUrlString = decodedJWTToken.sdkCompleteUrl,
+                   let sdkCompleteUrl = URL(string: sdkCompleteUrlString) {
+
+                    DispatchQueue.main.async {
+                        PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+                    }
+
+                    firstly {
+                        self.completePayment(clientToken: decodedJWTToken, completeUrl: sdkCompleteUrl)
+                    }
+                    .done {
+                        seal.fulfill(nil)
+                    }
+                    .catch { err in
+                        seal.reject(err)
+                    }
+
+                } else {
+                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                             diagnosticsId: UUID().uuidString)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                }
+            } else if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
 
                 let threeDSService = ThreeDSService()
                 threeDSService.perform3DS(
@@ -485,6 +512,37 @@ Make sure you call the decision handler otherwise the SDK will hang.
                                                    diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
+            }
+        }
+    }
+
+    /**
+     * Completes a payment using the provided JWT token and URL.
+     *
+     * This private method performs an API call to complete a payment, using a decoded JWT token for authentication
+     * and a URL indicating where the completion request should be sent.
+     *
+     * - Parameters:
+     *   - clientToken: A `DecodedJWTToken` representing the client's authentication token.
+     *   - completeUrl: An `URL` indicating the endpoint for completing the ACH payment.
+     *
+     * - Returns: A `Promise<Void>` that resolves if the payment is completed successfully, or rejects if there is
+     *            an error during the API call.
+     */
+    private func completePayment(clientToken: DecodedJWTToken, completeUrl: URL) -> Promise<Void> {
+        return Promise { seal in
+            let apiClient: PrimerAPIClientAchProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
+            let timeZone = TimeZone(abbreviation: "UTC")
+            let timeStamp = Date().toString(timeZone: timeZone)
+
+            let body = Request.Body.Payment.Complete(mandateSignatureTimestamp: timeStamp)
+            apiClient.completePayment(clientToken: clientToken, url: completeUrl, paymentRequest: body) { result in
+                switch result {
+                case .success:
+                    seal.fulfill()
+                case .failure(let error):
+                    seal.reject(error)
+                }
             }
         }
     }
