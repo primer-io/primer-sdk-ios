@@ -7,6 +7,7 @@
 
 import UIKit
 
+// swiftlint:disable type_body_length
 class PrimerCustomFieldView: UIView {
 
     // MARK: - Properties
@@ -388,3 +389,4 @@ class PrimerCustomFieldView: UIView {
         }
     }
 }
+// swiftlint:enable type_body_length
