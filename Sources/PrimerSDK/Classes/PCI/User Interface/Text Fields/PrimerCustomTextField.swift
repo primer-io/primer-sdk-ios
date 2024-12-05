@@ -28,6 +28,9 @@ class PrimerCustomFieldView: UIView {
     private var networksDropdownView: UIView?  // Dropdown view for displaying available card networks
     private var presentationButton: UIButton!  // Button used to trigger menu programmatically
 
+    private var surchargeView: UIView?  // The surcharge view
+    private var surchargeLabel: UILabel?  // Label inside the surcharge view
+
     // Callback triggered when a card network is selected
     var onCardNetworkSelected: ((PrimerCardNetwork) -> Void)?
     var selectedCardNetwork: PrimerCardNetwork?
@@ -86,6 +89,7 @@ class PrimerCustomFieldView: UIView {
         setupBottomLine()
         setupErrorLabel()
         constrainVerticalStackView()
+        setupSurchargeView()
     }
 
     // Function to reset the card network selection to the initial state
@@ -99,6 +103,55 @@ class PrimerCustomFieldView: UIView {
             // Update visibility based on card network count
             self.updateNetworksDropdownViewVisibility()
         }
+    }
+
+    // MARK: - Surcharge View
+
+    private func setupSurchargeView() {
+        surchargeView = createSurchargeView(withAmount: "")
+        surchargeView?.isHidden = true
+        if let surchargeView = surchargeView {
+            textFieldStackView.insertArrangedSubview(surchargeView, at: 1)
+        }
+    }
+
+    func updateSurcharge(amount: String?) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            if let amount = amount, !amount.isEmpty {
+                self.surchargeLabel?.text = amount
+                self.surchargeView?.isHidden = false
+            } else {
+                self.surchargeView?.isHidden = true
+            }
+        }
+    }
+
+    private func createSurchargeView(withAmount amount: String) -> UIView {
+        let containerView = UIView()
+        containerView.backgroundColor = UIColor(red: 229/255, green: 229/255, blue: 234/255, alpha: 1)
+        containerView.layer.cornerRadius = 4
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+
+        let label = UILabel()
+        label.text = amount
+        label.textColor = UIColor(red: 17/255, green: 17/255, blue: 18/255, alpha: 1)
+        label.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        containerView.addSubview(label)
+        surchargeLabel = label
+
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 5),
+            label.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -5),
+            label.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
+            label.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
+            containerView.heightAnchor.constraint(equalToConstant: 24)
+        ])
+
+        return containerView
     }
 
     // Sets up the main vertical stack view
@@ -333,19 +386,5 @@ class PrimerCustomFieldView: UIView {
         if let viewController = UIApplication.shared.keyWindow?.rootViewController {
             viewController.present(alertController, animated: true)
         }
-    }
-}
-
-fileprivate extension UIApplication {
-    var windows: [UIWindow] {
-        let windowScene = self.connectedScenes.compactMap { $0 as? UIWindowScene }.first
-        guard let windows = windowScene?.windows else {
-            return []
-        }
-        return windows
-    }
-
-    var keyWindow: UIWindow? {
-        return windows.first(where: { $0.isKeyWindow })
     }
 }
