@@ -698,15 +698,15 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
 
     func configureAmountLabels(cardNetwork: CardNetwork?) {
-
         if let surcharge = alternativelySelectedCardNetwork?.surcharge ?? cardNetwork?.surcharge,
-        PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil {
-            configureSurchargeLabel(surchargetAmount: surcharge)
+        PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
+        let currency = AppState.current.currency {
+            configureSurchargeLabel(surchargeAmount: surcharge, currency: currency)
         } else {
             hideSurchargeLabel()
         }
 
-        var amount: Int = AppState.current.amount ?? 0
+        let amount: Int = AppState.current.amount ?? 0
         configurePayButton(amount: amount)
     }
 
@@ -723,15 +723,16 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
 
-    func configureSurchargeLabel(surchargetAmount: Int) {
+    func configureSurchargeLabel(surchargeAmount: Int, currency: Currency) {
         DispatchQueue.main.async {
-            print(surchargetAmount)
+            let amount = "+ \(surchargeAmount.toCurrencyString(currency: currency))"
+            self.cardNumberContainerView.updateSurcharge(amount: amount)
         }
     }
 
     func hideSurchargeLabel() {
         DispatchQueue.main.async {
-            print("hideSurchargeLabel")
+            self.cardNumberContainerView.updateSurcharge(amount: nil)
         }
     }
 
@@ -978,7 +979,8 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
     }
 
     private func handleCardNetworkDetection(_ cardNetwork: CardNetwork?) {
-        guard alternativelySelectedCardNetwork == nil else { return }
+        guard alternativelySelectedCardNetwork == nil
+        else { return }
 
         self.rawCardData.cardNetwork = cardNetwork
         self.rawDataManager?.rawData = self.rawCardData
@@ -986,7 +988,8 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         var network = cardNetwork?.rawValue.uppercased()
         let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
 
-        if let cardNetwork = cardNetwork, cardNetwork != .unknown, cardNumberContainerView.rightImageView.image != cardNetwork.icon {
+        if let cardNetwork = cardNetwork,
+            cardNetwork != .unknown {
             // Set the network value to "OTHER" if it's nil or unknown
             if network == nil || network == "UNKNOWN" {
                 network = "OTHER"
@@ -1155,9 +1158,9 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
         cardNumberContainerView.cardNetworks = currentlyAvailableCardNetworks ?? []
 
         if currentlyAvailableCardNetworks?.count ?? 0 < 2 {
-            self.alternativelySelectedCardNetwork = nil
             DispatchQueue.main.async {
                 self.cardNumberContainerView.resetCardNetworkSelection()
+                self.alternativelySelectedCardNetwork = nil
                 self.handleCardNetworkDetection(self.currentlyAvailableCardNetworks?.first?.network)
             }
         }
