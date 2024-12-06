@@ -9,6 +9,7 @@ import Foundation
 
 internal protocol CreateResumePaymentServiceProtocol {
     func createPayment(paymentRequest: Request.Body.Payment.Create) -> Promise<Response.Body.Payment>
+    func completePayment(clientToken: DecodedJWTToken, completeUrl: URL) -> Promise<Void>
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) -> Promise<Response.Body.Payment>
 }
 
@@ -93,6 +94,37 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                     } catch {
                         seal.reject(error)
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * Completes a payment using the provided JWT token and URL.
+     *
+     * This private method performs an API call to complete a payment, using a decoded JWT token for authentication
+     * and a URL indicating where the completion request should be sent.
+     *
+     * - Parameters:
+     *   - clientToken: A `DecodedJWTToken` representing the client's authentication token.
+     *   - completeUrl: An `URL` indicating the endpoint for completing the ACH payment.
+     *
+     * - Returns: A `Promise<Void>` that resolves if the payment is completed successfully, or rejects if there is
+     *            an error during the API call.
+     */
+    func completePayment(clientToken: DecodedJWTToken, completeUrl: URL) -> Promise<Void> {
+        return Promise { seal in
+            let apiClient: PrimerAPIClientAchProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
+            let timeZone = TimeZone(abbreviation: "UTC")
+            let timeStamp = Date().toString(timeZone: timeZone)
+
+            let body = Request.Body.Payment.Complete(mandateSignatureTimestamp: timeStamp)
+            apiClient.completePayment(clientToken: clientToken, url: completeUrl, paymentRequest: body) { result in
+                switch result {
+                case .success:
+                    seal.fulfill()
+                case .failure(let error):
+                    seal.reject(error)
                 }
             }
         }
