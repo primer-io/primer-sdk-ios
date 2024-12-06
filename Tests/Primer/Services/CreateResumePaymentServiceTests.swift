@@ -225,6 +225,30 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         waitForExpectations(timeout: 5, handler: nil)
     }
 
+    func test_complete_token_completeUrl() throws {
+        let response = Response.Body.Complete.successResponse
+        let apiClient = MockCreateResumeAPI(completeResponse: response)
+
+        let createResumeService = CreateResumePaymentService(paymentMethodType: "STRIPE_ACH",
+                                                             apiClient: apiClient)
+
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let expectation = self.expectation(description: "Promise fulfilled")
+
+        guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+            XCTFail()
+            return
+        }
+        
+        let _ = createResumeService.completePayment(clientToken: clientToken,
+                                            completeUrl: URL(string: "https://example.com")!
+        ).done {
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 5, handler: nil)
+    }
+
 }
 
 
@@ -232,10 +256,14 @@ private class MockCreateResumeAPI: PrimerAPIClientCreateResumePaymentProtocol {
 
     var resumeResponse: APIResult<Response.Body.Payment>?
     var createResponse: APIResult<Response.Body.Payment>?
+    var completeResponse: APIResult<Response.Body.Complete>?
 
-    init(resumeResponse: APIResult<Response.Body.Payment>? = nil, createResponse: APIResult<Response.Body.Payment>? = nil) {
+    init(resumeResponse: APIResult<Response.Body.Payment>? = nil,
+         createResponse: APIResult<Response.Body.Payment>? = nil,
+         completeResponse: APIResult<Response.Body.Complete>? = nil) {
         self.resumeResponse = resumeResponse
         self.createResponse = createResponse
+        self.completeResponse = completeResponse
     }
 
     func createPayment(clientToken: DecodedJWTToken, paymentRequestBody: Request.Body.Payment.Create, completion: @escaping APICompletion<Response.Body.Payment>) {
@@ -252,6 +280,16 @@ private class MockCreateResumeAPI: PrimerAPIClientCreateResumePaymentProtocol {
             return
         }
         completion(resumeResponse)
+    }
+
+    func completePayment(clientToken: DecodedJWTToken,
+                         url: URL, paymentRequest: Request.Body.Payment.Complete,
+                         completion: @escaping APICompletion<Response.Body.Complete>) {
+        guard let completeResponse else {
+            XCTFail("No complete response set")
+            return
+        }
+        completion(completeResponse)
     }
 }
 
@@ -322,5 +360,11 @@ private extension Response.Body.Payment {
                                                    description: "",
                                                    userInfo: [:],
                                                    diagnosticsId: ""))
+    }
+}
+
+private extension Response.Body.Complete {
+    static var successResponse: APIResult<Response.Body.Complete> {
+        .success(.init())
     }
 }

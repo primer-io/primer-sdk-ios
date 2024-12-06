@@ -114,12 +114,11 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
      */
     func completePayment(clientToken: DecodedJWTToken, completeUrl: URL) -> Promise<Void> {
         return Promise { seal in
-            let apiClient: PrimerAPIClientAchProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
             let timeZone = TimeZone(abbreviation: "UTC")
             let timeStamp = Date().toString(timeZone: timeZone)
 
             let body = Request.Body.Payment.Complete(mandateSignatureTimestamp: timeStamp)
-            apiClient.completePayment(clientToken: clientToken, url: completeUrl, paymentRequest: body) { result in
+            self.apiClient.completePayment(clientToken: clientToken, url: completeUrl, paymentRequest: body) { result in
                 switch result {
                 case .success:
                     seal.fulfill()
