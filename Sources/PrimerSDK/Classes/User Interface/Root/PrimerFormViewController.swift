@@ -116,7 +116,7 @@ class PrimerFormViewController: PrimerViewController {
                 paymentMethodsStack.addArrangedSubview(unknownFeesContainerView)
             }
 
-            paymentMethodsContainerStack.addArrangedSubview(            paymentMethodsStack)
+            paymentMethodsContainerStack.addArrangedSubview(paymentMethodsStack)
             stackView.addArrangedSubview(paymentMethodsContainerStack)
         }
     }

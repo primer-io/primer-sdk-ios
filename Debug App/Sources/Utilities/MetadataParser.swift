@@ -10,11 +10,11 @@ import Foundation
 
 struct MetadataParser {
 
-    func parse(_ metadata: String?) -> [String: Any] {
+    func parse(_ metadata: String?) -> [String: String] {
         guard let metadata = metadata else { return [:] }
 
         if let jsonData = metadata.data(using: .utf8),
-           let jsonObject = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
+           let jsonObject = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: String] {
             return jsonObject
         }
 
@@ -22,10 +22,9 @@ struct MetadataParser {
             .split(separator: "\n")
             .map { $0.split(separator: "=").map { String($0).trimmingCharacters(in: .whitespaces) } }
             .filter { $0.count > 1 }
-            .map { (keyValue: [String]) -> (String, Any) in
+            .map { (keyValue: [String]) -> (String, String) in
                 let (key, value) = (keyValue[0], keyValue[1])
-                let parsedValue = parseValue(value)
-                return (key, parsedValue)
+                return (key, value)
             }
 
         return Dictionary(uniqueKeysWithValues: keyValuePairs)

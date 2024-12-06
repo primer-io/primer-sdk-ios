@@ -64,6 +64,7 @@ struct ACHMandateView: View {
             .disabled(viewModel.shouldDisableViews)
             .padding([.horizontal, .bottom])
         }
+        .background(PrimerColors.swiftColor(PrimerColors.white))
     }
 }
 

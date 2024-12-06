@@ -197,7 +197,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
                 savedCardView.backgroundColor = .white
                 savedCardView.translatesAutoresizingMaskIntoConstraints = false
                 savedCardView.heightAnchor.constraint(equalToConstant: 64.0).isActive = true
-                savedCardView.render(model: cardButtonViewModel, showIcon: false)
+                savedCardView.render(model: cardButtonViewModel)
                 paymentMethodStackView.addArrangedSubview(savedCardView)
             }
 

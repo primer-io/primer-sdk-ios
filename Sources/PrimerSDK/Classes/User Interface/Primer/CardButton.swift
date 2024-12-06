@@ -15,30 +15,20 @@ internal class CardButton: PrimerButton {
     private var last4Label = UILabel()
     private var expiryLabel = UILabel()
     private var border = PrimerView()
-    private var checkView = UIImageView()
 
-    private weak var checkmarkViewWidthConstraint: NSLayoutConstraint?
-    private weak var checkmarkViewTrailingConstraint: NSLayoutConstraint?
-    private weak var checkmarkViewLeadingConstraint: NSLayoutConstraint?
-    private weak var checkmarkViewHeightConstraint: NSLayoutConstraint?
-
-    var showIcon = true
-
-    func render(model: CardButtonViewModel?, showIcon: Bool = true) {
+    func render(model: CardButtonViewModel?) {
         guard let model = model else { return }
         accessibilityIdentifier = "saved_payment_method_button"
 
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         backgroundColor = theme.paymentMethodButton.color(for: .enabled)
 
-        addCheckmarkView()
-        if showIcon {
-
+        if model.paymentMethodType == .paymentCard || model.paymentMethodType == .cardOffSession {
+            addCardIcon(image: CardNetwork(cardNetworkStr: model.network).icon)
         } else {
-            toggleIcon()
+            addCardIcon(image: model.imageName.image)
         }
 
-        addCardIcon(image: CardNetwork(cardNetworkStr: model.network).icon)
         addBorder()
 
         switch model.paymentMethodType {
@@ -95,10 +85,13 @@ internal class CardButton: PrimerButton {
             iconView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 17).isActive = true
             iconView.heightAnchor.constraint(equalToConstant: 24).isActive = true
             iconView.widthAnchor.constraint(equalToConstant: 24).isActive = true
+        } else if iconView.image == ImageName.achBank.image {
+            iconView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
+            iconView.widthAnchor.constraint(equalToConstant: 56).isActive = true
         } else {
             iconView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
-            iconView.heightAnchor.constraint(equalToConstant: 28).isActive = true
-            iconView.widthAnchor.constraint(equalToConstant: 38).isActive = true
+            iconView.heightAnchor.constraint(equalToConstant: 41).isActive = true
+            iconView.widthAnchor.constraint(equalToConstant: 56).isActive = true
         }
     }
 
@@ -155,9 +148,7 @@ internal class CardButton: PrimerButton {
         last4Label.textColor = theme.paymentMethodButton.text.color
         addSubview(last4Label)
         last4Label.translatesAutoresizingMaskIntoConstraints = false
-        checkmarkViewLeadingConstraint = last4Label.trailingAnchor
-            .constraint(equalTo: checkView.leadingAnchor, constant: -14)
-        checkmarkViewLeadingConstraint?.isActive = true
+        last4Label.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14).isActive = true
         last4Label.bottomAnchor.constraint(equalTo: centerYAnchor).isActive = true
     }
 
@@ -184,40 +175,6 @@ internal class CardButton: PrimerButton {
         border.translatesAutoresizingMaskIntoConstraints = false
         border.pin(to: self)
         border.isUserInteractionEnabled = false
-    }
-
-    private func addCheckmarkView() {
-        let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-        checkView = UIImageView(image: ImageName.check2.image)
-
-        // color
-        let tintedIcon = ImageName.check2.image?.withRenderingMode(.alwaysTemplate)
-        checkView.tintColor = theme.paymentMethodButton.text.color
-        checkView.image = tintedIcon
-
-        addSubview(checkView)
-        checkView.translatesAutoresizingMaskIntoConstraints = false
-        checkView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        checkmarkViewTrailingConstraint = checkView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -14)
-        checkmarkViewWidthConstraint = checkView.widthAnchor.constraint(equalToConstant: 14)
-        checkmarkViewTrailingConstraint?.isActive = true
-        checkmarkViewWidthConstraint?.isActive = true
-        checkmarkViewHeightConstraint = checkView.heightAnchor.constraint(equalToConstant: 22)
-        checkmarkViewHeightConstraint?.isActive = true
-    }
-
-    func showDeleteIcon(_ flag: Bool) {
-        checkView.image = flag ? ImageName.delete.image : ImageName.check2.image
-    }
-
-    func toggleIcon() {
-        checkmarkViewTrailingConstraint?.constant = showIcon ? -14 : 0
-        checkmarkViewWidthConstraint?.constant = showIcon ? 14 : 0
-        checkmarkViewHeightConstraint?.constant = showIcon ? 14 : 0
-    }
-
-    func showCheckmarkIcon(_ val: Bool) {
-        checkView.isHidden = !val
     }
 
     func hideBorder() {

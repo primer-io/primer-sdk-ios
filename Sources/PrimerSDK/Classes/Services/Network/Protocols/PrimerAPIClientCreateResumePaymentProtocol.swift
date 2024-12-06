@@ -18,4 +18,10 @@ protocol PrimerAPIClientCreateResumePaymentProtocol {
         paymentId: String,
         paymentResumeRequest: Request.Body.Payment.Resume,
         completion: @escaping APICompletion<Response.Body.Payment>)
+
+    func completePayment(
+        clientToken: DecodedJWTToken,
+        url: URL,
+        paymentRequest: Request.Body.Payment.Complete,
+        completion: @escaping APICompletion<Response.Body.Complete>)
 }

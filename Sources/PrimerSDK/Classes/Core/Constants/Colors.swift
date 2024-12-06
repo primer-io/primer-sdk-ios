@@ -1,6 +1,7 @@
 // MARK: Light
 
 import UIKit
+import SwiftUI
 
 public struct PrimerColors {
 
@@ -35,4 +36,29 @@ public struct PrimerColors {
     // MARK: special cases
     static let klarnaPink = UIColor(red: 1, green: 0.702, blue: 0.78, alpha: 1)
     static let blurredBackground = UIColor.black.withAlphaComponent(0.4)
+}
+
+// Extension to produce a SwiftUI Color which works until iOS 13
+extension PrimerColors {
+    static func swiftColor(_ uiColor: UIColor) -> Color {
+        if #available(iOS 14.0, *) {
+            return Color(uiColor)
+        } else {
+            // For iOS 13, we need to manually convert using components
+            var red: CGFloat = 0
+            var green: CGFloat = 0
+            var blue: CGFloat = 0
+            var alpha: CGFloat = 0
+
+            uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+
+            return Color(
+                .sRGB,
+                red: Double(red),
+                green: Double(green),
+                blue: Double(blue),
+                opacity: Double(alpha)
+            )
+        }
+    }
 }
