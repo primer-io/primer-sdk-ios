@@ -286,7 +286,7 @@ internal class ClientSession {
 
             func toOrderItem() throws -> ApplePayOrderItem {
                 let applePayOptions = PrimerSettings.current.paymentMethodOptions.applePayOptions
-                let name = (self.description ?? applePayOptions?.merchantName)
+                let name = (self.description ?? self.name ?? applePayOptions?.merchantName)
                 return try ApplePayOrderItem(
                     name: name ?? "Item",
                     unitAmount: self.amount,
