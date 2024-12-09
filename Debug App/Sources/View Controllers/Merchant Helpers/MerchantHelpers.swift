@@ -32,7 +32,7 @@ struct MerchantMockDataManager {
         return ClientSessionRequestBody(
             customerId: customerId,
             orderId: "ios-order-\(String.randomString(length: 8))",
-            currencyCode: CurrencyLoader().getCurrency("EUR"),
+            currencyCode: CurrencyLoader().getCurrency("EUR")?.code,
             amount: nil,
             metadata: nil,
             customer: ClientSessionRequestBody.Customer(

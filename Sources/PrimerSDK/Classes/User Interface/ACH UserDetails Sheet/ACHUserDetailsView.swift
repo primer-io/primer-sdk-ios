@@ -16,7 +16,7 @@ struct ACHUserDetailsView: View {
     var onBackPressed: () -> Void
 
     var body: some View {
-
+        VStack {
         ZStack {
             Button {
                 onBackPressed()
@@ -41,9 +41,8 @@ struct ACHUserDetailsView: View {
                 .font(.system(size: 18, weight: .medium))
                 .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.title.rawValue)
         }
-        .padding(.top, -3)
+        .background(PrimerColors.swiftColor(PrimerColors.white))
 
-        VStack {
             HStack {
                 Text(Strings.UserDetails.subtitle)
                     .font(.system(size: 17))
@@ -95,6 +94,7 @@ struct ACHUserDetailsView: View {
         }
         .disabled(viewModel.shouldDisableViews)
         .frame(height: 380)
+        .background(PrimerColors.swiftColor(PrimerColors.white))
     }
 
     private func submitAction() {
@@ -121,7 +121,7 @@ struct CustomTextFieldView: View {
             TextField("", text: $text)
                 .padding(.horizontal, 10)
                 .frame(height: 44)
-                .background(Color.white)
+                .background(PrimerColors.swiftColor(PrimerColors.white))
                 .cornerRadius(4)
                 .overlay(
                     RoundedRectangle(cornerRadius: 4)

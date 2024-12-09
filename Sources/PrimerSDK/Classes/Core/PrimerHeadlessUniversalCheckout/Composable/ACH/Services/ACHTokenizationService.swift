@@ -71,37 +71,37 @@ class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelegate {
         else {
             throw ACHHelpers.getInvalidTokenError()
         }
-        
+
         guard paymentMethod.id != nil else {
             throw ACHHelpers.getInvalidValueError(
                 key: "configuration.id",
                 value: paymentMethod.id
             )
         }
-        
+
         if AppState.current.amount == nil {
             throw ACHHelpers.getInvalidSettingError(name: "amount")
         }
-        
+
         if AppState.current.currency == nil {
             throw ACHHelpers.getInvalidSettingError(name: "currency")
         }
-        
+
         let lineItems = clientSession?.order?.lineItems ?? []
         if lineItems.isEmpty {
             throw ACHHelpers.getInvalidValueError(key: "lineItems")
         }
-        
+
         if !(lineItems.filter({ $0.amount == nil })).isEmpty {
             throw ACHHelpers.getInvalidValueError(key: "settings.orderItems")
         }
-        
+
         guard let publishableKey = PrimerSettings.current.paymentMethodOptions.stripeOptions?.publishableKey,
               !publishableKey.isEmpty
         else {
             throw ACHHelpers.getInvalidValueError(key: "stripeOptions.publishableKey")
         }
-        
+
         do {
             _ = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
         } catch let error {

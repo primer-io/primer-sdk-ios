@@ -29,7 +29,6 @@ struct SessionConfiguration: Codable, Equatable {
     let postalCode: String
 
     let vault: Bool
-    let newWorkflows: Bool
     let environment: String
 
     let customApiKey: String

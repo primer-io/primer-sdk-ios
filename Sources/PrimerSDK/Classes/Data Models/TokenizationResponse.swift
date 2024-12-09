@@ -67,6 +67,7 @@ extension Response.Body.Tokenization {
         case .payPalBillingAgreement: return .paypal2
         case .goCardlessMandate: return .bank
         case .klarnaCustomerToken: return .klarna
+        case .stripeAch: return .achBank
         default: return .creditCard
         }
     }
@@ -108,6 +109,14 @@ extension Response.Body.Tokenization {
                 expiry: "",
                 imageName: self.icon,
                 paymentMethodType: self.paymentInstrumentType)
+        case .stripeAch:
+            return CardButtonViewModel(
+                network: self.paymentInstrumentData?.bankName ?? "Bank account",
+                cardholder: "•••• \(self.paymentInstrumentData?.accountNumberLastFourDigits ?? "")",
+                last4: "",
+                expiry: "",
+                imageName: self.icon,
+                paymentMethodType: self.paymentInstrumentType)
         default:
             return nil
         }
@@ -143,6 +152,9 @@ extension Response.Body.Tokenization {
         public let paymentMethodConfigId: String?
         public let paymentMethodType: String?
         public let sessionInfo: SessionInfo?
+
+        public let bankName: String?
+        public let accountNumberLastFourDigits: String?
 
         // swiftlint:disable:next nesting
         public struct SessionInfo: Codable {
