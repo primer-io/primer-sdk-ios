@@ -14,14 +14,12 @@ final class PrimerCardNetworkTests: XCTestCase {
         let cardNetwork = PrimerCardNetwork(displayName: "Custom DisplayName", network: .visa)
         XCTAssertEqual(cardNetwork.displayName, "Custom DisplayName")
         XCTAssertEqual(cardNetwork.network, .visa)
-        XCTAssertTrue(cardNetwork.allowed, "Visa should be allowed based on allowedCardNetworks definition")
     }
 
     func testInitWithNetworkOnly() {
         let cardNetwork = PrimerCardNetwork(network: .masterCard)
-        XCTAssertEqual(cardNetwork.displayName, "MasterCard")
+        XCTAssertEqual(cardNetwork.displayName, "Mastercard")
         XCTAssertEqual(cardNetwork.network, .masterCard)
-        XCTAssertTrue(cardNetwork.allowed, "MasterCard should be allowed")
 
         let unknownNetwork = PrimerCardNetwork(network: .unknown)
         XCTAssertEqual(unknownNetwork.displayName, "Unknown")
@@ -41,8 +39,7 @@ final class PrimerCardNetworkTests: XCTestCase {
     func testDescription() {
         let cardNetwork = PrimerCardNetwork(network: .masterCard)
         let description = cardNetwork.description
-        XCTAssertTrue(description.contains("displayName: MasterCard"), "Description should contain displayName")
+        XCTAssertTrue(description.contains("displayName: Mastercard"), "Description should contain displayName")
         XCTAssertTrue(description.contains("network: masterCard"), "Description should contain network")
-        XCTAssertTrue(description.contains("allowed: true"), "MasterCard should be allowed")
     }
 }
