@@ -274,7 +274,7 @@ class MockWebAuthenticationService: WebAuthenticationService {
 
     var onConnect: ((URL, String) -> URL)?
 
-    func connect(url: URL, scheme: String, _ completion: @escaping (Result<URL, any Error>) -> Void) {
+    func connect(paymentMethodType: String, url: URL, scheme: String, _ completion: @escaping (Result<URL, any Error>) -> Void) {
         if let onConnect = onConnect {
             completion(.success(onConnect(url, scheme)))
         } else {
