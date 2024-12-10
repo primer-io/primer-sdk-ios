@@ -14,9 +14,9 @@ public struct PrimerColors {
     private static let lightModeGreen = PrimerColor(red: 52, green: 199, blue: 89)
 
     private static let darkModeBlack = PrimerColor(red: 255, green: 255, blue: 255)
-    private static let darkModeWhite = PrimerColor(red: 28, green: 28, blue: 30)
+    private static let darkModeWhite = PrimerColor(red: 23, green: 22, blue: 25)
     private static let darkModeGray = PrimerColor(red: 142, green: 142, blue: 147)
-    private static let darkModeLightGray = PrimerColor(red: 58, green: 58, blue: 60)
+    private static let darkModeLightGray = PrimerColor(red: 44, green: 44, blue: 47)
     private static let darkModeRed = PrimerColor(red: 255, green: 69, blue: 58)
     private static let darkModeBlue = PrimerColor(red: 10, green: 132, blue: 255)
     private static let darkModeYellow = PrimerColor(red: 255, green: 214, blue: 10)
