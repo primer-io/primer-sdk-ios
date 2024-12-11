@@ -30,6 +30,7 @@ class PrimerContainerViewController: PrimerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.view.accessibilityIdentifier = "checkout_sheet_content"
         scrollView.accessibilityIdentifier = "primer_container_scroll_view"
 
         view.addSubview(mockedNavigationBar)
