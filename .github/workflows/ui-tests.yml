@@ -100,7 +100,7 @@ jobs:
       - name: Create secrets.defaults.properties
         shell: bash
         run: |
-          echo "STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}" > secrets.defaults.properties
+          echo "STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}" > Debug\ App/secrets.defaults.properties
 
       - name: Distribute internally on Firebase and upload to Browserstack 🚀
         run: |

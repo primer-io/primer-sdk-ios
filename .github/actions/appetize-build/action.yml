@@ -86,7 +86,7 @@ runs:
     - name: Create secrets.defaults.properties
       shell: bash
       run: |
-        echo "STRIPE_PUBLISHABLE_KEY=${{ inputs.stripe-publishable-key }}" > secrets.defaults.properties
+        echo "STRIPE_PUBLISHABLE_KEY=${{ inputs.stripe-publishable-key }}" > Debug\ App/secrets.defaults.properties
     - name: Test, Build, and Distribute app to Appetize 🚀
       shell: bash
       run: |
