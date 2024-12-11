@@ -41,16 +41,16 @@ internal class PrimerResultViewController: PrimerViewController {
 
         (parent as? PrimerContainerViewController)?.navigationItem.hidesBackButton = true
 
-        let successImage = UIImage(named: "check-circle", in: Bundle.primerResources, compatibleWith: nil)
+        let successImage = UIImage(named: "check-circle", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         successImage?.accessibilityIdentifier = "check-circle"
 
-        let failureImage = UIImage(named: "x-circle", in: Bundle.primerResources, compatibleWith: nil)
+        let failureImage = UIImage(named: "x-circle", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         failureImage?.accessibilityIdentifier = "x-circle"
 
         let img = (screenType == .success) ? successImage : failureImage
         let imgView = UIImageView(image: img)
         imgView.contentMode = .scaleAspectFit
-        imgView.tintColor = .black
+        imgView.tintColor = .label
         imgView.translatesAutoresizingMaskIntoConstraints = false
         imgView.heightAnchor.constraint(equalToConstant: 20.0).isActive = true
         imgView.widthAnchor.constraint(equalToConstant: 20.0).isActive = true
