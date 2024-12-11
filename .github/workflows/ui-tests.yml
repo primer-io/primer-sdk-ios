@@ -53,6 +53,7 @@ jobs:
           slack-channel: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           slack-reporter-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
           github-run-id: ${{ github.run_id }}
+          stripe-publishable-key: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
   build-and-upload-to-firebase-and-browserstack:
     runs-on: macos-13
     timeout-minutes: 20
@@ -95,6 +96,11 @@ jobs:
           base64 -d -i firebase_credentials.json.b64 > firebase_credentials.json
         env:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
+
+      - name: Create secrets.defaults.properties
+        shell: bash
+        run: |
+          echo "STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}" > secrets.defaults.properties
 
       - name: Distribute internally on Firebase and upload to Browserstack 🚀
         run: |
