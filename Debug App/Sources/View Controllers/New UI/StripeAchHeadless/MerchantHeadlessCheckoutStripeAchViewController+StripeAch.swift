@@ -88,7 +88,7 @@ extension MerchantHeadlessCheckoutStripeAchViewController: PrimerHeadlessUnivers
     func primerHeadlessUniversalCheckoutDidFail(withError err: any Error, checkoutData: PrimerCheckoutData?) {
         print("\n\nMERCHANT APP\n\(#function)\nerror: \(err)\ncheckoutData: \(String(describing: checkoutData))")
         logs.append(#function)
-        presentResultsVC(checkoutData: nil, error: err)
+        presentResultsVC(checkoutData: checkoutData, error: err)
     }
     
     func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {

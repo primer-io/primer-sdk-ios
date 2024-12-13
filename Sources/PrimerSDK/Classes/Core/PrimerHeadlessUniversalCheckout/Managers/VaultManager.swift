@@ -25,7 +25,6 @@ extension PrimerHeadlessUniversalCheckout {
         private(set) var resumePaymentId: String?
         private var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
-        private var achMandateCompletion: ((Result<Void, PrimerError>) -> Void)?
 
         lazy var createResumePaymentService: CreateResumePaymentServiceProtocol = {
             CreateResumePaymentService(paymentMethodType: paymentMethodType)

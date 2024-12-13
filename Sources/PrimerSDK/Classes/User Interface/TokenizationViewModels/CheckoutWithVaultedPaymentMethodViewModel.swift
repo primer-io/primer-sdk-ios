@@ -522,9 +522,14 @@ Make sure you call the decision handler otherwise the SDK will hang.
     }
 
     func handleSuccessfulFlow() {
-        let categories = self.config.paymentMethodManagerCategories
-        PrimerUIManager.dismissOrShowResultScreen(type: .success,
-                                                  paymentMethodManagerCategories: categories ?? [])
+        if let paymentMethodType = config.internalPaymentMethodType,
+              paymentMethodType == .stripeAch {
+            PrimerUIManager.showResultScreen(for: paymentMethodType, error: nil)
+        } else {
+            let categories = self.config.paymentMethodManagerCategories
+            PrimerUIManager.dismissOrShowResultScreen(type: .success,
+                                                      paymentMethodManagerCategories: categories ?? [])
+        }
     }
 
     func handleFailureFlow(errorMessage: String?) {
