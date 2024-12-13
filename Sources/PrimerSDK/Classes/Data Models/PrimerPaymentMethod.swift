@@ -238,7 +238,7 @@ class PrimerPaymentMethod: Codable, LogReporter {
             categories.append(PrimerPaymentMethodManagerCategory.componentWithRedirect)
 
         case .stripeAch:
-            categories.append(PrimerPaymentMethodManagerCategory.nativeUI)
+            categories.append(PrimerPaymentMethodManagerCategory.stripeAch)
 
         case .adyenBlik:
             categories.append(PrimerPaymentMethodManagerCategory.rawData)

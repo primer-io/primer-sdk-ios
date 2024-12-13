@@ -80,13 +80,19 @@ struct ACHUserDetailsView: View {
             Spacer()
 
             Button(action: submitAction) {
-                Text(Strings.UserDetails.continueButton)
-                    .font(.system(size: 17, weight: .medium))
-                    .foregroundColor(viewModel.isValidForm ? Color.white : Color.gray)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(viewModel.isValidForm ? Color.blue : Color.gray.opacity(0.2))
-                    .cornerRadius(10)
+                ZStack {
+                    if viewModel.shouldDisableViews {
+                        ActivityIndicator(isAnimating: .constant(true), style: .medium, color: UIColor.black)
+                    } else {
+                        Text(Strings.UserDetails.continueButton)
+                        .font(.system(size: 17, weight: .medium))
+                    }
+                }
+                .foregroundColor(viewModel.isValidForm ? Color.white : Color.gray)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(viewModel.isValidForm ? Color.blue : Color.gray.opacity(0.2))
+                .cornerRadius(10)
             }
             .disabled(!viewModel.isValidForm)
             .padding(.horizontal)
