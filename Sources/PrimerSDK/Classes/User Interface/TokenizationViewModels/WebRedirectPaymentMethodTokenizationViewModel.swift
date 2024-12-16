@@ -288,7 +288,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
             firstly { () -> Promise<String> in
                 if self.isCancelled {
-                    let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: .errorUserInfoDictionary(),
+                    let err = PrimerError.cancelled(paymentMethodType: self.config.type,
+                                                    userInfo: .errorUserInfoDictionary(),
                                                     diagnosticsId: UUID().uuidString)
                     throw err
                 }

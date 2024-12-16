@@ -73,15 +73,21 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     // MARK: Apple Pay Inputs
     @IBOutlet weak var applePayCaptureBillingAddressSwitch: UISwitch!
     @IBOutlet weak var applePayCheckProvidedNetworksSwitch: UISwitch!
-    
+
+    @IBOutlet weak var applePayBillingControlStackView: UIStackView!
+    @IBOutlet weak var applePayBillingContactNameSwitch: UISwitch!
+    @IBOutlet weak var applePayBillingContactEmailSwitch: UISwitch!
+    @IBOutlet weak var applePayBillingContactPhoneSwitch: UISwitch!
+    @IBOutlet weak var applePayBillingContactPostalAddressSwitch: UISwitch!
+
     @IBOutlet weak var applePayShippingControlStackView: UIStackView!
     @IBOutlet weak var applePayShippingDetailsSwitch: UISwitch!
-    @IBOutlet weak var applePayCaptureShippingAddressEnabledSwitch: UISwitch!
     @IBOutlet weak var applePayRequireShippingMethodSwitch: UISwitch!
     @IBOutlet weak var applePayShippingContactNameSwitch: UISwitch!
     @IBOutlet weak var applePayShippingContactEmailSwitch: UISwitch!
     @IBOutlet weak var applePayShippingContactPhoneSwitch: UISwitch!
-    
+    @IBOutlet weak var applePayShippingContactPostalAddressSwitch: UISwitch!
+
     // MARK: Order Inputs
     
     @IBOutlet weak var currencyTextField: UITextField!
@@ -156,14 +162,12 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var payAfterVaultSuccess: Bool = false
     
     var applePayCaptureBillingAddress = false
+    var applePayBillingAdditionalContactFields: [PrimerApplePayOptions.RequiredContactField]? = []
     var applePayCaptureShippingDetails = false
+    var applePayRequireShippingMethod = false
+    var applePayShippingAdditionalContactFields: [PrimerApplePayOptions.RequiredContactField]? = []
     var applePayCheckProvidedNetworks = false
-    
-    //Below are gated by applePayCaptureShippingDetails, default to on when above is true
-    var applePayCaptureShippingAddress = true
-    var applePayRequireShippingMethod = true
-    //    var applePayAdditionalContactFields: [PrimerApplePayOptions.ShippingOptions.AdditionalShippingContactField]? = [.name, .emailAddress, .phoneNumber]
-    
+
     func setAccessibilityIds() {
         self.view.accessibilityIdentifier = "Background View"
         self.testingModeSegmentedControl.accessibilityIdentifier = "Testing Mode Segmented Control"
@@ -411,65 +415,138 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     }
     
     @IBAction func applePayCaptureBillingAddressSwitchValueChanged(_ sender: UISwitch) {
+        applePayBillingControlStackView.isHidden = !sender.isOn
         applePayCaptureBillingAddress = sender.isOn
     }
-    
+
+    @IBAction func applePayBillingContactNameSwitchChanged(_ sender: UISwitch) {
+        if sender.isOn {
+            var fields = applePayBillingAdditionalContactFields ?? []
+            if !fields.contains(.name) {
+                fields.append(.name)
+            }
+            applePayBillingAdditionalContactFields = fields
+        } else {
+            applePayBillingAdditionalContactFields?.removeAll(where: { $0 == .name })
+            if applePayBillingAdditionalContactFields?.isEmpty == true {
+                applePayBillingAdditionalContactFields = nil
+            }
+        }
+    }
+
+
+    @IBAction func applePayBillingContactEmailField(_ sender: UISwitch) {
+        if sender.isOn {
+            var fields = applePayBillingAdditionalContactFields ?? []
+            if !fields.contains(.emailAddress) {
+                fields.append(.emailAddress)
+            }
+            applePayBillingAdditionalContactFields = fields
+        } else {
+            applePayBillingAdditionalContactFields?.removeAll(where: { $0 == .emailAddress })
+            if applePayBillingAdditionalContactFields?.isEmpty == true {
+                applePayBillingAdditionalContactFields = nil
+            }
+        }
+    }
+
+    @IBAction func applePayBillingContactPhoneSwitchChanged(_ sender: UISwitch) {
+        if sender.isOn {
+            var fields = applePayBillingAdditionalContactFields ?? []
+            if !fields.contains(.phoneNumber) {
+                fields.append(.phoneNumber)
+            }
+            applePayBillingAdditionalContactFields = fields
+        } else {
+            applePayBillingAdditionalContactFields?.removeAll(where: { $0 == .phoneNumber })
+            if applePayBillingAdditionalContactFields?.isEmpty == true {
+                applePayBillingAdditionalContactFields = nil
+            }
+        }
+    }
+
+    @IBAction func applePayBillingContactPostalAddressSwitchChanged(_ sender: UISwitch) {
+        if sender.isOn {
+            var fields = applePayBillingAdditionalContactFields ?? []
+            if !fields.contains(.postalAddress) {
+                fields.append(.postalAddress)
+            }
+            applePayBillingAdditionalContactFields = fields
+        } else {
+            applePayBillingAdditionalContactFields?.removeAll(where: { $0 == .postalAddress })
+            if applePayBillingAdditionalContactFields?.isEmpty == true {
+                applePayBillingAdditionalContactFields = nil
+            }
+        }
+    }
+
     @IBAction func applePayCaptureShippingDetailsSwitchChanged(_ sender: UISwitch) {
         applePayShippingControlStackView.isHidden = !sender.isOn
         applePayCaptureShippingDetails = sender.isOn
     }
-    
-    @IBAction func captureShippingAddressSwitchChanged(_ sender: UISwitch) {
-        applePayCaptureShippingAddress = sender.isOn
-    }
-    
+
     @IBAction func applePayRequireShippingMethodSwitchChanged(_ sender: UISwitch) {
         applePayRequireShippingMethod = sender.isOn
     }
     
     @IBAction func applePayShippingContactNameSwitchChanged(_ sender: UISwitch) {
-        //        if sender.isOn {
-        //            var fields = applePayAdditionalContactFields ?? []
-        //            if !fields.contains(.name) {
-        //                fields.append(.name)
-        //            }
-        //            applePayAdditionalContactFields = fields
-        //        } else {
-        //            applePayAdditionalContactFields?.removeAll(where: { $0 == .name })
-        //            if applePayAdditionalContactFields?.isEmpty == true {
-        //                applePayAdditionalContactFields = nil
-        //            }
-        //        }
+        if sender.isOn {
+            var fields = applePayShippingAdditionalContactFields ?? []
+            if !fields.contains(.name) {
+                fields.append(.name)
+            }
+            applePayShippingAdditionalContactFields = fields
+        } else {
+            applePayShippingAdditionalContactFields?.removeAll(where: { $0 == .name })
+            if applePayShippingAdditionalContactFields?.isEmpty == true {
+                applePayShippingAdditionalContactFields = nil
+            }
+        }
     }
     
     @IBAction func applePayShippingContactEmailField(_ sender: UISwitch) {
-        //        if sender.isOn {
-        //            var fields = applePayAdditionalContactFields ?? []
-        //            if !fields.contains(.emailAddress) {
-        //                fields.append(.emailAddress)
-        //            }
-        //            applePayAdditionalContactFields = fields
-        //        } else {
-        //            applePayAdditionalContactFields?.removeAll(where: { $0 == .emailAddress })
-        //            if applePayAdditionalContactFields?.isEmpty == true {
-        //                applePayAdditionalContactFields = nil
-        //            }
-        //        }
+        if sender.isOn {
+            var fields = applePayShippingAdditionalContactFields ?? []
+            if !fields.contains(.emailAddress) {
+                fields.append(.emailAddress)
+            }
+            applePayShippingAdditionalContactFields = fields
+        } else {
+            applePayShippingAdditionalContactFields?.removeAll(where: { $0 == .emailAddress })
+            if applePayShippingAdditionalContactFields?.isEmpty == true {
+                applePayShippingAdditionalContactFields = nil
+            }
+        }
     }
     
     @IBAction func applePayShippingContactPhoneSwitchChanged(_ sender: UISwitch) {
-        //        if sender.isOn {
-        //            var fields = applePayAdditionalContactFields ?? []
-        //            if !fields.contains(.phoneNumber) {
-        //                fields.append(.phoneNumber)
-        //            }
-        //            applePayAdditionalContactFields = fields
-        //        } else {
-        //            applePayAdditionalContactFields?.removeAll(where: { $0 == .phoneNumber })
-        //            if applePayAdditionalContactFields?.isEmpty == true {
-        //                applePayAdditionalContactFields = nil
-        //            }
-        //        }
+        if sender.isOn {
+            var fields = applePayShippingAdditionalContactFields ?? []
+            if !fields.contains(.phoneNumber) {
+                fields.append(.phoneNumber)
+            }
+            applePayShippingAdditionalContactFields = fields
+        } else {
+            applePayShippingAdditionalContactFields?.removeAll(where: { $0 == .phoneNumber })
+            if applePayShippingAdditionalContactFields?.isEmpty == true {
+                applePayShippingAdditionalContactFields = nil
+            }
+        }
+    }
+
+    @IBAction func applePayShippingContactPostalAddressSwitchChanged(_ sender: UISwitch) {
+        if sender.isOn {
+            var fields = applePayShippingAdditionalContactFields ?? []
+            if !fields.contains(.postalAddress) {
+                fields.append(.postalAddress)
+            }
+            applePayShippingAdditionalContactFields = fields
+        } else {
+            applePayShippingAdditionalContactFields?.removeAll(where: { $0 == .postalAddress })
+            if applePayShippingAdditionalContactFields?.isEmpty == true {
+                applePayShippingAdditionalContactFields = nil
+            }
+        }
     }
     
     @IBAction func applePayCheckProvidedNetworksSwitchValueChanged(_ sender: UISwitch) {
@@ -672,13 +749,14 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             theme: applyThemingSwitch.isOn ? CheckoutTheme.tropical : nil)
         
         let mandateData = PrimerStripeOptions.MandateData.templateMandate(merchantName: "Primer Inc.")
-        
-        // For Express Checkout Beta
-        //        let shippingOptions = applePayCaptureShippingDetails ?
-        //        PrimerApplePayOptions.ShippingOptions(isCaptureShippingAddressEnabled: true,
-        //                                              additionalShippingContactFields: [.name, .emailAddress, .phoneNumber],
-        //                                              requireShippingMethod: true) : nil
-        
+
+        let shippingOptions = applePayCaptureShippingDetails ?
+        PrimerApplePayOptions.ShippingOptions(shippingContactFields: applePayShippingAdditionalContactFields,
+                                              requireShippingMethod: applePayRequireShippingMethod) : nil
+
+        let billingOptions = applePayCaptureBillingAddress ?
+        PrimerApplePayOptions.BillingOptions(requiredBillingContactFields: applePayBillingAdditionalContactFields) : nil
+
         let stripePublishableKey = SecretsManager.shared.value(forKey: .stripePublishableKey)
         
         let settings = PrimerSettings(
@@ -690,10 +768,10 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     merchantName: merchantNameTextField.text ?? "Primer Merchant",
                     isCaptureBillingAddressEnabled: applePayCaptureBillingAddress,
                     showApplePayForUnsupportedDevice: false,
-                    checkProvidedNetworks: applePayCheckProvidedNetworks),
-                stripeOptions: stripePublishableKey == nil
-                ? nil
-                : PrimerStripeOptions(publishableKey: stripePublishableKey!, mandateData: mandateData)),
+                    checkProvidedNetworks: applePayCheckProvidedNetworks,
+                    shippingOptions: shippingOptions,
+                    billingOptions: billingOptions),
+                stripeOptions: stripePublishableKey == nil ? nil : PrimerStripeOptions(publishableKey: stripePublishableKey!, mandateData: mandateData)),
             uiOptions: uiOptions,
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
@@ -717,12 +795,14 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     
     @IBAction func primerHeadlessButtonTapped(_ sender: Any) {
         customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
-        
-        //        let shippingOptions = applePayCaptureShippingDetails ?
-        //        PrimerApplePayOptions.ShippingOptions(isCaptureShippingAddressEnabled: true,
-        //                                              additionalShippingContactFields: [.name, .emailAddress, .phoneNumber],
-        //                                              requireShippingMethod: true) : nil
-        
+
+        let shippingOptions = applePayCaptureShippingDetails ?
+        PrimerApplePayOptions.ShippingOptions(shippingContactFields: applePayShippingAdditionalContactFields,
+                                              requireShippingMethod: applePayRequireShippingMethod) : nil
+
+        let billingOptions = applePayCaptureBillingAddress ?
+        PrimerApplePayOptions.BillingOptions(requiredBillingContactFields: applePayBillingAdditionalContactFields) : nil
+
         let stripePublishableKey = SecretsManager.shared.value(forKey: .stripePublishableKey)
         
         let settings = PrimerSettings(
@@ -734,9 +814,10 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     merchantName: merchantNameTextField.text ?? "Primer Merchant",
                     isCaptureBillingAddressEnabled: applePayCaptureBillingAddress,
                     showApplePayForUnsupportedDevice: false,
-                    checkProvidedNetworks: applePayCheckProvidedNetworks),
-                stripeOptions: stripePublishableKey == nil
-                ? nil : PrimerStripeOptions(publishableKey: stripePublishableKey!)),
+                    checkProvidedNetworks: applePayCheckProvidedNetworks,
+                    shippingOptions: shippingOptions,
+                    billingOptions: billingOptions),
+                stripeOptions: stripePublishableKey == nil ? nil : PrimerStripeOptions(publishableKey: stripePublishableKey!)),
             uiOptions: nil,
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
         )
