@@ -142,6 +142,7 @@ public class PrimerApplePayOptions: Codable {
     let merchantIdentifier: String
     @available(*, deprecated, message: "Use Client Session API to provide merchant name value: https://primer.io/docs/payment-methods/apple-pay/direct-integration#prepare-the-client-session")
     let merchantName: String?
+    @available(*, deprecated, message: "Use BillingOptions to configure required billing fields.")
     let isCaptureBillingAddressEnabled: Bool
     /// If in some cases you dont want to present ApplePay option if the device is not supporting it set this to `false`.
     /// Default value is `true`.
@@ -151,6 +152,7 @@ public class PrimerApplePayOptions: Codable {
     /// we introduced this flag to continue supporting the old behaviour. Default value is `true`.
     let checkProvidedNetworks: Bool
     let shippingOptions: ShippingOptions?
+    let billingOptions: BillingOptions?
 
     public init(merchantIdentifier: String,
                 merchantName: String?,
@@ -160,42 +162,49 @@ public class PrimerApplePayOptions: Codable {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
-        self.shippingOptions = nil
         self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
         self.checkProvidedNetworks = checkProvidedNetworks
+        self.shippingOptions = nil
+        self.billingOptions = nil
     }
 
-    private init(merchantIdentifier: String,
-                 merchantName: String?,
-                 isCaptureBillingAddressEnabled: Bool = false,
-                 showApplePayForUnsupportedDevice: Bool = true,
-                 checkProvidedNetworks: Bool = true,
-                 shippingOptions: ShippingOptions? = nil) {
+    public init(merchantIdentifier: String,
+                merchantName: String?,
+                isCaptureBillingAddressEnabled: Bool = false,
+                showApplePayForUnsupportedDevice: Bool = true,
+                checkProvidedNetworks: Bool = true,
+                shippingOptions: ShippingOptions? = nil,
+                billingOptions: BillingOptions? = nil) {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
-        self.shippingOptions = shippingOptions
         self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
         self.checkProvidedNetworks = checkProvidedNetworks
+        self.shippingOptions = shippingOptions
+        self.billingOptions = billingOptions
     }
 
-    internal struct ShippingOptions: Codable {
-        let isCaptureShippingAddressEnabled: Bool
-        let additionalShippingContactFields: [AdditionalShippingContactField]?
-        let requireShippingMethod: Bool
+    public struct ShippingOptions: Codable {
+        public let shippingContactFields: [RequiredContactField]?
+        public let requireShippingMethod: Bool
 
-        public init(isCaptureShippingAddressEnabled: Bool,
-                    additionalShippingContactFields: [AdditionalShippingContactField]? = nil,
+        public init(shippingContactFields: [RequiredContactField]? = nil,
                     requireShippingMethod: Bool) {
-            self.isCaptureShippingAddressEnabled = isCaptureShippingAddressEnabled
-            self.additionalShippingContactFields = additionalShippingContactFields
+            self.shippingContactFields = shippingContactFields
             self.requireShippingMethod = requireShippingMethod
         }
+    }
 
-// swiftlint:disable:next nesting
-        internal enum AdditionalShippingContactField: Codable {
-            case name, emailAddress, phoneNumber
+    public struct BillingOptions: Codable {
+        public let requiredBillingContactFields: [RequiredContactField]?
+
+        public init(requiredBillingContactFields: [RequiredContactField]? = nil) {
+            self.requiredBillingContactFields = requiredBillingContactFields
         }
+    }
+
+    public enum RequiredContactField: Codable {
+        case name, emailAddress, phoneNumber, postalAddress
     }
 }
 
