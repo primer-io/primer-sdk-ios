@@ -566,6 +566,79 @@
                                                             </switch>
                                                         </subviews>
                                                     </stackView>
+                                                    <stackView hidden="YES" opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="bFz-Ec-13T" userLabel="Billing Controls">
+                                                        <rect key="frame" x="0.0" y="881.5" width="374" height="14"/>
+                                                        <subviews>
+                                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="14" translatesAutoresizingMaskIntoConstraints="NO" id="FGu-TL-mhN" userLabel="Additional Contact Fields">
+                                                                <rect key="frame" x="0.0" y="0.0" width="374" height="14"/>
+                                                                <subviews>
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="additionalBillingContactFields" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lz8-dy-QzY" userLabel="ApplePay gather Shipping">
+                                                                        <rect key="frame" x="0.0" y="0.0" width="374" height="0.0"/>
+                                                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                                        <nil key="textColor"/>
+                                                                        <nil key="highlightedColor"/>
+                                                                    </label>
+                                                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="fdb-Wu-BHy" userLabel="Additional Contact Fields">
+                                                                        <rect key="frame" x="0.0" y="14" width="374" height="0.0"/>
+                                                                        <subviews>
+                                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="name" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JcT-1V-7wc" userLabel="ApplePay gather Shipping">
+                                                                                <rect key="frame" x="0.0" y="0.0" width="40.5" height="0.0"/>
+                                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                                                <nil key="textColor"/>
+                                                                                <nil key="highlightedColor"/>
+                                                                            </label>
+                                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zKa-Ld-hDj">
+                                                                                <rect key="frame" x="47.5" y="0.0" width="43" height="0.0"/>
+                                                                                <connections>
+                                                                                    <action selector="applePayBillingContactNameSwitchChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="yjR-DC-0WJ"/>
+                                                                                    <action selector="applePayShippingContactNameSwitchChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="hct-3P-BKL"/>
+                                                                                </connections>
+                                                                            </switch>
+                                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="email" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q4Z-1N-2kh" userLabel="ApplePay gather Shipping">
+                                                                                <rect key="frame" x="95.5" y="0.0" width="40.5" height="0.0"/>
+                                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                                                <nil key="textColor"/>
+                                                                                <nil key="highlightedColor"/>
+                                                                            </label>
+                                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lJp-fS-mb0">
+                                                                                <rect key="frame" x="143" y="0.0" width="42.5" height="0.0"/>
+                                                                                <connections>
+                                                                                    <action selector="applePayBillingContactEmailField:" destination="jAd-Lg-hf8" eventType="valueChanged" id="axT-6d-Bva"/>
+                                                                                    <action selector="applePayShippingContactEmailField:" destination="jAd-Lg-hf8" eventType="valueChanged" id="2Ak-3c-qOl"/>
+                                                                                </connections>
+                                                                            </switch>
+                                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="phone" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mXt-tr-O99" userLabel="ApplePay gather Shipping">
+                                                                                <rect key="frame" x="190.5" y="0.0" width="40.5" height="0.0"/>
+                                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                                                <nil key="textColor"/>
+                                                                                <nil key="highlightedColor"/>
+                                                                            </label>
+                                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vZd-0N-edZ">
+                                                                                <rect key="frame" x="238" y="0.0" width="43" height="0.0"/>
+                                                                                <connections>
+                                                                                    <action selector="applePayBillingContactPhoneSwitchChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="S3K-6a-kuz"/>
+                                                                                    <action selector="applePayShippingContactPhoneSwitchChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="aBr-S6-Po8"/>
+                                                                                </connections>
+                                                                            </switch>
+                                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="postalAddress" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J3g-Vp-w52" userLabel="ApplePay gather Shipping">
+                                                                                <rect key="frame" x="286" y="0.0" width="40.5" height="0.0"/>
+                                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                                                <nil key="textColor"/>
+                                                                                <nil key="highlightedColor"/>
+                                                                            </label>
+                                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="w5P-gq-YQ5">
+                                                                                <rect key="frame" x="333.5" y="0.0" width="42.5" height="0.0"/>
+                                                                                <connections>
+                                                                                    <action selector="applePayBillingContactPostalAddressSwitchChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="Cyi-lH-3m3"/>
+                                                                                    <action selector="applePayShippingContactPhoneSwitchChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="P1X-R7-s3I"/>
+                                                                                </connections>
+                                                                            </switch>
+                                                                        </subviews>
+                                                                    </stackView>
+                                                                </subviews>
+                                                            </stackView>
+                                                        </subviews>
+                                                    </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="EqY-FO-mDr" userLabel="Shipping">
                                                         <rect key="frame" x="0.0" y="891.5" width="374" height="31"/>
                                                         <subviews>
@@ -584,7 +657,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView hidden="YES" opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="hmd-vB-Ft9" userLabel="Shipping Controls">
-                                                        <rect key="frame" x="0.0" y="858.5" width="374" height="34"/>
+                                                        <rect key="frame" x="0.0" y="932.5" width="374" height="34"/>
                                                         <subviews>
                                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="RIG-jm-T50" userLabel="Shipping Address">
                                                                 <rect key="frame" x="0.0" y="0.0" width="374" height="0.0"/>
@@ -1309,11 +1382,11 @@
                     <connections>
                         <outlet property="apiKeyStackView" destination="5Iy-N2-Dxd" id="hDA-fC-xDY"/>
                         <outlet property="apiKeyTextField" destination="h7R-0M-MoV" id="Rm3-rF-AlL"/>
-                        <outlet property="applePayBillingContactEmailSwitch" destination="lJp-fS-mb0" id="4GR-RN-7Mg"/>
-                        <outlet property="applePayBillingContactNameSwitch" destination="zKa-Ld-hDj" id="Ydr-2B-RsR"/>
-                        <outlet property="applePayBillingContactPhoneSwitch" destination="vZd-0N-edZ" id="qHd-nI-crm"/>
-                        <outlet property="applePayBillingContactPostalAddressSwitch" destination="w5P-gq-YQ5" id="dwz-N5-GCK"/>
-                        <outlet property="applePayBillingControlStackView" destination="bFz-Ec-13T" id="yKC-HD-npD"/>
+                        <outlet property="applePayBillingContactEmailSwitch" destination="lJp-fS-mb0" id="Vb2-8c-2Zs"/>
+                        <outlet property="applePayBillingContactNameSwitch" destination="zKa-Ld-hDj" id="fUn-1r-tfc"/>
+                        <outlet property="applePayBillingContactPhoneSwitch" destination="vZd-0N-edZ" id="XZs-z2-jRp"/>
+                        <outlet property="applePayBillingContactPostalAddressSwitch" destination="w5P-gq-YQ5" id="4tW-kH-WJg"/>
+                        <outlet property="applePayBillingControlStackView" destination="bFz-Ec-13T" id="aj9-8P-imf"/>
                         <outlet property="applePayCaptureBillingAddressSwitch" destination="Ftc-Xf-i2J" id="IxV-lb-PXc"/>
                         <outlet property="applePayCheckProvidedNetworksSwitch" destination="u8R-R4-Vq6" id="vNj-FI-1KA"/>
                         <outlet property="applePayRequireShippingMethodSwitch" destination="a2D-rC-q6f" id="7E5-00-yn4"/>
@@ -1904,13 +1977,13 @@
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="placeholderTextColor">
-            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.29803921570000003" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.29803921568627451" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
