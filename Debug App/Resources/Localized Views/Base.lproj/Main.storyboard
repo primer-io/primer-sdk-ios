@@ -440,6 +440,7 @@
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="w1G-D9-qpn" userLabel="Disable Success Screen Stack View">
                                                         <rect key="frame" x="0.0" y="332.5" width="374" height="31"/>
+                                                    </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="w1G-D9-qpn" userLabel="Disable Success Screen Stack View">
                                                         <rect key="frame" x="0.0" y="270.5" width="374" height="31"/>
                                                         <subviews>
