@@ -9,7 +9,9 @@ import Foundation
 @testable import PrimerSDK
 
 class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
-    func completePayment(clientToken: PrimerSDK.DecodedJWTToken, completeUrl: URL) -> PrimerSDK.Promise<Void> {
+    func completePayment(clientToken: PrimerSDK.DecodedJWTToken,
+                         completeUrl: URL,
+                         body: Request.Body.Payment.Complete) -> PrimerSDK.Promise<Void> {
         Promise { seal in
             seal.fulfill()
         }

@@ -241,7 +241,8 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         }
         
         let _ = createResumeService.completePayment(clientToken: clientToken,
-                                            completeUrl: URL(string: "https://example.com")!
+                                                    completeUrl: URL(string: "https://example.com")!,
+                                                    body: StripeAchTokenizationViewModel.defaultCompleteBodyWithTimestamp
         ).done {
             expectation.fulfill()
         }
