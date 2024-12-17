@@ -9,7 +9,9 @@ import Foundation
 
 internal protocol CreateResumePaymentServiceProtocol {
     func createPayment(paymentRequest: Request.Body.Payment.Create) -> Promise<Response.Body.Payment>
-    func completePayment(clientToken: DecodedJWTToken, completeUrl: URL) -> Promise<Void>
+    func completePayment(clientToken: DecodedJWTToken,
+                         completeUrl: URL,
+                         body: Request.Body.Payment.Complete) -> Promise<Void>
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) -> Promise<Response.Body.Payment>
 }
 
@@ -112,13 +114,13 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
      * - Returns: A `Promise<Void>` that resolves if the payment is completed successfully, or rejects if there is
      *            an error during the API call.
      */
-    func completePayment(clientToken: DecodedJWTToken, completeUrl: URL) -> Promise<Void> {
+    func completePayment(clientToken: DecodedJWTToken,
+                         completeUrl: URL,
+                         body: Request.Body.Payment.Complete) -> Promise<Void> {
         return Promise { seal in
-            let timeZone = TimeZone(abbreviation: "UTC")
-            let timeStamp = Date().toString(timeZone: timeZone)
-
-            let body = Request.Body.Payment.Complete(mandateSignatureTimestamp: timeStamp)
-            self.apiClient.completePayment(clientToken: clientToken, url: completeUrl, paymentRequest: body) { result in
+            self.apiClient.completePayment(clientToken: clientToken,
+                                           url: completeUrl,
+                                           paymentRequest: body) { result in
                 switch result {
                 case .success:
                     seal.fulfill()

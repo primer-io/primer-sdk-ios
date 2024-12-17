@@ -515,7 +515,9 @@ extension PrimerHeadlessUniversalCheckout {
                         }
 
                         firstly {
-                            self.createResumePaymentService.completePayment(clientToken: decodedJWTToken, completeUrl: sdkCompleteUrl)
+                            self.createResumePaymentService.completePayment(clientToken: decodedJWTToken,
+                                                                            completeUrl: sdkCompleteUrl,
+                                                                            body: StripeAchTokenizationViewModel.defaultCompleteBodyWithTimestamp)
                         }
                         .done {
                             seal.fulfill(nil)

@@ -473,7 +473,9 @@ Make sure you call the decision handler otherwise the SDK will hang.
                     }
 
                     firstly {
-                        self.createResumePaymentService.completePayment(clientToken: decodedJWTToken, completeUrl: sdkCompleteUrl)
+                        self.createResumePaymentService.completePayment(clientToken: decodedJWTToken,
+                                                                        completeUrl: sdkCompleteUrl,
+                                                                        body: StripeAchTokenizationViewModel.defaultCompleteBodyWithTimestamp)
                     }
                     .done {
                         seal.fulfill(nil)

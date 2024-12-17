@@ -165,7 +165,9 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return self.awaitUserInput()
             }
             .then { () -> Promise<Void> in
-                return self.createResumePaymentService.completePayment(clientToken: decodedJWTToken, completeUrl: sdkCompleteUrl)
+                return self.createResumePaymentService.completePayment(clientToken: decodedJWTToken,
+                                                                       completeUrl: sdkCompleteUrl,
+                                                                       body: StripeAchTokenizationViewModel.defaultCompleteBodyWithTimestamp)
             }
             .done {
                 seal.fulfill(nil)
@@ -394,6 +396,13 @@ extension StripeAchTokenizationViewModel: ACHUserDetailsDelegate {
                 }
             }
         }
+    }
+
+    static var defaultCompleteBodyWithTimestamp: Request.Body.Payment.Complete {
+        let timeZone = TimeZone(abbreviation: "UTC")
+        let timeStamp = Date().toString(timeZone: timeZone)
+
+        return Request.Body.Payment.Complete(mandateSignatureTimestamp: timeStamp)
     }
 }
 
