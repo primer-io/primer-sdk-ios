@@ -28,6 +28,7 @@ public enum ImageName: String {
         lock,
         rightArrow,
         bank,
+        achBank,
         camera,
         error,
         klarna,

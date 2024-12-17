@@ -74,7 +74,9 @@ class Mocks {
         productId: nil,
         paymentMethodConfigId: nil,
         paymentMethodType: nil,
-        sessionInfo: nil)
+        sessionInfo: nil,
+        bankName: nil,
+        accountNumberLastFourDigits: nil)
 
     static var payment = Response.Body.Payment(
         id: "mock_id",

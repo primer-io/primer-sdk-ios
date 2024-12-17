@@ -61,6 +61,8 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
             .done { checkoutData in
                 if let checkoutData = checkoutData {
                     PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+                } else if let checkoutData = self.paymentCheckoutData {
+                    PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
                 }
 
                 self.handleSuccessfulFlow()
@@ -461,7 +463,34 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
     private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         return Promise { seal in
-            if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
+
+            if decodedJWTToken.intent?.contains("STRIPE_ACH") == true {
+                if let sdkCompleteUrlString = decodedJWTToken.sdkCompleteUrl,
+                   let sdkCompleteUrl = URL(string: sdkCompleteUrlString) {
+
+                    DispatchQueue.main.async {
+                        PrimerUIManager.primerRootViewController?.enableUserInteraction(true)
+                    }
+
+                    firstly {
+                        self.createResumePaymentService.completePayment(clientToken: decodedJWTToken,
+                                                                        completeUrl: sdkCompleteUrl,
+                                                                        body: StripeAchTokenizationViewModel.defaultCompleteBodyWithTimestamp)
+                    }
+                    .done {
+                        seal.fulfill(nil)
+                    }
+                    .catch { err in
+                        seal.reject(err)
+                    }
+
+                } else {
+                    let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                             diagnosticsId: UUID().uuidString)
+                    ErrorHandler.handle(error: err)
+                    seal.reject(err)
+                }
+            } else if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
 
                 let threeDSService = ThreeDSService()
                 threeDSService.perform3DS(
@@ -495,9 +524,14 @@ Make sure you call the decision handler otherwise the SDK will hang.
     }
 
     func handleSuccessfulFlow() {
-        let categories = self.config.paymentMethodManagerCategories
-        PrimerUIManager.dismissOrShowResultScreen(type: .success,
-                                                  paymentMethodManagerCategories: categories ?? [])
+        if let paymentMethodType = config.internalPaymentMethodType,
+              paymentMethodType == .stripeAch {
+            PrimerUIManager.showResultScreen(for: paymentMethodType, error: nil)
+        } else {
+            let categories = self.config.paymentMethodManagerCategories
+            PrimerUIManager.dismissOrShowResultScreen(type: .success,
+                                                      paymentMethodManagerCategories: categories ?? [])
+        }
     }
 
     func handleFailureFlow(errorMessage: String?) {

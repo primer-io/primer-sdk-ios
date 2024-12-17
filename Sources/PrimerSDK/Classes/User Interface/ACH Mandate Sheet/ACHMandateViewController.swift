@@ -30,7 +30,7 @@ class ACHMandateViewController: PrimerViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .white
+        view.backgroundColor = PrimerColors.white
         addMandateView()
     }
 

@@ -68,5 +68,6 @@ struct PrimerResultPaymentStatusView: View {
             }
         }
         .padding(.horizontal)
+        .background(PrimerColors.swiftColor(PrimerColors.white))
     }
 }

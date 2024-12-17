@@ -312,6 +312,7 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
         print("\n\nMERCHANT APP\n\(#function)\nerror: \(err)\ncheckoutData: \(String(describing: checkoutData))")
         self.logs.append(#function)
         self.primerError = err
+        self.checkoutData = checkoutData
         self.hideLoadingOverlay()
 
         if let lastViewController = navigationController?.children.last {
