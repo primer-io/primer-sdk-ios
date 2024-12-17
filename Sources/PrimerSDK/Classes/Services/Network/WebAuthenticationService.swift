@@ -52,7 +52,7 @@ extension DefaultWebAuthenticationService: ASWebAuthenticationPresentationContex
 
 }
 
-fileprivate extension UIApplication {
+extension UIApplication {
     var windows: [UIWindow] {
         let windowScene = self.connectedScenes.compactMap { $0 as? UIWindowScene }.first
         guard let windows = windowScene?.windows else {
