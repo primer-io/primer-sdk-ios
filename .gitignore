@@ -89,3 +89,13 @@ fastlane/report.xml
 Debug App/Pods
 Debug App/Podfile.lock
 Debug App/secrets.defaults.properties
+
+# Alternative editors
+# Neovim
+.nvim
+buildserver.json
+.avanterules
+
+# Cursor/VSCode
+launch.json
+.cursorrules
