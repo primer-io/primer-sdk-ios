@@ -104,7 +104,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
                                                                                                                  paymentMethodType: nil,
                                                                                                                  sessionInfo: nil,
                                                                                                                  bankName: nil,
-                                                                                                                 accountNumberLastFourDigits: nil),
+                                                                                                                 accountNumberLast4Digits: nil),
                                          threeDSecureAuthentication: nil,
                                          token: "anything",
                                          tokenType: .multiUse,
@@ -305,7 +305,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
                                                                                                                  paymentMethodType: nil,
                                                                                                                  sessionInfo: nil,
                                                                                                                  bankName: nil,
-                                                                                                                 accountNumberLastFourDigits: nil),
+                                                                                                                 accountNumberLast4Digits: nil),
                                          threeDSecureAuthentication: nil,
                                          token: "anything",
                                          tokenType: .multiUse,
@@ -395,7 +395,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
                     paymentMethodType: nil,
                     sessionInfo: nil,
                     bankName: nil,
-                    accountNumberLastFourDigits: nil),
+                    accountNumberLast4Digits: nil),
                 analyticsId: "analytics-id")
         ]
 
@@ -474,7 +474,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
                     paymentMethodType: nil,
                     sessionInfo: nil,
                     bankName: nil,
-                    accountNumberLastFourDigits: nil),
+                    accountNumberLast4Digits: nil),
                 analyticsId: "analytics-id")
         ]
 
@@ -515,7 +515,7 @@ final class HeadlessVaultManagerTests: XCTestCase {
                     paymentMethodType: nil,
                     sessionInfo: nil,
                     bankName: nil,
-                    accountNumberLastFourDigits: nil),
+                    accountNumberLast4Digits: nil),
                 analyticsId: "analytics-id")
         ]
 
