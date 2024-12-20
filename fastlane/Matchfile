@@ -1,5 +1,5 @@
-git_url("git@github.com:primer-io/ios_sdk_match_repo.git")
-# git_url("https://github.com/primer-io/ios_sdk_match_repo.git")
+git_url("git@gitlab.com:primer-io/acceptance/mobile/ios-sdk-match-repo.git")
+git_branch("nq/update-ios-certificates") # When updating, we must do it on a branch
 
 storage_mode("git")
 
@@ -7,6 +7,7 @@ type("development") # The default type, can be: appstore, adhoc, enterprise or d
 
 app_identifier("com.primerapi.PrimerSDKExample")
 username("security@primerapi.com") # Your Apple Developer Portal username
+# api_key_path("./JM91JR5L1QGH.json")
 
 platform("ios")
 shallow_clone true
