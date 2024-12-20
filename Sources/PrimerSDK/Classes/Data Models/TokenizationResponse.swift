@@ -163,7 +163,7 @@ extension Response.Body.Tokenization {
             public let redirectionUrl: String?
         }
 
-        //swiftlint:disable:next identifier_name
+        // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case paypalBillingAgreementId
             case first6Digits
@@ -181,6 +181,7 @@ extension Response.Body.Tokenization {
             case threeDSecureAuthentication
             case gocardlessMandateId
             case authorizationToken
+// swiftlint:disable:next identifier_name
             case mx
             case currencyCode
             case productId
