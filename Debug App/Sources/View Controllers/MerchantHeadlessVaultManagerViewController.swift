@@ -345,8 +345,11 @@ class MerchantVaultedPaymentMethodCell: UITableViewCell {
                 self.paymentMethodLabel.text = "Failed to find logo for \(paymentMethod.paymentMethodType)"
             }
 
-            paymentMethodLabel.text = "Pay with \(paymentMethodAsset.paymentMethodName) "
-
+            if paymentMethod.paymentMethodType == "STRIPE_ACH" {
+                paymentMethodLabel.text = "Pay with ACH \(paymentMethod.paymentInstrumentData.bankName ?? "-") **** \(paymentMethod.paymentInstrumentData.accountNumberLast4Digits ?? "-")"
+            } else {
+                paymentMethodLabel.text = "Pay with \(paymentMethodAsset.paymentMethodName) "
+            }
         } else {
             self.paymentMethodLogoView.isHidden = true
             self.paymentMethodLabel.isHidden = false
