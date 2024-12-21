@@ -1,3 +1,9 @@
+## 2.33.1 (2024-12-21)
+
+### Fix
+
+- Align accountNumberLast4Digits with Android (#1066)
+
 ## 2.33.0 (2024-12-17)
 
 ### Feat
