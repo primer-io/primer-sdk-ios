@@ -11,6 +11,9 @@ import Foundation
 
 enum PrimerAPI: Endpoint, Equatable {
 
+    // MARK: - Single API version variable for easier updates
+    private static let apiVersion = "2.4"
+
     static func == (lhs: PrimerAPI, rhs: PrimerAPI) -> Bool {
         switch (lhs, rhs) {
         case (.exchangePaymentMethodToken, .exchangePaymentMethodToken),
@@ -78,7 +81,6 @@ enum PrimerAPI: Endpoint, Equatable {
     case validateClientToken(request: Request.Body.ClientTokenValidation)
 
     // Create - Resume Payment
-
     case createPayment(clientToken: DecodedJWTToken, paymentRequest: Request.Body.Payment.Create)
     case resumePayment(clientToken: DecodedJWTToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume)
 
@@ -88,14 +90,14 @@ enum PrimerAPI: Endpoint, Equatable {
     case listCardNetworks(clientToken: DecodedJWTToken, bin: String)
     case getNolSdkSecret(clientToken: DecodedJWTToken, request: Request.Body.NolPay.NolPaySecretDataRequest)
     case getPhoneMetadata(clientToken: DecodedJWTToken, request: Request.Body.PhoneMetadata.PhoneMetadataDataRequest)
-    
+
     // ACH - Complete Payment
     case completePayment(clientToken: DecodedJWTToken, url: URL, paymentRequest: Request.Body.Payment.Complete)
 }
 
 internal extension PrimerAPI {
 
-    // MARK: Headers
+    // MARK: - Headers
 
     static let headers: [String: String] = [
         "Content-Type": "application/json",
@@ -165,69 +167,56 @@ internal extension PrimerAPI {
             tmpHeaders["Primer-Client-Token"] = clientToken.accessToken
         }
 
+        // Switch statement for setting the X-Api-Version from our single variable
         switch self {
         case .exchangePaymentMethodToken:
-            tmpHeaders["X-Api-Version"] = "2.2"
+            tmpHeaders["X-Api-Version"] = Self.apiVersion
         case .fetchConfiguration:
-            tmpHeaders["X-Api-Version"] = "2.3"
+            tmpHeaders["X-Api-Version"] = Self.apiVersion
         case .fetchVaultedPaymentMethods:
-            tmpHeaders["X-Api-Version"] = "2.2"
+            tmpHeaders["X-Api-Version"] = Self.apiVersion
         case .deleteVaultedPaymentMethod:
-            tmpHeaders["X-Api-Version"] = "2.2"
-        case .createPayPalOrderSession:
-            break
-        case .createPayPalBillingAgreementSession:
-            break
-        case .confirmPayPalBillingAgreement:
-            break
-        case .createKlarnaPaymentSession:
-            break
-        case .createKlarnaCustomerToken:
-            break
-        case .finalizeKlarnaPaymentSession:
-            break
+            tmpHeaders["X-Api-Version"] = Self.apiVersion
         case .tokenizePaymentMethod:
-            tmpHeaders["X-Api-Version"] = "2.2"
-        case .listAdyenBanks:
-            break
-        case .listRetailOutlets:
-            break
+            tmpHeaders["X-Api-Version"] = Self.apiVersion
         case .requestPrimerConfigurationWithActions:
-            tmpHeaders["X-Api-Version"] = "2.3"
-        case .begin3DSRemoteAuth:
-            tmpHeaders["X-Api-Version"] = "2.1"
-        case .continue3DSRemoteAuth:
-            tmpHeaders["X-Api-Version"] = "2.1"
-        case .poll:
-            break
-        case .sendAnalyticsEvents:
-            break
-        case .fetchPayPalExternalPayerInfo:
-            break
+            tmpHeaders["X-Api-Version"] = Self.apiVersion
         case .validateClientToken:
-            tmpHeaders["X-Api-Version"] = "2.2"
+            tmpHeaders["X-Api-Version"] = Self.apiVersion
         case .createPayment:
-            tmpHeaders["X-Api-Version"] = "2.2"
+            tmpHeaders["X-Api-Version"] = Self.apiVersion
         case .resumePayment:
-            tmpHeaders["X-Api-Version"] = "2.2"
-        case .testFinalizePolling:
-            break
+            tmpHeaders["X-Api-Version"] = Self.apiVersion
         case .listCardNetworks:
-            tmpHeaders["X-Api-Version"] = "2.2"
-        case .getNolSdkSecret:
-            break
-        case .redirect:
-            break
-        case .getPhoneMetadata:
-            break
-        case .completePayment:
+            tmpHeaders["X-Api-Version"] = Self.apiVersion
+        case .begin3DSRemoteAuth:
+            tmpHeaders["X-Api-Version"] = Self.apiVersion
+        case .continue3DSRemoteAuth:
+            tmpHeaders["X-Api-Version"] = Self.apiVersion
+        case .createPayPalOrderSession,
+             .createPayPalBillingAgreementSession,
+             .confirmPayPalBillingAgreement,
+             .createKlarnaPaymentSession,
+             .createKlarnaCustomerToken,
+             .finalizeKlarnaPaymentSession,
+             .listAdyenBanks,
+             .listRetailOutlets,
+             .poll,
+             .sendAnalyticsEvents,
+             .fetchPayPalExternalPayerInfo,
+             .testFinalizePolling,
+             .getNolSdkSecret,
+             .redirect,
+             .getPhoneMetadata,
+             .completePayment:
             break
         }
 
         return tmpHeaders
     }
 
-    // MARK: Base URL
+    // MARK: - Base URL
+
     var baseURL: String? {
         switch self {
         case .createPayPalOrderSession(let clientToken, _),
@@ -273,7 +262,8 @@ internal extension PrimerAPI {
             return url.absoluteString
         }
     }
-    // MARK: Path
+
+    // MARK: - Path
 
     var path: String {
         switch self {
@@ -334,14 +324,13 @@ internal extension PrimerAPI {
         }
     }
 
-    // MARK: Port
-    // (not needed atm since port is included in the base URL provided by the access token)
+    // MARK: - Port (not needed)
 
     var port: Int? {
         return nil
     }
 
-    // MARK: HTTP Method
+    // MARK: - HTTP Method
 
     var method: HTTPMethod {
         switch self {
@@ -380,7 +369,7 @@ internal extension PrimerAPI {
         }
     }
 
-    // MARK: Query Parameters
+    // MARK: - Query Parameters
 
     var queryParameters: [String: String]? {
         switch self {
@@ -391,7 +380,7 @@ internal extension PrimerAPI {
         }
     }
 
-    // MARK: HTTP Body
+    // MARK: - HTTP Body
 
     var body: Data? {
         switch self {
@@ -452,7 +441,7 @@ internal extension PrimerAPI {
         }
     }
 
-    // MARK: Should Return Response Body
+    // MARK: - Should Return Response Body
 
     var shouldParseResponseBody: Bool {
         switch self {
@@ -464,7 +453,7 @@ internal extension PrimerAPI {
         }
     }
 
-    // MARK: Timeout
+    // MARK: - Timeout
 
     var timeout: TimeInterval? {
         switch self {
@@ -475,7 +464,7 @@ internal extension PrimerAPI {
         }
     }
 
-    // MARK: Helpers
+    // MARK: - Helpers
 
     var configuration: PrimerAPIConfiguration? {
         PrimerAPIConfiguration.current
