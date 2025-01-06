@@ -1,1 +1,307 @@
--n
+/* An error message displayed when the Address line 1 is not correct */
+"addressLine1ErrorInvalid" = "Baris 1 Alamat Tidak Valid";
+
+/* State, Region or County is required - Form Validation */
+"addressLine1ErrorRequired" = "Baris alamat 1 wajib diisi";
+
+/* The billing address Address line 1 container view label */
+"addressLine1Label" = "Baris 1 Alamat";
+
+/* Form Text Field Placeholder (Address line 1) */
+"addressLine1Placeholder" = "Baris 1 Alamat";
+
+/* An error message displayed when the Address line 2 is not correct */
+"addressLine2ErrorInvalid" = "Baris 2 Alamat Tidak Valid";
+
+/* State, Region or County is required - Form Validation */
+"addressLine2ErrorRequired" = "Baris alamat 2 wajib diisi";
+
+/* The billing address Address line 2 container view label */
+"addressLine2Label" = "Baris 2 Alamat";
+
+/* Form Text Field Placeholder (Address line 2) */
+"addressLine2Placeholder" = "Baris 2 Alamat";
+
+/* An error message displayed when the city field is not correct */
+"cardholderErrorInvalid" = "Nama Pemilik Kartu Tidak Valid";
+
+/* Choose your bank - Choose your bank title label */
+"choose-your-bank-title-label" = "Pilih bank Anda";
+
+/* An error message displayed when the city field is not correct */
+"cityErrorInvalid" = "Kota tidak valid";
+
+/* City is required - Form Validation */
+"cityErrorRequired" = "Kota wajib diisi";
+
+/* The billing address city container view label */
+"cityLabel" = "Kota";
+
+/* Form Text Field Placeholder (Address city) */
+"cityPlaceholder" = "Cape Town";
+
+/* Complete your payment - Account info payment title label */
+"completeYourPayment" = "Lengkapi pembayaran Anda";
+
+/* Continue */
+"continue" = "Lanjutkan";
+
+/* An error message displayed when the Country is not correct */
+"countryCodeErrorInvalid" = "Negara Tidak Valid";
+
+/* Country is required - Form Validation */
+"countryCodeErrorRequired" = "Negara harus diisi";
+
+/* The billing address Country code container view label */
+"countryCodeLabel" = "Kode negara";
+
+/* Form Text Field Placeholder (Country code) */
+"countryCodePlaceholder" = "Kode negara";
+
+/* Select a country - Choose your country title label */
+"countrySelectPlaceholder" = "Pilih negara";
+
+/* The prefix copy we put before the expiration date */
+"dueAt" = "Jatuh tempo pada";
+
+/* An error message displayed when the First Name is not correct */
+"firstNameErrorInvalid" = "Nama Depan Tidak Valid";
+
+/* First name is required - Form Validation */
+"firstNameErrorRequired" = "Nama depan harus diisi";
+
+/* The billing address First name container view label */
+"firstNameLabel" = "Nama depan";
+
+/* Form Text Field Placeholder (First name) */
+"firstNamePlaceholder" = "Nama depan";
+
+"form_error_card_holder_name_length" = "Nama harus terdiri dari antara 2 hingga 45 karakter";
+
+"form_error_card_type_not_supported" = "Jenis kartu tidak didukung";
+
+/* Get the code from your banking app - Blik descriptor */
+"input_description_otp" = "Dapatkan kode dari aplikasi perbankan Anda.";
+
+/* 6 digit code - Text field top placeholder */
+"input_hint_form_blik_otp" = "Kode 6 digit";
+
+/* An error message displayed when the Last Name is not correct */
+"lastNameErrorInvalid" = "Nama Belakang Tidak Valid";
+
+/* Last name is required - Form Validation */
+"lastNameErrorRequired" = "Nama belakang harus diisi";
+
+/* The billing address Last name container view label */
+"lastNameLabel" = "Nama belakang";
+
+/* Form Text Field Placeholder (Last name) */
+"lastNamePlaceholder" = "Nama belakang";
+
+/* No additional fee - Universal Checkout section text */
+"no_additional_fee" = "Tanpa biaya tambahan";
+
+/* Enter your one time password - Text field placeholder */
+"payment_method_blik_loading_placeholder" = "Selesaikan pembayaran Anda dalam aplikasi Blik";
+
+/* Pay with card - Payment Method Type (Card Not Vaulted */
+"payment-method-type-card-not-vaulted" = "Bayar dengan kartu";
+
+/* The message copy that tells the user how to transfer funds given a displayed account code */
+"pleaseTransferFunds" = "Harap transfer dana ke rekening bank DBS yang disediakan menggunakan rekening bank berkantor pusat di Singapura Anda dengan FAST (lebih disukai), MEPS, atau GIRO,";
+
+/* An error message displayed when the postal code field is not correct */
+"postalCodeErrorInvalid" = "Kode Pos Tidak Valid";
+
+/* Postal code is required - Form Validation */
+"postalCodeErrorRequired" = "Kode pos wajib diisi";
+
+/* The billing address postal code container view label */
+"postalCodeLabel" = "Kode pos";
+
+/* Form Text Field Placeholder (Address postal code) */
+"postalCodePlaceholder" = "90210";
+
+/* Cancel - Alert button cancel */
+"primer-alert-button-cancel" = "Batal";
+
+/* Delete - Alert button delete */
+"primer-alert-button-delete" = "Hapus";
+
+/* The title of the primer 'pay in installments' button */
+"primer-button-title-pay-in-installments" = "Bayar dengan cicilan";
+
+/* 12/24 - Card Form (Expiry text field placeholder text) */
+"primer-card-form-12-24" = "12/24";
+
+/* Add card - Card Form (Vault title text) */
+"primer-card-form-add-card" = "Tambahkan kartu";
+
+/* Checkout - Card Form (Checkout Title Text) */
+"primer-card-form-checkout" = "Pembayaran";
+
+/* CVV - Card Form (CVV Text Field placeholder text) */
+"primer-card-form-cvv" = "CVV";
+
+/* Cardholder name */
+"primer-card-form-name" = "Nama";
+
+/* Pay - Card Form (Checkout submit button text) */
+"primer-card-form-pay" = "Bayar";
+
+/* Save - Card Form (Vault submit button text) */
+"primer-card-form-save" = "Simpan";
+
+/* Choose payment method - Vault Navigation Bar Title */
+"primer-checkout-nav-bar-title" = "Pilih metode pembayaran";
+
+/* Add Bank Account - Confirm Mandate (Top title text_ */
+"primer-confirm-mandate-add-bank-account" = "Tambahkan Rekening Bank";
+
+/* Confirm - Confirm Mandate (Button text) */
+"primer-confirm-mandate-confirm" = "Konfirmasi";
+
+/* Confirm SEPA Direct Debit - Confirm Mandate (Main title text) */
+"primer-confirm-mandate-confirm-sepa-direct-debit" = "Konfirmasi Debit Langsung SEPA";
+
+/* CVV- CVV recapture explanation label */
+"primer-cvv-recapture-explanation" = "Masukkan %d digit kode keamanan pada kartu Anda untuk pembayaran yang aman.";
+
+/* CVV - CVV recapture screen title */
+"primer-cvv-recapture-title" = "Masukkan CVV";
+
+/* Do you want to delete this payment method? - Delete alert title */
+"primer-delete-alert-title" = "Anda ingin menghapus metode pembayaran ini?";
+
+/* Apple pay - Direct Checkout (Apple pay button text) */
+"primer-direct-checkout-apple-pay" = "Apple pay";
+
+/* Pay by card - Direct Checkout (Card button text) */
+"primer-direct-checkout-pay-by-card" = "Bayar dengan kartu";
+
+/* PayPal - Direct Checkout (PayPal button text */
+"primer-direct-checkout-paypal" = "PayPal";
+
+/* An error message displayed when the cvv code is not correct */
+"primer-error-card-form-card-cvv" = "CVV Tidak Valid";
+
+/* An error message displayed when the card expiration date is not correct */
+"primer-error-card-form-card-expiration-date" = "Tanggal Tidak Valid";
+
+/* An error message displayed when the card number is not correct */
+"primer-error-card-form-card-number" = "Nomor Kartu Tidak Valid";
+
+/* A suffix to mark a required field or action being performed */
+"primer-error-is-required-suffix" = "diwajibkan";
+
+/* Something went wrong, please try again. - Error Screen Message */
+"primer-error-screen" = "Terjadi masalah, harap coba lagi.";
+
+/* e.g. John Doe - Form Text Field Placeholder (Cardholder name) */
+"primer-form-text-field-placeholder-cardholder" = "misalnya Agus Budiman";
+
+/* Card number - Form Text Field Title (Card number) */
+"primer-form-text-field-title-card-number" = "Nomor kartu";
+
+/* Expiry date - Form Text Field Title (Expiry date) */
+"primer-form-text-field-title-expiry-date" = "Berlaku sampai";
+
+/* Enter your card details - Form Type Main Title (Card) */
+"primer-form-type-main-title-card-form" = "Masukkan informasi kartu Anda";
+
+/* Card form - Navigation Bar Title */
+"primer-form-type-nav-bar-title" = "Kartu pembayaran";
+
+/* Add Bank Account - IBAN Form (Main title) */
+"primer-iban-form-add-bank-account" = "Tambahkan Rekening Bank";
+
+/* Enter IBAN - IBAN Form (Text field placeholder text */
+"primer-iban-form-enter-iban" = "Masukkan IBAN";
+
+/* Your monthly fee will be automatically deducted from this account, using SEPA Core DirectDebit Mandate - IBAN Form (Subtitle text) */
+"primer-iban-form-monthly-fee-automatically-deducted" = "Biaya bulanan Anda akan otomatis dipotong dari akun ini, menggunakan SEPA Core DirectDebit Mandate";
+
+/* Next - IBAN Form (Button text) */
+"primer-iban-form-next" = "Berikutnya";
+
+/* Use an account number instead - IBAN Form (Switch text) */
+"primer-iban-form-use-account-number-instead" = "Gunakan nomer rekening";
+
+/* Expires - Saved card */
+"primer-saved-card" = "Kedaluwarsa";
+
+/* Manual input - Scanner view (Button text) */
+"primer-scanner-view-manual-input" = "Masukan manual";
+
+/* Scan card - Scanner view (Title text) */
+"primer-scanner-view-scan-card" = "Pindai kartu";
+
+/* Scan the front of your card - Scanner view (Description text) */
+"primer-scanner-view-scan-front-card" = "Pindai bagian depan kartu Anda";
+
+/* The title of the header for the flow decision view */
+"primer-test-header-description" = "Ini aliran yang disimulasikan untuk sandbox. Pilih hasil Anda ingin uji dari daftar di bawah ini.";
+
+/* The title of the mocked declined flow for a Test Payment Method */
+"primer-test-payment-method-decline-flow-title" = "Ditolak";
+
+/* The title of the mocked failed flow for a Test Payment Method */
+"primer-test-payment-method-fail-flow-title" = "Gagal";
+
+/* The title of the mocked successful flow for a Test Payment Method */
+"primer-test-payment-method-success-flow-title" = "Diotorisasikan";
+
+/* SAVED CARD - Vault Checkout Card Title */
+"primer-vault-checkout-payment-method-title" = "METODE PEMBAYARAN YANG DISIMPAN";
+
+/* Add payment method - Checkout Navigation Bar Title */
+"primer-vault-nav-bar-title" = "Tambahkan metode pembayaran";
+
+/* Add new card - Vault Payment Method (Button text) */
+"primer-vault-payment-method-add-new-card" = "Tambahkan kartu baru";
+
+/* Available payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-available-payment-methods" = "Metode pembayaran yang tersedia";
+
+/* Edit - Vault Payment Method (Button text) */
+"primer-vault-payment-method-edit" = "Edit";
+
+/* Saved payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-saved-payment-methods" = "Metode pembayaran yang disimpan";
+
+/* QR Code - QR code screen subtitle label */
+"qrCode" = "Kode QR";
+
+/* Scan to pay or take a screenshot - QR code screen title label */
+"scanToPay" = "Pindai untuk membayar atau mengambil cuplikan layar";
+
+/* Search bank - Search bank textfield placeholder */
+"search-bank-placeholder" = "Cari bank";
+
+/* Search country - Search country textfield placeholder */
+"search-country-placeholder" = "Cari negara";
+
+/* See all - Universal checkout */
+"see-all" = "Lihat semua";
+
+/* "Shipping" label displayed next to the shipping amount, for example: "Shipping $2.50" */
+"shipping" = "Pengiriman";
+
+/* An error message displayed when the State, Region or County field is not correct */
+"stateErrorInvalid" = "Negara Bagian, Wilayah, atau Kabupaten Tidak Valid";
+
+/* State, Region or County is required - Form Validation */
+"stateErrorRequired" = "Provinsi harus diisi";
+
+/* The billing address state container view label */
+"stateLabel" = "Provinsi";
+
+/* Form Text Field Placeholder (Address State / Region / County) */
+"statePlaceholder" = "Provinsi";
+
+/* Additional fee may apply - Surcharge (Label) */
+"surcharge-additional-fee" = "Dapat berlaku biaya tambahan";
+
+/* Upload the screenshot in your banking app. - QR code screen subtitle label */
+"uploadScreenshot" = "Unggah cuplikan layar di aplikasi perbankan Anda";
+
