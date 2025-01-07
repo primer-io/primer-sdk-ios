@@ -1,1 +1,353 @@
--n
+/* An error message displayed when the Address line 1 is not correct */
+"addressLine1ErrorInvalid" = "Invalid Address Line 1";
+
+/* State, Region or County is required - Form Validation */
+"addressLine1ErrorRequired" = "La línea 1 de dirección es obligatoria";
+
+/* The billing address Address line 1 container view label */
+"addressLine1Label" = "Address line 1";
+
+/* Form Text Field Placeholder (Address line 1) */
+"addressLine1Placeholder" = "Domicilio, línea 1";
+
+/* An error message displayed when the Address line 2 is not correct */
+"addressLine2ErrorInvalid" = "Invalid Address Line 2";
+
+/* State, Region or County is required - Form Validation */
+"addressLine2ErrorRequired" = "La línea 2 de dirección es obligatoria";
+
+/* The billing address Address line 2 container view label */
+"addressLine2Label" = "Address line 2";
+
+/* Form Text Field Placeholder (Address line 2) */
+"addressLine2Placeholder" = "Domicilio, línea 2";
+
+"back_button_label" = "Volver";
+
+/* An error message displayed when the city field is not correct */
+"cardholderErrorInvalid" = "Invalid Cardholder name";
+
+"choose_other_payment_method_button" = "Elige otra forma de pago";
+
+/* Choose your bank - Choose your bank title label */
+"choose-your-bank-title-label" = "Elige tu banco";
+
+/* An error message displayed when the city field is not correct */
+"cityErrorInvalid" = "Invalid city";
+
+/* City is required - Form Validation */
+"cityErrorRequired" = "La ciudad es obligatoria";
+
+/* The billing address city container view label */
+"cityLabel" = "Ciudad";
+
+/* Form Text Field Placeholder (Address city) */
+"cityPlaceholder" = "Ciudad del Cabo";
+
+/* Complete your payment - Account info payment title label */
+"completeYourPayment" = "Completa el pago";
+
+/* Continue */
+"continue" = "Continuar";
+
+/* An error message displayed when the Country is not correct */
+"countryCodeErrorInvalid" = "Invalid Country";
+
+/* Country is required - Form Validation */
+"countryCodeErrorRequired" = "El país es obligatorio";
+
+/* The billing address Country code container view label */
+"countryCodeLabel" = "Código de país";
+
+/* Form Text Field Placeholder (Country code) */
+"countryCodePlaceholder" = "Código de país";
+
+/* Select a country - Choose your country title label */
+"countrySelectPlaceholder" = "Seleccione un país";
+
+/* The prefix copy we put before the expiration date */
+"dueAt" = "antes del";
+
+/* An error message displayed when the First Name is not correct */
+"firstNameErrorInvalid" = "Invalid First Name";
+
+/* First name is required - Form Validation */
+"firstNameErrorRequired" = "El nombre es obligatorio";
+
+/* The billing address First name container view label */
+"firstNameLabel" = "Nombre";
+
+/* Form Text Field Placeholder (First name) */
+"firstNamePlaceholder" = "Nombre";
+
+"form_error_card_holder_name_length" = "El nombre debe tener entre 2 y 45 caracteres";
+
+"form_error_card_type_not_supported" = "Tipo de tarjeta no admitido";
+
+/* Get the code from your banking app - Blik descriptor */
+"input_description_otp" = "Obtén el código en la aplicación de tu banco";
+
+/* 6 digit code - Text field top placeholder */
+"input_hint_form_blik_otp" = "Código de 6 dígitos";
+
+/* An error message displayed when the Last Name is not correct */
+"lastNameErrorInvalid" = "Invalid Last Name";
+
+/* Last name is required - Form Validation */
+"lastNameErrorRequired" = "Los apellidos son obligatorios";
+
+/* The billing address Last name container view label */
+"lastNameLabel" = "Apellidos";
+
+/* Form Text Field Placeholder (Last name) */
+"lastNamePlaceholder" = "Apellidos";
+
+/* No additional fee - Universal Checkout section text */
+"no_additional_fee" = "Sin cargos adicionales";
+
+"pay_with_payment_method" = "Pagar con %@";
+
+"payByImmediateTransfer" = "Pagar vía transferencia inmediata";
+
+"payBySmartTransfer" = "Pagar vía transferencia bancaria";
+
+/* Enter your one time password - Text field placeholder */
+"payment_method_blik_loading_placeholder" = "Termina el pago en la aplicación de Blik";
+
+/* Pay with card - Payment Method Type (Card Not Vaulted */
+"payment-method-type-card-not-vaulted" = "Pagar con tarjeta";
+
+/* The message copy that tells the user how to transfer funds given a displayed account code */
+"pleaseTransferFunds" = "Transfiere fondos a la cuenta bancaria DBS proporcionada desde tu cuenta bancaria de Singapur a través de FAST (preferido), MEPS o GIRO.";
+
+/* An error message displayed when the postal code field is not correct */
+"postalCodeErrorInvalid" = "Invalid postal code";
+
+/* Postal code is required - Form Validation */
+"postalCodeErrorRequired" = "El código postal es obligatorio";
+
+/* The billing address postal code container view label */
+"postalCodeLabel" = "Código postal";
+
+/* Form Text Field Placeholder (Address postal code) */
+"postalCodePlaceholder" = "90210";
+
+/* Cancel - Alert button cancel */
+"primer-alert-button-cancel" = "Cancelar";
+
+/* Delete - Alert button delete */
+"primer-alert-button-delete" = "Eliminar";
+
+/* The title of the primer 'pay in installments' button */
+"primer-button-title-pay-in-installments" = "Pagar a plazos";
+
+/* 12/24 - Card Form (Expiry text field placeholder text) */
+"primer-card-form-12-24" = "12/24";
+
+/* Add card - Card Form (Vault title text) */
+"primer-card-form-add-card" = "Añadir tarjeta";
+
+/* Checkout - Card Form (Checkout Title Text) */
+"primer-card-form-checkout" = "Pantalla de compra";
+
+/* CVV - Card Form (CVV Text Field placeholder text) */
+"primer-card-form-cvv" = "CVV";
+
+/* Cardholder name */
+"primer-card-form-name" = "Nombre";
+
+/* Pay - Card Form (Checkout submit button text) */
+"primer-card-form-pay" = "Pagar";
+
+/* Save - Card Form (Vault submit button text) */
+"primer-card-form-save" = "Guardar";
+
+/* Choose payment method - Vault Navigation Bar Title */
+"primer-checkout-nav-bar-title" = "Elegir método de pago";
+
+/* Add Bank Account - Confirm Mandate (Top title text_ */
+"primer-confirm-mandate-add-bank-account" = "Añadir cuenta bancaria";
+
+/* Confirm - Confirm Mandate (Button text) */
+"primer-confirm-mandate-confirm" = "Confirmar";
+
+/* Confirm SEPA Direct Debit - Confirm Mandate (Main title text) */
+"primer-confirm-mandate-confirm-sepa-direct-debit" = "Confirmar domiciliación de adeudo directo SEPA";
+
+/* CVV- CVV recapture explanation label */
+"primer-cvv-recapture-explanation" = "Introduzca el código de seguridad de %d dígitos de su tarjeta para hacer un pago seguro.";
+
+/* CVV - CVV recapture screen title */
+"primer-cvv-recapture-title" = "Introducir CVV";
+
+/* Do you want to delete this payment method? - Delete alert title */
+"primer-delete-alert-title" = "¿Quieres eliminar este método de pago?";
+
+/* Apple pay - Direct Checkout (Apple pay button text) */
+"primer-direct-checkout-apple-pay" = "Apple Pay";
+
+/* Pay by card - Direct Checkout (Card button text) */
+"primer-direct-checkout-pay-by-card" = "Pagar con tarjeta";
+
+/* PayPal - Direct Checkout (PayPal button text */
+"primer-direct-checkout-paypal" = "PayPal";
+
+/* An error message displayed when the cvv code is not correct */
+"primer-error-card-form-card-cvv" = "CVV no válido";
+
+/* An error message displayed when the card expiration date is not correct */
+"primer-error-card-form-card-expiration-date" = "Fecha no válida";
+
+/* An error message displayed when the card number is not correct */
+"primer-error-card-form-card-number" = "El número de tarjeta no es válido";
+
+/* A suffix to mark a required field or action being performed */
+"primer-error-is-required-suffix" = "es necesario";
+
+/* Something went wrong, please try again. - Error Screen Message */
+"primer-error-screen" = "Algo salió mal, inténtalo de nuevo.";
+
+/* e.g. John Doe - Form Text Field Placeholder (Cardholder name) */
+"primer-form-text-field-placeholder-cardholder" = "p.ej. Juan Pérez López";
+
+/* Card number - Form Text Field Title (Card number) */
+"primer-form-text-field-title-card-number" = "Número de tarjeta";
+
+/* Expiry date - Form Text Field Title (Expiry date) */
+"primer-form-text-field-title-expiry-date" = "Fecha de caducidad";
+
+/* Enter your card details - Form Type Main Title (Card) */
+"primer-form-type-main-title-card-form" = "Introduce los datos de tu tarjeta";
+
+/* Card form - Navigation Bar Title */
+"primer-form-type-nav-bar-title" = "Tarjeta de pago";
+
+/* Add Bank Account - IBAN Form (Main title) */
+"primer-iban-form-add-bank-account" = "Añadir cuenta bancaria";
+
+/* Enter IBAN - IBAN Form (Text field placeholder text */
+"primer-iban-form-enter-iban" = "Introducir IBAN";
+
+/* Your monthly fee will be automatically deducted from this account, using SEPA Core DirectDebit Mandate - IBAN Form (Subtitle text) */
+"primer-iban-form-monthly-fee-automatically-deducted" = "Su cuota mensual se deducirá automáticamente de esta cuenta, utilizando la orden de domiciliación bancaria SEPA Core";
+
+/* Next - IBAN Form (Button text) */
+"primer-iban-form-next" = "Siguiente";
+
+/* Use an account number instead - IBAN Form (Switch text) */
+"primer-iban-form-use-account-number-instead" = "Use un número de cuenta en su lugar";
+
+/* Expires - Saved card */
+"primer-saved-card" = "Expira";
+
+/* Manual input - Scanner view (Button text) */
+"primer-scanner-view-manual-input" = "Introducción manual";
+
+/* Scan card - Scanner view (Title text) */
+"primer-scanner-view-scan-card" = "Escanear la tarjeta";
+
+/* Scan the front of your card - Scanner view (Description text) */
+"primer-scanner-view-scan-front-card" = "Escanee la parte de delante de su tarjeta";
+
+/* The title of the header for the flow decision view */
+"primer-test-header-description" = "Este es un flujo simulado para el \"sandbox\". Elige el resultado que quieras probar de la lista siguiente.";
+
+/* The title of the mocked declined flow for a Test Payment Method */
+"primer-test-payment-method-decline-flow-title" = "Rechazado";
+
+/* The title of the mocked failed flow for a Test Payment Method */
+"primer-test-payment-method-fail-flow-title" = "Se ha producido un error";
+
+/* The title of the mocked successful flow for a Test Payment Method */
+"primer-test-payment-method-success-flow-title" = "Autorizado";
+
+/* SAVED CARD - Vault Checkout Card Title */
+"primer-vault-checkout-payment-method-title" = "MÉTODO DE PAGO GUARDADO";
+
+/* Add payment method - Checkout Navigation Bar Title */
+"primer-vault-nav-bar-title" = "Añadir método de pago";
+
+/* Add new card - Vault Payment Method (Button text) */
+"primer-vault-payment-method-add-new-card" = "Añadir una nueva tarjeta";
+
+/* Available payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-available-payment-methods" = "Métodos de pago disponibles";
+
+/* Edit - Vault Payment Method (Button text) */
+"primer-vault-payment-method-edit" = "Editar";
+
+/* Saved payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-saved-payment-methods" = "Métodos de pago guardados";
+
+/* QR Code - QR code screen subtitle label */
+"qrCode" = "Código QR";
+
+"retry_button" = "Reintentar";
+
+/* Scan to pay or take a screenshot - QR code screen title label */
+"scanToPay" = "Escanea para pagar o hacer una captura de pantalla";
+
+/* Search bank - Search bank textfield placeholder */
+"search-bank-placeholder" = "Buscar banco";
+
+/* Search country - Search country textfield placeholder */
+"search-country-placeholder" = "Buscar país";
+
+/* See all - Universal checkout */
+"see-all" = "Ver todo";
+
+"session_complete_payment_cancellation_title" = "Pago cancelado";
+
+"session_complete_payment_failure_title" = "Pago fallido";
+
+"session_complete_payment_success_title" = "Pago autorizado";
+
+/* "Shipping" label displayed next to the shipping amount, for example: "Shipping $2.50" */
+"shipping" = "Envío";
+
+/* An error message displayed when the State, Region or County field is not correct */
+"stateErrorInvalid" = "Estado, región o provincia no válidos";
+
+/* State, Region or County is required - Form Validation */
+"stateErrorRequired" = "El estado, la región o la provincia son obligatorios";
+
+/* The billing address state container view label */
+"stateLabel" = "Estado / región / provincia";
+
+/* Form Text Field Placeholder (Address State / Region / County) */
+"statePlaceholder" = "Estado / región / provincia";
+
+"stripe_ach_mandate_accept_button" = "Aceptar";
+
+"stripe_ach_mandate_cancel_payment_button" = "Cancelar pago";
+
+"stripe_ach_mandate_template_ios" = "Al hacer clic en «aceptar», autorizas a %@ a cargar en la cuenta bancaria seleccionada cualquier importe adeudado por cargos derivados de tu uso de los servicios de %@ o la compra de productos de %@, de conformidad con el sitio web y las condiciones de %@ y hasta que se revoque esta autorización. Podrás modificar o cancelar esta autorización cuando lo desees notificándolo a %@ con 30 (treinta) días de antelación.\n\nSi utilizas los servicios de %@ o adquieres productos adicionales periódicamente de conformidad con las condiciones de %@, autorizas a %@ a realizar cargos periódicos en tu cuenta bancaria. Los pagos que no se encuentren dentro de los cargos periódicos autorizados mencionados anteriormente solo se cargarán en tu cuenta después de que los hayas aprobado.";
+
+"stripe_ach_payment_request_cancelled" = "Vuelve a intentarlo o selecciona otro banco";
+
+"stripe_ach_payment_request_completed_successfully" = "Has autorizado el cargo en tu cuenta bancaria. Se te notificará por correo electrónico una vez que el pago se haya cobrado correctamente.";
+
+"stripe_ach_user_details_collection_continue_button" = "Continuar";
+
+"stripe_ach_user_details_collection_data_usage_label" = "Solo la utilizaremos para mantenerte informado sobre el pago";
+
+"stripe_ach_user_details_collection_email_address_label" = "Dirección de correo electrónico";
+
+"stripe_ach_user_details_collection_first_name_label" = "Nombre";
+
+"stripe_ach_user_details_collection_invalid_email_address" = "La dirección de correo electrónico que has introducido no parece real. Asegúrate de que incluya una «@» y un dominio (como «@example.com»).";
+
+"stripe_ach_user_details_collection_invalid_first_name" = "Introduce un nombre válido. Evita el uso de números o caracteres especiales.";
+
+"stripe_ach_user_details_collection_invalid_last_name" = "Introduce un apellido válido. Evita el uso de números o caracteres especiales.";
+
+"stripe_ach_user_details_collection_last_name_label" = "Apellido";
+
+"stripe_ach_user_details_collection_subtitle_label" = "Datos personales";
+
+/* Additional fee may apply - Surcharge (Label) */
+"surcharge-additional-fee" = "Podría incurrir cargos adicionales";
+
+/* Upload the screenshot in your banking app. - QR code screen subtitle label */
+"uploadScreenshot" = "Sube la captura de pantalla a la aplicación de tu banco";
+

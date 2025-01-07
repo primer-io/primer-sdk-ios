@@ -1,1 +1,307 @@
--n
+/* An error message displayed when the Address line 1 is not correct */
+"addressLine1ErrorInvalid" = "Neteisinga 1 adreso eilutė";
+
+/* State, Region or County is required - Form Validation */
+"addressLine1ErrorRequired" = "1 adreso elutė yra privaloma";
+
+/* The billing address Address line 1 container view label */
+"addressLine1Label" = "1 adreso eilutė";
+
+/* Form Text Field Placeholder (Address line 1) */
+"addressLine1Placeholder" = "1 adreso eilutė";
+
+/* An error message displayed when the Address line 2 is not correct */
+"addressLine2ErrorInvalid" = "Neteisinga 2 adreso eilutė";
+
+/* State, Region or County is required - Form Validation */
+"addressLine2ErrorRequired" = "2 adreso eilutė yra privaloma";
+
+/* The billing address Address line 2 container view label */
+"addressLine2Label" = "2 adreso eilutė";
+
+/* Form Text Field Placeholder (Address line 2) */
+"addressLine2Placeholder" = "2 adreso eilutė";
+
+/* An error message displayed when the city field is not correct */
+"cardholderErrorInvalid" = "Neteisingi kortelės turėtojo vardas ir pavardė";
+
+/* Choose your bank - Choose your bank title label */
+"choose-your-bank-title-label" = "Pasirinkite banką";
+
+/* An error message displayed when the city field is not correct */
+"cityErrorInvalid" = "Neteisingas miestas";
+
+/* City is required - Form Validation */
+"cityErrorRequired" = "Miestas yra privalomas";
+
+/* The billing address city container view label */
+"cityLabel" = "Miestas";
+
+/* Form Text Field Placeholder (Address city) */
+"cityPlaceholder" = "Keiptaunas";
+
+/* Complete your payment - Account info payment title label */
+"completeYourPayment" = "Užbaigite";
+
+/* Continue */
+"continue" = "Tęsti";
+
+/* An error message displayed when the Country is not correct */
+"countryCodeErrorInvalid" = "Neteisinga šalis";
+
+/* Country is required - Form Validation */
+"countryCodeErrorRequired" = "Šalis yra privaloma";
+
+/* The billing address Country code container view label */
+"countryCodeLabel" = "Šalies kodas";
+
+/* Form Text Field Placeholder (Country code) */
+"countryCodePlaceholder" = "Šalies kodas";
+
+/* Select a country - Choose your country title label */
+"countrySelectPlaceholder" = "Pasirinkite šalį";
+
+/* The prefix copy we put before the expiration date */
+"dueAt" = "Atsiskaitymo data";
+
+/* An error message displayed when the First Name is not correct */
+"firstNameErrorInvalid" = "Neteisingas vardas";
+
+/* First name is required - Form Validation */
+"firstNameErrorRequired" = "Vardas yra privalomas";
+
+/* The billing address First name container view label */
+"firstNameLabel" = "Vardas";
+
+/* Form Text Field Placeholder (First name) */
+"firstNamePlaceholder" = "Vardas";
+
+"form_error_card_holder_name_length" = "Vardą turi sudaryti nuo 2 iki 45 simbolių";
+
+"form_error_card_type_not_supported" = "Nepalaikomas kortelės tipas";
+
+/* Get the code from your banking app - Blik descriptor */
+"input_description_otp" = "Gaukite kodą iš bankininkystės programėlės";
+
+/* 6 digit code - Text field top placeholder */
+"input_hint_form_blik_otp" = "6 skaičių kodas";
+
+/* An error message displayed when the Last Name is not correct */
+"lastNameErrorInvalid" = "Neteisinga pavardė";
+
+/* Last name is required - Form Validation */
+"lastNameErrorRequired" = "Pavardė yra privaloma";
+
+/* The billing address Last name container view label */
+"lastNameLabel" = "Pavardė";
+
+/* Form Text Field Placeholder (Last name) */
+"lastNamePlaceholder" = "Pavardė";
+
+/* No additional fee - Universal Checkout section text */
+"no_additional_fee" = "Jokio papildomo mokesčio";
+
+/* Enter your one time password - Text field placeholder */
+"payment_method_blik_loading_placeholder" = "Užbaikite mokėjimą „Blik“ programėlėje";
+
+/* Pay with card - Payment Method Type (Card Not Vaulted */
+"payment-method-type-card-not-vaulted" = "Mokėti kortele";
+
+/* The message copy that tells the user how to transfer funds given a displayed account code */
+"pleaseTransferFunds" = "Perveskite lėšas į nurodytą DBS banko sąskaitą, naudodamiesi Singapūre esančia banko sąskaita per FAST (pageidautina), MEPS arba GIRO.";
+
+/* An error message displayed when the postal code field is not correct */
+"postalCodeErrorInvalid" = "Neteisingas pašto kodas";
+
+/* Postal code is required - Form Validation */
+"postalCodeErrorRequired" = "Pašto kodas yra privalomas";
+
+/* The billing address postal code container view label */
+"postalCodeLabel" = "Pašto kodas";
+
+/* Form Text Field Placeholder (Address postal code) */
+"postalCodePlaceholder" = "90210";
+
+/* Cancel - Alert button cancel */
+"primer-alert-button-cancel" = "Atšaukti";
+
+/* Delete - Alert button delete */
+"primer-alert-button-delete" = "Pašalinti";
+
+/* The title of the primer 'pay in installments' button */
+"primer-button-title-pay-in-installments" = "Mokėti įmokomis";
+
+/* 12/24 - Card Form (Expiry text field placeholder text) */
+"primer-card-form-12-24" = "12/24";
+
+/* Add card - Card Form (Vault title text) */
+"primer-card-form-add-card" = "Pridėti kortelę";
+
+/* Checkout - Card Form (Checkout Title Text) */
+"primer-card-form-checkout" = "Atsiskaitymas";
+
+/* CVV - Card Form (CVV Text Field placeholder text) */
+"primer-card-form-cvv" = "CVV";
+
+/* Cardholder name */
+"primer-card-form-name" = "Vardas ir pavardė";
+
+/* Pay - Card Form (Checkout submit button text) */
+"primer-card-form-pay" = "Mokėti";
+
+/* Save - Card Form (Vault submit button text) */
+"primer-card-form-save" = "Išsaugoti";
+
+/* Choose payment method - Vault Navigation Bar Title */
+"primer-checkout-nav-bar-title" = "Pasirinkti mokėjimo būdą";
+
+/* Add Bank Account - Confirm Mandate (Top title text_ */
+"primer-confirm-mandate-add-bank-account" = "Pridėti banko sąskaitą";
+
+/* Confirm - Confirm Mandate (Button text) */
+"primer-confirm-mandate-confirm" = "Patvirtinti";
+
+/* Confirm SEPA Direct Debit - Confirm Mandate (Main title text) */
+"primer-confirm-mandate-confirm-sepa-direct-debit" = "Patvirtinti SEPA tiesioginį debetą";
+
+/* CVV- CVV recapture explanation label */
+"primer-cvv-recapture-explanation" = "Kad mokėjimas būtų saugus, įveskite %d skaitmeninį kortelės saugumo kodą.";
+
+/* CVV - CVV recapture screen title */
+"primer-cvv-recapture-title" = "Įveskite CVV";
+
+/* Do you want to delete this payment method? - Delete alert title */
+"primer-delete-alert-title" = "Ar norite pašalinti šį mokėjimo būdą?";
+
+/* Apple pay - Direct Checkout (Apple pay button text) */
+"primer-direct-checkout-apple-pay" = "Apple pay";
+
+/* Pay by card - Direct Checkout (Card button text) */
+"primer-direct-checkout-pay-by-card" = "Mokėti kortele";
+
+/* PayPal - Direct Checkout (PayPal button text */
+"primer-direct-checkout-paypal" = "PayPal";
+
+/* An error message displayed when the cvv code is not correct */
+"primer-error-card-form-card-cvv" = "Neteisingas CVV";
+
+/* An error message displayed when the card expiration date is not correct */
+"primer-error-card-form-card-expiration-date" = "Neteisinga data";
+
+/* An error message displayed when the card number is not correct */
+"primer-error-card-form-card-number" = "Neteisingas kortelės numeris";
+
+/* A suffix to mark a required field or action being performed */
+"primer-error-is-required-suffix" = "yra privalomas";
+
+/* Something went wrong, please try again. - Error Screen Message */
+"primer-error-screen" = "Kažkas nepavyko. Bandykite dar kartą.";
+
+/* e.g. John Doe - Form Text Field Placeholder (Cardholder name) */
+"primer-form-text-field-placeholder-cardholder" = "pvz., John Doe";
+
+/* Card number - Form Text Field Title (Card number) */
+"primer-form-text-field-title-card-number" = "Kortelės numeris";
+
+/* Expiry date - Form Text Field Title (Expiry date) */
+"primer-form-text-field-title-expiry-date" = "Galiojimo data";
+
+/* Enter your card details - Form Type Main Title (Card) */
+"primer-form-type-main-title-card-form" = "Įveskite kortelės duomenis";
+
+/* Card form - Navigation Bar Title */
+"primer-form-type-nav-bar-title" = "Mokėjimo kortelė";
+
+/* Add Bank Account - IBAN Form (Main title) */
+"primer-iban-form-add-bank-account" = "Pridėti banko sąskaitą";
+
+/* Enter IBAN - IBAN Form (Text field placeholder text */
+"primer-iban-form-enter-iban" = "Įvesti IBAN";
+
+/* Your monthly fee will be automatically deducted from this account, using SEPA Core DirectDebit Mandate - IBAN Form (Subtitle text) */
+"primer-iban-form-monthly-fee-automatically-deducted" = "Mėnesinis mokestis bus automatiškai nuskaičiuotas nuo šios paskyros naudojant SEPA pagrindinį tiesioginio debeto pavedimą";
+
+/* Next - IBAN Form (Button text) */
+"primer-iban-form-next" = "Kitas";
+
+/* Use an account number instead - IBAN Form (Switch text) */
+"primer-iban-form-use-account-number-instead" = "Verčiau naudoti sąskaitos numerį";
+
+/* Expires - Saved card */
+"primer-saved-card" = "Baigia galioti";
+
+/* Manual input - Scanner view (Button text) */
+"primer-scanner-view-manual-input" = "Rankinis įvedimas";
+
+/* Scan card - Scanner view (Title text) */
+"primer-scanner-view-scan-card" = "Nuskaityti kortelę";
+
+/* Scan the front of your card - Scanner view (Description text) */
+"primer-scanner-view-scan-front-card" = "Nuskaitykite kortelės priekį";
+
+/* The title of the header for the flow decision view */
+"primer-test-header-description" = "Tai netikras srautas smėlio dėžei. Iš toliau pateikto sąrašo pasirinkite norimą išbandyti rezultatą.";
+
+/* The title of the mocked declined flow for a Test Payment Method */
+"primer-test-payment-method-decline-flow-title" = "Atmesta";
+
+/* The title of the mocked failed flow for a Test Payment Method */
+"primer-test-payment-method-fail-flow-title" = "Nepavyko";
+
+/* The title of the mocked successful flow for a Test Payment Method */
+"primer-test-payment-method-success-flow-title" = "Patvirtinta";
+
+/* SAVED CARD - Vault Checkout Card Title */
+"primer-vault-checkout-payment-method-title" = "IŠSAUGOTAS MOKĖJIMO BŪDAS";
+
+/* Add payment method - Checkout Navigation Bar Title */
+"primer-vault-nav-bar-title" = "Pridėti mokėjimo būdą";
+
+/* Add new card - Vault Payment Method (Button text) */
+"primer-vault-payment-method-add-new-card" = "Pridėti banko kortelę";
+
+/* Available payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-available-payment-methods" = "Galimi mokėjimo būdai";
+
+/* Edit - Vault Payment Method (Button text) */
+"primer-vault-payment-method-edit" = "Redaguoti";
+
+/* Saved payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-saved-payment-methods" = "Išsaugoti mokėjimo būdai";
+
+/* QR Code - QR code screen subtitle label */
+"qrCode" = "QR kodas";
+
+/* Scan to pay or take a screenshot - QR code screen title label */
+"scanToPay" = "Nuskaitykite, kad sumokėtumėte arba padarykite ekrano nuotrauką";
+
+/* Search bank - Search bank textfield placeholder */
+"search-bank-placeholder" = "Iškoti banko";
+
+/* Search country - Search country textfield placeholder */
+"search-country-placeholder" = "Ieškoti šalies";
+
+/* See all - Universal checkout */
+"see-all" = "Matyti viską";
+
+/* "Shipping" label displayed next to the shipping amount, for example: "Shipping $2.50" */
+"shipping" = "Pristatymas";
+
+/* An error message displayed when the State, Region or County field is not correct */
+"stateErrorInvalid" = "Ieškoti valstijos, rajono ar apygardos";
+
+/* State, Region or County is required - Form Validation */
+"stateErrorRequired" = "Valstija, rajonas arba apygarda yra privalomi";
+
+/* The billing address state container view label */
+"stateLabel" = "Valstija / Rajonas / Apygarda";
+
+/* Form Text Field Placeholder (Address State / Region / County) */
+"statePlaceholder" = "Valstija / Rajonas / Apygarda";
+
+/* Additional fee may apply - Surcharge (Label) */
+"surcharge-additional-fee" = "Gali būti taikomas papildomas mokestis";
+
+/* Upload the screenshot in your banking app. - QR code screen subtitle label */
+"uploadScreenshot" = "Įkelkite ekrano nuotrauką į bankininkystės programėlę";
+
