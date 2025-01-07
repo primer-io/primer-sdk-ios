@@ -112,7 +112,7 @@ extension Response.Body.Tokenization {
         case .stripeAch:
             return CardButtonViewModel(
                 network: self.paymentInstrumentData?.bankName ?? "Bank account",
-                cardholder: "•••• \(self.paymentInstrumentData?.accountNumberLastFourDigits ?? "")",
+                cardholder: "•••• \(self.paymentInstrumentData?.accountNumberLast4Digits ?? "")",
                 last4: "",
                 expiry: "",
                 imageName: self.icon,
@@ -154,13 +154,42 @@ extension Response.Body.Tokenization {
         public let sessionInfo: SessionInfo?
 
         public let bankName: String?
-        public let accountNumberLastFourDigits: String?
+        public let accountNumberLast4Digits: String?
 
         // swiftlint:disable:next nesting
         public struct SessionInfo: Codable {
             public let locale: String?
             public let platform: String?
             public let redirectionUrl: String?
+        }
+
+        // swiftlint:disable:next nesting
+        enum CodingKeys: String, CodingKey {
+            case paypalBillingAgreementId
+            case first6Digits
+            case last4Digits
+            case expirationMonth
+            case expirationYear
+            case cardholderName
+            case network
+            case isNetworkTokenized
+            case klarnaCustomerToken
+            case sessionData
+            case externalPayerInfo
+            case shippingAddress
+            case binData
+            case threeDSecureAuthentication
+            case gocardlessMandateId
+            case authorizationToken
+// swiftlint:disable:next identifier_name
+            case mx
+            case currencyCode
+            case productId
+            case paymentMethodConfigId
+            case paymentMethodType
+            case sessionInfo
+            case bankName
+            case accountNumberLast4Digits = "accountNumberLastFourDigits"
         }
     }
 }
