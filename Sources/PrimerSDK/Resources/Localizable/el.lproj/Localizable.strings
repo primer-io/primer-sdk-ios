@@ -76,6 +76,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "Όνομα";
 
+"form_error_card_holder_name_length" = "Το όνομα πρέπει να είναι μεταξύ 2 και 45 χαρακτήρες";
+
+"form_error_card_type_not_supported" = "Μη υποστηριζόμενος τύπος κάρτας";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "Πάρτε τον κωδικό από την τραπεζική σας εφαρμογή.";
 

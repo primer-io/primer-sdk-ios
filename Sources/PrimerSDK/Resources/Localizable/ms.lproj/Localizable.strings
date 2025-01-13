@@ -76,6 +76,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "Nama pertama";
 
+"form_error_card_holder_name_length" = "Nama hendaklah diantara 2 hingga 45 aksara";
+
+"form_error_card_type_not_supported" = "Jenis kad tidak disokong";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "Dapatkan kodnya daripada aplikasi perbankan anda.";
 
