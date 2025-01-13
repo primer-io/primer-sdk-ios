@@ -76,6 +76,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "Förnamn";
 
+"form_error_card_holder_name_length" = "Namnet måste vara mellan 2 och 45 tecken";
+
+"form_error_card_type_not_supported" = "Korttypen stöds inte";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "Hämta numret från din bankapp.";
 
