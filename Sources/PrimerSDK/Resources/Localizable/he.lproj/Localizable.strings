@@ -76,6 +76,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "שם פרטי";
 
+"form_error_card_holder_name_length" = "השם חייב להכיל בין 2 ל-45 תווים";
+
+"form_error_card_type_not_supported" = "סוג כרטיס לא נתמך";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "קבלו את הקוד מאפליקציית הבנק.";
 
