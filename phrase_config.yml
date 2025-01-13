@@ -97,6 +97,7 @@ push:
         file_format: strings
         locale_id: Chinese-Taiwanese
         tags: ios-sdk
+
 pull:
   targets:
     - file: Sources/PrimerSDK/Resources/Localizable/ar.lproj/Localizable.strings
@@ -249,21 +250,21 @@ pull:
         locale_id: Indonesian
         tags: ios-sdk
         encoding: UTF-8
-    - file: Sources/PrimerSDK/Resources/Localizable/zh-CN.lproj/Localizable.strings
-      params:
-        file_format: strings
-        locale_id: Chinese
-        tags: ios-sdk
-        encoding: UTF-8
-    - file: Sources/PrimerSDK/Resources/Localizable/zh-HK.lproj/Localizable.strings
-      params:
-        file_format: strings
-        locale_id: Chinese-HongKong
-        tags: ios-sdk
-        encoding: UTF-8
-    - file: Sources/PrimerSDK/Resources/Localizable/zh-TW.lproj/Localizable.strings
-      params:
-        file_format: strings
-        locale_id: Chinese-Taiwanese
-        tags: ios-sdk
-        encoding: UTF-8
+#    - file: Sources/PrimerSDK/Resources/Localizable/zh-CN.lproj/Localizable.strings
+#      params:
+#        file_format: strings
+#        locale_id: Chinese
+#        tags: ios-sdk
+#        encoding: UTF-8
+#    - file: Sources/PrimerSDK/Resources/Localizable/zh-HK.lproj/Localizable.strings
+#      params:
+#        file_format: strings
+#        locale_id: Chinese-HongKong
+#        tags: ios-sdk
+#        encoding: UTF-8
+#    - file: Sources/PrimerSDK/Resources/Localizable/zh-TW.lproj/Localizable.strings
+#      params:
+#        file_format: strings
+#        locale_id: Chinese-Taiwanese
+#        tags: ios-sdk
+#        encoding: UTF-8
