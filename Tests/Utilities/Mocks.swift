@@ -289,6 +289,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
     var uiOptions = PrimerUIOptions()
     var threeDsOptions = PrimerThreeDsOptions()
     var debugOptions = PrimerDebugOptions()
+    var apiVersion: PrimerAPIVersion = .V2_3
 }
 
 let mockPaymentMethodConfig = PrimerAPIConfiguration(
