@@ -76,6 +76,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "ชื่อจริง";
 
+"form_error_card_holder_name_length" = "ชื่อต้องมีความยาวระหว่าง 2 ถึง 45 อักขระ";
+
+"form_error_card_type_not_supported" = "ไม่รองรับประเภทบัตรนี้";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "รับรหัสจากแอปธนาคารของคุณ";
 

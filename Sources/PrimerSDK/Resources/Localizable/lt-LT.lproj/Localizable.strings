@@ -76,6 +76,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "Vardas";
 
+"form_error_card_holder_name_length" = "Vardą turi sudaryti nuo 2 iki 45 simbolių";
+
+"form_error_card_type_not_supported" = "Nepalaikomas kortelės tipas";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "Gaukite kodą iš bankininkystės programėlės";
 
