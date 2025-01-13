@@ -76,6 +76,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "Ім'я";
 
+"form_error_card_holder_name_length" = "Назва має містити від 2 до 45 символів";
+
+"form_error_card_type_not_supported" = "Непідтримуваний тип карти";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "Отримай код у своєму банківському застосунку";
 

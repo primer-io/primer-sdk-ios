@@ -76,6 +76,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "Ime";
 
+"form_error_card_holder_name_length" = "Ime mora imeti od 2 do 45 znakov.";
+
+"form_error_card_type_not_supported" = "Nepodprta vrsta kartice";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "Pridobite kodo iz svoje bančne aplikacije.";
 
