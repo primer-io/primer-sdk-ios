@@ -98,23 +98,23 @@
         locale_id: Turkish
         tags: ios-sdk
 
-    # - file: Sources/PrimerSDK/Resources/Localizable/zh-CN.lproj/Localizable.strings
-    #   params:
-    #     file_format: strings
-    #     locale_id: Chinese
-    #     tags: ios-sdk
+    - file: Sources/PrimerSDK/Resources/Localizable/zh-CN.lproj/Localizable.strings
+      params:
+        file_format: strings
+        locale_id: Chinese
+        tags: ios-sdk
 
-    # - file: Sources/PrimerSDK/Resources/Localizable/zh-HK.lproj/Localizable.strings
-    #   params:
-    #     file_format: strings
-    #     locale_id: Chinese-HongKong
-    #     tags: ios-sdk
+    - file: Sources/PrimerSDK/Resources/Localizable/zh-HK.lproj/Localizable.strings
+      params:
+        file_format: strings
+        locale_id: Chinese-HongKong
+        tags: ios-sdk
 
-    # - file: Sources/PrimerSDK/Resources/Localizable/zh-TW.lproj/Localizable.strings
-    #   params:
-    #     file_format: strings
-    #     locale_id: Chinese-Taiwanese
-    #     tags: ios-sdk  
+    - file: Sources/PrimerSDK/Resources/Localizable/zh-TW.lproj/Localizable.strings
+      params:
+        file_format: strings
+        locale_id: Chinese-Taiwanese
+        tags: ios-sdk
   
   
   pull:
@@ -294,23 +294,23 @@
         tags: ios-sdk
         encoding: UTF-8
 
-    # - file: Sources/PrimerSDK/Resources/Localizable/zh-CN.lproj/Localizable.strings
-    #   params:
-    #     file_format: strings
-    #     locale_id: Chinese
-    #     tags: ios-sdk
-    #     encoding: UTF-8
+    - file: Sources/PrimerSDK/Resources/Localizable/zh-CN.lproj/Localizable.strings
+      params:
+        file_format: strings
+        locale_id: Chinese
+        tags: ios-sdk
+        encoding: UTF-8
 
-    # - file: Sources/PrimerSDK/Resources/Localizable/zh-HK.lproj/Localizable.strings
-    #   params:
-    #     file_format: strings
-    #     locale_id: Chinese-HongKong
-    #     tags: ios-sdk
-    #     encoding: UTF-8
+    - file: Sources/PrimerSDK/Resources/Localizable/zh-HK.lproj/Localizable.strings
+      params:
+        file_format: strings
+        locale_id: Chinese-HongKong
+        tags: ios-sdk
+        encoding: UTF-8
 
-    # - file: Sources/PrimerSDK/Resources/Localizable/zh-TW.lproj/Localizable.strings
-    #   params:
-    #     file_format: strings
-    #     locale_id: Chinese-Taiwanese
-    #     tags: ios-sdk
-    #     encoding: UTF-8
+    - file: Sources/PrimerSDK/Resources/Localizable/zh-TW.lproj/Localizable.strings
+      params:
+        file_format: strings
+        locale_id: Chinese-Taiwanese
+        tags: ios-sdk
+        encoding: UTF-8
