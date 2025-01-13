@@ -377,7 +377,8 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
             })
 
         } else if let clientSession = clientSession {
-            Networking.requestClientSession(requestBody: clientSession) { (clientToken, err) in
+            Networking.requestClientSession(requestBody: clientSession,
+                                            apiVersion: settings.apiVersion) { (clientToken, err) in
                 self.hideLoadingOverlay()
 
                 if let err = err {

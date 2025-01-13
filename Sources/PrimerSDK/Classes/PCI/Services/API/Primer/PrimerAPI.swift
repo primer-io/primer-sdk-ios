@@ -10,9 +10,11 @@
 import Foundation
 
 enum PrimerAPI: Endpoint, Equatable {
+    // MARK: - Pull ApiVersion from PrimerSettings
 
-    // MARK: - Single API version variable for easier updates
-    private static let apiVersion = "2.4"
+    private static var apiVersion: String {
+        PrimerSettings.current.apiVersion.rawValue
+    }
 
     static func == (lhs: PrimerAPI, rhs: PrimerAPI) -> Bool {
         switch (lhs, rhs) {
