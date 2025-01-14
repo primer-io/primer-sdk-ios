@@ -7,7 +7,6 @@ credentials = "#{username}:#{personal_access_token}"
 
 encoded_credentials = Base64.strict_encode64(credentials)
 
-puts encoded_credentials
 ENV['MATCH_GIT_BASIC_AUTHORIZATION'] = encoded_credentials
 
 git_url("https://gitlab.com/primer-io/acceptance/mobile/ios-sdk-match-repo.git")
