@@ -11,7 +11,7 @@ ENV['MATCH_GIT_BASIC_AUTHORIZATION'] = encoded_credentials
 
 git_url("https://gitlab.com/primer-io/acceptance/mobile/ios-sdk-match-repo.git")
 storage_mode("git")
-#git_branch("nq/update_certificates")
+git_branch("main")
 type("development") # The default type, can be: appstore, adhoc, enterprise or development
 
 
