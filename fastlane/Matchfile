@@ -1,14 +1,3 @@
-require 'base64'
-
-username = ENV['GITLAB_USERNAME']
-personal_access_token = ENV['GITLAB_PASSWORD']
-
-credentials = "#{username}:#{personal_access_token}"
-
-encoded_credentials = Base64.strict_encode64(credentials)
-
-ENV['MATCH_GIT_BASIC_AUTHORIZATION'] = encoded_credentials
-
 git_url("https://gitlab.com/primer-io/acceptance/mobile/ios-sdk-match-repo.git")
 storage_mode("git")
 git_branch("main")
