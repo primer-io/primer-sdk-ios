@@ -54,6 +54,8 @@ jobs:
           slack-reporter-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
           github-run-id: ${{ github.run_id }}
           stripe-publishable-key: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
+          gitlab-username: ${{ secrets.GITLAB_USERNAME }}
+          gitlab-password: ${{ secrets.GITLAB_PASSWORD }}
   build-and-upload-to-firebase-and-browserstack:
     runs-on: macos-13
     timeout-minutes: 20
@@ -118,6 +120,8 @@ jobs:
           BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
           SOURCE_BRANCH: ${{ github.ref }}
+          GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
+          GITLAB_PASSWORD: ${{ secrets.GITLAB_PASSWORD }}
       - name: Save Browserstack ID
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 #v4.4.3
         id: save_browserstack_id_step
