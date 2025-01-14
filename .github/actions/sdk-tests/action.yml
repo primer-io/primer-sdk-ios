@@ -38,6 +38,12 @@ inputs:
   package-swift:
     description: The swift package file to use, if not default
     required: false
+  gitlab-username:
+    description: 'GitLab username'
+    required: true
+  gitlab-password:
+    description: 'GitLab password'
+    required: true
 
 runs:
   using: "composite"
@@ -77,6 +83,8 @@ runs:
         MATCH_KEYCHAIN_NAME: ${{ inputs.match-keychain-name }}
         MATCH_KEYCHAIN_PASSWORD: ${{ inputs.match-password }}
         SOURCE_BRANCH: ${{ inputs.source-branch }}
+        GITLAB_USERNAME: ${{ inputs.gitlab-username }}
+        GITLAB_PASSWORD: ${{ inputs.gitlab-password }}
     - name: Prepare coverage reports
       shell: bash
       if: ${{ inputs.sdk-name != '' }}
