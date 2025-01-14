@@ -30,7 +30,6 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_KEY }}
           known-hosts: ${{ secrets.KNOWN_HOSTS }}
           match-password: ${{ secrets.MATCH_PASSWORD }}
-          match-git-private-key: ${{ secrets.FASTLANE_PASSWORD }}
           fastlane-session: ${{ secrets.FASTLANE_SESSION }}
           fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
           match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}

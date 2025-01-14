@@ -10,9 +10,6 @@ inputs:
   match-password:
     description: Match password
     required: true
-  match-git-private-key:
-    description: Match git private key
-    required: true
   fastlane-password:
     description: Fastlane password
     required: true
@@ -68,7 +65,6 @@ runs:
         bundle exec fastlane ${{ inputs.fastlane-test-lane }}
       env:
         MATCH_PASSWORD: ${{ inputs.match-password }}
-        MATCH_GIT_PRIVATE_KEY: ${{ inputs.ssh-private-key }}
         FASTLANE_PASSWORD: ${{ inputs.fastlane-password }}
         FASTLANE_SESSION: ${{ inputs.fastlane-session }}
         MATCH_KEYCHAIN_NAME: ${{ inputs.match-keychain-name }}
