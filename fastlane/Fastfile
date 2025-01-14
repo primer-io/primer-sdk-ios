@@ -1,3 +1,4 @@
+require('base64')
 default_platform(:ios)
 
 #----------------------- CONSTANTS -------------------------#
@@ -277,16 +278,12 @@ platform :ios do
       lock_when_sleeps: true
     )
 
-    require 'base64'
-
     username = ENV['GITLAB_USERNAME']
     personal_access_token = ENV['GITLAB_PASSWORD']
 
     credentials = "#{username}:#{personal_access_token}"
 
     encoded_credentials = Base64.strict_encode64(credentials)
-
-    ENV['MATCH_GIT_BASIC_AUTHORIZATION'] = encoded_credentials
 
     match(
       type: options[:match_type],
