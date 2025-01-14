@@ -1,4 +1,7 @@
-git_url("git@gitlab.com:primer-io/acceptance/mobile/ios-sdk-match-repo.git")
+ENV['MATCH_GIT_BASIC_AUTH_USERNAME']=ENV['GITLAB_USERNAME']
+ENV['MATCH_GIT_BASIC_AUTH_PASSWORD']=ENV['GITLAB_PASSWORD']
+
+git_url("https://gitlab.com/primer-io/acceptance/mobile/ios-sdk-match-repo.git")
 # git_branch("nq/update-ios-certificates") # When updating, we must do it on a branch
 
 storage_mode("git")
