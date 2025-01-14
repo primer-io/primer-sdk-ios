@@ -282,7 +282,6 @@ platform :ios do
     personal_access_token = ENV['GITLAB_PASSWORD']
 
     credentials = "#{username}:#{personal_access_token}"
-
     encoded_credentials = Base64.strict_encode64(credentials)
 
     match(
