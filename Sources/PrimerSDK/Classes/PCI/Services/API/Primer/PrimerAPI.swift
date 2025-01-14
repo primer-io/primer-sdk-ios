@@ -459,9 +459,41 @@ internal extension PrimerAPI {
 
     var timeout: TimeInterval? {
         switch self {
-        case .listCardNetworks:
-            return 10
-        default:
+        // 15-second endpoints
+        case .exchangePaymentMethodToken,
+             .fetchConfiguration,
+             .fetchVaultedPaymentMethods,
+             .deleteVaultedPaymentMethod,
+             .tokenizePaymentMethod,
+             .requestPrimerConfigurationWithActions,
+             .begin3DSRemoteAuth,
+             .continue3DSRemoteAuth,
+             .validateClientToken,
+             .createPayment,
+             .resumePayment,
+             .listCardNetworks,
+             .getPhoneMetadata:
+            return 15
+
+        // 60-second endpoints
+        case .createPayPalOrderSession,
+             .createPayPalBillingAgreementSession,
+             .confirmPayPalBillingAgreement,
+             .createKlarnaPaymentSession,
+             .createKlarnaCustomerToken,
+             .finalizeKlarnaPaymentSession,
+             .listAdyenBanks,
+             .listRetailOutlets,
+             .fetchPayPalExternalPayerInfo,
+             .testFinalizePolling,
+             .getNolSdkSecret,
+             .redirect,
+             .completePayment:
+            return 60
+
+        // No explicit timeout
+        case .poll,
+             .sendAnalyticsEvents:
             return nil
         }
     }
