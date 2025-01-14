@@ -55,7 +55,8 @@ class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
         if let clientToken = clientToken {
             Primer.shared.showVaultManager(clientToken: clientToken)
         } else if let clientSession = clientSession {
-            Networking.requestClientSession(requestBody: clientSession) { (clientToken, err) in
+            Networking.requestClientSession(requestBody: clientSession,
+                                            apiVersion: settings.apiVersion) { (clientToken, err) in
                 if let err = err {
                     print(err)
                     let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
@@ -77,7 +78,8 @@ class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
             Primer.shared.showUniversalCheckout(clientToken: clientToken)
 
         } else if let clientSession = clientSession {
-            Networking.requestClientSession(requestBody: clientSession) { (clientToken, err) in
+            Networking.requestClientSession(requestBody: clientSession,
+                                            apiVersion: settings.apiVersion) { (clientToken, err) in
                 if let err = err {
                     print(err)
                     let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
@@ -104,7 +106,8 @@ class MerchantDropInUIViewController: UIViewController, PrimerDelegate {
                                             intent: paymentMethodTypeSessionIntent,
                                             clientToken: clientToken)
         } else if let clientSession = clientSession {
-            Networking.requestClientSession(requestBody: clientSession) { (clientToken, err) in
+            Networking.requestClientSession(requestBody: clientSession,
+                                            apiVersion: settings.apiVersion) { (clientToken, err) in
                 if let err = err {
                     print(err)
                     let merchantErr = NSError(domain: "merchant-domain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch client token"])
