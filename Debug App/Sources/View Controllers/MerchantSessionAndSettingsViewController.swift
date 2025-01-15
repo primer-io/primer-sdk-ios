@@ -10,6 +10,7 @@ import PrimerSDK
 import UIKit
 
 var environment: Environment = .sandbox
+var apiVersion: PrimerAPIVersion = .V2_3
 var customDefinedApiKey: String?
 var performPaymentAfterVaulting: Bool = false
 var paymentSessionType: MerchantMockDataManager.SessionType = .generic
@@ -356,6 +357,19 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBAction func testingModeSegmentedControlValueChanged(_ sender: UISegmentedControl) {
         renderMode = RenderMode(rawValue: sender.selectedSegmentIndex)!
         render()
+    }
+
+    @IBAction func apiVersionSegmentedControlValueChanged(_ sender: UISegmentedControl) {
+        switch sender.selectedSegmentIndex {
+        case 0:
+            apiVersion = .V2_3
+        case 1:
+            apiVersion = .V2_4
+        case 2:
+            apiVersion = .latest
+        default:
+            apiVersion = .V2_3
+        }
     }
     
     @IBAction func environmentSegmentedControlValuewChanged(_ sender: UISegmentedControl) {
@@ -773,7 +787,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     billingOptions: billingOptions),
                 stripeOptions: stripePublishableKey == nil ? nil : PrimerStripeOptions(publishableKey: stripePublishableKey!, mandateData: mandateData)),
             uiOptions: uiOptions,
-            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
+            apiVersion: apiVersion
         )
         
         switch renderMode {
@@ -819,7 +834,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                     billingOptions: billingOptions),
                 stripeOptions: stripePublishableKey == nil ? nil : PrimerStripeOptions(publishableKey: stripePublishableKey!)),
             uiOptions: nil,
-            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false)
+            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
+            apiVersion: apiVersion
         )
         
         switch renderMode {

@@ -15,6 +15,17 @@ enum APIVersion: String {
     case v2_2 = "2.2"
     case v2_3 = "2.3"
     case v2_4 = "2.4"
+
+    static func from(primerApiVersion: PrimerAPIVersion) -> APIVersion {
+        switch primerApiVersion {
+        case .V2_3:
+            return .v2_3
+        case .V2_4:
+            return .v2_4
+        default:
+            return .v2_3
+        }
+    }
 }
 
 enum HTTPMethod: String {
@@ -273,6 +284,7 @@ class Networking {
     
     static func requestClientSession(
         requestBody: ClientSessionRequestBody, customDefinedApiKey: String? = nil,
+        apiVersion: PrimerAPIVersion,
         completion: @escaping (String?, Error?) -> Void
     ) {
         let url = environment.baseUrl.appendingPathComponent("/api/client-session")
@@ -289,7 +301,7 @@ class Networking {
         
         let networking = Networking()
         networking.request(
-            apiVersion: .v2_4,
+            apiVersion: APIVersion.from(primerApiVersion: apiVersion),
             url: url,
             method: .post,
             queryParameters: nil,
