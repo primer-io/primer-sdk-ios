@@ -51,7 +51,8 @@ class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadle
             self.clientToken = clientToken
             self.startPrimerHeadlessUniversalCheckout(with: clientToken)
         } else if let clientSession = clientSession {
-            Networking.requestClientSession(requestBody: clientSession) { (clientToken, err) in
+            Networking.requestClientSession(requestBody: clientSession,
+                                            apiVersion: settings.apiVersion) { (clientToken, err) in
                 if let err = err {
                     self.hideLoadingOverlay()
                     let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: err, logs: self.logs)

@@ -9,6 +9,7 @@ internal protocol PrimerSettingsProtocol {
     var paymentMethodOptions: PrimerPaymentMethodOptions { get }
     var uiOptions: PrimerUIOptions { get }
     var debugOptions: PrimerDebugOptions { get }
+    var apiVersion: PrimerAPIVersion { get }
 }
 
 public class PrimerSettings: PrimerSettingsProtocol, Codable {
@@ -24,6 +25,7 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
     let uiOptions: PrimerUIOptions
     let debugOptions: PrimerDebugOptions
     let clientSessionCachingEnabled: Bool
+    public let apiVersion: PrimerAPIVersion
 
     public init(
         paymentHandling: PrimerPaymentHandling = .auto,
@@ -32,7 +34,8 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
         uiOptions: PrimerUIOptions? = nil,
         threeDsOptions: PrimerThreeDsOptions? = nil,
         debugOptions: PrimerDebugOptions? = nil,
-        clientSessionCachingEnabled: Bool = false
+        clientSessionCachingEnabled: Bool = false,
+        apiVersion: PrimerAPIVersion = .V2_3
     ) {
         self.paymentHandling = paymentHandling
         self.localeData = localeData ?? PrimerLocaleData()
@@ -40,6 +43,7 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
         self.uiOptions = uiOptions ?? PrimerUIOptions()
         self.debugOptions = debugOptions ?? PrimerDebugOptions()
         self.clientSessionCachingEnabled = clientSessionCachingEnabled
+        self.apiVersion = apiVersion
     }
 }
 
@@ -317,7 +321,6 @@ internal protocol PrimerDebugOptionsProtocol {
 }
 
 public class PrimerDebugOptions: PrimerDebugOptionsProtocol, Codable {
-
     let is3DSSanityCheckEnabled: Bool
 
     public init(is3DSSanityCheckEnabled: Bool? = nil) {
@@ -332,10 +335,19 @@ internal protocol PrimerThreeDsOptionsProtocol {
 }
 
 public class PrimerThreeDsOptions: PrimerThreeDsOptionsProtocol, Codable {
-
     let threeDsAppRequestorUrl: String?
 
     public init(threeDsAppRequestorUrl: String? = nil) {
         self.threeDsAppRequestorUrl = threeDsAppRequestorUrl
     }
 }
+
+// MARK: - API Version
+// swiftlint:disable identifier_name
+public enum PrimerAPIVersion: String, Codable {
+    case V2_3 = "2.3"
+    case V2_4 = "2.4"
+
+    public static let latest = PrimerAPIVersion.V2_3
+}
+// swiftlint:enable identifier_name
