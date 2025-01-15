@@ -13,7 +13,7 @@ final class NetworkRequestFactoryTests: XCTestCase {
 
     var networkRequestFactory: NetworkRequestFactory!
 
-    func defaultHeaders(apiVersion: String = "2.2",
+    func defaultHeaders(apiVersion: String = "2.3",
                         isPost: Bool = false,
                         jwt: String? = nil) -> [String: String] {
         var headers = [
