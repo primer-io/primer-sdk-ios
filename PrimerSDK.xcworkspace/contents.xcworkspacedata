@@ -2,6 +2,2680 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Dangerfile.swift">
+   </FileRef>
+   <FileRef
+      location = "group:Package.swift">
+   </FileRef>
+   <FileRef
+      location = "group:PrimerSDK.podspec">
+   </FileRef>
+   <Group
+      location = "group:Sources"
+      name = "Sources">
+      <Group
+         location = "group:PrimerSDK"
+         name = "PrimerSDK">
+         <Group
+            location = "group:Classes"
+            name = "Classes">
+            <Group
+               location = "group:PCI"
+               name = "PCI">
+               <Group
+                  location = "group:Tokenization View Models"
+                  name = "Tokenization View Models">
+                  <Group
+                     location = "group:FormsTokenizationViewModel"
+                     name = "FormsTokenizationViewModel">
+                     <FileRef
+                        location = "group:CardFormPaymentMethodTokenizationViewModel.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:FormPaymentMethodTokenizationViewModel+FormViews.swift">
+                     </FileRef>
+                     <Group
+                        location = "group:Fields"
+                        name = "Fields">
+                        <FileRef
+                           location = "group:CountryField.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:CityField.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PostalCodeField.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:CVVField.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:CardholderNameField.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:Field.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:StateField.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:AddressField.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ExpiryDateField.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:CardNumberField.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:LastNameField.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:FirstNameField.swift">
+                        </FileRef>
+                     </Group>
+                     <FileRef
+                        location = "group:FormPaymentMethodTokenizationViewModel.swift">
+                     </FileRef>
+                  </Group>
+               </Group>
+               <FileRef
+                  location = "group:TokenizationService.swift">
+               </FileRef>
+               <Group
+                  location = "group:Checkout Components"
+                  name = "Checkout Components">
+                  <FileRef
+                     location = "group:PrimerCardData.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerOTPData.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerRawCardDataRedirectTokenizationBuilder.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerCardRedirectData.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerRawCardDataTokenizationBuilder.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerRawData.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerPhoneNumberData.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:Services"
+                  name = "Services">
+                  <FileRef
+                     location = "group:DefaultNetworkService.swift">
+                  </FileRef>
+                  <Group
+                     location = "group:Network"
+                     name = "Network">
+                     <FileRef
+                        location = "group:NetworkReportingService.swift">
+                     </FileRef>
+                     <Group
+                        location = "group:Parser"
+                        name = "Parser">
+                        <Group
+                           location = "group:JSON"
+                           name = "JSON">
+                           <FileRef
+                              location = "group:JSONLoader.swift">
+                           </FileRef>
+                        </Group>
+                     </Group>
+                     <Group
+                        location = "group:Factories"
+                        name = "Factories">
+                        <FileRef
+                           location = "group:NetworkResponseFactory.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:NetworkRequestFactory.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <FileRef
+                     location = "group:RetryHandler.swift">
+                  </FileRef>
+                  <Group
+                     location = "group:API"
+                     name = "API">
+                     <Group
+                        location = "group:Primer"
+                        name = "Primer">
+                        <FileRef
+                           location = "group:PrimerAPIClient+PCI.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PrimerAPI.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <FileRef
+                     location = "group:RequestDispatcher.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:User Interface"
+                  name = "User Interface">
+                  <FileRef
+                     location = "group:InternalCardComponentsManager.swift">
+                  </FileRef>
+                  <Group
+                     location = "group:Text Fields"
+                     name = "Text Fields">
+                     <FileRef
+                        location = "group:PrimerCardholderNameFieldView.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerTextFieldViewDelegate.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerTextFieldView.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerCustomTextField.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerCardNumberFieldView.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerCVVFieldView.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerTextField.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerExpiryDateFieldView.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Root"
+                     name = "Root">
+                     <FileRef
+                        location = "group:PrimerCardFormViewController.swift">
+                     </FileRef>
+                  </Group>
+               </Group>
+            </Group>
+            <Group
+               location = "group:Data Models"
+               name = "Data Models">
+               <Group
+                  location = "group:PCI"
+                  name = "PCI">
+                  <FileRef
+                     location = "group:FormType.swift">
+                  </FileRef>
+               </Group>
+               <FileRef
+                  location = "group:SuccessMessage.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:_PaymentAPIModel.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:VoucherValue.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerFlowEnums.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ApplePayOrderItem.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:TokenizationRequestPaymentInstrument.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerMultibancoCheckoutAdditionalInfo.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ImageName.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerLocaleData.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:CountryCode.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerInitializationData.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ClientToken.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PaymentMethodConfigurationOptions.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PaymentResponse.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:RetailOutletsRetail.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerVaultedPaymentMethodAdditionalData.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerPaymentMethod+DisplayMetadata.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:Throwable.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:Bin.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerPaymentMethodType.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:CardNetwork.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:TokenizationResponse.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PhoneMetadataDataRequest.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerCheckoutVoucherAdditionalInfo.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PayPal.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerSDKIntegrationType.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerVaultedCardAdditionalData.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:Klarna.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:TokenizationRequestBody.swift">
+               </FileRef>
+               <Group
+                  location = "group:Theme"
+                  name = "Theme">
+                  <FileRef
+                     location = "group:PrimerTheme.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerColor.swift">
+                  </FileRef>
+                  <Group
+                     location = "group:Internal"
+                     name = "Internal">
+                     <FileRef
+                        location = "group:PrimerTheme+TextStyles.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerTheme+Inputs.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerTheme+Views.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerTheme+Colors.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerTheme+Borders.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerTheme+Buttons.swift">
+                     </FileRef>
+                  </Group>
+                  <FileRef
+                     location = "group:PrimerTheme+Images.swift">
+                  </FileRef>
+                  <Group
+                     location = "group:Public"
+                     name = "Public">
+                     <FileRef
+                        location = "group:PrimerThemeData.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerThemeData+Deprecated.swift">
+                     </FileRef>
+                  </Group>
+               </Group>
+               <FileRef
+                  location = "group:StripeAch.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ApplePay.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:Notification.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerIntegrationOptions.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:CheckoutModule.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:TokenizationRequestPaymentSessionInfo.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:UniversalCheckoutViewModel.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:AdyenDotPay.swift">
+               </FileRef>
+               <Group
+                  location = "group:API"
+                  name = "API">
+                  <FileRef
+                     location = "group:VaultedPaymentMethods.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:Response.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ClientSessionAPIModel.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:Request.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PaymentAPIModel.swift">
+                  </FileRef>
+               </Group>
+               <FileRef
+                  location = "group:PrimerPaymentMethod.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerCheckoutAdditionalInfo.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerCheckoutQRCodeInfo.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerConfiguration.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerSettings.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:NolPaySecretDataRequest.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ClientSession.swift">
+               </FileRef>
+               <Group
+                  location = "group:Currency"
+                  name = "Currency">
+                  <FileRef
+                     location = "group:Currency.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:CurrencyNetworkServiceProtocol.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:CurrencyLoader.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:CurrencyStorageProtocol.swift">
+                  </FileRef>
+               </Group>
+               <FileRef
+                  location = "group:XenditRetailOutlets.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:CardButtonViewModel.swift">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:Extensions &amp; Utilities"
+               name = "Extensions &amp; Utilities">
+               <FileRef
+                  location = "group:UIScreenExtension.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:WebViewUtil.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:NSObject+ClassName.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:EncodingDecodingContainerExtensions.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:VersionUtils.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PresentationController.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:NSErrorExtension.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:UIColorExtension.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:DateFormatter+Extensions.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PaymentMethodTypeProviding.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:AnyDecodable.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:CardNetworkParser.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ArrayExtension.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerCancellable.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PostalCode.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:IntExtension.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ImageFileProcessor.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:BundleExtension.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:AlertController.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerTableViewCell.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:URLExtension.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerStackVIew.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:UINavigationController+Extensions.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerImageView.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerCustomStyleTextField.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:Mask.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:UILocalizableUtil.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerButton.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:DeeplinkUtils.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerScrollView.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:UIDeviceExtension.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerImage.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ApplePayUtils.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:DataExtension.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:Dictionary+Extensions.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerViewController.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:StringExtension.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:UserAgent.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:Debouncer.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerViewExtensions.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:UserDefaultsExtension.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:DateExtension.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:Error+Extensions.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:AnyCodable.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:AnyEncodable.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:Weak.swift">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:Core"
+               name = "Core">
+               <Group
+                  location = "group:Primer"
+                  name = "Primer">
+                  <FileRef
+                     location = "group:AppState.swift">
+                  </FileRef>
+                  <Group
+                     location = "group:Decision Handlers"
+                     name = "Decision Handlers">
+                     <FileRef
+                        location = "group:Decisions.swift">
+                     </FileRef>
+                  </Group>
+                  <FileRef
+                     location = "group:PrimerDelegate.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:DependencyInjection.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:Primer.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerSource.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerInternal.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:Cache"
+                  name = "Cache">
+                  <Group
+                     location = "group:ConfigurationCache"
+                     name = "ConfigurationCache">
+                     <FileRef
+                        location = "group:ConfigurationCache.swift">
+                     </FileRef>
+                  </Group>
+                  <FileRef
+                     location = "group:Cache.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:Connectivity"
+                  name = "Connectivity">
+                  <FileRef
+                     location = "group:Connectivity.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:Constants"
+                  name = "Constants">
+                  <FileRef
+                     location = "group:Strings.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:Dimensions.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:Content.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:Colors.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:BIN Data"
+                  name = "BIN Data">
+                  <FileRef
+                     location = "group:CardValidationService.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:Models"
+                  name = "Models">
+                  <FileRef
+                     location = "group:TokenizationProtocols.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:BanksTokenizationComponent.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:PrimerHeadlessUniversalCheckout"
+                  name = "PrimerHeadlessUniversalCheckout">
+                  <Group
+                     location = "group:Managers"
+                     name = "Managers">
+                     <FileRef
+                        location = "group:AssetsManager.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerRawRetailerDataTokenizationBuilder.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:VaultManager.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerRawOTPDataTokenizationBuilder.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerRawPhoneNumberDataTokenizationBuilder.swift">
+                     </FileRef>
+                     <Group
+                        location = "group:Payment Method Managers"
+                        name = "Payment Method Managers">
+                        <FileRef
+                           location = "group:RawDataManager.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PrimerHeadlessUniversalCheckoutComponentWithRedirectManager.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PrimerHeadlessUniversalCheckoutAchManager.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PrimerHeadlessBanksComponentWrapper.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PrimerHeadlessUniversalCheckoutKlarnaManager.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PrimerPaymentMethodManager.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PrimerHeadlessNolPayManager.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:NativeUIManager.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:Composable"
+                     name = "Composable">
+                     <Group
+                        location = "group:NativeUI"
+                        name = "NativeUI">
+                        <Group
+                           location = "group:Common"
+                           name = "Common">
+                           <FileRef
+                              location = "group:NativeUIValidateable.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:NativeUIPresentable.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:NativeUIPresentationComponent.swift">
+                           </FileRef>
+                        </Group>
+                        <Group
+                           location = "group:PayPal"
+                           name = "PayPal">
+                           <FileRef
+                              location = "group:PayPalValidationComponent.swift">
+                           </FileRef>
+                        </Group>
+                        <Group
+                           location = "group:ApplePay"
+                           name = "ApplePay">
+                           <FileRef
+                              location = "group:ApplePayValidationComponent.swift">
+                           </FileRef>
+                        </Group>
+                     </Group>
+                     <Group
+                        location = "group:Klarna"
+                        name = "Klarna">
+                        <Group
+                           location = "group:Managers"
+                           name = "Managers">
+                           <FileRef
+                              location = "group:KlarnaTokenizationManager.swift">
+                           </FileRef>
+                        </Group>
+                        <Group
+                           location = "group:Models"
+                           name = "Models">
+                           <FileRef
+                              location = "group:KlarnaCollectableData.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:KlarnaHelpers.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:KlarnaPaymentCategory.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:KlarnaStep.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:KlarnaAnalyticsEvents.swift">
+                           </FileRef>
+                        </Group>
+                        <Group
+                           location = "group:Components"
+                           name = "Components">
+                           <FileRef
+                              location = "group:PrimerHeadlessKlarnaComponent.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:PrimerHeadlessKlarnaComponent+ViewHandling.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:PrimerHeadlessKlarnaComponent+SessionCreation.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:KlarnaComponent.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:PrimerHeadlessKlarnaComponent+SessionAuthorization.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:KlarnaTokenizationComponent.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:PrimerHeadlessKlarnaComponent+SessionFinalization.swift">
+                           </FileRef>
+                        </Group>
+                     </Group>
+                     <Group
+                        location = "group:FormWithRedirect"
+                        name = "FormWithRedirect">
+                        <FileRef
+                           location = "group:WebStep.swift">
+                        </FileRef>
+                        <Group
+                           location = "group:Ideal"
+                           name = "Ideal">
+                           <FileRef
+                              location = "group:BanksCollectableData.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:BankStep.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:PrimerHeadlessRedirectComponent.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:DefaultBanksComponent.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:BanksAnalyticsEvent.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:BanksComponent.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:IssuingBank.swift">
+                           </FileRef>
+                        </Group>
+                     </Group>
+                     <Group
+                        location = "group:ACH"
+                        name = "ACH">
+                        <Group
+                           location = "group:Models"
+                           name = "Models">
+                           <FileRef
+                              location = "group:ACHMandateDelegate.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ACHUserDetailsError.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ACHAdditionalInfo.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ACHUserDetailsStep.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ACHAnalyticsEvents.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ACHUserDetailsCollectableData.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ACHHelpers.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ACHUserDetails.swift">
+                           </FileRef>
+                        </Group>
+                        <Group
+                           location = "group:Services"
+                           name = "Services">
+                           <FileRef
+                              location = "group:ACHClientSessionService.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ACHTokenizationService.swift">
+                           </FileRef>
+                        </Group>
+                        <Group
+                           location = "group:Stripe"
+                           name = "Stripe">
+                           <Group
+                              location = "group:Component"
+                              name = "Component">
+                              <FileRef
+                                 location = "group:StripeAchTokenizationViewModel.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:StripeAchHeadlessComponent+ClientSession.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:StripeAchUserDetailsComponent.swift">
+                              </FileRef>
+                              <FileRef
+                                 location = "group:StripeAchHeadlessComponent.swift">
+                              </FileRef>
+                           </Group>
+                        </Group>
+                     </Group>
+                     <FileRef
+                        location = "group:PrimerHeadlessComposable.swift">
+                     </FileRef>
+                     <Group
+                        location = "group:NolPay"
+                        name = "NolPay">
+                        <FileRef
+                           location = "group:NolPayPaymentComponent.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:NolPayLinkCardComponent.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:NolPayLinkedCardsComponent.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:NolPayUnlinkCardComponent.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:NolPayPaymentCard.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:NolPayAnalyticsEvents.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:NolPayPhoneMetadataService.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PrimerNolPayProtocol.swift">
+                        </FileRef>
+                     </Group>
+                     <FileRef
+                        location = "group:PrimerHeadlessMainComponent.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Models"
+                     name = "Models">
+                     <FileRef
+                        location = "group:PrimerHeadlessUniversalCheckoutPaymentMethod.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerCardValidationModels.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerRetailerData.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerHeadlessUniversalCheckoutInputElement.swift">
+                     </FileRef>
+                  </Group>
+                  <FileRef
+                     location = "group:PrimerHeadlessUniversalCheckoutProtocols.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerHeadlessUniversalCheckout.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:Keychain"
+                  name = "Keychain">
+                  <FileRef
+                     location = "group:Keychain.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:3DS"
+                  name = "3DS">
+                  <Group
+                     location = "group:Data Models"
+                     name = "Data Models">
+                     <FileRef
+                        location = "group:3DS.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Networking"
+                     name = "Networking">
+                     <FileRef
+                        location = "group:PrimerAPIClient+3DS.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Mock"
+                     name = "Mock">
+                     <FileRef
+                        location = "group:Mock3DSService.swift">
+                     </FileRef>
+                  </Group>
+                  <FileRef
+                     location = "group:3DSService.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:Logging"
+                  name = "Logging">
+                  <FileRef
+                     location = "group:PrimerLogger.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerLogging.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:LogReporter.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:Payment Services"
+                  name = "Payment Services">
+                  <FileRef
+                     location = "group:CreateResumePaymentService.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PayPalService.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:VaultService.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerAPIConfigurationModule.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:Analytics"
+                  name = "Analytics">
+                  <FileRef
+                     location = "group:Analytics.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:Device.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:AnalyticsEvent.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:AnalyticsService.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:AnalyticsStorage.swift">
+                  </FileRef>
+               </Group>
+            </Group>
+            <FileRef
+               location = "group:version.swift">
+            </FileRef>
+            <Group
+               location = "group:Error Handler"
+               name = "Error Handler">
+               <FileRef
+                  location = "group:PrimerIPay88Error+Extension.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerValidationError.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:Primer3DSErrorContainer.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerInternalError.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ErrorHandler.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerKlarnaError+Extension.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerServerError.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ErrorExtension.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerError.swift">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:Modules"
+               name = "Modules">
+               <FileRef
+                  location = "group:ClientSessionActionsModule.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PollingModule.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:Downloader.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ImageManager.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:CheckoutEventsNotifierModule.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:UserInterfaceModule.swift">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:Third Party"
+               name = "Third Party">
+               <Group
+                  location = "group:PromiseKit"
+                  name = "PromiseKit">
+                  <Group
+                     location = "group:Cancellation"
+                     name = "Cancellation">
+                     <FileRef
+                        location = "group:CancellableCatchable.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:CancelContext.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:Cancellable.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:CancellableThenable.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:CancellablePromise.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Wrappers"
+                     name = "Wrappers">
+                     <FileRef
+                        location = "group:RecoverWrappers.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:CatchWrappers.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:ThenableWrappers.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:WrapperProtocols.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:EnsureWrappers.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:SequenceWrappers.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:GuaranteeWrappers.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:FinallyWrappers.swift">
+                     </FileRef>
+                  </Group>
+                  <FileRef
+                     location = "group:Dispatcher.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:when.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:Guarantee.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:LICENSE">
+                  </FileRef>
+                  <FileRef
+                     location = "group:race.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:Error.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:after.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:Resolver.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:hang.swift">
+                  </FileRef>
+                  <Group
+                     location = "group:Dispatchers"
+                     name = "Dispatchers">
+                     <FileRef
+                        location = "group:RateLimitedDispatcher.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:RateLimitedDispatcherBase.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:CoreDataDispatcher.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:StrictRateLimitedDispatcher.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:Queue.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:ConcurrencyLimitedDispatcher.swift">
+                     </FileRef>
+                  </Group>
+                  <FileRef
+                     location = "group:Box.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:Catchable.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:LogEvent.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:Promise.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:firstly.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:CustomStringConvertible.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:Thenable.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:Configuration.swift">
+                  </FileRef>
+               </Group>
+            </Group>
+            <Group
+               location = "group:Services"
+               name = "Services">
+               <Group
+                  location = "group:Network"
+                  name = "Network">
+                  <FileRef
+                     location = "group:PrimerAPIClient.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:RetryConfiguration.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:WebAuthenticationService.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:NetworkService.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerAPIClientProtocol.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:SuccessResponse.swift">
+                  </FileRef>
+                  <Group
+                     location = "group:Protocols"
+                     name = "Protocols">
+                     <FileRef
+                        location = "group:PrimerAPIClientCreateResumePaymentProtocol.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerAPIClientAnalyticsProtocol.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerAPIClientVaultProtocol.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerAPIClientXenditProtocol.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerAPIClientBanksProtocol.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerAPIClientAchProtocol.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerAPIClientPayPalProtocol.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerAPIClientBINDataProtocol.swift">
+                     </FileRef>
+                  </Group>
+                  <FileRef
+                     location = "group:Endpoint.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:Parser"
+                  name = "Parser">
+                  <FileRef
+                     location = "group:Parser.swift">
+                  </FileRef>
+               </Group>
+            </Group>
+            <Group
+               location = "group:User Interface"
+               name = "User Interface">
+               <FileRef
+                  location = "group:UIUtils.swift">
+               </FileRef>
+               <Group
+                  location = "group:Primer"
+                  name = "Primer">
+                  <FileRef
+                     location = "group:CardButton.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:OAuth"
+                  name = "OAuth">
+                  <FileRef
+                     location = "group:PrimerWebViewController.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:Klarna Categories Sheet"
+                  name = "Klarna Categories Sheet">
+                  <FileRef
+                     location = "group:PrimerKlarnaCategoriesViewModel.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerKlarnaCategoriesViewController.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerKlarnaCategoriesView.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerKlarnaCategoriesElements.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:TokenizationViewModels"
+                  name = "TokenizationViewModels">
+                  <FileRef
+                     location = "group:NolPayTokenizationViewModel.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PayPalTokenizationViewModel.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PaymentMethodTokenizationViewModel.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:BankSelectorTokenizationViewModel.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:CheckoutWithVaultedPaymentMethodViewModel.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:KlarnaTokenizationViewModel.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:WebRedirectPaymentMethodTokenizationViewModel.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ApplePayTokenizationViewModel.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PaymentMethodTokenizationViewModel+Logic.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:QRCodeTokenizationViewModel.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:IPay88TokenizationViewModel.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerTestPaymentMethodTokenizationViewModel.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:BankSelectorTokenizationProviding.swift">
+                  </FileRef>
+               </Group>
+               <FileRef
+                  location = "group:PaymentMethodsGroupView.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerDemo3DSViewController.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ApplePayPresentationManager.swift">
+               </FileRef>
+               <Group
+                  location = "group:TokenizationViewControllers"
+                  name = "TokenizationViewControllers">
+                  <FileRef
+                     location = "group:QRCodeViewController.swift">
+                  </FileRef>
+               </Group>
+               <FileRef
+                  location = "group:AccessibilityIdentifier.swift">
+               </FileRef>
+               <Group
+                  location = "group:UI Delegates"
+                  name = "UI Delegates">
+                  <FileRef
+                     location = "group:ReloadDelegate.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:Components"
+                  name = "Components">
+                  <FileRef
+                     location = "group:PrimerResultViewController.swift">
+                  </FileRef>
+                  <Group
+                     location = "group:PrimerCustomResult"
+                     name = "PrimerCustomResult">
+                     <FileRef
+                        location = "group:PrimerResultPaymentStatusViewModel.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerCustomResultViewController.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerResultPaymentStatusView.swift">
+                     </FileRef>
+                  </Group>
+                  <FileRef
+                     location = "group:PrimerResultComponentView.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerSearchTextField.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:HeaderFooterLabelView.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerNibView.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerFormView.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:Text Fields"
+                  name = "Text Fields">
+                  <FileRef
+                     location = "group:PrimerLastNameFieldView.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerPostalCodeFieldView.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerFirstNameFieldView.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerAddressLineFieldView.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerTextFieldView+Analytics.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerCountryFieldView.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerStateFieldView.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerCityFieldView.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerTextFieldView+CardFormFieldsAnalytics.swift">
+                  </FileRef>
+                  <Group
+                     location = "group:Generic"
+                     name = "Generic">
+                     <FileRef
+                        location = "group:PrimerSimpleCardFormTextFieldView.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerGenericTextFieldView.swift">
+                     </FileRef>
+                  </Group>
+               </Group>
+               <Group
+                  location = "group:ACH UserDetails Sheet"
+                  name = "ACH UserDetails Sheet">
+                  <FileRef
+                     location = "group:ACHUserDetailsViewModel.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ACHUserDetailsViewController.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ACHUserDetailsView.swift">
+                  </FileRef>
+               </Group>
+               <FileRef
+                  location = "group:PrimerUIManager.swift">
+               </FileRef>
+               <Group
+                  location = "group:Root"
+                  name = "Root">
+                  <FileRef
+                     location = "group:PrimerPaymentPendingInfoViewController.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerContainerViewController.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerLoadingViewController.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerUniversalCheckoutViewController.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerFormViewController.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerAccountInfoPaymentViewController.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerVaultManagerViewController.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerNavigationBar.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerRootViewController.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerInputViewController.swift">
+                  </FileRef>
+                  <Group
+                     location = "group:CVVRecapture"
+                     name = "CVVRecapture">
+                     <FileRef
+                        location = "group:CVVRecaptureViewController.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:CVVRecaptureViewModel.swift">
+                     </FileRef>
+                  </Group>
+                  <FileRef
+                     location = "group:PrimerVoucherInfoPaymentViewController.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerNavigationController.swift">
+                  </FileRef>
+               </Group>
+               <FileRef
+                  location = "group:Identifiable.swift">
+               </FileRef>
+               <Group
+                  location = "group:TestPaymentMethods"
+                  name = "TestPaymentMethods">
+                  <FileRef
+                     location = "group:PrimerTestPaymentMethodViewController.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:FlowDecisionTableViewCell.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:Countries"
+                  name = "Countries">
+                  <FileRef
+                     location = "group:CountryTableViewCell.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:CountrySelectorViewController.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ACH Mandate Sheet"
+                  name = "ACH Mandate Sheet">
+                  <FileRef
+                     location = "group:ACHMandateViewModel.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ACHMandateView.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ACHMandateViewController.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:Banks"
+                  name = "Banks">
+                  <FileRef
+                     location = "group:BankSelectorViewController.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:BankTableViewCell.swift">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:Vault"
+                  name = "Vault">
+                  <FileRef
+                     location = "group:VaultPaymentMethodViewController.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:VaultPaymentMethodViewModel.swift">
+                  </FileRef>
+               </Group>
+            </Group>
+         </Group>
+         <Group
+            location = "group:Resources"
+            name = "Resources">
+            <Group
+               location = "group:JSONs"
+               name = "JSONs">
+               <Group
+                  location = "group:localized_countries"
+                  name = "localized_countries">
+                  <FileRef
+                     location = "group:hy.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:tg.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:zh.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ps.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:tr.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:mk.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:sl.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:hu.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:lt.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:is.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bn.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:dv.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ha.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:kk.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:nl.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ms.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ja.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:de.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ru.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:pl.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:uk.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ky.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:fi.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ta.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ug.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ku.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ur.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:tt.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:sk.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ml.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:az.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:pt.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:be.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:en.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ka.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:km.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:it.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:sr.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:hr.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:sd.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:et.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:cy.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:sq.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bs.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:fr.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:am.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:el.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:bg.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ro.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:hi.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ca.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:mn.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ko.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:eu.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:gl.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:he.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:zh-TW.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:vi.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:fa.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:zh-KH.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:cs.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:id.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:uz.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:lv.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:no.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:af.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:sw.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:da.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:th.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:sv.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:nn.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:es.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:ar.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:nb.json">
+                  </FileRef>
+                  <FileRef
+                     location = "group:so.json">
+                  </FileRef>
+               </Group>
+               <FileRef
+                  location = "group:phone_number_country_codes.json">
+               </FileRef>
+               <FileRef
+                  location = "group:currencies.json">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:Nibs"
+               name = "Nibs">
+               <FileRef
+                  location = "group:PrimerTextFieldView.xib">
+               </FileRef>
+            </Group>
+            <FileRef
+               location = "group:Icons.xcassets">
+            </FileRef>
+            <Group
+               location = "group:Localizable"
+               name = "Localizable">
+               <Group
+                  location = "group:de.lproj"
+                  name = "de.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:lt-LT.lproj"
+                  name = "lt-LT.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:he.lproj"
+                  name = "he.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ar.lproj"
+                  name = "ar.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:el.lproj"
+                  name = "el.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:zh-TW.lproj"
+                  name = "zh-TW.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:uk-UA.lproj"
+                  name = "uk-UA.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:en.lproj"
+                  name = "en.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:zh-HK.lproj"
+                  name = "zh-HK.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:nb.lproj"
+                  name = "nb.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:es.lproj"
+                  name = "es.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:sl.lproj"
+                  name = "sl.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:sr-RS.lproj"
+                  name = "sr-RS.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:da.lproj"
+                  name = "da.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:it.lproj"
+                  name = "it.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ms.lproj"
+                  name = "ms.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:sv.lproj"
+                  name = "sv.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ko.lproj"
+                  name = "ko.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:fi-FI.lproj"
+                  name = "fi-FI.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:tr.lproj"
+                  name = "tr.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:pl.lproj"
+                  name = "pl.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:zh-CN.lproj"
+                  name = "zh-CN.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:fr.lproj"
+                  name = "fr.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:id.lproj"
+                  name = "id.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:nl.lproj"
+                  name = "nl.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:th.lproj"
+                  name = "th.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:pt.lproj"
+                  name = "pt.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
+                  location = "group:ca.lproj"
+                  name = "ca.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+            </Group>
+         </Group>
+      </Group>
+   </Group>
+   <Group
+      location = "group:Tests"
+      name = "Tests">
+      <Group
+         location = "group:Klarna"
+         name = "Klarna">
+         <FileRef
+            location = "group:PrimerKlarnaCategoriesViewControllerTests.swift">
+         </FileRef>
+         <FileRef
+            location = "group:KlarnaTokenizationComponentTests.swift">
+         </FileRef>
+         <FileRef
+            location = "group:KlarnaTokenizationManagerTests.swift">
+         </FileRef>
+         <FileRef
+            location = "group:KlarnaTestsMocks.swift">
+         </FileRef>
+         <FileRef
+            location = "group:KlarnaComponentTests.swift">
+         </FileRef>
+         <FileRef
+            location = "group:KlarnaHeadlessManagerTests.swift">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:Primer"
+         name = "Primer">
+         <Group
+            location = "group:UI"
+            name = "UI">
+            <FileRef
+               location = "group:PrimerCountryFieldViewTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:HeaderFooterLabelViewTests.swift">
+            </FileRef>
+            <Group
+               location = "group:PrimerCustomResult"
+               name = "PrimerCustomResult">
+               <FileRef
+                  location = "group:PrimerCustomResultViewControllerTests.swift">
+               </FileRef>
+            </Group>
+            <FileRef
+               location = "group:PrimerInputElementTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PaymentMethodsGroupViewTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerCVVFieldViewTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerStateFieldViewTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerFirstNameFieldViewTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerCardNumberFieldViewTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerCardholderNameFieldViewTests.swift">
+            </FileRef>
+            <Group
+               location = "group:ACHUserDetails"
+               name = "ACHUserDetails">
+               <FileRef
+                  location = "group:ACHUserDetailsViewControllerTests.swift">
+               </FileRef>
+            </Group>
+            <FileRef
+               location = "group:PrimerPostalCodeFieldViewTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerGenericFieldViewTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerCityFieldViewTests.swift">
+            </FileRef>
+            <Group
+               location = "group:ACHMandate"
+               name = "ACHMandate">
+               <FileRef
+                  location = "group:ACHMandateViewControllerTests.swift">
+               </FileRef>
+            </Group>
+            <FileRef
+               location = "group:PrimerFormViewTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerExpiryDateFieldViewTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerTextFieldViewTests.swift">
+            </FileRef>
+            <Group
+               location = "group:Helpers"
+               name = "Helpers">
+               <FileRef
+                  location = "group:TextFieldViewDelegate.swift">
+               </FileRef>
+            </Group>
+            <FileRef
+               location = "group:PrimerLastNameFieldViewTests.swift">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:Data Models"
+            name = "Data Models">
+            <FileRef
+               location = "group:ApplePayOrderItemTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:CardNetworkTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerPaymentMethodTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:DecodedClientToken.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PayPalConfirmBillingAgreementTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerCheckoutTheme.swift">
+            </FileRef>
+            <Group
+               location = "group:PayPal"
+               name = "PayPal">
+               <FileRef
+                  location = "group:PayPalValidationComponentTests.swift">
+               </FileRef>
+            </Group>
+            <FileRef
+               location = "group:ApplePayTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerRawRetailerDataTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PayPalResponseTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PaymentMethodConfigTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerPaymentMethodOptionsTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:CardButtonViewModelTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:VoucherValueTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:ThemeTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:TokenizationResponseTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:CurrencyStorageTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PostalCodeTests.swift">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:CVV Recapture"
+            name = "CVV Recapture">
+            <FileRef
+               location = "group:CVVRecaptureViewModelTests.swift">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:Ideal"
+            name = "Ideal">
+            <FileRef
+               location = "group:WebRedirectComponentTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:BankComponentTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerHeadlessFormWithRedirectManagerTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:IdealPaymentMethodTests.swift">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:Managers"
+            name = "Managers">
+            <FileRef
+               location = "group:RawDataManagerTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:NativeUIManagerTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:KlarnaTokenizationManagerTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerRawOTPDataTokenizationBuilderTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:VaultManagerTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerBancontactCardDataManagerTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerOTPDataTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerRawCardDataManagerTests.swift">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:Network"
+            name = "Network">
+            <Group
+               location = "group:Endpoints"
+               name = "Endpoints">
+               <FileRef
+                  location = "group:ListCardNetworksEndpointTests.swift">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:Factories"
+               name = "Factories">
+               <FileRef
+                  location = "group:NetworkResponseFactoryTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:NetworkRequestFactoryTests.swift">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:Services"
+               name = "Services">
+               <FileRef
+                  location = "group:NetworkingReportingServiceTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:RequestDispatcherTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:DefaultNetworkServiceTests.swift">
+               </FileRef>
+            </Group>
+         </Group>
+         <FileRef
+            location = "group:DependencyContainerTests.swift">
+         </FileRef>
+         <Group
+            location = "group:Utils"
+            name = "Utils">
+            <FileRef
+               location = "group:CheckoutSessionTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:IntExtensionTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:MaskTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:StringTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:WebViewUtilTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:DateTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:ConfigurationCacheTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:CharacterSet+Utils.swift">
+            </FileRef>
+            <FileRef
+               location = "group:ApplePayUtilsTest.swift">
+            </FileRef>
+            <FileRef
+               location = "group:VersionUtilsTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:DebouncerTests.swift">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:Tokenization"
+            name = "Tokenization">
+            <Group
+               location = "group:View Models"
+               name = "View Models">
+               <FileRef
+                  location = "group:CheckoutWithVaultedPaymentMethodViewModelTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:QRCodeTokenizationViewModelTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:WebRedirectPaymentMethodTokenizationViewModelTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:FormPaymentMethodTokenizationViewModelTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:ApplePayTokenizationViewModelTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:CardFormPaymentMethodTokenizationViewModelTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:PayPalTokenizationViewModelTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:BankSelectionTokenizationViewModelTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:TokenizationViewModelTestCase.swift">
+               </FileRef>
+            </Group>
+         </Group>
+         <Group
+            location = "group:Extensions"
+            name = "Extensions">
+            <FileRef
+               location = "group:EncodingDecodingContainerTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:StringExtensionTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:ArrayExtensionTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:ErrorExtensionTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerColorTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:ClassNameExtensionTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:UserDefaultsExtensionTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:DataExtensionTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:DateExtensionTests.swift">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:v2"
+            name = "v2">
+            <FileRef
+               location = "group:HeadlessVaultManagerTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:RawDataManagerValidationTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:HeadlessUniversalCheckoutAPIConfigurationTests.swift">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:CurrencyLoaderTests.swift">
+         </FileRef>
+         <Group
+            location = "group:Modules"
+            name = "Modules">
+            <FileRef
+               location = "group:XCTestCase+Tokenization.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PrimerAPIConfigurationModuleTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PollingModuleTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:UserInterfaceModuleTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:HeadlessUniversalCheckoutTests.swift">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:ApplePay"
+            name = "ApplePay">
+            <FileRef
+               location = "group:ApplePayPresentationManagerTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:ApplePayValidationComponentTests.swift">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:Assets"
+            name = "Assets">
+            <FileRef
+               location = "group:AssetsManagerTests.swift">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:Banks"
+            name = "Banks">
+            <FileRef
+               location = "group:BanksTokenizationComponentTests.swift">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:Services"
+            name = "Services">
+            <FileRef
+               location = "group:CardValidationServiceTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PaymentMethodConfigServiceTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:TokenizationServiceTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:InternalCardComponentManagerTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:PayPalServiceTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:CreateResumePaymentServiceTests.swift">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:Vault"
+            name = "Vault">
+            <FileRef
+               location = "group:VaultPaymentMethodViewModelTests.swift">
+            </FileRef>
+         </Group>
+         <Group
+            location = "group:Analytics"
+            name = "Analytics">
+            <FileRef
+               location = "group:AnalyticsStorageTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:AnalyticsEventsTests.swift">
+            </FileRef>
+            <FileRef
+               location = "group:AnalyticsServiceTests.swift">
+            </FileRef>
+         </Group>
+      </Group>
+      <Group
+         location = "group:Utilities"
+         name = "Utilities">
+         <Group
+            location = "group:Mocks"
+            name = "Mocks">
+            <Group
+               location = "group:ViewModels"
+               name = "ViewModels">
+               <FileRef
+                  location = "group:MockVaultCheckoutViewModel.swift">
+               </FileRef>
+            </Group>
+            <FileRef
+               location = "group:MockPaymentMethodTokenizationViewModel.swift">
+            </FileRef>
+            <Group
+               location = "group:Delegates"
+               name = "Delegates">
+               <FileRef
+                  location = "group:MockRawDataManagerDelegate.swift">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:Services"
+               name = "Services">
+               <FileRef
+                  location = "group:CreateResumePaymentService.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:MockAPIClient.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:NetworkService.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:MockBINDataAPIClient.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:MockPrimerUIManager.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:TokenizationService.swift">
+               </FileRef>
+            </Group>
+            <Group
+               location = "group:Analytics"
+               name = "Analytics">
+               <FileRef
+                  location = "group:MockPrimerAPIAnalyticsClient.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:MockAnalyticsStorage.swift">
+               </FileRef>
+            </Group>
+         </Group>
+         <Group
+            location = "group:Test Utilities"
+            name = "Test Utilities">
+            <FileRef
+               location = "group:JWTFactory.swift">
+            </FileRef>
+            <FileRef
+               location = "group:StringTyper.swift">
+            </FileRef>
+            <FileRef
+               location = "group:TimerExtension.swift">
+            </FileRef>
+            <FileRef
+               location = "group:CodingUtilities.swift">
+            </FileRef>
+            <FileRef
+               location = "group:SDKSessionHelper.swift">
+            </FileRef>
+            <Group
+               location = "group:Delegates"
+               name = "Delegates">
+               <FileRef
+                  location = "group:MockPrimerHeadlessUniversalCheckoutDelegate.swift">
+               </FileRef>
+            </Group>
+         </Group>
+         <Group
+            location = "group:Extensions"
+            name = "Extensions">
+            <FileRef
+               location = "group:PrimerValidationStatus+Equatable.swift">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:Mocks.swift">
+         </FileRef>
+         <Group
+            location = "group:Helpers"
+            name = "Helpers">
+            <FileRef
+               location = "group:CardData.swift">
+            </FileRef>
+            <FileRef
+               location = "group:Promises+Helper.swift">
+            </FileRef>
+         </Group>
+      </Group>
+      <Group
+         location = "group:NolPay"
+         name = "NolPay">
+         <FileRef
+            location = "group:NolPayLinkedCardsComponentTests.swift">
+         </FileRef>
+         <FileRef
+            location = "group:PrimerHeadlessNolPayManagerTests.swift">
+         </FileRef>
+         <FileRef
+            location = "group:NolTestsMocks.swift">
+         </FileRef>
+         <FileRef
+            location = "group:NolPayLinkCardComponentTest.swift">
+         </FileRef>
+         <FileRef
+            location = "group:NolPayUnlinkCardComponentTest.swift">
+         </FileRef>
+         <FileRef
+            location = "group:NolPayPhoneMetadataServiceTests.swift">
+         </FileRef>
+         <FileRef
+            location = "group:NolPayPaymentComponentTests.swift">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:3DS"
+         name = "3DS">
+         <FileRef
+            location = "group:ThreeDSProtocolVersionTests.swift">
+         </FileRef>
+         <FileRef
+            location = "group:ThreeDSErrorTests.swift">
+         </FileRef>
+      </Group>
+      <Group
+         location = "group:Stripe"
+         name = "Stripe">
+         <FileRef
+            location = "group:ACHClientSessionServiceTests.swift">
+         </FileRef>
+         <FileRef
+            location = "group:ACHTokenizationServiceTests.swift">
+         </FileRef>
+         <FileRef
+            location = "group:ACHMocks.swift">
+         </FileRef>
+         <FileRef
+            location = "group:ACHAdditionalInfoTests.swift">
+         </FileRef>
+         <FileRef
+            location = "group:ACHHeadlessManagerTests.swift">
+         </FileRef>
+         <FileRef
+            location = "group:StripeAchHeadlessComponentTests.swift">
+         </FileRef>
+         <FileRef
+            location = "group:ACHHelpersTests.swift">
+         </FileRef>
+         <FileRef
+            location = "group:StripeAchTokenizationViewModelTests.swift">
+         </FileRef>
+      </Group>
+   </Group>
+   <FileRef
       location = "group:Debug App/Primer.io Debug App.xcodeproj">
    </FileRef>
    <FileRef
