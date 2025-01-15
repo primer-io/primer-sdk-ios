@@ -18,7 +18,7 @@
                      BlueprintIdentifier = "BEB14ABCDF34E3D24759EAAB"
                      BuildableName = "Debug App.app"
                      BlueprintName = "Debug App"
-                     ReferencedContainer = "container:Primer.io Debug App.xcodeproj">
+                     ReferencedContainer = "container:Debug App/Primer.io Debug App.xcodeproj">
                   </BuildableReference>
                </EnvironmentBuildable>
             </ActionContent>
@@ -36,7 +36,7 @@
                BlueprintIdentifier = "BEB14ABCDF34E3D24759EAAB"
                BuildableName = "Debug App.app"
                BlueprintName = "Debug App"
-               ReferencedContainer = "container:Primer.io Debug App.xcodeproj">
+               ReferencedContainer = "container:Debug App/Primer.io Debug App.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -50,7 +50,7 @@
                BlueprintIdentifier = "301F25EE1514F3AF2E4A7FBD"
                BuildableName = "Debug App Tests.xctest"
                BlueprintName = "Debug App Tests"
-               ReferencedContainer = "container:Primer.io Debug App.xcodeproj">
+               ReferencedContainer = "container:Debug App/Primer.io Debug App.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -68,7 +68,7 @@
                BlueprintIdentifier = "301F25EE1514F3AF2E4A7FBD"
                BuildableName = "Debug App Tests.xctest"
                BlueprintName = "Debug App Tests"
-               ReferencedContainer = "container:Primer.io Debug App.xcodeproj">
+               ReferencedContainer = "container:Debug App/Primer.io Debug App.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -91,7 +91,7 @@
             BlueprintIdentifier = "BEB14ABCDF34E3D24759EAAB"
             BuildableName = "Debug App.app"
             BlueprintName = "Debug App"
-            ReferencedContainer = "container:Primer.io Debug App.xcodeproj">
+            ReferencedContainer = "container:Debug App/Primer.io Debug App.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -108,7 +108,7 @@
             BlueprintIdentifier = "BEB14ABCDF34E3D24759EAAB"
             BuildableName = "Debug App.app"
             BlueprintName = "Debug App"
-            ReferencedContainer = "container:Primer.io Debug App.xcodeproj">
+            ReferencedContainer = "container:Debug App/Primer.io Debug App.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
