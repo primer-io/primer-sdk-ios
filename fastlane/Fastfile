@@ -10,7 +10,7 @@ github_run_id = ENV["GITHUB_RUN_ID"]
 github_run_number = ENV["GITHUB_RUN_NUMBER"]
 
 # Xcode
-app_workspace = "Debug App/Primer.io Debug App.xcworkspace"
+app_workspace = "PrimerSDK.xcworkdpace"
 
 app_xcode_proj = "Debug App/Primer.io Debug App.xcodeproj"
 app_scheme = "Debug App"
