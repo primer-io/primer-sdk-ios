@@ -76,6 +76,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "Fornavn";
 
+"form_error_card_holder_name_length" = "Navn skal være mellem 2 og 45 tegn";
+
+"form_error_card_type_not_supported" = "Ikke-understøttet korttype";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "Få koden fra din bank-app.";
 

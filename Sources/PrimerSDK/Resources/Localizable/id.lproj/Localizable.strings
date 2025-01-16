@@ -76,6 +76,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "Nama depan";
 
+"form_error_card_holder_name_length" = "Nama harus terdiri dari antara 2 hingga 45 karakter";
+
+"form_error_card_type_not_supported" = "Jenis kartu tidak didukung";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "Dapatkan kode dari aplikasi perbankan Anda.";
 
