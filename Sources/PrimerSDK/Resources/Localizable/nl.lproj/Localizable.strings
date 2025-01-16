@@ -76,6 +76,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "Voornaam";
 
+"form_error_card_holder_name_length" = "Naam moet tussen de 2 en 45 tekens lang zijn";
+
+"form_error_card_type_not_supported" = "Kaarttype niet ondersteund";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "Ontvang de code van uw bank-app";
 

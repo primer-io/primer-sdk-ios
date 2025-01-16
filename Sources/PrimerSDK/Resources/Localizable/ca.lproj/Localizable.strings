@@ -76,6 +76,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "Nom";
 
+"form_error_card_holder_name_length" = "El nom ha de tenir entre 2 i 45 caràcters";
+
+"form_error_card_type_not_supported" = "Tipus de targeta no admès";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "Aconseguiu el codi des de la vostra aplicació bancària.";
 

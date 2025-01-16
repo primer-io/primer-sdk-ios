@@ -76,6 +76,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "Prénom";
 
+"form_error_card_holder_name_length" = "Le nom doit comporter entre 2 et 45 caractères";
+
+"form_error_card_type_not_supported" = "Type de carte non pris en charge";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "Trouvez le code dans votre application bancaire.";
 

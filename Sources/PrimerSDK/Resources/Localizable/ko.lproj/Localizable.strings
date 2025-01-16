@@ -76,6 +76,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "이름";
 
+"form_error_card_holder_name_length" = "이름은 2~45자 사이여야 합니다";
+
+"form_error_card_type_not_supported" = "지원되지 않는 카드 종류입니다";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "금융 앱에서 코드를 받으세요.";
 
