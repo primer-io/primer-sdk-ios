@@ -9,7 +9,7 @@ line_length:
   ignores_urls: true
   
 included:
-  - ../Sources
+  - Sources
 
 excluded:
-  - ../Sources/PrimerSDK/Classes/Third Party/PromiseKit
+  - Sources/PrimerSDK/Classes/Third Party/PromiseKit
