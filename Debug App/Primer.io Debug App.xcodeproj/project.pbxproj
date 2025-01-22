@@ -63,7 +63,7 @@
 		F08F63DA2B9B5BC5006EF9A9 /* AppetizeConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63D92B9B5BC5006EF9A9 /* AppetizeConfigProvider.swift */; };
 		F08F63DC2B9F27B0006EF9A9 /* MetadataParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63DB2B9F27B0006EF9A9 /* MetadataParser.swift */; };
 		F09978822D00B7620058E4B5 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09978812D00B7620058E4B5 /* Metadata.swift */; };
-		F0C125D42D3FF62E007A0992 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = F0C125D32D3FF62E007A0992 /* .swiftlint.yml */; };
+		F0C125D62D40FB51007A0992 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = F0C125D52D40FB51007A0992 /* .swiftlint.yml */; };
 		F0C2147F6FA26527BE55549A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC701AFD94F96F0F1D108D1A /* LaunchScreen.xib */; };
 		FD5ADBCFA70DB606339F3AF2 /* TransactionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D3D6CF0F006A06B7CEC71B /* TransactionResponse.swift */; };
 /* End PBXBuildFile section */
@@ -209,6 +209,7 @@
 		F08F63DB2B9F27B0006EF9A9 /* MetadataParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataParser.swift; sourceTree = "<group>"; };
 		F09978812D00B7620058E4B5 /* Metadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = "<group>"; };
 		F0C125D32D3FF62E007A0992 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = .swiftlint.yml; path = ../.swiftlint.yml; sourceTree = "<group>"; };
+		F0C125D52D40FB51007A0992 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		F816A2444633C4336A7CB071 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
 		F9023841AFCE8E3205CB713A /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		FB1F71737862EF5D0F4FE5AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -318,6 +319,7 @@
 			children = (
 				A19EF5622B20E22E00A72F60 /* .swiftlint.yml */,
 				F0C125D32D3FF62E007A0992 /* .swiftlint.yml */,
+				F0C125D52D40FB51007A0992 /* .swiftlint.yml */,
 				FBDF3F8B5F93A0EC28048640 /* Project */,
 				DF30711EB149C64C364BB79A /* Products */,
 				61E8D69DF93462D748F446DF /* Pods */,
@@ -580,7 +582,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0C125D42D3FF62E007A0992 /* .swiftlint.yml in Resources */,
+				F0C125D62D40FB51007A0992 /* .swiftlint.yml in Resources */,
 				044DE11B2CBFF93F00AAE28A /* secrets.defaults.properties in Resources */,
 				EA7FAA4F8476BD3711D628CB /* Images.xcassets in Resources */,
 				F0C2147F6FA26527BE55549A /* LaunchScreen.xib in Resources */,
