@@ -183,6 +183,11 @@ struct ClientSessionRequestBody: Encodable {
 
         struct  SurchargeOption: Codable {
             var amount: Int?
+
+            var dictionaryValue: [String: Any] {
+                return ["amount": amount ?? 0]
+            }
+
         }
 
         struct NetworkOptionGroup: Codable {
@@ -213,7 +218,7 @@ struct ClientSessionRequestBody: Encodable {
             var surcharge: SurchargeOption
 
             var dictionaryValue: [String: Any] {
-                return ["surcharge": surcharge.dictionaryValue ?? [:]]
+                return ["surcharge": surcharge.dictionaryValue]
             }
         }
     }
