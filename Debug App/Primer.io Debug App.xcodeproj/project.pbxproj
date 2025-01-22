@@ -578,7 +578,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0C125D62D40FB51007A0992 /* .swiftlint.yml in Resources */,
+				A19EF5632B20E22E00A72F60 /* .swiftlint.yml in Resources */,
 				044DE11B2CBFF93F00AAE28A /* secrets.defaults.properties in Resources */,
 				EA7FAA4F8476BD3711D628CB /* Images.xcassets in Resources */,
 				F0C2147F6FA26527BE55549A /* LaunchScreen.xib in Resources */,
