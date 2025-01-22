@@ -316,8 +316,6 @@
 			isa = PBXGroup;
 			children = (
 				A19EF5622B20E22E00A72F60 /* .swiftlint.yml */,
-				F0C125D32D3FF62E007A0992 /* .swiftlint.yml */,
-				F0C125D52D40FB51007A0992 /* .swiftlint.yml */,
 				FBDF3F8B5F93A0EC28048640 /* Project */,
 				DF30711EB149C64C364BB79A /* Products */,
 				61E8D69DF93462D748F446DF /* Pods */,
