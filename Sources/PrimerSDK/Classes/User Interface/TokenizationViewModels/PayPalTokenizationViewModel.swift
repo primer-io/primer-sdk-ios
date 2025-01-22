@@ -247,7 +247,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return
             }
 
-            webAuthenticationService.connect(url: url, scheme: scheme) { [weak self] result in
+            webAuthenticationService.connect(paymentMethodType: self.config.type, url: url, scheme: scheme) { [weak self] result in
                 switch result {
                 case .success(let url):
                     seal.fulfill(url)

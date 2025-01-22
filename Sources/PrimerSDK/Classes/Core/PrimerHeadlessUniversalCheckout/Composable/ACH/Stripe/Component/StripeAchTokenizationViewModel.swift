@@ -165,7 +165,9 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 return self.awaitUserInput()
             }
             .then { () -> Promise<Void> in
-                return self.completePayment(clientToken: decodedJWTToken, completeUrl: sdkCompleteUrl)
+                return self.createResumePaymentService.completePayment(clientToken: decodedJWTToken,
+                                                                       completeUrl: sdkCompleteUrl,
+                                                                       body: StripeAchTokenizationViewModel.defaultCompleteBodyWithTimestamp)
             }
             .done {
                 seal.fulfill(nil)
@@ -326,36 +328,6 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
         }
     }
-
-    /**
-     * Completes a payment using the provided JWT token and URL.
-     *
-     * This private method performs an API call to complete a payment, using a decoded JWT token for authentication
-     * and a URL indicating where the completion request should be sent.
-     *
-     * - Parameters:
-     *   - clientToken: A `DecodedJWTToken` representing the client's authentication token.
-     *   - completeUrl: An `URL` indicating the endpoint for completing the ACH payment.
-     *
-     * - Returns: A `Promise<Void>` that resolves if the payment is completed successfully, or rejects if there is
-     *            an error during the API call.
-     */
-    private func completePayment(clientToken: DecodedJWTToken, completeUrl: URL) -> Promise<Void> {
-        return Promise { seal in
-            let apiClient: PrimerAPIClientAchProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
-            let timeZone = TimeZone(abbreviation: "UTC")
-            let timeStamp = Date().toString(timeZone: timeZone)
-            let body = Request.Body.Payment.Complete(mandateSignatureTimestamp: timeStamp, paymentMethodId: returnedStripeAchPaymentId)
-            apiClient.completePayment(clientToken: clientToken, url: completeUrl, paymentRequest: body) { result in
-                switch result {
-                case .success:
-                    seal.fulfill()
-                case .failure(let error):
-                    seal.reject(error)
-                }
-            }
-        }
-    }
 }
 
 // MARK: Drop-In
@@ -424,6 +396,13 @@ extension StripeAchTokenizationViewModel: ACHUserDetailsDelegate {
                 }
             }
         }
+    }
+
+    static var defaultCompleteBodyWithTimestamp: Request.Body.Payment.Complete {
+        let timeZone = TimeZone(abbreviation: "UTC")
+        let timeStamp = Date().toString(timeZone: timeZone)
+
+        return Request.Body.Payment.Complete(mandateSignatureTimestamp: timeStamp)
     }
 }
 

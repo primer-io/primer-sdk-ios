@@ -22,7 +22,6 @@ class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadle
     var settings: PrimerSettings!
     var clientSession: ClientSessionRequestBody?
     var clientToken: String?
-    var mandateDelegate: ACHMandateDelegate?
 
     var logs: [String] = []
     var primerError: Error?
@@ -52,7 +51,8 @@ class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadle
             self.clientToken = clientToken
             self.startPrimerHeadlessUniversalCheckout(with: clientToken)
         } else if let clientSession = clientSession {
-            Networking.requestClientSession(requestBody: clientSession) { (clientToken, err) in
+            Networking.requestClientSession(requestBody: clientSession,
+                                            apiVersion: settings.apiVersion) { (clientToken, err) in
                 if let err = err {
                     self.hideLoadingOverlay()
                     let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: err, logs: self.logs)
@@ -75,7 +75,6 @@ class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadle
     private func startPrimerHeadlessUniversalCheckout(with clientToken: String) {
         PrimerHeadlessUniversalCheckout.current.start(withClientToken: clientToken, settings: self.settings, completion: { (_, _) in
             self.vaultedManager = PrimerHeadlessUniversalCheckout.VaultManager()
-            self.mandateDelegate = self.vaultedManager
 
             do {
                 try self.vaultedManager?.configure()
@@ -135,15 +134,7 @@ class MerchantHeadlessVaultManagerViewController: UIViewController, PrimerHeadle
             self.activityIndicator = nil
         }
     }
-    
-    private func showMandate() {
-        showAlert(title: "Mandate acceptance", message: "Would you like to accept this mandate?") {
-            self.mandateDelegate?.acceptMandate()
-        } cancelHandler: {
-            self.mandateDelegate?.declineMandate()
-        }
-    }
-    
+
     private func showAlert(title: String, message: String, okHandler: (() -> Void)? = nil, cancelHandler: (() -> Void)? = nil) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let okAction = UIAlertAction(title: "OK", style: .default) { _ in okHandler?() }
@@ -174,9 +165,12 @@ extension MerchantHeadlessVaultManagerViewController: UITableViewDataSource, UIT
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         showLoadingOverlay()
         let vaultedPaymentMethod = self.availablePaymentMethods[indexPath.row]
-        let vaultedCardAdditionalData = PrimerVaultedCardAdditionalData(cvv: "737")
+        if vaultedPaymentMethod.paymentMethodType == "PAYMENT_CARD" {
+            self.vaultedManager?.startPaymentFlow(vaultedPaymentMethodId: vaultedPaymentMethod.id, vaultedPaymentMethodAdditionalData: PrimerVaultedCardAdditionalData(cvv: "737"))
+            return
+        }
 
-        self.vaultedManager?.startPaymentFlow(vaultedPaymentMethodId: vaultedPaymentMethod.id, vaultedPaymentMethodAdditionalData: vaultedCardAdditionalData)
+        self.vaultedManager?.startPaymentFlow(vaultedPaymentMethodId: vaultedPaymentMethod.id)
     }
 }
 
@@ -280,10 +274,6 @@ extension MerchantHeadlessVaultManagerViewController {
         DispatchQueue.main.async {
             self.hideLoadingOverlay()
         }
-        
-        if additionalInfo is ACHMandateAdditionalInfo {
-            showMandate()
-        }
     }
 
     func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
@@ -356,8 +346,11 @@ class MerchantVaultedPaymentMethodCell: UITableViewCell {
                 self.paymentMethodLabel.text = "Failed to find logo for \(paymentMethod.paymentMethodType)"
             }
 
-            paymentMethodLabel.text = "Pay with \(paymentMethodAsset.paymentMethodName) "
-
+            if paymentMethod.paymentMethodType == "STRIPE_ACH" {
+                paymentMethodLabel.text = "Pay with ACH \(paymentMethod.paymentInstrumentData.bankName ?? "-") **** \(paymentMethod.paymentInstrumentData.accountNumberLast4Digits ?? "-")"
+            } else {
+                paymentMethodLabel.text = "Pay with \(paymentMethodAsset.paymentMethodName) "
+            }
         } else {
             self.paymentMethodLogoView.isHidden = true
             self.paymentMethodLabel.isHidden = false

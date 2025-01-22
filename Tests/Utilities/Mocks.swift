@@ -74,7 +74,9 @@ class Mocks {
         productId: nil,
         paymentMethodConfigId: nil,
         paymentMethodType: nil,
-        sessionInfo: nil)
+        sessionInfo: nil,
+        bankName: nil,
+        accountNumberLast4Digits: nil)
 
     static var payment = Response.Body.Payment(
         id: "mock_id",
@@ -287,6 +289,7 @@ struct MockPrimerSettings: PrimerSettingsProtocol {
     var uiOptions = PrimerUIOptions()
     var threeDsOptions = PrimerThreeDsOptions()
     var debugOptions = PrimerDebugOptions()
+    var apiVersion: PrimerAPIVersion = .V2_3
 }
 
 let mockPaymentMethodConfig = PrimerAPIConfiguration(

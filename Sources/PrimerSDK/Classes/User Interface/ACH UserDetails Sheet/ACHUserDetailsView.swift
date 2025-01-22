@@ -16,7 +16,7 @@ struct ACHUserDetailsView: View {
     var onBackPressed: () -> Void
 
     var body: some View {
-
+        VStack {
         ZStack {
             Button {
                 onBackPressed()
@@ -41,9 +41,8 @@ struct ACHUserDetailsView: View {
                 .font(.system(size: 18, weight: .medium))
                 .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.title.rawValue)
         }
-        .padding(.top, -3)
+        .background(PrimerColors.swiftColor(PrimerColors.white))
 
-        VStack {
             HStack {
                 Text(Strings.UserDetails.subtitle)
                     .font(.system(size: 17))
@@ -81,13 +80,19 @@ struct ACHUserDetailsView: View {
             Spacer()
 
             Button(action: submitAction) {
-                Text(Strings.UserDetails.continueButton)
-                    .font(.system(size: 17, weight: .medium))
-                    .foregroundColor(viewModel.isValidForm ? Color.white : Color.gray)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(viewModel.isValidForm ? Color.blue : Color.gray.opacity(0.2))
-                    .cornerRadius(10)
+                ZStack {
+                    if viewModel.shouldDisableViews {
+                        ActivityIndicator(isAnimating: .constant(true), style: .medium, color: UIColor.black)
+                    } else {
+                        Text(Strings.UserDetails.continueButton)
+                        .font(.system(size: 17, weight: .medium))
+                    }
+                }
+                .foregroundColor(viewModel.isValidForm ? Color.white : Color.gray)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(viewModel.isValidForm ? Color.blue : Color.gray.opacity(0.2))
+                .cornerRadius(10)
             }
             .disabled(!viewModel.isValidForm)
             .padding(.horizontal)
@@ -95,6 +100,7 @@ struct ACHUserDetailsView: View {
         }
         .disabled(viewModel.shouldDisableViews)
         .frame(height: 380)
+        .background(PrimerColors.swiftColor(PrimerColors.white))
     }
 
     private func submitAction() {
@@ -121,7 +127,7 @@ struct CustomTextFieldView: View {
             TextField("", text: $text)
                 .padding(.horizontal, 10)
                 .frame(height: 44)
-                .background(Color.white)
+                .background(PrimerColors.swiftColor(PrimerColors.white))
                 .cornerRadius(4)
                 .overlay(
                     RoundedRectangle(cornerRadius: 4)

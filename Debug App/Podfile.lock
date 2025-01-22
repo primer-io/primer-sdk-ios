@@ -4,9 +4,9 @@ PODS:
   - PrimerIPay88MYSDK (0.1.7)
   - PrimerKlarnaSDK (1.1.1)
   - PrimerNolPaySDK (1.0.1)
-  - PrimerSDK (2.32.1):
-    - PrimerSDK/Core (= 2.32.1)
-  - PrimerSDK/Core (2.32.1)
+  - PrimerSDK (2.33.1):
+    - PrimerSDK/Core (= 2.33.1)
+  - PrimerSDK/Core (2.33.1)
   - PrimerStripeSDK (1.0.0)
 
 DEPENDENCIES:
@@ -37,9 +37,9 @@ SPEC CHECKSUMS:
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: 564105170cc7b467bf95c31851813ea41c468f8b
   PrimerNolPaySDK: 08b140ed39b378a0b33b4f8746544a402175c0cc
-  PrimerSDK: 41eb9f627fa189f3edafdb18ea2a671d4403b3e2
+  PrimerSDK: 181f7b12d3d436916bfea9a2c58d49a694aa8186
   PrimerStripeSDK: c37d4e7c1b5256d67d4890c4cc4b38ddc9427489
 
-PODFILE CHECKSUM: fa17ead44d40b0b09abc2f30a5cc3d8aefe389e1
+PODFILE CHECKSUM: 665eac28ae49fa5a7b983ebc01493e77d5e13406
 
 COCOAPODS: 1.16.2

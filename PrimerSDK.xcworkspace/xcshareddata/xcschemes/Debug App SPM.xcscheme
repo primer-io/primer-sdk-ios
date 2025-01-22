@@ -18,7 +18,7 @@
                      BlueprintIdentifier = "F00C65F52ACC67FA00187028"
                      BuildableName = "Debug App SPM.app"
                      BlueprintName = "Debug App SPM"
-                     ReferencedContainer = "container:Primer.io Debug App SPM.xcodeproj">
+                     ReferencedContainer = "container:Debug App/Primer.io Debug App SPM.xcodeproj">
                   </BuildableReference>
                </EnvironmentBuildable>
             </ActionContent>
@@ -36,7 +36,7 @@
                BlueprintIdentifier = "F00C65F52ACC67FA00187028"
                BuildableName = "Debug App SPM.app"
                BlueprintName = "Debug App SPM"
-               ReferencedContainer = "container:Primer.io Debug App SPM.xcodeproj">
+               ReferencedContainer = "container:Debug App/Primer.io Debug App SPM.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -65,7 +65,7 @@
             BlueprintIdentifier = "F00C65F52ACC67FA00187028"
             BuildableName = "Debug App SPM.app"
             BlueprintName = "Debug App SPM"
-            ReferencedContainer = "container:Primer.io Debug App SPM.xcodeproj">
+            ReferencedContainer = "container:Debug App/Primer.io Debug App SPM.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -82,7 +82,7 @@
             BlueprintIdentifier = "F00C65F52ACC67FA00187028"
             BuildableName = "Debug App SPM.app"
             BlueprintName = "Debug App SPM"
-            ReferencedContainer = "container:Primer.io Debug App SPM.xcodeproj">
+            ReferencedContainer = "container:Debug App/Primer.io Debug App SPM.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -173,14 +173,14 @@
                                     <action selector="testingModeSegmentedControlValueChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="cJO-Y5-e1h"/>
                                 </connections>
                             </segmentedControl>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fED-8r-rOM">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fED-8r-rOM">
                                 <rect key="frame" x="0.0" y="163" width="414" height="561"/>
                                 <subviews>
-                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="40" translatesAutoresizingMaskIntoConstraints="NO" id="Yce-hH-uhX">
-                                        <rect key="frame" x="20" y="20" width="374" height="4029"/>
+                                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="40" translatesAutoresizingMaskIntoConstraints="NO" id="Yce-hH-uhX">
+                                        <rect key="frame" x="20" y="20" width="374" height="4127"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="oCT-9e-d89" userLabel="Environment Stack View">
-                                                <rect key="frame" x="0.0" y="0.0" width="374" height="369.5"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="374" height="318.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Environment" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yLn-q9-pMX">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="33.5"/>
@@ -248,27 +248,10 @@
                                                             </textField>
                                                         </subviews>
                                                     </stackView>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="a0D-Pg-RVk" userLabel="Use New Workflows Stack View">
-                                                        <rect key="frame" x="0.0" y="338.5" width="374" height="31"/>
-                                                        <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Use New Workflows" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O64-8M-PSK" userLabel="Apply theming">
-                                                                <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
-                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
-                                                                <nil key="textColor"/>
-                                                                <nil key="highlightedColor"/>
-                                                            </label>
-                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PCb-Hh-UuC">
-                                                                <rect key="frame" x="325" y="0.0" width="51" height="31"/>
-                                                                <connections>
-                                                                    <action selector="useNewWorkflowsSwitchValueChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="lVV-7E-cJF"/>
-                                                                </connections>
-                                                            </switch>
-                                                        </subviews>
-                                                    </stackView>
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="n1R-Ky-ifJ" userLabel="Test Params Stack View">
-                                                <rect key="frame" x="0.0" y="409.5" width="374" height="424.5"/>
+                                                <rect key="frame" x="0.0" y="358.5" width="374" height="424.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Test" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5m9-J2-Vfy">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="33.5"/>
@@ -362,8 +345,8 @@
                                                     </stackView>
                                                 </subviews>
                                             </stackView>
-                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="f7f-4e-ZPN" userLabel="SDK Settings Stack View">
-                                                <rect key="frame" x="0.0" y="874" width="374" height="899.5"/>
+                                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="f7f-4e-ZPN" userLabel="SDK Settings Stack View">
+                                                <rect key="frame" x="0.0" y="823" width="374" height="1048.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SDK Settings" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HZ9-hO-miI">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="33.5"/>
@@ -371,24 +354,70 @@
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Checkout flow" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YnN-Gz-z4B">
-                                                        <rect key="frame" x="0.0" y="53.5" width="374" height="17"/>
-                                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
-                                                        <nil key="textColor"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Mp3-M5-t9x">
-                                                        <rect key="frame" x="0.0" y="90.5" width="374" height="32"/>
-                                                        <segments>
-                                                            <segment title="Auto"/>
-                                                            <segment title="Manual"/>
-                                                        </segments>
-                                                        <connections>
-                                                            <action selector="checkoutFlowSegmentedControlValueChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="ECs-ow-yJH"/>
-                                                        </connections>
-                                                    </segmentedControl>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="JMx-kT-CNz" userLabel="Api Version Stack View">
+                                                        <rect key="frame" x="0.0" y="53.5" width="374" height="55"/>
+                                                        <subviews>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="API Version" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YnN-Gz-z4B">
+                                                                <rect key="frame" x="0.0" y="0.0" width="374" height="17"/>
+                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                                <nil key="textColor"/>
+                                                                <nil key="highlightedColor"/>
+                                                            </label>
+                                                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Mp3-M5-t9x" userLabel="API Version Segmented Control">
+                                                                <rect key="frame" x="0.0" y="24" width="374" height="32"/>
+                                                                <segments>
+                                                                    <segment title="2.3"/>
+                                                                    <segment title="2.4"/>
+                                                                    <segment title="latest"/>
+                                                                </segments>
+                                                                <connections>
+                                                                    <action selector="apiVersionSegmentedControlValueChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="SZ1-R3-k11"/>
+                                                                </connections>
+                                                            </segmentedControl>
+                                                        </subviews>
+                                                    </stackView>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="ei5-BV-JXB" userLabel="Checkout Flow Stack View">
+                                                        <rect key="frame" x="0.0" y="128.5" width="374" height="55"/>
+                                                        <subviews>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Checkout flow" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H7u-Po-f89">
+                                                                <rect key="frame" x="0.0" y="0.0" width="374" height="17"/>
+                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                                <nil key="textColor"/>
+                                                                <nil key="highlightedColor"/>
+                                                            </label>
+                                                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="APl-oD-OXG">
+                                                                <rect key="frame" x="0.0" y="24" width="374" height="32"/>
+                                                                <segments>
+                                                                    <segment title="Auto"/>
+                                                                    <segment title="Manual"/>
+                                                                </segments>
+                                                                <connections>
+                                                                    <action selector="checkoutFlowSegmentedControlValueChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="OHV-9m-Wsa"/>
+                                                                </connections>
+                                                            </segmentedControl>
+                                                        </subviews>
+                                                    </stackView>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="nWM-Ez-WUl" userLabel="Vaulting Flow Stack View">
+                                                        <rect key="frame" x="0.0" y="203.5" width="374" height="48"/>
+                                                        <subviews>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Vaulting flow" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n93-PX-jxr">
+                                                                <rect key="frame" x="0.0" y="0.0" width="374" height="17"/>
+                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                                <nil key="textColor"/>
+                                                                <nil key="highlightedColor"/>
+                                                            </label>
+                                                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Srk-zn-mK7">
+                                                                <rect key="frame" x="0.0" y="17" width="374" height="32"/>
+                                                                <segments>
+                                                                    <segment title="None"/>
+                                                                    <segment title="On Success"/>
+                                                                    <segment title="On Agreement"/>
+                                                                </segments>
+                                                            </segmentedControl>
+                                                        </subviews>
+                                                    </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="gHa-UJ-OZI" userLabel="Merchant Name Stack View">
-                                                        <rect key="frame" x="0.0" y="141.5" width="374" height="58"/>
+                                                        <rect key="frame" x="0.0" y="271.5" width="374" height="58"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Merchant name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DQF-57-AQg">
                                                                 <rect key="frame" x="0.0" y="0.0" width="374" height="17"/>
@@ -404,7 +433,7 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="e5H-u1-UYv" userLabel="Theming Stack View">
-                                                        <rect key="frame" x="0.0" y="219.5" width="374" height="31"/>
+                                                        <rect key="frame" x="0.0" y="349.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Apply theming" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NrM-QC-Yfb" userLabel="Apply theming">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -417,8 +446,8 @@
                                                             </switch>
                                                         </subviews>
                                                     </stackView>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="66G-Ef-Ie3" userLabel="Vault Payments Stack View">
-                                                        <rect key="frame" x="0.0" y="270.5" width="374" height="31"/>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="w1G-D9-qps" userLabel="Disable Success Screen Stack View">
+                                                        <rect key="frame" x="0.0" y="400.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Vault payments" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U0L-jF-Mgs">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -431,8 +460,11 @@
                                                             </switch>
                                                         </subviews>
                                                     </stackView>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="w1G-D9-qpn" userLabel="Disable Success Screen Stack View">
-                                                        <rect key="frame" x="0.0" y="321.5" width="374" height="31"/>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="w1G-D9-qpn" userLabel="Disable Success Screen Stack View">
+                                                        <rect key="frame" x="0.0" y="451.5" width="374" height="50"/>
+                                                    </stackView>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="w1G-D9-qpd" userLabel="Disable Success Screen Stack View">
+                                                        <rect key="frame" x="0.0" y="521.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Disable success screen" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1kI-6E-8gK" userLabel="Disable Success Screen Apply theming">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -445,8 +477,8 @@
                                                             </switch>
                                                         </subviews>
                                                     </stackView>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="4lC-2k-qct" userLabel="Disable Success Screen Stack View">
-                                                        <rect key="frame" x="0.0" y="372.5" width="374" height="31"/>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="4lC-2k-qct" userLabel="Disable Success Screen Stack View">
+                                                        <rect key="frame" x="0.0" y="572.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Disable init screen" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wt0-U1-U8V" userLabel="Disable Success Screen Apply theming">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -460,8 +492,8 @@
                                                             </switch>
                                                         </subviews>
                                                     </stackView>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="dyw-4Y-N1z" userLabel="Disable Error Screen Stack View">
-                                                        <rect key="frame" x="0.0" y="423.5" width="374" height="31"/>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="dyw-4Y-N1z" userLabel="Disable Error Screen Stack View">
+                                                        <rect key="frame" x="0.0" y="623.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Disable error screen" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OHe-89-28f" userLabel="Disable Error Screen Apply theming">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -474,50 +506,8 @@
                                                             </switch>
                                                         </subviews>
                                                     </stackView>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="dSc-3j-qTd" userLabel="Dismissal Mechanism Stack View">
-                                                        <rect key="frame" x="0.0" y="474.5" width="374" height="31"/>
-                                                        <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dismiss by gestures" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gDT-sz-9X1" userLabel="Dismiss by gestures">
-                                                                <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
-                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
-                                                                <nil key="textColor"/>
-                                                                <nil key="highlightedColor"/>
-                                                            </label>
-                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="X8p-aa-8Ls">
-                                                                <rect key="frame" x="325" y="0.0" width="51" height="31"/>
-                                                            </switch>
-                                                        </subviews>
-                                                    </stackView>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="oB3-Ed-HEw" userLabel="Dismissal Mechanism Stack View">
-                                                        <rect key="frame" x="0.0" y="525.5" width="374" height="31"/>
-                                                        <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dismiss by close button" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="u1g-1f-acc" userLabel="Dismiss by gestures">
-                                                                <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
-                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
-                                                                <nil key="textColor"/>
-                                                                <nil key="highlightedColor"/>
-                                                            </label>
-                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="I8U-wZ-xj0">
-                                                                <rect key="frame" x="325" y="0.0" width="51" height="31"/>
-                                                            </switch>
-                                                        </subviews>
-                                                    </stackView>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="HFz-F7-hYN" userLabel="Perform Payment After Vaulting Stack View">
-                                                        <rect key="frame" x="0.0" y="576.5" width="374" height="31"/>
-                                                        <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pay after vault success" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AkJ-aG-BmV" userLabel="Apply theming">
-                                                                <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
-                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
-                                                                <nil key="textColor"/>
-                                                                <nil key="highlightedColor"/>
-                                                            </label>
-                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="jCb-ce-xzZ">
-                                                                <rect key="frame" x="325" y="0.0" width="51" height="31"/>
-                                                            </switch>
-                                                        </subviews>
-                                                    </stackView>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="YZe-Oh-Inv" userLabel="Recapture CVV">
-                                                        <rect key="frame" x="0.0" y="627.5" width="374" height="31"/>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="YZe-Oh-Inv" userLabel="Recapture CVV">
+                                                        <rect key="frame" x="0.0" y="674.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable CVV Recapture flow" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hxC-Ql-YpN" userLabel="Apply theming">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -530,8 +520,8 @@
                                                             </switch>
                                                         </subviews>
                                                     </stackView>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="t9m-wr-w9Y" userLabel="One time payment">
-                                                        <rect key="frame" x="0.0" y="678.5" width="374" height="31"/>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="t9m-wr-w9Y" userLabel="One time payment">
+                                                        <rect key="frame" x="0.0" y="725.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable Klarna EMD" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eSy-Oz-Hfs" userLabel="Apply theming">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -547,16 +537,44 @@
                                                             </switch>
                                                         </subviews>
                                                     </stackView>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Apple Pay Settings" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="In5-VI-PDg" userLabel="Apple Pay">
-                                                        <rect key="frame" x="0.0" y="729.5" width="374" height="17"/>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="6ae-Na-iSQ" userLabel="Dismiss with Gestures">
+                                                        <rect key="frame" x="0.0" y="776.5" width="374" height="31"/>
+                                                        <subviews>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dismiss with Gestures" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NET-aR-Nxd" userLabel="Dismiss w Gestures">
+                                                                <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
+                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                                <nil key="textColor"/>
+                                                                <nil key="highlightedColor"/>
+                                                            </label>
+                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="5FT-OT-WDd">
+                                                                <rect key="frame" x="325" y="0.0" width="51" height="31"/>
+                                                            </switch>
+                                                        </subviews>
+                                                    </stackView>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="u6D-4t-3Ra" userLabel="Dismiss with Closebutton">
+                                                        <rect key="frame" x="0.0" y="827.5" width="374" height="31"/>
+                                                        <subviews>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dismiss with Closebutton" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7hC-rs-Gfj" userLabel="Dismiss w Closebutton">
+                                                                <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
+                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                                <nil key="textColor"/>
+                                                                <nil key="highlightedColor"/>
+                                                            </label>
+                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="G04-bw-KwN">
+                                                                <rect key="frame" x="325" y="0.0" width="51" height="31"/>
+                                                            </switch>
+                                                        </subviews>
+                                                    </stackView>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Apple Pay Settings" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="In5-VI-PDg" userLabel="Apple Pay">
+                                                        <rect key="frame" x="0.0" y="878.5" width="374" height="17"/>
                                                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="KXu-LO-Zau" userLabel="Billing">
-                                                        <rect key="frame" x="0.0" y="766.5" width="374" height="31"/>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="KXu-LO-Zau" userLabel="Billing">
+                                                        <rect key="frame" x="0.0" y="915.5" width="374" height="31"/>
                                                         <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Capture Billing Address" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sJn-QO-F0J" userLabel="ApplePay gather Billing">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Billing Options" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sJn-QO-F0J" userLabel="ApplePay gather Billing">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
                                                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                                                 <nil key="textColor"/>
@@ -570,8 +588,81 @@
                                                             </switch>
                                                         </subviews>
                                                     </stackView>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="EqY-FO-mDr" userLabel="Shipping">
-                                                        <rect key="frame" x="0.0" y="817.5" width="374" height="31"/>
+                                                    <stackView hidden="YES" opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="bFz-Ec-13T" userLabel="Billing Controls">
+                                                        <rect key="frame" x="0.0" y="956.5" width="374" height="14"/>
+                                                        <subviews>
+                                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="14" translatesAutoresizingMaskIntoConstraints="NO" id="FGu-TL-mhN" userLabel="Additional Contact Fields">
+                                                                <rect key="frame" x="0.0" y="0.0" width="374" height="14"/>
+                                                                <subviews>
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="additionalBillingContactFields" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lz8-dy-QzY" userLabel="ApplePay gather Shipping">
+                                                                        <rect key="frame" x="0.0" y="0.0" width="374" height="0.0"/>
+                                                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                                        <nil key="textColor"/>
+                                                                        <nil key="highlightedColor"/>
+                                                                    </label>
+                                                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="fdb-Wu-BHy" userLabel="Additional Contact Fields">
+                                                                        <rect key="frame" x="0.0" y="14" width="374" height="0.0"/>
+                                                                        <subviews>
+                                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="name" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JcT-1V-7wc" userLabel="ApplePay gather Shipping">
+                                                                                <rect key="frame" x="0.0" y="0.0" width="40.5" height="0.0"/>
+                                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                                                <nil key="textColor"/>
+                                                                                <nil key="highlightedColor"/>
+                                                                            </label>
+                                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zKa-Ld-hDj">
+                                                                                <rect key="frame" x="47.5" y="0.0" width="43" height="0.0"/>
+                                                                                <connections>
+                                                                                    <action selector="applePayBillingContactNameSwitchChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="yjR-DC-0WJ"/>
+                                                                                    <action selector="applePayShippingContactNameSwitchChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="hct-3P-BKL"/>
+                                                                                </connections>
+                                                                            </switch>
+                                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="email" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q4Z-1N-2kh" userLabel="ApplePay gather Shipping">
+                                                                                <rect key="frame" x="95.5" y="0.0" width="40.5" height="0.0"/>
+                                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                                                <nil key="textColor"/>
+                                                                                <nil key="highlightedColor"/>
+                                                                            </label>
+                                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lJp-fS-mb0">
+                                                                                <rect key="frame" x="143" y="0.0" width="42.5" height="0.0"/>
+                                                                                <connections>
+                                                                                    <action selector="applePayBillingContactEmailField:" destination="jAd-Lg-hf8" eventType="valueChanged" id="axT-6d-Bva"/>
+                                                                                    <action selector="applePayShippingContactEmailField:" destination="jAd-Lg-hf8" eventType="valueChanged" id="2Ak-3c-qOl"/>
+                                                                                </connections>
+                                                                            </switch>
+                                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="phone" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mXt-tr-O99" userLabel="ApplePay gather Shipping">
+                                                                                <rect key="frame" x="190.5" y="0.0" width="40.5" height="0.0"/>
+                                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                                                <nil key="textColor"/>
+                                                                                <nil key="highlightedColor"/>
+                                                                            </label>
+                                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vZd-0N-edZ">
+                                                                                <rect key="frame" x="238" y="0.0" width="43" height="0.0"/>
+                                                                                <connections>
+                                                                                    <action selector="applePayBillingContactPhoneSwitchChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="S3K-6a-kuz"/>
+                                                                                    <action selector="applePayShippingContactPhoneSwitchChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="aBr-S6-Po8"/>
+                                                                                </connections>
+                                                                            </switch>
+                                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="postalAddress" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J3g-Vp-w52" userLabel="ApplePay gather Shipping">
+                                                                                <rect key="frame" x="286" y="0.0" width="40.5" height="0.0"/>
+                                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                                                <nil key="textColor"/>
+                                                                                <nil key="highlightedColor"/>
+                                                                            </label>
+                                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="w5P-gq-YQ5">
+                                                                                <rect key="frame" x="333.5" y="0.0" width="42.5" height="0.0"/>
+                                                                                <connections>
+                                                                                    <action selector="applePayBillingContactPostalAddressSwitchChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="Cyi-lH-3m3"/>
+                                                                                    <action selector="applePayShippingContactPhoneSwitchChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="P1X-R7-s3I"/>
+                                                                                </connections>
+                                                                            </switch>
+                                                                        </subviews>
+                                                                    </stackView>
+                                                                </subviews>
+                                                            </stackView>
+                                                        </subviews>
+                                                    </stackView>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="EqY-FO-mDr" userLabel="Shipping">
+                                                        <rect key="frame" x="0.0" y="966.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Shipping Options" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E5l-2Z-blp" userLabel="ApplePay gather Shipping">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -588,27 +679,10 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView hidden="YES" opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="hmd-vB-Ft9" userLabel="Shipping Controls">
-                                                        <rect key="frame" x="0.0" y="858.5" width="374" height="54"/>
+                                                        <rect key="frame" x="0.0" y="1007.5" width="374" height="34"/>
                                                         <subviews>
-                                                            <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="2t0-pt-FRR" userLabel="Shipping Address">
-                                                                <rect key="frame" x="0.0" y="0.0" width="374" height="0.0"/>
-                                                                <subviews>
-                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="captureShippingAddressEnabled" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4Ox-Ke-nNp" userLabel="ApplePay gather Shipping">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="318" height="0.0"/>
-                                                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
-                                                                        <nil key="textColor"/>
-                                                                        <nil key="highlightedColor"/>
-                                                                    </label>
-                                                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sSz-mi-ge1">
-                                                                        <rect key="frame" x="325" y="0.0" width="51" height="0.0"/>
-                                                                        <connections>
-                                                                            <action selector="captureShippingAddressSwitchChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="cjJ-n3-7ia"/>
-                                                                        </connections>
-                                                                    </switch>
-                                                                </subviews>
-                                                            </stackView>
                                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="RIG-jm-T50" userLabel="Shipping Address">
-                                                                <rect key="frame" x="0.0" y="20" width="374" height="0.0"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="374" height="0.0"/>
                                                                 <subviews>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="requireShippingMethod" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gPP-bB-s5F" userLabel="ApplePay gather Shipping">
                                                                         <rect key="frame" x="0.0" y="0.0" width="318" height="0.0"/>
@@ -625,7 +699,7 @@
                                                                 </subviews>
                                                             </stackView>
                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="14" translatesAutoresizingMaskIntoConstraints="NO" id="HQK-0G-epO" userLabel="Additional Contact Fields">
-                                                                <rect key="frame" x="0.0" y="40" width="374" height="14"/>
+                                                                <rect key="frame" x="0.0" y="20" width="374" height="14"/>
                                                                 <subviews>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="additionalShippingContactFields" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kbR-8Z-3G1" userLabel="ApplePay gather Shipping">
                                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="0.0"/>
@@ -637,39 +711,51 @@
                                                                         <rect key="frame" x="0.0" y="14" width="374" height="0.0"/>
                                                                         <subviews>
                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="name" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6gS-zC-rwV" userLabel="ApplePay gather Shipping">
-                                                                                <rect key="frame" x="0.0" y="0.0" width="56.5" height="0.0"/>
+                                                                                <rect key="frame" x="0.0" y="0.0" width="40.5" height="0.0"/>
                                                                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                                                                 <nil key="textColor"/>
                                                                                 <nil key="highlightedColor"/>
                                                                             </label>
                                                                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HUN-X7-hv0">
-                                                                                <rect key="frame" x="63.5" y="0.0" width="58.5" height="0.0"/>
+                                                                                <rect key="frame" x="47.5" y="0.0" width="43" height="0.0"/>
                                                                                 <connections>
                                                                                     <action selector="applePayShippingContactNameSwitchChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="3pm-aE-PBw"/>
                                                                                 </connections>
                                                                             </switch>
                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="email" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hpy-eN-FTo" userLabel="ApplePay gather Shipping">
-                                                                                <rect key="frame" x="127" y="0.0" width="56.5" height="0.0"/>
+                                                                                <rect key="frame" x="95.5" y="0.0" width="40.5" height="0.0"/>
                                                                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                                                                 <nil key="textColor"/>
                                                                                 <nil key="highlightedColor"/>
                                                                             </label>
                                                                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="la4-9j-78G">
-                                                                                <rect key="frame" x="190.5" y="0.0" width="58.5" height="0.0"/>
+                                                                                <rect key="frame" x="143" y="0.0" width="42.5" height="0.0"/>
                                                                                 <connections>
                                                                                     <action selector="applePayShippingContactEmailField:" destination="jAd-Lg-hf8" eventType="valueChanged" id="Zjl-2K-cO4"/>
                                                                                 </connections>
                                                                             </switch>
                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="phone" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Z4-pb-CN4" userLabel="ApplePay gather Shipping">
-                                                                                <rect key="frame" x="254" y="0.0" width="56.5" height="0.0"/>
+                                                                                <rect key="frame" x="190.5" y="0.0" width="40.5" height="0.0"/>
                                                                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                                                                                 <nil key="textColor"/>
                                                                                 <nil key="highlightedColor"/>
                                                                             </label>
                                                                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5AD-oh-3KE">
-                                                                                <rect key="frame" x="317.5" y="0.0" width="58.5" height="0.0"/>
+                                                                                <rect key="frame" x="238" y="0.0" width="43" height="0.0"/>
                                                                                 <connections>
                                                                                     <action selector="applePayShippingContactPhoneSwitchChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="LMd-t0-tSG"/>
+                                                                                </connections>
+                                                                            </switch>
+                                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="postalAddress" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O4l-bE-cnp" userLabel="ApplePay gather Shipping">
+                                                                                <rect key="frame" x="286" y="0.0" width="40.5" height="0.0"/>
+                                                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                                                <nil key="textColor"/>
+                                                                                <nil key="highlightedColor"/>
+                                                                            </label>
+                                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="P2y-Ne-F1u">
+                                                                                <rect key="frame" x="333.5" y="0.0" width="42.5" height="0.0"/>
+                                                                                <connections>
+                                                                                    <action selector="applePayShippingContactPostalAddressSwitchChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="gwl-TE-KZ2"/>
                                                                                 </connections>
                                                                             </switch>
                                                                         </subviews>
@@ -678,8 +764,8 @@
                                                             </stackView>
                                                         </subviews>
                                                     </stackView>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="GpQ-Jz-0Mz" userLabel="Check Provided Networks">
-                                                        <rect key="frame" x="0.0" y="868.5" width="374" height="31"/>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" spacing="7" translatesAutoresizingMaskIntoConstraints="NO" id="GpQ-Jz-0Mz" userLabel="Check Provided Networks">
+                                                        <rect key="frame" x="0.0" y="1017.5" width="374" height="31"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Check Provided Networks" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IU9-FR-hyJ" userLabel="ApplePay check networks">
                                                                 <rect key="frame" x="0.0" y="0.0" width="318" height="31"/>
@@ -697,8 +783,8 @@
                                                     </stackView>
                                                 </subviews>
                                             </stackView>
-                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="Wmb-0A-wCB" userLabel="Order Stack View">
-                                                <rect key="frame" x="0.0" y="1813.5" width="374" height="461"/>
+                                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="Wmb-0A-wCB" userLabel="Order Stack View">
+                                                <rect key="frame" x="0.0" y="1911.5" width="374" height="461"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Order" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rhW-8E-83f">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="33.5"/>
@@ -808,8 +894,8 @@
                                                     </stackView>
                                                 </subviews>
                                             </stackView>
-                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="cka-yb-xqD" userLabel="Customer Stack View">
-                                                <rect key="frame" x="0.0" y="2314.5" width="374" height="1565.5"/>
+                                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="cka-yb-xqD" userLabel="Customer Stack View">
+                                                <rect key="frame" x="0.0" y="2412.5" width="374" height="1565.5"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Customer" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3y1-pX-UrW">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="33.5"/>
@@ -1209,8 +1295,8 @@
                                                     </stackView>
                                                 </subviews>
                                             </stackView>
-                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="32O-OV-0ey" userLabel="Surcharge Group Stack View">
-                                                <rect key="frame" x="0.0" y="3920" width="374" height="109"/>
+                                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="32O-OV-0ey" userLabel="Surcharge Group Stack View">
+                                                <rect key="frame" x="0.0" y="4018" width="374" height="109"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hmO-CL-ebG">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="31"/>
@@ -1318,13 +1404,18 @@
                     <connections>
                         <outlet property="apiKeyStackView" destination="5Iy-N2-Dxd" id="hDA-fC-xDY"/>
                         <outlet property="apiKeyTextField" destination="h7R-0M-MoV" id="Rm3-rF-AlL"/>
+                        <outlet property="applePayBillingContactEmailSwitch" destination="lJp-fS-mb0" id="Vb2-8c-2Zs"/>
+                        <outlet property="applePayBillingContactNameSwitch" destination="zKa-Ld-hDj" id="fUn-1r-tfc"/>
+                        <outlet property="applePayBillingContactPhoneSwitch" destination="vZd-0N-edZ" id="XZs-z2-jRp"/>
+                        <outlet property="applePayBillingContactPostalAddressSwitch" destination="w5P-gq-YQ5" id="4tW-kH-WJg"/>
+                        <outlet property="applePayBillingControlStackView" destination="bFz-Ec-13T" id="aj9-8P-imf"/>
                         <outlet property="applePayCaptureBillingAddressSwitch" destination="Ftc-Xf-i2J" id="IxV-lb-PXc"/>
-                        <outlet property="applePayCaptureShippingAddressEnabledSwitch" destination="sSz-mi-ge1" id="SlF-W0-T8O"/>
                         <outlet property="applePayCheckProvidedNetworksSwitch" destination="u8R-R4-Vq6" id="vNj-FI-1KA"/>
                         <outlet property="applePayRequireShippingMethodSwitch" destination="a2D-rC-q6f" id="7E5-00-yn4"/>
                         <outlet property="applePayShippingContactEmailSwitch" destination="la4-9j-78G" id="GGb-32-qmh"/>
                         <outlet property="applePayShippingContactNameSwitch" destination="HUN-X7-hv0" id="VrI-oL-Jjs"/>
                         <outlet property="applePayShippingContactPhoneSwitch" destination="5AD-oh-3KE" id="2lJ-0f-1Zm"/>
+                        <outlet property="applePayShippingContactPostalAddressSwitch" destination="P2y-Ne-F1u" id="U0o-Pz-DQb"/>
                         <outlet property="applePayShippingControlStackView" destination="hmd-vB-Ft9" id="LCC-bs-UVf"/>
                         <outlet property="applePayShippingDetailsSwitch" destination="l2a-lu-nlK" id="RbG-0x-lQg"/>
                         <outlet property="applyThemingSwitch" destination="Xts-VY-QHZ" id="qQC-rP-kmS"/>
@@ -1338,10 +1429,9 @@
                         <outlet property="billingAddressStackView" destination="bM9-q3-7b4" id="tfD-RC-unz"/>
                         <outlet property="billingAddressStateTextField" destination="9XT-5Y-iB0" id="O4F-QT-v2W"/>
                         <outlet property="billingAddressSwitch" destination="Tgl-HM-zu5" id="0zQ-d2-QoW"/>
-                        <outlet property="checkoutFlowSegmentedControl" destination="Mp3-M5-t9x" id="Csd-pD-aIy"/>
                         <outlet property="clientTokenStackView" destination="IFG-cl-uk6" id="MaN-wY-MoO"/>
                         <outlet property="clientTokenTextField" destination="xjQ-Kj-2GL" id="5mh-UG-g6v"/>
-                        <outlet property="closeButtonDismissalSwitch" destination="I8U-wZ-xj0" id="zzy-2j-KTL"/>
+                        <outlet property="closeButtonDismissalSwitch" destination="G04-bw-KwN" id="Qna-pK-NIB"/>
                         <outlet property="countryCodeTextField" destination="eAd-Sp-lf3" id="JWU-0e-EUl"/>
                         <outlet property="currencyTextField" destination="QQA-bZ-5Uh" id="Ft1-0l-MqZ"/>
                         <outlet property="customerEmailTextField" destination="vJv-xd-xfg" id="FsI-Cy-pLo"/>
@@ -1356,7 +1446,7 @@
                         <outlet property="enableCVVRecaptureFlowSwitch" destination="XZa-6j-T8o" id="M4Q-x4-pMw"/>
                         <outlet property="environmentSegmentedControl" destination="ekZ-3s-TxK" id="SsX-7s-JaH"/>
                         <outlet property="environmentStackView" destination="oCT-9e-d89" id="JnB-93-2Gv"/>
-                        <outlet property="gesturesDismissalSwitch" destination="X8p-aa-8Ls" id="P3Y-G3-z8r"/>
+                        <outlet property="gesturesDismissalSwitch" destination="5FT-OT-WDd" id="dGe-d9-uuD"/>
                         <outlet property="klarnaEMDStackView" destination="t9m-wr-w9Y" id="42W-PH-dBF"/>
                         <outlet property="lineItemsStackView" destination="KMj-Qp-rNj" id="gVb-8g-WNx"/>
                         <outlet property="merchantNameTextField" destination="PHb-NY-wz8" id="59v-8M-bqS"/>
@@ -1393,9 +1483,7 @@
                         <outlet property="testScenarioTextField" destination="1I5-Ez-Jqq" id="Rvd-za-0f6"/>
                         <outlet property="testingModeSegmentedControl" destination="hgd-Bd-Btv" id="Skc-l2-RBn"/>
                         <outlet property="totalAmountLabel" destination="Lx7-hC-lz7" id="pOX-nF-EWM"/>
-                        <outlet property="useNewWorkflowsStackView" destination="a0D-Pg-RVk" id="9Re-cu-NP8"/>
-                        <outlet property="useNewWorkflowsSwitch" destination="PCb-Hh-UuC" id="Cq9-7a-kSO"/>
-                        <outlet property="vaultPaymentsSwitch" destination="tC1-OJ-CrG" id="Boi-VO-6dH"/>
+                        <outlet property="vaultingFlowSegmentedControl" destination="Srk-zn-mK7" id="KDS-c3-TJW"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="19K-SE-wqb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

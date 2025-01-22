@@ -22,7 +22,7 @@ jobs:
       - name: Install Phrase CLI
         uses: phrase/setup-cli@d1c415d0ff01efc1bb21287d60a547669d9331c5
         with:
-          version: '2.29.0'
+          version: '2.35.5'
 
       - name: Prepend Phrase configuration
         run: |
@@ -51,7 +51,7 @@ jobs:
           fi
           
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@5e914681df9dc83aa4e4905692ca88beb2f9e91f 
+        uses: peter-evans/create-pull-request@67ccf781d68cd99b580ae25a5c18a1cc84ffff1f 
         with:
           token: ${{ secrets.RELEASE_ACCESS_TOKEN }}
           base: ${{ github.event.inputs.branch }}

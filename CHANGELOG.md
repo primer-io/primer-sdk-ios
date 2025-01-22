@@ -1,3 +1,23 @@
+## 2.33.1 (2024-12-21)
+
+### Fix
+
+- Align accountNumberLast4Digits with Android (#1066)
+
+## 2.33.0 (2024-12-17)
+
+### Feat
+
+- Enable ACH via Stripe Vaulting flows (#1056)
+- Expose ApplePay Shipping Options and align them with Web SDK (#1049)
+
+### Fix
+
+- Update error type when canceling Paypal payment (#1060)
+- Update the default background color of the default theme for dark mode (#1061)
+- Disable the close button for Klarna during payment processing (#1058)
+- Make success asset visible In dark mode (#1059)
+
 ## 2.32.1 (2024-11-21)
 
 ### Fix

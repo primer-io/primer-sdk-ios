@@ -79,7 +79,6 @@ private extension SessionConfiguration {
               city: "mock-city",
               postalCode: "mock-postalCode",
               vault: false,
-              newWorkflows: false,
               environment: "mock-environment",
               customApiKey: "mock-customApiKey",
               metadata: "mock-metadata")
