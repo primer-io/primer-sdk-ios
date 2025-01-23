@@ -84,9 +84,11 @@ class PrimerPaymentMethod: Codable, LogReporter {
                  PrimerPaymentMethodType.adyenMBWay,
                  PrimerPaymentMethodType.adyenMultibanco:
                 return FormPaymentMethodTokenizationViewModel(config: self, apiClient: apiClient)
+            
+            case PrimerPaymentMethodType.adyenIDeal:
+                return WebRedirectPaymentMethodTokenizationViewModel(config: self, apiClient: apiClient)
 
-            case PrimerPaymentMethodType.adyenDotPay,
-                 PrimerPaymentMethodType.adyenIDeal:
+            case PrimerPaymentMethodType.adyenDotPay:
                 return BankSelectorTokenizationViewModel(config: self, apiClient: apiClient)
 
             case PrimerPaymentMethodType.applePay:
