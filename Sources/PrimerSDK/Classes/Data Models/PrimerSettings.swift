@@ -9,7 +9,7 @@ internal protocol PrimerSettingsProtocol {
     var paymentMethodOptions: PrimerPaymentMethodOptions { get }
     var uiOptions: PrimerUIOptions { get }
     var debugOptions: PrimerDebugOptions { get }
-    var apiVersion: PrimerAPIVersion { get }
+    var apiVersion: PrimerApiVersion { get }
 }
 
 public class PrimerSettings: PrimerSettingsProtocol, Codable {
@@ -25,7 +25,7 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
     let uiOptions: PrimerUIOptions
     let debugOptions: PrimerDebugOptions
     let clientSessionCachingEnabled: Bool
-    public let apiVersion: PrimerAPIVersion
+    public let apiVersion: PrimerApiVersion
 
     public init(
         paymentHandling: PrimerPaymentHandling = .auto,
@@ -35,7 +35,7 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
         threeDsOptions: PrimerThreeDsOptions? = nil,
         debugOptions: PrimerDebugOptions? = nil,
         clientSessionCachingEnabled: Bool = false,
-        apiVersion: PrimerAPIVersion = .V2_3
+        apiVersion: PrimerApiVersion = .V2_3
     ) {
         self.paymentHandling = paymentHandling
         self.localeData = localeData ?? PrimerLocaleData()
@@ -344,10 +344,10 @@ public class PrimerThreeDsOptions: PrimerThreeDsOptionsProtocol, Codable {
 
 // MARK: - API Version
 // swiftlint:disable identifier_name
-public enum PrimerAPIVersion: String, Codable {
+public enum PrimerApiVersion: String, Codable {
     case V2_3 = "2.3"
     case V2_4 = "2.4"
 
-    public static let latest = PrimerAPIVersion.V2_3
+    public static let latest = PrimerApiVersion.V2_3
 }
 // swiftlint:enable identifier_name
