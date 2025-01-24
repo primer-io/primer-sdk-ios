@@ -1,3 +1,9 @@
+## 2.34.0 (2025-01-23)
+
+### Experimental
+
+- With this version it is possible to opt-in to test API v2.4(Beta). For more information see our [Api Reference](https://primer.io/docs/api/v2.4/introduction/getting-started) and [Migration Guides](https://www.primer.io/docs/changelog/migration-guides/API-2.3-to-2.4)
+
 ## 2.33.1 (2024-12-21)
 
 ### Fix
