@@ -16,7 +16,7 @@ enum APIVersion: String {
     case v2_3 = "2.3"
     case v2_4 = "2.4"
 
-    static func from(primerApiVersion: PrimerAPIVersion) -> APIVersion {
+    static func from(primerApiVersion: PrimerApiVersion) -> APIVersion {
         switch primerApiVersion {
         case .V2_3:
             return .v2_3
@@ -284,7 +284,7 @@ class Networking {
     
     static func requestClientSession(
         requestBody: ClientSessionRequestBody, customDefinedApiKey: String? = nil,
-        apiVersion: PrimerAPIVersion,
+        apiVersion: PrimerApiVersion,
         completion: @escaping (String?, Error?) -> Void
     ) {
         let url = environment.baseUrl.appendingPathComponent("/api/client-session")
