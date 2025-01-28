@@ -264,7 +264,16 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
             }
 
             var certs: [Primer3DSCertificate] = []
+            // Once `threeDSecureIoCertificates` is removed from the response in the future
+            // we can delete the for loop bellow
             for certificate in AppState.current.apiConfiguration?.keys?.threeDSecureIoCertificates ?? [] {
+                let cer = ThreeDS.Cer(cardScheme: certificate.cardNetwork,
+                                      rootCertificate: certificate.rootCertificate,
+                                      encryptionKey: certificate.encryptionKey)
+                certs.append(cer)
+            }
+
+            for certificate in AppState.current.apiConfiguration?.keys?.threeDsProviderCertificates ?? [] {
                 let cer = ThreeDS.Cer(cardScheme: certificate.cardNetwork,
                                       rootCertificate: certificate.rootCertificate,
                                       encryptionKey: certificate.encryptionKey)
