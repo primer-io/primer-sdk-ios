@@ -10,7 +10,7 @@ import PrimerSDK
 import UIKit
 
 var environment: Environment = .sandbox
-var apiVersion: PrimerAPIVersion = .V2_3
+var apiVersion: PrimerApiVersion = .V2_3
 var customDefinedApiKey: String?
 var performPaymentAfterVaulting: Bool = false
 var paymentSessionType: MerchantMockDataManager.SessionType = .generic
