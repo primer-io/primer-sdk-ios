@@ -242,7 +242,16 @@ class PrimerCustomFieldView: UIView {
         iconAndChevronStack.addArrangedSubview(networkIconContainer)
 
         // Creates and configures the chevron icon
-        let chevronImageView = UIImageView(image: UIImage(systemName: "chevron.down", withConfiguration: UIImage.SymbolConfiguration(scale: .small)))
+        let chevronImageView = UIImageView(
+            image: UIImage(
+                systemName: "chevron.down",
+                withConfiguration: UIImage.SymbolConfiguration(scale: .small)
+            )
+        )
+
+        chevronImageView.accessibilityIdentifier = "image_view_card_network_caret"
+        chevronImageView.isAccessibilityElement = true
+
         self.chevronImageView = chevronImageView
         chevronImageView.contentMode = .scaleAspectFit
         iconAndChevronStack.addArrangedSubview(chevronImageView)
