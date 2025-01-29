@@ -266,3 +266,87 @@
           locale_id: Chinese-Taiwanese
           tags: ios-sdk
           encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/Localizable/bg.lproj/Localizable.strings
+        params:
+          file_format: strings
+          locale_id: Bulgarian
+          tags: ios-sdk
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/Localizable/cs.lproj/Localizable.strings
+        params:
+          file_format: strings
+          locale_id: Czech
+          tags: ios-sdk
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/Localizable/es-AR.lproj/Localizable.strings
+        params:
+          file_format: strings
+          locale_id: Spanish (Argentina)
+          tags: ios-sdk
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/Localizable/es-MX.lproj/Localizable.strings
+        params:
+          file_format: strings
+          locale_id: Spanish (Mexico)
+          tags: ios-sdk
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/Localizable/et.lproj/Localizable.strings
+        params:
+          file_format: strings
+          locale_id: Estonian
+          tags: ios-sdk
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/Localizable/hr.lproj/Localizable.strings
+        params:
+          file_format: strings
+          locale_id: Croatian
+          tags: ios-sdk
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/Localizable/hu.lproj/Localizable.strings
+        params:
+          file_format: strings
+          locale_id: Hungarian
+          tags: ios-sdk
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/Localizable/ja.lproj/Localizable.strings
+        params:
+          file_format: strings
+          locale_id: Japanese
+          tags: ios-sdk
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/Localizable/lv.lproj/Localizable.strings
+        params:
+          file_format: strings
+          locale_id: Latvian
+          tags: ios-sdk
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/Localizable/pt-BR.lproj/Localizable.strings
+        params:
+          file_format: strings
+          locale_id: Portuguese (Brazil)
+          tags: ios-sdk
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/Localizable/ro.lproj/Localizable.strings
+        params:
+          file_format: strings
+          locale_id: Romanian
+          tags: ios-sdk
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/Localizable/ru.lproj/Localizable.strings
+        params:
+          file_format: strings
+          locale_id: Russian
+          tags: ios-sdk
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/Localizable/sk.lproj/Localizable.strings
+        params:
+          file_format: strings
+          locale_id: Slovak
+          tags: ios-sdk
+          encoding: UTF-8
+      - file: Sources/PrimerSDK/Resources/Localizable/vi.lproj/Localizable.strings
+        params:
+          file_format: strings
+          locale_id: Vietnamese
+          tags: ios-sdk
+          encoding: UTF-8
