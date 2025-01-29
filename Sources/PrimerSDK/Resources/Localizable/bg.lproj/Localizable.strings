@@ -1,0 +1,307 @@
+/* An error message displayed when the Address line 1 is not correct */
+"addressLine1ErrorInvalid" = "Невалиден адрес, ред 1";
+
+/* State, Region or County is required - Form Validation */
+"addressLine1ErrorRequired" = "Ред 1 на адреса е задължителен";
+
+/* The billing address Address line 1 container view label */
+"addressLine1Label" = "Адрес ред 1";
+
+/* Form Text Field Placeholder (Address line 1) */
+"addressLine1Placeholder" = "Адрес ред 1";
+
+/* An error message displayed when the Address line 2 is not correct */
+"addressLine2ErrorInvalid" = "Невалиден адрес, ред 2";
+
+/* State, Region or County is required - Form Validation */
+"addressLine2ErrorRequired" = "Ред 2 на адреса е задължителен";
+
+/* The billing address Address line 2 container view label */
+"addressLine2Label" = "Адрес ред 2";
+
+/* Form Text Field Placeholder (Address line 2) */
+"addressLine2Placeholder" = "Ред 2 на адреса";
+
+/* An error message displayed when the city field is not correct */
+"cardholderErrorInvalid" = "Невалидно име на картодържател";
+
+/* Choose your bank - Choose your bank title label */
+"choose-your-bank-title-label" = "Изберете банката си";
+
+/* An error message displayed when the city field is not correct */
+"cityErrorInvalid" = "Невалиден град";
+
+/* City is required - Form Validation */
+"cityErrorRequired" = "Градът е задължителен";
+
+/* The billing address city container view label */
+"cityLabel" = "Града";
+
+/* Form Text Field Placeholder (Address city) */
+"cityPlaceholder" = "Кейп Таун";
+
+/* Complete your payment - Account info payment title label */
+"completeYourPayment" = "Завършете плащането си";
+
+/* Continue */
+"continue" = "Напред";
+
+/* An error message displayed when the Country is not correct */
+"countryCodeErrorInvalid" = "Невалидна държава";
+
+/* Country is required - Form Validation */
+"countryCodeErrorRequired" = "Изисква се държава";
+
+/* The billing address Country code container view label */
+"countryCodeLabel" = "Код на държавата";
+
+/* Form Text Field Placeholder (Country code) */
+"countryCodePlaceholder" = "Код на държавата";
+
+/* Select a country - Choose your country title label */
+"countrySelectPlaceholder" = "Изберете държава";
+
+/* The prefix copy we put before the expiration date */
+"dueAt" = "Дължимо на";
+
+/* An error message displayed when the First Name is not correct */
+"firstNameErrorInvalid" = "Невалидно собствено име";
+
+/* First name is required - Form Validation */
+"firstNameErrorRequired" = "Изисква се собствено име";
+
+/* The billing address First name container view label */
+"firstNameLabel" = "Собствено име";
+
+/* Form Text Field Placeholder (First name) */
+"firstNamePlaceholder" = "Собствено име";
+
+"form_error_card_holder_name_length" = "Името трябва да съдържа между 2 и 45 символа";
+
+"form_error_card_type_not_supported" = "Неподдържан тип карта";
+
+/* Get the code from your banking app - Blik descriptor */
+"input_description_otp" = "Вземете кода от банковото си приложение.";
+
+/* 6 digit code - Text field top placeholder */
+"input_hint_form_blik_otp" = "6-цифрен код";
+
+/* An error message displayed when the Last Name is not correct */
+"lastNameErrorInvalid" = "Невалиднa фамилия";
+
+/* Last name is required - Form Validation */
+"lastNameErrorRequired" = "Изисква се фамилия";
+
+/* The billing address Last name container view label */
+"lastNameLabel" = "Фамилия";
+
+/* Form Text Field Placeholder (Last name) */
+"lastNamePlaceholder" = "Фамилия";
+
+/* No additional fee - Universal Checkout section text */
+"no_additional_fee" = "Без допълнителна такса";
+
+/* Enter your one time password - Text field placeholder */
+"payment_method_blik_loading_placeholder" = "Завършете плащането си в приложението Blik";
+
+/* Pay with card - Payment Method Type (Card Not Vaulted */
+"payment-method-type-card-not-vaulted" = "Платете с карта";
+
+/* The message copy that tells the user how to transfer funds given a displayed account code */
+"pleaseTransferFunds" = "Моля, прехвърлете средства към предоставената банкова сметка в DBS, като използвате Вашата базирана в Сингапур банкова сметка чрез FAST (за предпочитане), MEPS или GIRO.";
+
+/* An error message displayed when the postal code field is not correct */
+"postalCodeErrorInvalid" = "Невалиден пощенски код";
+
+/* Postal code is required - Form Validation */
+"postalCodeErrorRequired" = "Изисква се пощенски код";
+
+/* The billing address postal code container view label */
+"postalCodeLabel" = "Пощенски код";
+
+/* Form Text Field Placeholder (Address postal code) */
+"postalCodePlaceholder" = "90210";
+
+/* Cancel - Alert button cancel */
+"primer-alert-button-cancel" = "Отказ";
+
+/* Delete - Alert button delete */
+"primer-alert-button-delete" = "Изтриване";
+
+/* The title of the primer 'pay in installments' button */
+"primer-button-title-pay-in-installments" = "Плащане на вноски";
+
+/* 12/24 - Card Form (Expiry text field placeholder text) */
+"primer-card-form-12-24" = "12/24";
+
+/* Add card - Card Form (Vault title text) */
+"primer-card-form-add-card" = "Добавяне на карта";
+
+/* Checkout - Card Form (Checkout Title Text) */
+"primer-card-form-checkout" = "Финализиране";
+
+/* CVV - Card Form (CVV Text Field placeholder text) */
+"primer-card-form-cvv" = "CVV код";
+
+/* Cardholder name */
+"primer-card-form-name" = "Име";
+
+/* Pay - Card Form (Checkout submit button text) */
+"primer-card-form-pay" = "Плати";
+
+/* Save - Card Form (Vault submit button text) */
+"primer-card-form-save" = "Запазете";
+
+/* Choose payment method - Vault Navigation Bar Title */
+"primer-checkout-nav-bar-title" = "Изберете начин на плащане";
+
+/* Add Bank Account - Confirm Mandate (Top title text_ */
+"primer-confirm-mandate-add-bank-account" = "Добавете банкова сметка";
+
+/* Confirm - Confirm Mandate (Button text) */
+"primer-confirm-mandate-confirm" = "Потвърждение";
+
+/* Confirm SEPA Direct Debit - Confirm Mandate (Main title text) */
+"primer-confirm-mandate-confirm-sepa-direct-debit" = "Потвърдете директен дебит чрез SEPA";
+
+/* CVV- CVV recapture explanation label */
+"primer-cvv-recapture-explanation" = "За сигурно плащане, въведи %d-цифровия код за сигурност от твоята карта.";
+
+/* CVV - CVV recapture screen title */
+"primer-cvv-recapture-title" = "Въведи кода CVV";
+
+/* Do you want to delete this payment method? - Delete alert title */
+"primer-delete-alert-title" = "Искате ли да изтриете този начин на плащане?";
+
+/* Apple pay - Direct Checkout (Apple pay button text) */
+"primer-direct-checkout-apple-pay" = "Apple pay";
+
+/* Pay by card - Direct Checkout (Card button text) */
+"primer-direct-checkout-pay-by-card" = "Плащане с карта";
+
+/* PayPal - Direct Checkout (PayPal button text */
+"primer-direct-checkout-paypal" = "PayPal";
+
+/* An error message displayed when the cvv code is not correct */
+"primer-error-card-form-card-cvv" = "Невалиден CVV";
+
+/* An error message displayed when the card expiration date is not correct */
+"primer-error-card-form-card-expiration-date" = "Невалидна дата";
+
+/* An error message displayed when the card number is not correct */
+"primer-error-card-form-card-number" = "Невалиден номер на картата";
+
+/* A suffix to mark a required field or action being performed */
+"primer-error-is-required-suffix" = "изисква се";
+
+/* Something went wrong, please try again. - Error Screen Message */
+"primer-error-screen" = "Нещо се обърка, моля, опитайте отново.";
+
+/* e.g. John Doe - Form Text Field Placeholder (Cardholder name) */
+"primer-form-text-field-placeholder-cardholder" = "напр. Джон Доу";
+
+/* Card number - Form Text Field Title (Card number) */
+"primer-form-text-field-title-card-number" = "Номер на карта";
+
+/* Expiry date - Form Text Field Title (Expiry date) */
+"primer-form-text-field-title-expiry-date" = "Срок на валидност";
+
+/* Enter your card details - Form Type Main Title (Card) */
+"primer-form-type-main-title-card-form" = "Въведете данните за Вашата карта";
+
+/* Card form - Navigation Bar Title */
+"primer-form-type-nav-bar-title" = "Разплащателна карта";
+
+/* Add Bank Account - IBAN Form (Main title) */
+"primer-iban-form-add-bank-account" = "Добавете банкова сметка";
+
+/* Enter IBAN - IBAN Form (Text field placeholder text */
+"primer-iban-form-enter-iban" = "Въведете номер на сметка - IBAN";
+
+/* Your monthly fee will be automatically deducted from this account, using SEPA Core DirectDebit Mandate - IBAN Form (Subtitle text) */
+"primer-iban-form-monthly-fee-automatically-deducted" = "Вашата месечна такса ще бъде удържана автоматично от тази сметка посредством Директен дебит SEPA (Core SDD)";
+
+/* Next - IBAN Form (Button text) */
+"primer-iban-form-next" = "Следващ";
+
+/* Use an account number instead - IBAN Form (Switch text) */
+"primer-iban-form-use-account-number-instead" = "Вместо това използвайте номер на Вашата сметка";
+
+/* Expires - Saved card */
+"primer-saved-card" = "Изтича";
+
+/* Manual input - Scanner view (Button text) */
+"primer-scanner-view-manual-input" = "Ръчно въвеждане";
+
+/* Scan card - Scanner view (Title text) */
+"primer-scanner-view-scan-card" = "Сканиране на картата";
+
+/* Scan the front of your card - Scanner view (Description text) */
+"primer-scanner-view-scan-front-card" = "Сканирайте предната част на Вашата карта";
+
+/* The title of the header for the flow decision view */
+"primer-test-header-description" = "Това е вътрешен дебит в тестова среда. Изберете резултата, който искате да тествате, от списъка по - долу.";
+
+/* The title of the mocked declined flow for a Test Payment Method */
+"primer-test-payment-method-decline-flow-title" = "Отказано";
+
+/* The title of the mocked failed flow for a Test Payment Method */
+"primer-test-payment-method-fail-flow-title" = "Неуспешно";
+
+/* The title of the mocked successful flow for a Test Payment Method */
+"primer-test-payment-method-success-flow-title" = "Авторизирано";
+
+/* SAVED CARD - Vault Checkout Card Title */
+"primer-vault-checkout-payment-method-title" = "ЗАПАЗЕН НАЧИН НА ПЛАЩАНЕ";
+
+/* Add payment method - Checkout Navigation Bar Title */
+"primer-vault-nav-bar-title" = "Добавете начин на плащане";
+
+/* Add new card - Vault Payment Method (Button text) */
+"primer-vault-payment-method-add-new-card" = "Добавяне на нова карта";
+
+/* Available payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-available-payment-methods" = "Налични методи на плащане";
+
+/* Edit - Vault Payment Method (Button text) */
+"primer-vault-payment-method-edit" = "Редакция";
+
+/* Saved payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-saved-payment-methods" = "Запазени методи на плащане";
+
+/* QR Code - QR code screen subtitle label */
+"qrCode" = "QR код";
+
+/* Scan to pay or take a screenshot - QR code screen title label */
+"scanToPay" = "Сканирайте, за да платите или направете екранна снимка";
+
+/* Search bank - Search bank textfield placeholder */
+"search-bank-placeholder" = "Търсене на банка";
+
+/* Search country - Search country textfield placeholder */
+"search-country-placeholder" = "Държава за търсене";
+
+/* See all - Universal checkout */
+"see-all" = "Вижте всички";
+
+/* "Shipping" label displayed next to the shipping amount, for example: "Shipping $2.50" */
+"shipping" = "Доставка";
+
+/* An error message displayed when the State, Region or County field is not correct */
+"stateErrorInvalid" = "Невалиден щат, регион или окръг";
+
+/* State, Region or County is required - Form Validation */
+"stateErrorRequired" = "Изисква се щат/ регион/ държава";
+
+/* The billing address state container view label */
+"stateLabel" = "Щат/ Регион/ Държава";
+
+/* Form Text Field Placeholder (Address State / Region / County) */
+"statePlaceholder" = "Щат/ Регион/ Държава";
+
+/* Additional fee may apply - Surcharge (Label) */
+"surcharge-additional-fee" = "Може да е прилжима допълнителна такса";
+
+/* Upload the screenshot in your banking app. - QR code screen subtitle label */
+"uploadScreenshot" = "Качете екранната снимка в банковото си приложение";
+

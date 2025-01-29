@@ -1,0 +1,307 @@
+/* An error message displayed when the Address line 1 is not correct */
+"addressLine1ErrorInvalid" = "Neplatná adresa řádek 1";
+
+/* State, Region or County is required - Form Validation */
+"addressLine1ErrorRequired" = "Vyžaduje se řádek adresy 1";
+
+/* The billing address Address line 1 container view label */
+"addressLine1Label" = "Řádek adresy 1";
+
+/* Form Text Field Placeholder (Address line 1) */
+"addressLine1Placeholder" = "Řádek adresy 1";
+
+/* An error message displayed when the Address line 2 is not correct */
+"addressLine2ErrorInvalid" = "Neplatná adresa řádek 2";
+
+/* State, Region or County is required - Form Validation */
+"addressLine2ErrorRequired" = "Je vyžadován řádek adresy 2";
+
+/* The billing address Address line 2 container view label */
+"addressLine2Label" = "Řádek adresy 2";
+
+/* Form Text Field Placeholder (Address line 2) */
+"addressLine2Placeholder" = "Řádek adresy 2";
+
+/* An error message displayed when the city field is not correct */
+"cardholderErrorInvalid" = "Neplatné jméno držitele karty";
+
+/* Choose your bank - Choose your bank title label */
+"choose-your-bank-title-label" = "Vyberte svou banku";
+
+/* An error message displayed when the city field is not correct */
+"cityErrorInvalid" = "Neplatné město";
+
+/* City is required - Form Validation */
+"cityErrorRequired" = "Je vyžadováno město";
+
+/* The billing address city container view label */
+"cityLabel" = "Město";
+
+/* Form Text Field Placeholder (Address city) */
+"cityPlaceholder" = "Kapské Město";
+
+/* Complete your payment - Account info payment title label */
+"completeYourPayment" = "Dokončete svou platbu";
+
+/* Continue */
+"continue" = "Pokračovat";
+
+/* An error message displayed when the Country is not correct */
+"countryCodeErrorInvalid" = "Neplatná země";
+
+/* Country is required - Form Validation */
+"countryCodeErrorRequired" = "Je vyžadována země";
+
+/* The billing address Country code container view label */
+"countryCodeLabel" = "Kód země";
+
+/* Form Text Field Placeholder (Country code) */
+"countryCodePlaceholder" = "Kód země";
+
+/* Select a country - Choose your country title label */
+"countrySelectPlaceholder" = "Vybrat zemi";
+
+/* The prefix copy we put before the expiration date */
+"dueAt" = "Splatnost";
+
+/* An error message displayed when the First Name is not correct */
+"firstNameErrorInvalid" = "Neplatné jméno";
+
+/* First name is required - Form Validation */
+"firstNameErrorRequired" = "Je vyžadováno jméno";
+
+/* The billing address First name container view label */
+"firstNameLabel" = "Příjmení";
+
+/* Form Text Field Placeholder (First name) */
+"firstNamePlaceholder" = "Příjmení";
+
+"form_error_card_holder_name_length" = "Název musí mít délku 2 až 45 znaků";
+
+"form_error_card_type_not_supported" = "Nepodporovaný typ karty";
+
+/* Get the code from your banking app - Blik descriptor */
+"input_description_otp" = "Získejte kód z bankovní aplikace.";
+
+/* 6 digit code - Text field top placeholder */
+"input_hint_form_blik_otp" = "6místný kód";
+
+/* An error message displayed when the Last Name is not correct */
+"lastNameErrorInvalid" = "Neplatné příjmení";
+
+/* Last name is required - Form Validation */
+"lastNameErrorRequired" = "Je vyžadováno příjmení";
+
+/* The billing address Last name container view label */
+"lastNameLabel" = "Příjmení";
+
+/* Form Text Field Placeholder (Last name) */
+"lastNamePlaceholder" = "Příjmení";
+
+/* No additional fee - Universal Checkout section text */
+"no_additional_fee" = "Bez dalších poplatků";
+
+/* Enter your one time password - Text field placeholder */
+"payment_method_blik_loading_placeholder" = "Dokončete platbu v aplikaci Blik";
+
+/* Pay with card - Payment Method Type (Card Not Vaulted */
+"payment-method-type-card-not-vaulted" = "Platba kartou";
+
+/* The message copy that tells the user how to transfer funds given a displayed account code */
+"pleaseTransferFunds" = "Převeďte prosím finanční prostředky na uvedený bankovní účet DBS pomocí svého bankovního účtu vedeného v Singapuru prostřednictvím FAST (preferováno), MEPS nebo GIRO.";
+
+/* An error message displayed when the postal code field is not correct */
+"postalCodeErrorInvalid" = "Neplatné PSČ";
+
+/* Postal code is required - Form Validation */
+"postalCodeErrorRequired" = "Postal code is required";
+
+/* The billing address postal code container view label */
+"postalCodeLabel" = "PSČ";
+
+/* Form Text Field Placeholder (Address postal code) */
+"postalCodePlaceholder" = "90210";
+
+/* Cancel - Alert button cancel */
+"primer-alert-button-cancel" = "Zrušit";
+
+/* Delete - Alert button delete */
+"primer-alert-button-delete" = "Odstranit";
+
+/* The title of the primer 'pay in installments' button */
+"primer-button-title-pay-in-installments" = "Platba na splátky";
+
+/* 12/24 - Card Form (Expiry text field placeholder text) */
+"primer-card-form-12-24" = "12/24";
+
+/* Add card - Card Form (Vault title text) */
+"primer-card-form-add-card" = "Přidat kartu";
+
+/* Checkout - Card Form (Checkout Title Text) */
+"primer-card-form-checkout" = "Pokladna";
+
+/* CVV - Card Form (CVV Text Field placeholder text) */
+"primer-card-form-cvv" = "CVV";
+
+/* Cardholder name */
+"primer-card-form-name" = "Jméno";
+
+/* Pay - Card Form (Checkout submit button text) */
+"primer-card-form-pay" = "Zaplatit";
+
+/* Save - Card Form (Vault submit button text) */
+"primer-card-form-save" = "Uložit";
+
+/* Choose payment method - Vault Navigation Bar Title */
+"primer-checkout-nav-bar-title" = "Výběr způsobu platby";
+
+/* Add Bank Account - Confirm Mandate (Top title text_ */
+"primer-confirm-mandate-add-bank-account" = "Přidat bankovní účet";
+
+/* Confirm - Confirm Mandate (Button text) */
+"primer-confirm-mandate-confirm" = "Potvrdit";
+
+/* Confirm SEPA Direct Debit - Confirm Mandate (Main title text) */
+"primer-confirm-mandate-confirm-sepa-direct-debit" = "Potvrdit přímé inkaso SEPA";
+
+/* CVV- CVV recapture explanation label */
+"primer-cvv-recapture-explanation" = "Pro bezpečnou platbu zadej %dčíslicový bezpečnostní kód na své kartě.";
+
+/* CVV - CVV recapture screen title */
+"primer-cvv-recapture-title" = "Zadej CVV";
+
+/* Do you want to delete this payment method? - Delete alert title */
+"primer-delete-alert-title" = "Chcete odstranit tento způsob platby?";
+
+/* Apple pay - Direct Checkout (Apple pay button text) */
+"primer-direct-checkout-apple-pay" = "Apple Pay";
+
+/* Pay by card - Direct Checkout (Card button text) */
+"primer-direct-checkout-pay-by-card" = "Platba kartou";
+
+/* PayPal - Direct Checkout (PayPal button text */
+"primer-direct-checkout-paypal" = "PayPal";
+
+/* An error message displayed when the cvv code is not correct */
+"primer-error-card-form-card-cvv" = "Neplatný kód CVV";
+
+/* An error message displayed when the card expiration date is not correct */
+"primer-error-card-form-card-expiration-date" = "Neplatné datum";
+
+/* An error message displayed when the card number is not correct */
+"primer-error-card-form-card-number" = "Neplatné číslo karty";
+
+/* A suffix to mark a required field or action being performed */
+"primer-error-is-required-suffix" = "je vyžadováno";
+
+/* Something went wrong, please try again. - Error Screen Message */
+"primer-error-screen" = "Něco se pokazilo, zkuste to prosím znovu.";
+
+/* e.g. John Doe - Form Text Field Placeholder (Cardholder name) */
+"primer-form-text-field-placeholder-cardholder" = "např. Jan Novák";
+
+/* Card number - Form Text Field Title (Card number) */
+"primer-form-text-field-title-card-number" = "Číslo karty";
+
+/* Expiry date - Form Text Field Title (Expiry date) */
+"primer-form-text-field-title-expiry-date" = "Datum vypršení platnosti";
+
+/* Enter your card details - Form Type Main Title (Card) */
+"primer-form-type-main-title-card-form" = "Zadejte údaje své karty";
+
+/* Card form - Navigation Bar Title */
+"primer-form-type-nav-bar-title" = "Platební karta";
+
+/* Add Bank Account - IBAN Form (Main title) */
+"primer-iban-form-add-bank-account" = "Přidat bankovní účet";
+
+/* Enter IBAN - IBAN Form (Text field placeholder text */
+"primer-iban-form-enter-iban" = "Zadat IBAN";
+
+/* Your monthly fee will be automatically deducted from this account, using SEPA Core DirectDebit Mandate - IBAN Form (Subtitle text) */
+"primer-iban-form-monthly-fee-automatically-deducted" = "Váš měsíční poplatek bude automaticky strháván z tohoto účtu prostřednictvím příkazu k inkasu SEPA";
+
+/* Next - IBAN Form (Button text) */
+"primer-iban-form-next" = "Další";
+
+/* Use an account number instead - IBAN Form (Switch text) */
+"primer-iban-form-use-account-number-instead" = "Místo toho použít číslo účtu";
+
+/* Expires - Saved card */
+"primer-saved-card" = "Platnost končí";
+
+/* Manual input - Scanner view (Button text) */
+"primer-scanner-view-manual-input" = "Manuální zadávání";
+
+/* Scan card - Scanner view (Title text) */
+"primer-scanner-view-scan-card" = "Naskenovat kartu";
+
+/* Scan the front of your card - Scanner view (Description text) */
+"primer-scanner-view-scan-front-card" = "Naskenujte přední stranu karty";
+
+/* The title of the header for the flow decision view */
+"primer-test-header-description" = "Toto je simulovaný tok pro sandbox. Z níže uvedeného seznamu vyberte výsledek, který chcete otestovat.";
+
+/* The title of the mocked declined flow for a Test Payment Method */
+"primer-test-payment-method-decline-flow-title" = "Odmítnuto";
+
+/* The title of the mocked failed flow for a Test Payment Method */
+"primer-test-payment-method-fail-flow-title" = "Neúspěšné";
+
+/* The title of the mocked successful flow for a Test Payment Method */
+"primer-test-payment-method-success-flow-title" = "Autorizováno";
+
+/* SAVED CARD - Vault Checkout Card Title */
+"primer-vault-checkout-payment-method-title" = "ULOŽENÝ ZPŮSOB PLATBY";
+
+/* Add payment method - Checkout Navigation Bar Title */
+"primer-vault-nav-bar-title" = "Přidat způsob platby";
+
+/* Add new card - Vault Payment Method (Button text) */
+"primer-vault-payment-method-add-new-card" = "Místo toho použít IBAN";
+
+/* Available payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-available-payment-methods" = "Dostupné způsoby platby";
+
+/* Edit - Vault Payment Method (Button text) */
+"primer-vault-payment-method-edit" = "Upravit";
+
+/* Saved payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-saved-payment-methods" = "Uložené způsoby platby";
+
+/* QR Code - QR code screen subtitle label */
+"qrCode" = "QR kód";
+
+/* Scan to pay or take a screenshot - QR code screen title label */
+"scanToPay" = "Skenování pro platbu nebo pořízení snímku obrazovky";
+
+/* Search bank - Search bank textfield placeholder */
+"search-bank-placeholder" = "Vyhledat banku";
+
+/* Search country - Search country textfield placeholder */
+"search-country-placeholder" = "Vyhledat zemi";
+
+/* See all - Universal checkout */
+"see-all" = "Zobrazit vše";
+
+/* "Shipping" label displayed next to the shipping amount, for example: "Shipping $2.50" */
+"shipping" = "Doručení";
+
+/* An error message displayed when the State, Region or County field is not correct */
+"stateErrorInvalid" = "Neplatný stát, region nebo okres";
+
+/* State, Region or County is required - Form Validation */
+"stateErrorRequired" = "Je vyžadován stát / region / kraj";
+
+/* The billing address state container view label */
+"stateLabel" = "Stát / region / kraj";
+
+/* Form Text Field Placeholder (Address State / Region / County) */
+"statePlaceholder" = "Stát / region / kraj";
+
+/* Additional fee may apply - Surcharge (Label) */
+"surcharge-additional-fee" = "Může být účtován další poplatek";
+
+/* Upload the screenshot in your banking app. - QR code screen subtitle label */
+"uploadScreenshot" = "Nahrání snímku obrazovky v bankovní aplikaci";
+
