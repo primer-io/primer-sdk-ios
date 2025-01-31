@@ -2,39 +2,12 @@
   "object": {
     "pins": [
       {
-        "package": "PrimerKlarnaSDK",
-        "repositoryURL": "https://github.com/primer-io/primer-klarna-sdk-ios",
-        "state": {
-          "branch": null,
-          "revision": "e6405455eefc00fb7ebc64f8d16b151c527d2ea8",
-          "version": "1.1.2"
-        }
-      },
-      {
-        "package": "PrimerNolPaySDK",
-        "repositoryURL": "https://github.com/primer-io/primer-nol-pay-sdk-ios",
-        "state": {
-          "branch": null,
-          "revision": "2ddb759f2aa710ff4287723d2ca762f019eae7b7",
-          "version": "1.0.2"
-        }
-      },
-      {
         "package": "Primer3DS",
         "repositoryURL": "https://github.com/primer-io/primer-sdk-3ds-ios",
         "state": {
           "branch": null,
-          "revision": "7d2c9ac8825a4459034a1416012cae61761543fd",
-          "version": "2.4.1"
-        }
-      },
-      {
-        "package": "PrimerStripeSDK",
-        "repositoryURL": "https://github.com/primer-io/primer-stripe-sdk-ios",
-        "state": {
-          "branch": null,
-          "revision": "257fd44196a4f0e8a99110bae654ae5d46e3fd43",
-          "version": "1.0.1"
+          "revision": "37aa7ea8f67ab6aabaeff25f64ce006b4dc53533",
+          "version": "2.4.2"
         }
       }
     ]
