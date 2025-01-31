@@ -78,14 +78,14 @@ class MerchantHeadlessCheckoutNolPayViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         #if canImport(IQKeyboardManagerSwift)
-        IQKeyboardManager.shared.enable = true
+        IQKeyboardManager.shared.isEnabled = true
         #endif
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         #if canImport(IQKeyboardManagerSwift)
-        IQKeyboardManager.shared.enable = false
+        IQKeyboardManager.shared.isEnabled = false
         #endif
     }
 
