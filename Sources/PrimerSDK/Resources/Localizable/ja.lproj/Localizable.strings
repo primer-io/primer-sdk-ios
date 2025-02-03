@@ -1,0 +1,307 @@
+/* An error message displayed when the Address line 1 is not correct */
+"addressLine1ErrorInvalid" = "住所1が無効です";
+
+/* State, Region or County is required - Form Validation */
+"addressLine1ErrorRequired" = "住所行1は必須です";
+
+/* The billing address Address line 1 container view label */
+"addressLine1Label" = "住所1";
+
+/* Form Text Field Placeholder (Address line 1) */
+"addressLine1Placeholder" = "住所行1";
+
+/* An error message displayed when the Address line 2 is not correct */
+"addressLine2ErrorInvalid" = "住所2が無効です";
+
+/* State, Region or County is required - Form Validation */
+"addressLine2ErrorRequired" = "住所行2は必須です";
+
+/* The billing address Address line 2 container view label */
+"addressLine2Label" = "住所2";
+
+/* Form Text Field Placeholder (Address line 2) */
+"addressLine2Placeholder" = "住所行2";
+
+/* An error message displayed when the city field is not correct */
+"cardholderErrorInvalid" = "カード所有者名が無効です";
+
+/* Choose your bank - Choose your bank title label */
+"choose-your-bank-title-label" = "銀行を選択";
+
+/* An error message displayed when the city field is not correct */
+"cityErrorInvalid" = "市町村が無効です";
+
+/* City is required - Form Validation */
+"cityErrorRequired" = "都市の入力は必須です";
+
+/* The billing address city container view label */
+"cityLabel" = "都市";
+
+/* Form Text Field Placeholder (Address city) */
+"cityPlaceholder" = "ケープタウン";
+
+/* Complete your payment - Account info payment title label */
+"completeYourPayment" = "支払いを完了する";
+
+/* Continue */
+"continue" = "続行する";
+
+/* An error message displayed when the Country is not correct */
+"countryCodeErrorInvalid" = "国が無効です";
+
+/* Country is required - Form Validation */
+"countryCodeErrorRequired" = "国の入力は必須です";
+
+/* The billing address Country code container view label */
+"countryCodeLabel" = "国コード";
+
+/* Form Text Field Placeholder (Country code) */
+"countryCodePlaceholder" = "国コード";
+
+/* Select a country - Choose your country title label */
+"countrySelectPlaceholder" = "国を選択";
+
+/* The prefix copy we put before the expiration date */
+"dueAt" = "期限";
+
+/* An error message displayed when the First Name is not correct */
+"firstNameErrorInvalid" = "名が無効です";
+
+/* First name is required - Form Validation */
+"firstNameErrorRequired" = "名の入力は必須です";
+
+/* The billing address First name container view label */
+"firstNameLabel" = "名";
+
+/* Form Text Field Placeholder (First name) */
+"firstNamePlaceholder" = "名";
+
+"form_error_card_holder_name_length" = "名前は2〜45文字にする必要があります";
+
+"form_error_card_type_not_supported" = "サポートされていないカードタイプ";
+
+/* Get the code from your banking app - Blik descriptor */
+"input_description_otp" = "銀行アプリからコードを取得します。";
+
+/* 6 digit code - Text field top placeholder */
+"input_hint_form_blik_otp" = "6桁のコード";
+
+/* An error message displayed when the Last Name is not correct */
+"lastNameErrorInvalid" = "姓が無効です";
+
+/* Last name is required - Form Validation */
+"lastNameErrorRequired" = "姓の入力は必須です";
+
+/* The billing address Last name container view label */
+"lastNameLabel" = "姓";
+
+/* Form Text Field Placeholder (Last name) */
+"lastNamePlaceholder" = "姓";
+
+/* No additional fee - Universal Checkout section text */
+"no_additional_fee" = "追加手数料なし";
+
+/* Enter your one time password - Text field placeholder */
+"payment_method_blik_loading_placeholder" = "Blik アプリで支払いを完了";
+
+/* Pay with card - Payment Method Type (Card Not Vaulted */
+"payment-method-type-card-not-vaulted" = "カードで支払う";
+
+/* The message copy that tells the user how to transfer funds given a displayed account code */
+"pleaseTransferFunds" = "シンガポールに拠点を置く銀行の口座を使用し、FAST（推奨）、MEPS、またはGIRO経由で、提供されたDBS銀行の口座に資金を送金してください。";
+
+/* An error message displayed when the postal code field is not correct */
+"postalCodeErrorInvalid" = "郵便番号が無効です";
+
+/* Postal code is required - Form Validation */
+"postalCodeErrorRequired" = "郵便番号の入力は必須です";
+
+/* The billing address postal code container view label */
+"postalCodeLabel" = "郵便番号";
+
+/* Form Text Field Placeholder (Address postal code) */
+"postalCodePlaceholder" = "90210";
+
+/* Cancel - Alert button cancel */
+"primer-alert-button-cancel" = "キャンセル";
+
+/* Delete - Alert button delete */
+"primer-alert-button-delete" = "削除";
+
+/* The title of the primer 'pay in installments' button */
+"primer-button-title-pay-in-installments" = "分割払い";
+
+/* 12/24 - Card Form (Expiry text field placeholder text) */
+"primer-card-form-12-24" = "12/24";
+
+/* Add card - Card Form (Vault title text) */
+"primer-card-form-add-card" = "カードを追加";
+
+/* Checkout - Card Form (Checkout Title Text) */
+"primer-card-form-checkout" = "チェックアウト";
+
+/* CVV - Card Form (CVV Text Field placeholder text) */
+"primer-card-form-cvv" = "セキュリティコード";
+
+/* Cardholder name */
+"primer-card-form-name" = "名前";
+
+/* Pay - Card Form (Checkout submit button text) */
+"primer-card-form-pay" = "支払い";
+
+/* Save - Card Form (Vault submit button text) */
+"primer-card-form-save" = "保存";
+
+/* Choose payment method - Vault Navigation Bar Title */
+"primer-checkout-nav-bar-title" = "お支払い方法を選択する";
+
+/* Add Bank Account - Confirm Mandate (Top title text_ */
+"primer-confirm-mandate-add-bank-account" = "銀行口座を追加";
+
+/* Confirm - Confirm Mandate (Button text) */
+"primer-confirm-mandate-confirm" = "確認";
+
+/* Confirm SEPA Direct Debit - Confirm Mandate (Main title text) */
+"primer-confirm-mandate-confirm-sepa-direct-debit" = "SEPA Direct Debit を確認";
+
+/* CVV- CVV recapture explanation label */
+"primer-cvv-recapture-explanation" = "安全にお支払いいただくために、カードに記載された%d桁のセキュリティコードを入力してください。";
+
+/* CVV - CVV recapture screen title */
+"primer-cvv-recapture-title" = "CVVを入力";
+
+/* Do you want to delete this payment method? - Delete alert title */
+"primer-delete-alert-title" = "この支払方法を削除しますか？";
+
+/* Apple pay - Direct Checkout (Apple pay button text) */
+"primer-direct-checkout-apple-pay" = "Apple Pay";
+
+/* Pay by card - Direct Checkout (Card button text) */
+"primer-direct-checkout-pay-by-card" = "カードで支払い";
+
+/* PayPal - Direct Checkout (PayPal button text */
+"primer-direct-checkout-paypal" = "PayPal";
+
+/* An error message displayed when the cvv code is not correct */
+"primer-error-card-form-card-cvv" = "CVVが無効です";
+
+/* An error message displayed when the card expiration date is not correct */
+"primer-error-card-form-card-expiration-date" = "日付が無効です";
+
+/* An error message displayed when the card number is not correct */
+"primer-error-card-form-card-number" = "カード番号が無効です";
+
+/* A suffix to mark a required field or action being performed */
+"primer-error-is-required-suffix" = "必須";
+
+/* Something went wrong, please try again. - Error Screen Message */
+"primer-error-screen" = "エラーが発生しました。再試行してください。";
+
+/* e.g. John Doe - Form Text Field Placeholder (Cardholder name) */
+"primer-form-text-field-placeholder-cardholder" = "例 : John Doe";
+
+/* Card number - Form Text Field Title (Card number) */
+"primer-form-text-field-title-card-number" = "カード番号";
+
+/* Expiry date - Form Text Field Title (Expiry date) */
+"primer-form-text-field-title-expiry-date" = "有効期限";
+
+/* Enter your card details - Form Type Main Title (Card) */
+"primer-form-type-main-title-card-form" = "カード情報を入力";
+
+/* Card form - Navigation Bar Title */
+"primer-form-type-nav-bar-title" = "決済カード";
+
+/* Add Bank Account - IBAN Form (Main title) */
+"primer-iban-form-add-bank-account" = "銀行口座を追加";
+
+/* Enter IBAN - IBAN Form (Text field placeholder text */
+"primer-iban-form-enter-iban" = "IBANを入力";
+
+/* Your monthly fee will be automatically deducted from this account, using SEPA Core DirectDebit Mandate - IBAN Form (Subtitle text) */
+"primer-iban-form-monthly-fee-automatically-deducted" = "月額料金は、SEPAコア自動引き落とし委任状を使用してこの口座から自動的に引き落とされます";
+
+/* Next - IBAN Form (Button text) */
+"primer-iban-form-next" = "次へ";
+
+/* Use an account number instead - IBAN Form (Switch text) */
+"primer-iban-form-use-account-number-instead" = "代わりに口座番号を使用";
+
+/* Expires - Saved card */
+"primer-saved-card" = "有効期限";
+
+/* Manual input - Scanner view (Button text) */
+"primer-scanner-view-manual-input" = "手入力";
+
+/* Scan card - Scanner view (Title text) */
+"primer-scanner-view-scan-card" = "カードをスキャン";
+
+/* Scan the front of your card - Scanner view (Description text) */
+"primer-scanner-view-scan-front-card" = "カードの前面をスキャン";
+
+/* The title of the header for the flow decision view */
+"primer-test-header-description" = "これはサンドボックス用のフローのモックアップです。以下の一覧からテストしたい結果を選んでください。";
+
+/* The title of the mocked declined flow for a Test Payment Method */
+"primer-test-payment-method-decline-flow-title" = "拒否されました";
+
+/* The title of the mocked failed flow for a Test Payment Method */
+"primer-test-payment-method-fail-flow-title" = "失敗しました";
+
+/* The title of the mocked successful flow for a Test Payment Method */
+"primer-test-payment-method-success-flow-title" = "承認されました";
+
+/* SAVED CARD - Vault Checkout Card Title */
+"primer-vault-checkout-payment-method-title" = "保存したお支払い方法";
+
+/* Add payment method - Checkout Navigation Bar Title */
+"primer-vault-nav-bar-title" = "支払方法を追加";
+
+/* Add new card - Vault Payment Method (Button text) */
+"primer-vault-payment-method-add-new-card" = "新しいカードを追加";
+
+/* Available payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-available-payment-methods" = "利用可能な支払方法";
+
+/* Edit - Vault Payment Method (Button text) */
+"primer-vault-payment-method-edit" = "編集";
+
+/* Saved payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-saved-payment-methods" = "保存された支払方法";
+
+/* QR Code - QR code screen subtitle label */
+"qrCode" = "QR コード";
+
+/* Scan to pay or take a screenshot - QR code screen title label */
+"scanToPay" = "スキャンして支払うかスクリーンショットを撮影";
+
+/* Search bank - Search bank textfield placeholder */
+"search-bank-placeholder" = "銀行を検索";
+
+/* Search country - Search country textfield placeholder */
+"search-country-placeholder" = "国を検索する";
+
+/* See all - Universal checkout */
+"see-all" = "すべて表示";
+
+/* "Shipping" label displayed next to the shipping amount, for example: "Shipping $2.50" */
+"shipping" = "送料";
+
+/* An error message displayed when the State, Region or County field is not correct */
+"stateErrorInvalid" = "州、地域または郡が無効です";
+
+/* State, Region or County is required - Form Validation */
+"stateErrorRequired" = "州 / 地方 / 郡は必須です";
+
+/* The billing address state container view label */
+"stateLabel" = "州 / 地方 / 郡";
+
+/* Form Text Field Placeholder (Address State / Region / County) */
+"statePlaceholder" = "州 / 地方 / 郡";
+
+/* Additional fee may apply - Surcharge (Label) */
+"surcharge-additional-fee" = "追加手数料が適用される場合があります";
+
+/* Upload the screenshot in your banking app. - QR code screen subtitle label */
+"uploadScreenshot" = "銀行アプリでスクリーンショットをアップロード";
+

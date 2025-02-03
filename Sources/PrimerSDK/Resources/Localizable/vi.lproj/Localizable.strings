@@ -1,0 +1,307 @@
+/* An error message displayed when the Address line 1 is not correct */
+"addressLine1ErrorInvalid" = "Dòng Địa chỉ 1 Không hợp lệ";
+
+/* State, Region or County is required - Form Validation */
+"addressLine1ErrorRequired" = "Vui lòng nhập dòng địa chỉ 1";
+
+/* The billing address Address line 1 container view label */
+"addressLine1Label" = "Dòng địa chỉ 1";
+
+/* Form Text Field Placeholder (Address line 1) */
+"addressLine1Placeholder" = "Dòng địa chỉ 1";
+
+/* An error message displayed when the Address line 2 is not correct */
+"addressLine2ErrorInvalid" = "Dòng Địa chỉ 2 Không hợp lệ";
+
+/* State, Region or County is required - Form Validation */
+"addressLine2ErrorRequired" = "Dòng địa chỉ 2 là bắt buộc";
+
+/* The billing address Address line 2 container view label */
+"addressLine2Label" = "Dòng địa chỉ 2";
+
+/* Form Text Field Placeholder (Address line 2) */
+"addressLine2Placeholder" = "Dòng địa chỉ 2";
+
+/* An error message displayed when the city field is not correct */
+"cardholderErrorInvalid" = "Tên Chủ thẻ không hợp lệ";
+
+/* Choose your bank - Choose your bank title label */
+"choose-your-bank-title-label" = "Chọn ngân hàng của bạn";
+
+/* An error message displayed when the city field is not correct */
+"cityErrorInvalid" = "Thành phố không hợp lệ";
+
+/* City is required - Form Validation */
+"cityErrorRequired" = "Thành phố là bắt buộc";
+
+/* The billing address city container view label */
+"cityLabel" = "Thành phố";
+
+/* Form Text Field Placeholder (Address city) */
+"cityPlaceholder" = "Cape Town";
+
+/* Complete your payment - Account info payment title label */
+"completeYourPayment" = "Hoàn tất giao dịch thanh toán của bạn";
+
+/* Continue */
+"continue" = "Tiếp tục";
+
+/* An error message displayed when the Country is not correct */
+"countryCodeErrorInvalid" = "Quốc gia Không hợp lệ";
+
+/* Country is required - Form Validation */
+"countryCodeErrorRequired" = "Quốc gia là bắt buộc";
+
+/* The billing address Country code container view label */
+"countryCodeLabel" = "Mã quốc gia";
+
+/* Form Text Field Placeholder (Country code) */
+"countryCodePlaceholder" = "Mã quốc gia";
+
+/* Select a country - Choose your country title label */
+"countrySelectPlaceholder" = "Chọn quốc gia";
+
+/* The prefix copy we put before the expiration date */
+"dueAt" = "Hết hạn lúc";
+
+/* An error message displayed when the First Name is not correct */
+"firstNameErrorInvalid" = "Tên Không hợp lệ";
+
+/* First name is required - Form Validation */
+"firstNameErrorRequired" = "Tên là bắt buộc";
+
+/* The billing address First name container view label */
+"firstNameLabel" = "Tên";
+
+/* Form Text Field Placeholder (First name) */
+"firstNamePlaceholder" = "Tên";
+
+"form_error_card_holder_name_length" = "Tên phải từ 2 đến 45 ký tự";
+
+"form_error_card_type_not_supported" = "Loại thẻ không được hỗ trợ";
+
+/* Get the code from your banking app - Blik descriptor */
+"input_description_otp" = "Nhận mã từ ứng dụng ngân hàng của bạn.";
+
+/* 6 digit code - Text field top placeholder */
+"input_hint_form_blik_otp" = "Mã có 6 chữ số";
+
+/* An error message displayed when the Last Name is not correct */
+"lastNameErrorInvalid" = "Họ Không hợp lệ";
+
+/* Last name is required - Form Validation */
+"lastNameErrorRequired" = "Họ là bắt buộc";
+
+/* The billing address Last name container view label */
+"lastNameLabel" = "Họ";
+
+/* Form Text Field Placeholder (Last name) */
+"lastNamePlaceholder" = "Họ";
+
+/* No additional fee - Universal Checkout section text */
+"no_additional_fee" = "Không có phí bổ sung";
+
+/* Enter your one time password - Text field placeholder */
+"payment_method_blik_loading_placeholder" = "Hoàn tất giao dịch thanh toán của bạn trong ứng dụng Blik";
+
+/* Pay with card - Payment Method Type (Card Not Vaulted */
+"payment-method-type-card-not-vaulted" = "Thanh toán bằng thẻ";
+
+/* The message copy that tells the user how to transfer funds given a displayed account code */
+"pleaseTransferFunds" = "Vui lòng Chuyển tiền vào tài khoản ngân hàng DBS được cung cấp bằng tài khoản ngân hàng ở Singapore của bạn thông qua FAST (ưu tiên), MEPS hoặc GIRO.";
+
+/* An error message displayed when the postal code field is not correct */
+"postalCodeErrorInvalid" = "Mã bưu chính không hợp lệ";
+
+/* Postal code is required - Form Validation */
+"postalCodeErrorRequired" = "Mã bưu điện là bắt buộc";
+
+/* The billing address postal code container view label */
+"postalCodeLabel" = "Mã bưu điện";
+
+/* Form Text Field Placeholder (Address postal code) */
+"postalCodePlaceholder" = "90210";
+
+/* Cancel - Alert button cancel */
+"primer-alert-button-cancel" = "Hủy";
+
+/* Delete - Alert button delete */
+"primer-alert-button-delete" = "Xóa";
+
+/* The title of the primer 'pay in installments' button */
+"primer-button-title-pay-in-installments" = "Thanh toán bằng trả góp";
+
+/* 12/24 - Card Form (Expiry text field placeholder text) */
+"primer-card-form-12-24" = "12/24";
+
+/* Add card - Card Form (Vault title text) */
+"primer-card-form-add-card" = "Thêm thẻ";
+
+/* Checkout - Card Form (Checkout Title Text) */
+"primer-card-form-checkout" = "Thanh toán";
+
+/* CVV - Card Form (CVV Text Field placeholder text) */
+"primer-card-form-cvv" = "CVV";
+
+/* Cardholder name */
+"primer-card-form-name" = "Tên";
+
+/* Pay - Card Form (Checkout submit button text) */
+"primer-card-form-pay" = "Thanh toán";
+
+/* Save - Card Form (Vault submit button text) */
+"primer-card-form-save" = "Lưu";
+
+/* Choose payment method - Vault Navigation Bar Title */
+"primer-checkout-nav-bar-title" = "Chọn phương thức thanh toán";
+
+/* Add Bank Account - Confirm Mandate (Top title text_ */
+"primer-confirm-mandate-add-bank-account" = "Thêm tài khoản ngân hàng";
+
+/* Confirm - Confirm Mandate (Button text) */
+"primer-confirm-mandate-confirm" = "Xác nhận";
+
+/* Confirm SEPA Direct Debit - Confirm Mandate (Main title text) */
+"primer-confirm-mandate-confirm-sepa-direct-debit" = "Xác nhận Ghi nợ Trực tiếp SEPA";
+
+/* CVV- CVV recapture explanation label */
+"primer-cvv-recapture-explanation" = "Nhập mã bảo mật có %d chữ số trên thẻ của bạn để thanh toán an toàn.";
+
+/* CVV - CVV recapture screen title */
+"primer-cvv-recapture-title" = "Nhập CVV";
+
+/* Do you want to delete this payment method? - Delete alert title */
+"primer-delete-alert-title" = "Bạn có muốn xóa phương thức thanh toán này không?";
+
+/* Apple pay - Direct Checkout (Apple pay button text) */
+"primer-direct-checkout-apple-pay" = "Apple pay";
+
+/* Pay by card - Direct Checkout (Card button text) */
+"primer-direct-checkout-pay-by-card" = "Thanh toán bằng thẻ";
+
+/* PayPal - Direct Checkout (PayPal button text */
+"primer-direct-checkout-paypal" = "PayPal";
+
+/* An error message displayed when the cvv code is not correct */
+"primer-error-card-form-card-cvv" = "CVV không hợp lệ";
+
+/* An error message displayed when the card expiration date is not correct */
+"primer-error-card-form-card-expiration-date" = "Ngày không hợp lệ";
+
+/* An error message displayed when the card number is not correct */
+"primer-error-card-form-card-number" = "Số thẻ không hợp lệ";
+
+/* A suffix to mark a required field or action being performed */
+"primer-error-is-required-suffix" = "là thông tin bắt buộc";
+
+/* Something went wrong, please try again. - Error Screen Message */
+"primer-error-screen" = "Đã xảy ra lỗi, xin vui lòng thử lại.";
+
+/* e.g. John Doe - Form Text Field Placeholder (Cardholder name) */
+"primer-form-text-field-placeholder-cardholder" = "ví dụ: John Doe";
+
+/* Card number - Form Text Field Title (Card number) */
+"primer-form-text-field-title-card-number" = "Số thẻ";
+
+/* Expiry date - Form Text Field Title (Expiry date) */
+"primer-form-text-field-title-expiry-date" = "Ngày hết hạn";
+
+/* Enter your card details - Form Type Main Title (Card) */
+"primer-form-type-main-title-card-form" = "Nhập thông tin thẻ của bạn";
+
+/* Card form - Navigation Bar Title */
+"primer-form-type-nav-bar-title" = "Thẻ thanh toán";
+
+/* Add Bank Account - IBAN Form (Main title) */
+"primer-iban-form-add-bank-account" = "Thêm tài khoản ngân hàng";
+
+/* Enter IBAN - IBAN Form (Text field placeholder text */
+"primer-iban-form-enter-iban" = "Nhập IBAN";
+
+/* Your monthly fee will be automatically deducted from this account, using SEPA Core DirectDebit Mandate - IBAN Form (Subtitle text) */
+"primer-iban-form-monthly-fee-automatically-deducted" = "Phí hàng tháng của bạn sẽ bị tự động trừ từ tài khoản này, bằng cách sử dụng Ủy quyền ghi nợ trực tiếp SEPA Core";
+
+/* Next - IBAN Form (Button text) */
+"primer-iban-form-next" = "Tiếp theo";
+
+/* Use an account number instead - IBAN Form (Switch text) */
+"primer-iban-form-use-account-number-instead" = "Sử dụng số tài khoản thay vào đó";
+
+/* Expires - Saved card */
+"primer-saved-card" = "Hết hạn";
+
+/* Manual input - Scanner view (Button text) */
+"primer-scanner-view-manual-input" = "Nhập thủ công";
+
+/* Scan card - Scanner view (Title text) */
+"primer-scanner-view-scan-card" = "Quét thẻ";
+
+/* Scan the front of your card - Scanner view (Description text) */
+"primer-scanner-view-scan-front-card" = "Quét mặt trước của thẻ";
+
+/* The title of the header for the flow decision view */
+"primer-test-header-description" = "Đây là một quy trình giả lập cho sandbox (môi trường thử nghiệm cô lập). Chọn kết quả bạn muốn kiểm tra từ danh sách bên dưới.";
+
+/* The title of the mocked declined flow for a Test Payment Method */
+"primer-test-payment-method-decline-flow-title" = "Bị từ chối";
+
+/* The title of the mocked failed flow for a Test Payment Method */
+"primer-test-payment-method-fail-flow-title" = "Không thành công";
+
+/* The title of the mocked successful flow for a Test Payment Method */
+"primer-test-payment-method-success-flow-title" = "Được cho phép";
+
+/* SAVED CARD - Vault Checkout Card Title */
+"primer-vault-checkout-payment-method-title" = "ĐÃ LƯU PHƯƠNG THỨC THANH TOÁN";
+
+/* Add payment method - Checkout Navigation Bar Title */
+"primer-vault-nav-bar-title" = "Thêm phương thức thanh toán";
+
+/* Add new card - Vault Payment Method (Button text) */
+"primer-vault-payment-method-add-new-card" = "Thêm thẻ mới";
+
+/* Available payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-available-payment-methods" = "Các phương thức thanh toán khả dụng";
+
+/* Edit - Vault Payment Method (Button text) */
+"primer-vault-payment-method-edit" = "Sửa";
+
+/* Saved payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-saved-payment-methods" = "Phương thức thanh toán đã lưu";
+
+/* QR Code - QR code screen subtitle label */
+"qrCode" = "Mã QR";
+
+/* Scan to pay or take a screenshot - QR code screen title label */
+"scanToPay" = "Quét để thanh toán hoặc chụp ảnh màn hình";
+
+/* Search bank - Search bank textfield placeholder */
+"search-bank-placeholder" = "Tìm kiếm ngân hàng";
+
+/* Search country - Search country textfield placeholder */
+"search-country-placeholder" = "Tìm kiếm quốc gia";
+
+/* See all - Universal checkout */
+"see-all" = "Xem tất cả";
+
+/* "Shipping" label displayed next to the shipping amount, for example: "Shipping $2.50" */
+"shipping" = "Phí vận chuyển";
+
+/* An error message displayed when the State, Region or County field is not correct */
+"stateErrorInvalid" = "Tiểu bang, Vùng hoặc Hạt Không hợp lệ";
+
+/* State, Region or County is required - Form Validation */
+"stateErrorRequired" = "Tiểu bang, Vùng hoặc Quận là bắt buộc";
+
+/* The billing address state container view label */
+"stateLabel" = "Tiểu bang / Vùng / Hạt";
+
+/* Form Text Field Placeholder (Address State / Region / County) */
+"statePlaceholder" = "Tiểu bang / Vùng / Hạt";
+
+/* Additional fee may apply - Surcharge (Label) */
+"surcharge-additional-fee" = "Có thể có phí bổ sung";
+
+/* Upload the screenshot in your banking app. - QR code screen subtitle label */
+"uploadScreenshot" = "Tải lên ảnh chụp màn hình trong ứng dụng ngân hàng của bạn";
+
