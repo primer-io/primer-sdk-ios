@@ -1,3 +1,13 @@
+## 2.35.0 (2025-02-04)
+
+### Feat
+
+- add missing localizations (#1097)
+
+### Fix
+
+- ACC-4826 Update 3DS SDK Keys for Non-Production Environments (#1096)
+
 ## 2.34.0 (2025-01-23)
 
 ### Experimental
