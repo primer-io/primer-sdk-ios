@@ -1846,6 +1846,13 @@
                location = "group:Localizable"
                name = "Localizable">
                <Group
+                  location = "group:cs.lproj"
+                  name = "cs.lproj">
+                  <FileRef
+                     location = "group:Localizable.strings">
+                  </FileRef>
+               </Group>
+               <Group
                   location = "group:de.lproj"
                   name = "de.lproj">
                   <FileRef
