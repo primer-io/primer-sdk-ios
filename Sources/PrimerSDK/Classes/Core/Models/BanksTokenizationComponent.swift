@@ -14,6 +14,7 @@ import Foundation
 import UIKit
 import SafariServices
 
+//TODO remove
 final class BanksTokenizationComponent: NSObject, LogReporter {
 
     var paymentMethodType: PrimerPaymentMethodType
@@ -88,8 +89,6 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
             var paymentMethodRequestValue: String = ""
             switch self.config.type {
-            case PrimerPaymentMethodType.adyenDotPay.rawValue:
-                paymentMethodRequestValue = "dotpay"
             case PrimerPaymentMethodType.adyenIDeal.rawValue:
                 paymentMethodRequestValue = "ideal"
             default:

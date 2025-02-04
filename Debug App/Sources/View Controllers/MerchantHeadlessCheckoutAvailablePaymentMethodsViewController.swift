@@ -164,9 +164,6 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UITable
             #else
             break
             #endif
-        case "ADYEN_IDEAL":
-            let vc = MerchantHeadlessCheckoutBankViewController()
-            self.navigationController?.pushViewController(vc, animated: true)
         case "STRIPE_ACH":
             #if canImport(PrimerStripeSDK)
             let vc = MerchantHeadlessCheckoutStripeAchViewController()

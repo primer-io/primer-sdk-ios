@@ -32,7 +32,6 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
 
     private var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
     private let unsupportedPaymentMethodTypes: [String] = [
-        PrimerPaymentMethodType.adyenDotPay.rawValue,
         PrimerPaymentMethodType.goCardless.rawValue,
         PrimerPaymentMethodType.googlePay.rawValue,
         PrimerPaymentMethodType.primerTestKlarna.rawValue,

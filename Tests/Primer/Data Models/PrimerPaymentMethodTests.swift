@@ -118,15 +118,6 @@ final class PrimerPaymentMethodTests: XCTestCase {
             XCTAssertTrue(paymentMethod.tokenizationViewModel is FormPaymentMethodTokenizationViewModel)
         }
 
-        let banksPaymentMethods: [PrimerPaymentMethodType] = [
-            .adyenIDeal,
-            .adyenDotPay
-        ]
-        banksPaymentMethods.forEach { type in
-            let paymentMethod = createPaymentMethod(withImplementationType: .nativeSdk,
-                                                    paymentType: type)
-            XCTAssertTrue(paymentMethod.tokenizationViewModel is BankSelectorTokenizationViewModel)
-        }
 
         let cardPaymentMethods: [PrimerPaymentMethodType] = [
             .paymentCard,

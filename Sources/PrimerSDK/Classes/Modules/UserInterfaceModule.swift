@@ -154,26 +154,6 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
         case .adyenBancontactCard:
             return nil
 
-        case .adyenDotPay:
-            return PrimerPaymentMethod.DisplayMetadata(
-                button: PrimerPaymentMethod.DisplayMetadata.Button(
-                    iconUrl: nil,
-                    backgroundColor: PrimerTheme.BaseColors(
-                        coloredHex: nil,
-                        lightHex: "#FFFFFF",
-                        darkHex: "#000000"),
-                    cornerRadius: 4,
-                    borderWidth: PrimerTheme.BaseBorderWidth(
-                        colored: nil,
-                        light: 1,
-                        dark: 1),
-                    borderColor: PrimerTheme.BaseColors(
-                        coloredHex: nil,
-                        lightHex: "#000000",
-                        darkHex: "#FFFFFF"),
-                    text: nil,
-                    textColor: nil))
-
         case .adyenGiropay,
              .buckarooGiropay,
              .payNLGiropay:

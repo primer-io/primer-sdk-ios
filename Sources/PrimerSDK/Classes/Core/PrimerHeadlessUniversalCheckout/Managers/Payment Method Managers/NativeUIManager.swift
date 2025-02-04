@@ -48,7 +48,6 @@ extension PrimerHeadlessUniversalCheckout {
             settings.uiOptions.isInitScreenEnabled = false
             settings.uiOptions.isSuccessScreenEnabled = false
             settings.uiOptions.isErrorScreenEnabled = false
-
         }
 
         @discardableResult

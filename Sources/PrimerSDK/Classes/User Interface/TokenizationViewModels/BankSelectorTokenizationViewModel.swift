@@ -7,6 +7,8 @@
 
 // swiftlint:disable function_body_length
 
+
+//TODO this should be removed
 import SafariServices
 import UIKit
 
@@ -229,8 +231,6 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
 
             var paymentMethodRequestValue: String = ""
             switch self.config.type {
-            case PrimerPaymentMethodType.adyenDotPay.rawValue:
-                paymentMethodRequestValue = "dotpay"
             case PrimerPaymentMethodType.adyenIDeal.rawValue:
                 paymentMethodRequestValue = "ideal"
             default:

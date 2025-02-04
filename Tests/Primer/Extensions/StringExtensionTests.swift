@@ -211,7 +211,6 @@ final class StringExtensionTests: XCTestCase {
     func testIsValidPhoneNumberForPaymentType() {
         // Generic case
         XCTAssertTrue("+447890123456".isValidPhoneNumberForPaymentMethodType(.paymentCard))
-        XCTAssertTrue("+447890123456".isValidPhoneNumberForPaymentMethodType(.adyenDotPay))
         XCTAssertTrue("+447890123456".isValidPhoneNumberForPaymentMethodType(.applePay))
         XCTAssertTrue("+447890123456".isValidPhoneNumberForPaymentMethodType(.googlePay))
         XCTAssertTrue("+129876543210".isValidPhoneNumberForPaymentMethodType(.googlePay))
