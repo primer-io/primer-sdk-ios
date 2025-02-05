@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "地址行 2";
 
+"card_expiry_date" = "月份/年份";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "无效的持卡人姓名";
 
@@ -130,9 +132,6 @@
 
 /* The title of the primer 'pay in installments' button */
 "primer-button-title-pay-in-installments" = "分期付款";
-
-/* 12/24 - Card Form (Expiry text field placeholder text) */
-"primer-card-form-12-24" = "12/24";
 
 /* Add card - Card Form (Vault title text) */
 "primer-card-form-add-card" = "添加卡片";
