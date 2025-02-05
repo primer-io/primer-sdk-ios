@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "2. vrstica naslova";
 
+"card_expiry_date" = "MM/LL";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "Neveljavno ime imetnika kartice";
 

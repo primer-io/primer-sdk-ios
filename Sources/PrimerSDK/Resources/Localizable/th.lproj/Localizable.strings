@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "ที่อยู่บรรทัดที่ 2";
 
+"card_expiry_date" = "เดือน/ปี";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "ชื่อผู้ถือบัตรไม่ถูกต้อง";
 

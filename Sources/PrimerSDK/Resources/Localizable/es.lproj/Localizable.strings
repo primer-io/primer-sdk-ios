@@ -24,6 +24,8 @@
 
 "back_button_label" = "Volver";
 
+"card_expiry_date" = "MM/AA";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "Invalid Cardholder name";
 

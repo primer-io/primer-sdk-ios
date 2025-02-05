@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "Címsor 2";
 
+"card_expiry_date" = "HH/ÉÉ";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "Érvénytelen kártyabirtokos név";
 

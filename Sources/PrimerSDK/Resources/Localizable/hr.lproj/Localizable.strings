@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "Adresni redak 2";
 
+"card_expiry_date" = "MM/GG";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "Nevažeće ime vlasnika kartice";
 

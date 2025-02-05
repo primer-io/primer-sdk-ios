@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "Рядок адреси 2";
 
+"card_expiry_date" = "ММ/РР";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "Недійсне ім'я власника картки";
 
