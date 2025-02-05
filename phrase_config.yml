@@ -281,13 +281,13 @@
       - file: Sources/PrimerSDK/Resources/Localizable/es-AR.lproj/Localizable.strings
         params:
           file_format: strings
-          locale_id: Spanish (Argentina)
+          locale_id: Spanish-Argentina
           tags: ios-sdk
           encoding: UTF-8
       - file: Sources/PrimerSDK/Resources/Localizable/es-MX.lproj/Localizable.strings
         params:
           file_format: strings
-          locale_id: Spanish (Mexico)
+          locale_id: Mexican-Spanish
           tags: ios-sdk
           encoding: UTF-8
       - file: Sources/PrimerSDK/Resources/Localizable/et.lproj/Localizable.strings
@@ -323,7 +323,7 @@
       - file: Sources/PrimerSDK/Resources/Localizable/pt-BR.lproj/Localizable.strings
         params:
           file_format: strings
-          locale_id: Portuguese (Brazil)
+          locale_id: Brazilian-Portuguese
           tags: ios-sdk
           encoding: UTF-8
       - file: Sources/PrimerSDK/Resources/Localizable/ro.lproj/Localizable.strings
