@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "Druga linia adresu";
 
+"card_expiry_date" = "MM/RR";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "Invalid Cardholder name";
 

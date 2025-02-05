@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "주소 2번 줄";
 
+"card_expiry_date" = "MM/YY";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "유효하지 않은 카드 소유자 이름";
 

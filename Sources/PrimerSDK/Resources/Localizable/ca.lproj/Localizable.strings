@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "Línia d'adreça 2";
 
+"card_expiry_date" = "MM/AA";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "Nom del titular de la targeta no vàlid";
 

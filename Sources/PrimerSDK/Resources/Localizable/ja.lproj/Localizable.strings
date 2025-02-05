@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "住所行2";
 
+"card_expiry_date" = "月月/年年";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "カード所有者名が無効です";
 
