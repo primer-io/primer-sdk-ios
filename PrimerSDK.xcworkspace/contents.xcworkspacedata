@@ -1334,9 +1334,6 @@
                      location = "group:PaymentMethodTokenizationViewModel.swift">
                   </FileRef>
                   <FileRef
-                     location = "group:BankSelectorTokenizationViewModel.swift">
-                  </FileRef>
-                  <FileRef
                      location = "group:CheckoutWithVaultedPaymentMethodViewModel.swift">
                   </FileRef>
                   <FileRef
@@ -1566,16 +1563,6 @@
                   </FileRef>
                   <FileRef
                      location = "group:ACHMandateViewController.swift">
-                  </FileRef>
-               </Group>
-               <Group
-                  location = "group:Banks"
-                  name = "Banks">
-                  <FileRef
-                     location = "group:BankSelectorViewController.swift">
-                  </FileRef>
-                  <FileRef
-                     location = "group:BankTableViewCell.swift">
                   </FileRef>
                </Group>
                <Group
@@ -2366,9 +2353,6 @@
                </FileRef>
                <FileRef
                   location = "group:PayPalTokenizationViewModelTests.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:BankSelectionTokenizationViewModelTests.swift">
                </FileRef>
                <FileRef
                   location = "group:TokenizationViewModelTestCase.swift">

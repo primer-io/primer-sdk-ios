@@ -92,6 +92,9 @@ class PrimerPaymentMethod: Codable, LogReporter {
                 if #available(iOS 13.0, *) {
                     return KlarnaTokenizationViewModel(config: self, apiClient: apiClient)
                 }
+            // TODO this should not be necessary
+            case PrimerPaymentMethodType.adyenIDeal:
+                return WebRedirectPaymentMethodTokenizationViewModel(config: self, apiClient: apiClient)
 
             case PrimerPaymentMethodType.paymentCard,
                  PrimerPaymentMethodType.adyenBancontactCard:
