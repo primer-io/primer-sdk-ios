@@ -25,7 +25,7 @@ public final class PrimerCardholderNameFieldView: PrimerSimpleCardFormTextFieldV
             userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
         isValid = { text in
-            return text.isValidNonDecimalString
+            return text.isValidNonDecimalString && 2 <= text.count && text.count < 45
         }
     }
 
