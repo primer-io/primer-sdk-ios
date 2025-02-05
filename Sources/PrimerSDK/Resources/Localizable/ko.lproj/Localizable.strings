@@ -133,9 +133,6 @@
 /* The title of the primer 'pay in installments' button */
 "primer-button-title-pay-in-installments" = "할부로 결제하기";
 
-/* 12/24 - Card Form (Expiry text field placeholder text) */
-"primer-card-form-12-24" = "12/24";
-
 /* Add card - Card Form (Vault title text) */
 "primer-card-form-add-card" = "카드 추가";
 
