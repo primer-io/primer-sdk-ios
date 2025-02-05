@@ -38,12 +38,12 @@ jobs:
       - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
-      - uses: ruby/setup-ruby@28c4deda893d5a96a6b2d958c5b47fc18d65c9d3  # v1.213.0
+      - uses: ruby/setup-ruby@2654679fe7f7c29875c669398a8ec0791b8a64a1  # v1.215.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
       - name: Setup node
-        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af #v4.1.0
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a #v4.2.0
         with:
           node-version: 18.3.0
       - run: npm install --save slack-message-builder
@@ -93,7 +93,7 @@ jobs:
         with:
           ref: ${{ github.ref }}
       - name: Setup node
-        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af #v4.1.0
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a #v4.2.0
         with:
           node-version: 18.3.0
       - run: npm install --save slack-message-builder
