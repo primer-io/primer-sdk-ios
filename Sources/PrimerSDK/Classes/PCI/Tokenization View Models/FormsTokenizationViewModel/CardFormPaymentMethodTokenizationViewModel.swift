@@ -813,8 +813,19 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
                 expiryDateContainerView.errorText = Strings.CardFormView.ExpiryDate.invalidErrorMessage
             } else if primerTextFieldView is PrimerCVVFieldView, !primerTextFieldView.isEmpty {
                 cvvContainerView.errorText = Strings.CardFormView.CVV.invalidErrorMessage
-            } else if primerTextFieldView is PrimerCardholderNameFieldView, !primerTextFieldView.isEmpty {
-                cardholderNameContainerView?.errorText = Strings.CardFormView.Cardholder.invalidErrorMessage
+            } else if primerTextFieldView is PrimerCardholderNameFieldView {
+                // Check if the cardholder name field is empty or has an invalid length.
+                if primerTextFieldView.isEmpty {
+                    // If the text field is empty, assign the default invalid error message.
+                    cardholderNameContainerView?.errorText = Strings.CardFormView.Cardholder.invalidErrorMessage
+                } else if let count = primerTextFieldView.textField.text?.count, count >= 2 && count < 45 {
+                    // If the count of characters is between 2 (inclusive) and 45 (exclusive),
+                    // assign the error message specific to cardholder length.
+                    cardholderNameContainerView?.errorText = Strings.CardFormView.Cardholder.invalidCardholderLengthErrorMessage
+                } else {
+                    // For all other cases, assign the general invalid error message.
+                    cardholderNameContainerView?.errorText = Strings.CardFormView.Cardholder.invalidErrorMessage
+                }
             } else if primerTextFieldView is PrimerPostalCodeFieldView {
                 postalCodeContainerView.errorText = primerTextFieldView.isEmpty ?
                     Strings.CardFormView.PostalCode.isRequiredErrorMessage : Strings.CardFormView.PostalCode.invalidErrorMessage

@@ -675,6 +675,12 @@ extension Strings {
                 bundle: Bundle.primerResources,
                 value: "Invalid Cardholder name",
                 comment: "An error message displayed when the city field is not correct")
+
+            static let invalidCardholderLengthErrorMessage = NSLocalizedString(
+                "form_error_card_holder_name_length",
+                bundle: Bundle.primerResources,
+                value: "Name must have between 2 and 45 characters",
+                comment: "An error message displayed when cardholder.text length is < 2")
         }
 
         // swiftlint:disable:next nesting
