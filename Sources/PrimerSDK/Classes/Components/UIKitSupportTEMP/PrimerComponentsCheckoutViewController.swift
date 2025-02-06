@@ -27,7 +27,23 @@ class PrimerComponentsCheckoutViewController: UIViewController {
         super.viewDidLoad()
 
         // Embed the SwiftUI `PrimerCheckout` view inside a UIHostingController.
-        let primerCheckoutView = PrimerCheckout(clientToken: clientToken, onPaymentFinished: onPaymentFinished)
+        let primerCheckoutView = PrimerCheckout(clientToken: clientToken,
+                                                onPaymentFinished: onPaymentFinished) { scope in
+            return AnyView(
+                VStack {
+                    Text("Custom Payment UI for \(scope.method.name)")
+                        .font(.title)
+                        .padding()
+
+
+                    // Additional custom UI elements can be added here.
+                }
+                .padding()
+                .background(Color.yellow) // Custom background color
+                .border(Color.green, width: 3) // 3-point green border
+                .padding() // Extra padding for clarity
+            )
+        }
         let hostingController = UIHostingController(rootView: primerCheckoutView)
 
         // Add the SwiftUI view controller as a child.

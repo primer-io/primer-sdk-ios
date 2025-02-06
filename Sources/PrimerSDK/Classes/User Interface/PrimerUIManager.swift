@@ -75,7 +75,7 @@ internal class PrimerUIManager: PrimerUIManaging {
                 let primerVC = PrimerComponentsCheckoutViewController(clientToken: "mock-token") { paymentResult in
                     print("Payment finished with result: \(paymentResult)")
                 }
-                PrimerUIManager.primerRootViewController?.show(viewController:primerVC, animated: true)
+                PrimerUIManager.primerRootViewController?.present(primerVC, animated: true)
 
             } else {
                 // OLD CODE PATH
