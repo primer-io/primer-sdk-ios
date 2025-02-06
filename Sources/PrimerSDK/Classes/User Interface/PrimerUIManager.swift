@@ -69,8 +69,19 @@ internal class PrimerUIManager: PrimerUIManaging {
         if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
             PrimerUIManager.presentPaymentMethod(type: paymentMethodType)
         } else if PrimerInternal.shared.intent == .checkout {
-            let pucvc = PrimerUniversalCheckoutViewController()
-            PrimerUIManager.primerRootViewController?.show(viewController: pucvc)
+
+            if #available(iOS 15.0, *) {
+                // TODO: TEMP - JUST FOR TESTING
+                let primerVC = PrimerComponentsCheckoutViewController(clientToken: "mock-token") { paymentResult in
+                    print("Payment finished with result: \(paymentResult)")
+                }
+                PrimerUIManager.primerRootViewController?.show(viewController:primerVC, animated: true)
+
+            } else {
+                // OLD CODE PATH
+                let pucvc = PrimerUniversalCheckoutViewController()
+                PrimerUIManager.primerRootViewController?.show(viewController: pucvc)
+            }
         } else if PrimerInternal.shared.intent == .vault {
             let pvmvc = PrimerVaultManagerViewController()
             PrimerUIManager.primerRootViewController?.show(viewController: pvmvc)

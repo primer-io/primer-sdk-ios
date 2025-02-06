@@ -1,6 +1,6 @@
 //
 //  ApplePayPaymentContentScope.swift
-//  
+//
 //
 //  Created by Boris on 6.2.25..
 //
@@ -15,7 +15,7 @@ struct ApplePayPaymentContentScope: PaymentMethodContentScope {
     let method: PaymentMethod
 
     // Simulated state; replace with real Apple Pay state management.
-    private var simulatedState = PaymentMethodState(
+    var simulatedState = PaymentMethodState(
         isLoading: false,
         validationState: PaymentValidationState(isValid: true)
     )

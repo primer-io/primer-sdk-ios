@@ -17,7 +17,7 @@ actor PaymentFlow: PaymentFlowScope {
     // MARK: Internal State
 
     private var _paymentMethods: [PaymentMethod] = []
-    private var _selectedMethod: PaymentMethod? = nil
+    private var _selectedMethod: PaymentMethod?
 
     // AsyncStream continuations to emit updates.
     private var paymentMethodsContinuation: AsyncStream<[PaymentMethod]>.Continuation?
@@ -70,7 +70,7 @@ actor PaymentFlow: PaymentFlowScope {
         updateSelectedMethod()
     }
 
-#if canImport(SwiftUI)
+    #if canImport(SwiftUI)
     nonisolated func paymentMethodContent<Content: View>(
         for method: PaymentMethod,
         @ViewBuilder content: @escaping (any PaymentMethodContentScope) -> Content
@@ -78,5 +78,5 @@ actor PaymentFlow: PaymentFlowScope {
         // Wrap the helper view in AnyView for type erasure.
         AnyView(PaymentMethodContentView(method: method, content: content))
     }
-#endif
+    #endif
 }
