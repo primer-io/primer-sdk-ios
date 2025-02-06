@@ -19,6 +19,10 @@
          <Group
             location = "group:Classes"
             name = "Classes">
+            <FileSystemSynchronizedGroup
+               location = "group:Components"
+               name = "Components">
+            </FileSystemSynchronizedGroup>
             <Group
                location = "group:PCI"
                name = "PCI">
