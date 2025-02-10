@@ -790,18 +790,6 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
         self.uiManager.primerRootViewController?.enableUserInteraction(!isLoading)
     }
 
-    fileprivate func autofocusToNextFieldIfNeeded(for primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        if isValid == true {
-            if primerTextFieldView is PrimerCardNumberFieldView {
-                _ = expiryDateField.becomeFirstResponder()
-            } else if primerTextFieldView is PrimerExpiryDateFieldView {
-                _ = cvvField.becomeFirstResponder()
-            } else if primerTextFieldView is PrimerCVVFieldView {
-                _ = cardholderNameField?.becomeFirstResponder()
-            }
-        }
-    }
-
     // swiftlint:disable cyclomatic_complexity
     fileprivate func showTexfieldViewErrorIfNeeded(for primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
 
@@ -904,7 +892,6 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
     }
 
     func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, isValid: Bool?) {
-        autofocusToNextFieldIfNeeded(for: primerTextFieldView, isValid: isValid)
         showTexfieldViewErrorIfNeeded(for: primerTextFieldView, isValid: isValid)
         enableSubmitButtonIfNeeded()
     }
