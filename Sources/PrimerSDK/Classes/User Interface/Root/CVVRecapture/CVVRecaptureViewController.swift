@@ -40,6 +40,23 @@ class CVVRecaptureViewController: UIViewController {
         _ = cvvField.becomeFirstResponder()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        let didAppearEvent = Analytics.Event.ui(
+            action: .present,
+            context: Analytics.Event.Property.Context(
+                issuerId: nil,
+                paymentMethodType: viewModel.cardButtonViewModel.paymentMethodType.rawValue,
+                url: nil),
+            extra: nil,
+            objectType: .view,
+            objectId: nil,
+            objectClass: "\(Self.self)",
+            place: .cvvRecapture
+        )
+        Analytics.Service.record(event: didAppearEvent)
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
