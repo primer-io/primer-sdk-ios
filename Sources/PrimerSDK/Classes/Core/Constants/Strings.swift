@@ -586,7 +586,6 @@ extension Strings {
             value: "Save",
             comment: "Save - Card Form (Vault submit button text)")
 
-        // swiftlint:disable:next nesting
         enum CardNumber {
 
             static let label = NSLocalizedString(
@@ -610,7 +609,6 @@ extension Strings {
                 comment: "An error message displayed when the card number is not correct")
         }
 
-        // swiftlint:disable:next nesting
         enum ExpiryDate {
 
             static let label = NSLocalizedString(
@@ -634,7 +632,6 @@ extension Strings {
                 comment: "An error message displayed when the card expiration date is not correct")
         }
 
-        // swiftlint:disable:next nesting
         enum CVV {
 
             static let label = NSLocalizedString(
@@ -653,7 +650,6 @@ extension Strings {
                 comment: "An error message displayed when the cvv code is not correct")
         }
 
-        // swiftlint:disable:next nesting
         enum Cardholder {
 
             static let label = NSLocalizedString(
@@ -683,7 +679,6 @@ extension Strings {
                 comment: "An error message displayed when cardholder.text length is < 2")
         }
 
-        // swiftlint:disable:next nesting
         enum City {
 
             static let label = NSLocalizedString(
@@ -717,7 +712,6 @@ extension Strings {
                 comment: "An error message displayed when the city field is not correct")
         }
 
-        // swiftlint:disable:next nesting
         enum PostalCode {
 
             static let label = NSLocalizedString(
@@ -751,7 +745,6 @@ extension Strings {
                 comment: "An error message displayed when the postal code field is not correct")
         }
 
-        // swiftlint:disable:next nesting
         enum State {
 
             static let label = NSLocalizedString(
@@ -785,7 +778,6 @@ extension Strings {
                 comment: "An error message displayed when the State, Region or County field is not correct")
         }
 
-        // swiftlint:disable:next nesting
         enum AddressLine1 {
 
             static let label = NSLocalizedString(
@@ -819,7 +811,6 @@ extension Strings {
                 comment: "An error message displayed when the Address line 1 is not correct")
         }
 
-        // swiftlint:disable:next nesting
         enum AddressLine2 {
 
             static let label = NSLocalizedString(
@@ -853,7 +844,6 @@ extension Strings {
                 comment: "An error message displayed when the Address line 2 is not correct")
         }
 
-        // swiftlint:disable:next nesting
         enum CountryCode {
 
             static let label = NSLocalizedString(
@@ -887,7 +877,6 @@ extension Strings {
                 comment: "An error message displayed when the Country is not correct")
         }
 
-        // swiftlint:disable:next nesting
         enum FirstName {
 
             static let label = NSLocalizedString(
@@ -921,7 +910,6 @@ extension Strings {
                 comment: "An error message displayed when the First Name is not correct")
         }
 
-        // swiftlint:disable:next nesting
         enum LastName {
 
             static let label = NSLocalizedString(
@@ -1122,7 +1110,6 @@ extension Strings {
             comment: "The email disclaimer label of User Details screen"
         )
 
-        // swiftlint:disable:next nesting
         enum FirstName {
 
             static let label = NSLocalizedString(
@@ -1142,7 +1129,6 @@ extension Strings {
             )
         }
 
-        // swiftlint:disable:next nesting
         enum LastName {
 
             static let label = NSLocalizedString(
@@ -1162,7 +1148,6 @@ extension Strings {
             )
         }
 
-        // swiftlint:disable:next nesting
         enum EmailAddress {
 
             static let label = NSLocalizedString(
@@ -1279,14 +1264,11 @@ extension Strings {
                 value: "Payment failed",
                 comment: "The subtitle for ResultView - Failed state"
             )
-
         }
-
     }
-
 }
 
-// swiftlint:enable type_body_length
-// swiftlint:enable line_length
 // swiftlint:enable nesting
+// swiftlint:enable line_length
+// swiftlint:enable type_body_length
 // swiftlint:enable file_length
