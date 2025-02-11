@@ -1,3 +1,10 @@
+## 2.35.1 (2025-02-11)
+
+### Fix
+
+- Update /payment and /resume timeouts to 60s (#1112)
+- Card Form for RTL languages (#1110)
+
 ## 2.35.0 (2025-02-04)
 
 ### Feat
