@@ -469,8 +469,6 @@ internal extension PrimerAPI {
              .begin3DSRemoteAuth,
              .continue3DSRemoteAuth,
              .validateClientToken,
-             .createPayment,
-             .resumePayment,
              .listCardNetworks,
              .getPhoneMetadata:
             return 15
@@ -488,6 +486,8 @@ internal extension PrimerAPI {
              .testFinalizePolling,
              .getNolSdkSecret,
              .redirect,
+             .createPayment,
+             .resumePayment,
              .completePayment:
             return 60
 
