@@ -24,6 +24,8 @@
 
 "back_button_label" = "Volver";
 
+"card_expiry_date" = "MM/AA";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "Invalid Cardholder name";
 
@@ -140,9 +142,6 @@
 
 /* The title of the primer 'pay in installments' button */
 "primer-button-title-pay-in-installments" = "Pagar a plazos";
-
-/* 12/24 - Card Form (Expiry text field placeholder text) */
-"primer-card-form-12-24" = "12/24";
 
 /* Add card - Card Form (Vault title text) */
 "primer-card-form-add-card" = "Añadir tarjeta";

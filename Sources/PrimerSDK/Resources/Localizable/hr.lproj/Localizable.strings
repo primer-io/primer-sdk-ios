@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "Adresni redak 2";
 
+"card_expiry_date" = "MM/GG";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "Nevažeće ime vlasnika kartice";
 
@@ -118,9 +120,6 @@
 
 /* The title of the primer 'pay in installments' button */
 "primer-button-title-pay-in-installments" = "Plaćanje na rate";
-
-/* 12/24 - Card Form (Expiry text field placeholder text) */
-"primer-card-form-12-24" = "12/24";
 
 /* Add card - Card Form (Vault title text) */
 "primer-card-form-add-card" = "Dodaj karticu";
