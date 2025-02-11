@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "Adresse ligne 2";
 
+"card_expiry_date" = "MM/AA";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "Invalid Cardholder name";
 
@@ -134,9 +136,6 @@
 
 /* The title of the primer 'pay in installments' button */
 "primer-button-title-pay-in-installments" = "Payer en plusieurs fois";
-
-/* 12/24 - Card Form (Expiry text field placeholder text) */
-"primer-card-form-12-24" = "12/24";
 
 /* Add card - Card Form (Vault title text) */
 "primer-card-form-add-card" = "Ajouter une carte";

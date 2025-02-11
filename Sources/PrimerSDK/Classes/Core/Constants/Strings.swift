@@ -619,11 +619,11 @@ extension Strings {
                 comment: "Expiry date - Form Text Field Title (Expiry date)")
 
             static let placeholder = NSLocalizedString(
-                "primer-card-form-12-24",
+                "card_expiry_date",
                 tableName: nil,
                 bundle: Bundle.primerResources,
-                value: "12/24",
-                comment: "12/24 - Card Form (Expiry text field placeholder text)")
+                value: "MM/YY",
+                comment: "MM/YY - Card Form (Expiry text field placeholder text)")
 
             static let invalidErrorMessage = NSLocalizedString(
                 "primer-error-card-form-card-expiration-date",
