@@ -52,6 +52,12 @@ inputs:
   stripe-publishable-key:
     description: 'Stripe publishable key'
     required: true
+  gitlab-username:
+    description: 'GitLab username'
+    required: true
+  gitlab-password:
+    description: 'GitLab password'
+    required: true
 outputs:
   appetize-url:
     description: Appetize URL
@@ -103,6 +109,8 @@ runs:
         BUILD_TYPE: ${{ inputs.build_type }}
         GITHUB_RUN_ID: ${{ inputs.github-run-id }}
         PR_NUMBER: ${{ inputs.pr-number}}
+        GITLAB_USERNAME: ${{ inputs.gitlab-username }}
+        GITLAB_PASSWORD: ${{ inputs.gitlab-password }}
     - name: Create Slack Success Summary Report
       if: ${{ success()  }}
       shell: bash
