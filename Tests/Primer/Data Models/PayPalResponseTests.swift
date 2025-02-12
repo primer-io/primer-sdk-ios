@@ -22,7 +22,7 @@ final class PayPalResponseTests: XCTestCase {
         "email": "john@example.com"
     }
     """
-        
+
         guard let data = JSON_snake_case.data(using: .utf8) else {
             XCTFail()
             return
@@ -30,20 +30,20 @@ final class PayPalResponseTests: XCTestCase {
         do {
             let decoder = JSONDecoder()
             let decoded: PayPalResponse.ExternalPayerInfo = try decoder.decode(PayPalResponse.ExternalPayerInfo.self, from: data)
-            
+
             XCTAssertEqual(decoded.externalPayerId, "external-id")
             XCTAssertEqual(decoded.externalPayerId, decoded.externalPayerIdSnakeCase)
-            
+
             XCTAssertEqual(decoded.firstName, "John")
             XCTAssertEqual(decoded.firstName, decoded.firstNameSnakeCase)
-            
+
             XCTAssertEqual(decoded.lastName, "Doe")
             XCTAssertEqual(decoded.lastName, decoded.lastNameSnakeCase)
         } catch {
             XCTFail()
         }
     }
-    
+
     func test_externalPayerInfo_camelcase() async {
         let JSON_camelCase = """
     {
@@ -53,7 +53,7 @@ final class PayPalResponseTests: XCTestCase {
         "email": "john@example.com"
     }
     """
-        
+
         guard let data = JSON_camelCase.data(using: .utf8) else {
             XCTFail()
             return
@@ -61,13 +61,13 @@ final class PayPalResponseTests: XCTestCase {
         do {
             let decoder = JSONDecoder()
             let decoded: PayPalResponse.ExternalPayerInfo = try decoder.decode(PayPalResponse.ExternalPayerInfo.self, from: data)
-            
+
             XCTAssertEqual(decoded.externalPayerId, "external-id")
             XCTAssertEqual(decoded.externalPayerId, decoded.externalPayerIdSnakeCase)
-            
+
             XCTAssertEqual(decoded.firstName, "John")
             XCTAssertEqual(decoded.firstName, decoded.firstNameSnakeCase)
-            
+
             XCTAssertEqual(decoded.lastName, "Doe")
             XCTAssertEqual(decoded.lastName, decoded.lastNameSnakeCase)
         } catch {
@@ -80,7 +80,7 @@ final class PayPalResponseTests: XCTestCase {
                                                          email: "john@example.com",
                                                          firstName: "John",
                                                          lastName: "Doe")
-        
+
         do {
             let encoder = JSONEncoder()
             let encoded = try encoder.encode(payerInfo)
@@ -88,16 +88,16 @@ final class PayPalResponseTests: XCTestCase {
                 XCTFail()
                 return
             }
-            
+
             XCTAssertTrue(string.contains("\"externalPayerId\":\"external-id\""))
             XCTAssertTrue(string.contains("\"external_payer_id\":\"external-id\""))
-            
+
             XCTAssertTrue(string.contains("\"firstName\":\"John\""))
             XCTAssertTrue(string.contains("\"first_name\":\"John\""))
-            
+
             XCTAssertTrue(string.contains("\"lastName\":\"Doe\""))
             XCTAssertTrue(string.contains("\"last_name\":\"Doe\""))
-            
+
             XCTAssertTrue(string.contains("\"email\":\"john@example.com\""))
         } catch {
             XCTFail()

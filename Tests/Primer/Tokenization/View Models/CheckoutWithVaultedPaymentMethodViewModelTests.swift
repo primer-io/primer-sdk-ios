@@ -1,6 +1,6 @@
 //
 //  CheckoutWithVaultedPaymentMethodViewModelTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 07/05/2024.
 //
@@ -9,7 +9,7 @@ import XCTest
 @testable import PrimerSDK
 
 final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
-    
+
     var tokenizationService: MockTokenizationService!
 
     var createResumePaymentService: MockCreateResumePaymentService!
@@ -31,7 +31,6 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
         createResumePaymentService = nil
         tokenizationService = nil
     }
-
 
     func testStartWithPreTokenizationAndAbort() throws {
         SDKSessionHelper.setUp()
@@ -84,21 +83,21 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
             expectCheckoutDidCompletewithData.fulfill()
         }
 
-//        let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-//        tokenizationService.onTokenize = { body in
-//            expectOnTokenize.fulfill()
-//            return Promise.fulfilled(self.tokenizationResponseBody)
-//        }
+        //        let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
+        //        tokenizationService.onTokenize = { body in
+        //            expectOnTokenize.fulfill()
+        //            return Promise.fulfilled(self.tokenizationResponseBody)
+        //        }
 
         let expectDidExchangeToken = self.expectation(description: "didExchangeToken called")
-        tokenizationService.onExchangePaymentMethodToken = { tokenId, data in
+        tokenizationService.onExchangePaymentMethodToken = { tokenId, _ in
             XCTAssertEqual(tokenId, "mock_payment_method_token_data_id")
             expectDidExchangeToken.fulfill()
             return Promise.fulfilled(self.tokenizationResponseBody)
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
-        createResumePaymentService.onCreatePayment = { body in
+        createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
 

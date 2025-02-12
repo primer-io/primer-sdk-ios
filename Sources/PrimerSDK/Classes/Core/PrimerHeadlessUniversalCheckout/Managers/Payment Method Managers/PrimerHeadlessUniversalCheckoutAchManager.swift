@@ -10,17 +10,17 @@ import UIKit
 extension PrimerHeadlessUniversalCheckout {
     public class AchManager: NSObject {
         public var mandateDelegate: ACHMandateDelegate?
-        
+
         public func provide<PrimerHeadlessAchComponent>(paymentMethodType: String) throws -> PrimerHeadlessAchComponent?
         where PrimerCollectableData: Any, PrimerHeadlessStep: Any {
             try provideStripeAchUserDetailsComponent(paymentMethodType: paymentMethodType) as? PrimerHeadlessAchComponent
         }
-        
+
         public func provideStripeAchUserDetailsComponent(paymentMethodType: String) throws -> (any StripeAchUserDetailsComponent)? {
             guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?
-                .first(where: { $0.type == paymentMethodType })
+                    .first(where: { $0.type == paymentMethodType })
             else {
-                
+
                 let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType,
                                                                userInfo: .errorUserInfoDictionary(additionalInfo: [
                                                                 "message": "Unable to locate a valid payment method configuration"
@@ -29,7 +29,7 @@ extension PrimerHeadlessUniversalCheckout {
                 ErrorHandler.handle(error: err)
                 throw err
             }
-            
+
             guard let tokenizationViewModel = paymentMethod.tokenizationViewModel as? StripeAchTokenizationViewModel else {
                 let err = PrimerError.unsupportedPaymentMethod(paymentMethodType: paymentMethodType,
                                                                userInfo: .errorUserInfoDictionary(additionalInfo: [

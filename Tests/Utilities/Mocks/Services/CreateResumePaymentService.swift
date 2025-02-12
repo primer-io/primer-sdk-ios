@@ -16,7 +16,6 @@ class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
             seal.fulfill()
         }
     }
-    
 
     static var apiClient: (any PrimerSDK.PrimerAPIClientProtocol)?
 

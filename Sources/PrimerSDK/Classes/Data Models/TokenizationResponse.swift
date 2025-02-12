@@ -181,7 +181,7 @@ extension Response.Body.Tokenization {
             case threeDSecureAuthentication
             case gocardlessMandateId
             case authorizationToken
-// swiftlint:disable:next identifier_name
+            // swiftlint:disable:next identifier_name
             case mx
             case currencyCode
             case productId

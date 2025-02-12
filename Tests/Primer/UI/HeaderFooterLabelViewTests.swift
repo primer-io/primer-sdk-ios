@@ -1,7 +1,7 @@
 //
 //  HeaderFooterLabelViewTests.swift
-//  
-//c
+//
+// c
 //  Created by Jack Newcombe on 11/06/2024.
 //
 
@@ -15,7 +15,6 @@ final class HeaderFooterLabelViewTests: XCTestCase {
     func testViewInit() throws {
         sut = HeaderFooterLabelView(reuseIdentifier: "Test")
         sut.configure(text: "Testing")
-
 
         let labelView = sut.contentView.subviews.first?.subviews.first as? UILabel
         XCTAssertNotNil(labelView?.text)

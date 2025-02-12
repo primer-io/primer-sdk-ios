@@ -14,11 +14,6 @@ final class ACHTokenizationServiceTests: XCTestCase {
     var achTokenizationService: ACHTokenizationService!
     var mockApiClient: MockPrimerAPIClient!
 
-    override func setUp() {
-        super.setUp()
-        
-    }
-
     override func tearDown() {
         restartPrimerConfiguration()
         super.tearDown()
@@ -64,7 +59,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
 
         wait(for: [expectation], timeout: 10.0)
     }
-    
+
     func test_tokenization_validation_success() {
         prepareConfigurations()
         do {
@@ -73,16 +68,16 @@ final class ACHTokenizationServiceTests: XCTestCase {
             XCTFail("Result should not fail with error")
         }
     }
-    
+
     func test_tokenization_validation_decodedToken_failure() {
         prepareConfigurations(isClientSessionEmpty: false, hasDecodedToken: false)
         do {
             try achTokenizationService.validate()
         } catch {
-            //XCTFail("Result should not fail with error")
+            // XCTFail("Result should not fail with error")
         }
     }
-    
+
     func test_tokenization_validation_amount_failure() {
         prepareConfigurations(isClientSessionEmpty: true, emptyMerchantAmmount: true, emptyTotalOrderAmmount: true)
         do {
@@ -92,7 +87,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
                 XCTFail("Error should be of type PrimerError")
                 return
             }
-            
+
             switch primerError {
             case .invalidValue(let key, _, _, _):
                 XCTAssertTrue(key == "amount")
@@ -101,7 +96,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
             }
         }
     }
-    
+
     func test_tokenization_validation_currency_failure() {
         prepareConfigurations(isClientSessionEmpty: true, emptyCurrencyCode: true)
         do {
@@ -111,7 +106,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
                 XCTFail("Error should be of type PrimerError")
                 return
             }
-            
+
             switch primerError {
             case .invalidValue(let key, _, _, _):
                 XCTAssertTrue(key == "currency")
@@ -120,7 +115,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
             }
         }
     }
-    
+
     func test_tokenization_validation_lineItems_failure() {
         prepareConfigurations(isClientSessionEmpty: true, emptyLineItems: true)
         do {
@@ -130,7 +125,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
                 XCTFail("Error should be of type PrimerError")
                 return
             }
-            
+
             switch primerError {
             case .invalidValue(let key, _, _, _):
                 XCTAssertTrue(key == "lineItems")
@@ -139,7 +134,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
             }
         }
     }
-    
+
     func test_tokenization_validation_lineItems_total_failure() {
         prepareConfigurations(isClientSessionEmpty: true, emptyOrderAmount: true)
         do {
@@ -149,7 +144,7 @@ final class ACHTokenizationServiceTests: XCTestCase {
                 XCTFail("Error should be of type PrimerError")
                 return
             }
-            
+
             switch primerError {
             case .invalidValue(let key, _, _, _):
                 XCTAssertTrue(key == "settings.orderItems")
@@ -164,23 +159,23 @@ final class ACHTokenizationServiceTests: XCTestCase {
 extension ACHTokenizationServiceTests {
     private func setupPrimerConfiguration(paymentMethod: PrimerPaymentMethod, apiConfiguration: PrimerAPIConfiguration, hasDecodedToken: Bool) {
         let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(data: [])
-        
+
         mockApiClient.fetchVaultedPaymentMethodsResult = (vaultedPaymentMethods, nil)
         mockApiClient.fetchConfigurationResult = (apiConfiguration, nil)
-        
+
         if hasDecodedToken {
             AppState.current.clientToken = MockAppState.mockClientToken
         }
-        
+
         PrimerAPIConfigurationModule.apiClient = mockApiClient
-        
+
         if hasDecodedToken {
             PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
         }
-        
+
         PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
         let tokenizationService = TokenizationService(apiClient: mockApiClient)
-        
+
         achTokenizationService = ACHTokenizationService(paymentMethod: paymentMethod, tokenizationService: tokenizationService)
     }
 
@@ -192,15 +187,15 @@ extension ACHTokenizationServiceTests {
                                        emptyOrderAmount: Bool = false,
                                        emptyCurrencyCode: Bool = false) {
         mockApiClient = MockPrimerAPIClient()
-        
+
         let settings = PrimerSettings(paymentMethodOptions:
                                         PrimerPaymentMethodOptions(urlScheme: "test://primer.io",
                                                                    stripeOptions: PrimerStripeOptions(publishableKey: "test-pk-1234")))
-        
+
         DependencyContainer.register(settings as PrimerSettingsProtocol)
-        
+
         var clientSession: ClientSession.APIResponse?
-        
+
         if isClientSessionEmpty {
             clientSession = ACHMocks.getEmptyClientSession(emptyMerchantAmmount: emptyMerchantAmmount,
                                                            emptyTotalOrderAmmount: emptyTotalOrderAmmount,
@@ -210,14 +205,14 @@ extension ACHTokenizationServiceTests {
         } else {
             clientSession = ACHMocks.getClientSession()
         }
-        
+
         PrimerInternal.shared.sdkIntegrationType = .headless
         PrimerInternal.shared.intent = .checkout
 
         let mockPrimerApiConfiguration = Mocks.createMockAPIConfiguration(
             clientSession: clientSession,
             paymentMethods: [ACHMocks.stripeACHPaymentMethod])
-        
+
         mockPrimerApiConfiguration.paymentMethods?[0].baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
         setupPrimerConfiguration(paymentMethod: ACHMocks.stripeACHPaymentMethod, apiConfiguration: mockPrimerApiConfiguration, hasDecodedToken: hasDecodedToken)
     }
@@ -227,10 +222,10 @@ extension ACHTokenizationServiceTests {
         PrimerAPIConfigurationModule.apiClient = nil
         PrimerAPIConfigurationModule.clientToken = nil
         PrimerAPIConfigurationModule.apiConfiguration = nil
-        
+
         achTokenizationService = nil
     }
-    
+
     private func getInvalidTokenError() -> PrimerError {
         let error = PrimerError.invalidClientToken(
             userInfo: self.getErrorUserInfo(),

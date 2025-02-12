@@ -1,6 +1,6 @@
 //
 //  WebRedirectPaymentMethodTokenizationViewModelTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 22/05/2024.
 //
@@ -128,7 +128,7 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
         }
 
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        tokenizationService.onTokenize = { body in
+        tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
             return Promise.fulfilled(.init(analyticsId: "analytics_id",
                                            id: "id",
@@ -144,7 +144,7 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
-        createResumePaymentService.onCreatePayment = { body in
+        createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return .init(id: "id",
                          paymentId: "payment_id",
@@ -163,7 +163,7 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
         }
 
         let expectDidShowPaymentMethod = self.expectation(description: "Payment method was shown in web view")
-        uiDelegate.onUIDidShowPaymentMethod = { type in
+        uiDelegate.onUIDidShowPaymentMethod = { _ in
             XCTAssertNotNil(self.sut.webViewController?.delegate)
             expectDidShowPaymentMethod.fulfill()
         }
@@ -178,11 +178,11 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
                          amount: 1234,
                          currencyCode: "GBP",
                          customer: nil,
-                         customerId: "customer_id", 
+                         customerId: "customer_id",
                          dateStr: nil,
                          order: nil,
                          orderId: "order_id",
-                         requiredAction: nil, 
+                         requiredAction: nil,
                          status: .success,
                          paymentFailureReason: nil)
         }

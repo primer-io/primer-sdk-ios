@@ -97,7 +97,7 @@ extension Request.Body.Payment {
             self.resumeToken = token
         }
     }
-    
+
     public struct Complete: Encodable {
         let mandateSignatureTimestamp: String
         let paymentMethodId: String?
@@ -151,7 +151,7 @@ extension Response.Body {
             case success = "SUCCESS"
         }
     }
-    
+
     public struct Complete: Codable {}
 }
 

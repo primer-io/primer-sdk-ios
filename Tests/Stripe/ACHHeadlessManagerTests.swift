@@ -1,6 +1,6 @@
 //
 //  ACHHeadlessManagerTests.swift
-//  
+//
 //
 //  Created by Stefan Vrancianu on 28.05.2024.
 //
@@ -10,11 +10,11 @@ import XCTest
 @testable import PrimerSDK
 
 final class ACHHeadlessManagerTests: XCTestCase {
-    
+
     var manager: PrimerHeadlessUniversalCheckout.AchManager!
     var stripeACHComponent: (any StripeAchUserDetailsComponent)!
     var mockApiClient: MockPrimerAPIClient!
-    
+
     override func setUp() {
         super.setUp()
         // Prepare the client session with the current user details
@@ -22,12 +22,12 @@ final class ACHHeadlessManagerTests: XCTestCase {
                               lastName: "lastname",
                               email: "email")
     }
-    
+
     override func tearDown() {
         restartPrimerConfiguration()
         super.tearDown()
     }
-    
+
     func test_manager_initialization_succeed() {
         XCTAssertNotNil(manager)
     }
@@ -36,7 +36,7 @@ final class ACHHeadlessManagerTests: XCTestCase {
         stripeACHComponent = try? manager.provide(paymentMethodType: ACHMocks.stripeACHPaymentMethodType)
         XCTAssertNotNil(stripeACHComponent)
     }
-    
+
     func test_stripeACHComponent_initialization_with_inexistent_payment_method() {
         do {
             stripeACHComponent = try manager.provide(paymentMethodType: ACHMocks.inexistentPaymentMethod)
@@ -44,7 +44,7 @@ final class ACHHeadlessManagerTests: XCTestCase {
             XCTAssertNotNil(error.localizedDescription)
         }
     }
-    
+
     func test_stripeACHComponent_initialization_with_wrong_payment_method() {
         do {
             stripeACHComponent = try manager.provide(paymentMethodType: ACHMocks.klarnaPaymentMethodType)
@@ -65,7 +65,7 @@ extension ACHHeadlessManagerTests {
         PrimerAPIConfigurationModule.apiClient = mockApiClient
         PrimerAPIConfigurationModule.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
-        
+
         manager = PrimerHeadlessUniversalCheckout.AchManager()
     }
 
