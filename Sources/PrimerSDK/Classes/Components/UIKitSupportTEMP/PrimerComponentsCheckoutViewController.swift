@@ -35,7 +35,6 @@ class PrimerComponentsCheckoutViewController: UIViewController {
                         .font(.title)
                         .padding()
 
-
                     // Additional custom UI elements can be added here.
                 }
                 .padding()

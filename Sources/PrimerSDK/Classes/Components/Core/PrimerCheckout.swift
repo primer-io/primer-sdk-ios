@@ -20,6 +20,7 @@ struct PrimerCheckout: View {
 
     /// View model bridging the PaymentFlow actor with SwiftUI.
     @StateObject private var viewModel = PaymentFlowViewModel()
+    @StateObject private var tokensManager = DesignTokensManager()
 
     /// Default initializer using the default UI.
     init(clientToken: String,
@@ -52,9 +53,8 @@ struct PrimerCheckout: View {
                         Task {
                             await viewModel.selectMethod(method)
                         }
-                    }) {
-                        Text(method.name)
-                    }
+                    },
+                           label: { Text(method.name) })
                 }
                 .frame(height: 200)
 
@@ -88,11 +88,14 @@ struct PrimerCheckout: View {
                 }
             }
             .padding()
-            .navigationTitle("Primer Checkout")
             .task {
-                await viewModel.loadPaymentMethods()
+                async let _ = await viewModel.loadPaymentMethods()
+                await tokensManager.fetchTokens()
             }
+            .navigationTitle("Primer Checkout")
         }
+        // Inject the fetched tokens into the environment for downstream views.
+        .environment(\.designTokens, tokensManager.tokens)
     }
 }
 
@@ -106,20 +109,20 @@ struct PrimerCheckout_Previews: PreviewProvider {
 
             // Example of using a custom UI:
             /*
-            PrimerCheckout(clientToken: "mock-token", onPaymentFinished: { result in
-                print("Payment finished with result: \(result)")
-            }) { scope in
-                AnyView(
-                    VStack {
-                        Text("Custom UI for \(scope.method.name)")
-                            .font(.title)
-                            .foregroundColor(.blue)
-                        // Add your custom form fields or elements here.
-                    }
-                    .padding()
-                )
-            }
-            */
+             PrimerCheckout(clientToken: "mock-token", onPaymentFinished: { result in
+             print("Payment finished with result: \(result)")
+             }) { scope in
+             AnyView(
+             VStack {
+             Text("Custom UI for \(scope.method.name)")
+             .font(.title)
+             .foregroundColor(.blue)
+             // Add your custom form fields or elements here.
+             }
+             .padding()
+             )
+             }
+             */
         } else {
             // Fallback on earlier versions
             Text("iOS 15 or newer is required.")

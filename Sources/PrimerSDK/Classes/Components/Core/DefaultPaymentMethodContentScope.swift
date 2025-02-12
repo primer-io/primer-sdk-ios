@@ -23,7 +23,7 @@ struct DefaultPaymentMethodContentScope: PaymentMethodContentScope {
     /// Returns the current simulated state.
     func getState() async -> PaymentMethodState {
         // TODO: Replace simulated state with actual state mapping from your processing logic.
-        return simulatedState
+        simulatedState
     }
 
     /// Simulate payment submission.
@@ -35,17 +35,26 @@ struct DefaultPaymentMethodContentScope: PaymentMethodContentScope {
 
     #if canImport(SwiftUI)
     /// Provides default SwiftUI UI for the payment method.
-    @ViewBuilder
     func defaultContent() -> AnyView {
-        // Wrap your view in AnyView to satisfy the return type.
-        AnyView(
-            VStack {
-                Text("Default UI for \(method.name)")
-                    .font(.headline)
-                    .padding()
-                // TODO: Add form fields, validations, and error messaging as needed.
-            }
-        )
+        if let tokens = Environment(\.designTokens).wrappedValue {
+            return AnyView(
+                VStack(spacing: 12) {
+                    Text("Default UI for \(method.name)")
+                        .font(.system(size: 16, weight: .medium))  // Replace with tokens if needed
+                        .foregroundColor(tokens.colorBrand)
+                        .padding(8)
+                        .background(tokens.colorGray100)
+                        .cornerRadius(8)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.red, lineWidth: 3)
+                        )
+                }
+                .padding(16)
+            )
+        } else {
+            return AnyView(Text("Loading design tokens..."))
+        }
     }
     #endif
 }
