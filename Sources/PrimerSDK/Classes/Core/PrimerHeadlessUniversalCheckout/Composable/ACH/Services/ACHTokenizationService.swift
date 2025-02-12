@@ -13,14 +13,14 @@ import Foundation
  * - Returns: A `Promise<PrimerPaymentMethodTokenData>` which resolves to a `PrimerPaymentMethodTokenData`
  * object on successful tokenization or rejects with an `Error` if the tokenization process fails.
  */
-protocol ACHTokenizationDelegate {
+protocol ACHTokenizationDelegate: AnyObject {
     func tokenize() -> Promise<PrimerPaymentMethodTokenData>
 }
 
 /**
  * Validation method to ensure data integrity before proceeding with tokenization.
  */
-protocol ACHValidationDelegate {
+protocol ACHValidationDelegate: AnyObject {
     func validate() throws
 }
 
