@@ -186,7 +186,7 @@ class PayPalServiceTests: XCTestCase {
             case .success(let model):
                 XCTAssertEqual(model.orderId, "order_id")
                 XCTAssertEqual(model.approvalUrl, "scheme://approve")
-            case .failure(_):
+            case .failure:
                 XCTFail()
             }
             startOrderSessionExpectation.fulfill()
@@ -212,7 +212,7 @@ class PayPalServiceTests: XCTestCase {
             switch result {
             case .success(let approvalUrl):
                 XCTAssertEqual(approvalUrl, "scheme://approve")
-            case .failure(_):
+            case .failure:
                 XCTFail()
             }
             startBillingAgreementExpectation.fulfill()
@@ -233,7 +233,7 @@ class PayPalServiceTests: XCTestCase {
             switch result {
             case .success(let model):
                 XCTAssertEqual(model.externalPayerInfo.externalPayerId, "external_payer_id")
-            case .failure(_):
+            case .failure:
                 XCTFail()
             }
             expectation.fulfill()
@@ -243,11 +243,11 @@ class PayPalServiceTests: XCTestCase {
     }
 }
 
-fileprivate class MockPayPalAPIClient: PrimerAPIClientPayPalProtocol {
+private class MockPayPalAPIClient: PrimerAPIClientPayPalProtocol {
 
     var onCreateOrderSession: ((DecodedJWTToken, Request.Body.PayPal.CreateOrder) -> Response.Body.PayPal.CreateOrder)?
 
-    func createPayPalOrderSession(clientToken: PrimerSDK.DecodedJWTToken, 
+    func createPayPalOrderSession(clientToken: PrimerSDK.DecodedJWTToken,
                                   payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder,
                                   completion: @escaping APICompletion<Response.Body.PayPal.CreateOrder>) {
         if let onCreateOrderSession = onCreateOrderSession {
@@ -256,7 +256,7 @@ fileprivate class MockPayPalAPIClient: PrimerAPIClientPayPalProtocol {
             completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
     }
-    
+
     var onCreateBillingAgreementSession: ((DecodedJWTToken, Request.Body.PayPal.CreateBillingAgreement) -> Response.Body.PayPal.CreateBillingAgreement)?
 
     func createPayPalBillingAgreementSession(clientToken: DecodedJWTToken,
@@ -268,11 +268,11 @@ fileprivate class MockPayPalAPIClient: PrimerAPIClientPayPalProtocol {
             completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
     }
-    
+
     var onConfirmBillingAgreement: ((DecodedJWTToken, Request.Body.PayPal.ConfirmBillingAgreement) -> Response.Body.PayPal.ConfirmBillingAgreement)?
 
     func confirmPayPalBillingAgreement(clientToken: DecodedJWTToken,
-                                       payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement, 
+                                       payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement,
                                        completion: @escaping APICompletion<Response.Body.PayPal.ConfirmBillingAgreement>) {
         if let onConfirmBillingAgreement = onConfirmBillingAgreement {
             completion(.success(onConfirmBillingAgreement(clientToken, payPalConfirmBillingAgreementRequest)))
@@ -280,11 +280,11 @@ fileprivate class MockPayPalAPIClient: PrimerAPIClientPayPalProtocol {
             completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
     }
-    
+
     var onFetchExternalPayerInfo: ((DecodedJWTToken, Request.Body.PayPal.PayerInfo) -> Response.Body.PayPal.PayerInfo)?
 
     func fetchPayPalExternalPayerInfo(clientToken: DecodedJWTToken,
-                                      payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo, 
+                                      payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo,
                                       completion: @escaping APICompletion<Response.Body.PayPal.PayerInfo>) {
         if let onFetchExternalPayerInfo = onFetchExternalPayerInfo {
             completion(.success(onFetchExternalPayerInfo(clientToken, payPalExternalPayerInfoRequestBody)))
@@ -292,6 +292,5 @@ fileprivate class MockPayPalAPIClient: PrimerAPIClientPayPalProtocol {
             completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
     }
-    
 
 }

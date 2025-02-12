@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 23/05/2024.
 //
@@ -71,4 +71,3 @@ extension TokenizationViewModelTestCase {
                      paymentFailureReason: nil)
     }
 }
-

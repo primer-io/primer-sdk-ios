@@ -1,6 +1,6 @@
 //
 //  StripeAchHeadlessComponentTests.swift
-//  
+//
 //
 //  Created by Stefan Vrancianu on 20.05.2024.
 //
@@ -168,19 +168,19 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
         let firstName = "test-firstname-user1"
         let lastName = "test-lastname-user1"
         let emailAddress = "test-email-user1"
-        
+
         let userOne = ACHUserDetails(firstName: firstName,
-                                      lastName: lastName,
-                                      emailAddress: emailAddress)
-        
+                                     lastName: lastName,
+                                     emailAddress: emailAddress)
+
         let userTwo = ACHUserDetails(firstName: firstName,
-                                      lastName: lastName,
-                                      emailAddress: emailAddress)
-        
+                                     lastName: lastName,
+                                     emailAddress: emailAddress)
+
         let userThree = ACHUserDetails(firstName: "",
                                        lastName: "",
                                        emailAddress: "")
-        
+
         XCTAssertTrue(ACHUserDetails.compare(lhs: userOne, rhs: userTwo).areEqual)
         XCTAssertFalse(ACHUserDetails.compare(lhs: userOne, rhs: userThree).areEqual)
     }
@@ -228,7 +228,7 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
 
         currentUserDetails.update(with: updateCollectableLastName)
         currentUserDetails.update(with: updateCollectableEmailAddress)
-        
+
         let comparedDifferentValues = ACHUserDetails.compare(lhs: currentUserDetails, rhs: expectedUpdatedUserDetails)
         guard let differentValue = comparedDifferentValues.differingFields.first else {
             XCTFail("The differentValue should not be nil")
@@ -243,35 +243,35 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
         let expectedUserDetails = ACHUserDetails(firstName: "",
                                                  lastName: "",
                                                  emailAddress: "")
-        
+
         let emptyUserDetails = ACHUserDetails.emptyUserDetails()
         XCTAssertTrue(ACHUserDetails.compare(lhs: emptyUserDetails, rhs: expectedUserDetails).areEqual)
     }
-    
+
     func test_resetClientSessionDetails() {
         let userDetails = ACHUserDetails(firstName: "firstname-1", lastName: "lastname-1", emailAddress: "email-1")
         sut.inputUserDetails = userDetails
         sut.clientSessionUserDetails = userDetails
-        
+
         let emptyUserDetails = ACHUserDetails.emptyUserDetails()
         sut.resetClientSessionDetails()
-        
+
         XCTAssertTrue(ACHUserDetails.compare(lhs: sut.inputUserDetails, rhs: emptyUserDetails).areEqual)
         XCTAssertTrue(ACHUserDetails.compare(lhs: sut.clientSessionUserDetails, rhs: emptyUserDetails).areEqual)
     }
-    
+
     func test_component_start() {
         let expectedUserDetails = ACHUserDetails(firstName: "firstname-test",
                                                  lastName: "lastname-test",
                                                  emailAddress: "test@mail.com")
-        
+
         sut.start()
-        
+
         let expectation = self.expectation(description: "Waiting for the getClientSessionUserDetails method to update the step async.")
-        
+
         DispatchQueue.global().async {
             sleep(2)
-            
+
             switch self.stepResult as? ACHUserDetailsStep {
             case .retrievedUserDetails(let userDetails):
                 XCTAssertTrue(ACHUserDetails.compare(lhs: userDetails, rhs: expectedUserDetails).areEqual)
@@ -287,34 +287,32 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
             }
         }
     }
-    
+
     func test_component_submit_with_patching() {
         let outdatedUserDetails = ACHUserDetails(firstName: "firstname-test",
                                                  lastName: "lastname-test",
                                                  emailAddress: "test@mail.com")
-        
+
         let newUserDetails = ACHUserDetails(firstName: "new-firstname-test",
                                             lastName: "new-lastname-test",
                                             emailAddress: "new-test@mail.com")
-        
+
         sut.clientSessionUserDetails = outdatedUserDetails
         sut.inputUserDetails = newUserDetails
-        
+
         let configurationsFetchWithActions = getFetchConfiguration(firstName: newUserDetails.firstName,
                                                                    lastName: newUserDetails.lastName,
                                                                    email: newUserDetails.emailAddress)
 
         mockApiClient.fetchConfigurationWithActionsResult = (configurationsFetchWithActions, nil)
-        
+
         sut.submit()
-        
-       
-        
+
         let expectation = self.expectation(description: "Waiting for the patchClientSessionIfNeeded method to update the step async.")
-        
+
         DispatchQueue.global().async {
             sleep(2)
-            
+
             switch self.stepResult as? ACHUserDetailsStep {
             case .didCollectUserDetails:
                 expectation.fulfill()
@@ -329,21 +327,21 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
             }
         }
     }
-    
+
     func test_component_submit_without_patching() {
         let expectedUserDetails = ACHUserDetails(firstName: "firstname-test",
                                                  lastName: "lastname-test",
                                                  emailAddress: "test@mail.com")
-        
+
         sut.inputUserDetails = expectedUserDetails
         sut.clientSessionUserDetails = expectedUserDetails
         sut.submit()
-        
+
         let expectation = self.expectation(description: "Waiting for the patchClientSessionIfNeeded method to update the step async.")
-        
+
         DispatchQueue.global().async {
             sleep(2)
-            
+
             switch self.stepResult as? ACHUserDetailsStep {
             case .didCollectUserDetails:
                 expectation.fulfill()
@@ -360,9 +358,9 @@ final class StripeAchHeadlessComponentTests: XCTestCase {
     }
 }
 
-extension StripeAchHeadlessComponentTests:  PrimerHeadlessErrorableDelegate,
-                                            PrimerHeadlessValidatableDelegate,
-                                            PrimerHeadlessSteppableDelegate {
+extension StripeAchHeadlessComponentTests: PrimerHeadlessErrorableDelegate,
+                                           PrimerHeadlessValidatableDelegate,
+                                           PrimerHeadlessSteppableDelegate {
 
     func didReceiveError(error: PrimerSDK.PrimerError) {
         errorResult = error

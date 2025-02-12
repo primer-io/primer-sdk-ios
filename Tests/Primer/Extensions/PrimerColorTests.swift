@@ -1,6 +1,6 @@
 //
 //  PrimerColorTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 13/05/2024.
 //
@@ -55,7 +55,6 @@ final class PrimerColorTests: XCTestCase {
         XCTAssertEqual(blackHalfAlphaColor.cgColor.components![3] * 1.0,
                        expecteBlackHalfAlphaColor!.components![3] * 1.0, accuracy: 0.01)
 
-
         let invalidHexColor = PrimerColor(hex: "00FF00")
         XCTAssertNil(invalidHexColor)
 
@@ -78,4 +77,4 @@ private extension CGColor {
     func toSRGB() -> CGColor! {
         return converted(to: defaultColorSpace, intent: .defaultIntent, options: nil)
     }
-}    
+}

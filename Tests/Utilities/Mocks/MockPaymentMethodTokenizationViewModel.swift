@@ -36,7 +36,6 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     var paymentCreationDecision: PrimerPaymentCreationDecision?
     var paymentResult: (PrimerCheckoutData?, Error?)?
 
-
     convenience init(config: PrimerPaymentMethod) {
         self.init(config: config,
                   uiManager: PrimerUIManager.shared,

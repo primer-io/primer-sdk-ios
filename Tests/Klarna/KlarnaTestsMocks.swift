@@ -57,7 +57,7 @@ class KlarnaTestsMocks {
             ]
         ]
     ]
-    
+
     static var klarnaOrder: ClientSession.Order {
         .init(id: "order_id",
               merchantAmount: 1234,
@@ -178,7 +178,7 @@ class KlarnaTestsMocks {
                 shippingAddress: nil,
                 tokenDetails: nil))
     }
-    
+
     static var tokenizationResponseBody: Response.Body.Tokenization {
         .init(analyticsId: "analytics_id",
               id: "id",
@@ -192,7 +192,7 @@ class KlarnaTestsMocks {
               tokenType: .singleUse,
               vaultData: nil)
     }
-    
+
     static var paymentResponseBody: Response.Body.Payment {
         return .init(id: "id",
                      paymentId: "payment_id",

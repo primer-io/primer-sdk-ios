@@ -1,6 +1,6 @@
 //
 //  VaultPaymentMethodViewModelTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 24/05/2024.
 //
@@ -67,7 +67,7 @@ final class VaultPaymentMethodViewModelTests: XCTestCase {
     func testDeletePaymentMethod_success() throws {
         setupAPIClientWithVaultedPaymentMethod()
 
-        apiClient.onDeleteVaultedPaymentMethods = { token, id in
+        apiClient.onDeleteVaultedPaymentMethods = { _, id in
             XCTAssertEqual(id, "id")
         }
 
@@ -124,7 +124,7 @@ final class VaultPaymentMethodViewModelTests: XCTestCase {
     // MARK: Helpers
 
     func setupAPIClientWithVaultedPaymentMethod() {
-        apiClient.onFetchVaultedPaymentMethods = { token in
+        apiClient.onFetchVaultedPaymentMethods = { _ in
             return .init(data: [
                 .init(analyticsId: "analytics_id",
                       id: "id",
@@ -143,7 +143,7 @@ final class VaultPaymentMethodViewModelTests: XCTestCase {
 
 }
 
-fileprivate class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
+private class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
 
     var onFetchVaultedPaymentMethods: ((DecodedJWTToken) -> Response.Body.VaultedPaymentMethods)?
 
@@ -165,6 +165,5 @@ fileprivate class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
             completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
     }
-    
 
 }

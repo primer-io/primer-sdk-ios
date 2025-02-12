@@ -1,6 +1,6 @@
 //
 //  KlarnaTokenizationManagerTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 11/06/2024.
 //
@@ -39,7 +39,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
 
         let expectDidTokenize = self.expectation(description: "Did tokenize")
         tokenizationService.onTokenize = { body in
-            
+
             XCTAssertTrue(body.paymentInstrument is KlarnaAuthorizationPaymentInstrument)
             let instrument = body.paymentInstrument as! KlarnaAuthorizationPaymentInstrument
             XCTAssertEqual(instrument.klarnaAuthorizationToken, "osa_id")
@@ -56,7 +56,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
 
         let expectDidCompleteCheckout = self.expectation(description: "did complete checkout")
         sut.tokenizeHeadless(customerToken: customerToken, offSessionAuthorizationId: "osa_id")
-            .done { checkoutData in
+            .done { _ in
                 expectDidCompleteCheckout.fulfill()
             }
             .catch { error in
@@ -81,7 +81,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
 
         let expectDidCompleteCheckout = self.expectation(description: "did complete checkout")
         sut.tokenizeDropIn(customerToken: customerToken, offSessionAuthorizationId: "osa_id")
-            .done { checkoutData in
+            .done { _ in
                 expectDidCompleteCheckout.fulfill()
             }
             .catch { error in
@@ -106,7 +106,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
 
         let expectDidCompleteCheckout = self.expectation(description: "did complete checkout")
         sut.tokenizeDropIn(customerToken: customerToken, offSessionAuthorizationId: "osa_id")
-            .done { checkoutData in
+            .done { _ in
                 expectDidCompleteCheckout.fulfill()
             }
             .catch { error in

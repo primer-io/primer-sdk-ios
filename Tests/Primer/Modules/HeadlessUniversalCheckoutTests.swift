@@ -57,7 +57,7 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
             paymentMethod: nativePaymentMethod
         )
         setupMockApiClients(apiConfiguration: apiConfiguration)
-        
+
         let orderedExpectations = expectationsForDelegates(paymentMethod: nativePaymentMethod)
 
         try presentNativeUIManager(paymentMethod: nativePaymentMethod, expecting: orderedExpectations)
@@ -172,25 +172,24 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
         try submitWithRawDataManager(paymentMethod: rawDataPaymentMethod, expecting: orderedExpectations)
     }
 
-
     // NOTE: RawDataManager does not support surcharge yet - enable this test when it does
-//    func testRawDataManager_presentAdyenGiroPay_withSurcharge() throws {
-//        setupSettings(handling: .auto)
-//
-//        let surchargeAmount: Int = 99
-//
-//        let paymentMethod = Mocks.PaymentMethods.paymentCardPaymentMethod
-//        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
-//        let apiConfiguration = setupApiConfiguration(
-//            paymentMethod: paymentMethod,
-//            surchargeAmount: surchargeAmount
-//        )
-//        setupMockApiClients(apiConfiguration: apiConfiguration)
-//
-//        let orderedExpectations = expectationsForDelegates(paymentMethod: paymentMethod, surchargeAmount: 99)
-//
-//        try submitWithRawDataManager(paymentMethod: paymentMethod, expecting: orderedExpectations)
-//    }
+    //    func testRawDataManager_presentAdyenGiroPay_withSurcharge() throws {
+    //        setupSettings(handling: .auto)
+    //
+    //        let surchargeAmount: Int = 99
+    //
+    //        let paymentMethod = Mocks.PaymentMethods.paymentCardPaymentMethod
+    //        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
+    //        let apiConfiguration = setupApiConfiguration(
+    //            paymentMethod: paymentMethod,
+    //            surchargeAmount: surchargeAmount
+    //        )
+    //        setupMockApiClients(apiConfiguration: apiConfiguration)
+    //
+    //        let orderedExpectations = expectationsForDelegates(paymentMethod: paymentMethod, surchargeAmount: 99)
+    //
+    //        try submitWithRawDataManager(paymentMethod: paymentMethod, expecting: orderedExpectations)
+    //    }
 
     // MARK: Presentation helpers
 
@@ -247,7 +246,6 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
         wait(for: orderedExpectations, timeout: timeout, enforceOrder: true)
     }
 
-
     // MARK: Other Helpers
 
     func expectationsForDelegates(paymentMethod: PrimerPaymentMethod,
@@ -271,9 +269,8 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
             }
             orderedExpectations.append(expectClientSessionWillUpdate)
 
-
             let expectClientSessionDidUpdate = self.expectation(description: "Expected delegate method: didUpdateClientSession")
-            delegate.onDidUpdateClientSession = { session in
+            delegate.onDidUpdateClientSession = { _ in
                 guard let _surchargeAmount = self.clientSession?.paymentMethod?.options?[0]["surcharge"] as? Int else {
                     XCTFail(); return
                 }
@@ -299,7 +296,7 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
             }
             orderedExpectations.append(expectDidFail)
 
-            if handling == .auto, paymentMethod.internalPaymentMethodType != .paymentCard  {
+            if handling == .auto, paymentMethod.internalPaymentMethodType != .paymentCard {
                 let expectOnDismiss = self.expectation(description: "Expected delegate method: onDimiss")
                 uiDelegate.onUIDidDismissPaymentMethod = {
                     expectOnDismiss.fulfill()
@@ -318,7 +315,7 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
 
         if handling == .manual {
             let expectDidTokenizePaymentMethod = self.expectation(description: "Expected delegate method: didTokenizePaymentMethod")
-            delegate.onDidTokenizePaymentMethod = { data, decisionHandler in
+            delegate.onDidTokenizePaymentMethod = { _, decisionHandler in
                 // TODO: based on isImplementingPaymentMethodWithRequiredAction from HUC tests
                 if paymentMethod.internalPaymentMethodType == .paymentCard {
                     decisionHandler(.complete())
@@ -338,14 +335,13 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
                 orderedExpectations.append(expectUIDidShowPaymentMethod)
 
                 let expectDidResumeWith = self.expectation(description: "Expected delegate method: didResumeWith")
-                delegate.onDidResumeWith = { resumeToken, decisionHandler in
+                delegate.onDidResumeWith = { _, _ in
                     // TODO: decision handler?
                     expectDidResumeWith.fulfill()
                 }
                 orderedExpectations.append(expectDidResumeWith)
             }
-        }
-        else {
+        } else {
             let expectDidCompleteCheckoutWithData = self.expectation(description: "Expected delegate method: didCompleteCheckoutWithData")
             delegate.onDidCompleteCheckoutWithData = { data in
                 XCTAssertNotNil(data.payment)
@@ -357,7 +353,7 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
             orderedExpectations.append(expectDidCompleteCheckoutWithData)
         }
 
-        if handling == .auto, paymentMethod.internalPaymentMethodType != .paymentCard  {
+        if handling == .auto, paymentMethod.internalPaymentMethodType != .paymentCard {
             let expectOnDismiss = self.expectation(description: "Expected delegate method: onDimiss")
             uiDelegate.onUIDidDismissPaymentMethod = {
                 expectOnDismiss.fulfill()
@@ -380,7 +376,6 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
 // MARK: SDK Helpers
 
 extension HeadlessUniversalCheckoutTests {
-
 
     private func setupApiConfiguration(paymentMethod: PrimerPaymentMethod,
                                        surchargeAmount: Int? = nil) -> PrimerAPIConfiguration {

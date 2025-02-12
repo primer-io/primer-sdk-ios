@@ -11,7 +11,7 @@ import XCTest
 
 class MockNetworkService: NetworkService {
 
-    func request<T>(_ endpoint: any PrimerSDK.Endpoint, completion: @escaping PrimerSDK.ResponseCompletionWithHeaders<T>) -> (any PrimerSDK.PrimerCancellable)? where T : Decodable {
+    func request<T>(_ endpoint: any PrimerSDK.Endpoint, completion: @escaping PrimerSDK.ResponseCompletionWithHeaders<T>) -> (any PrimerSDK.PrimerCancellable)? where T: Decodable {
         onReceiveEndpoint?(endpoint)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
@@ -26,7 +26,6 @@ class MockNetworkService: NetworkService {
 
         return nil
     }
-    
 
     var mockedResult: Decodable?
 
@@ -54,7 +53,7 @@ class MockNetworkService: NetworkService {
         return nil
     }
 
-    func request<T>(_ endpoint: any PrimerSDK.Endpoint, retryConfig: PrimerSDK.RetryConfig?, completion: @escaping PrimerSDK.ResponseCompletionWithHeaders<T>) -> (any PrimerSDK.PrimerCancellable)? where T : Decodable {
+    func request<T>(_ endpoint: any PrimerSDK.Endpoint, retryConfig: PrimerSDK.RetryConfig?, completion: @escaping PrimerSDK.ResponseCompletionWithHeaders<T>) -> (any PrimerSDK.PrimerCancellable)? where T: Decodable {
         onReceiveEndpoint?(endpoint)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {

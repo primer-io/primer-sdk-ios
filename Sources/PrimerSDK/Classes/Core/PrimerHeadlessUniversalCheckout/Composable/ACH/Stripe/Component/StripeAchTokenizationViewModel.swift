@@ -183,11 +183,11 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
             // Checking if we are running UI(E2E) tests here.
             var isMockBE = false
 
-#if DEBUG
+            #if DEBUG
             if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
                 isMockBE = true
             }
-#endif
+            #endif
 
             if isMockBE {
                 seal.fulfill()
@@ -216,7 +216,7 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     private func showCollector(urlScheme: String) -> Promise<Void> {
         return Promise { seal in
-#if canImport(PrimerStripeSDK)
+            #if canImport(PrimerStripeSDK)
             let fullName = "\(self.userDetails.firstName) \(self.userDetails.lastName)"
             let stripeParams = PrimerStripeParams(publishableKey: self.publishableKey,
                                                   clientSecret: self.clientSecret,
@@ -242,10 +242,10 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 PrimerUIManager.primerRootViewController?.show(viewController: collectorViewController)
                 seal.fulfill()
             }
-#else
+            #else
             let error = ACHHelpers.getMissingSDKError(sdk: "PrimerStripeSDK")
             seal.reject(error)
-#endif
+            #endif
         }
     }
 
@@ -267,11 +267,11 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 // Checking if we are running UI(E2E) tests here.
                 var isMockBE = false
 
-#if DEBUG
+                #if DEBUG
                 if PrimerAPIConfiguration.current?.clientSession?.testId != nil {
                     isMockBE = true
                 }
-#endif
+                #endif
                 if isMockBE {
                     return Promise { seal in
                         seal.fulfill()

@@ -44,11 +44,11 @@ extension ACHClientSessionService {
         let customerDetails = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer
         return Promise { seal in
             let userDetails = ACHUserDetails(firstName: customerDetails?.firstName ?? "",
-                                                   lastName: customerDetails?.lastName ?? "",
-                                                   emailAddress: customerDetails?.emailAddress ?? "")
+                                             lastName: customerDetails?.lastName ?? "",
+                                             emailAddress: customerDetails?.emailAddress ?? "")
             seal.fulfill(userDetails)
         }
-        
+
     }
 }
 
@@ -74,10 +74,10 @@ extension ACHClientSessionService {
             .catch { error in
                 seal.reject(error)
             }
-            
+
         }
     }
-    
+
     func prepareClientSessionActionsRequestBody(paymentMethodType: String) -> ClientSessionUpdateRequest {
         let params: [String: Any] = ["paymentMethodType": paymentMethodType]
         let actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]

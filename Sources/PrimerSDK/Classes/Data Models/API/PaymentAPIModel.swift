@@ -5,6 +5,7 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
+// swiftlint:disable file_length
 import Foundation
 
 public struct PaymentAPIModelAddress: Codable {
@@ -97,7 +98,7 @@ extension Request.Body.Payment {
             self.resumeToken = token
         }
     }
-    
+
     public struct Complete: Encodable {
         let mandateSignatureTimestamp: String
         let paymentMethodId: String?
@@ -133,7 +134,18 @@ extension Response.Body {
 
         // swiftlint:disable:next nesting
         public enum CodingKeys: String, CodingKey {
-            case id, paymentId, amount, currencyCode, customer, customerId, order, orderId, requiredAction, status, paymentFailureReason, showSuccessCheckoutOnPendingPayment
+            case id,
+                 paymentId,
+                 amount,
+                 currencyCode,
+                 customer,
+                 customerId,
+                 order,
+                 orderId,
+                 requiredAction,
+                 status,
+                 paymentFailureReason,
+                 showSuccessCheckoutOnPendingPayment
             case dateStr = "date"
         }
 
@@ -151,7 +163,7 @@ extension Response.Body {
             case success = "SUCCESS"
         }
     }
-    
+
     public struct Complete: Codable {}
 }
 
@@ -411,3 +423,4 @@ extension PrimerCheckoutDataPayment {
         self.state = state
     }
 }
+// swiftlint:enable file_length

@@ -16,15 +16,15 @@ var performPaymentAfterVaulting: Bool = false
 var paymentSessionType: MerchantMockDataManager.SessionType = .generic
 
 class MerchantSessionAndSettingsViewController: UIViewController {
-    
+
     enum RenderMode: Int {
         case createClientSession = 0
         case clientToken
         case testScenario
     }
-    
+
     // MARK: Stack Views
-    
+
     @IBOutlet weak var environmentStackView: UIStackView!
     @IBOutlet weak var testParamsGroupStackView: UIStackView!
     @IBOutlet weak var apiKeyStackView: UIStackView!
@@ -34,20 +34,20 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var orderStackView: UIStackView!
     @IBOutlet weak var customerStackView: UIStackView!
     @IBOutlet weak var surchargeGroupStackView: UIStackView!
-    
+
     // MARK: Testing Mode Inputs
-    
+
     @IBOutlet weak var testingModeSegmentedControl: UISegmentedControl!
-    
+
     // MARK: Environment Inputs
-    
+
     @IBOutlet weak var environmentSegmentedControl: UISegmentedControl!
     @IBOutlet weak var apiKeyTextField: UITextField!
     @IBOutlet weak var clientTokenTextField: UITextField!
     @IBOutlet weak var metadataTextField: UITextField!
-    
+
     // MARK: Test Inputs
-    
+
     @IBOutlet weak var testScenarioTextField: UITextField!
     @IBOutlet weak var testResultSegmentedControl: UISegmentedControl!
     @IBOutlet weak var testParamsStackView: UIStackView!
@@ -58,7 +58,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var testErrorDescriptionTextField: UITextField!
     @IBOutlet weak var test3DSStackView: UIStackView!
     @IBOutlet weak var test3DSScenarioTextField: UITextField!
-    
+
     // MARK: SDK Settings Inputs
     @IBOutlet weak var checkoutFlowSegmentedControl: UISegmentedControl!
     @IBOutlet weak var vaultingFlowSegmentedControl: UISegmentedControl!
@@ -70,7 +70,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var closeButtonDismissalSwitch: UISwitch!
     @IBOutlet weak var disableInitScreenSwitch: UISwitch!
     @IBOutlet weak var enableCVVRecaptureFlowSwitch: UISwitch!
-    
+
     // MARK: Apple Pay Inputs
     @IBOutlet weak var applePayCaptureBillingAddressSwitch: UISwitch!
     @IBOutlet weak var applePayCheckProvidedNetworksSwitch: UISwitch!
@@ -90,21 +90,21 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var applePayShippingContactPostalAddressSwitch: UISwitch!
 
     // MARK: Order Inputs
-    
+
     @IBOutlet weak var currencyTextField: UITextField!
     @IBOutlet weak var countryCodeTextField: UITextField!
     @IBOutlet weak var orderIdTextField: UITextField!
     @IBOutlet weak var lineItemsStackView: UIStackView!
     @IBOutlet weak var totalAmountLabel: UILabel!
-    
+
     // MARK: Customer Inputs
-    
+
     @IBOutlet weak var customerIdTextField: UITextField!
     @IBOutlet weak var customerFirstNameTextField: UITextField!
     @IBOutlet weak var customerLastNameTextField: UITextField!
     @IBOutlet weak var customerEmailTextField: UITextField!
     @IBOutlet weak var customerMobileNumberTextField: UITextField!
-    
+
     @IBOutlet weak var billingAddressSwitch: UISwitch!
     @IBOutlet weak var billingAddressStackView: UIStackView!
     @IBOutlet weak var billingAddressFirstNameTextField: UITextField!
@@ -115,7 +115,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var billingAddressStateTextField: UITextField!
     @IBOutlet weak var billingAddressPostalCodeTextField: UITextField!
     @IBOutlet weak var billingAddressCountryTextField: UITextField!
-    
+
     @IBOutlet weak var shippingAddressStackView: UIStackView!
     @IBOutlet weak var shippingAddressSwitch: UISwitch!
     @IBOutlet weak var shippinAddressFirstNameTextField: UITextField!
@@ -126,16 +126,16 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var shippinAddressStateTextField: UITextField!
     @IBOutlet weak var shippinAddressPostalCodeTextField: UITextField!
     @IBOutlet weak var shippinAddressCountryTextField: UITextField!
-    
+
     // MARK: Surcharge Inputs
-    
+
     @IBOutlet weak var surchargeSwitch: UISwitch!
     @IBOutlet weak var surchargeStackView: UIStackView!
     @IBOutlet weak var applePaySurchargeTextField: UITextField!
-    
+
     @IBOutlet weak var primerSDKButton: UIButton!
     @IBOutlet weak var primerHeadlessSDKButton: UIButton!
-    
+
     var lineItems: [ClientSessionRequestBody.Order.LineItem] {
         get {
             return self.clientSession.order?.lineItems ?? []
@@ -144,24 +144,24 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             self.clientSession.order?.lineItems = newValue
         }
     }
-    
+
     let testScenarioPicker = UIPickerView()
     let testFailureFlowPicker = UIPickerView()
     let test3DSScenarioPicker = UIPickerView()
-    
+
     var renderMode: RenderMode = .createClientSession
-    
+
     var selectedPaymentHandling: PrimerPaymentHandling = .auto
-    
+
     var clientSession = MerchantMockDataManager.getClientSession(sessionType: .generic)
-    
+
     var selectedTestScenario: Test.Scenario?
     var selectedTestFlow: Test.Flow?
     var selectedTest3DSScenario: Test.Params.ThreeDS.Scenario?
-    
+
     var applyTheme: Bool = false
     var payAfterVaultSuccess: Bool = false
-    
+
     var applePayCaptureBillingAddress = false
     var applePayBillingAdditionalContactFields: [PrimerApplePayOptions.RequiredContactField]? = []
     var applePayCaptureShippingDetails = false
@@ -174,25 +174,25 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         self.testingModeSegmentedControl.accessibilityIdentifier = "Testing Mode Segmented Control"
         self.clientTokenTextField.accessibilityIdentifier = "Client Token Text Field"
     }
-    
+
     // MARK: - VIEW LIFE-CYCLE
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         self.setAccessibilityIds()
         testScenarioPicker.dataSource = self
         testScenarioPicker.delegate = self
         testScenarioTextField.inputView = testScenarioPicker
-        
+
         testFailureFlowPicker.dataSource = self
         testFailureFlowPicker.delegate = self
         testFailureFlowTextField.inputView = testFailureFlowPicker
-        
+
         test3DSScenarioPicker.dataSource = self
         test3DSScenarioPicker.delegate = self
         test3DSScenarioTextField.inputView = test3DSScenarioPicker
-        
+
         switch environment {
         case .dev:
             environmentSegmentedControl.selectedSegmentIndex = 0
@@ -205,43 +205,43 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         default:
             environmentSegmentedControl.selectedSegmentIndex = 1
         }
-        
+
         self.apiKeyTextField.text = customDefinedApiKey
-        
+
         let viewTap = UITapGestureRecognizer(target: self, action: #selector(viewTapped))
         view.addGestureRecognizer(viewTap)
-        
+
         merchantNameTextField.text = "Primer Merchant"
         populateSessionSettingsFields()
-        
+
         customerIdTextField.addTarget(
             self, action: #selector(customerIdChanged(_:)), for: .editingDidEnd)
-        
+
         handleAppetizeIfNeeded(AppetizeConfigProvider())
-        
+
         render()
-        
+
         NotificationCenter.default.addObserver(
             self, selector: #selector(handleAppetizeConfig), name: NSNotification.Name.appetizeURLHandled,
             object: nil)
     }
-    
+
     @objc func handleAppetizeConfig(_ notification: NSNotification) {
         if let payloadProvider = notification.object as? DeeplinkConfigProvider {
             handleAppetizeIfNeeded(AppetizeConfigProvider(payloadProvider: payloadProvider))
         }
     }
-    
+
     private func handleAppetizeIfNeeded(_ configProvider: AppetizeConfigProvider) {
         if let config = configProvider.fetchConfig() {
             updateUI(for: config)
         }
     }
-    
+
     @objc func viewTapped() {
         view.endEditing(true)
     }
-    
+
     func render() {
         switch renderMode {
         case .createClientSession:
@@ -254,7 +254,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             customerStackView.isHidden = false
             surchargeGroupStackView.isHidden = false
             klarnaEMDStackView.isHidden = false
-            
+
         case .clientToken:
             environmentStackView.isHidden = false
             testParamsGroupStackView.isHidden = true
@@ -265,7 +265,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             customerStackView.isHidden = true
             surchargeGroupStackView.isHidden = true
             klarnaEMDStackView.isHidden = true
-            
+
         case .testScenario:
             environmentStackView.isHidden = true
             testParamsGroupStackView.isHidden = false
@@ -276,15 +276,15 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             customerStackView.isHidden = false
             surchargeGroupStackView.isHidden = false
             klarnaEMDStackView.isHidden = true
-            
+
             testParamsStackView.isHidden = (selectedTestScenario == nil)
-            
+
             if testResultSegmentedControl.selectedSegmentIndex == 0 {
                 testFailureStackView.isHidden = true
             } else {
                 testFailureStackView.isHidden = false
             }
-            
+
             switch selectedTestScenario {
             case .testNative3DS:
                 if testResultSegmentedControl.selectedSegmentIndex == 0 {
@@ -296,51 +296,51 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 test3DSStackView.isHidden = true
             }
         }
-        
+
         gesturesDismissalSwitch.isOn = true  // Default value
         closeButtonDismissalSwitch.isOn = false  // Default false
-        
+
         lineItemsStackView.removeAllArrangedSubviews()
         lineItemsStackView.alignment = .fill
         lineItemsStackView.distribution = .fill
-        
+
         for (index, lineItem) in lineItems.enumerated() {
             let horizontalStackView = UIStackView()
             horizontalStackView.tag = index
             horizontalStackView.axis = .horizontal
             horizontalStackView.alignment = .fill
             horizontalStackView.distribution = .fill
-            
+
             let nameLbl = UILabel()
             nameLbl.text = (lineItem.description ?? "") + " x\(lineItem.quantity ?? 1)"
             nameLbl.textAlignment = .left
             nameLbl.font = UIFont.systemFont(ofSize: 14)
             horizontalStackView.addArrangedSubview(nameLbl)
-            
+
             let priceLbl = UILabel()
             priceLbl.text = "\(lineItem.amount ?? 0)"
             priceLbl.textAlignment = .right
             priceLbl.font = UIFont.systemFont(ofSize: 14)
             horizontalStackView.addArrangedSubview(priceLbl)
-            
+
             let lineItemTapGesture = UITapGestureRecognizer(
                 target: self, action: #selector(lineItemTapped))
             horizontalStackView.addGestureRecognizer(lineItemTapGesture)
-            
+
             lineItemsStackView.addArrangedSubview(horizontalStackView)
         }
-        
+
         let totalAmount = lineItems.compactMap({ (($0.quantity ?? 0) * ($0.amount ?? 0)) }).reduce(0, +)
         totalAmountLabel.text = "\(totalAmount)"
     }
-    
+
     // MARK: - ACTIONS
-    
+
     @objc func lineItemTapped(_ sender: UITapGestureRecognizer) {
         guard let index = sender.view?.tag, lineItems.count > index else {
             return
         }
-        
+
         let lineItem = lineItems[index]
         let vc = MerchantNewLineItemViewController.instantiate(lineItem: lineItem)
         vc.onLineItemEdited = { lineItem in
@@ -353,7 +353,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         }
         navigationController?.pushViewController(vc, animated: true)
     }
-    
+
     @IBAction func testingModeSegmentedControlValueChanged(_ sender: UISegmentedControl) {
         renderMode = RenderMode(rawValue: sender.selectedSegmentIndex)!
         render()
@@ -371,7 +371,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             apiVersion = .V2_3
         }
     }
-    
+
     @IBAction func environmentSegmentedControlValuewChanged(_ sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
@@ -386,11 +386,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             fatalError()
         }
     }
-    
+
     @IBAction func testResultSegmentedControlValueChanged(_ sender: UISegmentedControl) {
         render()
     }
-    
+
     @IBAction func checkoutFlowSegmentedControlValueChanged(_ sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
@@ -401,7 +401,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             fatalError()
         }
     }
-    
+
     @IBAction func addLineItemButtonTapped(_ sender: Any) {
         let vc = MerchantNewLineItemViewController.instantiate(lineItem: nil)
         vc.onLineItemAdded = { lineItem in
@@ -410,15 +410,15 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         }
         navigationController?.pushViewController(vc, animated: true)
     }
-    
+
     @IBAction func billingAddressSwitchValueChanged(_ sender: UISwitch) {
         billingAddressStackView.isHidden = !sender.isOn
     }
-    
+
     @IBAction func shippingAddressSwitchValueChanged(_ sender: UISwitch) {
         shippingAddressStackView.isHidden = !sender.isOn
     }
-    
+
     @IBAction func surchargeSwitchValueChanged(_ sender: UISwitch) {
         surchargeStackView.isHidden = !sender.isOn
     }
@@ -427,7 +427,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         paymentSessionType = sender.isOn ? .klarnaWithEMD : .generic
         populateSessionSettingsFields()
     }
-    
+
     @IBAction func applePayCaptureBillingAddressSwitchValueChanged(_ sender: UISwitch) {
         applePayBillingControlStackView.isHidden = !sender.isOn
         applePayCaptureBillingAddress = sender.isOn
@@ -447,7 +447,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             }
         }
     }
-
 
     @IBAction func applePayBillingContactEmailField(_ sender: UISwitch) {
         if sender.isOn {
@@ -502,7 +501,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBAction func applePayRequireShippingMethodSwitchChanged(_ sender: UISwitch) {
         applePayRequireShippingMethod = sender.isOn
     }
-    
+
     @IBAction func applePayShippingContactNameSwitchChanged(_ sender: UISwitch) {
         if sender.isOn {
             var fields = applePayShippingAdditionalContactFields ?? []
@@ -517,7 +516,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             }
         }
     }
-    
+
     @IBAction func applePayShippingContactEmailField(_ sender: UISwitch) {
         if sender.isOn {
             var fields = applePayShippingAdditionalContactFields ?? []
@@ -532,7 +531,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             }
         }
     }
-    
+
     @IBAction func applePayShippingContactPhoneSwitchChanged(_ sender: UISwitch) {
         if sender.isOn {
             var fields = applePayShippingAdditionalContactFields ?? []
@@ -562,11 +561,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             }
         }
     }
-    
+
     @IBAction func applePayCheckProvidedNetworksSwitchValueChanged(_ sender: UISwitch) {
         applePayCheckProvidedNetworks = sender.isOn
     }
-    
+
     func configureClientSession() {
         clientSession.currencyCode = CurrencyLoader().getCurrency(currencyTextField.text ?? "")?.code
         clientSession.order?.countryCode = CountryCode(rawValue: countryCodeTextField.text ?? "")
@@ -576,7 +575,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         clientSession.customer?.lastName = customerLastNameTextField.text
         clientSession.customer?.emailAddress = customerEmailTextField.text
         clientSession.customer?.mobileNumber = customerMobileNumberTextField.text
-        
+
         if billingAddressSwitch.isOn {
             clientSession.customer?.billingAddress?.firstName = billingAddressFirstNameTextField.text
             clientSession.customer?.billingAddress?.lastName = billingAddressLastNameTextField.text
@@ -589,7 +588,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         } else {
             clientSession.customer?.billingAddress = nil
         }
-        
+
         if shippingAddressSwitch.isOn {
             clientSession.customer?.shippingAddress?.firstName = shippinAddressFirstNameTextField.text
             clientSession.customer?.shippingAddress?.lastName = shippinAddressLastNameTextField.text
@@ -602,7 +601,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         } else {
             clientSession.customer?.shippingAddress = nil
         }
-        
+
         clientSession.paymentMethod = MerchantMockDataManager.getPaymentMethod(
             sessionType: paymentSessionType)
         if paymentSessionType == .generic && enableCVVRecaptureFlowSwitch.isOn {
@@ -612,19 +611,19 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 extraMerchantData: nil,
                 captureVaultedCardCvv: enableCVVRecaptureFlowSwitch.isOn,
                 merchantName: nil)
-            
+
             clientSession.paymentMethod?.options?.PAYMENT_CARD = option
         }
-        
+
         let applePayOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(
             surcharge: nil,
             instalmentDuration: nil,
             extraMerchantData: nil,
             captureVaultedCardCvv: nil,
             merchantName: "Primer Merchant iOS")
-        
+
         clientSession.paymentMethod?.options?.APPLE_PAY = applePayOptions
-        
+
         if vaultingFlowSegmentedControl.selectedSegmentIndex == 1 {
             clientSession.paymentMethod?.vaultOnSuccess = true
             clientSession.paymentMethod?.vaultOnAgreement = nil
@@ -647,7 +646,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             metadataTextField.text?.components(separatedBy: ",").forEach {
                 let tuple = String($0).components(separatedBy: "=")
                 guard tuple.count == 2
-                    else { return }
+                else { return }
                 let key = tuple[0].trimmingCharacters(in: .whitespaces)
                 let value = tuple[1].trimmingCharacters(in: .whitespaces)
                 try? metadataDict.add(.string(value), forKey: key)
@@ -655,23 +654,23 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             clientSession.metadata = metadataDict
         }
     }
-    
+
     func populateSessionSettingsFields() {
         clientSession = MerchantMockDataManager.getClientSession(sessionType: paymentSessionType)
-        
+
         enableCVVRecaptureFlowSwitch.isOn =
-        clientSession.paymentMethod?.options?.PAYMENT_CARD?.captureVaultedCardCvv == true
-        
+            clientSession.paymentMethod?.options?.PAYMENT_CARD?.captureVaultedCardCvv == true
+
         currencyTextField.text = clientSession.currencyCode
         countryCodeTextField.text = clientSession.order?.countryCode?.rawValue
         orderIdTextField.text = clientSession.orderId
-        
+
         customerIdTextField.text = clientSession.customerId
         customerFirstNameTextField.text = clientSession.customer?.firstName
         customerLastNameTextField.text = clientSession.customer?.lastName
         customerEmailTextField.text = clientSession.customer?.emailAddress
         customerMobileNumberTextField.text = clientSession.customer?.mobileNumber
-        
+
         billingAddressSwitch.isOn = true
         billingAddressFirstNameTextField.text = clientSession.customer?.billingAddress?.firstName
         billingAddressLastNameTextField.text = clientSession.customer?.billingAddress?.lastName
@@ -681,7 +680,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         billingAddressStateTextField.text = clientSession.customer?.billingAddress?.state
         billingAddressPostalCodeTextField.text = clientSession.customer?.billingAddress?.postalCode
         billingAddressCountryTextField.text = clientSession.customer?.billingAddress?.countryCode
-        
+
         shippingAddressSwitch.isOn = true
         shippinAddressFirstNameTextField.text = clientSession.customer?.shippingAddress?.firstName
         shippinAddressLastNameTextField.text = clientSession.customer?.shippingAddress?.lastName
@@ -692,7 +691,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         shippinAddressPostalCodeTextField.text = clientSession.customer?.shippingAddress?.postalCode
         shippinAddressCountryTextField.text = clientSession.customer?.shippingAddress?.countryCode
     }
-    
+
     func configureTestScenario() {
         guard let selectedTestScenario = selectedTestScenario else {
             let alert = UIAlertController(
@@ -701,14 +700,14 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             present(alert, animated: true)
             return
         }
-        
+
         var testParams = Test.Params(
             scenario: selectedTestScenario,
             result: .success,
             network: nil,
             polling: nil,
             threeDS: nil)
-        
+
         if testResultSegmentedControl.selectedSegmentIndex == 1 {
             guard let selectedTestFlow = selectedTestFlow else {
                 let alert = UIAlertController(
@@ -718,15 +717,15 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 present(alert, animated: true)
                 return
             }
-            
+
             let failure = Test.Params.Failure(
                 flow: selectedTestFlow,
                 error: Test.Params.Failure.Error(
                     errorId: testErrorIdTextField.text ?? "test-error-id",
                     description: testErrorDescriptionTextField.text ?? "test-error-description"))
-            
+
             testParams.result = .failure(failure: failure)
-            
+
         } else if case .testNative3DS = selectedTestScenario {
             guard let selectedTest3DSScenario = selectedTest3DSScenario else {
                 let alert = UIAlertController(
@@ -737,13 +736,13 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             }
             testParams.threeDS = Test.Params.ThreeDS(scenario: selectedTest3DSScenario)
         }
-        
+
         clientSession.testParams = testParams
     }
-    
+
     @IBAction func primerSDKButtonTapped(_ sender: Any) {
         customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
-        
+
         let selectedDismissalMechanisms: [DismissalMechanism] = {
             var mechanisms = [DismissalMechanism]()
             if gesturesDismissalSwitch.isOn {
@@ -754,25 +753,25 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             }
             return mechanisms
         }()
-        
+
         let uiOptions = PrimerUIOptions(
             isInitScreenEnabled: !disableInitScreenSwitch.isOn,
             isSuccessScreenEnabled: !disableSuccessScreenSwitch.isOn,
             isErrorScreenEnabled: !disableErrorScreenSwitch.isOn,
             dismissalMechanism: selectedDismissalMechanisms,
             theme: applyThemingSwitch.isOn ? CheckoutTheme.tropical : nil)
-        
+
         let mandateData = PrimerStripeOptions.MandateData.templateMandate(merchantName: "Primer Inc.")
 
         let shippingOptions = applePayCaptureShippingDetails ?
-        PrimerApplePayOptions.ShippingOptions(shippingContactFields: applePayShippingAdditionalContactFields,
-                                              requireShippingMethod: applePayRequireShippingMethod) : nil
+            PrimerApplePayOptions.ShippingOptions(shippingContactFields: applePayShippingAdditionalContactFields,
+                                                  requireShippingMethod: applePayRequireShippingMethod) : nil
 
         let billingOptions = applePayCaptureBillingAddress ?
-        PrimerApplePayOptions.BillingOptions(requiredBillingContactFields: applePayBillingAdditionalContactFields) : nil
+            PrimerApplePayOptions.BillingOptions(requiredBillingContactFields: applePayBillingAdditionalContactFields) : nil
 
         let stripePublishableKey = SecretsManager.shared.value(forKey: .stripePublishableKey)
-        
+
         let settings = PrimerSettings(
             paymentHandling: selectedPaymentHandling,
             paymentMethodOptions: PrimerPaymentMethodOptions(
@@ -790,7 +789,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
             apiVersion: apiVersion
         )
-        
+
         switch renderMode {
         case .createClientSession, .testScenario:
             configureClientSession()
@@ -800,26 +799,26 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             let vc = MerchantDropInUIViewController.instantiate(
                 settings: settings, clientSession: clientSession, clientToken: nil)
             navigationController?.pushViewController(vc, animated: true)
-            
+
         case .clientToken:
             let vc = MerchantDropInUIViewController.instantiate(
                 settings: settings, clientSession: nil, clientToken: clientTokenTextField.text)
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-    
+
     @IBAction func primerHeadlessButtonTapped(_ sender: Any) {
         customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
 
         let shippingOptions = applePayCaptureShippingDetails ?
-        PrimerApplePayOptions.ShippingOptions(shippingContactFields: applePayShippingAdditionalContactFields,
-                                              requireShippingMethod: applePayRequireShippingMethod) : nil
+            PrimerApplePayOptions.ShippingOptions(shippingContactFields: applePayShippingAdditionalContactFields,
+                                                  requireShippingMethod: applePayRequireShippingMethod) : nil
 
         let billingOptions = applePayCaptureBillingAddress ?
-        PrimerApplePayOptions.BillingOptions(requiredBillingContactFields: applePayBillingAdditionalContactFields) : nil
+            PrimerApplePayOptions.BillingOptions(requiredBillingContactFields: applePayBillingAdditionalContactFields) : nil
 
         let stripePublishableKey = SecretsManager.shared.value(forKey: .stripePublishableKey)
-        
+
         let settings = PrimerSettings(
             paymentHandling: selectedPaymentHandling,
             paymentMethodOptions: PrimerPaymentMethodOptions(
@@ -837,7 +836,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
             apiVersion: apiVersion
         )
-        
+
         switch renderMode {
         case .createClientSession, .testScenario:
             configureClientSession()
@@ -857,7 +856,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-    
+
     @objc func customerIdChanged(_ textField: UITextField!) {
         guard let text = customerIdTextField.text else { return }
         UserDefaults.standard.set(text, forKey: MerchantMockDataManager.customerIdStorageKey)
@@ -865,11 +864,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 }
 
 extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPickerViewDelegate {
-    
+
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
-    
+
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         if pickerView == testScenarioPicker {
             return Test.Scenario.allCases.count + 1
@@ -878,13 +877,12 @@ extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPi
         } else if pickerView == test3DSScenarioPicker {
             return Test.Params.ThreeDS.Scenario.allCases.count + 1
         }
-        
+
         return 0
     }
-    
+
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int)
-    -> String?
-    {
+    -> String? {
         if row == 0 {
             return "-"
         } else {
@@ -896,10 +894,10 @@ extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPi
                 return Test.Params.ThreeDS.Scenario.allCases[row - 1].rawValue
             }
         }
-        
+
         return nil
     }
-    
+
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if pickerView == testScenarioPicker {
             if row == 0 {
@@ -926,7 +924,7 @@ extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPi
                 test3DSScenarioTextField.text = selectedTest3DSScenario?.rawValue
             }
         }
-        
+
         render()
     }
 }
@@ -935,7 +933,7 @@ extension MerchantSessionAndSettingsViewController {
     private func updateUI(for config: SessionConfiguration) {
         apiKeyTextField.text = config.customApiKey
         customerIdTextField.text = config.customerId.isEmpty ? "ios-customer-id" : config.customerId
-        
+
         switch config.env {
         case .dev:
             environmentSegmentedControl.selectedSegmentIndex = 0
@@ -949,17 +947,17 @@ extension MerchantSessionAndSettingsViewController {
             environmentSegmentedControl.selectedSegmentIndex = 2
         }
         environment = config.env
-        
+
         switch config.paymentHandling {
         case .auto:
             checkoutFlowSegmentedControl.selectedSegmentIndex = 0
         case .manual:
             checkoutFlowSegmentedControl.selectedSegmentIndex = 1
         }
-        
+
         currencyTextField.text = config.currency
         countryCodeTextField.text = config.countryCode
-        
+
         let lineItem = ClientSessionRequestBody.Order.LineItem(
             itemId: "ld-lineitem",
             description: "Fancy Shoes",
@@ -967,9 +965,9 @@ extension MerchantSessionAndSettingsViewController {
             quantity: 1,
             discountAmount: nil,
             taxAmount: nil)
-        
+
         self.lineItems = [lineItem]
-        
+
         metadataTextField.text = config.metadata
     }
 }

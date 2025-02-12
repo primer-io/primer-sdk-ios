@@ -43,7 +43,7 @@ enum Metadata: Codable {
             throw MetadataError.notDictionary
         }
     }
-    
+
     enum MetadataError: Error {
         case notDictionary
     }

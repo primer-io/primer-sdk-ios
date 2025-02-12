@@ -1,6 +1,6 @@
 //
 //  PrimerFormViewTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 11/06/2024.
 //
@@ -15,7 +15,7 @@ final class PrimerFormViewTests: XCTestCase {
     func testViewInit() throws {
         sut = PrimerFormView(formViews: [
             [ UILabel(text: "Testing 1"),
-            UILabel(text: "Testing 2") ],
+              UILabel(text: "Testing 2") ],
             [ UILabel(text: "Testing 3") ]
         ])
 

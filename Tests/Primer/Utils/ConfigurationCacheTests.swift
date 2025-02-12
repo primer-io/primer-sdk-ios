@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Niall Quinn on 01/08/24.
 //
@@ -13,14 +13,13 @@ final class ConfigurationCacheTests: XCTestCase {
     override func tearDown() {
         ConfigurationCache.shared.clearCache()
     }
-    
+
     func test_useHeadersTTL() throws {
         let headers = [ConfigurationCachedData.CacheHeaderKey: "2000"]
         let cacheData = ConfigurationCachedData(config: PrimerAPIConfiguration.mock, headers: headers)
 
         XCTAssert(cacheData.ttl == 2000)
     }
-
 
     func test_useFallbackTTL() throws {
         let headers = ["content-type": "application/json"]
@@ -32,7 +31,7 @@ final class ConfigurationCacheTests: XCTestCase {
     func test_clearCache() throws {
         let settings = PrimerSettings(clientSessionCachingEnabled: true)
         let exp = self.expectation(description: "Wait for headless start")
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { paymentMethods, err in
+        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { _, _ in
             exp.fulfill()
         }
 
@@ -57,7 +56,7 @@ final class ConfigurationCacheTests: XCTestCase {
         let headers = [ConfigurationCachedData.CacheHeaderKey: "0"]
         let cacheData = ConfigurationCachedData(config: PrimerAPIConfiguration.mock, headers: headers)
         let cacheKey = "cache-key"
-        
+
         cache.setData(cacheData, forKey: cacheKey)
 
         XCTAssertNil(cache.data(forKey: cacheKey))
@@ -66,7 +65,7 @@ final class ConfigurationCacheTests: XCTestCase {
     func test_respectsPrimerSettingsFlag() {
         let settings = PrimerSettings(clientSessionCachingEnabled: false)
         let exp = self.expectation(description: "Wait for headless start")
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { paymentMethods, err in
+        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { _, _ in
             exp.fulfill()
         }
 
@@ -83,7 +82,6 @@ final class ConfigurationCacheTests: XCTestCase {
     }
 
 }
-
 
 private extension PrimerAPIConfiguration {
     static var mock: PrimerAPIConfiguration {

@@ -24,7 +24,7 @@ final class NetworkResponseFactoryTests: XCTestCase {
         let metadata = ResponseMetadataModel(responseUrl: "a_url", statusCode: 200, headers: nil)
 
         let jsonNetworkResponseFactory = JSONNetworkResponseFactory()
-        let responseModel: TestCodable = try jsonNetworkResponseFactory.model(for: data, 
+        let responseModel: TestCodable = try jsonNetworkResponseFactory.model(for: data,
                                                                               forMetadata: metadata)
 
         XCTAssertEqual(model, responseModel)

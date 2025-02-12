@@ -1,6 +1,6 @@
 //
 //  PrimerTextFieldViewTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 21/05/2024.
 //
@@ -159,8 +159,8 @@ final class PrimerTextFieldViewTests: XCTestCase {
     }
 
     func testShouldChangeCharactersInRange() {
-        let value = view.textField(view.textField, 
-                                   shouldChangeCharactersIn: NSRange(), 
+        let value = view.textField(view.textField,
+                                   shouldChangeCharactersIn: NSRange(),
                                    replacementString: "")
         XCTAssertTrue(value)
     }

@@ -13,19 +13,18 @@ import Foundation
  * - Returns: A `Promise<PrimerPaymentMethodTokenData>` which resolves to a `PrimerPaymentMethodTokenData`
  * object on successful tokenization or rejects with an `Error` if the tokenization process fails.
  */
-protocol ACHTokenizationDelegate {
+protocol ACHTokenizationDelegate: AnyObject {
     func tokenize() -> Promise<PrimerPaymentMethodTokenData>
 }
 
 /**
  * Validation method to ensure data integrity before proceeding with tokenization.
  */
-protocol ACHValidationDelegate {
+protocol ACHValidationDelegate: AnyObject {
     func validate() throws
 }
 
 class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelegate {
-    
     // MARK: - Properties
     private let tokenizationService: TokenizationServiceProtocol
     private let paymentMethod: PrimerPaymentMethod
@@ -46,7 +45,7 @@ class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelegate {
                 seal.reject(ACHHelpers.getInvalidValueError(key: "configuration.id", value: paymentMethod.id))
                 return
             }
-            
+
             firstly {
                 getRequestBody()
             }
@@ -61,7 +60,7 @@ class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelegate {
             }
         }
     }
-    
+
     // MARK: - Validation
     func validate() throws {
         guard
@@ -129,7 +128,7 @@ extension ACHTokenizationService {
                 seal.reject(error)
                 return
             }
-            
+
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             seal.fulfill(requestBody)
         }

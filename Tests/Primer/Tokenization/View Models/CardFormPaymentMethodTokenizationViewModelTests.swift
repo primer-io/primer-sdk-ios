@@ -1,6 +1,6 @@
 //
 //  CardFormPaymentMethodTokenizationViewModelTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 23/05/2024.
 //
@@ -69,7 +69,7 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
         }
 
         let expectWillShowPaymentMethod = self.expectation(description: "Did show payment method")
-        uiDelegate.onUIDidShowPaymentMethod = { type in
+        uiDelegate.onUIDidShowPaymentMethod = { _ in
             self.sut.userInputCompletion?()
             expectWillShowPaymentMethod.fulfill()
         }
@@ -120,19 +120,19 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
         }
 
         let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        tokenizationService.onTokenize = { body in
+        tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
             return Promise.fulfilled(self.tokenizationResponseBody)
         }
 
         let expectWillShowPaymentMethod = self.expectation(description: "Did show payment method")
-        uiDelegate.onUIDidShowPaymentMethod = { type in
+        uiDelegate.onUIDidShowPaymentMethod = { _ in
             self.sut.userInputCompletion?()
             expectWillShowPaymentMethod.fulfill()
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
-        createResumePaymentService.onCreatePayment = { body in
+        createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
 
@@ -170,7 +170,6 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
             setupAppState(amount: 1234, currencyCode: "GBP")
             XCTAssertNoThrow(try sut.validate())
 
-
         }
     }
 
@@ -184,7 +183,6 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
                                                                                  surcharge: nil,
                                                                                  options: nil,
                                                                                  displayMetadata: nil))
-
 
         let error = PrimerError.paymentFailed(paymentMethodType: "PMT",
                                               paymentId: "123",

@@ -9,15 +9,15 @@ import Foundation
 
 /**
  * The protocol includes methods for updating user details with new data collected during the transaction process,
-  * as well as a factory method for creating a new instance of `ACHUserDetails` with all fields initialized to empty strings.
-  *
-  * Methods:
-  *  - `update(with:)`: Updates the `ACHUserDetails` instance with new data from a given `ACHUserDetailsCollectableData` instance.
-  *    This method should be used to reflect any changes in the user's information that came from the client session.
-  *
-  *  - `emptyUserDetails()`: Factory method that returns a new `ACHUserDetails` instance where all user detail fields are initialized to empty strings.
-  *    Use this method to create a default state for `ACHUserDetails` with no pre-filled information.
-  */
+ * as well as a factory method for creating a new instance of `ACHUserDetails` with all fields initialized to empty strings.
+ *
+ * Methods:
+ *  - `update(with:)`: Updates the `ACHUserDetails` instance with new data from a given `ACHUserDetailsCollectableData` instance.
+ *    This method should be used to reflect any changes in the user's information that came from the client session.
+ *
+ *  - `emptyUserDetails()`: Factory method that returns a new `ACHUserDetails` instance where all user detail fields are initialized to empty strings.
+ *    Use this method to create a default state for `ACHUserDetails` with no pre-filled information.
+ */
 protocol ACHUserDetailsHandling {
     func update(with collectedData: ACHUserDetailsCollectableData)
     static func emptyUserDetails() -> ACHUserDetails
@@ -73,8 +73,8 @@ extension ACHUserDetails: ACHUserDetailsHandling {
 extension ACHUserDetails: Equatable {
     public static func == (lhs: ACHUserDetails, rhs: ACHUserDetails) -> Bool {
         return lhs.firstName == rhs.firstName &&
-        lhs.lastName == rhs.lastName &&
-        lhs.emailAddress == rhs.emailAddress
+            lhs.lastName == rhs.lastName &&
+            lhs.emailAddress == rhs.emailAddress
     }
 
     /// Compares two instances for equality and details any differing fields.

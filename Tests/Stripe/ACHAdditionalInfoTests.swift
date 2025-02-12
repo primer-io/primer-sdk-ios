@@ -10,14 +10,14 @@ import XCTest
 @testable import PrimerSDK
 
 class ACHAdditionalInfoTests: XCTestCase {
-    
+
     func test_ACHBankAccountCollector_additionalInfo_initialization() {
         let mockViewController = UIViewController()
         let additionalInfo = ACHBankAccountCollectorAdditionalInfo(collectorViewController: mockViewController)
-        
+
         XCTAssertEqual(additionalInfo.collectorViewController, mockViewController, "collectorViewController should be set correctly")
     }
-    
+
     func test_ACHBankAccountCollector_additionalInfo_decoderInitialization() {
         do {
             let decoder = JSONDecoder()

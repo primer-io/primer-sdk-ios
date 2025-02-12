@@ -12,30 +12,30 @@ import PrimerSDK
 import Combine
 
 class MerchantHeadlessCheckoutStripeAchViewController: UIViewController {
-    
+
     // MARK: - Subviews
     let activityIndicator = UIActivityIndicatorView(style: .large)
-    
+
     // MARK: - Properties
     var logs: [String] = []
     var cancellables: Set<AnyCancellable> = []
-    
+
     // MARK: - Stripe ACH
     lazy var manager: PrimerHeadlessUniversalCheckout.AchManager = PrimerHeadlessUniversalCheckout.AchManager()
     var stripeForm: StripeAchFieldsView?
     var stripeFormViewModel: StripeAchFieldsViewModel = StripeAchFieldsViewModel()
     var stripeAchComponent: (any StripeAchUserDetailsComponent)?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         setupUI()
         setupLayout()
         addStripeFormView()
         addHUCDelegate()
         initializeStripeAchComponent()
     }
-    
+
     func setupObservables() {
         stripeFormViewModel.$firstName
             .dropFirst()
@@ -45,7 +45,7 @@ class MerchantHeadlessCheckoutStripeAchViewController: UIViewController {
                 self?.stripeAchComponent?.updateCollectedData(collectableData: firstNameCollectedData)
             }
             .store(in: &cancellables)
-        
+
         stripeFormViewModel.$lastName
             .dropFirst()
             .receive(on: DispatchQueue.main)
@@ -54,7 +54,7 @@ class MerchantHeadlessCheckoutStripeAchViewController: UIViewController {
                 self?.stripeAchComponent?.updateCollectedData(collectableData: lastNameCollectedData)
             }
             .store(in: &cancellables)
-        
+
         stripeFormViewModel.$emailAddress
             .dropFirst()
             .receive(on: DispatchQueue.main)
@@ -64,11 +64,11 @@ class MerchantHeadlessCheckoutStripeAchViewController: UIViewController {
             }
             .store(in: &cancellables)
     }
-    
+
     private func addHUCDelegate() {
         PrimerHeadlessUniversalCheckout.current.delegate = self
     }
-    
+
     private func initializeStripeAchComponent() {
         do {
             stripeAchComponent = try manager.provide(paymentMethodType: "STRIPE_ACH")
@@ -81,16 +81,16 @@ class MerchantHeadlessCheckoutStripeAchViewController: UIViewController {
                 showAlert(title: "Error", message: "StripeAch component provider not found.")
                 return
             }
-            
+
             showAlert(title: "Error", message: primerError.errorDescription ?? "StripeAch component provider not found.")
         }
     }
-    
+
     private func addStripeFormView() {
         stripeForm = StripeAchFieldsView(viewModel: stripeFormViewModel, onSubmitPressed: {
             self.stripeAchComponent?.submit()
         })
-        
+
         let hostingViewController = UIHostingController(rootView: stripeForm)
         hostingViewController.view.translatesAutoresizingMaskIntoConstraints = false
         addChild(hostingViewController)
@@ -106,7 +106,7 @@ class MerchantHeadlessCheckoutStripeAchViewController: UIViewController {
             )
         ])
     }
-    
+
     deinit {
         cancellables.forEach { $0.cancel() }
     }
@@ -119,7 +119,7 @@ extension MerchantHeadlessCheckoutStripeAchViewController {
         activityIndicator.hidesWhenStopped = true
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
     }
-    
+
     func setupLayout() {
         view.addSubview(activityIndicator)
         NSLayoutConstraint.activate([
@@ -141,20 +141,20 @@ extension MerchantHeadlessCheckoutStripeAchViewController {
         alert.addAction(cancelAction)
         present(alert, animated: true, completion: nil)
     }
-    
+
     func showStripeCollector(_ stripeBankCollector: UIViewController) {
         present(stripeBankCollector, animated: true)
     }
-    
+
     func showLoader() {
         view.bringSubviewToFront(activityIndicator)
         activityIndicator.startAnimating()
     }
-    
+
     func hideLoader() {
         activityIndicator.stopAnimating()
     }
-    
+
     func showMandate() {
         showAlert(title: "Mandate acceptance", message: "Would you like to accept this mandate?") {
             self.manager.mandateDelegate?.acceptMandate()

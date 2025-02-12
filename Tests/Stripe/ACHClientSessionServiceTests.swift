@@ -14,10 +14,6 @@ final class ACHClientSessionServiceTests: XCTestCase {
     var clientSessionService: ACHClientSessionService!
     var mockApiClient: MockPrimerAPIClient!
 
-    override func setUp() {
-        super.setUp()
-    }
-
     override func tearDown() {
         restartPrimerConfiguration()
         super.tearDown()
@@ -73,7 +69,7 @@ final class ACHClientSessionServiceTests: XCTestCase {
         let configurationsFetchWithActions = getFetchConfiguration(firstName: expectedUserDetails.firstName, lastName: expectedUserDetails.lastName, email: expectedUserDetails.emailAddress)
 
         mockApiClient.fetchConfigurationWithActionsResult = (configurationsFetchWithActions, nil)
-        
+
         // Creating the actions for the patch request with the updated new user details
         let actionsArray = [ClientSession.Action.setCustomerFirstName(expectedUserDetails.firstName),
                             ClientSession.Action.setCustomerLastName(expectedUserDetails.lastName),
@@ -121,7 +117,7 @@ final class ACHClientSessionServiceTests: XCTestCase {
                               email: currentUserDetails.emailAddress)
 
         mockApiClient.fetchConfigurationWithActionsResult = (nil, error)
-        
+
         // Creating the actions for the patch request with the updated new user details
         let actionsArray = [ClientSession.Action.setCustomerFirstName(expectedUserDetails.firstName),
                             ClientSession.Action.setCustomerLastName(expectedUserDetails.lastName),
