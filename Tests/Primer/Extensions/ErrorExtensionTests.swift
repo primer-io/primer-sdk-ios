@@ -36,7 +36,7 @@ final class ErrorExtensionTests: XCTestCase {
         }
 
         let internalError3DSFailureContinue = InternalError.failedToPerform3dsButShouldContinue(error:
-            Primer3DSErrorContainer.missingSdkDependency(userInfo: nil, diagnosticsId: "")
+                                                                                                    Primer3DSErrorContainer.missingSdkDependency(userInfo: nil, diagnosticsId: "")
         )
         let exposedError3DSFailureContinue = internalError3DSFailureContinue.exposedError
         switch exposedError3DSFailureContinue {
@@ -45,7 +45,6 @@ final class ErrorExtensionTests: XCTestCase {
         default:
             XCTFail()
         }
-        
 
         // MARK: Underlying errors
 
@@ -89,7 +88,7 @@ final class ErrorExtensionTests: XCTestCase {
             PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         ]
 
-        let singleDescription = { (message: String) in
+        let singleDescription = { (_: String) in
             "[unknown] Something went wrong (diagnosticsId: )"
         }
 

@@ -17,31 +17,31 @@ struct ACHUserDetailsView: View {
 
     var body: some View {
         VStack {
-        ZStack {
-            Button {
-                onBackPressed()
-            } label: {
-                HStack {
-                    Image(systemName: "chevron.left")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 15, height: 15)
-                        .foregroundColor(.blue)
-                        .padding(.leading, 15)
-                    Text(Strings.UserDetails.backButton)
-                        .font(.system(size: 17))
-                        .foregroundColor(.blue)
-                        .padding(.leading, -5)
+            ZStack {
+                Button {
+                    onBackPressed()
+                } label: {
+                    HStack {
+                        Image(systemName: "chevron.left")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 15, height: 15)
+                            .foregroundColor(.blue)
+                            .padding(.leading, 15)
+                        Text(Strings.UserDetails.backButton)
+                            .font(.system(size: 17))
+                            .foregroundColor(.blue)
+                            .padding(.leading, -5)
 
-                    Spacer()
+                        Spacer()
+                    }
                 }
-            }
 
-            Text(String(format: Strings.ResultView.paymentTitle, "ACH"))
-                .font(.system(size: 18, weight: .medium))
-                .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.title.rawValue)
-        }
-        .background(PrimerColors.swiftColor(PrimerColors.white))
+                Text(String(format: Strings.ResultView.paymentTitle, "ACH"))
+                    .font(.system(size: 18, weight: .medium))
+                    .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.title.rawValue)
+            }
+            .background(PrimerColors.swiftColor(PrimerColors.white))
 
             HStack {
                 Text(Strings.UserDetails.subtitle)
@@ -75,7 +75,7 @@ struct ACHUserDetailsView: View {
                                 errorDescription: viewModel.emailErrorDescription,
                                 infoDescription: Strings.UserDetails.emailDisclaimer,
                                 accessibilityIdentifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.emailAddressTextField.rawValue)
-            .padding([.horizontal, .bottom], 15)
+                .padding([.horizontal, .bottom], 15)
 
             Spacer()
 
@@ -85,7 +85,7 @@ struct ACHUserDetailsView: View {
                         ActivityIndicator(isAnimating: .constant(true), style: .medium, color: UIColor.black)
                     } else {
                         Text(Strings.UserDetails.continueButton)
-                        .font(.system(size: 17, weight: .medium))
+                            .font(.system(size: 17, weight: .medium))
                     }
                 }
                 .foregroundColor(viewModel.isValidForm ? Color.white : Color.gray)

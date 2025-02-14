@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Niall Quinn on 01/08/24.
 //
@@ -22,8 +22,8 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         AppState.current.clientToken = nil
         let expectation = self.expectation(description: "Promise fulfilled")
         let createRequest = Request.Body.Payment.Create(token: "123")
-        createResumeService.createPayment(paymentRequest: createRequest).done { payment in
-        }.catch { error in
+        createResumeService.createPayment(paymentRequest: createRequest).done { _ in
+        }.catch { _ in
             expectation.fulfill()
         }
 
@@ -46,7 +46,7 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         }.catch { error in
             XCTFail("Promise rejected: \(error)")
         }
-        
+
         waitForExpectations(timeout: 5, handler: nil)
     }
 
@@ -60,9 +60,9 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         AppState.current.clientToken = MockAppState.mockClientToken
         let expectation = self.expectation(description: "Promise fulfilled")
         let createRequest = Request.Body.Payment.Create(token: "123")
-        createResumeService.createPayment(paymentRequest: createRequest).done { payment in
+        createResumeService.createPayment(paymentRequest: createRequest).done { _ in
             XCTFail("Succeeded when it should have failed")
-        }.catch { error in
+        }.catch { _ in
             expectation.fulfill()
         }
 
@@ -99,15 +99,14 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         AppState.current.clientToken = MockAppState.mockClientToken
         let expectation = self.expectation(description: "Promise fulfilled")
         let createRequest = Request.Body.Payment.Create(token: "123")
-        createResumeService.createPayment(paymentRequest: createRequest).done { payment in
+        createResumeService.createPayment(paymentRequest: createRequest).done { _ in
             XCTFail("Succeeded when it should have failed")
-        }.catch { error in
+        }.catch { _ in
             expectation.fulfill()
         }
 
         waitForExpectations(timeout: 5, handler: nil)
     }
-
 
     func test_resumeNoJWT() throws {
         let response = Payment.successResponse
@@ -119,8 +118,8 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         AppState.current.clientToken = nil
         let expectation = self.expectation(description: "Promise fulfilled")
         let resumeRequest = Request.Body.Payment.Resume(token: "")
-        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { payment in
-        }.catch { error in
+        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { _ in
+        }.catch { _ in
             expectation.fulfill()
         }
 
@@ -157,9 +156,9 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         AppState.current.clientToken = MockAppState.mockClientToken
         let expectation = self.expectation(description: "Promise fulfilled")
         let resumeRequest = Request.Body.Payment.Resume(token: "")
-        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { payment in
+        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { _ in
             XCTFail("Succeeded when it should have failed")
-        }.catch { error in
+        }.catch { _ in
             expectation.fulfill()
         }
 
@@ -176,9 +175,9 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         AppState.current.clientToken = MockAppState.mockClientToken
         let expectation = self.expectation(description: "Promise fulfilled")
         let resumeRequest = Request.Body.Payment.Resume(token: "")
-        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { payment in
+        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { _ in
             XCTFail("Succeeded when it should have failed")
-        }.catch { error in
+        }.catch { _ in
             expectation.fulfill()
         }
 
@@ -195,9 +194,9 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         AppState.current.clientToken = MockAppState.mockClientToken
         let expectation = self.expectation(description: "Promise fulfilled")
         let resumeRequest = Request.Body.Payment.Resume(token: "")
-        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { payment in
+        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { _ in
             XCTFail("Succeeded when it should have failed")
-        }.catch { error in
+        }.catch { _ in
             expectation.fulfill()
         }
 
@@ -217,7 +216,7 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { payment in
             XCTAssert(payment.status == .pending)
             expectation.fulfill()
-        }.catch { error in
+        }.catch { _ in
             XCTFail("Failed, but flag should result in success")
             expectation.fulfill()
         }
@@ -239,10 +238,10 @@ final class CreateResumePaymentServiceTests: XCTestCase {
             XCTFail()
             return
         }
-        
-        let _ = createResumeService.completePayment(clientToken: clientToken,
-                                                    completeUrl: URL(string: "https://example.com")!,
-                                                    body: StripeAchTokenizationViewModel.defaultCompleteBodyWithTimestamp
+
+        _ = createResumeService.completePayment(clientToken: clientToken,
+                                                completeUrl: URL(string: "https://example.com")!,
+                                                body: StripeAchTokenizationViewModel.defaultCompleteBodyWithTimestamp
         ).done {
             expectation.fulfill()
         }
@@ -251,7 +250,6 @@ final class CreateResumePaymentServiceTests: XCTestCase {
     }
 
 }
-
 
 private class MockCreateResumeAPI: PrimerAPIClientCreateResumePaymentProtocol {
 

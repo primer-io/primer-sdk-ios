@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct AnyEncodable : Encodable {
+struct AnyEncodable: Encodable {
 
     var value: Encodable
 
@@ -20,7 +20,6 @@ struct AnyEncodable : Encodable {
         try container.encode(value)
     }
 }
-
 
 extension Encodable {
     var asJSONData: Data? {

@@ -27,7 +27,7 @@ class EncodingDecodingTests: XCTestCase {
                 false,
                 321,
                 3.321,
-                "This is a string in an array",
+                "This is a string in an array"
             ]
         ]
     )
@@ -61,7 +61,6 @@ class EncodingDecodingTests: XCTestCase {
         let doubleValue = context!["double"] as? Double
         XCTAssertNotNil(doubleValue)
         XCTAssertEqual(doubleValue!, 1.123, accuracy: 0.001)
-
 
         let stringValue = context!["string"] as? String
         XCTAssertNotNil(stringValue)
@@ -112,7 +111,6 @@ class EncodingDecodingTests: XCTestCase {
         let doubleValue = context!["double"] as? Double
         XCTAssertNotNil(doubleValue)
         XCTAssertEqual(doubleValue!, 1.123, accuracy: 0.001)
-
 
         let stringValue = context!["string"] as? String
         XCTAssertNotNil(stringValue)

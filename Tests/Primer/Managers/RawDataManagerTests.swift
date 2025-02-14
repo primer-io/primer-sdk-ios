@@ -1,6 +1,6 @@
 //
 //  RawDataManagerTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 06/06/2024.
 //
@@ -48,13 +48,13 @@ final class RawDataManagerTests: XCTestCase {
         }
 
         let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
-        headlessCheckoutDelegate.onWillCreatePaymentWithData = { data, decisionHandler in
+        headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
             expectWillCreatePaymentWithData.fulfill()
             decisionHandler(.continuePaymentCreation())
         }
 
         let expectOnTokenize = self.expectation(description: "On tokenization complete")
-        tokenizationService.onTokenize = { body in
+        tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
             return Promise.fulfilled(self.tokenizationResponseBody)
         }
@@ -96,13 +96,13 @@ final class RawDataManagerTests: XCTestCase {
         }
 
         let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
-        headlessCheckoutDelegate.onWillCreatePaymentWithData = { data, decisionHandler in
+        headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
             expectWillCreatePaymentWithData.fulfill()
             decisionHandler(.continuePaymentCreation())
         }
 
         let expectOnTokenize = self.expectation(description: "On tokenization complete")
-        tokenizationService.onTokenize = { body in
+        tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
             return Promise.fulfilled(self.tokenizationResponseBody)
         }
@@ -137,7 +137,7 @@ final class RawDataManagerTests: XCTestCase {
 
     func testAbortPaymentFlow() throws {
         let expectWillCreatePaymentWithData = self.expectation(description: "Will create payment with data")
-        headlessCheckoutDelegate.onWillCreatePaymentWithData = { data, decisionHandler in
+        headlessCheckoutDelegate.onWillCreatePaymentWithData = { _, decisionHandler in
             expectWillCreatePaymentWithData.fulfill()
             decisionHandler(.abortPaymentCreation())
         }
@@ -182,7 +182,7 @@ final class RawDataManagerTests: XCTestCase {
         rawDataManagerDelegate.onDataIsValid = { _, isValid, errors in
             XCTAssertFalse(isValid)
             XCTAssertTrue(errors!.first!.localizedDescription.starts(
-                with: "[invalid-value] Invalid value 'nil' for key 'rawData' ")
+                            with: "[invalid-value] Invalid value 'nil' for key 'rawData' ")
             )
             expectDidValidate.fulfill()
         }
@@ -280,22 +280,22 @@ final class RawDataManagerTests: XCTestCase {
 
     var paymentResponseAfterResume: Response.Body.Payment {
         .init(id: "id",
-                     paymentId: "payment_id",
-                     amount: 1234,
-                     currencyCode: "GBP",
-                     customer: nil,
-                     customerId: "customer_id",
-                     dateStr: nil,
-                     order: nil,
-                     orderId: "order_id",
-                     requiredAction: nil,
-                     status: .success,
-                     paymentFailureReason: nil)
+              paymentId: "payment_id",
+              amount: 1234,
+              currencyCode: "GBP",
+              customer: nil,
+              customerId: "customer_id",
+              dateStr: nil,
+              order: nil,
+              orderId: "order_id",
+              requiredAction: nil,
+              status: .success,
+              paymentFailureReason: nil)
     }
 }
 
 private class MockXenditAPIClient: PrimerAPIClientXenditProtocol {
-    
+
     var onListRetailOutlets: ((DecodedJWTToken, String) -> RetailOutletsList)?
 
     func listRetailOutlets(clientToken: DecodedJWTToken, paymentMethodId: String, completion: @escaping PrimerSDK.APICompletion<PrimerSDK.RetailOutletsList>) {

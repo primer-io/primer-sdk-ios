@@ -145,7 +145,7 @@ struct ClientSessionRequestBody: Encodable {
                     let jsonString = String(data: jsonData, encoding: .utf8)
                     try container.encode(jsonString, forKey: .extraMerchantData)
                 }
-                
+
                 if let merchantName = merchantName {
                     try container.encode(merchantName, forKey: .merchantName)
                 }
@@ -162,7 +162,7 @@ struct ClientSessionRequestBody: Encodable {
                 } else {
                     extraMerchantData = nil
                 }
-                
+
                 merchantName = try container.decodeIfPresent(String.self, forKey: .merchantName)
 
                 captureVaultedCardCvv = try container.decodeIfPresent(Bool.self, forKey: .captureVaultedCardCvv) ?? false

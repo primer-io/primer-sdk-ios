@@ -44,7 +44,7 @@ final class NetworkingReportingServiceTests: XCTestCase {
                                                     requestParameters: nil)
         let request = try DefaultNetworkRequestFactory().request(for: endpoint, identifier: nil)
 
-        networkReportingService.report(eventType: .requestStart(identifier: "id", 
+        networkReportingService.report(eventType: .requestStart(identifier: "id",
                                                                 endpoint: endpoint,
                                                                 request: request))
 

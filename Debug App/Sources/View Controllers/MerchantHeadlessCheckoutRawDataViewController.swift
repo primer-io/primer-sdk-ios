@@ -299,7 +299,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
             print("[MerchantHeadlessCheckoutRawDataViewController] ERROR: Failed to cast metadata and state to card entry models")
             return
         }
-        
+
         let printableNetworks = metadata.detectedCardNetworks.items.map { $0.network.rawValue }.joined(separator: ", ")
         print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveCardMetadata: \(printableNetworks) forCardValidationState: \(cardState.cardNumber)")
 
