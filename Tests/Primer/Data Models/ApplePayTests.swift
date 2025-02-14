@@ -192,7 +192,7 @@ class ApplePayTests: XCTestCase {
                     lineItems: nil),
                 customer: nil,
                 testId: nil)
-            
+
             let configurationApplePayOptions = ApplePayOptions(merchantName: "Test")
 
             orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSession(clientSession, applePayOptions: configurationApplePayOptions)
@@ -320,7 +320,7 @@ class ApplePayTests: XCTestCase {
 
             XCTAssert(applePayItems.last!.amount.doubleValue == NSDecimalNumber(floatLiteral: 302.02).doubleValue)
             XCTAssert(applePayItems.last!.label == settings.paymentMethodOptions.applePayOptions?.merchantName)
-            
+
             let configurationApplePayOptions = ApplePayOptions(merchantName: "Test")
             orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSession(clientSession, applePayOptions: configurationApplePayOptions)
             applePayItems = orderItems.compactMap({ $0.applePayItem })

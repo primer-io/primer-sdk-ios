@@ -1,6 +1,6 @@
 //
 //  BanksTokenizationComponentTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 07/05/2024.
 //
@@ -74,7 +74,6 @@ final class BanksTokenizationComponentTests: XCTestCase {
 
         SDKSessionHelper.tearDown()
 
-
         let settings = PrimerSettings()
         DependencyContainer.register(settings as PrimerSettingsProtocol)
     }
@@ -127,7 +126,6 @@ final class BanksTokenizationComponentTests: XCTestCase {
         defaultBanksComponent.stepDelegate = stepDelegate
         defaultBanksComponent.validationDelegate = validationDelegate
 
-
         let expectIsLoadingStep = self.expectation(description: "Did start loading")
         let expectDidGetBanksStep = self.expectation(description: "Did get bank step")
         stepDelegate.onReceiveStep = { step in
@@ -146,7 +144,7 @@ final class BanksTokenizationComponentTests: XCTestCase {
 
         let expectDidStartValidating = self.expectation(description: "Did validate")
         let expectDidValidate = self.expectation(description: "Did validate")
-        validationDelegate.onDidUpdate = { status, data in
+        validationDelegate.onDidUpdate = { status, _ in
             switch status {
             case .validating:
                 expectDidStartValidating.fulfill()
@@ -175,7 +173,7 @@ final class BanksTokenizationComponentTests: XCTestCase {
         }
 
         let expectDidCompleteCheckout = self.expectation(description: "Did complete checkout")
-        delegate.onDidCompleteCheckoutWithData = { data in
+        delegate.onDidCompleteCheckoutWithData = { _ in
             expectDidCompleteCheckout.fulfill()
         }
 
@@ -241,7 +239,7 @@ final class BanksTokenizationComponentTests: XCTestCase {
 
         let expectDidStartValidating = self.expectation(description: "Did validate")
         let expectDidValidate = self.expectation(description: "Did validate")
-        validationDelegate.onDidUpdate = { status, data in
+        validationDelegate.onDidUpdate = { status, _ in
             switch status {
             case .validating:
                 expectDidStartValidating.fulfill()
@@ -276,8 +274,8 @@ final class BanksTokenizationComponentTests: XCTestCase {
         let expectDidFinishPayment = self.expectation(description: "Did finish payment")
         delegate.onDidResumeWith = { _, decisionHandler in
             decisionHandler(.complete())
-            
-            self.sut.didFinishPayment = { data in
+
+            self.sut.didFinishPayment = { _ in
                 expectDidFinishPayment.fulfill()
             }
 

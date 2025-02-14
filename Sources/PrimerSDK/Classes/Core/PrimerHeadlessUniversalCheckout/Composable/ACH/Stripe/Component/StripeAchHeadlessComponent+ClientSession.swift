@@ -42,7 +42,7 @@ extension StripeAchHeadlessComponent {
                 userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString
             )
-            
+
             self.errorDelegate?.didReceiveError(error: primerError)
         }
     }

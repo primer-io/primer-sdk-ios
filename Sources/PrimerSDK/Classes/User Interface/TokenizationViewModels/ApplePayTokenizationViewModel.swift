@@ -353,10 +353,10 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     func getShippingMethodsInfo() -> ShippingMethodsInfo {
         guard let options = PrimerAPIConfigurationModule
-            .apiConfiguration?
-            .checkoutModules?
-            .first(where: { $0.type == "SHIPPING"})?
-            .options as? ShippingMethodOptions else {
+                .apiConfiguration?
+                .checkoutModules?
+                .first(where: { $0.type == "SHIPPING"})?
+                .options as? ShippingMethodOptions else {
             return .init(shippingMethods: nil, selectedShippingMethodOrderItem: nil)
         }
 

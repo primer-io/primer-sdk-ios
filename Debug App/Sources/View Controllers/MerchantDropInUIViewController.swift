@@ -281,7 +281,7 @@ extension MerchantDropInUIViewController {
         self.primerError = error
         self.logs.append(#function)
         self.checkoutData = data
-        
+
         let message = "Merchant App | ERROR: \(error.localizedDescription)"
         decisionHandler(.fail(withErrorMessage: message))
     }

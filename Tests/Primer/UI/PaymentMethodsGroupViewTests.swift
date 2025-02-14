@@ -1,6 +1,6 @@
 //
 //  PaymentMethodsGroupViewTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 11/06/2024.
 //
@@ -94,7 +94,7 @@ private class MockTokenizationViewModel: NSObject, PaymentMethodTokenizationView
         Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
     }
 
-    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken, 
+    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
                                           paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
     }
@@ -115,17 +115,17 @@ private class MockTokenizationViewModel: NSObject, PaymentMethodTokenizationView
     var willPresentPaymentMethodUI: (() -> Void)?
 
     var didPresentPaymentMethodUI: (() -> Void)?
-    
+
     var willDismissPaymentMethodUI: (() -> Void)?
-    
+
     var didDismissPaymentMethodUI: (() -> Void)?
-    
+
     var config: PrimerSDK.PrimerPaymentMethod = Mocks.PaymentMethods.paymentCardPaymentMethod
 
     lazy var uiModule: PrimerSDK.UserInterfaceModule! = {
         UserInterfaceModule(paymentMethodTokenizationViewModel: self)
     }()
-    
+
     var position: Int = 0
 }
 

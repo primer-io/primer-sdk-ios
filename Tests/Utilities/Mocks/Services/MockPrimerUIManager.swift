@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 22/05/2024.
 //
@@ -13,7 +13,7 @@ class MockPrimerUIManager: PrimerUIManaging {
     // MARK: Properties
 
     var primerWindow: UIWindow?
-    
+
     var primerRootViewController: PrimerSDK.PrimerRootViewController?
     var apiConfigurationModule: (any PrimerSDK.PrimerAPIConfigurationModuleProtocol)?
 
