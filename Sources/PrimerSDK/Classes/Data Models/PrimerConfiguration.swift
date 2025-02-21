@@ -268,6 +268,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
             let moduleThrowables = try container.decode([Throwable<CheckoutModule>].self, forKey: .checkoutModules)
             self.checkoutModules = moduleThrowables.compactMap({ $0.value })
 
+            var hasCardSurcharge = false
             if let options = clientSession?.paymentMethod?.options, !options.isEmpty {
                 for paymentMethodOption in options {
                     if let type = paymentMethodOption["type"] as? String {
@@ -278,14 +279,14 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
                                 guard network["type"] is String,
                                       network["surcharge"] is Int
                                 else { continue }
-
+                                hasCardSurcharge = true
                             }
                         }
                     }
                 }
-
+                
                 if let paymentMethod = self.paymentMethods?.filter({ $0.type == PrimerPaymentMethodType.paymentCard.rawValue }).first {
-                    paymentMethod.hasUnknownSurcharge = true
+                    paymentMethod.hasUnknownSurcharge = hasCardSurcharge
                     paymentMethod.surcharge = nil
                 }
             }
