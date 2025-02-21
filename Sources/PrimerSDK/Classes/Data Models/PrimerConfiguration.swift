@@ -269,6 +269,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
             self.checkoutModules = moduleThrowables.compactMap({ $0.value })
 
             var hasCardSurcharge = false
+            var paymentMethodSurcharges: [String: Int] = [:]
             if let options = clientSession?.paymentMethod?.options, !options.isEmpty {
                 for paymentMethodOption in options {
                     if let type = paymentMethodOption["type"] as? String {
@@ -282,6 +283,10 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
                                 else { continue }
                                 hasCardSurcharge = surchargeValue > 0
                             }
+                        } else {
+                            if let surcharge = paymentMethodOption["surcharge"] as? Int {
+                                paymentMethodSurcharges[type] = surcharge
+                            }
                         }
                     }
                 }
@@ -289,6 +294,13 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
                 if let paymentMethod = self.paymentMethods?.filter({ $0.type == PrimerPaymentMethodType.paymentCard.rawValue }).first {
                     paymentMethod.hasUnknownSurcharge = hasCardSurcharge
                     paymentMethod.surcharge = nil
+                }
+                
+                // Process other payment method surcharges
+                for (paymentMethodType, surchargeValue) in paymentMethodSurcharges {
+                    if let paymentMethod = self.paymentMethods?.first(where: { $0.type == paymentMethodType }) {
+                        paymentMethod.surcharge = surchargeValue
+                    }
                 }
             }
         }
