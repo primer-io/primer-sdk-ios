@@ -30,7 +30,7 @@ jobs:
       - name: Record changelog for current release
         run: cz changelog $FROM_VERSION..$RELEASE_VERSION --file-name="release.md"
       - name: Create release
-        uses: ncipollo/release-action@cdcc88a9acf3ca41c16c37bb7d21b9ad48560d87 #v1.15.0
+        uses: ncipollo/release-action@440c8c1cb0ed28b9f43e4d1d670870f059653174 #v1.16.0
         with:
           name: "Release ${{ env.RELEASE_VERSION }}"
           tag: ${{ env.RELEASE_VERSION }}
