@@ -212,12 +212,6 @@ internal class ImageManager: LogReporter {
             }
             .catch { err in
                 if file.bundledImage != nil {
-                    let bundledImageEvent = Analytics.Event.message(
-                        message: "Failed to load image (\(file.fileName) with URL \(file.remoteUrl?.absoluteString ?? "null"), but found image locally",
-                        messageType: .paymentMethodImageLoadingFailed,
-                        severity: .info
-                    )
-                    Analytics.Service.record(events: [bundledImageEvent])
 
                     self.logger.warn(message: "FAILED TO DOWNLOAD LOGO BUT FOUND LOGO LOCALLY")
                     self.logger.warn(message: "Payment method [\(file.fileName)] logo URL: \(file.remoteUrl?.absoluteString ?? "null")")
@@ -225,12 +219,6 @@ internal class ImageManager: LogReporter {
                     seal.fulfill(file)
 
                 } else {
-                    let failedToLoadEvent = Analytics.Event.message(
-                        message: "Failed to load image (\(file.fileName) with URL \(file.remoteUrl?.absoluteString ?? "null")",
-                        messageType: .paymentMethodImageLoadingFailed,
-                        severity: .warning
-                    )
-                    Analytics.Service.record(events: [failedToLoadEvent])
 
                     self.logger.warn(message: "FAILED TO DOWNLOAD LOGO")
                     self.logger.warn(message: "Payment method [\(file.fileName)] logo URL: \(file.remoteUrl?.absoluteString ?? "null")")
