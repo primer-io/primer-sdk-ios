@@ -1,8 +1,0 @@
-{
-  "scripts": {
-    "build-tokens": "style-dictionary build --config ./config.json"
-  },
-  "devDependencies": {
-    "style-dictionary": "^3.7.1"
-  }
-}

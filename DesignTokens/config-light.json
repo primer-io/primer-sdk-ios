@@ -1,0 +1,21 @@
+{
+    "source": ["tokens/base.json"],
+    "platforms": {
+      "swift": {
+        "transformGroup": "ios-swift",
+        "buildPath": "../Sources/PrimerSDK/Classes/Components/Design/",
+        "files": [
+          {
+            "destination": "DesignTokensLight.swift",
+            "format": "ios-swift/class.swift",
+            "className": "DesignTokensLight",
+            "options": {
+              "accessControl": "internal",
+              "className": "DesignTokensLight",
+              "outputReferences": true
+            }
+          }
+        ]
+      }
+    }
+  }

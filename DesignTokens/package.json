@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "build-tokens-light": "style-dictionary build --config ./config-light.json",
+    "build-tokens-dark": "style-dictionary build --config ./config-dark.json",
+    "build-tokens": "npm run build-tokens-light && npm run build-tokens-dark"
+  },
+  "devDependencies": {
+    "style-dictionary": "^4.3.3"
+  }
+}
