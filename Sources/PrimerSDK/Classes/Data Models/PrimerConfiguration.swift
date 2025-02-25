@@ -295,7 +295,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
                     paymentMethod.hasUnknownSurcharge = hasCardSurcharge
                     paymentMethod.surcharge = nil
                 }
-                
+
                 // Process other payment method surcharges
                 for (paymentMethodType, surchargeValue) in paymentMethodSurcharges {
                     if let paymentMethod = self.paymentMethods?.first(where: { $0.type == paymentMethodType }) {
