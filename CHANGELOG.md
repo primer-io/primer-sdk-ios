@@ -1,3 +1,11 @@
+## 2.35.2 (2025-02-25)
+
+### Fix
+
+- Do not track image failures in analytics (#1122)
+- Record retry event only if we have one or more retries (#1123)
+- Fix Additional Fees text in Drop-in (#1118)
+
 ## 2.35.1 (2025-02-11)
 
 ### Fix
