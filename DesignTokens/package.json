@@ -1,8 +1,12 @@
-{
+{  
+  "name": "@primer-io/design-tokens-ios",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "build-tokens-light": "style-dictionary build --config ./config-light.json",
-    "build-tokens-dark": "style-dictionary build --config ./config-dark.json",
-    "build-tokens": "npm run build-tokens-light && npm run build-tokens-dark"
+    "build": "yarn run build-light && yarn run build-dark",
+    "build-light": "style-dictionary build --config ./config-light.js",
+    "build-dark": "style-dictionary build --config ./config-dark.js"
   },
   "devDependencies": {
     "style-dictionary": "^4.3.3"
