@@ -16,7 +16,18 @@ internal class DesignTokensLight: Decodable {
         value = token.value;
       } else if (token.type === 'dimension') {
         type = 'CGFloat';
-        value = token.value;
+        if (typeof token.value === 'string') {
+          // Remove any "CGFloat(" and ")" wrappers so we can evaluate the arithmetic.
+          let raw = token.value.replace(/CGFloat\$begin:math:text$/g, '').replace(/\\$end:math:text$/g, '');
+          try {
+            value = Number(eval(raw));
+          } catch (error) {
+            console.error("Error evaluating dimension token:", token.value, error);
+            value = token.value;
+          }
+        } else {
+          value = token.value;
+        }
       } else if (token.type === 'string') {
         type = 'String';
         value = `"${token.value}"`;
@@ -24,7 +35,6 @@ internal class DesignTokensLight: Decodable {
         type = 'Any';
         value = token.value;
       }
-
       return `public var ${token.name}: ${type}? = ${value}`;
     }).join('\n    ')}
 
@@ -44,13 +54,13 @@ internal class DesignTokensLight: Decodable {
                 blue: ${token.name}Components[2],
                 opacity: ${token.name}Components[3]
             )
-        }`
+        }`;
           } else if (token.type === 'dimension') {
-            return `self.${token.name} = try container.decodeIfPresent(CGFloat.self, forKey: .${token.name})`
+            return `self.${token.name} = try container.decodeIfPresent(CGFloat.self, forKey: .${token.name})`;
           } else if (token.type === 'string') {
-            return `self.${token.name} = try container.decodeIfPresent(String.self, forKey: .${token.name})`
+            return `self.${token.name} = try container.decodeIfPresent(String.self, forKey: .${token.name})`;
           } else {
-            return `self.${token.name} = try container.decodeIfPresent(Any.self, forKey: .${token.name})`
+            return `self.${token.name} = try container.decodeIfPresent(Any.self, forKey: .${token.name})`;
           }
         }).join('\n        ')}
     }
@@ -60,7 +70,6 @@ internal class DesignTokensLight: Decodable {
   }
 });
 
-// Register a custom transform group for iOS
 StyleDictionary.registerTransformGroup({
   name: 'primer-ios-swiftui',
   transforms: [
@@ -69,28 +78,25 @@ StyleDictionary.registerTransformGroup({
     'color/ColorSwiftUI',
     'content/swift/literal',
     'asset/swift/literal',
-    'size/swift/remToCGFloat'
-  ],
+  ]
 });
 
 export default {
-  source: [`tokens/base.json`],
+  source: ['tokens/base.json'],
   platforms: {
     swift: {
       transformGroup: 'primer-ios-swiftui',
       buildPath: '../Sources/PrimerSDK/Classes/Components/Design/',
       files: [
         {
-          destination: `DesignTokensLight.swift`,
-          format: `primer/ios/swift`,
-          options: [
-            {
-              accessControl: `internal`,
-              outputReferences: true  
-            }
-          ]
+          destination: 'DesignTokensLight.swift',
+          format: 'primer/ios/swift',
+          options: {
+            accessControl: 'internal',
+            outputReferences: true
+          }
         }
-      ],
-    },
-  },
+      ]
+    }
+  }
 };
