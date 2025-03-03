@@ -1,6 +1,8 @@
 // swiftlint:disable all
 import SwiftUI
 
+// This class is generated automatically by Style Dictionary.
+// It represents the design tokens for the Light theme.
 internal class DesignTokensLight: Decodable {
     public var primerColorBackground: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
     public var primerColorTextPrimary: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
@@ -90,6 +92,7 @@ internal class DesignTokensLight: Decodable {
     public var primerSizeXxxlarge: CGFloat? = 56
     public var primerSizeBase: CGFloat? = 4
 
+    // Coding keys to map JSON keys to properties.
     enum CodingKeys: String, CodingKey {
         case primerColorBackground
         case primerColorTextPrimary
@@ -180,6 +183,7 @@ internal class DesignTokensLight: Decodable {
         case primerSizeBase
     }
 
+    // Custom initializer to decode from JSON.
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         

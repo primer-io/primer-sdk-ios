@@ -1,23 +1,26 @@
 import StyleDictionary from 'style-dictionary';
 
+// Register the same custom Swift format for the Dark theme.
 StyleDictionary.registerFormat({
   name: 'primer/ios/swift',
   format: function({ dictionary }) {
     return `// swiftlint:disable all
 import SwiftUI
 
+// This class is generated automatically by Style Dictionary.
+// It represents the design tokens for the Dark theme.
 internal class DesignTokensDark: Decodable {
     ${dictionary.allTokens.map(function(token) {
       let type;
       let value;
-
+      
       if (token.type === 'color') {
         type = 'Color';
         value = token.value;
       } else if (token.type === 'dimension') {
         type = 'CGFloat';
         if (typeof token.value === 'string') {
-          // Remove any "CGFloat(" and ")" wrappers so we can evaluate the arithmetic.
+          // Remove "CGFloat(" and the first ")" to extract the numeric expression.
           let raw = token.value.replace(/CGFloat\$begin:math:text$/g, '').replace(/\\$end:math:text$/g, '');
           try {
             value = Number(eval(raw));
@@ -70,6 +73,7 @@ internal class DesignTokensDark: Decodable {
   }
 });
 
+// Register the same custom transform group for iOS SwiftUI.
 StyleDictionary.registerTransformGroup({
   name: 'primer-ios-swiftui',
   transforms: [
@@ -77,11 +81,12 @@ StyleDictionary.registerTransformGroup({
     'name/camel',
     'color/ColorSwiftUI',
     'content/swift/literal',
-    'asset/swift/literal',
+    'asset/swift/literal'
   ]
 });
 
 export default {
+  // The source tokens for the dark theme.
   source: ['tokens/dark.json'],
   platforms: {
     swift: {
