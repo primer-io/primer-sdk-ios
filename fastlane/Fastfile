@@ -279,10 +279,13 @@ platform :ios do
     )
 
     username = "security@primerapi.com" 
+    username = ENV['GITLAB_USERNAME'] 
     personal_access_token = ENV['GITLAB_PASSWORD']
 
-    credentials = "security@primerapi.com:#{personal_access_token}"
+    credentials = "#{username}:#{personal_access_token}"
     encoded_credentials = Base64.strict_encode64(credentials)
+
+    puts "encoded_credentials: " + encoded_credentials
 
     match(
       type: options[:match_type],
