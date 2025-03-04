@@ -108,11 +108,7 @@ export default {
       files: [
         {
           destination: 'DesignTokensLight.swift',
-          format: 'primer/ios/swift',
-          options: {
-            accessControl: 'internal',
-            outputReferences: true
-          }
+          format: 'primer/ios/swift'
         }
       ]
     }

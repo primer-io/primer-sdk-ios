@@ -95,11 +95,7 @@ export default {
       files: [
         {
           destination: 'DesignTokensDark.swift',
-          format: 'primer/ios/swift',
-          options: {
-            accessControl: 'internal',
-            outputReferences: true
-          }
+          format: 'primer/ios/swift'
         }
       ]
     }
