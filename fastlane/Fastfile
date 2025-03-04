@@ -278,7 +278,6 @@ platform :ios do
     #   lock_when_sleeps: true
     # )
 
-    username = ENV['GITLAB_USERNAME']
     personal_access_token = ENV['GITLAB_PASSWORD']
 
     credentials = "#{username}:#{personal_access_token}"
