@@ -269,14 +269,14 @@ platform :ios do
   desc 'This action creates a temporary keychain and installs certificates and provisioning profiles'
   private_lane :setup_signing do |options|
 
-    create_keychain(
-      name: ENV["MATCH_KEYCHAIN_NAME"],
-      password: ENV["MATCH_KEYCHAIN_PASSWORD"],
-      default_keychain: true,
-      unlock: true,
-      timeout: 3600,
-      lock_when_sleeps: true
-    )
+    # create_keychain(
+    #   name: ENV["MATCH_KEYCHAIN_NAME"],
+    #   password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+    #   default_keychain: true,
+    #   unlock: true,
+    #   timeout: 3600,
+    #   lock_when_sleeps: true
+    # )
 
     username = ENV['GITLAB_USERNAME']
     personal_access_token = ENV['GITLAB_PASSWORD']
