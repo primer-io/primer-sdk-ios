@@ -3,7 +3,7 @@ import SwiftUI
 
 // This class is generated automatically by Style Dictionary.
 // It represents the design tokens for the Light theme.
-internal class DesignTokensLight: Decodable {
+internal class DesignTokens: Decodable {
     public var primerColorBackground: Color? = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 1)
     public var primerColorTextPrimary: Color? = Color(red: 0.129, green: 0.129, blue: 0.129, opacity: 1)
     public var primerColorTextPlaceholder: Color? = Color(red: 0.620, green: 0.620, blue: 0.620, opacity: 1)

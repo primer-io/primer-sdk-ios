@@ -19,16 +19,11 @@ In your app’s view hierarchy, you can inject a DesignTokens instance (typicall
 This approach allows you to decouple your design token configuration from the view code, making it easy to swap or update tokens without modifying individual view components. It also leverages SwiftUI’s built‑in environment mechanism for propagating configuration data, ensuring consistency and making theming straightforward.
 */
 
-/// Define a custom EnvironmentKey for our design tokens.
-/// This key will be used to store and retrieve a DesignTokens object in the SwiftUI environment.
-/// The default value is nil, meaning that if no tokens are provided, the environment will return nil.
+/// Environment key for injecting design tokens into SwiftUI views.
 struct DesignTokensKey: EnvironmentKey {
     static let defaultValue: DesignTokens? = nil
 }
 
-/// Extend EnvironmentValues to include a new property, `designTokens`.
-/// This computed property allows views to read and write design tokens from the SwiftUI environment.
-/// It uses the `DesignTokensKey` to store the value.
 extension EnvironmentValues {
     var designTokens: DesignTokens? {
         get { self[DesignTokensKey.self] }

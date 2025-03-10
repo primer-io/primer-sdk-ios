@@ -11,7 +11,7 @@ import SwiftUI
 
 // This class is generated automatically by Style Dictionary.
 // It represents the design tokens for the Light theme.
-internal class DesignTokensLight: Decodable {
+internal class DesignTokens: Decodable {
     ${dictionary.allTokens.map(function(token) {
       let type;
       let value;
