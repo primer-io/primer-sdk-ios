@@ -118,37 +118,91 @@ class CardPaymentContentScope: PaymentMethodContentScope, ObservableObject {
 }
 
 /// A dedicated SwiftUI view to render default content for card payments.
-/// This view reads the design tokens from the environment.
+/// This view uses design tokens from the environment to style its UI components.
 struct CardPaymentDefaultContentView: View {
     @Environment(\.designTokens) var tokens: DesignTokens?
     @ObservedObject var scope: CardPaymentContentScope
 
     var body: some View {
-        if let tokens = tokens {
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Enter card details:")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(tokens.primerColorBrand)
-                Group {
-                    TextField("Card Number", text: $scope.cardNumber)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                // Header
+                Text("Enter Card Details")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(tokens?.primerColorBrand ?? .blue)
+                    .padding(.bottom, 8)
+
+                // Card Number Field
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Card Number")
+                        .font(.caption)
+                        .foregroundColor(tokens?.primerColorTextSecondary ?? .gray)
+                    TextField("1234 5678 9012 3456", text: $scope.cardNumber)
                         .keyboardType(.numberPad)
-                    HStack {
-                        TextField("MM", text: $scope.expiryMonth)
-                            .keyboardType(.numberPad)
-                        TextField("YY", text: $scope.expiryYear)
-                            .keyboardType(.numberPad)
-                    }
-                    TextField("CVV", text: $scope.cvv)
-                        .keyboardType(.numberPad)
-                    TextField("Cardholder Name", text: $scope.cardholderName)
+                        .padding()
+                        .background(tokens?.primerColorGray100 ?? Color(.systemGray5))
+                        .cornerRadius(8)
                 }
-                .padding(8)
-                .background(tokens.primerColorGray100)
-                .cornerRadius(8)
+
+                // Expiry Date and CVV Fields
+                HStack(spacing: 16) {
+                    // Expiry Date Fields (MM/YY)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Expiry (MM/YY)")
+                            .font(.caption)
+                            .foregroundColor(tokens?.primerColorTextSecondary ?? .gray)
+                        HStack(spacing: 8) {
+                            TextField("MM", text: $scope.expiryMonth)
+                                .keyboardType(.numberPad)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(tokens?.primerColorGray100 ?? Color(.systemGray5))
+                                .cornerRadius(8)
+                            TextField("YY", text: $scope.expiryYear)
+                                .keyboardType(.numberPad)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(tokens?.primerColorGray100 ?? Color(.systemGray5))
+                                .cornerRadius(8)
+                        }
+                    }
+
+                    // CVV Field
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("CVV")
+                            .font(.caption)
+                            .foregroundColor(tokens?.primerColorTextSecondary ?? .gray)
+                        TextField("123", text: $scope.cvv)
+                            .keyboardType(.numberPad)
+                            .padding()
+                            .background(tokens?.primerColorGray100 ?? Color(.systemGray5))
+                            .cornerRadius(8)
+                    }
+                }
+
+                // Cardholder Name Field
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Cardholder Name")
+                        .font(.caption)
+                        .foregroundColor(tokens?.primerColorTextSecondary ?? .gray)
+                    TextField("John Doe", text: $scope.cardholderName)
+                        .padding()
+                        .background(tokens?.primerColorGray100 ?? Color(.systemGray5))
+                        .cornerRadius(8)
+                }
             }
             .padding(16)
-        } else {
-            Text("Loading design tokens...")
         }
+        // Add tap gesture on the scroll view to dismiss the keyboard when tapping outside of text fields.
+        .onTapGesture {
+            UIApplication.shared.endEditing()
+        }
+    }
+}
+
+// MARK: - UIApplication Extension to Dismiss Keyboard
+extension UIApplication {
+    func endEditing() {
+        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
