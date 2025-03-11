@@ -45,7 +45,7 @@ final class DesignTokensManager: ObservableObject {
     /// - Parameter fileName: The name of the JSON file (without extension).
     /// - Returns: A dictionary representation of the JSON.
     private func loadJSONDictionary(from fileName: String) throws -> [String: Any] {
-        guard let url = Bundle.main.url(forResource: fileName, withExtension: "json") else {
+        guard let url = Bundle.primerResources.url(forResource: fileName, withExtension: "json") else {
             throw NSError(domain: "DesignTokensManager", code: 1, userInfo: [NSLocalizedDescriptionKey: "File \(fileName).json not found"])
         }
         let data = try Data(contentsOf: url)

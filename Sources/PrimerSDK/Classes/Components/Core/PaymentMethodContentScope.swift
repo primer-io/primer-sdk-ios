@@ -5,25 +5,20 @@
 //  Created by Boris on 6.2.25..
 //
 
-import Foundation
-#if canImport(SwiftUI)
 import SwiftUI
-#endif
 
 /// Scope that handles behavior and UI for an individual payment method.
-protocol PaymentMethodContentScope {
+protocol PaymentMethodContentScope: AnyObject, ObservableObject {
     /// The payment method for which this scope applies.
     var method: PaymentMethod { get }
-
-    /// Retrieve the current state asynchronously.
+    /// Indicates if a submission is in progress.
+    var isLoading: Bool { get }
+    /// Current validation state of the payment method input.
+    var validationState: PaymentValidationState { get }
+    /// Retrieve the current state asynchronously (snapshot of isLoading and validation).
     func getState() async -> PaymentMethodState
-
     /// Asynchronously submit the payment.
     func submit() async -> Result<PaymentResult, Error>
-
-    #if canImport(SwiftUI)
     /// Provides default SwiftUI UI for this payment method.
-    @ViewBuilder
-    func defaultContent() -> AnyView
-    #endif
+    @ViewBuilder func defaultContent() -> AnyView
 }

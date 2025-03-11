@@ -8,6 +8,7 @@
 import SwiftUI
 
 /// A view model that bridges the PaymentFlow actor with SwiftUI state.
+@available(iOS 14.0, *)
 @MainActor
 class PaymentFlowViewModel: ObservableObject {
     /// The underlying PaymentFlow actor.

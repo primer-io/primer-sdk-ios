@@ -7,24 +7,40 @@
 
 import SwiftUI
 
-// PaymentMethodContentView.swift
-
-/// A helper view that instantiates the appropriate PaymentMethodContentScope and passes it to the provided content builder.
+/// A helper view that instantiates the appropriate PaymentMethodContentScope
+/// and passes it to the provided content builder.
+@available(iOS 14.0, *)
 struct PaymentMethodContentView<Content: View>: View {
-    let method: PaymentMethod
-    let content: (any PaymentMethodContentScope) -> Content
+    @StateObject private var scopeHolder: ScopeHolder
+    private let contentBuilder: (any PaymentMethodContentScope) -> Content
 
-    var body: some View {
-        // Decide which scope to use based on the payment method type.
-        let scope: any PaymentMethodContentScope
+    nonisolated init(method: PaymentMethod,
+                     @ViewBuilder content: @escaping (any PaymentMethodContentScope) -> Content) {
+        // Choose the appropriate scope implementation based on the payment method type.
+        let chosenScope: any PaymentMethodContentScope
         switch method.methodType {
         case .card:
-            scope = DefaultPaymentMethodContentScope(method: method)
+            chosenScope = CardPaymentContentScope(method: method)
         case .paypal:
-            scope = PayPalPaymentContentScope(method: method)
+            chosenScope = PayPalPaymentContentScope(method: method)
         case .applePay:
-            scope = ApplePayPaymentContentScope(method: method)
+            chosenScope = ApplePayPaymentContentScope(method: method)
         }
-        return content(scope)
+        // Initialize the scope holder (no Combine subscription is needed)
+        _scopeHolder = StateObject(wrappedValue: ScopeHolder(scope: chosenScope))
+        self.contentBuilder = content
+    }
+
+    var body: some View {
+        contentBuilder(scopeHolder.scope)
+    }
+}
+
+/// A simple holder class for the PaymentMethodContentScope.
+private class ScopeHolder: ObservableObject {
+    let scope: any PaymentMethodContentScope
+
+    init(scope: any PaymentMethodContentScope) {
+        self.scope = scope
     }
 }

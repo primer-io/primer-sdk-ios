@@ -1833,6 +1833,12 @@
                   location = "group:phone_number_country_codes.json">
                </FileRef>
                <FileRef
+                  location = "group:base.json">
+               </FileRef>
+               <FileRef
+                  location = "group:dark.json">
+               </FileRef>
+               <FileRef
                   location = "group:currencies.json">
                </FileRef>
             </Group>

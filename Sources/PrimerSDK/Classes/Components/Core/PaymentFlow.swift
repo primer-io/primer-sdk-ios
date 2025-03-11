@@ -5,17 +5,12 @@
 //  Created by Boris on 6.2.25..
 //
 
-import Foundation
-#if canImport(SwiftUI)
 import SwiftUI
-#endif
 
 /// The headless core component that encapsulates payment processing logic and state.
-/// This actor leverages Swift Concurrency (async/await) as per Apple's guidelines.
+@available(iOS 14.0, *)
 actor PaymentFlow: PaymentFlowScope {
-
-    // MARK: Internal State
-
+    // MARK: - Internal State
     private var _paymentMethods: [PaymentMethod] = []
     private var _selectedMethod: PaymentMethod?
 
@@ -25,7 +20,7 @@ actor PaymentFlow: PaymentFlowScope {
 
     /// Initialize with default payment methods.
     init() {
-        // TODO: In a production system, fetch or update available payment methods dynamically.
+        // In a production system, fetch or update available payment methods dynamically.
         _paymentMethods = [
             CardPaymentMethod(id: "card", name: "Credit Card"),
             PayPalPaymentMethod(id: "paypal", name: "PayPal"),
@@ -33,27 +28,25 @@ actor PaymentFlow: PaymentFlowScope {
         ]
     }
 
-    // MARK: AsyncStream Providers
+    // MARK: - AsyncStream Providers
 
-    /// Provides an `AsyncStream` for payment methods.
     func getPaymentMethods() async -> AsyncStream<[PaymentMethod]> {
-        return AsyncStream { continuation in
+        AsyncStream { continuation in
             self.paymentMethodsContinuation = continuation
             continuation.yield(self._paymentMethods)
             // TODO: Implement dynamic updates if payment methods change.
         }
     }
 
-    /// Provides an `AsyncStream` for the currently selected payment method.
     func getSelectedMethod() async -> AsyncStream<PaymentMethod?> {
-        return AsyncStream { continuation in
+        AsyncStream { continuation in
             self.selectedMethodContinuation = continuation
             continuation.yield(self._selectedMethod)
             // TODO: Implement dynamic updates if the selection changes.
         }
     }
 
-    // MARK: Internal Update Helpers
+    // MARK: - Internal Update Helpers
 
     private func updatePaymentMethods() {
         paymentMethodsContinuation?.yield(_paymentMethods)
@@ -63,20 +56,21 @@ actor PaymentFlow: PaymentFlowScope {
         selectedMethodContinuation?.yield(_selectedMethod)
     }
 
-    // MARK: PaymentFlowScope Implementation
+    // MARK: - PaymentFlowScope Implementation
 
     func selectPaymentMethod(_ method: PaymentMethod?) async {
         _selectedMethod = method
         updateSelectedMethod()
     }
 
-    #if canImport(SwiftUI)
+    /// Returns the payment method content wrapped in AnyView.
+    /// (Since the protocol requirement is @MainActor, this function will be executed on the main actor.)
     nonisolated func paymentMethodContent<Content: View>(
         for method: PaymentMethod,
         @ViewBuilder content: @escaping (any PaymentMethodContentScope) -> Content
     ) -> AnyView {
-        // Wrap the helper view in AnyView for type erasure.
-        AnyView(PaymentMethodContentView(method: method, content: content))
+        // PaymentMethodContentView is a SwiftUI view, which is implicitly main-actor isolated.
+        // We can directly instantiate it here.
+        return AnyView(PaymentMethodContentView(method: method, content: content))
     }
-    #endif
 }

@@ -5,47 +5,44 @@
 //  Created by Boris on 6.2.25..
 //
 
-import Foundation
-#if canImport(SwiftUI)
 import SwiftUI
-#endif
 
-/// The default implementation of PaymentMethodContentScope for Apple Pay.
-struct ApplePayPaymentContentScope: PaymentMethodContentScope {
+/// PaymentMethodContentScope implementation for Apple Pay (placeholder).
+class ApplePayPaymentContentScope: PaymentMethodContentScope {
     let method: PaymentMethod
+    @Published private(set) var isLoading: Bool = false
+    @Published private(set) var validationState: PaymentValidationState = PaymentValidationState(isValid: true)
 
-    // Simulated state; replace with real Apple Pay state management.
-    var simulatedState = PaymentMethodState(
-        isLoading: false,
-        validationState: PaymentValidationState(isValid: true)
-    )
+    init(method: PaymentMethod) {
+        self.method = method
+        // Apple Pay requires no manual input if Wallet is configured, so it's valid by default.
+    }
 
-    /// Returns the current state for Apple Pay.
     func getState() async -> PaymentMethodState {
-        // TODO: Replace with actual state logic for Apple Pay.
-        return simulatedState
+        PaymentMethodState(isLoading: isLoading, validationState: validationState)
     }
 
-    /// Submits the Apple Pay payment.
     func submit() async -> Result<PaymentResult, Error> {
-        // TODO: Implement Apple Pay-specific submission logic.
-        try? await Task.sleep(nanoseconds: 2 * 1_000_000_000) // Simulate network delay.
-        return .success(PaymentResult(success: true, message: "Apple Pay processed successfully"))
+        // Simulate invoking Apple Pay.
+        isLoading = true
+        defer { isLoading = false }
+        try? await Task.sleep(nanoseconds: 1 * 1_000_000_000)
+        // In a real implementation, you'd trigger the Apple Pay flow and await its result.
+        return .success(PaymentResult(success: true, message: "Paid with Apple Pay"))
     }
 
-    #if canImport(SwiftUI)
-    /// Provides default SwiftUI UI for Apple Pay.
-    @ViewBuilder
     func defaultContent() -> AnyView {
-        // Wrap your view in AnyView for type erasure.
-        AnyView(
-            VStack {
-                Text("Apple Pay UI for \(method.name)")
-                    .font(.headline)
-                    .padding()
-                // TODO: Add Apple Pay-specific UI elements and configuration.
-            }
-        )
+        if let tokens = Environment(\.designTokens).wrappedValue {
+            return AnyView(
+                Text("Apple Pay will use Wallet for payment.")
+                    .foregroundColor(tokens.primerColorBrand)
+                    .padding(8)
+                    .background(tokens.primerColorGray100)
+                    .cornerRadius(8)
+                    .padding(16)
+            )
+        } else {
+            return AnyView(Text("Loading design tokens..."))
+        }
     }
-    #endif
 }

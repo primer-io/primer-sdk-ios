@@ -15,14 +15,13 @@ struct PrimerCheckout: View {
     /// Closure invoked when the payment process finishes.
     let onPaymentFinished: (PaymentResult) -> Void
     /// Optional custom content closure for merchants to build their own UI.
-    /// The closure receives an object conforming to PaymentMethodContentScope and returns an AnyView.
     private let customContent: ((any PaymentMethodContentScope) -> AnyView)?
 
     /// View model bridging the PaymentFlow actor with SwiftUI.
     @StateObject private var viewModel = PaymentFlowViewModel()
     @StateObject private var tokensManager = DesignTokensManager()
+    @Environment(\.colorScheme) private var colorScheme
 
-    /// Default initializer using the default UI.
     init(clientToken: String,
          onPaymentFinished: @escaping (PaymentResult) -> Void) {
         self.clientToken = clientToken
@@ -31,7 +30,6 @@ struct PrimerCheckout: View {
         // TODO: Validate the client token if necessary.
     }
 
-    /// Custom initializer that accepts a custom content closure.
     init(clientToken: String,
          onPaymentFinished: @escaping (PaymentResult) -> Void,
          customContent: @escaping (any PaymentMethodContentScope) -> AnyView) {
@@ -48,22 +46,25 @@ struct PrimerCheckout: View {
                     .font(.headline)
 
                 // Display a list of available payment methods.
-                List(viewModel.paymentMethods, id: \.id) { method in
-                    Button(action: {
-                        Task {
-                            await viewModel.selectMethod(method)
+                List(viewModel.paymentMethods, id: \.id, rowContent: { method in
+                    Button(
+                        action: {
+                            Task {
+                                await viewModel.selectMethod(method)
+                            }
+                        },
+                        label: {
+                            Text(method.name)
                         }
-                    },
-                           label: { Text(method.name) })
-                }
+                    )
+                })
                 .frame(height: 200)
 
                 // When a payment method is selected, render its content.
                 if let selectedMethod = viewModel.selectedMethod {
                     viewModel.paymentFlow.paymentMethodContent(for: selectedMethod) { scope in
                         VStack(spacing: 16) {
-                            // If a custom content closure was provided, use it;
-                            // otherwise, render the default UI.
+                            // Use custom content if provided; otherwise, use default UI.
                             if let customContent = customContent {
                                 customContent(scope)
                             } else {
@@ -74,12 +75,19 @@ struct PrimerCheckout: View {
                             Button("Submit Payment") {
                                 Task {
                                     let result = await scope.submit()
-                                    // NOTE: Replace force-unwrapping with proper error handling.
-                                    try onPaymentFinished(result.get())
+                                    switch result {
+                                    case .success(let paymentResult):
+                                        onPaymentFinished(paymentResult)
+                                    case .failure(let error):
+                                        // Handle error by finishing with a failed PaymentResult.
+                                        let failedResult = PaymentResult(success: false, message: error.localizedDescription)
+                                        onPaymentFinished(failedResult)
+                                    }
                                 }
                             }
                             .buttonStyle(.borderedProminent)
-                            // TODO: Enable/disable the button based on state from getState().
+                            // Disable button if input is invalid or the scope is loading.
+                            .disabled(!scope.validationState.isValid || scope.isLoading)
                         }
                         .padding()
                     }
@@ -89,43 +97,17 @@ struct PrimerCheckout: View {
             }
             .padding()
             .task {
-                async let _ = await viewModel.loadPaymentMethods()
-                await tokensManager.fetchTokens()
+                // Load payment methods and design tokens concurrently.
+                async let _ = viewModel.loadPaymentMethods()
+                do {
+                    try await tokensManager.fetchTokens(for: colorScheme)
+                } catch {
+                    print("Error loading tokens: \(error)")
+                }
             }
             .navigationTitle("Primer Checkout")
         }
         // Inject the fetched tokens into the environment for downstream views.
         .environment(\.designTokens, tokensManager.tokens)
-    }
-}
-
-struct PrimerCheckout_Previews: PreviewProvider {
-    static var previews: some View {
-        if #available(iOS 15.0, *) {
-            // Using the default UI:
-            PrimerCheckout(clientToken: "mock-token") { result in
-                print("Payment finished with result: \(result)")
-            }
-
-            // Example of using a custom UI:
-            /*
-             PrimerCheckout(clientToken: "mock-token", onPaymentFinished: { result in
-             print("Payment finished with result: \(result)")
-             }) { scope in
-             AnyView(
-             VStack {
-             Text("Custom UI for \(scope.method.name)")
-             .font(.title)
-             .foregroundColor(.blue)
-             // Add your custom form fields or elements here.
-             }
-             .padding()
-             )
-             }
-             */
-        } else {
-            // Fallback on earlier versions
-            Text("iOS 15 or newer is required.")
-        }
     }
 }

@@ -107,7 +107,7 @@ export default {
       buildPath: '../Sources/PrimerSDK/Classes/Components/Design/',
       files: [
         {
-          destination: 'DesignTokensLight.swift',
+          destination: 'DesignTokens.swift',
           format: 'primer/ios/swift'
         }
       ]
