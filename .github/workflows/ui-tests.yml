@@ -21,7 +21,7 @@ on:
 
 jobs:
   build-and-upload-to-appetize:
-    runs-on: macos-latest
+    runs-on: macos-15
     timeout-minutes: 20
     name: "Build and upload app to Appetize"
     steps:
@@ -57,7 +57,7 @@ jobs:
           gitlab-username: ${{ secrets.GITLAB_USERNAME }}
           gitlab-password: ${{ secrets.GITLAB_PASSWORD }}
   build-and-upload-to-firebase-and-browserstack:
-    runs-on: macos-latest
+    runs-on: macos-15
     timeout-minutes: 20
     name: "Distribute app to Firebase and Browserstack"
     steps:

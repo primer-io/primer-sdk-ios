@@ -9,7 +9,7 @@ on:
 jobs:
   pod-lint:
     if: ${{ github.event.pull_request.base.ref == 'master' }}
-    runs-on: macos-latest
+    runs-on: macos-15
     name: "Pod lint"
     strategy:
       fail-fast: false
