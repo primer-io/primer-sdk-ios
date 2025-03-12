@@ -21,7 +21,7 @@ on:
 
 jobs:
   build-and-upload-to-appetize:
-    runs-on: macos-13
+    runs-on: macos-latest
     timeout-minutes: 20
     name: "Build and upload app to Appetize"
     steps:
@@ -55,7 +55,7 @@ jobs:
           github-run-id: ${{ github.run_id }}
           stripe-publishable-key: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
   build-and-upload-to-firebase-and-browserstack:
-    runs-on: macos-13
+    runs-on: macos-latest
     timeout-minutes: 20
     name: "Distribute app to Firebase and Browserstack"
     steps:
@@ -72,7 +72,7 @@ jobs:
       - name: Select Xcode Version
         uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd  # v1.6.0 
         with:
-          xcode-version: '15.0'
+          xcode-version: '16.2.0'
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@d4fffb50872869abe2d9a9098a6d9c5aa7d16be4 #v2.7.0
@@ -85,7 +85,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - uses: ruby/setup-ruby@32110d4e311bd8996b2a82bf2a43b714ccc91777  # v1.221.0
+      - uses: ruby/setup-ruby@277ba2a127aba66d45bad0fa2dc56f80dbfedffa  # v1.222.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
