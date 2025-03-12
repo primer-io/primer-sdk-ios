@@ -19,7 +19,9 @@ struct PrimerCheckout: View {
 
     /// View model bridging the PaymentFlow actor with SwiftUI.
     @StateObject private var viewModel = PaymentFlowViewModel()
+    /// Manages dynamic design tokens for light/dark mode or other themes.
     @StateObject private var tokensManager = DesignTokensManager()
+    /// Reflects the system’s color scheme (light or dark).
     @Environment(\.colorScheme) private var colorScheme
 
     init(clientToken: String,
@@ -27,7 +29,6 @@ struct PrimerCheckout: View {
         self.clientToken = clientToken
         self.onPaymentFinished = onPaymentFinished
         self.customContent = nil
-        // TODO: Validate the client token if necessary.
     }
 
     init(clientToken: String,
@@ -36,78 +37,106 @@ struct PrimerCheckout: View {
         self.clientToken = clientToken
         self.onPaymentFinished = onPaymentFinished
         self.customContent = customContent
-        // TODO: Validate the client token if necessary.
     }
 
     var body: some View {
         NavigationView {
-            VStack(spacing: 20) {
-                Text("Select Payment Method")
-                    .font(.headline)
+            // Use a ScrollView to allow content to expand while still being scrollable.
+            ScrollView {
+                // Main container with styling
+                VStack(alignment: .leading, spacing: 20) {
+                    // Title / Header
+                    Text("Select Payment Method")
+                        .font(.system(size: 18, weight: .semibold))
+                        // Use a brand color from design tokens if available
+                        .foregroundColor(tokensManager.tokens?.primerColorBrand ?? .primary)
+                        .padding(.top, 16)
 
-                // Display a list of available payment methods.
-                List(viewModel.paymentMethods, id: \.id, rowContent: { method in
-                    Button(
-                        action: {
-                            Task {
-                                await viewModel.selectMethod(method)
-                            }
-                        },
-                        label: {
-                            Text(method.name)
-                        }
-                    )
-                })
-                .frame(height: 200)
-
-                // When a payment method is selected, render its content.
-                if let selectedMethod = viewModel.selectedMethod {
-                    viewModel.paymentFlow.paymentMethodContent(for: selectedMethod) { scope in
-                        VStack(spacing: 16) {
-                            // Use custom content if provided; otherwise, use default UI.
-                            if let customContent = customContent {
-                                customContent(scope)
-                            } else {
-                                scope.defaultContent()
-                            }
-
-                            // Button to submit payment.
-                            Button("Submit Payment") {
+                    // List of available payment methods
+                    // We can wrap the List in a container that resembles the card form styling
+                    VStack(spacing: 0) {
+                        List(viewModel.paymentMethods, id: \.id) { method in
+                            Button {
                                 Task {
-                                    let result = await scope.submit()
-                                    switch result {
-                                    case .success(let paymentResult):
-                                        onPaymentFinished(paymentResult)
-                                    case .failure(let error):
-                                        // Handle error by finishing with a failed PaymentResult.
-                                        let failedResult = PaymentResult(success: false, message: error.localizedDescription)
-                                        onPaymentFinished(failedResult)
+                                    await viewModel.selectMethod(method)
+                                }
+                            } label: {
+                                Text(method.name)
+                                    .font(.body)
+                                    .foregroundColor(.primary)
+                            }
+                        }
+                        // Plain list style to reduce extra iOS styling
+                        .listStyle(.plain)
+                        .frame(height: 200)
+                    }
+                    .background(
+                        (tokensManager.tokens?.primerColorGray000 ?? Color(UIColor.systemBackground))
+                            .cornerRadius(8)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.black.opacity(0.14), lineWidth: 1)
+                    )
+
+                    // Render content for the selected method
+                    if let selectedMethod = viewModel.selectedMethod {
+                        viewModel.paymentFlow.paymentMethodContent(for: selectedMethod) { scope in
+                            VStack(spacing: 16) {
+                                // If the merchant has provided custom content, use it; otherwise default.
+                                if let customContent = customContent {
+                                    customContent(scope)
+                                } else {
+                                    scope.defaultContent()
+                                }
+
+                                // Submit Payment Button
+                                Button("Submit Payment") {
+                                    Task {
+                                        let result = await scope.submit()
+                                        switch result {
+                                        case .success(let paymentResult):
+                                            onPaymentFinished(paymentResult)
+                                        case .failure(let error):
+                                            let failedResult = PaymentResult(
+                                                success: false,
+                                                message: error.localizedDescription
+                                            )
+                                            onPaymentFinished(failedResult)
+                                        }
                                     }
                                 }
+                                .buttonStyle(.borderedProminent)
+                                .disabled(!scope.validationState.isValid || scope.isLoading)
                             }
-                            .buttonStyle(.borderedProminent)
-                            // Disable button if input is invalid or the scope is loading.
-                            .disabled(!scope.validationState.isValid || scope.isLoading)
+                            .padding(16)
+                            .background(
+                                (tokensManager.tokens?.primerColorGray000
+                                 ?? Color(UIColor.secondarySystemBackground))
+                                    .cornerRadius(8)
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.black.opacity(0.14), lineWidth: 1)
+                            )
+                            .padding(.top, 8)
                         }
-                        .padding()
                     }
-                    .background(Color(UIColor.secondarySystemBackground))
-                    .cornerRadius(8)
                 }
-            }
-            .padding()
-            .task {
-                // Load payment methods and design tokens concurrently.
-                async let _ = viewModel.loadPaymentMethods()
-                do {
-                    try await tokensManager.fetchTokens(for: colorScheme)
-                } catch {
-                    print("Error loading tokens: \(error)")
+                .padding(16)
+                // Load payment methods and design tokens concurrently on appearance
+                .task {
+                    async let _ = viewModel.loadPaymentMethods()
+                    do {
+                        try await tokensManager.fetchTokens(for: colorScheme)
+                    } catch {
+                        print("Error loading tokens: \(error)")
+                    }
                 }
             }
             .navigationTitle("Primer Checkout")
         }
-        // Inject the fetched tokens into the environment for downstream views.
+        // Inject tokens into environment so child views can style themselves
         .environment(\.designTokens, tokensManager.tokens)
     }
 }
