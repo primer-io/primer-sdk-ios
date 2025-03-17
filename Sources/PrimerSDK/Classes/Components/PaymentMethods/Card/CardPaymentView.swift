@@ -1,6 +1,6 @@
 //
 //  CardPaymentView.swift
-//  
+//
 //
 //  Created by Boris on 17.3.25..
 //
@@ -11,7 +11,7 @@ import SwiftUI
 @available(iOS 14.0, *)
 struct CardPaymentView: View {
     let scope: any CardPaymentMethodScope
-    
+
     @State private var cardNumber: String = ""
     @State private var expiryMonth: String = ""
     @State private var expiryYear: String = ""
@@ -19,9 +19,9 @@ struct CardPaymentView: View {
     @State private var cardholderName: String = ""
     @State private var isValid: Bool = false
     @State private var isSubmitting: Bool = false
-    
+
     @Environment(\.designTokens) private var tokens
-    
+
     var body: some View {
         if #available(iOS 15.0, *) {
             VStack(spacing: 16) {
@@ -39,7 +39,7 @@ struct CardPaymentView: View {
                             scope.updateCardNumber(newValue)
                         }
                 }
-                
+
                 // Expiry date and CVV row
                 HStack(spacing: 16) {
                     // Expiry month/year fields
@@ -58,10 +58,10 @@ struct CardPaymentView: View {
                                 .onChange(of: expiryMonth) { newValue in
                                     scope.updateExpiryMonth(newValue)
                                 }
-                            
+
                             Text("/")
                                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                            
+
                             TextField("YY", text: $expiryYear)
                                 .keyboardType(.numberPad)
                                 .multilineTextAlignment(.center)
@@ -74,7 +74,7 @@ struct CardPaymentView: View {
                                 }
                         }
                     }
-                    
+
                     // CVV field
                     VStack(alignment: .leading, spacing: 4) {
                         Text("CVV")
@@ -90,7 +90,7 @@ struct CardPaymentView: View {
                             }
                     }
                 }
-                
+
                 // Cardholder name field
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Cardholder Name")
@@ -104,7 +104,7 @@ struct CardPaymentView: View {
                             scope.updateCardholderName(newValue)
                         }
                 }
-                
+
                 // Submit button
                 Button {
                     isSubmitting = true
