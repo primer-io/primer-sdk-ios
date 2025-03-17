@@ -20,13 +20,13 @@ final class DesignTokensManager: ObservableObject {
         let lightDict = try loadJSONDictionary(from: "base")
 
         let mergedDict: [String: Any]
-        if colorScheme == .dark {
-            // For dark mode, load dark overrides (from dark.json) and merge them
-            let darkDict = try loadJSONDictionary(from: "dark")
-            mergedDict = mergeDictionaries(lightDict, with: darkDict)
-        } else {
+//        if colorScheme == .dark {
+//            // For dark mode, load dark overrides (from dark.json) and merge them
+//            let darkDict = try loadJSONDictionary(from: "dark")
+//            mergedDict = mergeDictionaries(lightDict, with: darkDict)
+//        } else {
             mergedDict = lightDict
-        }
+//        }
 
         // Convert the merged dictionary back to JSON data.
         let mergedData = try JSONSerialization.data(withJSONObject: mergedDict, options: [])

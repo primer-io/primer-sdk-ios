@@ -199,7 +199,7 @@ class CardPaymentMethod: PaymentMethodProtocol, Identifiable {
 
     @MainActor
     func defaultContent() -> AnyView {
-        if #available(iOS 14.0, *) {
+        if #available(iOS 15.0, *) {
             return AnyView(CardPaymentView(scope: scope))
         } else {
             // Fallback for earlier iOS versions

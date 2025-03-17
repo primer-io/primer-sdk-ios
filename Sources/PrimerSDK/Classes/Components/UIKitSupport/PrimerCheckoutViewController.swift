@@ -15,9 +15,9 @@ public class PrimerCheckoutViewController: UIViewController {
     private let onComplete: ((Result<PaymentResult, Error>) -> Void)?
 
     // PRESENTATION TIP: Switch between examples by commenting/uncommenting the desired example number
-//    private var exampleToShow = ExampleType.default
+    private var exampleToShow = ExampleType.default
 //     private var exampleToShow = ExampleType.tabLayout
-     private var exampleToShow = ExampleType.customCardForm
+//     private var exampleToShow = ExampleType.customCardForm
 
     enum ExampleType {
         case `default`
@@ -157,7 +157,7 @@ struct TabLayoutExample: View {
             .cornerRadius(12)
             .shadow(radius: 2)
             .task {
-                for await methods in await scope.paymentMethods() {
+                for await methods in scope.paymentMethods() {
                     paymentMethods = methods
                 }
             }
@@ -244,12 +244,12 @@ struct CustomCheckoutWithCardForm: View {
             .padding()
             .animation(.easeInOut, value: selectedMethod != nil)
             .task {
-                for await methods in await scope.paymentMethods() {
+                for await methods in scope.paymentMethods() {
                     paymentMethods = methods
                 }
             }
             .task {
-                for await method in await scope.selectedPaymentMethod() {
+                for await method in scope.selectedPaymentMethod() {
                     selectedMethod = method
                 }
             }
@@ -458,7 +458,7 @@ struct CustomCardFormExample: View {
             }
             .padding()
             .task {
-                for await state in await scope.state() {
+                for await state in scope.state() {
                     if let state = state {
                         // Update form state based on the scope's state
                         isValid = state.isValid

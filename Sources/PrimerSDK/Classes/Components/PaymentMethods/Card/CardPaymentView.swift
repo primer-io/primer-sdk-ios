@@ -8,11 +8,14 @@
 import SwiftUI
 
 /// Default UI for card payments.
-@available(iOS 14.0, *)
+@available(iOS 15.0, *)
 struct CardPaymentView: View {
     let scope: any CardPaymentMethodScope
 
-    @State private var cardNumber: String = ""
+    // Reference to the input field for direct access
+    @State private var cardNumberField: CardNumberInputField?
+
+    // Form state
     @State private var expiryMonth: String = ""
     @State private var expiryYear: String = ""
     @State private var cvv: String = ""
@@ -20,25 +23,35 @@ struct CardPaymentView: View {
     @State private var isValid: Bool = false
     @State private var isSubmitting: Bool = false
 
+    // Card network state
+    @State private var currentCardNetwork: CardNetwork = .unknown
+
     @Environment(\.designTokens) private var tokens
 
     var body: some View {
         if #available(iOS 15.0, *) {
             VStack(spacing: 16) {
-                // Card number field
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Card Number")
-                        .font(.caption)
-                        .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                    TextField("1234 5678 9012 3456", text: $cardNumber)
-                        .keyboardType(.numberPad)
-                        .padding()
-                        .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-                        .cornerRadius(8)
-                        .onChange(of: cardNumber) { newValue in
-                            scope.updateCardNumber(newValue)
+                // Card number field - using the updated CardNumberInputField
+                CardNumberInputField(
+                    label: "Card Number",
+                    placeholder: "4242 4242 4242 4242",
+                    onCardNetworkChange: { network in
+                        currentCardNetwork = network
+                        // Update the scope with the detected card network
+                        Task {
+                            await scope.updateCardNetwork(network)
                         }
-                }
+                    },
+                    onValidationChange: { isCardNumberValid in
+                        // Get card number directly from the field and update the scope
+                        if let field = cardNumberField {
+                            let cardNumber = field.getCardNumber()
+                            Task {
+                                scope.updateCardNumber(cardNumber)
+                            }
+                        }
+                    }
+                )
 
                 // Expiry date and CVV row
                 HStack(spacing: 16) {
@@ -56,7 +69,9 @@ struct CardPaymentView: View {
                                 .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
                                 .cornerRadius(8)
                                 .onChange(of: expiryMonth) { newValue in
-                                    scope.updateExpiryMonth(newValue)
+                                    Task {
+                                        scope.updateExpiryMonth(newValue)
+                                    }
                                 }
 
                             Text("/")
@@ -70,7 +85,9 @@ struct CardPaymentView: View {
                                 .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
                                 .cornerRadius(8)
                                 .onChange(of: expiryYear) { newValue in
-                                    scope.updateExpiryYear(newValue)
+                                    Task {
+                                        scope.updateExpiryYear(newValue)
+                                    }
                                 }
                         }
                     }
@@ -86,7 +103,9 @@ struct CardPaymentView: View {
                             .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
                             .cornerRadius(8)
                             .onChange(of: cvv) { newValue in
-                                scope.updateCvv(newValue)
+                                Task {
+                                    scope.updateCvv(newValue)
+                                }
                             }
                     }
                 }
@@ -101,7 +120,9 @@ struct CardPaymentView: View {
                         .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
                         .cornerRadius(8)
                         .onChange(of: cardholderName) { newValue in
-                            scope.updateCardholderName(newValue)
+                            Task {
+                                scope.updateCardholderName(newValue)
+                            }
                         }
                 }
 
@@ -132,9 +153,11 @@ struct CardPaymentView: View {
             }
             .padding(16)
             .task {
-                for await state in await scope.state() {
+                for await state in scope.state() {
                     if let state = state {
-                        cardNumber = state.cardNumber
+                        // Update the UI from the state
+                        // Note: For card number, we don't directly set it
+                        // as the field manages its own state
                         expiryMonth = state.expiryMonth
                         expiryYear = state.expiryYear
                         cvv = state.cvv
@@ -145,6 +168,19 @@ struct CardPaymentView: View {
             }
         } else {
             // Fallback on earlier versions
+            Text("Requires iOS 15 or later")
+                .foregroundColor(.secondary)
+                .padding()
         }
+    }
+}
+
+// MARK: - Helper Extensions
+
+extension CardPaymentMethodScope {
+    /// Update the card network when it changes
+    func updateCardNetwork(_ network: CardNetwork) async {
+        // This method would need to be implemented in your CardPaymentMethodScope protocol
+        // For now, it's a placeholder
     }
 }
