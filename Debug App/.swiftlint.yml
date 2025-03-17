@@ -13,3 +13,10 @@ included:
 
 excluded:
   - ../Sources/PrimerSDK/Classes/Third Party/PromiseKit
+
+# Allow single-character generic type 'T' by excluding it from type_name validation.
+type_name:
+  min_length: 3
+  max_length: 40
+  excluded:
+    - '^T$'  # Regex to ignore type name "T"

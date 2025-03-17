@@ -72,7 +72,7 @@ internal class PrimerUIManager: PrimerUIManaging {
 
             if #available(iOS 15.0, *) {
                 // TODO: TEMP - JUST FOR TESTING
-                let primerVC = PrimerComponentsCheckoutViewController(clientToken: "mock-token") { paymentResult in
+                let primerVC = PrimerCheckoutViewController(clientToken: "mock-token") { paymentResult in
                     print("Payment finished with result: \(paymentResult)")
                 }
                 PrimerUIManager.primerRootViewController?.present(primerVC, animated: true)

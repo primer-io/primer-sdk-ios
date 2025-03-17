@@ -4,18 +4,19 @@
 //
 //  Created by Boris on 6.2.25..
 //
+
 import UIKit
 import SwiftUI
 
-/// A UIKit wrapper for the SwiftUI `PrimerCheckout` view.
-@available(iOS 15.0, *)
-class PrimerComponentsCheckoutViewController: UIViewController {
+/// A UIKit wrapper for the SwiftUI PrimerCheckout view.
+@available(iOS 14.0, *)
+public class PrimerCheckoutViewController: UIViewController {
     private let clientToken: String
-    private let onPaymentFinished: (PaymentResult) -> Void
+    private let onComplete: ((Result<PaymentResult, Error>) -> Void)?
 
-    init(clientToken: String, onPaymentFinished: @escaping (PaymentResult) -> Void) {
+    public init(clientToken: String, onComplete: ((Result<PaymentResult, Error>) -> Void)? = nil) {
         self.clientToken = clientToken
-        self.onPaymentFinished = onPaymentFinished
+        self.onComplete = onComplete
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -23,20 +24,16 @@ class PrimerComponentsCheckoutViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Embed the SwiftUI `PrimerCheckout` view inside a UIHostingController.
-        let primerCheckoutView = PrimerCheckout(clientToken: clientToken,
-                                                onPaymentFinished: onPaymentFinished)
-        let hostingController = UIHostingController(rootView: primerCheckoutView)
+        let primerCheckout = PrimerCheckout(clientToken: clientToken)
+        let hostingController = UIHostingController(rootView: primerCheckout)
 
-        // Add the SwiftUI view controller as a child.
         addChild(hostingController)
-        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(hostingController.view)
 
-        // Constraints to make it fill the full screen.
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
             hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),

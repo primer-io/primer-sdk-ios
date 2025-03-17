@@ -11,7 +11,7 @@ import UIKit
 /// Used to identify a PrimerButton if needed
 /// For implementation example check PrimerButton.swift
 ///
-protocol Identifiable where Self: UIView {
+protocol PrimerIdentifiable where Self: UIView {
 
     /// The identifier
     var id: String? { get set }
