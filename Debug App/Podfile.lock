@@ -32,7 +32,7 @@ PODS:
     - IQKeyboardToolbar/Placeholderable
   - IQKeyboardToolbar/Placeholderable (1.1.1):
     - IQKeyboardCore
-  - IQKeyboardToolbarManager (1.1.2):
+  - IQKeyboardToolbarManager (1.1.3):
     - IQKeyboardToolbar
     - IQTextInputViewNotification
   - IQTextInputViewNotification (1.0.8):
@@ -43,9 +43,9 @@ PODS:
   - PrimerIPay88MYSDK (0.1.7)
   - PrimerKlarnaSDK (1.1.2)
   - PrimerNolPaySDK (1.0.1)
-  - PrimerSDK (2.35.1):
-    - PrimerSDK/Core (= 2.35.1)
-  - PrimerSDK/Core (2.35.1)
+  - PrimerSDK (2.35.2):
+    - PrimerSDK/Core (= 2.35.2)
+  - PrimerSDK/Core (2.35.2)
   - PrimerStripeSDK (1.0.1)
 
 DEPENDENCIES:
@@ -83,14 +83,14 @@ SPEC CHECKSUMS:
   IQKeyboardNotification: d7382c4466c5a5adef92c7452ebf861b36050088
   IQKeyboardReturnManager: 972be48528ce9e7508ab3ab15ac7efac803f17f5
   IQKeyboardToolbar: d4bdccfb78324aec2f3920659c77bb89acd33312
-  IQKeyboardToolbarManager: 6f4072ac620c2572d4af8c09f42a801f3e4909f7
+  IQKeyboardToolbarManager: 6c693c8478d6327a7ef2107528d29698b3514dbb
   IQTextInputViewNotification: f5e954d8881fd9808b744e49e024cc0d4bcfe572
   IQTextView: ae13b4922f22e6f027f62c557d9f4f236b19d5c7
   Primer3DS: 41159e5287ff47018b7b8415f13621d11be666a2
   PrimerIPay88MYSDK: 436ee0be7e2c97e4e81456ccddee20175e9e3c4d
   PrimerKlarnaSDK: c39536a4eb070da5b43ec99a4edbede241e91d25
   PrimerNolPaySDK: 08b140ed39b378a0b33b4f8746544a402175c0cc
-  PrimerSDK: c7c5f19a752de84eebfedaaf6ea3c452d0385204
+  PrimerSDK: fe15564b83b1b9041b6f401399f0a6ea719c3dab
   PrimerStripeSDK: dce5e37d10223ee724f33d1cdeaa17235a71ddbb
 
 PODFILE CHECKSUM: 665eac28ae49fa5a7b983ebc01493e77d5e13406

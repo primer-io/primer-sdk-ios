@@ -87,7 +87,13 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                                          paymentId: paymentId,
                                          paymentResumeRequest: paymentResumeRequest) { result in
                 switch result {
-                case .failure(let error):
+                case .failure(let err):
+                    let error = PrimerError.failedToResumePayment(
+                        paymentMethodType: self.paymentMethodType,
+                        description: err.localizedDescription,
+                        userInfo: .errorUserInfoDictionary(),
+                        diagnosticsId: UUID().uuidString)
+                    
                     seal.reject(error)
                 case .success(let paymentResponse):
                     do {
