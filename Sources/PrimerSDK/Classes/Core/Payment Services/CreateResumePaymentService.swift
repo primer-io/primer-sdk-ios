@@ -21,17 +21,17 @@ private enum CreateResumePaymentCallType: String {
 }
 
 internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
-    
+
     let apiClient: PrimerAPIClientCreateResumePaymentProtocol
-    
+
     let paymentMethodType: String
-    
+
     init(paymentMethodType: String,
          apiClient: PrimerAPIClientCreateResumePaymentProtocol = PrimerAPIClient()) {
         self.paymentMethodType = paymentMethodType
         self.apiClient = apiClient
     }
-    
+
     func createPayment(paymentRequest: Request.Body.Payment.Create) -> Promise<Response.Body.Payment> {
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
@@ -39,7 +39,7 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             ErrorHandler.handle(error: err)
             return Promise(error: err)
         }
-        
+
         return Promise { seal in
             self.apiClient.createPayment(clientToken: clientToken,
                                          paymentRequestBody: paymentRequest) { result in
@@ -57,9 +57,9 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             }
         }
     }
-    
+
     private func validateResponse(paymentResponse: Response.Body.Payment, callType: CreateResumePaymentCallType) throws {
-        
+
         if paymentResponse.id == nil || paymentResponse.status == .failed ||
             (callType == .resume && paymentResponse.status == .pending && paymentResponse.showSuccessCheckoutOnPendingPayment == false) {
             let err = PrimerError.paymentFailed(
@@ -73,7 +73,7 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             throw err
         }
     }
-    
+
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) -> Promise<Response.Body.Payment> {
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
@@ -81,7 +81,7 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             ErrorHandler.handle(error: err)
             return Promise(error: err)
         }
-        
+
         return Promise { seal in
             self.apiClient.resumePayment(clientToken: clientToken,
                                          paymentId: paymentId,
@@ -93,7 +93,7 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                         description: err.localizedDescription,
                         userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
-                    
+
                     seal.reject(error)
                 case .success(let paymentResponse):
                     do {
@@ -106,7 +106,7 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             }
         }
     }
-    
+
     /**
      * Completes a payment using the provided JWT token and URL.
      *
