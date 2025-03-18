@@ -1,3 +1,9 @@
+## 2.35.3 (2025-03-18)
+
+### Fix
+
+- Decode errors properly for 2xx response codes (#1131)
+
 ## 2.35.2 (2025-02-25)
 
 ### Fix
