@@ -116,7 +116,6 @@ struct PrimerCheckoutSheet: View {
     }
 }
 
-// Define a simple wrapper struct that is Identifiable
 struct IdentifiablePaymentMethod: Identifiable {
     let id: String
     let method: any PaymentMethodProtocol
@@ -128,7 +127,6 @@ struct IdentifiablePaymentMethod: Identifiable {
     }
 }
 
-// In your PaymentMethodListContent view:
 struct PaymentMethodListContent: View {
     let paymentMethods: [any PaymentMethodProtocol]
     let tokens: DesignTokens?

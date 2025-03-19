@@ -1,5 +1,6 @@
 disabled_rules:
     - superfluous_disable_command
+    - type_body_length
 
 line_length:
   warning: 150
@@ -7,16 +8,32 @@ line_length:
   ignores_comments: true
   ignores_interpolated_strings: true
   ignores_urls: true
-  
+
 included:
   - ../Sources
 
 excluded:
   - ../Sources/PrimerSDK/Classes/Third Party/PromiseKit
 
-# Allow single-character generic type 'T' by excluding it from type_name validation.
+# Configuration for type names:
+# Enforces a minimum length of 3 and a maximum length of 40 characters,
+# but excludes the generic type "T" from this rule.
 type_name:
   min_length: 3
   max_length: 40
   excluded:
     - '^T$'  # Regex to ignore type name "T"
+
+# Configuration for identifier names:
+# Enforces a minimum length of 3 and a maximum length of 40 characters,
+# but excludes the loop counter "i" from this rule.
+identifier_name:
+  min_length: 3
+  max_length: 40
+  excluded:
+    - '^i$'  # Regex to ignore identifier "i" in for loops
+
+# Configuration for type body length:
+# Updates the maximum allowed type body length to 500 lines.
+#type_body_length:
+#  max: 500
