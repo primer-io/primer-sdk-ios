@@ -12,11 +12,18 @@ import SwiftUI
 struct CardPaymentView: View {
     let scope: any CardPaymentMethodScope
 
-    // Reference to the input field for direct access - initialize with a proper reference
+    // Reference to the input fields for direct access
     @State private var cardInputField = CardNumberInputField(
         label: "Card Number",
         placeholder: "4242 4242 4242 4242",
         onCardNetworkChange: nil,
+        onValidationChange: nil
+    )
+
+    @State private var cvvInputField = CVVInputField(
+        label: "CVV",
+        placeholder: "123",
+        cardNetwork: .unknown,
         onValidationChange: nil
     )
 
@@ -27,6 +34,10 @@ struct CardPaymentView: View {
     @State private var cardholderName: String = ""
     @State private var isValid: Bool = false
     @State private var isSubmitting: Bool = false
+
+    // Input validation state
+    @State private var isCardNumberValid: Bool = false
+    @State private var isCvvValid: Bool = false
 
     // Card network state
     @State private var currentCardNetwork: CardNetwork = .unknown
@@ -39,11 +50,21 @@ struct CardPaymentView: View {
             cardInputField
                 .onCardNetworkChange { network in
                     currentCardNetwork = network
+                    // Update CVV field's card network to adjust validation rules
+                    cvvInputField = CVVInputField(
+                        label: "CVV",
+                        placeholder: network == .amex ? "1234" : "123",
+                        cardNetwork: network,
+                        onValidationChange: cvvInputField.onValidationChange
+                    )
                     Task {
                         await scope.updateCardNetwork(network)
                     }
                 }
-                .onValidationChange { isCardNumberValid in
+                .onValidationChange { isValid in
+                    isCardNumberValid = isValid
+                    updateFormValidity()
+
                     // Get card number directly from the field and update the scope
                     let cardNumber = cardInputField.getCardNumber()
                     Task {
@@ -90,22 +111,19 @@ struct CardPaymentView: View {
                     }
                 }
 
-                // CVV field
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("CVV")
-                        .font(.caption)
-                        .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                    TextField("123", text: $cvv)
-                        .keyboardType(.numberPad)
-                        .padding()
-                        .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-                        .cornerRadius(8)
-                        .onChange(of: cvv) { newValue in
-                            Task {
-                                scope.updateCvv(newValue)
-                            }
+                // CVV field - using our new CVVInputField component
+                cvvInputField
+                    .onValidationChange { isValid in
+                        isCvvValid = isValid
+                        updateFormValidity()
+
+                        // Get CVV directly from the field and update the scope
+                        let cvvValue = cvvInputField.getCVV()
+                        cvv = cvvValue // Update local state
+                        Task {
+                            scope.updateCvv(cvvValue)
                         }
-                }
+                    }
             }
 
             // MARK: - Cardholder Name Field
@@ -155,14 +173,26 @@ struct CardPaymentView: View {
             for await state in scope.state() {
                 if let state = state {
                     // Note: The card number is now managed by CardNumberTextField
+                    // Note: The CVV is now managed by CVVInputField
                     expiryMonth = state.expiryMonth
                     expiryYear = state.expiryYear
-                    cvv = state.cvv
                     cardholderName = state.cardholderName
-                    isValid = state.isValid
+
+                    // We still use the scope's isValid for the overall form state
+                    // but our local validity checks will influence this too
+                    isValid = state.isValid && isCardNumberValid && isCvvValid
                 }
             }
         }
+    }
+
+    /// Updates the overall form validity based on field-level validation
+    private func updateFormValidity() {
+        // This method can be expanded with additional validation logic
+        // For now it just combines the individual field validations
+        isValid = isCardNumberValid && isCvvValid &&
+                  !expiryMonth.isEmpty && !expiryYear.isEmpty &&
+                  !cardholderName.isEmpty
     }
 }
 
@@ -175,7 +205,8 @@ extension CardPaymentMethodScope {
     }
 }
 
-// Extension for applying the callback functions via view modifiers
+// MARK: - Extensions for applying callback functions via view modifiers
+
 @available(iOS 15.0, *)
 extension CardNumberInputField {
     func onCardNetworkChange(_ handler: @escaping (CardNetwork) -> Void) -> Self {
@@ -184,6 +215,15 @@ extension CardNumberInputField {
         return view
     }
 
+    func onValidationChange(_ handler: @escaping (Bool) -> Void) -> Self {
+        var view = self
+        view.onValidationChange = handler
+        return view
+    }
+}
+
+@available(iOS 15.0, *)
+extension CVVInputField {
     func onValidationChange(_ handler: @escaping (Bool) -> Void) -> Self {
         var view = self
         view.onValidationChange = handler

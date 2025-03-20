@@ -52,7 +52,7 @@ struct CardNumberInputField: View {
 
             // Card input field with network icon
             HStack(spacing: 8) {
-                CardNumberTextField(
+                ImprovedCardNumberTextField(
                     cardNumber: $cardNumber,
                     isValid: $isValid,
                     cardNetwork: $cardNetwork,
@@ -107,7 +107,7 @@ struct CardNumberInputField: View {
 
 /// An improved UIViewRepresentable wrapper that avoids state cycles
 @available(iOS 15.0, *)
-struct CardNumberTextField: UIViewRepresentable {
+struct ImprovedCardNumberTextField: UIViewRepresentable {
     @Binding var cardNumber: String
     @Binding var isValid: Bool?
     @Binding var cardNetwork: CardNetwork
@@ -196,7 +196,7 @@ struct CardNumberTextField: UIViewRepresentable {
     }
 
     class Coordinator: NSObject, UITextFieldDelegate {
-        var parent: CardNumberTextField
+        var parent: ImprovedCardNumberTextField
 
         // Add a flag to prevent update cycles
         private var isUpdating = false
@@ -208,7 +208,7 @@ struct CardNumberTextField: UIViewRepresentable {
         // For tracking changes in cursor position
         private var lastCursorPosition: Int = 0
 
-        init(_ parent: CardNumberTextField) {
+        init(_ parent: ImprovedCardNumberTextField) {
             self.parent = parent
             print("📝 Coordinator initialized")
         }
@@ -267,9 +267,8 @@ struct CardNumberTextField: UIViewRepresentable {
             }
         }
 
-        // MARK: - Main UITextFieldDelegate method
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            // Early returns to reduce nesting
+            // Avoid reentrance
             if isUpdating {
                 print("🔄 Avoiding reentrance in shouldChangeCharactersIn")
                 return false
@@ -284,177 +283,102 @@ struct CardNumberTextField: UIViewRepresentable {
             // Save current cursor position before making changes
             saveCursorPosition(textField)
 
-            // Get current unformatted text
+            // Get the current internal text (unformatted)
             let currentText = primerTextField.internalText ?? ""
 
-            // Process the input and get new card number
-            let inputType = determineInputType(string: string, range: range)
-            let newCardNumber = processInput(type: inputType,
-                                             currentText: currentText,
-                                             string: string,
-                                             range: range,
-                                             textField: textField)
+            // Determine if this is a deletion operation (backspace)
+            let isDeletion = string.isEmpty
 
-            // Check if resulting text would be valid
-            guard isValid(cardNumber: newCardNumber) else {
+            // IMPROVEMENT: Handle paste operation more robustly
+            // Check if this is a paste operation by checking string length
+            let isPasteOperation = !isDeletion && string.count > 1
+            if isPasteOperation {
+                print("📋 Paste operation detected with \(string.count) characters")
+            }
+
+            var newCardNumber: String
+
+            if isDeletion {
+                // Handle deletion operation
+                if range.length > 0 {
+                    // Convert formatted range to unformatted range for selection deletion
+                    let unformattedRange = getUnformattedRange(formattedRange: range, formattedText: textField.text ?? "", unformattedText: currentText)
+                    print("🗑️ Deletion - formatted range \(range.location),\(range.length) → unformatted range \(unformattedRange.location),\(unformattedRange.length)")
+                    newCardNumber = handleDeletion(currentText: currentText, unformattedRange: unformattedRange)
+                } else if range.location > 0 {
+                    // Simple backspace - remove the character before the cursor in unformatted text
+                    // Count numeric characters up to cursor position
+                    var unformattedPos = 0
+                    for i in 0..<range.location {
+                        if i < (textField.text?.count ?? 0) &&
+                           (textField.text?[textField.text!.index(textField.text!.startIndex, offsetBy: i)].isNumber ?? false) {
+                            unformattedPos += 1
+                        }
+                    }
+
+                    print("🗑️ Backspace at position \(range.location) maps to unformatted position \(unformattedPos)")
+
+                    if unformattedPos > 0 && unformattedPos <= currentText.count {
+                        let index = currentText.index(currentText.startIndex, offsetBy: unformattedPos - 1)
+                        newCardNumber = currentText.removing(at: index)
+                    } else {
+                        newCardNumber = currentText
+                    }
+                } else {
+                    newCardNumber = currentText
+                }
+            } else {
+                // Handle addition operation for typing or pasting
+                // Only allow numeric characters
+                let filteredText = string.filter { $0.isNumber }
+                if filteredText.isEmpty {
+                    print("⌨️ Ignoring non-numeric input: '\(string)'")
+                    return false
+                }
+
+                // For paste operations, log the filtered content
+                if isPasteOperation && filteredText.count != string.count {
+                    print("📋 Filtered paste content from \(string.count) to \(filteredText.count) digits")
+                }
+
+                // Count numeric characters up to cursor position to get insertion point
+                var unformattedPos = 0
+                for i in 0..<range.location {
+                    if i < (textField.text?.count ?? 0) &&
+                       (textField.text?[textField.text!.index(textField.text!.startIndex, offsetBy: i)].isNumber ?? false) {
+                        unformattedPos += 1
+                    }
+                }
+
+                if isPasteOperation {
+                    print("📋 Pasting at position \(range.location) maps to unformatted position \(unformattedPos)")
+                } else {
+                    print("⌨️ Typing at position \(range.location) maps to unformatted position \(unformattedPos)")
+                }
+
+                // Insert at the correct position in unformatted text
+                if unformattedPos <= currentText.count {
+                    let index = currentText.index(currentText.startIndex, offsetBy: unformattedPos)
+                    newCardNumber = currentText.inserting(contentsOf: filteredText, at: index)
+                } else {
+                    newCardNumber = currentText + filteredText
+                }
+            }
+
+            // If text is invalid or too long, reject the change
+            if newCardNumber.count > 19 {
+                print("⌨️ Rejecting input - would exceed max length (19)")
                 return false
             }
 
             print("🔄 Text will change: '\(currentText)' → '\(newCardNumber)'")
 
             // Process the valid text change
-            processTextChange(primerTextField: primerTextField,
-                              newText: newCardNumber,
-                              isDeletion: inputType == .deletion)
+            processTextChange(primerTextField: primerTextField, newText: newCardNumber, isDeletion: isDeletion)
 
             return false // We handle the update manually
         }
 
-        // MARK: - Input categorization
-
-        /// Defines the type of text input operation
-        enum InputType {
-            case deletion          // Regular backspace operation
-            case rangeDelete       // Deleting a selected range
-            case typing            // Typing a single character
-            case paste             // Pasting multiple characters
-        }
-
-        /// Determines what kind of input operation is occurring
-        private func determineInputType(string: String, range: NSRange) -> InputType {
-            let isDeletion = string.isEmpty
-
-            if isDeletion {
-                return range.length > 0 ? .rangeDelete : .deletion
-            } else {
-                return string.count > 1 ? .paste : .typing
-            }
-        }
-
-        // MARK: - Input processing
-
-        /// Process the input based on its type
-        private func processInput(type: InputType,
-                                  currentText: String,
-                                  string: String,
-                                  range: NSRange,
-                                  textField: UITextField) -> String {
-
-            switch type {
-            case .deletion:
-                return processDeletion(currentText: currentText, range: range, textField: textField)
-
-            case .rangeDelete:
-                return processRangeDelete(currentText: currentText, range: range, textField: textField)
-
-            case .typing, .paste:
-                return processAddition(
-                    currentText: currentText,
-                    input: string,
-                    range: range,
-                    textField: textField,
-                    isPaste: type == .paste
-                )
-            }
-        }
-
-        /// Process a single character deletion (backspace)
-        private func processDeletion(currentText: String, range: NSRange, textField: UITextField) -> String {
-            guard range.location > 0 else {
-                return currentText
-            }
-
-            // Map formatted cursor position to unformatted position
-            let unformattedPos = mapToUnformattedPosition(
-                formattedPosition: range.location,
-                formattedText: textField.text ?? ""
-            )
-
-            print("🗑️ Backspace at position \(range.location) maps to unformatted position \(unformattedPos)")
-
-            // Return modified text only if the unformatted position is valid
-            if unformattedPos > 0 && unformattedPos <= currentText.count {
-                let index = currentText.index(currentText.startIndex, offsetBy: unformattedPos - 1)
-                return currentText.removing(at: index)
-            }
-
-            return currentText
-        }
-
-        /// Process deletion of a selected range
-        private func processRangeDelete(currentText: String, range: NSRange, textField: UITextField) -> String {
-            // Convert formatted range to unformatted range
-            let unformattedRange = getUnformattedRange(
-                formattedRange: range,
-                formattedText: textField.text ?? "",
-                unformattedText: currentText
-            )
-
-            print("🗑️ Deletion - formatted range \(range.location),\(range.length) → unformatted range \(unformattedRange.location),\(unformattedRange.length)")
-
-            return handleDeletion(currentText: currentText, unformattedRange: unformattedRange)
-        }
-
-        /// Process addition of text (typing or pasting)
-        private func processAddition(currentText: String,
-                                     input: String,
-                                     range: NSRange,
-                                     textField: UITextField,
-                                     isPaste: Bool) -> String {
-            // Filter out non-numeric characters
-            let filteredText = input.filter { $0.isNumber }
-
-            if filteredText.isEmpty {
-                print("⌨️ Ignoring non-numeric input: '\(input)'")
-                return currentText // No change if no numeric characters
-            }
-
-            // Log filtered paste content
-            if isPaste && filteredText.count != input.count {
-                print("📋 Filtered paste content from \(input.count) to \(filteredText.count) digits")
-            }
-
-            // Map formatted cursor position to unformatted position
-            let unformattedPos = mapToUnformattedPosition(
-                formattedPosition: range.location,
-                formattedText: textField.text ?? ""
-            )
-
-            let operationType = isPaste ? "Pasting" : "Typing"
-            print("⌨️ \(operationType) at position \(range.location) maps to unformatted position \(unformattedPos)")
-
-            // Insert at the correct position
-            if unformattedPos <= currentText.count {
-                let index = currentText.index(currentText.startIndex, offsetBy: unformattedPos)
-                return currentText.inserting(contentsOf: filteredText, at: index)
-            } else {
-                return currentText + filteredText
-            }
-        }
-
-        // MARK: - Helper functions
-
-        /// Maps a position in formatted text to the corresponding position in unformatted text
-        private func mapToUnformattedPosition(formattedPosition: Int, formattedText: String) -> Int {
-            var unformattedPos = 0
-
-            for i in 0..<formattedPosition {
-                if i < formattedText.count && formattedText[formattedText.index(formattedText.startIndex, offsetBy: i)].isNumber {
-                    unformattedPos += 1
-                }
-            }
-
-            return unformattedPos
-        }
-
-        /// Checks if the card number would be valid after changes
-        private func isValid(cardNumber: String) -> Bool {
-            if cardNumber.count > 19 {
-                print("⌨️ Rejecting input - would exceed max length (19)")
-                return false
-            }
-            return true
-        }
         private func saveCursorPosition(_ textField: UITextField) {
             if let selectedTextRange = textField.selectedTextRange {
                 selectedRange = selectedTextRange
@@ -493,10 +417,12 @@ struct CardNumberTextField: UIViewRepresentable {
                 let rangeEnd = min(formattedRange.location + formattedRange.length, formattedText.count)
 
                 // Count digits in the selection
-                for index in formattedRange.location..<rangeEnd where index < formattedText.count {
-                    let char = formattedText[formattedText.index(formattedText.startIndex, offsetBy: index)]
-                    if char.isNumber {
-                        unformattedLength += 1
+                for index in formattedRange.location..<rangeEnd {
+                    if index < formattedText.count {
+                        let char = formattedText[formattedText.index(formattedText.startIndex, offsetBy: index)]
+                        if char.isNumber {
+                            unformattedLength += 1
+                        }
                     }
                 }
             }
@@ -540,168 +466,141 @@ struct CardNumberTextField: UIViewRepresentable {
             return currentText
         }
 
-        // MARK: - Main function with reduced complexity
         private func processTextChange(primerTextField: PrimerCardNumberTextField, newText: String, isDeletion: Bool) {
             print("🔄 Processing text change: current='\(primerTextField.text ?? "")', new unformatted='\(newText)'")
 
             // Get current text for comparison
             let currentFormattedText = primerTextField.text ?? ""
+            let currentUnformattedText = primerTextField.internalText ?? ""
 
-            // Determine card network
+            // Determine card network only if we have enough digits
             let networkChanged = updateCardNetworkIfNeeded(newText: newText)
+            if networkChanged {
+                print("🔄 Card network changed to: \(parent.cardNetwork.displayName)")
+            }
 
             // Avoid update cycles
             isUpdating = true
 
-            // Process the text input (truncate and format)
-            let processedText = processCardText(newText)
-
-            // Update the text field values
-            updateTextField(primerTextField, unformattedText: processedText.truncated, formattedText: processedText.formatted)
-
-            // Calculate and set cursor position
-            let newPosition = calculateCursorPosition(
-                currentText: currentFormattedText,
-                newFormattedText: processedText.formatted,
-                isDeletion: isDeletion
-            )
-
-            setCursorPosition(for: primerTextField, position: newPosition)
-
-            // Update parent state
-            updateParentState(truncatedText: processedText.truncated, networkChanged: networkChanged)
-        }
-
-        // MARK: - Helper functions
-
-        private func processCardText(_ newText: String) -> (truncated: String, formatted: String) {
             // Limit length based on card type
             let maxLength = parent.cardNetwork.validation?.lengths.max() ?? 16
             let truncatedText = String(newText.prefix(maxLength))
-
             if truncatedText.count < newText.count {
                 print("🔄 Text truncated to max length \(maxLength)")
             }
 
             // Format for display with spaces
             let formattedText = parent.formatCardNumber(truncatedText, for: parent.cardNetwork)
+
+            // Update the text and internal text properties immediately
+            primerTextField.internalText = truncatedText
+            primerTextField.text = formattedText
+
             print("🔄 Text updated: unformatted='\(truncatedText)', formatted='\(formattedText)'")
 
-            return (truncatedText, formattedText)
-        }
+            // Calculate new cursor position
+            var newCursorPosition: Int = 0
 
-        private func updateTextField(_ textField: PrimerCardNumberTextField, unformattedText: String, formattedText: String) {
-            textField.internalText = unformattedText
-            textField.text = formattedText
-        }
+            if isDeletion {
+                if truncatedText.isEmpty {
+                    // If all text was deleted, position cursor at the beginning
+                    newCursorPosition = 0
+                    print("📍 Cursor reset to beginning after complete deletion")
+                } else {
+                    // For backspace operation, position cursor at the end of the text
+                    // This handles the common case of pressing backspace at the end of the text
+                    newCursorPosition = formattedText.count
 
-        private func calculateCursorPosition(currentText: String, newFormattedText: String, isDeletion: Bool) -> Int {
-            let newCursorPosition = isDeletion
-                ? calculateDeletionCursorPosition(currentText: currentText, newText: newFormattedText)
-                : calculateAdditionCursorPosition(currentText: currentText, newText: newFormattedText)
+                    // If deletion wasn't at the end, try to position cursor at the deletion point
+                    if cursorPosition < currentFormattedText.count {
+                        // Count digits up to cursor position in the old text
+                        var digitCountBeforeCursor = 0
+                        for i in 0..<cursorPosition {
+                            if i < currentFormattedText.count &&
+                               currentFormattedText[currentFormattedText.index(currentFormattedText.startIndex, offsetBy: i)].isNumber {
+                                digitCountBeforeCursor += 1
+                            }
+                        }
+
+                        // Position cursor after the same number of digits in the new text
+                        // If we deleted a digit, we need to adjust by 1
+                        var positionCursor = 0
+                        var digitsEncountered = 0
+                        let targetDigits = max(0, digitCountBeforeCursor - 1) // One less because we deleted a digit
+
+                        for (i, char) in formattedText.enumerated() {
+                            if char.isNumber {
+                                digitsEncountered += 1
+                            }
+                            if digitsEncountered >= targetDigits {
+                                positionCursor = char.isNumber ? i + 1 : i
+                                break
+                            }
+                            positionCursor = i + 1
+                        }
+
+                        newCursorPosition = positionCursor
+                        print("📍 Calculated cursor position after deletion: \(newCursorPosition) (target digits: \(targetDigits))")
+                    } else {
+                        print("📍 Cursor positioned at end after deletion: \(newCursorPosition)")
+                    }
+                }
+            } else {
+                // For additions, position cursor after the newly inserted text
+                var targetDigitPosition = 0
+
+                // Convert cursor position to digit position
+                for i in 0..<min(cursorPosition, currentFormattedText.count) {
+                    if i < currentFormattedText.count &&
+                       currentFormattedText[currentFormattedText.index(currentFormattedText.startIndex, offsetBy: i)].isNumber {
+                        targetDigitPosition += 1
+                    }
+                }
+
+                // Add 1 to account for the newly inserted digit
+                targetDigitPosition += 1
+
+                // Find where this position is in the formatted text
+                var digitCount = 0
+                var cursorPos = 0
+
+                for (i, char) in formattedText.enumerated() {
+                    if char.isNumber {
+                        digitCount += 1
+                        if digitCount == targetDigitPosition {
+                            cursorPos = i + 1
+                            break
+                        }
+                    }
+                    cursorPos = i + 1
+                }
+
+                newCursorPosition = cursorPos
+                print("📍 Calculated cursor position after addition: \(newCursorPosition) (target digits: \(targetDigitPosition))")
+            }
 
             // Ensure cursor position is within valid range
-            let safePosition = min(newCursorPosition, newFormattedText.count)
-
+            let safePosition = min(newCursorPosition, formattedText.count)
             if safePosition != newCursorPosition {
                 print("📍 Cursor position adjusted to safe value: \(newCursorPosition) → \(safePosition)")
             }
 
-            return safePosition
-        }
-
-        private func calculateDeletionCursorPosition(currentText: String, newText: String) -> Int {
-            if newText.isEmpty {
-                // If all text was deleted, cursor at beginning
-                print("📍 Cursor reset to beginning after complete deletion")
-                return 0
-            }
-
-            // Default to end of text for typical backspace
-            var newPosition = newText.count
-
-            // For mid-text deletion, position cursor at deletion point
-            if cursorPosition < currentText.count {
-                // Count digits up to cursor in old text
-                var digitCountBeforeCursor = 0
-                for i in 0..<cursorPosition {
-                    if i < currentText.count && currentText[currentText.index(currentText.startIndex, offsetBy: i)].isNumber {
-                        digitCountBeforeCursor += 1
-                    }
-                }
-
-                // Target is one less because we deleted a digit
-                let targetDigits = max(0, digitCountBeforeCursor - 1)
-
-                // Find position after same number of digits in new text
-                var position = 0
-                var digitsEncountered = 0
-
-                for (i, char) in newText.enumerated() {
-                    if char.isNumber {
-                        digitsEncountered += 1
-                    }
-                    if digitsEncountered >= targetDigits {
-                        position = char.isNumber ? i + 1 : i
-                        break
-                    }
-                    position = i + 1
-                }
-
-                newPosition = position
-                print("📍 Calculated cursor position after deletion: \(newPosition) (target digits: \(targetDigits))")
-            } else {
-                print("📍 Cursor positioned at end after deletion: \(newPosition)")
-            }
-
-            return newPosition
-        }
-
-        private func calculateAdditionCursorPosition(currentText: String, newText: String) -> Int {
-            // For additions, find position after newly inserted text
-            var targetDigitPosition = 0
-
-            // Convert cursor position to digit position
-            for i in 0..<min(cursorPosition, currentText.count) {
-                if i < currentText.count && currentText[currentText.index(currentText.startIndex, offsetBy: i)].isNumber {
-                    targetDigitPosition += 1
-                }
-            }
-
-            // Add 1 for newly inserted digit
-            targetDigitPosition += 1
-
-            // Find where this position is in formatted text
-            var digitCount = 0
-            var position = 0
-
-            for (i, char) in newText.enumerated() {
-                if char.isNumber {
-                    digitCount += 1
-                    if digitCount == targetDigitPosition {
-                        position = i + 1
-                        break
-                    }
-                }
-                position = i + 1
-            }
-
-            print("📍 Calculated cursor position after addition: \(position) (target digits: \(targetDigitPosition))")
-            return position
-        }
-
-        private func setCursorPosition(for textField: PrimerCardNumberTextField, position: Int) {
+            // Restore cursor position
             DispatchQueue.main.async {
-                if let textField = textField as UITextField?,
-                   let newPosition = textField.position(from: textField.beginningOfDocument, offset: position) {
-                    print("📍 Setting cursor position to: \(position)")
+                if let textField = primerTextField as UITextField?,
+                   let newPosition = textField.position(from: textField.beginningOfDocument, offset: safePosition) {
+                    print("📍 Setting cursor position to: \(safePosition)")
                     textField.selectedTextRange = textField.textRange(from: newPosition, to: newPosition)
-                    self.lastCursorPosition = position
+                    self.lastCursorPosition = safePosition
                 } else {
-                    print("⚠️ Failed to set cursor position to: \(position)")
+                    print("⚠️ Failed to set cursor position to: \(safePosition)")
                 }
             }
+
+            // Update parent state with delay to avoid cycles
+            updateParentState(truncatedText: truncatedText, networkChanged: networkChanged)
         }
+
         private func updateCardNetworkIfNeeded(newText: String) -> Bool {
             if newText.count < 4 {
                 if parent.cardNetwork != .unknown {
@@ -786,7 +685,7 @@ struct CardNumberTextField: UIViewRepresentable {
             // Check Luhn only for complete numbers
             if let validation = network.validation,
                validation.lengths.contains(number.count) {
-                if number.isValidLuhn {
+                if isLuhnValid(number) {
                     print("✅ Validation passed: Card number is valid")
                     parent.isValid = true
                     parent.errorMessage = nil
@@ -832,7 +731,7 @@ struct CardNumberTextField: UIViewRepresentable {
             }
 
             // Check Luhn algorithm
-            if !number.isValidLuhn {
+            if !isLuhnValid(number) {
                 print("⚠️ Validation failed: Invalid card number (Luhn check)")
                 parent.isValid = false
                 parent.errorMessage = "Invalid card number"
@@ -843,6 +742,26 @@ struct CardNumberTextField: UIViewRepresentable {
             print("✅ Validation passed: Card number is valid")
             parent.isValid = true
             parent.errorMessage = nil
+        }
+
+        // Luhn algorithm implementation
+        private func isLuhnValid(_ number: String) -> Bool {
+            let digitOnly = number.filter { $0.isNumber }
+            if digitOnly.isEmpty { return false }
+
+            let reversedDigits = digitOnly.reversed().map { Int(String($0))! }
+            var sum = 0
+
+            for (index, digit) in reversedDigits.enumerated() {
+                if index % 2 == 1 {
+                    let doubledValue = digit * 2
+                    sum += doubledValue > 9 ? doubledValue - 9 : doubledValue
+                } else {
+                    sum += digit
+                }
+            }
+
+            return sum % 10 == 0
         }
     }
 }
@@ -873,7 +792,7 @@ class PrimerCardNumberTextField: UITextField {
     /// Overridden to return masked text for external access
     override var text: String? {
         get {
-            return "****"
+            return super.text
         }
         set {
             super.text = newValue
