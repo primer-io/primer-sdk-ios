@@ -16,8 +16,8 @@ public class PrimerCheckoutViewController: UIViewController {
 
     // PRESENTATION TIP: Switch between examples by commenting/uncommenting the desired example number
     private var exampleToShow = ExampleType.default
-//     private var exampleToShow = ExampleType.tabLayout
-//     private var exampleToShow = ExampleType.customCardForm
+    //     private var exampleToShow = ExampleType.tabLayout
+    //     private var exampleToShow = ExampleType.customCardForm
 
     enum ExampleType {
         case `default`

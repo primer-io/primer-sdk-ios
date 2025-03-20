@@ -76,8 +76,8 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope {
     private func loadPaymentMethods() async -> [any PaymentMethodProtocol] {
         // Dummy payment methods for demonstration
         return [
-            CardPaymentMethod(),
-//            KlarnaPaymentMethod()
+            CardPaymentMethod()
+            //            KlarnaPaymentMethod()
         ]
     }
 }

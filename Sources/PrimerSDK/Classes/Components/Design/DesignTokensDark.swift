@@ -40,7 +40,7 @@ internal class DesignTokensDark: Decodable {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        
+
         if let primerColorGray100Components = try container.decodeIfPresent([CGFloat].self, forKey: .primerColorGray100) {
             self.primerColorGray100 = Color(
                 red: primerColorGray100Components[0],
@@ -49,7 +49,7 @@ internal class DesignTokensDark: Decodable {
                 opacity: primerColorGray100Components[3]
             )
         }
-        
+
         if let primerColorGray200Components = try container.decodeIfPresent([CGFloat].self, forKey: .primerColorGray200) {
             self.primerColorGray200 = Color(
                 red: primerColorGray200Components[0],
@@ -58,7 +58,7 @@ internal class DesignTokensDark: Decodable {
                 opacity: primerColorGray200Components[3]
             )
         }
-        
+
         if let primerColorGray300Components = try container.decodeIfPresent([CGFloat].self, forKey: .primerColorGray300) {
             self.primerColorGray300 = Color(
                 red: primerColorGray300Components[0],
@@ -67,7 +67,7 @@ internal class DesignTokensDark: Decodable {
                 opacity: primerColorGray300Components[3]
             )
         }
-        
+
         if let primerColorGray400Components = try container.decodeIfPresent([CGFloat].self, forKey: .primerColorGray400) {
             self.primerColorGray400 = Color(
                 red: primerColorGray400Components[0],
@@ -76,7 +76,7 @@ internal class DesignTokensDark: Decodable {
                 opacity: primerColorGray400Components[3]
             )
         }
-        
+
         if let primerColorGray500Components = try container.decodeIfPresent([CGFloat].self, forKey: .primerColorGray500) {
             self.primerColorGray500 = Color(
                 red: primerColorGray500Components[0],
@@ -85,7 +85,7 @@ internal class DesignTokensDark: Decodable {
                 opacity: primerColorGray500Components[3]
             )
         }
-        
+
         if let primerColorGray600Components = try container.decodeIfPresent([CGFloat].self, forKey: .primerColorGray600) {
             self.primerColorGray600 = Color(
                 red: primerColorGray600Components[0],
@@ -94,7 +94,7 @@ internal class DesignTokensDark: Decodable {
                 opacity: primerColorGray600Components[3]
             )
         }
-        
+
         if let primerColorGray900Components = try container.decodeIfPresent([CGFloat].self, forKey: .primerColorGray900) {
             self.primerColorGray900 = Color(
                 red: primerColorGray900Components[0],
@@ -103,7 +103,7 @@ internal class DesignTokensDark: Decodable {
                 opacity: primerColorGray900Components[3]
             )
         }
-        
+
         if let primerColorGray000Components = try container.decodeIfPresent([CGFloat].self, forKey: .primerColorGray000) {
             self.primerColorGray000 = Color(
                 red: primerColorGray000Components[0],
@@ -112,7 +112,7 @@ internal class DesignTokensDark: Decodable {
                 opacity: primerColorGray000Components[3]
             )
         }
-        
+
         if let primerColorGreen500Components = try container.decodeIfPresent([CGFloat].self, forKey: .primerColorGreen500) {
             self.primerColorGreen500 = Color(
                 red: primerColorGreen500Components[0],
@@ -121,7 +121,7 @@ internal class DesignTokensDark: Decodable {
                 opacity: primerColorGreen500Components[3]
             )
         }
-        
+
         if let primerColorBrandComponents = try container.decodeIfPresent([CGFloat].self, forKey: .primerColorBrand) {
             self.primerColorBrand = Color(
                 red: primerColorBrandComponents[0],
@@ -130,7 +130,7 @@ internal class DesignTokensDark: Decodable {
                 opacity: primerColorBrandComponents[3]
             )
         }
-        
+
         if let primerColorRed100Components = try container.decodeIfPresent([CGFloat].self, forKey: .primerColorRed100) {
             self.primerColorRed100 = Color(
                 red: primerColorRed100Components[0],
@@ -139,7 +139,7 @@ internal class DesignTokensDark: Decodable {
                 opacity: primerColorRed100Components[3]
             )
         }
-        
+
         if let primerColorRed500Components = try container.decodeIfPresent([CGFloat].self, forKey: .primerColorRed500) {
             self.primerColorRed500 = Color(
                 red: primerColorRed500Components[0],
@@ -148,7 +148,7 @@ internal class DesignTokensDark: Decodable {
                 opacity: primerColorRed500Components[3]
             )
         }
-        
+
         if let primerColorRed900Components = try container.decodeIfPresent([CGFloat].self, forKey: .primerColorRed900) {
             self.primerColorRed900 = Color(
                 red: primerColorRed900Components[0],
@@ -157,7 +157,7 @@ internal class DesignTokensDark: Decodable {
                 opacity: primerColorRed900Components[3]
             )
         }
-        
+
         if let primerColorBlue500Components = try container.decodeIfPresent([CGFloat].self, forKey: .primerColorBlue500) {
             self.primerColorBlue500 = Color(
                 red: primerColorBlue500Components[0],
@@ -166,7 +166,7 @@ internal class DesignTokensDark: Decodable {
                 opacity: primerColorBlue500Components[3]
             )
         }
-        
+
         if let primerColorBlue900Components = try container.decodeIfPresent([CGFloat].self, forKey: .primerColorBlue900) {
             self.primerColorBlue900 = Color(
                 red: primerColorBlue900Components[0],
