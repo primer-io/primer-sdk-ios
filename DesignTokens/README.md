@@ -124,7 +124,7 @@ This caused runtime errors because CGFloat isn't defined in the Node.js environm
    This regenerates the Swift files with the latest values.
 
 3. **Integrate with Your iOS Project:**
-   - The generated Swift files (`DesignTokensLight.swift` and `DesignTokensDark.swift`) should be added to your iOS project. Your theming or token manager can then choose between these based on the current color scheme.
+   - The generated Swift files (`DesignTokens.swift` and `DesignTokensDark.swift`) should be added to your iOS project. Your theming or token manager can then choose between these based on the current color scheme.
 
 ## Additional Notes
 
