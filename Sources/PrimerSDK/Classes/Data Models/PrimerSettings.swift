@@ -3,7 +3,7 @@ import PassKit
 
 // MARK: - PRIMER SETTINGS
 
-internal protocol PrimerSettingsProtocol {
+protocol PrimerSettingsProtocol {
     var paymentHandling: PrimerPaymentHandling { get }
     var localeData: PrimerLocaleData { get }
     var paymentMethodOptions: PrimerPaymentMethodOptions { get }
@@ -13,12 +13,12 @@ internal protocol PrimerSettingsProtocol {
 }
 
 public class PrimerSettings: PrimerSettingsProtocol, Codable {
-
     static var current: PrimerSettings {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         guard let primerSettings = settings as? PrimerSettings else { fatalError() }
         return primerSettings
     }
+
     public let paymentHandling: PrimerPaymentHandling
     let localeData: PrimerLocaleData
     let paymentMethodOptions: PrimerPaymentMethodOptions
@@ -32,10 +32,10 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
         localeData: PrimerLocaleData? = nil,
         paymentMethodOptions: PrimerPaymentMethodOptions? = nil,
         uiOptions: PrimerUIOptions? = nil,
-        threeDsOptions: PrimerThreeDsOptions? = nil,
+        threeDsOptions _: PrimerThreeDsOptions? = nil,
         debugOptions: PrimerDebugOptions? = nil,
         clientSessionCachingEnabled: Bool = false,
-        apiVersion: PrimerApiVersion = .V2_3
+        apiVersion: PrimerApiVersion = .V2_4
     ) {
         self.paymentHandling = paymentHandling
         self.localeData = localeData ?? PrimerLocaleData()
@@ -50,13 +50,13 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
 // MARK: - PAYMENT HANDLING
 
 public enum PrimerPaymentHandling: String, Codable {
-    case auto   = "AUTO"
+    case auto = "AUTO"
     case manual = "MANUAL"
 }
 
 // MARK: - PAYMENT METHOD OPTIONS
 
-internal protocol PrimerPaymentMethodOptionsProtocol {
+protocol PrimerPaymentMethodOptionsProtocol {
     var applePayOptions: PrimerApplePayOptions? { get }
     var klarnaOptions: PrimerKlarnaOptions? { get }
     var threeDsOptions: PrimerThreeDsOptions? { get }
@@ -67,14 +67,13 @@ internal protocol PrimerPaymentMethodOptionsProtocol {
 }
 
 public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Codable {
-
     private let urlScheme: String?
     let applePayOptions: PrimerApplePayOptions?
     var klarnaOptions: PrimerKlarnaOptions?
 
     // Was producing warning: Immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
     // Was it intentional?
-    var cardPaymentOptions: PrimerCardPaymentOptions = PrimerCardPaymentOptions()
+    var cardPaymentOptions: PrimerCardPaymentOptions = .init()
     var threeDsOptions: PrimerThreeDsOptions?
     var stripeOptions: PrimerStripeOptions?
 
@@ -88,8 +87,8 @@ public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Cod
         self.urlScheme = urlScheme
         if let urlScheme = urlScheme, URL(string: urlScheme) == nil {
             PrimerLogging.shared.logger.warn(message: """
-The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a valid url scheme is provided of the form 'myurlscheme://myapp'
-""")
+            The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a valid url scheme is provided of the form 'myurlscheme://myapp'
+            """)
         }
         self.applePayOptions = applePayOptions
         self.klarnaOptions = klarnaOptions
@@ -102,7 +101,7 @@ The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a 
         urlScheme: String? = nil,
         applePayOptions: PrimerApplePayOptions? = nil,
         klarnaOptions: PrimerKlarnaOptions? = nil,
-        cardPaymentOptions: PrimerCardPaymentOptions? = nil,
+        cardPaymentOptions _: PrimerCardPaymentOptions? = nil,
         stripeOptions: PrimerStripeOptions? = nil
     ) {
         self.urlScheme = urlScheme
@@ -117,7 +116,8 @@ The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a 
                 key: "urlScheme",
                 value: nil,
                 userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
+                diagnosticsId: UUID().uuidString
+            )
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -131,7 +131,8 @@ The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a 
                 key: "urlScheme",
                 value: nil,
                 userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
+                diagnosticsId: UUID().uuidString
+            )
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -142,7 +143,6 @@ The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a 
 // MARK: Apple Pay
 
 public class PrimerApplePayOptions: Codable {
-
     let merchantIdentifier: String
     @available(*, deprecated, message: "Use Client Session API to provide merchant name value: https://primer.io/docs/payment-methods/apple-pay/direct-integration#prepare-the-client-session")
     let merchantName: String?
@@ -162,14 +162,15 @@ public class PrimerApplePayOptions: Codable {
                 merchantName: String?,
                 isCaptureBillingAddressEnabled: Bool = false,
                 showApplePayForUnsupportedDevice: Bool = true,
-                checkProvidedNetworks: Bool = true) {
+                checkProvidedNetworks: Bool = true)
+    {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
         self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
         self.checkProvidedNetworks = checkProvidedNetworks
-        self.shippingOptions = nil
-        self.billingOptions = nil
+        shippingOptions = nil
+        billingOptions = nil
     }
 
     public init(merchantIdentifier: String,
@@ -178,7 +179,8 @@ public class PrimerApplePayOptions: Codable {
                 showApplePayForUnsupportedDevice: Bool = true,
                 checkProvidedNetworks: Bool = true,
                 shippingOptions: ShippingOptions? = nil,
-                billingOptions: BillingOptions? = nil) {
+                billingOptions: BillingOptions? = nil)
+    {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
@@ -193,7 +195,8 @@ public class PrimerApplePayOptions: Codable {
         public let requireShippingMethod: Bool
 
         public init(shippingContactFields: [RequiredContactField]? = nil,
-                    requireShippingMethod: Bool) {
+                    requireShippingMethod: Bool)
+        {
             self.shippingContactFields = shippingContactFields
             self.requireShippingMethod = requireShippingMethod
         }
@@ -215,7 +218,6 @@ public class PrimerApplePayOptions: Codable {
 // MARK: Klarna
 
 public class PrimerKlarnaOptions: Codable {
-
     let recurringPaymentDescription: String
 
     public init(recurringPaymentDescription: String) {
@@ -224,8 +226,8 @@ public class PrimerKlarnaOptions: Codable {
 }
 
 // MARK: Stripe ACH
-public class PrimerStripeOptions: Codable {
 
+public class PrimerStripeOptions: Codable {
     public enum MandateData: Codable {
         case fullMandate(text: String)
         case templateMandate(merchantName: String)
@@ -243,7 +245,6 @@ public class PrimerStripeOptions: Codable {
 // MARK: Card Payment
 
 public class PrimerCardPaymentOptions: Codable {
-
     let is3DSOnVaultingEnabled: Bool
 
     @available(swift, obsoleted: 4.0, message: "is3DSOnVaultingEnabled is obsoleted on v.2.14.0")
@@ -252,7 +253,7 @@ public class PrimerCardPaymentOptions: Codable {
     }
 
     public init() {
-        self.is3DSOnVaultingEnabled = true
+        is3DSOnVaultingEnabled = true
     }
 }
 
@@ -262,7 +263,7 @@ public enum DismissalMechanism: Codable {
     case gestures, closeButton
 }
 
-internal protocol PrimerUIOptionsProtocol {
+protocol PrimerUIOptionsProtocol {
     var isInitScreenEnabled: Bool { get } // Default: true
     var isSuccessScreenEnabled: Bool { get } // Default: true
     var isErrorScreenEnabled: Bool { get } // Default: true
@@ -271,7 +272,6 @@ internal protocol PrimerUIOptionsProtocol {
 }
 
 public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
-
     public internal(set) var isInitScreenEnabled: Bool
     public internal(set) var isSuccessScreenEnabled: Bool
     public internal(set) var isErrorScreenEnabled: Bool
@@ -298,11 +298,11 @@ public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
 
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.isInitScreenEnabled = try container.decode(Bool.self, forKey: .isInitScreenEnabled)
-        self.isSuccessScreenEnabled = try container.decode(Bool.self, forKey: .isSuccessScreenEnabled)
-        self.isErrorScreenEnabled = try container.decode(Bool.self, forKey: .isErrorScreenEnabled)
-        self.dismissalMechanism = try container.decode([DismissalMechanism].self, forKey: .dismissalMechanism)
-        self.theme = PrimerTheme()
+        isInitScreenEnabled = try container.decode(Bool.self, forKey: .isInitScreenEnabled)
+        isSuccessScreenEnabled = try container.decode(Bool.self, forKey: .isSuccessScreenEnabled)
+        isErrorScreenEnabled = try container.decode(Bool.self, forKey: .isErrorScreenEnabled)
+        dismissalMechanism = try container.decode([DismissalMechanism].self, forKey: .dismissalMechanism)
+        theme = PrimerTheme()
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -316,7 +316,7 @@ public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
 
 // MARK: - DEBUG OPTIONS
 
-internal protocol PrimerDebugOptionsProtocol {
+protocol PrimerDebugOptionsProtocol {
     var is3DSSanityCheckEnabled: Bool { get }
 }
 
@@ -330,7 +330,7 @@ public class PrimerDebugOptions: PrimerDebugOptionsProtocol, Codable {
 
 // MARK: - 3DS OPTIONS
 
-internal protocol PrimerThreeDsOptionsProtocol {
+protocol PrimerThreeDsOptionsProtocol {
     var threeDsAppRequestorUrl: String? { get }
 }
 
@@ -343,11 +343,13 @@ public class PrimerThreeDsOptions: PrimerThreeDsOptionsProtocol, Codable {
 }
 
 // MARK: - API Version
+
 // swiftlint:disable identifier_name
 public enum PrimerApiVersion: String, Codable {
     case V2_3 = "2.3"
     case V2_4 = "2.4"
 
-    public static let latest = PrimerApiVersion.V2_3
+    public static let latest = PrimerApiVersion.V2_4
 }
+
 // swiftlint:enable identifier_name
