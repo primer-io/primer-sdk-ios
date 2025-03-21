@@ -372,7 +372,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         case 2:
             apiVersion = .latest
         default:
-            apiVersion = .V2_3
+            apiVersion = .V2_4
         }
     }
 
