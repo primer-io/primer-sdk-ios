@@ -2313,11 +2313,36 @@
          <Group
             location = "group:Utils"
             name = "Utils">
+            <Group
+               location = "group:CurrencyFormatting"
+               name = "CurrencyFormatting">
+               <FileRef
+                  location = "group:CAD_CurrencyFormattingTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:CNY_CurrencyFormattingTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:EUR_CurrencyFormattingTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:GBP_CurrencyFormattingTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:JPY_CurrencyFormattingTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:KRW_CurrencyFormattingTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:SEK_CurrencyFormattingTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:USD_CurrencyFormattingTests.swift">
+               </FileRef>
+            </Group>
             <FileRef
                location = "group:CheckoutSessionTests.swift">
-            </FileRef>
-            <FileRef
-               location = "group:IntExtensionTests.swift">
             </FileRef>
             <FileRef
                location = "group:MaskTests.swift">
