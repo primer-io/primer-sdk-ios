@@ -1,3 +1,4 @@
+require('base64')
 default_platform(:ios)
 
 #----------------------- CONSTANTS -------------------------#
@@ -277,11 +278,21 @@ platform :ios do
       lock_when_sleeps: true
     )
 
+    username = "security@primerapi.com" 
+    username = ENV['GITLAB_USERNAME'] 
+    personal_access_token = ENV['GITLAB_PASSWORD']
+
+    credentials = "#{username}:#{personal_access_token}"
+    encoded_credentials = Base64.strict_encode64(credentials)
+
+    puts "encoded_credentials: " + encoded_credentials
+
     match(
       type: options[:match_type],
       readonly: true,
       keychain_name: ENV["MATCH_KEYCHAIN_NAME"],
       keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"],
+      git_basic_authorization: encoded_credentials
     )
 
   end
