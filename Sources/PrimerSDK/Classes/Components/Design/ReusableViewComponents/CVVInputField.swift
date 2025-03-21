@@ -85,7 +85,7 @@ struct CVVInputField: View {
 
 /// An improved UIViewRepresentable wrapper for a CVV text field
 @available(iOS 15.0, *)
-struct CVVTextField: UIViewRepresentable {
+struct CVVTextField: UIViewRepresentable, LogReporter {
     @Binding var cvv: String
     @Binding var isValid: Bool?
     @Binding var errorMessage: String?
@@ -103,8 +103,7 @@ struct CVVTextField: UIViewRepresentable {
 
         // Define the required CVV length based on card network
         context.coordinator.expectedCVVLength = cardNetwork.validation?.code.length ?? 3
-
-        print("🔤 Creating new CVV text field")
+        logger.debug(message: "🔤 Creating new CVV text field")
 
         // Add a "Done" button to the keyboard
         let toolbar = UIToolbar()
@@ -126,7 +125,7 @@ struct CVVTextField: UIViewRepresentable {
 
         // Only update if needed
         if cvvTextField.internalText != cvv {
-            print("🔄 Updating CVV text field: internalText='\(cvvTextField.internalText ?? "")' → cvv='\(cvv)'")
+            logger.debug(message: "🔄 Updating CVV text field: internalText='\(cvvTextField.internalText ?? "")' → cvv='\(cvv)'")
             cvvTextField.internalText = cvv
             cvvTextField.text = cvv
         }
@@ -149,20 +148,20 @@ struct CVVTextField: UIViewRepresentable {
         }
 
         @objc func doneButtonTapped() {
-            print("⌨️ Done button tapped")
+            logger.debug(message: "⌨️ Done button tapped")
             DispatchQueue.main.async {
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
         }
 
         func textFieldDidBeginEditing(_ textField: UITextField) {
-            print("⌨️ CVV field began editing")
+            logger.debug(message: "⌨️ CVV field began editing")
             // Clear error message when user starts editing
             parent.errorMessage = nil
         }
 
         func textFieldDidEndEditing(_ textField: UITextField) {
-            print("⌨️ CVV field ended editing")
+            logger.debug(message: "⌨️ CVV field ended editing")
             // Validate the CVV when the field loses focus
             if let cvvTextField = textField as? PrimerCVVTextField,
                let cvv = cvvTextField.internalText {
@@ -181,7 +180,7 @@ struct CVVTextField: UIViewRepresentable {
                 return true
             }
 
-            print("⌨️ CVV shouldChangeCharactersIn - range: \(range.location),\(range.length), replacement: '\(string)'")
+            logger.debug(message: "⌨️ CVV shouldChangeCharactersIn - range: \(range.location),\(range.length), replacement: '\(string)'")
 
             // Get current text
             let currentText = cvvTextField.internalText ?? ""

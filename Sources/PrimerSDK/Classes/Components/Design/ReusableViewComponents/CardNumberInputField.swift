@@ -52,7 +52,7 @@ struct CardNumberInputField: View {
 
             // Card input field with network icon
             HStack(spacing: 8) {
-                ImprovedCardNumberTextField(
+                CardNumberTextField(
                     cardNumber: $cardNumber,
                     isValid: $isValid,
                     cardNetwork: $cardNetwork,
@@ -107,7 +107,7 @@ struct CardNumberInputField: View {
 
 /// An improved UIViewRepresentable wrapper that avoids state cycles
 @available(iOS 15.0, *)
-struct ImprovedCardNumberTextField: UIViewRepresentable {
+struct CardNumberTextField: UIViewRepresentable, LogReporter {
     @Binding var cardNumber: String
     @Binding var isValid: Bool?
     @Binding var cardNetwork: CardNetwork
@@ -122,7 +122,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
         textField.borderStyle = .none
         textField.font = UIFont.preferredFont(forTextStyle: .body)
 
-        print("🔤 Creating new card number text field")
+        logger.debug(message: "🔤 Creating new card number text field")
 
         // Add a "Done" button to the keyboard
         let toolbar = UIToolbar()
@@ -143,7 +143,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
         // Important: Set initial value
         textField.internalText = cardNumber
 
-        print("🔤 Initial card number text field setup complete")
+        logger.debug(message: "🔤 Initial card number text field setup complete")
 
         return textField
     }
@@ -154,7 +154,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
 
         // Only update if needed
         if primerTextField.internalText != cardNumber {
-            print("🔄 Updating text field: internalText='\(primerTextField.internalText ?? "")' → cardNumber='\(cardNumber)'")
+            logger.debug(message: "🔄 Updating text field: internalText='\(primerTextField.internalText ?? "")' → cardNumber='\(cardNumber)'")
 
             primerTextField.internalText = cardNumber
 
@@ -162,7 +162,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
             if !cardNumber.isEmpty {
                 let formattedText = formatCardNumber(cardNumber, for: cardNetwork)
                 if primerTextField.text != formattedText {
-                    print("🔄 Formatted text update: '\(primerTextField.text ?? "")' → '\(formattedText)'")
+                    logger.debug(message: "🔄 Formatted text update: '\(primerTextField.text ?? "")' → '\(formattedText)'")
                     primerTextField.text = formattedText
                 }
             }
@@ -170,7 +170,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
             // Log the current cursor position after update
             if let selectedRange = primerTextField.selectedTextRange {
                 let cursorPosition = primerTextField.offset(from: primerTextField.beginningOfDocument, to: selectedRange.start)
-                print("🔄 Cursor position after update: \(cursorPosition)")
+                logger.debug(message: "🔄 Cursor position after update: \(cursorPosition)")
             }
         }
     }
@@ -196,7 +196,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
     }
 
     class Coordinator: NSObject, UITextFieldDelegate {
-        var parent: ImprovedCardNumberTextField
+        var parent: CardNumberTextField
 
         // Add a flag to prevent update cycles
         private var isUpdating = false
@@ -208,9 +208,9 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
         // For tracking changes in cursor position
         private var lastCursorPosition: Int = 0
 
-        init(_ parent: ImprovedCardNumberTextField) {
+        init(_ parent: CardNumberTextField) {
             self.parent = parent
-            print("📝 Coordinator initialized")
+            logger.debug(message: "📝 Coordinator initialized")
         }
 
         @objc func textDidChangeNotification(_ notification: Notification) {
@@ -222,33 +222,33 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
             let cursorPosition = textField.offset(from: textField.beginningOfDocument, to: selectedRange.start)
 
             if cursorPosition != lastCursorPosition {
-                print("📍 Cursor position changed: \(lastCursorPosition) → \(cursorPosition)")
+                logger.debug(message: "📍 Cursor position changed: \(lastCursorPosition) → \(cursorPosition)")
                 lastCursorPosition = cursorPosition
             }
         }
 
         @objc func doneButtonTapped() {
-            print("⌨️ Done button tapped")
+            logger.debug(message: "⌨️ Done button tapped")
             DispatchQueue.main.async {
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }
         }
 
         func textFieldDidBeginEditing(_ textField: UITextField) {
-            print("⌨️ Text field began editing")
+            logger.debug(message: "⌨️ Text field began editing")
             // Clear error message when user starts editing
             parent.errorMessage = nil
 
             // Log initial cursor position
             if let selectedRange = textField.selectedTextRange {
                 let cursorPosition = textField.offset(from: textField.beginningOfDocument, to: selectedRange.start)
-                print("📍 Initial cursor position: \(cursorPosition)")
+                logger.debug(message: "📍 Initial cursor position: \(cursorPosition)")
                 lastCursorPosition = cursorPosition
             }
         }
 
         func textFieldDidEndEditing(_ textField: UITextField) {
-            print("⌨️ Text field ended editing")
+            logger.debug(message: "⌨️ Text field ended editing")
             // Validate the card number when the field loses focus
             if let primerTextField = textField as? PrimerCardNumberTextField,
                let cardNumber = primerTextField.internalText {
@@ -261,7 +261,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
                 let cursorPosition = textField.offset(from: textField.beginningOfDocument, to: selectedRange.start)
 
                 if cursorPosition != lastCursorPosition {
-                    print("📍 Selection changed: \(lastCursorPosition) → \(cursorPosition)")
+                    logger.debug(message: "📍 Selection changed: \(lastCursorPosition) → \(cursorPosition)")
                     lastCursorPosition = cursorPosition
                 }
             }
@@ -270,7 +270,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             // Avoid reentrance
             if isUpdating {
-                print("🔄 Avoiding reentrance in shouldChangeCharactersIn")
+                logger.debug(message: "🔄 Avoiding reentrance in shouldChangeCharactersIn")
                 return false
             }
 
@@ -278,7 +278,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
                 return true
             }
 
-            print("⌨️ shouldChangeCharactersIn - range: \(range.location),\(range.length), replacement: '\(string)'")
+            logger.debug(message: "⌨️ shouldChangeCharactersIn - range: \(range.location),\(range.length), replacement: '\(string)'")
 
             // Save current cursor position before making changes
             saveCursorPosition(textField)
@@ -293,7 +293,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
             // Check if this is a paste operation by checking string length
             let isPasteOperation = !isDeletion && string.count > 1
             if isPasteOperation {
-                print("📋 Paste operation detected with \(string.count) characters")
+                logger.debug(message: "📋 Paste operation detected with \(string.count) characters")
             }
 
             var newCardNumber: String
@@ -303,7 +303,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
                 if range.length > 0 {
                     // Convert formatted range to unformatted range for selection deletion
                     let unformattedRange = getUnformattedRange(formattedRange: range, formattedText: textField.text ?? "", unformattedText: currentText)
-                    print("🗑️ Deletion - formatted range \(range.location),\(range.length) → unformatted range \(unformattedRange.location),\(unformattedRange.length)")
+                    logger.debug(message: "🗑️ Deletion - formatted range \(range.location),\(range.length) → unformatted range \(unformattedRange.location),\(unformattedRange.length)")
                     newCardNumber = handleDeletion(currentText: currentText, unformattedRange: unformattedRange)
                 } else if range.location > 0 {
                     // Simple backspace - remove the character before the cursor in unformatted text
@@ -316,7 +316,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
                         }
                     }
 
-                    print("🗑️ Backspace at position \(range.location) maps to unformatted position \(unformattedPos)")
+                    logger.debug(message: "🗑️ Backspace at position \(range.location) maps to unformatted position \(unformattedPos)")
 
                     if unformattedPos > 0 && unformattedPos <= currentText.count {
                         let index = currentText.index(currentText.startIndex, offsetBy: unformattedPos - 1)
@@ -332,13 +332,13 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
                 // Only allow numeric characters
                 let filteredText = string.filter { $0.isNumber }
                 if filteredText.isEmpty {
-                    print("⌨️ Ignoring non-numeric input: '\(string)'")
+                    logger.debug(message: "⌨️ Ignoring non-numeric input: '\(string)'")
                     return false
                 }
 
                 // For paste operations, log the filtered content
                 if isPasteOperation && filteredText.count != string.count {
-                    print("📋 Filtered paste content from \(string.count) to \(filteredText.count) digits")
+                    logger.debug(message: "📋 Filtered paste content from \(string.count) to \(filteredText.count) digits")
                 }
 
                 // Count numeric characters up to cursor position to get insertion point
@@ -351,9 +351,9 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
                 }
 
                 if isPasteOperation {
-                    print("📋 Pasting at position \(range.location) maps to unformatted position \(unformattedPos)")
+                    logger.debug(message: "📋 Pasting at position \(range.location) maps to unformatted position \(unformattedPos)")
                 } else {
-                    print("⌨️ Typing at position \(range.location) maps to unformatted position \(unformattedPos)")
+                    logger.debug(message: "⌨️ Typing at position \(range.location) maps to unformatted position \(unformattedPos)")
                 }
 
                 // Insert at the correct position in unformatted text
@@ -367,11 +367,11 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
 
             // If text is invalid or too long, reject the change
             if newCardNumber.count > 19 {
-                print("⌨️ Rejecting input - would exceed max length (19)")
+                logger.debug(message: "⌨️ Rejecting input - would exceed max length (19)")
                 return false
             }
 
-            print("🔄 Text will change: '\(currentText)' → '\(newCardNumber)'")
+            logger.debug(message: "🔄 Text will change: '\(currentText)' → '\(newCardNumber)'")
 
             // Process the valid text change
             processTextChange(primerTextField: primerTextField, newText: newCardNumber, isDeletion: isDeletion)
@@ -385,7 +385,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
                 if let start = textField.position(from: textField.beginningOfDocument, offset: 0),
                    let cursorPos = textField.selectedTextRange?.start {
                     cursorPosition = textField.offset(from: start, to: cursorPos)
-                    print("💾 Saved cursor position: \(cursorPosition)")
+                    logger.debug(message: "💾 Saved cursor position: \(cursorPosition)")
                 }
             }
         }
@@ -427,7 +427,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
                 }
             }
 
-            print("🔍 Range conversion: formatted \(formattedRange.location),\(formattedRange.length) → unformatted \(unformattedLocation),\(unformattedLength)")
+            logger.debug(message: "🔍 Range conversion: formatted \(formattedRange.location),\(formattedRange.length) → unformatted \(unformattedLocation),\(unformattedLength)")
 
             return NSRange(location: unformattedLocation, length: unformattedLength)
         }
@@ -436,21 +436,21 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
             // If deleting a range of characters
             if unformattedRange.length > 0 {
                 if unformattedRange.location >= currentText.count {
-                    print("🗑️ Deletion range outside text bounds")
+                    logger.debug(message: "🗑️ Deletion range outside text bounds")
                     return currentText
                 }
 
                 let startIndex = currentText.index(currentText.startIndex, offsetBy: unformattedRange.location)
                 let endIndex = currentText.index(startIndex, offsetBy: min(unformattedRange.length, currentText.count - unformattedRange.location))
                 let newText = currentText.replacingCharacters(in: startIndex..<endIndex, with: "")
-                print("🗑️ Deleted range from text: '\(currentText)' → '\(newText)'")
+                logger.debug(message: "🗑️ Deleted range from text: '\(currentText)' → '\(newText)'")
                 return newText
             }
 
             // If backspace at the end of the text
             if unformattedRange.location >= currentText.count && currentText.count > 0 {
                 let newText = String(currentText.dropLast())
-                print("🗑️ Deleted last character: '\(currentText)' → '\(newText)'")
+                logger.debug(message: "🗑️ Deleted last character: '\(currentText)' → '\(newText)'")
                 return newText
             }
 
@@ -458,16 +458,16 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
             if unformattedRange.location > 0 && unformattedRange.location <= currentText.count {
                 let index = currentText.index(currentText.startIndex, offsetBy: unformattedRange.location - 1)
                 let newText = currentText.removing(at: index)
-                print("🗑️ Deleted character at position \(unformattedRange.location-1): '\(currentText)' → '\(newText)'")
+                logger.debug(message: "🗑️ Deleted character at position \(unformattedRange.location-1): '\(currentText)' → '\(newText)'")
                 return newText
             }
 
-            print("🗑️ No changes made during deletion")
+            logger.debug(message: "🗑️ No changes made during deletion")
             return currentText
         }
 
         private func processTextChange(primerTextField: PrimerCardNumberTextField, newText: String, isDeletion: Bool) {
-            print("🔄 Processing text change: current='\(primerTextField.text ?? "")', new unformatted='\(newText)'")
+            logger.debug(message: "🔄 Processing text change: current='\(primerTextField.text ?? "")', new unformatted='\(newText)'")
 
             // Get current text for comparison
             let currentFormattedText = primerTextField.text ?? ""
@@ -476,7 +476,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
             // Determine card network only if we have enough digits
             let networkChanged = updateCardNetworkIfNeeded(newText: newText)
             if networkChanged {
-                print("🔄 Card network changed to: \(parent.cardNetwork.displayName)")
+                logger.debug(message: "🔄 Card network changed to: \(parent.cardNetwork.displayName)")
             }
 
             // Avoid update cycles
@@ -486,7 +486,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
             let maxLength = parent.cardNetwork.validation?.lengths.max() ?? 16
             let truncatedText = String(newText.prefix(maxLength))
             if truncatedText.count < newText.count {
-                print("🔄 Text truncated to max length \(maxLength)")
+                logger.debug(message: "🔄 Text truncated to max length \(maxLength)")
             }
 
             // Format for display with spaces
@@ -496,7 +496,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
             primerTextField.internalText = truncatedText
             primerTextField.text = formattedText
 
-            print("🔄 Text updated: unformatted='\(truncatedText)', formatted='\(formattedText)'")
+            logger.debug(message: "🔄 Text updated: unformatted='\(truncatedText)', formatted='\(formattedText)'")
 
             // Calculate new cursor position
             var newCursorPosition: Int = 0
@@ -505,7 +505,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
                 if truncatedText.isEmpty {
                     // If all text was deleted, position cursor at the beginning
                     newCursorPosition = 0
-                    print("📍 Cursor reset to beginning after complete deletion")
+                    logger.debug(message: "📍 Cursor reset to beginning after complete deletion")
                 } else {
                     // For backspace operation, position cursor at the end of the text
                     // This handles the common case of pressing backspace at the end of the text
@@ -540,9 +540,9 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
                         }
 
                         newCursorPosition = positionCursor
-                        print("📍 Calculated cursor position after deletion: \(newCursorPosition) (target digits: \(targetDigits))")
+                        logger.debug(message: "📍 Calculated cursor position after deletion: \(newCursorPosition) (target digits: \(targetDigits))")
                     } else {
-                        print("📍 Cursor positioned at end after deletion: \(newCursorPosition)")
+                        logger.debug(message: "📍 Cursor positioned at end after deletion: \(newCursorPosition)")
                     }
                 }
             } else {
@@ -576,24 +576,24 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
                 }
 
                 newCursorPosition = cursorPos
-                print("📍 Calculated cursor position after addition: \(newCursorPosition) (target digits: \(targetDigitPosition))")
+                logger.debug(message: "📍 Calculated cursor position after addition: \(newCursorPosition) (target digits: \(targetDigitPosition))")
             }
 
             // Ensure cursor position is within valid range
             let safePosition = min(newCursorPosition, formattedText.count)
             if safePosition != newCursorPosition {
-                print("📍 Cursor position adjusted to safe value: \(newCursorPosition) → \(safePosition)")
+                logger.debug(message: "📍 Cursor position adjusted to safe value: \(newCursorPosition) → \(safePosition)")
             }
 
             // Restore cursor position
             DispatchQueue.main.async {
                 if let textField = primerTextField as UITextField?,
                    let newPosition = textField.position(from: textField.beginningOfDocument, offset: safePosition) {
-                    print("📍 Setting cursor position to: \(safePosition)")
+                    logger.debug(message: "📍 Setting cursor position to: \(safePosition)")
                     textField.selectedTextRange = textField.textRange(from: newPosition, to: newPosition)
                     self.lastCursorPosition = safePosition
                 } else {
-                    print("⚠️ Failed to set cursor position to: \(safePosition)")
+                    logger.debug(message: "⚠️ Failed to set cursor position to: \(safePosition)")
                 }
             }
 
@@ -604,7 +604,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
         private func updateCardNetworkIfNeeded(newText: String) -> Bool {
             if newText.count < 4 {
                 if parent.cardNetwork != .unknown {
-                    print("🔄 Resetting card network to unknown (insufficient digits)")
+                    logger.debug(message: "🔄 Resetting card network to unknown (insufficient digits)")
                     parent.cardNetwork = .unknown
                     return true
                 }
@@ -615,7 +615,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
             let networkChanged = newCardNetwork != parent.cardNetwork
 
             if networkChanged {
-                print("🔄 Card network changed: \(parent.cardNetwork.displayName) → \(newCardNetwork.displayName)")
+                logger.debug(message: "🔄 Card network changed: \(parent.cardNetwork.displayName) → \(newCardNetwork.displayName)")
                 parent.cardNetwork = newCardNetwork
             }
 
@@ -629,24 +629,24 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
 
                 // Only update the binding if the value has actually changed
                 if truncatedText != self.parent.cardNumber {
-                    print("🔄 Updating parent state with: '\(truncatedText)'")
+                    logger.debug(message: "🔄 Updating parent state with: '\(truncatedText)'")
                     self.parent.cardNumber = truncatedText
                 } else {
-                    print("🔄 Skipping redundant state update (value unchanged)")
+                    logger.debug(message: "🔄 Skipping redundant state update (value unchanged)")
                 }
 
                 // Don't show validation errors during typing unless we have a complete number
                 if truncatedText.count >= 13 {
                     self.debouncedValidation(truncatedText)
                 } else if truncatedText.isEmpty {
-                    print("🔄 Clearing validation state (empty text)")
+                    logger.debug(message: "🔄 Clearing validation state (empty text)")
                     self.parent.isValid = nil
                     self.parent.errorMessage = nil
                 }
 
                 // Reset update flag
                 self.isUpdating = false
-                print("🔄 Text change processing completed")
+                logger.debug(message: "🔄 Text change processing completed")
             }
         }
 
@@ -660,7 +660,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
             // Schedule validation after a short delay to avoid flickering during typing
             validationTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
                 guard let self = self else { return }
-                print("⏱️ Running delayed validation after typing pause")
+                logger.debug(message: "⏱️ Running delayed validation after typing pause")
                 self.validateCardNumberWhileTyping(number, for: self.parent.cardNetwork)
             }
         }
@@ -676,7 +676,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
 
             // Verify the network is valid
             if network == .unknown && number.count >= 6 {
-                print("⚠️ Validation failed: Unsupported card type")
+                logger.debug(message: "⚠️ Validation failed: Unsupported card type")
                 parent.isValid = false
                 parent.errorMessage = "Unsupported card type"
                 return
@@ -686,11 +686,11 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
             if let validation = network.validation,
                validation.lengths.contains(number.count) {
                 if isLuhnValid(number) {
-                    print("✅ Validation passed: Card number is valid")
+                    logger.debug(message: "✅ Validation passed: Card number is valid")
                     parent.isValid = true
                     parent.errorMessage = nil
                 } else {
-                    print("⚠️ Validation failed: Invalid card number (Luhn check)")
+                    logger.debug(message: "⚠️ Validation failed: Invalid card number (Luhn check)")
                     parent.isValid = false
                     parent.errorMessage = "Invalid card number"
                 }
@@ -704,7 +704,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
         // Full validation when field loses focus
         private func validateCardNumberFully(_ number: String) {
             if number.isEmpty {
-                print("⚠️ Validation failed: Card number cannot be blank")
+                logger.debug(message: "⚠️ Validation failed: Card number cannot be blank")
                 parent.isValid = false
                 parent.errorMessage = "Card number cannot be blank"
                 return
@@ -714,7 +714,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
 
             // Check if the network is valid
             if network == .unknown {
-                print("⚠️ Validation failed: Unsupported card type")
+                logger.debug(message: "⚠️ Validation failed: Unsupported card type")
                 parent.isValid = false
                 parent.errorMessage = "Unsupported card type"
                 return
@@ -723,7 +723,7 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
             // Check if the length is valid for this network
             if let validation = network.validation {
                 if !validation.lengths.contains(number.count) {
-                    print("⚠️ Validation failed: Invalid card number length (\(number.count)) for \(network.displayName)")
+                    logger.debug(message: "⚠️ Validation failed: Invalid card number length (\(number.count)) for \(network.displayName)")
                     parent.isValid = false
                     parent.errorMessage = "Invalid card number length"
                     return
@@ -732,14 +732,14 @@ struct ImprovedCardNumberTextField: UIViewRepresentable {
 
             // Check Luhn algorithm
             if !isLuhnValid(number) {
-                print("⚠️ Validation failed: Invalid card number (Luhn check)")
+                logger.debug(message: "⚠️ Validation failed: Invalid card number (Luhn check)")
                 parent.isValid = false
                 parent.errorMessage = "Invalid card number"
                 return
             }
 
             // All checks passed
-            print("✅ Validation passed: Card number is valid")
+            logger.debug(message: "✅ Validation passed: Card number is valid")
             parent.isValid = true
             parent.errorMessage = nil
         }
@@ -785,7 +785,7 @@ extension String {
 
 /// A custom UITextField that masks its text property to prevent exposing
 /// sensitive card information externally, while maintaining the internal value.
-class PrimerCardNumberTextField: UITextField {
+class PrimerCardNumberTextField: UITextField, LogReporter {
     /// The actual card number stored internally
     var internalText: String?
 
@@ -801,13 +801,13 @@ class PrimerCardNumberTextField: UITextField {
 
     override func becomeFirstResponder() -> Bool {
         let result = super.becomeFirstResponder()
-        print("⌨️ TextField became first responder: \(result)")
+        logger.debug(message: "⌨️ TextField became first responder: \(result)")
         return result
     }
 
     override func resignFirstResponder() -> Bool {
         let result = super.resignFirstResponder()
-        print("⌨️ TextField resigned first responder: \(result)")
+        logger.debug(message: "⌨️ TextField resigned first responder: \(result)")
         return result
     }
 }
