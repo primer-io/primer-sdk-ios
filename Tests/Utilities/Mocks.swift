@@ -1,5 +1,5 @@
 //
-//  PrimerSettings.swift
+//  Mocks.swift
 //  PrimerSDKTests
 //
 //  Created by Carl Eriksson on 03/01/2021.
@@ -8,7 +8,7 @@
 @testable import PrimerSDK
 import XCTest
 
-var mockClientToken = DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSince1970: 2000000000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", supportedThreeDsProtocolVersions: nil, coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: nil, backendCallbackUrl: nil, primerTransactionId: nil, iPay88PaymentMethodId: nil, iPay88ActionType: nil, supportedCurrencyCode: nil, supportedCountry: nil, nolPayTransactionNo: nil, stripeClientSecret: nil, sdkCompleteUrl: "https://primer.io")
+var mockClientToken = DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSince1970: 2_000_000_000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", supportedThreeDsProtocolVersions: nil, coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: nil, backendCallbackUrl: nil, primerTransactionId: nil, iPay88PaymentMethodId: nil, iPay88ActionType: nil, supportedCurrencyCode: nil, supportedCountry: nil, nolPayTransactionNo: nil, stripeClientSecret: nil, sdkCompleteUrl: "https://primer.io")
 
 // (
 //    accessToken: "bla",
@@ -29,7 +29,6 @@ var mockSettings = PrimerSettings(
 )
 
 class Mocks {
-
     static var settings = PrimerSettings(
         paymentMethodOptions: PrimerPaymentMethodOptions(
             urlScheme: "urlScheme",
@@ -37,7 +36,7 @@ class Mocks {
         )
     )
 
-    static var decodedJWTToken = DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSince1970: 2000000000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", supportedThreeDsProtocolVersions: nil, coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: nil, backendCallbackUrl: nil, primerTransactionId: nil, iPay88PaymentMethodId: nil, iPay88ActionType: nil, supportedCurrencyCode: nil, supportedCountry: nil, nolPayTransactionNo: nil, stripeClientSecret: nil, sdkCompleteUrl: "https://primer.io")
+    static var decodedJWTToken = DecodedJWTToken(accessToken: "bla", expDate: Date(timeIntervalSince1970: 2_000_000_000), configurationUrl: "https://primer.io", paymentFlow: "bla", threeDSecureInitUrl: "https://primer.io", threeDSecureToken: "bla", supportedThreeDsProtocolVersions: nil, coreUrl: "https://primer.io", pciUrl: "https://primer.io", env: "bla", intent: "bla", statusUrl: "https://primer.io", redirectUrl: "https://primer.io", qrCode: nil, accountNumber: nil, backendCallbackUrl: nil, primerTransactionId: nil, iPay88PaymentMethodId: nil, iPay88ActionType: nil, supportedCurrencyCode: nil, supportedCountry: nil, nolPayTransactionNo: nil, stripeClientSecret: nil, sdkCompleteUrl: "https://primer.io")
 
     static var primerPaymentMethodTokenData = PrimerPaymentMethodTokenData(
         analyticsId: "mock_analytics_id",
@@ -50,7 +49,8 @@ class Mocks {
         threeDSecureAuthentication: nil,
         token: "mock_payment_method_token",
         tokenType: .singleUse,
-        vaultData: nil)
+        vaultData: nil
+    )
 
     static var primerPaymentMethodInstrumentationData = Response.Body.Tokenization.PaymentInstrumentData(
         paypalBillingAgreementId: nil,
@@ -76,7 +76,8 @@ class Mocks {
         paymentMethodType: nil,
         sessionInfo: nil,
         bankName: nil,
-        accountNumberLast4Digits: nil)
+        accountNumberLast4Digits: nil
+    )
 
     static var payment = Response.Body.Payment(
         id: "mock_id",
@@ -90,7 +91,8 @@ class Mocks {
         orderId: nil,
         requiredAction: nil,
         status: .success,
-        paymentFailureReason: nil)
+        paymentFailureReason: nil
+    )
 
     static func createMockAPIConfiguration(
         clientSession: ClientSession.APIResponse?,
@@ -105,7 +107,8 @@ class Mocks {
             paymentMethods: paymentMethods,
             primerAccountId: nil,
             keys: nil,
-            checkoutModules: nil)
+            checkoutModules: nil
+        )
     }
 
     static var apiConfiguration = PrimerAPIConfiguration(
@@ -117,14 +120,13 @@ class Mocks {
         paymentMethods: [],
         primerAccountId: nil,
         keys: nil,
-        checkoutModules: nil)
+        checkoutModules: nil
+    )
 
     static var listCardNetworksData = Response.Body.Bin.Networks(networks: [])
 
     class Static {
-
         class Strings {
-
             static var webRedirectPaymentMethodId = "mock_web_redirect_payment_method_id"
             static var adyenGiroPayRedirectPaymentMethodId = "mock_adyen_giropay_payment_method_id"
             static var adyenBlikPaymentMethodId = "mock_adyen_blik_payment_method_id"
@@ -158,7 +160,6 @@ class Mocks {
     }
 
     class PaymentMethods {
-
         static var webRedirectPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.webRedirectPaymentMethodId,
             implementationType: .webRedirect,
@@ -167,7 +168,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 99,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var paymentCardPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.paymentCardPaymentMethodId,
@@ -177,7 +179,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 0,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var nolPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.nolPaymentMethodId,
@@ -187,7 +190,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 0,
             options: MerchantOptions(merchantId: "user8", merchantAccountId: "123", appId: "test"),
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var adyenGiroPayRedirectPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.adyenGiroPayRedirectPaymentMethodId,
@@ -197,7 +201,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 199,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var adyenBlikPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.adyenBlikPaymentMethodId,
@@ -207,7 +212,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: nil,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var adyenVippsPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.adyenVippsPaymentMethodId,
@@ -217,7 +223,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: nil,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var adyenIDealPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.adyenBlikPaymentMethodId,
@@ -227,7 +234,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: nil,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var klarnaRedirectPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.klarnaPaymentMethodId,
@@ -237,7 +245,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 299,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var idealFormWithRedirectPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.idealPaymentMethodId,
@@ -247,7 +256,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 0,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var klarnaPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.klarnaPaymentMethodId,
@@ -257,7 +267,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 299,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var paypalPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.paypalPaymentMethodId,
@@ -267,7 +278,8 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 0,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
 
         static var xenditPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.xenditPaymentMethodId,
@@ -277,19 +289,19 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 0,
             options: nil,
-            displayMetadata: nil)
+            displayMetadata: nil
+        )
     }
 }
 
 struct MockPrimerSettings: PrimerSettingsProtocol {
-
     var paymentHandling = PrimerPaymentHandling.auto
     var localeData = PrimerLocaleData()
     var paymentMethodOptions = PrimerPaymentMethodOptions()
     var uiOptions = PrimerUIOptions()
     var threeDsOptions = PrimerThreeDsOptions()
     var debugOptions = PrimerDebugOptions()
-    var apiVersion: PrimerApiVersion = .V2_3
+    var apiVersion: PrimerApiVersion = .V2_4
 }
 
 let mockPaymentMethodConfig = PrimerAPIConfiguration(
@@ -300,7 +312,7 @@ let mockPaymentMethodConfig = PrimerAPIConfiguration(
     clientSession: nil,
     paymentMethods: [
         PrimerPaymentMethod(id: "klarna-test", implementationType: .nativeSdk, type: "KLARNA", name: "Klarna", processorConfigId: "klarna-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
-        PrimerPaymentMethod(id: "paypal-test", implementationType: .nativeSdk, type: "PAYPAL", name: "PayPal", processorConfigId: "paypal-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil)
+        PrimerPaymentMethod(id: "paypal-test", implementationType: .nativeSdk, type: "PAYPAL", name: "PayPal", processorConfigId: "paypal-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
     ],
     primerAccountId: nil,
     keys: nil,
@@ -308,19 +320,14 @@ let mockPaymentMethodConfig = PrimerAPIConfiguration(
 )
 
 class MockAppState: AppStateProtocol {
-
     static var current: AppStateProtocol {
         let appState: AppStateProtocol = DependencyContainer.resolve()
         return appState
     }
 
-    lazy var amount: Int? = {
-        return MockAppState.current.apiConfiguration?.clientSession?.order?.merchantAmount ?? AppState.current.apiConfiguration?.clientSession?.order?.totalOrderAmount
-    }()
+    lazy var amount: Int? = MockAppState.current.apiConfiguration?.clientSession?.order?.merchantAmount ?? AppState.current.apiConfiguration?.clientSession?.order?.totalOrderAmount
 
-    lazy var currency: Currency? = {
-        return MockAppState.current.apiConfiguration?.clientSession?.order?.currencyCode
-    }()
+    lazy var currency: Currency? = MockAppState.current.apiConfiguration?.clientSession?.order?.currencyCode
 
     var clientToken: String?
     var apiConfiguration: PrimerAPIConfiguration?
@@ -342,7 +349,7 @@ class MockAppState: AppStateProtocol {
             clientSession: nil,
             paymentMethods: [
                 PrimerPaymentMethod(id: "klarna-test", implementationType: .nativeSdk, type: "KLARNA", name: "Klarna", processorConfigId: "klarna-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
-                PrimerPaymentMethod(id: "paypal-test", implementationType: .nativeSdk, type: "PAYPAL", name: "PayPal", processorConfigId: "paypal-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil)
+                PrimerPaymentMethod(id: "paypal-test", implementationType: .nativeSdk, type: "PAYPAL", name: "PayPal", processorConfigId: "paypal-processor-config-id", surcharge: nil, options: nil, displayMetadata: nil),
             ],
             primerAccountId: nil,
             keys: nil,
@@ -389,7 +396,6 @@ class MockLocator {
 }
 
 class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
-
     static var apiClient: PrimerAPIClientProtocol?
 
     static var clientToken: JWTToken? {
@@ -415,9 +421,9 @@ class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
 
     func setupSession(
         forClientToken clientToken: String,
-        requestDisplayMetadata: Bool,
-        requestClientTokenValidation: Bool,
-        requestVaultedPaymentMethods: Bool
+        requestDisplayMetadata _: Bool,
+        requestClientTokenValidation _: Bool,
+        requestVaultedPaymentMethods _: Bool
     ) -> Promise<Void> {
         return Promise { seal in
             guard let mockedAPIConfiguration = mockedAPIConfiguration else {
@@ -433,7 +439,7 @@ class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
         }
     }
 
-    func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
+    func updateSession(withActions _: ClientSessionUpdateRequest) -> Promise<Void> {
         return Promise { _ in
             guard let mockedAPIConfiguration = mockedAPIConfiguration else {
                 XCTAssert(false, "Set 'mockedAPIConfiguration' on your MockPrimerAPIConfigurationModule")
