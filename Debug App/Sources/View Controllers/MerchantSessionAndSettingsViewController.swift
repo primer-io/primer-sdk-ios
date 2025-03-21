@@ -10,7 +10,7 @@ import PrimerSDK
 import UIKit
 
 var environment: Environment = .sandbox
-var apiVersion: PrimerApiVersion = .V2_3
+var apiVersion: PrimerApiVersion = .V2_4
 var customDefinedApiKey: String?
 var performPaymentAfterVaulting: Bool = false
 var paymentSessionType: MerchantMockDataManager.SessionType = .generic
@@ -368,7 +368,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         case 2:
             apiVersion = .latest
         default:
-            apiVersion = .V2_3
+            apiVersion = .V2_4
         }
     }
 
