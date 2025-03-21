@@ -35,7 +35,7 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
         threeDsOptions: PrimerThreeDsOptions? = nil,
         debugOptions: PrimerDebugOptions? = nil,
         clientSessionCachingEnabled: Bool = false,
-        apiVersion: PrimerApiVersion = .V2_3
+        apiVersion: PrimerApiVersion = .V2_4
     ) {
         self.paymentHandling = paymentHandling
         self.localeData = localeData ?? PrimerLocaleData()
@@ -348,6 +348,6 @@ public enum PrimerApiVersion: String, Codable {
     case V2_3 = "2.3"
     case V2_4 = "2.4"
 
-    public static let latest = PrimerApiVersion.V2_3
+    public static let latest = PrimerApiVersion.V2_4
 }
 // swiftlint:enable identifier_name

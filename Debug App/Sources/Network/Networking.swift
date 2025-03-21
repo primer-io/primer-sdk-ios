@@ -23,7 +23,7 @@ enum APIVersion: String {
         case .V2_4:
             return .v2_4
         default:
-            return .v2_3
+            return .v2_4
         }
     }
 }
