@@ -1,8 +1,7 @@
 //
 //  CardPaymentView.swift
 //
-//
-//  Created by Boris on 17.3.25..
+//  Created on 21.03.2025.
 //
 
 import SwiftUI
@@ -27,6 +26,12 @@ struct CardPaymentView: View {
         onValidationChange: nil
     )
 
+    @State private var cardholderNameInputField = CardholderNameInputField(
+        label: "Cardholder Name",
+        placeholder: "John Doe",
+        onValidationChange: nil
+    )
+
     // Form state
     @State private var expiryMonth: String = ""
     @State private var expiryYear: String = ""
@@ -38,6 +43,7 @@ struct CardPaymentView: View {
     // Input validation state
     @State private var isCardNumberValid: Bool = false
     @State private var isCvvValid: Bool = false
+    @State private var isCardholderNameValid: Bool = false
 
     // Card network state
     @State private var currentCardNetwork: CardNetwork = .unknown
@@ -126,21 +132,19 @@ struct CardPaymentView: View {
                     }
             }
 
-            // MARK: - Cardholder Name Field
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Cardholder Name")
-                    .font(.caption)
-                    .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                TextField("John Doe", text: $cardholderName)
-                    .padding()
-                    .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-                    .cornerRadius(8)
-                    .onChange(of: cardholderName) { newValue in
-                        Task {
-                            scope.updateCardholderName(newValue)
-                        }
+            // MARK: - Cardholder Name Field - using our new CardholderNameInputField component
+            cardholderNameInputField
+                .onValidationChange { isValid in
+                    isCardholderNameValid = isValid
+                    updateFormValidity()
+
+                    // Get cardholder name directly from the field and update the scope
+                    let name = cardholderNameInputField.getCardholderName()
+                    cardholderName = name // Update local state
+                    Task {
+                        scope.updateCardholderName(name)
                     }
-            }
+                }
 
             // MARK: - Submit Button
             Button {
@@ -174,13 +178,13 @@ struct CardPaymentView: View {
                 if let state = state {
                     // Note: The card number is now managed by CardNumberTextField
                     // Note: The CVV is now managed by CVVInputField
+                    // Note: The cardholder name is now managed by CardholderNameInputField
                     expiryMonth = state.expiryMonth
                     expiryYear = state.expiryYear
-                    cardholderName = state.cardholderName
 
                     // We still use the scope's isValid for the overall form state
                     // but our local validity checks will influence this too
-                    isValid = state.isValid && isCardNumberValid && isCvvValid
+                    isValid = state.isValid && isCardNumberValid && isCvvValid && isCardholderNameValid
                 }
             }
         }
@@ -190,9 +194,8 @@ struct CardPaymentView: View {
     private func updateFormValidity() {
         // This method can be expanded with additional validation logic
         // For now it just combines the individual field validations
-        isValid = isCardNumberValid && isCvvValid &&
-                  !expiryMonth.isEmpty && !expiryYear.isEmpty &&
-                  !cardholderName.isEmpty
+        isValid = isCardNumberValid && isCvvValid && isCardholderNameValid &&
+                  !expiryMonth.isEmpty && !expiryYear.isEmpty
     }
 }
 
