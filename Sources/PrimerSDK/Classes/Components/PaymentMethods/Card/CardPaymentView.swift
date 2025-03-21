@@ -19,6 +19,14 @@ struct CardPaymentView: View {
         onValidationChange: nil
     )
 
+    @State private var expiryDateInputField = ExpiryDateInputField(
+        label: "Expiry Date",
+        placeholder: "MM/YY",
+        onValidationChange: nil,
+        onMonthChange: nil,
+        onYearChange: nil
+    )
+
     @State private var cvvInputField = CVVInputField(
         label: "CVV",
         placeholder: "123",
@@ -33,15 +41,12 @@ struct CardPaymentView: View {
     )
 
     // Form state
-    @State private var expiryMonth: String = ""
-    @State private var expiryYear: String = ""
-    @State private var cvv: String = ""
-    @State private var cardholderName: String = ""
     @State private var isValid: Bool = false
     @State private var isSubmitting: Bool = false
 
     // Input validation state
     @State private var isCardNumberValid: Bool = false
+    @State private var isExpiryDateValid: Bool = false
     @State private var isCvvValid: Bool = false
     @State private var isCardholderNameValid: Bool = false
 
@@ -80,44 +85,24 @@ struct CardPaymentView: View {
 
             // MARK: - Expiry Date and CVV Row
             HStack(spacing: 16) {
-                // Expiry month/year fields
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Expiry Date")
-                        .font(.caption)
-                        .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                    HStack(spacing: 8) {
-                        TextField("MM", text: $expiryMonth)
-                            .keyboardType(.numberPad)
-                            .multilineTextAlignment(.center)
-                            .frame(width: 60)
-                            .padding()
-                            .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-                            .cornerRadius(8)
-                            .onChange(of: expiryMonth) { newValue in
-                                Task {
-                                    scope.updateExpiryMonth(newValue)
-                                }
-                            }
-
-                        Text("/")
-                            .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-
-                        TextField("YY", text: $expiryYear)
-                            .keyboardType(.numberPad)
-                            .multilineTextAlignment(.center)
-                            .frame(width: 60)
-                            .padding()
-                            .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-                            .cornerRadius(8)
-                            .onChange(of: expiryYear) { newValue in
-                                Task {
-                                    scope.updateExpiryYear(newValue)
-                                }
-                            }
+                // Expiry date field using our new component
+                expiryDateInputField
+                    .onValidationChange { isValid in
+                        isExpiryDateValid = isValid
+                        updateFormValidity()
                     }
-                }
+                    .onMonthChange { month in
+                        Task {
+                            scope.updateExpiryMonth(month)
+                        }
+                    }
+                    .onYearChange { year in
+                        Task {
+                            scope.updateExpiryYear(year)
+                        }
+                    }
 
-                // CVV field - using our new CVVInputField component
+                // CVV field using our CVVInputField component
                 cvvInputField
                     .onValidationChange { isValid in
                         isCvvValid = isValid
@@ -125,14 +110,13 @@ struct CardPaymentView: View {
 
                         // Get CVV directly from the field and update the scope
                         let cvvValue = cvvInputField.getCVV()
-                        cvv = cvvValue // Update local state
                         Task {
                             scope.updateCvv(cvvValue)
                         }
                     }
             }
 
-            // MARK: - Cardholder Name Field - using our new CardholderNameInputField component
+            // MARK: - Cardholder Name Field using our CardholderNameInputField component
             cardholderNameInputField
                 .onValidationChange { isValid in
                     isCardholderNameValid = isValid
@@ -140,7 +124,6 @@ struct CardPaymentView: View {
 
                     // Get cardholder name directly from the field and update the scope
                     let name = cardholderNameInputField.getCardholderName()
-                    cardholderName = name // Update local state
                     Task {
                         scope.updateCardholderName(name)
                     }
@@ -176,15 +159,9 @@ struct CardPaymentView: View {
         .task {
             for await state in scope.state() {
                 if let state = state {
-                    // Note: The card number is now managed by CardNumberTextField
-                    // Note: The CVV is now managed by CVVInputField
-                    // Note: The cardholder name is now managed by CardholderNameInputField
-                    expiryMonth = state.expiryMonth
-                    expiryYear = state.expiryYear
-
-                    // We still use the scope's isValid for the overall form state
-                    // but our local validity checks will influence this too
-                    isValid = state.isValid && isCardNumberValid && isCvvValid && isCardholderNameValid
+                    // The fields are now managed by their respective components
+                    // We just need to update the overall form validity
+                    updateFormValidity()
                 }
             }
         }
@@ -192,10 +169,8 @@ struct CardPaymentView: View {
 
     /// Updates the overall form validity based on field-level validation
     private func updateFormValidity() {
-        // This method can be expanded with additional validation logic
-        // For now it just combines the individual field validations
-        isValid = isCardNumberValid && isCvvValid && isCardholderNameValid &&
-                  !expiryMonth.isEmpty && !expiryYear.isEmpty
+        // Combine the individual field validations
+        isValid = isCardNumberValid && isExpiryDateValid && isCvvValid && isCardholderNameValid
     }
 }
 
