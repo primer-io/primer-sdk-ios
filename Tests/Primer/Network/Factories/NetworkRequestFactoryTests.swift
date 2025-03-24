@@ -13,7 +13,7 @@ final class NetworkRequestFactoryTests: XCTestCase {
 
     var networkRequestFactory: NetworkRequestFactory!
 
-    func defaultHeaders(apiVersion: String = "2.3",
+    func defaultHeaders(apiVersion: String = "2.4",
                         isPost: Bool = false,
                         jwt: String? = nil) -> [String: String] {
         var headers = [
@@ -60,7 +60,7 @@ final class NetworkRequestFactoryTests: XCTestCase {
 
         XCTAssertEqual(request.httpMethod, "GET")
         XCTAssertEqual(request.url?.absoluteString, (Mocks.decodedJWTToken.configurationUrl ?? "") + "?withDisplayMetadata=true")
-        XCTAssertEqual(request.allHTTPHeaderFields, defaultHeaders(apiVersion: "2.3", jwt: "bla"))
+        XCTAssertEqual(request.allHTTPHeaderFields, defaultHeaders(apiVersion: "2.4", jwt: "bla"))
     }
 
     func testRequestCreation_paymentInstruments() throws {
