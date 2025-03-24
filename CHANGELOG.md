@@ -1,3 +1,14 @@
+## 2.36.0 (2025-03-24)
+
+### Feat
+
+- Update default api version to 2.4 (#1135)
+
+### Fix
+
+- Currency formatting incorrect in CTA (#1133)
+- **currency-formatting**: Ensure French locale places symbol on the right & add more unit tests
+
 ## 2.35.3 (2025-03-18)
 
 ### Fix
