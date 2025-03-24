@@ -10,20 +10,30 @@ import Foundation
 import PrimerSDK
 
 enum APIVersion: String {
-    case v2     = "2021-09-27"
-    case v2_1   = "2.1"
-    case v2_2   = "2.2"
-    case v3     = "2021-10-19"
-    case v4     = "2021-12-01"
-    case v5     = "2021-12-10"
+    case v2 = "2021-09-27"
+    case v2_1 = "2.1"
+    case v2_2 = "2.2"
+    case v2_3 = "2.3"
+    case v2_4 = "2.4"
+
+    static func from(primerApiVersion: PrimerApiVersion) -> APIVersion {
+        switch primerApiVersion {
+        case .V2_3:
+            return .v2_3
+        case .V2_4:
+            return .v2_4
+        default:
+            return .v2_3
+        }
+    }
 }
 
 enum HTTPMethod: String {
-    case get    = "GET"
-    case post   = "POST"
-    case put    = "PUT"
+    case get = "GET"
+    case post = "POST"
+    case put = "PUT"
     case delete = "DELETE"
-    case patch  = "PATCH"
+    case patch = "PATCH"
 }
 
 enum NetworkError: Error {
@@ -40,12 +50,10 @@ private let logger = PrimerLogging.shared.logger
 class Networking {
 
     var endpoint: String {
-        get {
-            if environment == .local {
-                return "https://primer-mock-back-end.herokuapp.com"
-            } else {
-                return "https://us-central1-primerdemo-8741b.cloudfunctions.net"
-            }
+        if environment == .local {
+            return "https://primer-mock-back-end.herokuapp.com"
+        } else {
+            return "https://us-central1-primerdemo-8741b.cloudfunctions.net"
         }
     }
 
@@ -53,10 +61,11 @@ class Networking {
         apiVersion: APIVersion?,
         url: URL,
         method: HTTPMethod,
-        headers: [String: String]?,
+        headers: [String: String]? = nil,
         queryParameters: [String: String]?,
         body: Data?,
-        completion: @escaping (_ result: Result<Data, Error>) -> Void) {
+        completion: @escaping (_ result: Result<Data, Error>) -> Void
+    ) {
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
 
         if let queryParameters = queryParameters {
@@ -64,7 +73,8 @@ class Networking {
                 URLQueryItem(name: key, value: value)
             }
         }
-        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(
+            of: "+", with: "%2B")
 
         logger.debug(message: "URL: \(components.url!.absoluteString )")
 
@@ -84,7 +94,7 @@ class Networking {
             // We have a dedicated argument that takes x-api-key into account
             // in case a custom one gets defined before SDK initialization
             // so in case this array contains the same key, it won't be added
-            for header in headers.filter({ $0.value != "x-api-key"}) {
+            for header in headers.filter({ $0.key != "x-api-key" }) {
                 request.addValue(header.value, forHTTPHeaderField: header.key)
             }
         }
@@ -94,9 +104,10 @@ class Networking {
             request.addValue("IOS", forHTTPHeaderField: "Client")
         }
 
-        let headerDescriptions = request.allHTTPHeaderFields?.map { key, value in
-            return "\(key) = \(value)"
-        } ?? []
+        let headerDescriptions =
+            request.allHTTPHeaderFields?.map { key, value in
+                return "\(key) = \(value)"
+            } ?? []
         logger.debug(message: "Request Headers:\n\(headerDescriptions.joined(separator: "\n"))")
 
         if let body = body {
@@ -106,66 +117,77 @@ class Networking {
             }
         }
 
-        URLSession.shared.dataTask(with: request, completionHandler: { (data, response, err) in
-            DispatchQueue.main.async {
-                logger.debug(message: "Url: \(request.url?.absoluteString ?? "unknown")")
+        URLSession.shared.dataTask(
+            with: request,
+            completionHandler: { (data, response, err) in
+                DispatchQueue.main.async {
+                    logger.debug(message: "Url: \(request.url?.absoluteString ?? "unknown")")
 
-                if err != nil {
-                    logger.debug(message: "Error: \(err!)")
-                    completion(.failure(err!))
-                    return
-                }
-
-                guard let httpResponse = response as? HTTPURLResponse else {
-                    logger.debug(message: "Error: Invalid response")
-                    completion(.failure(NetworkError.invalidResponse))
-                    return
-                }
-
-                if httpResponse.statusCode < 200 || httpResponse.statusCode > 399 {
-                    logger.debug(message: "Status Code: \(httpResponse.statusCode)")
-                    if let data = data, let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
-                        logger.debug(message: "Response Body (json):\n\(resJson)")
+                    if err != nil {
+                        logger.debug(message: "Error: \(err!)")
+                        completion(.failure(err!))
+                        return
                     }
 
-                    guard let data = data else {
-                        logger.error(message: "No data")
+                    guard let httpResponse = response as? HTTPURLResponse else {
+                        logger.debug(message: "Error: Invalid response")
                         completion(.failure(NetworkError.invalidResponse))
                         return
                     }
 
-                    do {
-                        let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                        logger.debug(message: "Response Body (json):\n\(json)")
-                    } catch {
-                        logger.error(message: "Failed to parse response body: \(error)")
+                    if httpResponse.statusCode < 200 || httpResponse.statusCode > 399 {
+                        logger.debug(message: "Status Code: \(httpResponse.statusCode)")
+                        if let data = data,
+                           let resJson =
+                            (try? JSONSerialization.jsonObject(with: data, options: .allowFragments))
+                            as? [String: Any] {
+                            logger.debug(message: "Response Body (json):\n\(resJson)")
+                        }
+
+                        guard let data = data else {
+                            logger.error(message: "No data")
+                            completion(.failure(NetworkError.invalidResponse))
+                            return
+                        }
+
+                        do {
+                            let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                            logger.debug(message: "Response Body (json):\n\(json)")
+                        } catch {
+                            logger.error(message: "Failed to parse response body: \(error)")
+                        }
+                        completion(.failure(NetworkError.invalidResponse))
+                        return
                     }
-                    completion(.failure(NetworkError.invalidResponse))
-                    return
-                }
 
-                guard let data = data else {
+                    guard let data = data else {
+                        logger.debug(message: "Status Code: \(httpResponse.statusCode)")
+                        logger.debug(message: "Response Body: No data")
+                        completion(.failure(NetworkError.invalidResponse))
+                        return
+                    }
+
                     logger.debug(message: "Status Code: \(httpResponse.statusCode)")
-                    logger.debug(message: "Response Body: No data")
-                    completion(.failure(NetworkError.invalidResponse))
-                    return
-                }
+                    if let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments))
+                        as? [String: Any] {
+                        logger.debug(message: "Response Body (json):\n\(resJson)")
+                    } else {
+                        logger.debug(
+                            message:
+                                "Response Body (text):\n\(String(describing: String(data: data, encoding: .utf8)))")
+                    }
 
-                logger.debug(message: "Status Code: \(httpResponse.statusCode)")
-                if let resJson = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] {
-                    logger.debug(message: "Response Body (json):\n\(resJson)")
-                } else {
-                    logger.debug(message: "Response Body (text):\n\(String(describing: String(data: data, encoding: .utf8)))")
+                    completion(.success(data))
                 }
-
-                completion(.success(data))
             }
-        }).resume()
+        ).resume()
     }
 
-    static func resumePayment(_ paymentId: String,
-                              withToken resumeToken: String,
-                              completion: @escaping (Payment.Response?, Error?) -> Void) {
+    static func resumePayment(
+        _ paymentId: String,
+        withToken resumeToken: String,
+        completion: @escaping (Payment.Response?, Error?) -> Void
+    ) {
         let url = environment.baseUrl.appendingPathComponent("/api/payments/\(paymentId)/resume")
 
         let body = Payment.ResumeRequest(token: resumeToken)
@@ -186,7 +208,8 @@ class Networking {
             method: .post,
             headers: nil,
             queryParameters: nil,
-            body: bodyData) { result in
+            body: bodyData
+        ) { result in
             switch result {
             case .success(let data):
                 do {
@@ -211,10 +234,12 @@ class Networking {
 
         guard let token = paymentMethodTokenData.token else {
             let err = PrimerError.invalidClientToken(
-                userInfo: ["file": #file,
-                           "class": "\(Self.self)",
-                           "function": #function,
-                           "line": "\(#line)"],
+                userInfo: [
+                    "file": #file,
+                    "class": "\(Self.self)",
+                    "function": #function,
+                    "line": "\(#line)"
+                ],
                 diagnosticsId: UUID().uuidString)
             completion(nil, err)
             return
@@ -238,7 +263,8 @@ class Networking {
             method: .post,
             headers: nil,
             queryParameters: nil,
-            body: bodyData) { result in
+            body: bodyData
+        ) { result in
             switch result {
             case .success(let data):
                 do {
@@ -254,18 +280,18 @@ class Networking {
         }
     }
 
-    static func requestClientSession(requestBody: ClientSessionRequestBody, customDefinedApiKey: String? = nil, completion: @escaping (String?, Error?) -> Void) {
+    static func requestClientSession(
+        requestBody: ClientSessionRequestBody, customDefinedApiKey: String? = nil,
+        apiVersion: PrimerApiVersion,
+        completion: @escaping (String?, Error?) -> Void
+    ) {
         let url = environment.baseUrl.appendingPathComponent("/api/client-session")
 
         var bodyData: Data!
 
         do {
-            if let requestBodyJson = requestBody.dictionaryValue {
-                bodyData = try JSONSerialization.data(withJSONObject: requestBodyJson, options: .fragmentsAllowed)
-            } else {
-                completion(nil, NetworkError.serializationError)
-                return
-            }
+            let encoder = JSONEncoder()
+            bodyData = try encoder.encode(requestBody)
         } catch {
             completion(nil, NetworkError.missingParams)
             return
@@ -273,20 +299,23 @@ class Networking {
 
         let networking = Networking()
         networking.request(
-            apiVersion: .v2_2,
+            apiVersion: APIVersion.from(primerApiVersion: apiVersion),
             url: url,
             method: .post,
-            headers: URL.requestSessionHTTPHeaders(useNewWorkflows: useNewWorkflows),
             queryParameters: nil,
             body: bodyData
         ) { result in
             switch result {
             case .success(let data):
                 do {
-                    if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
+                    if let token =
+                        (try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                            as? [String: Any])?["clientToken"] as? String {
                         completion(token, nil)
                     } else {
-                        let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
+                        let err = NSError(
+                            domain: "example", code: 10,
+                            userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
                         completion(nil, err)
                     }
 
@@ -299,7 +328,10 @@ class Networking {
         }
     }
 
-    static func patchClientSession(clientToken: String, requestBody: ClientSessionRequestBody, customDefinedApiKey: String? = nil, completion: @escaping (String?, Error?) -> Void) {
+    static func patchClientSession(
+        clientToken: String, requestBody: ClientSessionRequestBody, customDefinedApiKey: String? = nil,
+        completion: @escaping (String?, Error?) -> Void
+    ) {
         let url = environment.baseUrl.appendingPathComponent("/api/client-session")
 
         var tmpRequestBody = requestBody
@@ -308,12 +340,8 @@ class Networking {
         let bodyData: Data!
 
         do {
-            if let requestBodyJson = tmpRequestBody.dictionaryValue {
-                bodyData = try JSONSerialization.data(withJSONObject: requestBodyJson, options: .fragmentsAllowed)
-            } else {
-                completion(nil, NetworkError.serializationError)
-                return
-            }
+            let encoder = JSONEncoder()
+            bodyData = try encoder.encode(requestBody)
         } catch {
             completion(nil, NetworkError.missingParams)
             return
@@ -326,14 +354,19 @@ class Networking {
             method: .patch,
             headers: nil,
             queryParameters: nil,
-            body: bodyData) { result in
+            body: bodyData
+        ) { result in
             switch result {
             case .success(let data):
                 do {
-                    if let token = (try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])?["clientToken"] as? String {
+                    if let token =
+                        (try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                            as? [String: Any])?["clientToken"] as? String {
                         completion(token, nil)
                     } else {
-                        let err = NSError(domain: "example", code: 10, userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
+                        let err = NSError(
+                            domain: "example", code: 10,
+                            userInfo: [NSLocalizedDescriptionKey: "Failed to find client token"])
                         completion(nil, err)
                     }
 
@@ -347,8 +380,9 @@ class Networking {
     }
 }
 
-internal extension String {
-    func toDate(withFormat f: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timeZone: TimeZone? = nil) -> Date? {
+extension String {
+    func toDate(withFormat f: String = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timeZone: TimeZone? = nil)
+    -> Date? {
         let df = DateFormatter()
         df.dateFormat = f
         df.locale = Locale(identifier: "en_US_POSIX")
@@ -393,7 +427,8 @@ public struct Payment {
         public let paymentFailureReason: PrimerPaymentErrorCode.RawValue?
 
         public enum CodingKeys: String, CodingKey {
-            case id, paymentId, amount, currencyCode, customer, customerId, order, orderId, requiredAction, status, paymentFailureReason
+            case id, paymentId, amount, currencyCode, customer, customerId, order, orderId,
+                 requiredAction, status, paymentFailureReason
             case dateStr = "date"
         }
 

@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "Indirizzo riga 2";
 
+"card_expiry_date" = "MM/AA";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "Invalid Cardholder name";
 
@@ -75,6 +77,10 @@
 
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "Nome";
+
+"form_error_card_holder_name_length" = "Il nome deve avere un numero di caratteri compreso tra 2 e 45";
+
+"form_error_card_type_not_supported" = "Tipo di carta non supportato";
 
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "Ottieni il codice dalla tua app bancaria.";
@@ -130,9 +136,6 @@
 
 /* The title of the primer 'pay in installments' button */
 "primer-button-title-pay-in-installments" = "Paga a rate";
-
-/* 12/24 - Card Form (Expiry text field placeholder text) */
-"primer-card-form-12-24" = "12/24";
 
 /* Add card - Card Form (Vault title text) */
 "primer-card-form-add-card" = "Aggiungi carta";

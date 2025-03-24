@@ -49,6 +49,9 @@ inputs:
   pr-number:
     description: PR number
     required: true
+  stripe-publishable-key:
+    description: 'Stripe publishable key'
+    required: true
 outputs:
   appetize-url:
     description: Appetize URL
@@ -59,7 +62,7 @@ runs:
     - name: Select Xcode Version
       uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd  # v1.6.0 
       with:
-        xcode-version: '15.1'
+        xcode-version: '16.2.0'
     - name: Install SSH key
       uses: shimataro/ssh-key-action@d4fffb50872869abe2d9a9098a6d9c5aa7d16be4 #v2.7.0
       with:
@@ -80,6 +83,10 @@ runs:
     - name: Install SMB
       shell: bash
       run: npm install --save slack-message-builder
+    - name: Create secrets.defaults.properties
+      shell: bash
+      run: |
+        echo "STRIPE_PUBLISHABLE_KEY=${{ inputs.stripe-publishable-key }}" > Debug\ App/secrets.defaults.properties
     - name: Test, Build, and Distribute app to Appetize 🚀
       shell: bash
       run: |

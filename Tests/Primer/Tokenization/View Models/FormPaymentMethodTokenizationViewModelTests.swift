@@ -1,6 +1,6 @@
 //
 //  FormPaymentMethodTokenizationViewModelTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 24/05/2024.
 //
@@ -36,7 +36,7 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
     }
 
     func testStartWithPreTokenizationAndAbort() throws {
-        SDKSessionHelper.setUp() { mockAppState in
+        SDKSessionHelper.setUp { mockAppState in
             mockAppState.amount = 1234
             mockAppState.currency = Currency(code: "GBP", decimalDigits: 2)
         }
@@ -85,7 +85,7 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
     }
 
     func testStartWithFullCheckoutFlow() throws {
-        SDKSessionHelper.setUp() { mockAppState in
+        SDKSessionHelper.setUp { mockAppState in
             mockAppState.amount = 1234
             mockAppState.currency = Currency(code: "GBP", decimalDigits: 2)
         }
@@ -128,20 +128,20 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
         }
 
         let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        tokenizationService.onTokenize = { body in
+        tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
             return Promise.fulfilled(self.tokenizationResponseBody)
         }
 
-//        let expectDidExchangeToken = self.expectation(description: "didExchangeToken called")
-//        tokenizationService.onExchangePaymentMethodToken = { tokenId, data in
-//            XCTAssertEqual(tokenId, "mock_payment_method_token_data_id")
-//            expectDidExchangeToken.fulfill()
-//            return Promise.fulfilled(self.tokenizationResponseBody)
-//        }
+        //        let expectDidExchangeToken = self.expectation(description: "didExchangeToken called")
+        //        tokenizationService.onExchangePaymentMethodToken = { tokenId, data in
+        //            XCTAssertEqual(tokenId, "mock_payment_method_token_data_id")
+        //            expectDidExchangeToken.fulfill()
+        //            return Promise.fulfilled(self.tokenizationResponseBody)
+        //        }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
-        createResumePaymentService.onCreatePayment = { body in
+        createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
         }
@@ -151,7 +151,7 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
         }
 
         sut.start()
-        
+
         wait(for: [
             expectShowPaymentMethod,
             expectWillCreatePaymentData,
@@ -213,7 +213,7 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
 
 }
 
-fileprivate class MockInput: Input {
+private class MockInput: Input {
 
     var mockText: String?
 

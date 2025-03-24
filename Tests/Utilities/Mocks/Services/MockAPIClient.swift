@@ -40,7 +40,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     var testFetchNolSdkSecretResult: (Response.Body.NolPay.NolPaySecretDataResponse?, Error?)?
     var phoneMetadataResult = Response.Body.PhoneMetadata.PhoneMetadataDataResponse(isValid: true, countryCode: "+111", nationalNumber: "12341234")
     var sdkCompleteUrlResult: (Response.Body.Complete?, Error?)?
-    var responseHeaders: [String: String]? = nil
+    var responseHeaders: [String: String]?
 
     func validateClientToken(
         request: Request.Body.ClientTokenValidation,
@@ -62,7 +62,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func fetchConfiguration(clientToken: PrimerSDK.DecodedJWTToken, 
+    func fetchConfiguration(clientToken: PrimerSDK.DecodedJWTToken,
                             requestParameters: PrimerSDK.Request.URLParameters.Configuration?,
                             completion: @escaping PrimerSDK.ConfigurationCompletion) {
         guard let result = fetchConfigurationResult,
@@ -584,7 +584,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func getPhoneMetadata(clientToken: PrimerSDK.DecodedJWTToken, paymentRequestBody: PrimerSDK.Request.Body.PhoneMetadata.PhoneMetadataDataRequest, completion: @escaping (Result<PrimerSDK.Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>) -> Void) {
         completion(.success(phoneMetadataResult))
     }
-    
+
     func completePayment(clientToken: PrimerSDK.DecodedJWTToken, url: URL, paymentRequest: PrimerSDK.Request.Body.Payment.Complete, completion: @escaping PrimerSDK.APICompletion<PrimerSDK.Response.Body.Complete>) {
         guard let result = sdkCompleteUrlResult,
               result.0 != nil || result.1 != nil

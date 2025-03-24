@@ -1,6 +1,6 @@
 //
 //  QRCodeTokenizationViewModelTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 28/05/2024.
 //
@@ -112,13 +112,13 @@ final class QRCodeTokenizationViewModelTests: XCTestCase {
         }
 
         let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        tokenizationService.onTokenize = { body in
+        tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
             return Promise.fulfilled(self.tokenizationResponseBody)
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
-        createResumePaymentService.onCreatePayment = { body in
+        createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
         }

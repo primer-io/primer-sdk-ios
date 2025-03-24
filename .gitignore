@@ -58,7 +58,7 @@ playground.xcworkspace
 
 .build/
 Package.swift.orig
-
+Package.resolved
 # CocoaPods
 #
 # We recommend against adding the Pods directory to your .gitignore. However
@@ -89,3 +89,13 @@ fastlane/report.xml
 Debug App/Pods
 Debug App/Podfile.lock
 Debug App/secrets.defaults.properties
+
+# Alternative editors
+# Neovim
+.nvim
+buildserver.json
+.avanterules
+
+# Cursor/VSCode
+launch.json
+.cursorrules

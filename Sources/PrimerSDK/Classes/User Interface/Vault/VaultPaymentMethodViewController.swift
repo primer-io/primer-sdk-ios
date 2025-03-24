@@ -47,8 +47,8 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
         if cardNetworkImageView.superview == nil {
             horizontalStackView.addArrangedSubview(cardNetworkImageView)
             cardNetworkImageView.translatesAutoresizingMaskIntoConstraints = false
-            cardNetworkImageView.widthAnchor.constraint(equalToConstant: 28).isActive = true
-            cardNetworkImageView.heightAnchor.constraint(equalToConstant: 38).isActive = true
+            cardNetworkImageView.widthAnchor.constraint(equalToConstant: 41).isActive = true
+            cardNetworkImageView.heightAnchor.constraint(equalToConstant: 56).isActive = true
         }
 
         if verticalLeftStackView.superview == nil {
@@ -109,12 +109,18 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
         verticalRightStackView.distribution = .fillEqually
         verticalRightStackView.spacing = 0
 
-        if let network = paymentMethod.cardButtonViewModel?.network {
-            let cardNetworkImage = CardNetwork(cardNetworkStr: network).icon
-            cardNetworkImageView.image = cardNetworkImage
+        if paymentMethod.cardButtonViewModel?.paymentMethodType == .paymentCard || paymentMethod.cardButtonViewModel?.paymentMethodType == .cardOffSession {
+
+            if let network = paymentMethod.cardButtonViewModel?.network {
+                let cardNetworkImage = CardNetwork(cardNetworkStr: network).icon
+                cardNetworkImageView.image = cardNetworkImage
+            } else {
+                cardNetworkImageView.image = paymentMethod.cardButtonViewModel?.imageName.image
+            }
         } else {
             cardNetworkImageView.image = paymentMethod.cardButtonViewModel?.imageName.image
         }
+
         cardNetworkImageView.contentMode = .scaleAspectFit
 
         checkmarkImageView.image = isDeleting ?

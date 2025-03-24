@@ -16,34 +16,33 @@ struct ACHUserDetailsView: View {
     var onBackPressed: () -> Void
 
     var body: some View {
-
-        ZStack {
-            Button {
-                onBackPressed()
-            } label: {
-                HStack {
-                    Image(systemName: "chevron.left")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 15, height: 15)
-                        .foregroundColor(.blue)
-                        .padding(.leading, 15)
-                    Text(Strings.UserDetails.backButton)
-                        .font(.system(size: 17))
-                        .foregroundColor(.blue)
-                        .padding(.leading, -5)
-
-                    Spacer()
-                }
-            }
-
-            Text(String(format: Strings.ResultView.paymentTitle, "ACH"))
-                .font(.system(size: 18, weight: .medium))
-                .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.title.rawValue)
-        }
-        .padding(.top, -3)
-
         VStack {
+            ZStack {
+                Button {
+                    onBackPressed()
+                } label: {
+                    HStack {
+                        Image(systemName: "chevron.left")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 15, height: 15)
+                            .foregroundColor(.blue)
+                            .padding(.leading, 15)
+                        Text(Strings.UserDetails.backButton)
+                            .font(.system(size: 17))
+                            .foregroundColor(.blue)
+                            .padding(.leading, -5)
+
+                        Spacer()
+                    }
+                }
+
+                Text(String(format: Strings.ResultView.paymentTitle, "ACH"))
+                    .font(.system(size: 18, weight: .medium))
+                    .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.title.rawValue)
+            }
+            .background(PrimerColors.swiftColor(PrimerColors.white))
+
             HStack {
                 Text(Strings.UserDetails.subtitle)
                     .font(.system(size: 17))
@@ -76,18 +75,24 @@ struct ACHUserDetailsView: View {
                                 errorDescription: viewModel.emailErrorDescription,
                                 infoDescription: Strings.UserDetails.emailDisclaimer,
                                 accessibilityIdentifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.emailAddressTextField.rawValue)
-            .padding([.horizontal, .bottom], 15)
+                .padding([.horizontal, .bottom], 15)
 
             Spacer()
 
             Button(action: submitAction) {
-                Text(Strings.UserDetails.continueButton)
-                    .font(.system(size: 17, weight: .medium))
-                    .foregroundColor(viewModel.isValidForm ? Color.white : Color.gray)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(viewModel.isValidForm ? Color.blue : Color.gray.opacity(0.2))
-                    .cornerRadius(10)
+                ZStack {
+                    if viewModel.shouldDisableViews {
+                        ActivityIndicator(isAnimating: .constant(true), style: .medium, color: UIColor.black)
+                    } else {
+                        Text(Strings.UserDetails.continueButton)
+                            .font(.system(size: 17, weight: .medium))
+                    }
+                }
+                .foregroundColor(viewModel.isValidForm ? Color.white : Color.gray)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(viewModel.isValidForm ? Color.blue : Color.gray.opacity(0.2))
+                .cornerRadius(10)
             }
             .disabled(!viewModel.isValidForm)
             .padding(.horizontal)
@@ -95,6 +100,7 @@ struct ACHUserDetailsView: View {
         }
         .disabled(viewModel.shouldDisableViews)
         .frame(height: 380)
+        .background(PrimerColors.swiftColor(PrimerColors.white))
     }
 
     private func submitAction() {
@@ -121,7 +127,7 @@ struct CustomTextFieldView: View {
             TextField("", text: $text)
                 .padding(.horizontal, 10)
                 .frame(height: 44)
-                .background(Color.white)
+                .background(PrimerColors.swiftColor(PrimerColors.white))
                 .cornerRadius(4)
                 .overlay(
                     RoundedRectangle(cornerRadius: 4)

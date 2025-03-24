@@ -1,6 +1,6 @@
 //
 //  PayPalTokenizationViewModelTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 28/05/2024.
 //
@@ -141,13 +141,13 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
         }
 
         let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        tokenizationService.onTokenize = { body in
+        tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
             return Promise.fulfilled(self.tokenizationResponseBody)
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
-        createResumePaymentService.onCreatePayment = { body in
+        createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
         }
@@ -166,7 +166,7 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
             expectCheckoutDidCompletewithData
         ], timeout: 20.0, enforceOrder: true)
     }
-    
+
     // MARK: Helpers
 
     var tokenizationResponseBody: Response.Body.Tokenization {
@@ -243,7 +243,7 @@ class MockPayPalService: PayPalServiceProtocol {
             completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
     }
-    
+
     // MARK: confirmBillingAgreement
 
     var onConfirmBillingAgreement: (() -> Response.Body.PayPal.ConfirmBillingAgreement)?
@@ -274,7 +274,7 @@ class MockWebAuthenticationService: WebAuthenticationService {
 
     var onConnect: ((URL, String) -> URL)?
 
-    func connect(url: URL, scheme: String, _ completion: @escaping (Result<URL, any Error>) -> Void) {
+    func connect(paymentMethodType: String, url: URL, scheme: String, _ completion: @escaping (Result<URL, any Error>) -> Void) {
         if let onConnect = onConnect {
             completion(.success(onConnect(url, scheme)))
         } else {

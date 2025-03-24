@@ -9,6 +9,7 @@ internal protocol PrimerSettingsProtocol {
     var paymentMethodOptions: PrimerPaymentMethodOptions { get }
     var uiOptions: PrimerUIOptions { get }
     var debugOptions: PrimerDebugOptions { get }
+    var apiVersion: PrimerApiVersion { get }
 }
 
 public class PrimerSettings: PrimerSettingsProtocol, Codable {
@@ -24,6 +25,7 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
     let uiOptions: PrimerUIOptions
     let debugOptions: PrimerDebugOptions
     let clientSessionCachingEnabled: Bool
+    public let apiVersion: PrimerApiVersion
 
     public init(
         paymentHandling: PrimerPaymentHandling = .auto,
@@ -32,7 +34,8 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
         uiOptions: PrimerUIOptions? = nil,
         threeDsOptions: PrimerThreeDsOptions? = nil,
         debugOptions: PrimerDebugOptions? = nil,
-        clientSessionCachingEnabled: Bool = false
+        clientSessionCachingEnabled: Bool = false,
+        apiVersion: PrimerApiVersion = .V2_3
     ) {
         self.paymentHandling = paymentHandling
         self.localeData = localeData ?? PrimerLocaleData()
@@ -40,6 +43,7 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
         self.uiOptions = uiOptions ?? PrimerUIOptions()
         self.debugOptions = debugOptions ?? PrimerDebugOptions()
         self.clientSessionCachingEnabled = clientSessionCachingEnabled
+        self.apiVersion = apiVersion
     }
 }
 
@@ -142,6 +146,7 @@ public class PrimerApplePayOptions: Codable {
     let merchantIdentifier: String
     @available(*, deprecated, message: "Use Client Session API to provide merchant name value: https://primer.io/docs/payment-methods/apple-pay/direct-integration#prepare-the-client-session")
     let merchantName: String?
+    @available(*, deprecated, message: "Use BillingOptions to configure required billing fields.")
     let isCaptureBillingAddressEnabled: Bool
     /// If in some cases you dont want to present ApplePay option if the device is not supporting it set this to `false`.
     /// Default value is `true`.
@@ -151,6 +156,7 @@ public class PrimerApplePayOptions: Codable {
     /// we introduced this flag to continue supporting the old behaviour. Default value is `true`.
     let checkProvidedNetworks: Bool
     let shippingOptions: ShippingOptions?
+    let billingOptions: BillingOptions?
 
     public init(merchantIdentifier: String,
                 merchantName: String?,
@@ -160,42 +166,49 @@ public class PrimerApplePayOptions: Codable {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
-        self.shippingOptions = nil
         self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
         self.checkProvidedNetworks = checkProvidedNetworks
+        self.shippingOptions = nil
+        self.billingOptions = nil
     }
 
-    private init(merchantIdentifier: String,
-                 merchantName: String?,
-                 isCaptureBillingAddressEnabled: Bool = false,
-                 showApplePayForUnsupportedDevice: Bool = true,
-                 checkProvidedNetworks: Bool = true,
-                 shippingOptions: ShippingOptions? = nil) {
+    public init(merchantIdentifier: String,
+                merchantName: String?,
+                isCaptureBillingAddressEnabled: Bool = false,
+                showApplePayForUnsupportedDevice: Bool = true,
+                checkProvidedNetworks: Bool = true,
+                shippingOptions: ShippingOptions? = nil,
+                billingOptions: BillingOptions? = nil) {
         self.merchantIdentifier = merchantIdentifier
         self.merchantName = merchantName
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
-        self.shippingOptions = shippingOptions
         self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
         self.checkProvidedNetworks = checkProvidedNetworks
+        self.shippingOptions = shippingOptions
+        self.billingOptions = billingOptions
     }
 
-    internal struct ShippingOptions: Codable {
-        let isCaptureShippingAddressEnabled: Bool
-        let additionalShippingContactFields: [AdditionalShippingContactField]?
-        let requireShippingMethod: Bool
+    public struct ShippingOptions: Codable {
+        public let shippingContactFields: [RequiredContactField]?
+        public let requireShippingMethod: Bool
 
-        public init(isCaptureShippingAddressEnabled: Bool,
-                    additionalShippingContactFields: [AdditionalShippingContactField]? = nil,
+        public init(shippingContactFields: [RequiredContactField]? = nil,
                     requireShippingMethod: Bool) {
-            self.isCaptureShippingAddressEnabled = isCaptureShippingAddressEnabled
-            self.additionalShippingContactFields = additionalShippingContactFields
+            self.shippingContactFields = shippingContactFields
             self.requireShippingMethod = requireShippingMethod
         }
+    }
 
-// swiftlint:disable:next nesting
-        internal enum AdditionalShippingContactField: Codable {
-            case name, emailAddress, phoneNumber
+    public struct BillingOptions: Codable {
+        public let requiredBillingContactFields: [RequiredContactField]?
+
+        public init(requiredBillingContactFields: [RequiredContactField]? = nil) {
+            self.requiredBillingContactFields = requiredBillingContactFields
         }
+    }
+
+    public enum RequiredContactField: Codable {
+        case name, emailAddress, phoneNumber, postalAddress
     }
 }
 
@@ -308,7 +321,6 @@ internal protocol PrimerDebugOptionsProtocol {
 }
 
 public class PrimerDebugOptions: PrimerDebugOptionsProtocol, Codable {
-
     let is3DSSanityCheckEnabled: Bool
 
     public init(is3DSSanityCheckEnabled: Bool? = nil) {
@@ -323,10 +335,19 @@ internal protocol PrimerThreeDsOptionsProtocol {
 }
 
 public class PrimerThreeDsOptions: PrimerThreeDsOptionsProtocol, Codable {
-
     let threeDsAppRequestorUrl: String?
 
     public init(threeDsAppRequestorUrl: String? = nil) {
         self.threeDsAppRequestorUrl = threeDsAppRequestorUrl
     }
 }
+
+// MARK: - API Version
+// swiftlint:disable identifier_name
+public enum PrimerApiVersion: String, Codable {
+    case V2_3 = "2.3"
+    case V2_4 = "2.4"
+
+    public static let latest = PrimerApiVersion.V2_3
+}
+// swiftlint:enable identifier_name

@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "ที่อยู่บรรทัดที่ 2";
 
+"card_expiry_date" = "เดือน/ปี";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "ชื่อผู้ถือบัตรไม่ถูกต้อง";
 
@@ -76,6 +78,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "ชื่อจริง";
 
+"form_error_card_holder_name_length" = "ชื่อต้องมีความยาวระหว่าง 2 ถึง 45 อักขระ";
+
+"form_error_card_type_not_supported" = "ไม่รองรับประเภทบัตรนี้";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "รับรหัสจากแอปธนาคารของคุณ";
 
@@ -126,9 +132,6 @@
 
 /* The title of the primer 'pay in installments' button */
 "primer-button-title-pay-in-installments" = "ผ่อนชำระ";
-
-/* 12/24 - Card Form (Expiry text field placeholder text) */
-"primer-card-form-12-24" = "12/24";
 
 /* Add card - Card Form (Vault title text) */
 "primer-card-form-add-card" = "เพิ่มบัตร";

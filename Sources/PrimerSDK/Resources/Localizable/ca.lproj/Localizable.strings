@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "Línia d'adreça 2";
 
+"card_expiry_date" = "MM/AA";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "Nom del titular de la targeta no vàlid";
 
@@ -76,6 +78,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "Nom";
 
+"form_error_card_holder_name_length" = "El nom ha de tenir entre 2 i 45 caràcters";
+
+"form_error_card_type_not_supported" = "Tipus de targeta no admès";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "Aconseguiu el codi des de la vostra aplicació bancària.";
 
@@ -126,9 +132,6 @@
 
 /* The title of the primer 'pay in installments' button */
 "primer-button-title-pay-in-installments" = "Pagar a terminis";
-
-/* 12/24 - Card Form (Expiry text field placeholder text) */
-"primer-card-form-12-24" = "12/24";
 
 /* Add card - Card Form (Vault title text) */
 "primer-card-form-add-card" = "Afegeix una targeta";

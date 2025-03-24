@@ -288,7 +288,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
             firstly { () -> Promise<String> in
                 if self.isCancelled {
-                    let err = PrimerError.cancelled(paymentMethodType: self.config.type, userInfo: .errorUserInfoDictionary(),
+                    let err = PrimerError.cancelled(paymentMethodType: self.config.type,
+                                                    userInfo: .errorUserInfoDictionary(),
                                                     diagnosticsId: UUID().uuidString)
                     throw err
                 }
@@ -386,13 +387,13 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         super.cancel()
     }
 
-#if DEBUG
+    #if DEBUG
     /// See: [Vipps MobilePay Documentation](https://developer.vippsmobilepay.com/docs/knowledge-base/user-flow/#deep-link-flow)
     /// If changing these values - they must also be updated in `Info.plist` `LSApplicationQueriesSchemes` of the host App.
     private static let adyenVippsDeeplinkUrl = "vippsmt://"
-#else
+    #else
     private static let adyenVippsDeeplinkUrl = "vipps://"
-#endif
+    #endif
 
     func sessionInfo() -> WebRedirectSessionInfo {
         switch config.type {

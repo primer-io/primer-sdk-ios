@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "שורת כתובת 2";
 
+"card_expiry_date" = "MM/YY";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "שם בעל הכרטיס לא תקין";
 
@@ -76,6 +78,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "שם פרטי";
 
+"form_error_card_holder_name_length" = "השם חייב להכיל בין 2 ל-45 תווים";
+
+"form_error_card_type_not_supported" = "סוג כרטיס לא נתמך";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "קבלו את הקוד מאפליקציית הבנק.";
 
@@ -126,9 +132,6 @@
 
 /* The title of the primer 'pay in installments' button */
 "primer-button-title-pay-in-installments" = "שלמו בתשלומים";
-
-/* 12/24 - Card Form (Expiry text field placeholder text) */
-"primer-card-form-12-24" = "12/24";
 
 /* Add card - Card Form (Vault title text) */
 "primer-card-form-add-card" = "הוספת כרטיס";

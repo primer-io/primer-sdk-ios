@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "Рядок адреси 2";
 
+"card_expiry_date" = "ММ/РР";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "Недійсне ім'я власника картки";
 
@@ -76,6 +78,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "Ім'я";
 
+"form_error_card_holder_name_length" = "Назва має містити від 2 до 45 символів";
+
+"form_error_card_type_not_supported" = "Непідтримуваний тип карти";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "Отримай код у своєму банківському застосунку";
 
@@ -126,9 +132,6 @@
 
 /* The title of the primer 'pay in installments' button */
 "primer-button-title-pay-in-installments" = "Оплатити частинами";
-
-/* 12/24 - Card Form (Expiry text field placeholder text) */
-"primer-card-form-12-24" = "12/24";
 
 /* Add card - Card Form (Vault title text) */
 "primer-card-form-add-card" = "Додати картку";

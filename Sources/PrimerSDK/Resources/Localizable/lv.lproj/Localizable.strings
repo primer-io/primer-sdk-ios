@@ -1,0 +1,306 @@
+/* An error message displayed when the Address line 1 is not correct */
+"addressLine1ErrorInvalid" = "Adreses 1. rindiņa ievadīta nekorekti";
+
+/* State, Region or County is required - Form Validation */
+"addressLine1ErrorRequired" = "Adreses 1. rinda ir obligāta";
+
+/* The billing address Address line 1 container view label */
+"addressLine1Label" = "Adreses 1. rindiņa";
+
+/* Form Text Field Placeholder (Address line 1) */
+"addressLine1Placeholder" = "Adreses 1. rindiņa";
+
+/* An error message displayed when the Address line 2 is not correct */
+"addressLine2ErrorInvalid" = "Adreses 2. rindiņa ievadīta nekorekti";
+
+/* State, Region or County is required - Form Validation */
+"addressLine2ErrorRequired" = "Adreses 2. rinda ir obligāta";
+
+/* The billing address Address line 2 container view label */
+"addressLine2Label" = "Adreses 2. rindiņa";
+
+/* Form Text Field Placeholder (Address line 2) */
+"addressLine2Placeholder" = "Adreses 2. rindiņa";
+
+"card_expiry_date" = "MM/GG";
+
+/* An error message displayed when the city field is not correct */
+"cardholderErrorInvalid" = "Maksājumu kartes īpašnieka vārds ievadīts nekorekti";
+
+/* Choose your bank - Choose your bank title label */
+"choose-your-bank-title-label" = "Izvēlies savu banku";
+
+/* An error message displayed when the city field is not correct */
+"cityErrorInvalid" = "Pilsēta ievadīta nekorekti";
+
+/* City is required - Form Validation */
+"cityErrorRequired" = "Jānorāda pilsēta";
+
+/* The billing address city container view label */
+"cityLabel" = "Pilsēta";
+
+/* Form Text Field Placeholder (Address city) */
+"cityPlaceholder" = "Keiptauna";
+
+/* Complete your payment - Account info payment title label */
+"completeYourPayment" = "Pabeidz maksājumu";
+
+/* Continue */
+"continue" = "Turpināt";
+
+/* An error message displayed when the Country is not correct */
+"countryCodeErrorInvalid" = "Valsts ievadīta nekorekti";
+
+/* Country is required - Form Validation */
+"countryCodeErrorRequired" = "Valsts ir obligāta";
+
+/* The billing address Country code container view label */
+"countryCodeLabel" = "Valsts kods";
+
+/* Form Text Field Placeholder (Country code) */
+"countryCodePlaceholder" = "Valsts kods";
+
+/* Select a country - Choose your country title label */
+"countrySelectPlaceholder" = "Izvēlieties valsti";
+
+/* The prefix copy we put before the expiration date */
+"dueAt" = "Derīguma termiņš:";
+
+/* An error message displayed when the First Name is not correct */
+"firstNameErrorInvalid" = "Vārds ievadīts nekorekti";
+
+/* First name is required - Form Validation */
+"firstNameErrorRequired" = "Jānorāda vārds";
+
+/* The billing address First name container view label */
+"firstNameLabel" = "Vārds";
+
+/* Form Text Field Placeholder (First name) */
+"firstNamePlaceholder" = "Vārds";
+
+"form_error_card_holder_name_length" = "Nosaukumam ir jābūt no 2 līdz 45 rakstzīmēm";
+
+"form_error_card_type_not_supported" = "Neatbalstīts kartes veids";
+
+/* Get the code from your banking app - Blik descriptor */
+"input_description_otp" = "Iegūstiet kodu no savas bankas lietotnes.";
+
+/* 6 digit code - Text field top placeholder */
+"input_hint_form_blik_otp" = "6 ciparu kods";
+
+/* An error message displayed when the Last Name is not correct */
+"lastNameErrorInvalid" = "Uzvārds ievadīts nekorekti";
+
+/* Last name is required - Form Validation */
+"lastNameErrorRequired" = "Jānorāda uzvārds";
+
+/* The billing address Last name container view label */
+"lastNameLabel" = "Uzvārds";
+
+/* Form Text Field Placeholder (Last name) */
+"lastNamePlaceholder" = "Uzvārds";
+
+/* No additional fee - Universal Checkout section text */
+"no_additional_fee" = "Bez papildmaksas";
+
+/* Enter your one time password - Text field placeholder */
+"payment_method_blik_loading_placeholder" = "Pabeidziet maksājumu lietotnē Blik";
+
+/* Pay with card - Payment Method Type (Card Not Vaulted */
+"payment-method-type-card-not-vaulted" = "Maksā ar maksājumu karti";
+
+/* The message copy that tells the user how to transfer funds given a displayed account code */
+"pleaseTransferFunds" = "Lūdzu, pārskaiti līdzekļus uz norādīto DBS bankas kontu, izmantojot savu Singapūras bankas kontu, izmantojot FAST (vēlams), MEPS vai GIRO pārskaitījumu platformas.";
+
+/* An error message displayed when the postal code field is not correct */
+"postalCodeErrorInvalid" = "Pasta indekss ievadīts nekorekti";
+
+/* Postal code is required - Form Validation */
+"postalCodeErrorRequired" = "Jānorāda pasta indekss";
+
+/* The billing address postal code container view label */
+"postalCodeLabel" = "Pasta indekss";
+
+/* Form Text Field Placeholder (Address postal code) */
+"postalCodePlaceholder" = "90210";
+
+/* Cancel - Alert button cancel */
+"primer-alert-button-cancel" = "Atcelt";
+
+/* Delete - Alert button delete */
+"primer-alert-button-delete" = "Dzēst";
+
+/* The title of the primer 'pay in installments' button */
+"primer-button-title-pay-in-installments" = "Maksā pa daļām";
+
+/* Add card - Card Form (Vault title text) */
+"primer-card-form-add-card" = "Pievienot karti";
+
+/* Checkout - Card Form (Checkout Title Text) */
+"primer-card-form-checkout" = "Norēķināties";
+
+/* CVV - Card Form (CVV Text Field placeholder text) */
+"primer-card-form-cvv" = "CVV";
+
+/* Cardholder name */
+"primer-card-form-name" = "Vārds";
+
+/* Pay - Card Form (Checkout submit button text) */
+"primer-card-form-pay" = "Maksāt";
+
+/* Save - Card Form (Vault submit button text) */
+"primer-card-form-save" = "Saglabāt";
+
+/* Choose payment method - Vault Navigation Bar Title */
+"primer-checkout-nav-bar-title" = "Izvēlēties maksāšanas veidu";
+
+/* Add Bank Account - Confirm Mandate (Top title text_ */
+"primer-confirm-mandate-add-bank-account" = "Pievienot bankas kontu";
+
+/* Confirm - Confirm Mandate (Button text) */
+"primer-confirm-mandate-confirm" = "Apstiprināt";
+
+/* Confirm SEPA Direct Debit - Confirm Mandate (Main title text) */
+"primer-confirm-mandate-confirm-sepa-direct-debit" = "Apstiprināt SEPA tiešo debetu";
+
+/* CVV- CVV recapture explanation label */
+"primer-cvv-recapture-explanation" = "Lai veiktu drošu maksājumu, ievadi drošības kodu %d no savas kartes.";
+
+/* CVV - CVV recapture screen title */
+"primer-cvv-recapture-title" = "Ievadīt CVV kodu";
+
+/* Do you want to delete this payment method? - Delete alert title */
+"primer-delete-alert-title" = "Vai vēlaties dzēst šo maksājuma veidu?";
+
+/* Apple pay - Direct Checkout (Apple pay button text) */
+"primer-direct-checkout-apple-pay" = "Apple pay";
+
+/* Pay by card - Direct Checkout (Card button text) */
+"primer-direct-checkout-pay-by-card" = "Maksāt ar karti";
+
+/* PayPal - Direct Checkout (PayPal button text */
+"primer-direct-checkout-paypal" = "PayPal";
+
+/* An error message displayed when the cvv code is not correct */
+"primer-error-card-form-card-cvv" = "Maksājumu kartes drošības kods ievadīts nekorekti";
+
+/* An error message displayed when the card expiration date is not correct */
+"primer-error-card-form-card-expiration-date" = "Datums ievadīts nekorekti";
+
+/* An error message displayed when the card number is not correct */
+"primer-error-card-form-card-number" = "Nederīgs maksājumu kartes numurs";
+
+/* A suffix to mark a required field or action being performed */
+"primer-error-is-required-suffix" = "nepieciešams";
+
+/* Something went wrong, please try again. - Error Screen Message */
+"primer-error-screen" = "Kaut kas nogāja greizi, lūdzu, mēģiniet vēlreiz.";
+
+/* e.g. John Doe - Form Text Field Placeholder (Cardholder name) */
+"primer-form-text-field-placeholder-cardholder" = "piem., John Doe";
+
+/* Card number - Form Text Field Title (Card number) */
+"primer-form-text-field-title-card-number" = "Kartes numurs";
+
+/* Expiry date - Form Text Field Title (Expiry date) */
+"primer-form-text-field-title-expiry-date" = "Derīguma termiņš";
+
+/* Enter your card details - Form Type Main Title (Card) */
+"primer-form-type-main-title-card-form" = "Ievadiet savas kartes informāciju";
+
+/* Card form - Navigation Bar Title */
+"primer-form-type-nav-bar-title" = "Maksājumu karte";
+
+/* Add Bank Account - IBAN Form (Main title) */
+"primer-iban-form-add-bank-account" = "Pievienot bankas kontu";
+
+/* Enter IBAN - IBAN Form (Text field placeholder text */
+"primer-iban-form-enter-iban" = "Ievadīt IBAN";
+
+/* Your monthly fee will be automatically deducted from this account, using SEPA Core DirectDebit Mandate - IBAN Form (Subtitle text) */
+"primer-iban-form-monthly-fee-automatically-deducted" = "Mēneša maksa tiks atskaitīta automātiski no šī konta, izmantojot SEPA tiešā debeta pamatmandātu";
+
+/* Next - IBAN Form (Button text) */
+"primer-iban-form-next" = "Nākamais";
+
+/* Use an account number instead - IBAN Form (Switch text) */
+"primer-iban-form-use-account-number-instead" = "Tā vietā izmantot konta numuru";
+
+/* Expires - Saved card */
+"primer-saved-card" = "Beidzas";
+
+/* Manual input - Scanner view (Button text) */
+"primer-scanner-view-manual-input" = "Manuāla ievade";
+
+/* Scan card - Scanner view (Title text) */
+"primer-scanner-view-scan-card" = "Skenēt karti";
+
+/* Scan the front of your card - Scanner view (Description text) */
+"primer-scanner-view-scan-front-card" = "Skenēt kartes priekšpusi";
+
+/* The title of the header for the flow decision view */
+"primer-test-header-description" = "Šis ir izmēģinājuma vietnes paraugs. Zemāk esošajā sarakstā izvēlies rezultātu, kuru vēlies pārbaudīt.";
+
+/* The title of the mocked declined flow for a Test Payment Method */
+"primer-test-payment-method-decline-flow-title" = "Noraidīts";
+
+/* The title of the mocked failed flow for a Test Payment Method */
+"primer-test-payment-method-fail-flow-title" = "Neizdevās";
+
+/* The title of the mocked successful flow for a Test Payment Method */
+"primer-test-payment-method-success-flow-title" = "Apstiprināts";
+
+/* SAVED CARD - Vault Checkout Card Title */
+"primer-vault-checkout-payment-method-title" = "SAGLABĀTAIS MAKSĀŠANAS VEIDS";
+
+/* Add payment method - Checkout Navigation Bar Title */
+"primer-vault-nav-bar-title" = "Pievienot maksāšanas veidu";
+
+/* Add new card - Vault Payment Method (Button text) */
+"primer-vault-payment-method-add-new-card" = "Pievienot jaunu karti";
+
+/* Available payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-available-payment-methods" = "Pieejamie maksāšanas veidi";
+
+/* Edit - Vault Payment Method (Button text) */
+"primer-vault-payment-method-edit" = "Rediģēt";
+
+/* Saved payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-saved-payment-methods" = "Saglabātie maksāšanas veidi";
+
+/* QR Code - QR code screen subtitle label */
+"qrCode" = "Kvadrātkods";
+
+/* Scan to pay or take a screenshot - QR code screen title label */
+"scanToPay" = "Skenē, lai samaksātu, vai uzņem ekrānuzņēmumu";
+
+/* Search bank - Search bank textfield placeholder */
+"search-bank-placeholder" = "Meklēt banku";
+
+/* Search country - Search country textfield placeholder */
+"search-country-placeholder" = "Meklē valsti";
+
+/* See all - Universal checkout */
+"see-all" = "Skatīt visu";
+
+/* "Shipping" label displayed next to the shipping amount, for example: "Shipping $2.50" */
+"shipping" = "Piegāde";
+
+/* An error message displayed when the State, Region or County field is not correct */
+"stateErrorInvalid" = "Novads, reģions vai apgabals ievadīts nekorekti";
+
+/* State, Region or County is required - Form Validation */
+"stateErrorRequired" = "Jānorāda valsts, reģions vai apgabals";
+
+/* The billing address state container view label */
+"stateLabel" = "Valsts / reģions / apgabals";
+
+/* Form Text Field Placeholder (Address State / Region / County) */
+"statePlaceholder" = "Valsts / reģions / apgabals";
+
+/* Additional fee may apply - Surcharge (Label) */
+"surcharge-additional-fee" = "Var tikt piemērota papildu maksa";
+
+/* Upload the screenshot in your banking app. - QR code screen subtitle label */
+"uploadScreenshot" = "Augšupielādē ekrānuzņēmumu savas bankas lietotnē";
+

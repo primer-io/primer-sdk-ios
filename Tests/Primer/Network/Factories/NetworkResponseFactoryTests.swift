@@ -24,7 +24,7 @@ final class NetworkResponseFactoryTests: XCTestCase {
         let metadata = ResponseMetadataModel(responseUrl: "a_url", statusCode: 200, headers: nil)
 
         let jsonNetworkResponseFactory = JSONNetworkResponseFactory()
-        let responseModel: TestCodable = try jsonNetworkResponseFactory.model(for: data, 
+        let responseModel: TestCodable = try jsonNetworkResponseFactory.model(for: data,
                                                                               forMetadata: metadata)
 
         XCTAssertEqual(model, responseModel)
@@ -67,6 +67,40 @@ final class NetworkResponseFactoryTests: XCTestCase {
             XCTFail() // should be failed-to-decode only
         }
     }
+    
+    
+    func testResponseCreation_ErrorJSON_Success() throws {
+        let jsonNetworkResponseFactory = JSONNetworkResponseFactory()
+        let metadata = ResponseMetadataModel(responseUrl: "a_url", statusCode: 202, headers: nil)
+        let string = """
+        {
+            "error": {
+               "errorId": "error-id",
+               "description": "a description",
+               "diagnosticsId": "uuid"
+            }
+        }
+        """
+
+        do {
+            let _: TestCodable = try jsonNetworkResponseFactory.model(for: string.data(using: .utf8)!,
+                                                                          forMetadata: metadata)
+            XCTFail("Expected serverError, but decoding succeeded")
+        } catch let error as InternalError {
+            switch error {
+            case .serverError(let status, let response, _, _):
+                XCTAssertEqual(status, 202)
+                XCTAssertEqual(response?.errorId, "error-id")
+                XCTAssertEqual(response?.description, "a description")
+                XCTAssertEqual(response?.diagnosticsId, "uuid")
+            default:
+                XCTFail("Expected serverError, but got \(error)")
+            }
+        } catch {
+            XCTFail("Expected InternalError.serverError, but got \(error)")
+        }
+    }
+
 
     func testResponseCreation_errorStatus_Failure() throws {
         let jsonNetworkResponseFactory = JSONNetworkResponseFactory()

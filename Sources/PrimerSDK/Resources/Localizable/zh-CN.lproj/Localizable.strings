@@ -1,202 +1,306 @@
 /* An error message displayed when the Address line 1 is not correct */
 "addressLine1ErrorInvalid" = "无效的地址行 1";
+
 /* State, Region or County is required - Form Validation */
 "addressLine1ErrorRequired" = "地址第 1 行为必填";
+
 /* The billing address Address line 1 container view label */
 "addressLine1Label" = "地址行 1";
+
 /* Form Text Field Placeholder (Address line 1) */
 "addressLine1Placeholder" = "地址行 1";
+
 /* An error message displayed when the Address line 2 is not correct */
 "addressLine2ErrorInvalid" = "无效的地址行 2";
+
 /* State, Region or County is required - Form Validation */
 "addressLine2ErrorRequired" = "地址第2行为必填项";
+
 /* The billing address Address line 2 container view label */
 "addressLine2Label" = "地址行 2";
+
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "地址行 2";
+
+"card_expiry_date" = "月份/年份";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "无效的持卡人姓名";
+
 /* Choose your bank - Choose your bank title label */
 "choose-your-bank-title-label" = "选择银行";
+
 /* An error message displayed when the city field is not correct */
 "cityErrorInvalid" = "无效的城市";
+
 /* City is required - Form Validation */
 "cityErrorRequired" = "城市为必填项";
+
 /* The billing address city container view label */
 "cityLabel" = "城市";
+
 /* Form Text Field Placeholder (Address city) */
 "cityPlaceholder" = "开普敦";
+
 /* Complete your payment - Account info payment title label */
 "completeYourPayment" = "完成您的付款";
-/* An error message displayed when the Country is not correct */
-"countryCodeErrorInvalid" = "无效的国家/地区";
-/* Country is required - Form Validation */
-"countryCodeErrorRequired" = "国家代码为必填项";
-/* The billing address Country code container view label */
-"countryCodeLabel" = "国家代码";
-/* Form Text Field Placeholder (Country code) */
-"countryCodePlaceholder" = "国家代码";
-/* Select a country - Choose your country title label */
-"countrySelectPlaceholder" = "选择国家/地区";
-/* The prefix copy we put before the expiration date. */
-"dueAt" = "截止日期";
-/* An error message displayed when the First Name is not correct */
-"firstNameErrorInvalid" = "无效的名字";
-/* First name is required - Form Validation */
-"firstNameErrorRequired" = "名字为必需";
-/* The billing address First name container view label */
-"firstNameLabel" = "名字";
-/* Form Text Field Placeholder (First name) */
-"firstNamePlaceholder" = "名字";
-/* Get the code from your banking app - Blik descriptor */
-"input_description_otp" = "从您的银行应用获取代码。";
-/* 6 digit code - Text field top placeholder */
-"input_hint_form_blik_otp" = "6位代码";
-/* An error message displayed when the Last Name is not correct */
-"lastNameErrorInvalid" = "无效的姓氏";
-/* Last name is required - Form Validation */
-"lastNameErrorRequired" = "姓氏为必需";
-/* The billing address Last name container view label */
-"lastNameLabel" = "姓氏";
-/* Form Text Field Placeholder (Last name) */
-"lastNamePlaceholder" = "姓氏";
-/* No additional fee - Universal Checkout section text */
-"no_additional_fee" = "没有额外费用";
-/* Pay with card - Payment Method Type (Card Not vaulted) */
-"payment-method-type-card-not-vaulted" = "使用银行卡支付";
-/* Enter your one time password - Text field placeholder */
-"payment_method_blik_loading_placeholder" = "在Blik应用中完成付款";
-/* The message copy that tells the user how to transfer funds given a displayed account code. */
-"pleaseTransferFunds" = "请使用您在新加坡的银行账户，通过 FAST（首选）、MEPS 或 GIRO 将资金转账到所提供的星展银行账户上。";
-/* An error message displayed when the postal code field is not correct */
-"postalCodeErrorInvalid" = "无效的邮政编码";
-/* Postal code is required - Form Validation */
-"postalCodeErrorRequired" = "邮政编码为必填项";
-/* The billing address postal code container view label */
-"postalCodeLabel" = "邮编";
-/* Form Text Field Placeholder (Address postal code) */
-"postalCodePlaceholder" = "90210";
-/* Cancel - Alert button cancel */
-"primer-alert-button-cancel" = "取消";
-/* Delete - Alert button delete */
-"primer-alert-button-delete" = "删除";
-/* The title of the primer 'pay in installments' button */
-"primer-button-title-pay-in-installments" = "分期付款";
-/* 12/24 - Card Form (Expiry text field placeholder text) */
-"primer-card-form-12-24" = "12/24";
-/* 4242 4242 4242 4242 - Card Form (Card text field placeholder text) */
-"primer-card-form-4242-4242-4242-4242" = "4242 4242 4242 4242";
-/* Add card - Card Form (Vault title text) */
-"primer-card-form-add-card" = "添加卡片";
-/* Checkout - Card Form (Checkout title text) */
-"primer-card-form-checkout" = "结账";
-/* CVV - Card Form (CVV text field placeholder text) */
-"primer-card-form-cvv" = "CVV";
-/* Cardholder name */
-"primer-card-form-name" = "姓名";
-/* Pay - Card Form (Checkout submit button text) */
-"primer-card-form-pay" = "支付";
-/* Save - Card Form (Vault submit button text) */
-"primer-card-form-save" = "保存";
-/* Choose payment method - Checkout Navigation Bar Title */
-"primer-checkout-nav-bar-title" = "选择付款方式";
-/* Add Bank Account - Confirm Mandate (Top title text_ */
-"primer-confirm-mandate-add-bank-account" = "增加银行账户";
-/* Confirm - Confirm Mandate (Button text) */
-"primer-confirm-mandate-confirm" = "确认";
-/* Confirm SEPA Direct Debit - Confirm Mandate (Main title text) */
-"primer-confirm-mandate-confirm-sepa-direct-debit" = "确认 SEPA 直接借记";
-/* Do you want to delete this payment method? - Delete alert title */
-"primer-delete-alert-title" = "您要删除此付款方式吗？";
-/* Apple pay - Direct Checkout (Apple pay button text) */
-"primer-direct-checkout-apple-pay" = "Apple 支付";
-/* Pay by card - Direct Checkout (Card button text) */
-"primer-direct-checkout-pay-by-card" = "用卡支付";
-/* PayPal - Direct Checkout (PayPal button text */
-"primer-direct-checkout-paypal" = "Paypal";
-/* An error message displayed when the cvv code is not correct */
-"primer-error-card-form-card-cvv" = "无效的 CVV 码";
-/* An error message displayed when the card expiration date is not correct */
-"primer-error-card-form-card-expiration-date" = "无效的日期";
-/* An error message displayed when the card number is not correct */
-"primer-error-card-form-card-number" = "无效的卡号";
-/* A suffix to mark a required field or action being performed */
-"primer-error-is-required-suffix" = "为必需";
-/* A generic error message that is displayed on the error view */
-"primer-error-screen" = "出现问题，请重试。";
-/* e.g. John Doe - Form Text Field Placeholder (Cardholder name) */
-"primer-form-text-field-placeholder-cardholder" = "例如约翰·多伊";
-/* Card number - Form Text Field Title (Card number) */
-"primer-form-text-field-title-card-number" = "卡号";
-/* Expiry date - Form Text Field Title (Expiry date) */
-"primer-form-text-field-title-expiry-date" = "到期日";
-/* Enter your card details - Form Type Main Title (Card) */
-"primer-form-type-main-title-card-form" = "输入您的银行卡详细信息";
-/* Card form - Navigation Bar Title */
-"primer-form-type-nav-bar-title" = "支付卡";
-/* Add Bank Account - IBAN Form (Main title) */
-"primer-iban-form-add-bank-account" = "增加银行账户";
-/* Enter IBAN - IBAN Form (Text field placeholder text */
-"primer-iban-form-enter-iban" = "输入 IBAN（国际银行账户）";
-/* Your monthly fee will be automatically deducted from this account, using SEPA Core DirectDebit Mandate - IBAN Form (Subtitle text) */
-"primer-iban-form-monthly-fee-automatically-deducted" = "使用 SEPA 核心直接借记授权，您的月费将自动从此账户中扣除";
-/* Next - IBAN Form (Button text) */
-"primer-iban-form-next" = "下一步";
-/* Use an account number instead - IBAN Form (Switch text) */
-"primer-iban-form-use-account-number-instead" = "请改用账户";
-/* Expires - Saved card */
-"primer-saved-card" = "到期";
-/* Manual input - Scanner view (Button text) */
-"primer-scanner-view-manual-input" = "手动输入";
-/* Scan card - Scanner view (Title text) */
-"primer-scanner-view-scan-card" = "扫描卡";
-/* Scan the front of your card - Scanner view (Description text) */
-"primer-scanner-view-scan-front-card" = "扫描卡的正面";
-/* The title of the header for the flow decision view */
-"primer-test-header-description" = "这是沙盒模拟流程，请从下方列表选择您想要测试的结果。";
-/* The title of the mocked declined flow for a Test Payment Method */
-"primer-test-payment-method-decline-flow-title" = "已拒绝";
-/* The title of the mocked failed flow for a Test Payment Method */
-"primer-test-payment-method-fail-flow-title" = "已失败";
-/* The title of the mocked successful flow for a Test Payment Method */
-"primer-test-payment-method-success-flow-title" = "已授权";
-/* SAVED PAYMENT METHOD - Vault Checkout Card Title */
-"primer-vault-checkout-payment-method-title" = "已保存的付款方式";
-/* Add payment method - Vault Navigation Bar Title */
-"primer-vault-nav-bar-title" = "添加付款方式";
-/* Add new card - Vault Payment Method (Button text) */
-"primer-vault-payment-method-add-new-card" = "添加新卡";
-/* Available payment methods - Vault Payment Method (Main title text) */
-"primer-vault-payment-method-available-payment-methods" = "可用付款方式";
-/* Edit - Vault Payment Method (Button text) */
-"primer-vault-payment-method-edit" = "编辑";
-/* Saved payment methods - Vault Payment Method (Main title text) */
-"primer-vault-payment-method-saved-payment-methods" = "已保存的付款方式";
-/* QR Code - QR code screen subtitle label */
-"qrCode" = "二维码";
-/* Scan to pay or take a screenshot - QR code screen title label */
-"scanToPay" = "扫一扫付款或截图";
-/* Search bank - Search bank textfield placeholder */
-"search-bank-placeholder" = "搜索银行";
-/* Search country - Search country textfield placeholder */
-"search-country-placeholder" = "搜索国家/地区";
-/* See all - Universal checkout */
-"see-all" = "查看全部";
-/* An error message displayed when the State, Region or County field is not correct */
-"stateErrorInvalid" = "无效的州、地区或县";
-/* State, Region or County is required - Form Validation */
-"stateErrorRequired" = "州、地区或县为必需";
-/* The billing address state container view label */
-"stateLabel" = "州/地区/县";
-/* Form Text Field Placeholder (Address State / Region / County) */
-"statePlaceholder" = "州/地区/县";
-/* Additional fee may apply - Surcharge (Label) */
-"surcharge-additional-fee" = "可能会收取额外费用";
-/* Upload the screenshot in your banking app. - QR code screen subtitle label */
-"uploadScreenshot" = "在您的银行应用中上传屏幕截图";
-/* CVV recapture screen title */
-"primer-cvv-recapture-title" = "输入 CVV";
-/* CVV recapture explanation */
-"primer-cvv-recapture-explanation" = "输入卡上的 %d 位安全码以保障付款安全。";
+
 /* Continue */
 "continue" = "继续";
+
+/* An error message displayed when the Country is not correct */
+"countryCodeErrorInvalid" = "无效的国家/地区";
+
+/* Country is required - Form Validation */
+"countryCodeErrorRequired" = "国家代码为必填项";
+
+/* The billing address Country code container view label */
+"countryCodeLabel" = "国家代码";
+
+/* Form Text Field Placeholder (Country code) */
+"countryCodePlaceholder" = "国家代码";
+
+/* Select a country - Choose your country title label */
+"countrySelectPlaceholder" = "选择国家/地区";
+
+/* The prefix copy we put before the expiration date */
+"dueAt" = "截止日期";
+
+/* An error message displayed when the First Name is not correct */
+"firstNameErrorInvalid" = "无效的名字";
+
+/* First name is required - Form Validation */
+"firstNameErrorRequired" = "名字为必需";
+
+/* The billing address First name container view label */
+"firstNameLabel" = "名字";
+
+/* Form Text Field Placeholder (First name) */
+"firstNamePlaceholder" = "名字";
+
+"form_error_card_holder_name_length" = "名称长度为 2 ~ 45 个字符";
+
+"form_error_card_type_not_supported" = "不支持的卡类型";
+
+/* Get the code from your banking app - Blik descriptor */
+"input_description_otp" = "从您的银行应用获取代码。";
+
+/* 6 digit code - Text field top placeholder */
+"input_hint_form_blik_otp" = "6位代码";
+
+/* An error message displayed when the Last Name is not correct */
+"lastNameErrorInvalid" = "无效的姓氏";
+
+/* Last name is required - Form Validation */
+"lastNameErrorRequired" = "姓氏为必需";
+
+/* The billing address Last name container view label */
+"lastNameLabel" = "姓氏";
+
+/* Form Text Field Placeholder (Last name) */
+"lastNamePlaceholder" = "姓氏";
+
+/* No additional fee - Universal Checkout section text */
+"no_additional_fee" = "没有额外费用";
+
+/* Enter your one time password - Text field placeholder */
+"payment_method_blik_loading_placeholder" = "在Blik应用中完成付款";
+
+/* Pay with card - Payment Method Type (Card Not Vaulted */
+"payment-method-type-card-not-vaulted" = "使用银行卡支付";
+
+/* The message copy that tells the user how to transfer funds given a displayed account code */
+"pleaseTransferFunds" = "请使用您在新加坡的银行账户，通过 FAST（首选）、MEPS 或 GIRO 将资金转账到所提供的星展银行账户上。";
+
+/* An error message displayed when the postal code field is not correct */
+"postalCodeErrorInvalid" = "无效的邮政编码";
+
+/* Postal code is required - Form Validation */
+"postalCodeErrorRequired" = "邮政编码为必填项";
+
+/* The billing address postal code container view label */
+"postalCodeLabel" = "邮编";
+
+/* Form Text Field Placeholder (Address postal code) */
+"postalCodePlaceholder" = "90210";
+
+/* Cancel - Alert button cancel */
+"primer-alert-button-cancel" = "取消";
+
+/* Delete - Alert button delete */
+"primer-alert-button-delete" = "删除";
+
+/* The title of the primer 'pay in installments' button */
+"primer-button-title-pay-in-installments" = "分期付款";
+
+/* Add card - Card Form (Vault title text) */
+"primer-card-form-add-card" = "添加卡片";
+
+/* Checkout - Card Form (Checkout Title Text) */
+"primer-card-form-checkout" = "结账";
+
+/* CVV - Card Form (CVV Text Field placeholder text) */
+"primer-card-form-cvv" = "CVV";
+
+/* Cardholder name */
+"primer-card-form-name" = "姓名";
+
+/* Pay - Card Form (Checkout submit button text) */
+"primer-card-form-pay" = "支付";
+
+/* Save - Card Form (Vault submit button text) */
+"primer-card-form-save" = "保存";
+
+/* Choose payment method - Vault Navigation Bar Title */
+"primer-checkout-nav-bar-title" = "选择付款方式";
+
+/* Add Bank Account - Confirm Mandate (Top title text_ */
+"primer-confirm-mandate-add-bank-account" = "增加银行账户";
+
+/* Confirm - Confirm Mandate (Button text) */
+"primer-confirm-mandate-confirm" = "确认";
+
+/* Confirm SEPA Direct Debit - Confirm Mandate (Main title text) */
+"primer-confirm-mandate-confirm-sepa-direct-debit" = "确认 SEPA 直接借记";
+
+/* CVV- CVV recapture explanation label */
+"primer-cvv-recapture-explanation" = "输入卡上的 %d 位安全码以保障付款安全。";
+
+/* CVV - CVV recapture screen title */
+"primer-cvv-recapture-title" = "输入 CVV";
+
+/* Do you want to delete this payment method? - Delete alert title */
+"primer-delete-alert-title" = "您要删除此付款方式吗？";
+
+/* Apple pay - Direct Checkout (Apple pay button text) */
+"primer-direct-checkout-apple-pay" = "Apple 支付";
+
+/* Pay by card - Direct Checkout (Card button text) */
+"primer-direct-checkout-pay-by-card" = "用卡支付";
+
+/* PayPal - Direct Checkout (PayPal button text */
+"primer-direct-checkout-paypal" = "Paypal";
+
+/* An error message displayed when the cvv code is not correct */
+"primer-error-card-form-card-cvv" = "无效的 CVV 码";
+
+/* An error message displayed when the card expiration date is not correct */
+"primer-error-card-form-card-expiration-date" = "无效的日期";
+
+/* An error message displayed when the card number is not correct */
+"primer-error-card-form-card-number" = "无效的卡号";
+
+/* A suffix to mark a required field or action being performed */
+"primer-error-is-required-suffix" = "为必需";
+
+/* Something went wrong, please try again. - Error Screen Message */
+"primer-error-screen" = "出现问题，请重试。";
+
+/* e.g. John Doe - Form Text Field Placeholder (Cardholder name) */
+"primer-form-text-field-placeholder-cardholder" = "例如约翰·多伊";
+
+/* Card number - Form Text Field Title (Card number) */
+"primer-form-text-field-title-card-number" = "卡号";
+
+/* Expiry date - Form Text Field Title (Expiry date) */
+"primer-form-text-field-title-expiry-date" = "到期日";
+
+/* Enter your card details - Form Type Main Title (Card) */
+"primer-form-type-main-title-card-form" = "输入您的银行卡详细信息";
+
+/* Card form - Navigation Bar Title */
+"primer-form-type-nav-bar-title" = "支付卡";
+
+/* Add Bank Account - IBAN Form (Main title) */
+"primer-iban-form-add-bank-account" = "增加银行账户";
+
+/* Enter IBAN - IBAN Form (Text field placeholder text */
+"primer-iban-form-enter-iban" = "输入 IBAN（国际银行账户）";
+
+/* Your monthly fee will be automatically deducted from this account, using SEPA Core DirectDebit Mandate - IBAN Form (Subtitle text) */
+"primer-iban-form-monthly-fee-automatically-deducted" = "使用 SEPA 核心直接借记授权，您的月费将自动从此账户中扣除";
+
+/* Next - IBAN Form (Button text) */
+"primer-iban-form-next" = "下一步";
+
+/* Use an account number instead - IBAN Form (Switch text) */
+"primer-iban-form-use-account-number-instead" = "请改用账户";
+
+/* Expires - Saved card */
+"primer-saved-card" = "到期";
+
+/* Manual input - Scanner view (Button text) */
+"primer-scanner-view-manual-input" = "手动输入";
+
+/* Scan card - Scanner view (Title text) */
+"primer-scanner-view-scan-card" = "扫描卡";
+
+/* Scan the front of your card - Scanner view (Description text) */
+"primer-scanner-view-scan-front-card" = "扫描卡的正面";
+
+/* The title of the header for the flow decision view */
+"primer-test-header-description" = "这是沙盒模拟流程，请从下方列表选择您想要测试的结果。";
+
+/* The title of the mocked declined flow for a Test Payment Method */
+"primer-test-payment-method-decline-flow-title" = "已拒绝";
+
+/* The title of the mocked failed flow for a Test Payment Method */
+"primer-test-payment-method-fail-flow-title" = "已失败";
+
+/* The title of the mocked successful flow for a Test Payment Method */
+"primer-test-payment-method-success-flow-title" = "已授权";
+
+/* SAVED CARD - Vault Checkout Card Title */
+"primer-vault-checkout-payment-method-title" = "已保存的付款方式";
+
+/* Add payment method - Checkout Navigation Bar Title */
+"primer-vault-nav-bar-title" = "添加付款方式";
+
+/* Add new card - Vault Payment Method (Button text) */
+"primer-vault-payment-method-add-new-card" = "添加新卡";
+
+/* Available payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-available-payment-methods" = "可用付款方式";
+
+/* Edit - Vault Payment Method (Button text) */
+"primer-vault-payment-method-edit" = "编辑";
+
+/* Saved payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-saved-payment-methods" = "已保存的付款方式";
+
+/* QR Code - QR code screen subtitle label */
+"qrCode" = "二维码";
+
+/* Scan to pay or take a screenshot - QR code screen title label */
+"scanToPay" = "扫一扫付款或截图";
+
+/* Search bank - Search bank textfield placeholder */
+"search-bank-placeholder" = "搜索银行";
+
+/* Search country - Search country textfield placeholder */
+"search-country-placeholder" = "搜索国家/地区";
+
+/* See all - Universal checkout */
+"see-all" = "查看全部";
+
+/* "Shipping" label displayed next to the shipping amount, for example: "Shipping $2.50" */
+"shipping" = "运费";
+
+/* An error message displayed when the State, Region or County field is not correct */
+"stateErrorInvalid" = "无效的州、地区或县";
+
+/* State, Region or County is required - Form Validation */
+"stateErrorRequired" = "州、地区或县为必需";
+
+/* The billing address state container view label */
+"stateLabel" = "州/地区/县";
+
+/* Form Text Field Placeholder (Address State / Region / County) */
+"statePlaceholder" = "州/地区/县";
+
+/* Additional fee may apply - Surcharge (Label) */
+"surcharge-additional-fee" = "可能会收取额外费用";
+
+/* Upload the screenshot in your banking app. - QR code screen subtitle label */
+"uploadScreenshot" = "在您的银行应用中上传屏幕截图";
+

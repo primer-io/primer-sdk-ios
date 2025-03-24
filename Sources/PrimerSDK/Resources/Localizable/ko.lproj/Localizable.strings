@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "주소 2번 줄";
 
+"card_expiry_date" = "MM/YY";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "유효하지 않은 카드 소유자 이름";
 
@@ -76,6 +78,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "이름";
 
+"form_error_card_holder_name_length" = "이름은 2~45자 사이여야 합니다";
+
+"form_error_card_type_not_supported" = "지원되지 않는 카드 종류입니다";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "금융 앱에서 코드를 받으세요.";
 
@@ -126,9 +132,6 @@
 
 /* The title of the primer 'pay in installments' button */
 "primer-button-title-pay-in-installments" = "할부로 결제하기";
-
-/* 12/24 - Card Form (Expiry text field placeholder text) */
-"primer-card-form-12-24" = "12/24";
 
 /* Add card - Card Form (Vault title text) */
 "primer-card-form-add-card" = "카드 추가";

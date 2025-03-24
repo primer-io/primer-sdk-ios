@@ -94,8 +94,12 @@ class RetryHandler: LogReporter {
             if (200...299).contains(responseModel.metadata.statusCode) {
                 let successMessage = "Request succeeded after \(self.retries) retries. Status code: \(responseModel.metadata.statusCode)"
                 self.logger.debug(message: successMessage)
-                let retryEvent = Analytics.Event.message(message: successMessage, messageType: .retrySuccess, severity: .info)
-                Analytics.Service.record(event: retryEvent)
+
+                // Record event only if we have one or more retries
+                if self.retries > 0 {
+                    let retryEvent = Analytics.Event.message(message: successMessage, messageType: .retrySuccess, severity: .info)
+                    Analytics.Service.record(event: retryEvent)
+                }
                 self.completion(.success(responseModel))
             } else {
                 self.handleRetry(responseModel: responseModel, error: error)

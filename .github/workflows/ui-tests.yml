@@ -21,7 +21,7 @@ on:
 
 jobs:
   build-and-upload-to-appetize:
-    runs-on: macos-13
+    runs-on: macos-latest
     timeout-minutes: 20
     name: "Build and upload app to Appetize"
     steps:
@@ -53,8 +53,9 @@ jobs:
           slack-channel: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
           slack-reporter-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
           github-run-id: ${{ github.run_id }}
+          stripe-publishable-key: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
   build-and-upload-to-firebase-and-browserstack:
-    runs-on: macos-13
+    runs-on: macos-latest
     timeout-minutes: 20
     name: "Distribute app to Firebase and Browserstack"
     steps:
@@ -71,7 +72,7 @@ jobs:
       - name: Select Xcode Version
         uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd  # v1.6.0 
         with:
-          xcode-version: '15.0'
+          xcode-version: '16.2.0'
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@d4fffb50872869abe2d9a9098a6d9c5aa7d16be4 #v2.7.0
@@ -80,11 +81,11 @@ jobs:
           name: id_rsa_github_actions
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
-      - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
+      - uses: webfactory/ssh-agent@a6f90b1f127823b31d4d4a8d96047790581349bd # v0.9.1
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - uses: ruby/setup-ruby@a2bbe5b1b236842c1cb7dd11e8e3b51e0a616acc  # v1.202.0
+      - uses: ruby/setup-ruby@1a615958ad9d422dd932dc1d5823942ee002799f  # v1.227.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
@@ -95,6 +96,11 @@ jobs:
           base64 -d -i firebase_credentials.json.b64 > firebase_credentials.json
         env:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
+
+      - name: Create secrets.defaults.properties
+        shell: bash
+        run: |
+          echo "STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}" > Debug\ App/secrets.defaults.properties
 
       - name: Distribute internally on Firebase and upload to Browserstack 🚀
         run: |
@@ -113,7 +119,7 @@ jobs:
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
           SOURCE_BRANCH: ${{ github.ref }}
       - name: Save Browserstack ID
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 #v4.4.3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 #v4.6.2
         id: save_browserstack_id_step
         with:
           name: browserstack_id

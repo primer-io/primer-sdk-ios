@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "2. vrstica naslova";
 
+"card_expiry_date" = "MM/LL";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "Neveljavno ime imetnika kartice";
 
@@ -76,6 +78,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "Ime";
 
+"form_error_card_holder_name_length" = "Ime mora imeti od 2 do 45 znakov.";
+
+"form_error_card_type_not_supported" = "Nepodprta vrsta kartice";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "Pridobite kodo iz svoje bančne aplikacije.";
 
@@ -126,9 +132,6 @@
 
 /* The title of the primer 'pay in installments' button */
 "primer-button-title-pay-in-installments" = "Plačajte na obroke";
-
-/* 12/24 - Card Form (Expiry text field placeholder text) */
-"primer-card-form-12-24" = "12/24";
 
 /* Add card - Card Form (Vault title text) */
 "primer-card-form-add-card" = "Dodajte kartico";

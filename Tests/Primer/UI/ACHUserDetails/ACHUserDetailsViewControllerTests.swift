@@ -1,6 +1,6 @@
 //
 //  ACHUserDetailsViewControllerTests.swift
-//  
+//
 //
 //  Created by Stefan Vrancianu on 11.07.2024.
 //
@@ -11,7 +11,7 @@ import XCTest
 final class ACHUserDetailsViewControllerTests: XCTestCase {
 
     var sut: ACHUserDetailsViewController!
-    
+
     // ACHUserDetailsDelegate variables
     var sessionRestarted = false
     var userSubmitedForm = false
@@ -19,14 +19,14 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        
+
         SDKSessionHelper.setUp(order: order, customer: customer)
         let tokenizationService = MockTokenizationService()
         let createResumePaymentService = MockCreateResumePaymentService()
         let uiManager = MockPrimerUIManager()
-        
+
         let tokenizationViewModel = StripeAchTokenizationViewModel(config: stripeACHPaymentMethod, uiManager: uiManager, tokenizationService: tokenizationService, createResumePaymentService: createResumePaymentService)
-        
+
         sut = ACHUserDetailsViewController(tokenizationViewModel: tokenizationViewModel, delegate: self)
         sut.loadViewIfNeeded()
     }
@@ -39,25 +39,25 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
         SDKSessionHelper.tearDown()
         super.tearDown()
     }
-    
+
     func test_achUserDetails_viewWillAppear() {
         sut.viewWillAppear(false)
-        
+
         if let parentVC = sut.parent as? PrimerContainerViewController {
             XCTAssertTrue(parentVC.mockedNavigationBar.hidesBackButton)
         }
     }
-    
+
     func test_achUserDetails_viewDidAppear() {
         sut.achUserDetailsViewModel.shouldDisableViews = true
         sut.viewDidAppear(false)
-        
+
         XCTAssertTrue(sessionRestarted)
     }
-    
+
     func test_achUserDetails_viewWillDisappear() {
         sut.viewWillDisappear(false)
-        
+
         if let parentVC = sut.parent as? PrimerContainerViewController {
             XCTAssertFalse(parentVC.mockedNavigationBar.hidesBackButton)
         }
@@ -70,10 +70,10 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
     func test_achUserDetails_component_not_nil() {
         XCTAssertNotNil(sut.stripeAchComponent)
     }
-    
+
     func test_achUserDetails_firstName_valid() {
         var didReceiveStepCalled = false
-        
+
         let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
         sut.didReceiveStepCompletion = { step in
             switch step {
@@ -85,7 +85,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 break
             }
         }
-        
+
         let expectUpdateFirstName = self.expectation(description: "expectUpdateFirstName called")
         sut.didUpdateCompletion = {
             if didReceiveStepCalled {
@@ -94,16 +94,16 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 expectUpdateFirstName.fulfill()
             }
         }
-        
+
         wait(for: [
             expectDidReceiveStep,
             expectUpdateFirstName
         ], timeout: 3.0, enforceOrder: true)
     }
-    
+
     func test_achUserDetails_lastName_valid() {
         var didReceiveStepCalled = false
-        
+
         let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
         sut.didReceiveStepCompletion = { step in
             switch step {
@@ -115,7 +115,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 break
             }
         }
-        
+
         let expectUpdateFirstName = self.expectation(description: "expectUpdateFirstName called")
         sut.didUpdateCompletion = {
             if didReceiveStepCalled {
@@ -124,16 +124,16 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 expectUpdateFirstName.fulfill()
             }
         }
-        
+
         wait(for: [
             expectDidReceiveStep,
             expectUpdateFirstName
         ], timeout: 3.0, enforceOrder: true)
     }
-    
+
     func test_achUserDetails_emailAddress_valid() {
         var didReceiveStepCalled = false
-        
+
         let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
         sut.didReceiveStepCompletion = { step in
             switch step {
@@ -145,7 +145,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 break
             }
         }
-        
+
         let expectUpdateFirstName = self.expectation(description: "expectUpdateFirstName called")
         sut.didUpdateCompletion = {
             if didReceiveStepCalled {
@@ -154,16 +154,16 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 expectUpdateFirstName.fulfill()
             }
         }
-        
+
         wait(for: [
             expectDidReceiveStep,
             expectUpdateFirstName
         ], timeout: 3.0, enforceOrder: true)
     }
-    
+
     func test_achUserDetails_firstName_invalid() {
         var didReceiveStepCalled = false
-        
+
         let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
         sut.didReceiveStepCompletion = { step in
             switch step {
@@ -175,7 +175,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 break
             }
         }
-        
+
         let expectUpdateFirstName = self.expectation(description: "expectUpdateFirstName called")
         sut.didUpdateCompletion = {
             if didReceiveStepCalled {
@@ -184,16 +184,16 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 expectUpdateFirstName.fulfill()
             }
         }
-        
+
         wait(for: [
             expectDidReceiveStep,
             expectUpdateFirstName
         ], timeout: 3.0, enforceOrder: true)
     }
-    
+
     func test_achUserDetails_lastName_invalid() {
         var didReceiveStepCalled = false
-        
+
         let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
         sut.didReceiveStepCompletion = { step in
             switch step {
@@ -205,7 +205,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 break
             }
         }
-        
+
         let expectUpdateFirstName = self.expectation(description: "expectUpdateFirstName called")
         sut.didUpdateCompletion = {
             if didReceiveStepCalled {
@@ -214,16 +214,16 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 expectUpdateFirstName.fulfill()
             }
         }
-        
+
         wait(for: [
             expectDidReceiveStep,
             expectUpdateFirstName
         ], timeout: 3.0, enforceOrder: true)
     }
-    
+
     func test_achUserDetails_emailAddress_invalid() {
         var didReceiveStepCalled = false
-        
+
         let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
         sut.didReceiveStepCompletion = { step in
             switch step {
@@ -235,7 +235,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 break
             }
         }
-        
+
         let expectUpdateFirstName = self.expectation(description: "expectUpdateFirstName called")
         sut.didUpdateCompletion = {
             if didReceiveStepCalled {
@@ -244,20 +244,20 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 expectUpdateFirstName.fulfill()
             }
         }
-        
+
         wait(for: [
             expectDidReceiveStep,
             expectUpdateFirstName
         ], timeout: 3.0, enforceOrder: true)
     }
-    
+
     func test_achUserDetails_isValidForm_true() {
         XCTAssertTrue(sut.achUserDetailsViewModel.isValidForm)
     }
-    
+
     func test_retrievedUserDetails_values() {
         let expectDidReceiveStep = self.expectation(description: "expectDidReceiveStep called")
-        
+
         sut.didReceiveStepCompletion = { step in
             switch step {
             case .retrievedUserDetails:
@@ -269,33 +269,33 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                 break
             }
         }
-        
+
         waitForExpectations(timeout: 2.0)
     }
-    
+
     func test_achUserDetails_submit() {
         sut.stripeAchComponent?.submit()
-        
+
         XCTAssertTrue(userSubmitedForm)
     }
-    
+
     func test_achUserDetails_restartSession() {
         sut.delegate?.restartSession()
-        
+
         XCTAssertTrue(sessionRestarted)
     }
-    
+
     func test_achUserDetails_didReceiveError() {
         let error = ACHHelpers.getInvalidTokenError()
         sut.stripeAchComponent?.errorDelegate?.didReceiveError(error: error)
-        
+
         XCTAssertTrue(didReceiveError)
     }
-    
+
     // MARK: Helpers
-    
+
     var stripeACHPaymentMethodType = "STRIPE_ACH"
-    
+
     let stripeACHPaymentMethod = PrimerPaymentMethod(
         id: "STRIPE_ACH",
         implementationType: .nativeSdk,
@@ -305,7 +305,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
         surcharge: 299,
         options: nil,
         displayMetadata: nil)
-    
+
     var order: ClientSession.Order {
         .init(id: "order_id",
               merchantAmount: 1234,
@@ -326,7 +326,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                       productType: nil)
               ])
     }
-    
+
     var customer = ClientSession.Customer(
         id: "mock-customer-id",
         firstName: "mock-first-name",
@@ -334,7 +334,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
         emailAddress: "mock@email.com",
         mobileNumber: "12345678"
     )
-    
+
     var paymentResponseBody: Response.Body.Payment {
         return .init(id: "id",
                      paymentId: "payment_id",
@@ -370,7 +370,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                      status: .success,
                      paymentFailureReason: nil)
     }
-    
+
     var tokenizationResponseBody: Response.Body.Tokenization {
         .init(analyticsId: "analytics_id",
               id: "id",
@@ -384,7 +384,7 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
               tokenType: .singleUse,
               vaultData: nil)
     }
-    
+
     var stripeACHToken: String {
         "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6ImNsaWVudC10b2tlbi1zaWduaW5nLWtleSJ9.eyJleHAiOjE2NjQ5NTM1OTkwLCJhY2Nlc3NUb2tlbiI6ImIwY2E0NTFhLTBmYmItNGZlYS1hY2UwLTgxMDYwNGQ4OTBkYSIsImFuYWx5dGljc1VybCI6Imh0dHBzOi8vYW5hbHl0aWNzLmFwaS5zYW5kYm94LmNvcmUucHJpbWVyLmlvL21peHBhbmVsIiwiYW5hbHl0aWNzVXJsVjIiOiJodHRwczovL2FuYWx5dGljcy5zYW5kYm94LmRhdGEucHJpbWVyLmlvL2NoZWNrb3V0L3RyYWNrIiwiaW50ZW50IjoiU1RSSVBFX0FDSCIsInN0cmlwZUNsaWVudFNlY3JldCI6ImNsaWVudC1zZWNyZXQtdGVzdCIsInNka0NvbXBsZXRlVXJsIjoiaHR0cHM6Ly9hcGkuc2FuZGJveC5wcmltZXIuaW8vY2xpZW50LXNkay9jb21wbGV0ZSIsImNvbmZpZ3VyYXRpb25VcmwiOiJodHRwczovL2FwaS5zYW5kYm94LnByaW1lci5pby9jbGllbnQtc2RrL2NvbmZpZ3VyYXRpb24iLCJjb3JlVXJsIjoiaHR0cHM6Ly9hcGkuc2FuZGJveC5wcmltZXIuaW8iLCJwY2lVcmwiOiJodHRwczovL3Nkay5hcGkuc2FuZGJveC5wcmltZXIuaW8iLCJlbnYiOiJTQU5EQk9YIiwic3RhdHVzVXJsIjoiaHR0cHM6Ly9hcGkuc2FuZGJveC5wcmltZXIuaW8vcmVzdW1lLXRva2Vucy9lOTM3ZDQyMS0zYzE2LTRjMmUtYTBjOC01OGQxY2RhNWM0NmUiLCJyZWRpcmVjdFVybCI6Imh0dHBzOi8vdGVzdC5hZHllbi5jb20vaHBwL2NoZWNrb3V0LnNodG1sP3U9c2tpcERldGFpbHMmcD1lSnlOVTl0eW16QVEtUnJ6QmdQaVluamd3UVdTdUUwY2g5aE9waThlV2F4dDFTQXhrbkROMzJjaGwyblR6clF6ekk3WWN5U2RQYnVpYlZ0elJnMlhZaTcyMG9HTEFTVm92YXlwMlV2VnpJV0JnNkpHcW5TcGVBUEtvdi1Zc2FBTi1DOTNBMG9qbGhKcnA2aW9NbGxCZXVCS3RyUzNXS2NVQ05hUHlXSmRXbmdnTzFKaFpvekpUcGkzTzc3dVZxQk5rZDNmZlJEZU5lUEpqdWxiU0xPYkl2dDJ2MTV0cjR0RlVjNnp2ekxQYjFxaTZRZGN3aDRHRFpCeXFiZFNWYUMydk5xRzljLTc5bGJ0ZnVHWlRvbWNHcHBtRCpGeUdUd0gqVk5PbmhZeCplQTg4a042TFNET29KSDVobmpWNWZRZ3dwc3YtV0puaXRYc0txZzhsWWlZcTRmbkpTSHJpWjliNkVJRFdHOHpsdXZGcnFWZ2NJV0xReWFGVVpTWnRDeXlkVm5PRjllSXRVQ05MWVZ0MEJmWm1YUlBhdzJZMSp2eU5qMGEwKnFKUDV1UUstellFZGdKT2ZvbzJ4YVViZEJEaDFZOUNJZko1azhDWmpTb00yZWdjYmw4RlRZWHlFVXhKVlFjbFJsRXpoNkdXakpzOFN2bkRzeFJWaFAtNmxQM3NMN1AtWnVRU0kxR29seUVYd1dUY0pBY0RxSXgwSlk3R2dkbEp5OU9PMjUzdUJ3UnJMSnJ3RGJ5QkVLUEdVajhhUlVRei1hWkY5a0JJMkJUbDhWMkdGY2VxMmpJZ2doR0loYlIxbUNHSDMqNFlYdUNmbGpueVg0S1BtR0pIZTg4WmdmVXhWVTFCWnZSTVBKZFZzVlRCcFlHUFl6Tmh0YTg0cVpQaVV1STdibTJHNnpjR1AxMkl3eCo4dDE2YzNJWXVhRnp3NmdWZVBYZ0M3eUR2dzJjelRwdEpPSzJtblcxS2ZYUjBpY3V4dmZRZGp2blRKeVllSkVmVENNdkNYMHZJYjZUZTlxZkMqa2EqWGh3Tnp5QTQ5YmRlLVVxbi1QTE9lSWJNZTEtblBmSldwcmlCY3BiWlBRIn0.p7BV8U5chJSGUvdY9nyrrWeXUjCMWRF_bPCgSwU0h9U"
     }
@@ -394,15 +394,13 @@ extension ACHUserDetailsViewControllerTests: ACHUserDetailsDelegate {
     func restartSession() {
         sessionRestarted = true
     }
-    
+
     func didSubmit() {
         userSubmitedForm = true
     }
-    
+
     func didReceivedError(error: PrimerSDK.PrimerError) {
         didReceiveError = true
     }
-    
-    
-}
 
+}

@@ -10,8 +10,8 @@ import UIKit
 import PrimerSDK
 
 extension MerchantHeadlessCheckoutStripeAchViewController: PrimerHeadlessErrorableDelegate,
-                                                        PrimerHeadlessValidatableDelegate,
-                                                        PrimerHeadlessSteppableDelegate {
+                                                           PrimerHeadlessValidatableDelegate,
+                                                           PrimerHeadlessSteppableDelegate {
     // MARK: - PrimerHeadlessErrorableDelegate
     func didReceiveError(error: PrimerSDK.PrimerError) {
         presentResultsVC(checkoutData: nil, error: error)
@@ -62,7 +62,7 @@ extension MerchantHeadlessCheckoutStripeAchViewController {
             stripeFormViewModel.emailErrorDescription = error?.errorDescription ?? ""
         }
     }
-    
+
     private func presentResultsVC(checkoutData: PrimerCheckoutData?, error: Error?) {
         DispatchQueue.main.async {
             let rvc = MerchantResultViewController.instantiate(checkoutData: checkoutData, error: error, logs: self.logs)
@@ -78,19 +78,19 @@ extension MerchantHeadlessCheckoutStripeAchViewController: PrimerHeadlessUnivers
         print("\n\nMERCHANT APP\n\(#function)\npaymentMethodType: \(paymentMethodType)")
         self.logs.append(#function)
     }
-    
+
     func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerSDK.PrimerCheckoutData) {
         print("\n\nMERCHANT APP\n\(#function)\ndata: \(data)")
         logs.append(#function)
         presentResultsVC(checkoutData: data, error: nil)
     }
-    
+
     func primerHeadlessUniversalCheckoutDidFail(withError err: any Error, checkoutData: PrimerCheckoutData?) {
         print("\n\nMERCHANT APP\n\(#function)\nerror: \(err)\ncheckoutData: \(String(describing: checkoutData))")
         logs.append(#function)
-        presentResultsVC(checkoutData: nil, error: err)
+        presentResultsVC(checkoutData: checkoutData, error: err)
     }
-    
+
     func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
         print("\n\nMERCHANT APP\n\(#function)\nadditionalInfo: \(String(describing: additionalInfo))")
         if let stripeCollector = additionalInfo as? ACHBankAccountCollectorAdditionalInfo {

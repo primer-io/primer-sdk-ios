@@ -29,7 +29,6 @@
 		E11F475D2B06C5A40091C31F /* BanksListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47592B06C5A40091C31F /* BanksListView.swift */; };
 		E11F475E2B06C5A40091C31F /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F475A2B06C5A40091C31F /* BanksListModel.swift */; };
 		E11F475F2B06C5A40091C31F /* ImageViewWithUrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F475B2B06C5A40091C31F /* ImageViewWithUrl.swift */; };
-		E1AB44D02AFE139600639DC5 /* URL+NetworkHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AB44CF2AFE139600639DC5 /* URL+NetworkHeaders.swift */; };
 		F00C65F82ACC67FA00187028 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC5687FF32E8661F1A00CE5 /* AppDelegate.swift */; };
 		F00C65F92ACC67FA00187028 /* Data+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1594BC5C96ECC3F46C811B2F /* Data+Extensions.swift */; };
 		F00C65FA2ACC67FA00187028 /* Range+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9128566126AA7F571FFECA3A /* Range+Extensions.swift */; };
@@ -56,12 +55,12 @@
 		F00C66142ACC67FA00187028 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B18D7E7738BF86467B0F1465 /* Images.xcassets */; };
 		F00C66152ACC67FA00187028 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC701AFD94F96F0F1D108D1A /* LaunchScreen.xib */; };
 		F00C66162ACC67FA00187028 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE259612A00F85709107B872 /* Main.storyboard */; };
-		F01193FF2B28FD1700D0ABD9 /* Primer3DS in Frameworks */ = {isa = PBXBuildFile; productRef = F01193FE2B28FD1700D0ABD9 /* Primer3DS */; };
 		F04510E32ACD98E100A0A48C /* PrimerSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F04510E22ACD98E100A0A48C /* PrimerSDK */; };
 		F04510E62ACD990A00A0A48C /* PrimerKlarnaSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F04510E52ACD990A00A0A48C /* PrimerKlarnaSDK */; };
 		F08F63E02BA0BE83006EF9A9 /* SessionConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63DF2BA0BE83006EF9A9 /* SessionConfiguration.swift */; };
 		F08F63E32BA0BEAD006EF9A9 /* AppetizeConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63E12BA0BEAD006EF9A9 /* AppetizeConfigProvider.swift */; };
 		F08F63E42BA0BEAD006EF9A9 /* MetadataParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63E22BA0BEAD006EF9A9 /* MetadataParser.swift */; };
+		F09978842D0326860058E4B5 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09978832D0326860058E4B5 /* Metadata.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -158,6 +157,7 @@
 		F08F63DF2BA0BE83006EF9A9 /* SessionConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionConfiguration.swift; sourceTree = "<group>"; };
 		F08F63E12BA0BEAD006EF9A9 /* AppetizeConfigProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppetizeConfigProvider.swift; sourceTree = "<group>"; };
 		F08F63E22BA0BEAD006EF9A9 /* MetadataParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetadataParser.swift; sourceTree = "<group>"; };
+		F09978832D0326860058E4B5 /* Metadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Metadata.swift; path = Sources/Model/Metadata.swift; sourceTree = "<group>"; };
 		F816A2444633C4336A7CB071 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
 		F9023841AFCE8E3205CB713A /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		FB1F71737862EF5D0F4FE5AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -171,7 +171,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F01193FF2B28FD1700D0ABD9 /* Primer3DS in Frameworks */,
 				F04510E32ACD98E100A0A48C /* PrimerSDK in Frameworks */,
 				F04510E62ACD990A00A0A48C /* PrimerKlarnaSDK in Frameworks */,
 				0498E1CF2BFB509F00EEF9EE /* PrimerNolPaySDK in Frameworks */,
@@ -243,6 +242,7 @@
 		1C9799A622D0CCDBBF94925B = {
 			isa = PBXGroup;
 			children = (
+				F09978832D0326860058E4B5 /* Metadata.swift */,
 				F04510DE2ACD4EA500A0A48C /* primer-sdk-ios */,
 				FBDF3F8B5F93A0EC28048640 /* Project */,
 				DF30711EB149C64C364BB79A /* Products */,
@@ -418,7 +418,6 @@
 			packageProductDependencies = (
 				F04510E22ACD98E100A0A48C /* PrimerSDK */,
 				F04510E52ACD990A00A0A48C /* PrimerKlarnaSDK */,
-				F01193FE2B28FD1700D0ABD9 /* Primer3DS */,
 				0498E1CE2BFB509F00EEF9EE /* PrimerNolPaySDK */,
 				87BD7B7F2C2350B900BE70E8 /* PrimerStripeSDK */,
 			);
@@ -460,7 +459,6 @@
 			mainGroup = 1C9799A622D0CCDBBF94925B;
 			packageReferences = (
 				F04510E42ACD990A00A0A48C /* XCRemoteSwiftPackageReference "primer-klarna-sdk-ios" */,
-				F01193FD2B28FD1700D0ABD9 /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */,
 				0498E1CD2BFB509F00EEF9EE /* XCRemoteSwiftPackageReference "primer-nol-pay-sdk-ios" */,
 				87BD7B7E2C2350B900BE70E8 /* XCRemoteSwiftPackageReference "primer-stripe-sdk-ios" */,
 			);
@@ -493,6 +491,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F09978842D0326860058E4B5 /* Metadata.swift in Sources */,
 				8723ADE42B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift in Sources */,
 				F08F63E42BA0BEAD006EF9A9 /* MetadataParser.swift in Sources */,
 				044F805D2C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsViewModel.swift in Sources */,
@@ -515,7 +514,6 @@
 				8723ADDD2B8E0F5100A5FE23 /* MerchantHelpers.swift in Sources */,
 				F00C66022ACC67FA00187028 /* TestScenario.swift in Sources */,
 				F00C66032ACC67FA00187028 /* TransactionResponse.swift in Sources */,
-				E1AB44D02AFE139600639DC5 /* URL+NetworkHeaders.swift in Sources */,
 				E11F475D2B06C5A40091C31F /* BanksListView.swift in Sources */,
 				F00C66052ACC67FA00187028 /* Networking.swift in Sources */,
 				F00C66062ACC67FA00187028 /* MerchantDropInUIViewController.swift in Sources */,
@@ -811,14 +809,6 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		F01193FD2B28FD1700D0ABD9 /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/primer-io/primer-sdk-3ds-ios";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
-			};
-		};
 		F04510E42ACD990A00A0A48C /* XCRemoteSwiftPackageReference "primer-klarna-sdk-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/primer-io/primer-klarna-sdk-ios";
@@ -839,11 +829,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 87BD7B7E2C2350B900BE70E8 /* XCRemoteSwiftPackageReference "primer-stripe-sdk-ios" */;
 			productName = PrimerStripeSDK;
-		};
-		F01193FE2B28FD1700D0ABD9 /* Primer3DS */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F01193FD2B28FD1700D0ABD9 /* XCRemoteSwiftPackageReference "primer-sdk-3ds-ios" */;
-			productName = Primer3DS;
 		};
 		F04510E22ACD98E100A0A48C /* PrimerSDK */ = {
 			isa = XCSwiftPackageProductDependency;

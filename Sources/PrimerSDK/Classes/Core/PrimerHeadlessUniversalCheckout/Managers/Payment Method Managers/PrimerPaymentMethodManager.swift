@@ -12,6 +12,7 @@ public enum PrimerPaymentMethodManagerCategory: String {
     case rawData         = "RAW_DATA"
     case nolPay          = "NOL_PAY"
     case componentWithRedirect = "COMPONENT_WITH_REDIRECT"
+    case stripeAch = "STRIPE_ACH"
 }
 
 internal protocol PrimerPaymentMethodManager {

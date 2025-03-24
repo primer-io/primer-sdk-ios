@@ -1,3 +1,60 @@
+## 2.35.3 (2025-03-18)
+
+### Fix
+
+- Decode errors properly for 2xx response codes (#1131)
+
+## 2.35.2 (2025-02-25)
+
+### Fix
+
+- Do not track image failures in analytics (#1122)
+- Record retry event only if we have one or more retries (#1123)
+- Fix Additional Fees text in Drop-in (#1118)
+
+## 2.35.1 (2025-02-11)
+
+### Fix
+
+- Update /payment and /resume timeouts to 60s (#1112)
+- Card Form for RTL languages (#1110)
+
+## 2.35.0 (2025-02-04)
+
+### Feat
+
+- add missing localizations (#1097)
+
+### Fix
+
+- ACC-4826 Update 3DS SDK Keys for Non-Production Environments (#1096)
+
+## 2.34.0 (2025-01-23)
+
+### Experimental
+
+- With this version it is possible to opt-in to test API v2.4(Beta). For more information see our [Api Reference](https://primer.io/docs/api/v2.4/introduction/getting-started) and [Migration Guides](https://www.primer.io/docs/changelog/migration-guides/API-2.3-to-2.4)
+
+## 2.33.1 (2024-12-21)
+
+### Fix
+
+- Align accountNumberLast4Digits with Android (#1066)
+
+## 2.33.0 (2024-12-17)
+
+### Feat
+
+- Enable ACH via Stripe Vaulting flows (#1056)
+- Expose ApplePay Shipping Options and align them with Web SDK (#1049)
+
+### Fix
+
+- Update error type when canceling Paypal payment (#1060)
+- Update the default background color of the default theme for dark mode (#1061)
+- Disable the close button for Klarna during payment processing (#1058)
+- Make success asset visible In dark mode (#1059)
+
 ## 2.32.1 (2024-11-21)
 
 ### Fix

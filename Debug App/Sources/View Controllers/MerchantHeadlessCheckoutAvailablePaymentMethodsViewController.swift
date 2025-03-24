@@ -95,14 +95,14 @@ class MerchantHeadlessCheckoutAvailablePaymentMethodsViewController: UIViewContr
             self.activityIndicator = nil
         }
     }
-    
+
     private func resetPaymentResultState() {
         logs.removeAll(keepingCapacity: false)
         primerError = nil
         checkoutData = nil
         manualHandlingCheckoutData = nil
     }
-    
+
     private func presentResultsVC() {
         let resultsCheckoutData = manualHandlingCheckoutData != nil ? manualHandlingCheckoutData : checkoutData
         let rvc = MerchantResultViewController.instantiate(checkoutData: resultsCheckoutData, error: primerError, logs: logs)
@@ -228,12 +228,12 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
                         self.hideLoadingOverlay()
                     }
                     decisionHandler(.complete())
-                    
+
                     if let lastViewController = self.navigationController?.children.last {
                         if lastViewController is MerchantHeadlessCheckoutKlarnaViewController {
                             self.manualHandlingCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(id: res.id,
-                                                                                                      orderId: res.orderId,
-                                                                                                      paymentFailureReason: nil))
+                                                                                                                    orderId: res.orderId,
+                                                                                                                    paymentFailureReason: nil))
                         } else {
                             self.presentResultsVC()
                         }
@@ -312,11 +312,12 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
         print("\n\nMERCHANT APP\n\(#function)\nerror: \(err)\ncheckoutData: \(String(describing: checkoutData))")
         self.logs.append(#function)
         self.primerError = err
+        self.checkoutData = checkoutData
         self.hideLoadingOverlay()
 
         if let lastViewController = navigationController?.children.last {
             if lastViewController is MerchantHeadlessCheckoutBankViewController ||
-               lastViewController is MerchantHeadlessCheckoutKlarnaViewController {
+                lastViewController is MerchantHeadlessCheckoutKlarnaViewController {
                 navigationController?.popViewController(animated: false)
             }
         }
@@ -376,7 +377,8 @@ extension MerchantHeadlessCheckoutAvailablePaymentMethodsViewController {
             })
 
         } else if let clientSession = clientSession {
-            Networking.requestClientSession(requestBody: clientSession) { (clientToken, err) in
+            Networking.requestClientSession(requestBody: clientSession,
+                                            apiVersion: settings.apiVersion) { (clientToken, err) in
                 self.hideLoadingOverlay()
 
                 if let err = err {

@@ -24,6 +24,8 @@
 
 "back_button_label" = "Back";
 
+"card_expiry_date" = "MM/YY";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "Invalid Cardholder name";
 
@@ -79,6 +81,10 @@
 
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "First name";
+
+"form_error_card_holder_name_length" = "Name must have between 2 and 45 characters";
+
+"form_error_card_type_not_supported" = "Unsupported card type";
 
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "Get the code from your banking app.";
@@ -136,9 +142,6 @@
 
 /* The title of the primer 'pay in installments' button */
 "primer-button-title-pay-in-installments" = "Pay in installments";
-
-/* 12/24 - Card Form (Expiry text field placeholder text) */
-"primer-card-form-12-24" = "12/24";
 
 /* Add card - Card Form (Vault title text) */
 "primer-card-form-add-card" = "Add card";

@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "Osoiterivi 1";
 
+"card_expiry_date" = "KK/VV";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "Virheellinen kortinhaltijan nimi";
 
@@ -76,6 +78,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "Etunimi";
 
+"form_error_card_holder_name_length" = "Nimen on oltava 2–45 merkin pituinen";
+
+"form_error_card_type_not_supported" = "Tukematon korttityyppi";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "Hae koodi pankkisovelluksestasi.";
 
@@ -126,9 +132,6 @@
 
 /* The title of the primer 'pay in installments' button */
 "primer-button-title-pay-in-installments" = "Maksa erissä";
-
-/* 12/24 - Card Form (Expiry text field placeholder text) */
-"primer-card-form-12-24" = "12/24";
 
 /* Add card - Card Form (Vault title text) */
 "primer-card-form-add-card" = "Lisää kortti";

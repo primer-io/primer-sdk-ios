@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "2 adreso eilutė";
 
+"card_expiry_date" = "MM/YY";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "Neteisingi kortelės turėtojo vardas ir pavardė";
 
@@ -76,6 +78,10 @@
 /* Form Text Field Placeholder (First name) */
 "firstNamePlaceholder" = "Vardas";
 
+"form_error_card_holder_name_length" = "Vardą turi sudaryti nuo 2 iki 45 simbolių";
+
+"form_error_card_type_not_supported" = "Nepalaikomas kortelės tipas";
+
 /* Get the code from your banking app - Blik descriptor */
 "input_description_otp" = "Gaukite kodą iš bankininkystės programėlės";
 
@@ -126,9 +132,6 @@
 
 /* The title of the primer 'pay in installments' button */
 "primer-button-title-pay-in-installments" = "Mokėti įmokomis";
-
-/* 12/24 - Card Form (Expiry text field placeholder text) */
-"primer-card-form-12-24" = "12/24";
 
 /* Add card - Card Form (Vault title text) */
 "primer-card-form-add-card" = "Pridėti kortelę";

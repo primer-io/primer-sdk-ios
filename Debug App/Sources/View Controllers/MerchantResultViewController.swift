@@ -47,24 +47,27 @@ final class MerchantResultViewController: UIViewController {
         }
 
         if error != nil || checkoutData != nil {
-            let paymentEncodable = PrimerPaymentResultEncodable(id: checkoutData?.payment?.id, 
-                                                          orderId: checkoutData?.payment?.orderId)
+            let paymentEncodable = PrimerPaymentResultEncodable(id: checkoutData?.payment?.id,
+                                                                orderId: checkoutData?.payment?.orderId)
             let encodable = PrimerResultEncodable(payment: paymentEncodable, error: error)
             guard let data = try? JSONEncoder().encode(encodable), let string = String(data: data, encoding: .utf8) else {
                 responseTextView.text = "[\"Couldn't encode result to JSON\"]"
                 return
             }
             responseTextView.text = string
+
+            if let error = self.error {
+                responseTextView.text.append("\n\(error.localizedDescription)")
+            }
         } else if let error = self.error {
             responseTextView.text = "[\"\(error.localizedDescription)\"]"
         } else {
             responseTextView.text = "[\"No checkout data or error received\"]"
         }
 
-        
         responseStatus.font = .systemFont(ofSize: 17, weight: .medium)
-        responseStatus.textColor = error == nil ? .green : .red
-        responseStatus.text = error == nil ? "Success" : "Failure"
+        responseStatus.textColor = self.error == nil ? .green : .red
+        responseStatus.text = self.error == nil ? "Success" : "Failure"
 
         if logs.count > 0 {
             if let data = try? JSONSerialization.data(withJSONObject: logs) {
