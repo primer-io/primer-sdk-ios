@@ -7,10 +7,12 @@
 
 import SwiftUI
 
-/// Scope interface for customizing the Primer checkout experience.
-///
-/// This interface provides access to payment method data and selection functionality when implementing a custom checkout
-/// experience through `PrimerCheckout`'s `content` parameter closure.
+/**
+ * Scope interface for customizing the Primer checkout experience.
+ *
+ * This interface provides access to payment method data and selection functionality when implementing a custom checkout
+ * experience through `PrimerCheckout`'s `content` parameter closure.
+ */
 @MainActor
 protocol PrimerCheckoutScope {
     /// An AsyncStream containing the list of available payment methods based on prior merchant configuration.

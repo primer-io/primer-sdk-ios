@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// The main entry point to Primer's component-based SDK for implementing checkout functionality.
-@available(iOS 14.0, *)
+@available(iOS 15.0, *)
 struct PrimerCheckout: View {
     private let clientToken: String
     private let successContent: (() -> AnyView)?
@@ -49,34 +49,30 @@ struct PrimerCheckout: View {
     }
 
     var body: some View {
-        if #available(iOS 15.0, *) {
-            ZStack {
-                if !viewModel.isClientTokenProcessed {
-                    ProgressView("Processing client token...")
-                        .onAppear {
-                            Task {
-                                await viewModel.processClientToken(clientToken)
-                            }
+        ZStack {
+            if !viewModel.isClientTokenProcessed {
+                ProgressView("Processing client token...")
+                    .onAppear {
+                        Task {
+                            await viewModel.processClientToken(clientToken)
                         }
-                } else if let error = viewModel.error {
-                    failureView(error: error)
-                } else if viewModel.isCheckoutComplete {
-                    successView()
-                } else {
-                    checkoutContent()
-                }
+                    }
+            } else if let error = viewModel.error {
+                failureView(error: error)
+            } else if viewModel.isCheckoutComplete {
+                successView()
+            } else {
+                checkoutContent()
             }
-            .task {
-                do {
-                    try await tokensManager.fetchTokens(for: colorScheme)
-                } catch {
-                    viewModel.setError(ComponentsPrimerError.designTokensError(error))
-                }
-            }
-            .environment(\.designTokens, tokensManager.tokens)
-        } else {
-            // Fallback on earlier versions
         }
+        .task {
+            do {
+                try await tokensManager.fetchTokens(for: colorScheme)
+            } catch {
+                viewModel.setError(ComponentsPrimerError.designTokensError(error))
+            }
+        }
+        .environment(\.designTokens, tokensManager.tokens)
     }
 
     @ViewBuilder

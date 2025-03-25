@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// Default sheet UI for the Primer checkout experience.
-@available(iOS 14.0, *)
+@available(iOS 15.0, *)
 struct PrimerCheckoutSheet: View {
     @ObservedObject var viewModel: PrimerCheckoutViewModel
 

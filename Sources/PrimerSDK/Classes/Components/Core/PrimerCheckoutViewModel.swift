@@ -7,12 +7,20 @@
 
 import SwiftUI
 
-/// ViewModel that implements the PrimerCheckoutScope and manages checkout state.
+/**
+ * ViewModel that implements the PrimerCheckoutScope interface and manages checkout state.
+ */
+@available(iOS 15.0, *)
 @MainActor
 class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope {
+    // MARK: - Published Properties
+
+    @Published private(set) var clientToken: String?
     @Published private(set) var isClientTokenProcessed = false
     @Published private(set) var isCheckoutComplete = false
     @Published private(set) var error: ComponentsPrimerError?
+
+    // MARK: - Private Properties
 
     private var paymentMethodsContinuation: AsyncStream<[any PaymentMethodProtocol]>.Continuation?
     private var selectedMethodContinuation: AsyncStream<(any PaymentMethodProtocol)?>.Continuation?
@@ -20,18 +28,32 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope {
     private var availablePaymentMethods: [any PaymentMethodProtocol] = []
     private var currentSelectedMethod: (any PaymentMethodProtocol)?
 
+    // MARK: - Initialization
+
     init() {
-        // Initialize empty state
+        // Initialize with empty state
     }
 
-    /// Process the client token and initialize the SDK.
-    func processClientToken(_ token: String) async {
-        do {
-            // Parse the token and initialize the SDK
-            try await Task.sleep(nanoseconds: 1 * 1_000_000_000) // Simulate network delay
+    // MARK: - Public Methods
 
-            // Load payment methods
-            availablePaymentMethods = await loadPaymentMethods()
+    /// Process the client token and initialize the SDK.
+    /// - Parameter token: The client token string
+    func processClientToken(_ token: String) async {
+        guard clientToken != token else {
+            // Already processed this token
+            return
+        }
+
+        do {
+            self.clientToken = token
+
+            // Configure SDK with token
+            try await configureSDK(with: token)
+
+            // Load available payment methods
+            self.availablePaymentMethods = await loadPaymentMethods()
+
+            // Notify any listeners
             paymentMethodsContinuation?.yield(availablePaymentMethods)
 
             isClientTokenProcessed = true
@@ -41,6 +63,7 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope {
     }
 
     /// Set an error that occurred during checkout.
+    /// - Parameter error: The error that occurred
     func setError(_ error: ComponentsPrimerError) {
         self.error = error
     }
@@ -73,11 +96,17 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope {
 
     // MARK: - Private Helpers
 
+    private func configureSDK(with token: String) async throws {
+        // Here would be the SDK configuration logic
+        // For now, just simulate network delay
+        try await Task.sleep(nanoseconds: 1 * 1_000_000_000)
+    }
+
     private func loadPaymentMethods() async -> [any PaymentMethodProtocol] {
-        // Dummy payment methods for demonstration
+        // Simulate loading payment methods from SDK
         return [
-            CardPaymentMethod()
-            //            KlarnaPaymentMethod()
+            CardPaymentMethod(),
+            // Add other payment methods as they become available
         ]
     }
 }

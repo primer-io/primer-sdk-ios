@@ -9,7 +9,7 @@ import UIKit
 import SwiftUI
 
 /// A UIKit wrapper for the SwiftUI PrimerCheckout view demonstrating different customization options.
-@available(iOS 14.0, *)
+@available(iOS 15.0, *)
 public class PrimerCheckoutViewController: UIViewController {
     private let clientToken: String
     private let onComplete: ((Result<PaymentResult, Error>) -> Void)?
@@ -260,7 +260,7 @@ struct CustomCheckoutWithCardForm: View {
 }
 
 /// Custom card form example showing branded styling and enhanced validation
-@available(iOS 14.0, *)
+@available(iOS 15.0, *)
 struct CustomCardFormExample: View {
     let scope: any CardPaymentMethodScope
 
@@ -461,7 +461,7 @@ struct CustomCardFormExample: View {
                 for await state in scope.state() {
                     if let state = state {
                         // Update form state based on the scope's state
-                        isValid = state.isValid
+                        isValid = state.validationErrors.isEmpty
                     }
                 }
             }
