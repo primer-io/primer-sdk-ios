@@ -133,7 +133,7 @@ jobs:
         with:
           name: save_app_artifact_step
           retention-days: 1
-          path: '/var/tmp/Primer.io_Debug_App.xcarchive/Products/Applications/Debug App.app'
+          path: '/Users/runner/work/primer-sdk-ios/primer-sdk-ios/Debug App.ipa'
           if-no-files-found: error
   test-via-browserstack:
       runs-on: ubuntu-latest
