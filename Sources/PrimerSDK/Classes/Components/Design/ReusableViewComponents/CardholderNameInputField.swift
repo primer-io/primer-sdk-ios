@@ -242,7 +242,10 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
             return false
         }
 
+        private var activeTextFieldUpdateToken: UUID = UUID()
         private func updateTextField(_ textField: PrimerCardholderNameTextField, newText: String) {
+            let updateToken = UUID()
+            activeTextFieldUpdateToken = updateToken
             isUpdating = true
 
             // Update the text field
@@ -252,7 +255,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
 
             // Update the binding
             DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
+                guard let self = self, self.activeTextFieldUpdateToken == updateToken else { return }
                 self.parent.cardholderName = newText
 
                 // Validate while typing

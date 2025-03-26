@@ -320,7 +320,10 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             return formattedText
         }
 
+        private var activeTextFieldUpdateToken: UUID = UUID()
         private func updateTextField(_ textField: PrimerExpiryDateTextField, newText: String) {
+            let updateToken = UUID()
+            activeTextFieldUpdateToken = updateToken
             isUpdating = true
 
             // Update the text field
@@ -330,7 +333,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
 
             // Update the binding
             DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
+                guard let self = self, self.activeTextFieldUpdateToken == updateToken else { return }
                 self.parent.expiryDate = newText
 
                 // Extract month and year
