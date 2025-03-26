@@ -58,6 +58,8 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 20
     name: "Distribute app to Firebase and Browserstack"
+    outputs:
+      artifact-url: ${{ steps.save_app_artifact_step.outputs.artifact-url }}
     steps:
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
@@ -123,9 +125,16 @@ jobs:
         id: save_browserstack_id_step
         with:
           name: browserstack_id
+          retention-days: 1
           path: /var/tmp/browserstack_id.txt
           if-no-files-found: error
-
+      - name: Save App Artifact
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        with:
+          name: save_app_artifact_step
+          retention-days: 1
+          path: '/var/tmp/Primer.io_Debug_App.xcarchive/Products/Applications/Debug App.app'
+          if-no-files-found: error
   test-via-browserstack:
       runs-on: ubuntu-latest
       needs: build-and-upload-to-firebase-and-browserstack
@@ -155,6 +164,7 @@ jobs:
             slack-mobile-sdk-channel: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
             slack-reporter-bot-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
             ui-tests-secrets-api-key: ${{ secrets.UI_TESTS_SECRETS_API_KEY }}
+            test-app-artifact-url: ${{ needs.build-and-upload-to-firebase-and-browserstack.outputs.artifact-url }}
   
   test-via-browserstack-manual:
     runs-on: ubuntu-latest
