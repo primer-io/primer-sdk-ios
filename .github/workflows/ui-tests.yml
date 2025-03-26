@@ -129,9 +129,10 @@ jobs:
           path: /var/tmp/browserstack_id.txt
           if-no-files-found: error
       - name: Save App Artifact
+        id: save_app_artifact_step
         uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
         with:
-          name: save_app_artifact_step
+          name: app_artifact_id
           retention-days: 1
           path: '/Users/runner/work/primer-sdk-ios/primer-sdk-ios/Debug App.ipa'
           if-no-files-found: error
