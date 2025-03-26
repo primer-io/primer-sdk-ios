@@ -51,19 +51,6 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
         stateContinuation = nil
     }
 
-    // Add this method to CardViewModel
-    func submit() {
-        // Call the async version
-        Task {
-            do {
-                _ = try await submit()
-            } catch {
-                // Handle the error - maybe update UI state or log
-                print("Payment submission failed: \(error.localizedDescription)")
-            }
-        }
-    }
-
     func submit() async throws -> PaymentResult {
         try await withCheckedThrowingContinuation { continuation in
             Task {

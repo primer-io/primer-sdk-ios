@@ -126,7 +126,6 @@ extension CardPaymentUiState {
     }
 }
 
-// Helper structure to match Android implementation
 struct InputFieldState {
     let value: String
     let validationError: ValidationError?
@@ -150,16 +149,5 @@ struct InputFieldState {
 
     var imeAction: UIReturnKeyType {
         return isLast ? .done : .next
-    }
-}
-
-// Helper extensions
-extension Collection {
-    var isNotEmpty: Bool {
-        return !isEmpty
-    }
-
-    func all(_ predicate: (Element) -> Bool) -> Bool {
-        return self.allSatisfy(predicate)
     }
 }

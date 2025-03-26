@@ -29,11 +29,6 @@ import SwiftUI
  */
 @MainActor
 protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPaymentUiState {
-    // MARK: - Submission methods
-
-    /// Submits the card information for processing. To be used in custom Pay button implementations.
-    func submit()
-
     // MARK: - Card field update methods
 
     /// Updates the card number in the payment method state
