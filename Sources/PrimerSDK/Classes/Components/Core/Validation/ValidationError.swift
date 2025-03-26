@@ -1,8 +1,8 @@
 //
-//  ValidationError.swift
+//  representing.swift
 //
 //
-//  Created by Boris on 24.3.25..
+//  Created by Boris on 26.3.25..
 //
 
 import Foundation
@@ -13,7 +13,7 @@ import Foundation
  * @property code A unique identifier for the error.
  * @property message A descriptive message explaining the error.
  */
-struct ValidationError: Equatable, Hashable, Codable {
+public struct ValidationError: Equatable, Hashable, Codable {
     let code: String
     let message: String
 }

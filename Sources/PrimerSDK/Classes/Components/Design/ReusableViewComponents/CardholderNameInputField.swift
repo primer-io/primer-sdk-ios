@@ -24,6 +24,9 @@ struct CardholderNameInputField: View, LogReporter {
 
     // MARK: - Private Properties
 
+    /// The validation service used to validate the card holder name
+    private let validationService: ValidationService
+
     /// The cardholder name entered by the user
     @State private var cardholderName: String = ""
 
@@ -34,6 +37,20 @@ struct CardholderNameInputField: View, LogReporter {
     @State private var errorMessage: String?
 
     @Environment(\.designTokens) private var tokens
+
+    // MARK: - Initialization
+
+    init(
+        label: String,
+        placeholder: String,
+        validationService: ValidationService = DefaultValidationService(),
+        onValidationChange: ((Bool) -> Void)? = nil
+    ) {
+        self.label = label
+        self.placeholder = placeholder
+        self.validationService = validationService
+        self.onValidationChange = onValidationChange
+    }
 
     // MARK: - Body
 
@@ -49,7 +66,8 @@ struct CardholderNameInputField: View, LogReporter {
                 cardholderName: $cardholderName,
                 isValid: $isValid,
                 errorMessage: $errorMessage,
-                placeholder: placeholder
+                placeholder: placeholder,
+                validationService: validationService
             )
             .padding()
             .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
@@ -90,6 +108,7 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
     @Binding var isValid: Bool
     @Binding var errorMessage: String?
     var placeholder: String
+    let validationService: ValidationService
 
     func makeUIView(context: Context) -> UITextField {
         let textField = PrimerCardholderNameTextField()
@@ -132,18 +151,43 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(self)
+        Coordinator(
+            validationService: validationService,
+            updateCardholderName: { newValue in
+                self.cardholderName = newValue
+            },
+            updateValidationState: { isValid, errorMessage in
+                self.isValid = isValid
+                self.errorMessage = errorMessage
+            }
+        )
     }
 
     class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
-        var parent: CardholderNameTextField
-        private var isUpdating = false
+        // MARK: - Properties
 
-        init(_ parent: CardholderNameTextField) {
-            self.parent = parent
+        private let validationService: ValidationService
+        private let updateCardholderName: (String) -> Void
+        private let updateValidationState: (Bool, String?) -> Void
+
+        private var isUpdating = false
+        private var activeTextFieldUpdateToken: UUID = UUID()
+
+        // MARK: - Initialization
+
+        init(
+            validationService: ValidationService,
+            updateCardholderName: @escaping (String) -> Void,
+            updateValidationState: @escaping (Bool, String?) -> Void
+        ) {
+            self.validationService = validationService
+            self.updateCardholderName = updateCardholderName
+            self.updateValidationState = updateValidationState
             super.init()
             logger.debug(message: "📝 Cardholder name field coordinator initialized")
         }
+
+        // MARK: - UI Actions
 
         @objc func doneButtonTapped() {
             logger.debug(message: "⌨️ Done button tapped on cardholder name field")
@@ -152,10 +196,12 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
             }
         }
 
+        // MARK: - UITextFieldDelegate Methods
+
         func textFieldDidBeginEditing(_ textField: UITextField) {
             logger.debug(message: "⌨️ Cardholder name field began editing")
             // Clear error message when user starts editing
-            parent.errorMessage = nil
+            updateValidationState(false, nil)
         }
 
         func textFieldDidEndEditing(_ textField: UITextField) {
@@ -167,153 +213,227 @@ struct CardholderNameTextField: UIViewRepresentable, LogReporter {
             }
         }
 
-        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            // Early returns to reduce nesting
+        func textField(_ textField: UITextField,
+                       shouldChangeCharactersIn range: NSRange,
+                       replacementString string: String) -> Bool {
+            // Early return if an update is already in progress to avoid reentrance.
             if isUpdating {
                 logger.debug(message: "🔄 Avoiding reentrance in shouldChangeCharactersIn")
                 return false
             }
 
+            // Ensure the text field is the expected custom type.
             guard let primerTextField = textField as? PrimerCardholderNameTextField else {
                 return true
             }
 
+            // Log the range and replacement string.
             logger.debug(message: "⌨️ Cardholder name shouldChangeCharactersIn - range: \(range.location),\(range.length), replacement: '\(string)'")
 
-            // Get current text
+            // Retrieve the current text (or use an empty string if nil).
             let currentText = primerTextField.internalText ?? ""
 
-            // Handle return key
-            if string == "\n" {
-                logger.debug(message: "⌨️ Return key pressed, resigning first responder")
-                textField.resignFirstResponder()
+            // Handle special cases: if the user presses the return key or performs deletion,
+            // then we process those actions separately.
+            if handleSpecialCases(for: primerTextField,
+                                  in: textField,
+                                  currentText: currentText,
+                                  range: range,
+                                  replacementString: string) {
                 return false
             }
 
-            // Allow deletion
+            // Validate that the input contains only allowed characters.
+            // Allowed characters are letters, spaces, apostrophes, and hyphens.
+            guard validateAllowedCharacters(for: string) else {
+                logger.debug(message: "⌨️ Rejecting input - contains invalid characters: '\(string)'")
+                return false
+            }
+
+            // Process the input change. Depending on whether this is an insertion or a replacement,
+            // the helper function computes the new text.
+            let newText = processInputChange(currentText: currentText,
+                                             range: range,
+                                             replacementString: string)
+            logger.debug(message: "🔄 Text will change: '\(currentText)' → '\(newText)'")
+
+            // When inserting text, extra spaces may have been added if pasting.
+            // For paste operations (string longer than one character), we trim any leading/trailing whitespace.
+            let replacement = string.count > 1 ? string.trimmingCharacters(in: .whitespacesAndNewlines) : string
+            // Compute the desired cursor offset:
+            // • For deletion, we want the cursor to be at the starting index of the deletion (range.location).
+            // • For insertion, we set it to range.location + (trimmed replacement string length).
+            let desiredCursorOffset = string.isEmpty ? range.location : range.location + replacement.count
+
+            // Update the text field with the new text and restore the cursor position.
+            updateTextField(primerTextField, newText: newText, desiredCursorOffset: desiredCursorOffset)
+            return false
+        }
+
+        // MARK: - Helper Functions
+
+        /// Handles special cases such as when the return key is pressed or when deletion occurs.
+        ///
+        /// - Parameters:
+        ///   - primerTextField: The custom text field (PrimerCardholderNameTextField).
+        ///   - textField: The original UITextField instance.
+        ///   - currentText: The current text from the text field.
+        ///   - range: The range where the change is occurring.
+        ///   - replacementString: The string to be inserted.
+        /// - Returns: `true` if a special case was handled (i.e. no further processing is needed).
+        private func handleSpecialCases(for primerTextField: PrimerCardholderNameTextField,
+                                        in textField: UITextField,
+                                        currentText: String,
+                                        range: NSRange,
+                                        replacementString string: String) -> Bool {
+            // Handle the return key by resigning first responder.
+            if string == "\n" {
+                logger.debug(message: "⌨️ Return key pressed, resigning first responder")
+                textField.resignFirstResponder()
+                return true
+            }
+
+            // Handle deletion when the replacement string is empty.
             if string.isEmpty {
                 logger.debug(message: "🗑️ Deletion detected in cardholder name field")
                 let newText: String
                 if range.length > 0 && range.location < currentText.count {
+                    // Range deletion: remove the specified range from the current text.
                     let start = currentText.index(currentText.startIndex, offsetBy: range.location)
                     let end = currentText.index(start, offsetBy: min(range.length, currentText.count - range.location))
                     newText = currentText.replacingCharacters(in: start..<end, with: "")
                     logger.debug(message: "🗑️ Range deletion from \(range.location) to \(range.location + range.length)")
                 } else if range.location < currentText.count {
-                    let index = currentText.index(currentText.startIndex, offsetBy: range.location)
+                    // Single character deletion: remove the character at the specified location.
                     var chars = Array(currentText)
                     chars.remove(at: range.location)
                     newText = String(chars)
                     logger.debug(message: "🗑️ Single character deletion at position \(range.location)")
                 } else {
+                    // If the deletion range is outside the text bounds, do nothing.
                     newText = currentText
                     logger.debug(message: "🗑️ No deletion performed (range outside text bounds)")
                 }
-
-                updateTextField(primerTextField, newText: newText)
-                return false
+                // Update the text field with the new text and set the cursor at the deletion start.
+                updateTextField(primerTextField, newText: newText, desiredCursorOffset: range.location)
+                return true
             }
 
-            // Filter for valid characters (allow letters, spaces, apostrophes, hyphens)
-            let allowedCharacterSet = CharacterSet.letters.union(CharacterSet(charactersIn: " '-"))
-            let characterSet = CharacterSet(charactersIn: string)
-            guard allowedCharacterSet.isSuperset(of: characterSet) else {
-                logger.debug(message: "⌨️ Rejecting input - contains invalid characters: '\(string)'")
-                return false
-            }
-
-            // Process the input
-            let newText: String
-            if range.length > 0 {
-                // Replace a range of text
-                let start = currentText.index(currentText.startIndex, offsetBy: range.location)
-                let end = currentText.index(start, offsetBy: min(range.length, currentText.count - range.location))
-                newText = currentText.replacingCharacters(in: start..<end, with: string)
-                logger.debug(message: "⌨️ Replacing text range from \(range.location) to \(range.location + range.length) with '\(string)'")
-            } else {
-                // Insert text at position
-                let index = currentText.index(currentText.startIndex, offsetBy: min(range.location, currentText.count))
-                newText = currentText.inserting(contentsOf: string, at: index)
-                logger.debug(message: "⌨️ Inserting text '\(string)' at position \(range.location)")
-            }
-
-            logger.debug(message: "🔄 Text will change: '\(currentText)' → '\(newText)'")
-            updateTextField(primerTextField, newText: newText)
+            // No special case handled; return false.
             return false
         }
 
-        private var activeTextFieldUpdateToken: UUID = UUID()
-        private func updateTextField(_ textField: PrimerCardholderNameTextField, newText: String) {
+        /// Validates that the input string contains only allowed characters.
+        ///
+        /// - Parameter string: The string to validate.
+        /// - Returns: `true` if the string consists only of letters, spaces, apostrophes, and hyphens; otherwise, `false`.
+        private func validateAllowedCharacters(for string: String) -> Bool {
+            let allowedCharacterSet = CharacterSet.letters.union(CharacterSet(charactersIn: " '-"))
+            let characterSet = CharacterSet(charactersIn: string)
+            return allowedCharacterSet.isSuperset(of: characterSet)
+        }
+
+        /// Processes the input change by replacing the text in the given range or inserting new text.
+        ///
+        /// - Parameters:
+        ///   - currentText: The current text in the text field.
+        ///   - range: The range where the change should be applied.
+        ///   - replacementString: The string to insert.
+        /// - Returns: The updated text after the change.
+        private func processInputChange(currentText: String,
+                                        range: NSRange,
+                                        replacementString string: String) -> String {
+            if range.length > 0 {
+                // If a range of text is being replaced, compute the new text.
+                let start = currentText.index(currentText.startIndex, offsetBy: range.location)
+                let end = currentText.index(start, offsetBy: min(range.length, currentText.count - range.location))
+                logger.debug(message: "⌨️ Replacing text range from \(range.location) to \(range.location + range.length) with '\(string)'")
+                return currentText.replacingCharacters(in: start..<end, with: string)
+            } else {
+                // Otherwise, insert the new text at the specified index.
+                let index = currentText.index(currentText.startIndex, offsetBy: min(range.location, currentText.count))
+                logger.debug(message: "⌨️ Inserting text '\(string)' at position \(range.location)")
+                // If pasting (i.e. string has length > 1), trim any extra whitespace.
+                let replacement = string.count > 1 ? string.trimmingCharacters(in: .whitespacesAndNewlines) : string
+                return currentText.inserting(contentsOf: replacement, at: index)
+            }
+        }
+
+        /// Updates the text field's UI and internal state, and restores the cursor position.
+        ///
+        /// - Parameters:
+        ///   - textField: The custom text field (PrimerCardholderNameTextField) to update.
+        ///   - newText: The new text to set.
+        ///   - desiredCursorOffset: The offset (in characters) where the cursor should be restored.
+        private func updateTextField(_ textField: PrimerCardholderNameTextField,
+                                     newText: String,
+                                     desiredCursorOffset: Int) {
             let updateToken = UUID()
             activeTextFieldUpdateToken = updateToken
             isUpdating = true
 
-            // Update the text field
+            // Update the internal text (used for logic/formatting) and the visible text.
             textField.internalText = newText
             textField.text = newText
             logger.debug(message: "🔄 Updated text field with: '\(newText)'")
 
-            // Update the binding
+            // Restore the cursor position on the main thread.
             DispatchQueue.main.async { [weak self] in
                 guard let self = self, self.activeTextFieldUpdateToken == updateToken else { return }
-                self.parent.cardholderName = newText
 
-                // Validate while typing
+                // Update parent binding
+                self.updateCardholderName(newText)
+
+                // Try to obtain the text position corresponding to the desired offset.
+                if let newPosition = textField.position(from: textField.beginningOfDocument, offset: desiredCursorOffset) {
+                    textField.selectedTextRange = textField.textRange(from: newPosition, to: newPosition)
+                    logger.debug(message: "🔄 Restored cursor position to offset: \(desiredCursorOffset)")
+                } else {
+                    logger.debug(message: "🔄 Could not restore cursor position; defaulting to end")
+                }
+
+                // Validate while typing using the validation service
                 self.validateCardholderNameWhileTyping(newText)
-
                 self.isUpdating = false
                 logger.debug(message: "🔄 Text change processing completed")
             }
         }
 
+        // MARK: - Validation Methods
+
         // Validation while typing - more lenient
         private func validateCardholderNameWhileTyping(_ name: String) {
             if name.isEmpty {
                 logger.debug(message: "🔍 Validation while typing: Empty name - marked as invalid (no error shown)")
-                parent.isValid = false
-                parent.errorMessage = nil // Don't show error during typing if empty
+                updateValidationState(false, nil) // Don't show error during typing if empty
                 return
             }
 
-            // Basic validation - at least 2 characters
-            parent.isValid = name.count >= 2
-            if parent.isValid {
+            // Use the validation service but with more lenient expectations during typing
+            // Just verify it's at least 2 characters for immediate feedback
+            let isValid = name.count >= 2
+            updateValidationState(isValid, nil) // Don't show error during typing
+
+            if isValid {
                 logger.debug(message: "✅ Validation while typing: Valid name (>= 2 characters)")
             } else {
                 logger.debug(message: "🔍 Validation while typing: Too short (< 2 characters) - marked as invalid (no error shown)")
             }
-            parent.errorMessage = parent.isValid ? nil : nil // Don't show error during typing
         }
 
         // Full validation when field loses focus
         private func validateCardholderName(_ name: String) {
-            if name.isEmpty {
-                logger.debug(message: "⚠️ Validation failed: Cardholder name cannot be blank")
-                parent.isValid = false
-                parent.errorMessage = "Cardholder name cannot be blank"
-                return
-            }
+            // Use the validation service for complete validation
+            let validationResult = validationService.validateCardholderName(name)
 
-            if name.count < 2 {
-                logger.debug(message: "⚠️ Validation failed: Cardholder name is too short (\(name.count) chars)")
-                parent.isValid = false
-                parent.errorMessage = "Cardholder name is too short"
-                return
-            }
+            // Update the state based on validation result
+            updateValidationState(validationResult.isValid, validationResult.errorMessage)
 
-            // Check if name contains only valid characters
-            let allowedCharacterSet = CharacterSet.letters.union(CharacterSet(charactersIn: " '-"))
-            if name.rangeOfCharacter(from: allowedCharacterSet.inverted) != nil {
-                logger.debug(message: "⚠️ Validation failed: Cardholder name contains invalid characters")
-                parent.isValid = false
-                parent.errorMessage = "Cardholder name contains invalid characters"
-                return
+            if validationResult.isValid {
+                logger.debug(message: "✅ Validation passed: Cardholder name is valid")
+            } else {
+                logger.debug(message: "⚠️ Validation failed: \(validationResult.errorMessage ?? "Unknown error")")
             }
-
-            // All checks passed
-            logger.debug(message: "✅ Validation passed: Cardholder name is valid")
-            parent.isValid = true
-            parent.errorMessage = nil
         }
     }
 }

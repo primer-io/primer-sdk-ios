@@ -27,6 +27,9 @@ struct CardNumberInputField: View {
 
     // MARK: - Private Properties
 
+    /// The validation service used to validate the card number
+    private let validationService: ValidationService
+
     /// The card number entered by the user (without formatting)
     @State private var cardNumber: String = ""
 
@@ -40,6 +43,22 @@ struct CardNumberInputField: View {
     @State private var errorMessage: String?
 
     @Environment(\.designTokens) private var tokens
+
+    // MARK: - Initialization
+
+    init(
+        label: String,
+        placeholder: String,
+        validationService: ValidationService = DefaultValidationService(),
+        onCardNetworkChange: ((CardNetwork) -> Void)? = nil,
+        onValidationChange: ((Bool) -> Void)? = nil
+    ) {
+        self.label = label
+        self.placeholder = placeholder
+        self.validationService = validationService
+        self.onCardNetworkChange = onCardNetworkChange
+        self.onValidationChange = onValidationChange
+    }
 
     // MARK: - Body
 
@@ -57,7 +76,8 @@ struct CardNumberInputField: View {
                     isValid: $isValid,
                     cardNetwork: $cardNetwork,
                     errorMessage: $errorMessage,
-                    placeholder: placeholder
+                    placeholder: placeholder,
+                    validationService: validationService
                 )
                 .padding()
                 .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
@@ -113,6 +133,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
     @Binding var cardNetwork: CardNetwork
     @Binding var errorMessage: String?
     var placeholder: String
+    let validationService: ValidationService
 
     func makeUIView(context: Context) -> UITextField {
         let textField = PrimerCardNumberTextField()
@@ -176,7 +197,22 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(self)
+        Coordinator(
+            validationService: validationService,
+            updateCardNumber: { newNumber in
+                self.cardNumber = newNumber
+            },
+            updateCardNetwork: { newNetwork in
+                self.cardNetwork = newNetwork
+            },
+            updateValidationState: { isValid, errorMessage in
+                self.isValid = isValid
+                self.errorMessage = errorMessage
+            },
+            formatCardNumber: { number, network in
+                self.formatCardNumber(number, for: network)
+            }
+        )
     }
 
     /// Formats a card number string with spaces according to the card network type
@@ -195,8 +231,14 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
         return formatted
     }
 
-    class Coordinator: NSObject, UITextFieldDelegate {
-        var parent: CardNumberTextField
+    class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+        // MARK: - Properties
+
+        private let validationService: ValidationService
+        private let updateCardNumber: (String) -> Void
+        private let updateCardNetwork: (CardNetwork) -> Void
+        private let updateValidationState: (Bool?, String?) -> Void
+        private let formatCardNumber: (String, CardNetwork) -> String
 
         // Add a flag to prevent update cycles
         private var isUpdating = false
@@ -208,10 +250,31 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
         // For tracking changes in cursor position
         private var lastCursorPosition: Int = 0
 
-        init(_ parent: CardNumberTextField) {
-            self.parent = parent
-            logger.debug(message: "📝 Coordinator initialized")
+        // Local state for accessing current card network
+        private var currentCardNetwork: CardNetwork = .unknown
+
+        // Timer for debounced validation
+        private var validationTimer: Timer?
+
+        // MARK: - Initialization
+
+        init(
+            validationService: ValidationService,
+            updateCardNumber: @escaping (String) -> Void,
+            updateCardNetwork: @escaping (CardNetwork) -> Void,
+            updateValidationState: @escaping (Bool?, String?) -> Void,
+            formatCardNumber: @escaping (String, CardNetwork) -> String
+        ) {
+            self.validationService = validationService
+            self.updateCardNumber = updateCardNumber
+            self.updateCardNetwork = updateCardNetwork
+            self.updateValidationState = updateValidationState
+            self.formatCardNumber = formatCardNumber
+            super.init()
+            logger.debug(message: "📝 Card number field coordinator initialized")
         }
+
+        // MARK: - Notification Handlers
 
         @objc func textDidChangeNotification(_ notification: Notification) {
             guard let textField = notification.object as? UITextField,
@@ -234,10 +297,12 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             }
         }
 
+        // MARK: - UITextFieldDelegate
+
         func textFieldDidBeginEditing(_ textField: UITextField) {
             logger.debug(message: "⌨️ Text field began editing")
             // Clear error message when user starts editing
-            parent.errorMessage = nil
+            updateValidationState(nil, nil)
 
             // Log initial cursor position
             if let selectedRange = textField.selectedTextRange {
@@ -379,6 +444,8 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             return false // We handle the update manually
         }
 
+        // MARK: - Helper Methods
+
         private func saveCursorPosition(_ textField: UITextField) {
             if let selectedTextRange = textField.selectedTextRange {
                 selectedRange = selectedTextRange
@@ -417,13 +484,12 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 let rangeEnd = min(formattedRange.location + formattedRange.length, formattedText.count)
 
                 // Count digits in the selection
-                for index in formattedRange.location..<rangeEnd {
-                    if index < formattedText.count {
-                        let char = formattedText[formattedText.index(formattedText.startIndex, offsetBy: index)]
-                        if char.isNumber {
-                            unformattedLength += 1
-                        }
-                    }
+                for index in formattedRange.location..<rangeEnd
+                    where index < formattedText.count &&
+                          formattedText[formattedText.index(formattedText.startIndex, offsetBy: index)].isNumber {
+
+                    // Increment only when the character is a number
+                    unformattedLength += 1
                 }
             }
 
@@ -476,21 +542,21 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             // Determine card network only if we have enough digits
             let networkChanged = updateCardNetworkIfNeeded(newText: newText)
             if networkChanged {
-                logger.debug(message: "🔄 Card network changed to: \(parent.cardNetwork.displayName)")
+                logger.debug(message: "🔄 Card network changed to: \(currentCardNetwork.displayName)")
             }
 
             // Avoid update cycles
             isUpdating = true
 
             // Limit length based on card type
-            let maxLength = parent.cardNetwork.validation?.lengths.max() ?? 16
+            let maxLength = currentCardNetwork.validation?.lengths.max() ?? 16
             let truncatedText = String(newText.prefix(maxLength))
             if truncatedText.count < newText.count {
                 logger.debug(message: "🔄 Text truncated to max length \(maxLength)")
             }
 
             // Format for display with spaces
-            let formattedText = parent.formatCardNumber(truncatedText, for: parent.cardNetwork)
+            let formattedText = formatCardNumber(truncatedText, currentCardNetwork)
 
             // Update the text and internal text properties immediately
             primerTextField.internalText = truncatedText
@@ -586,7 +652,8 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             }
 
             // Restore cursor position
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
                 if let textField = primerTextField as UITextField?,
                    let newPosition = textField.position(from: textField.beginningOfDocument, offset: safePosition) {
                     logger.debug(message: "📍 Setting cursor position to: \(safePosition)")
@@ -597,51 +664,47 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 }
             }
 
-            // Update parent state with delay to avoid cycles
+            // Update state with delay to avoid cycles
             updateParentState(truncatedText: truncatedText, networkChanged: networkChanged)
         }
 
         private func updateCardNetworkIfNeeded(newText: String) -> Bool {
             if newText.count < 4 {
-                if parent.cardNetwork != .unknown {
+                if currentCardNetwork != .unknown {
                     logger.debug(message: "🔄 Resetting card network to unknown (insufficient digits)")
-                    parent.cardNetwork = .unknown
+                    currentCardNetwork = .unknown
+                    updateCardNetwork(.unknown)
                     return true
                 }
                 return false
             }
 
             let newCardNetwork = CardNetwork(cardNumber: newText)
-            let networkChanged = newCardNetwork != parent.cardNetwork
+            let networkChanged = newCardNetwork != currentCardNetwork
 
             if networkChanged {
-                logger.debug(message: "🔄 Card network changed: \(parent.cardNetwork.displayName) → \(newCardNetwork.displayName)")
-                parent.cardNetwork = newCardNetwork
+                logger.debug(message: "🔄 Card network changed: \(currentCardNetwork.displayName) → \(newCardNetwork.displayName)")
+                currentCardNetwork = newCardNetwork
+                updateCardNetwork(newCardNetwork)
             }
 
             return networkChanged
         }
 
-        // IMPROVEMENT 2: Optimize state updates to avoid redundant binding updates
         private func updateParentState(truncatedText: String, networkChanged: Bool) {
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
 
-                // Only update the binding if the value has actually changed
-                if truncatedText != self.parent.cardNumber {
-                    logger.debug(message: "🔄 Updating parent state with: '\(truncatedText)'")
-                    self.parent.cardNumber = truncatedText
-                } else {
-                    logger.debug(message: "🔄 Skipping redundant state update (value unchanged)")
-                }
+                // Always update the card number
+                logger.debug(message: "🔄 Updating parent state with: '\(truncatedText)'")
+                self.updateCardNumber(truncatedText)
 
                 // Don't show validation errors during typing unless we have a complete number
                 if truncatedText.count >= 13 {
                     self.debouncedValidation(truncatedText)
                 } else if truncatedText.isEmpty {
                     logger.debug(message: "🔄 Clearing validation state (empty text)")
-                    self.parent.isValid = nil
-                    self.parent.errorMessage = nil
+                    self.updateValidationState(nil, nil)
                 }
 
                 // Reset update flag
@@ -649,9 +712,6 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 logger.debug(message: "🔄 Text change processing completed")
             }
         }
-
-        // IMPROVEMENT 3: Add debouncing for validation
-        private var validationTimer: Timer?
 
         private func debouncedValidation(_ number: String) {
             // Cancel any existing validation timer
@@ -661,123 +721,64 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             validationTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
                 guard let self = self else { return }
                 logger.debug(message: "⏱️ Running delayed validation after typing pause")
-                self.validateCardNumberWhileTyping(number, for: self.parent.cardNetwork)
+                self.validateCardNumberWhileTyping(number)
             }
         }
 
-        // Validation while typing - keep it minimal during input
-        private func validateCardNumberWhileTyping(_ number: String, for network: CardNetwork) {
+        // Validation while typing - more lenient for better UX
+        private func validateCardNumberWhileTyping(_ number: String) {
             // Only validate complete card numbers during typing
             if number.count < 13 {
-                parent.isValid = nil
-                parent.errorMessage = nil
+                updateValidationState(nil, nil)
                 return
             }
+
+            // Use the validation service for card number validation
+            // For typing feedback, just use a basic check first
+            let network = CardNetwork(cardNumber: number)
 
             // Verify the network is valid
             if network == .unknown && number.count >= 6 {
                 logger.debug(message: "⚠️ Validation failed: Unsupported card type")
-                parent.isValid = false
-                parent.errorMessage = "Unsupported card type"
+                updateValidationState(false, "Unsupported card type")
                 return
             }
 
-            // Check Luhn only for complete numbers
-            if let validation = network.validation,
-               validation.lengths.contains(number.count) {
-                if isLuhnValid(number) {
+            // Only do full validation if we have a potentially complete number
+            if let validation = network.validation, validation.lengths.contains(number.count) {
+                // Use validation service for the actual check
+                let validationResult = validationService.validateCardNumber(number)
+                updateValidationState(validationResult.isValid, validationResult.isValid ? nil : validationResult.errorMessage)
+
+                if validationResult.isValid {
                     logger.debug(message: "✅ Validation passed: Card number is valid")
-                    parent.isValid = true
-                    parent.errorMessage = nil
                 } else {
-                    logger.debug(message: "⚠️ Validation failed: Invalid card number (Luhn check)")
-                    parent.isValid = false
-                    parent.errorMessage = "Invalid card number"
+                    logger.debug(message: "⚠️ Validation failed: \(validationResult.errorMessage ?? "Unknown error")")
                 }
             } else {
                 // Not a complete number yet
-                parent.isValid = nil
-                parent.errorMessage = nil
+                updateValidationState(nil, nil)
             }
         }
 
         // Full validation when field loses focus
         private func validateCardNumberFully(_ number: String) {
-            if number.isEmpty {
-                logger.debug(message: "⚠️ Validation failed: Card number cannot be blank")
-                parent.isValid = false
-                parent.errorMessage = "Card number cannot be blank"
-                return
+            // Use the validation service for complete validation
+            let validationResult = validationService.validateCardNumber(number)
+
+            // Update the state based on validation result
+            updateValidationState(validationResult.isValid, validationResult.errorMessage)
+
+            if validationResult.isValid {
+                logger.debug(message: "✅ Validation passed: Card number is valid")
+            } else {
+                logger.debug(message: "⚠️ Validation failed: \(validationResult.errorMessage ?? "Unknown error")")
             }
-
-            let network = CardNetwork(cardNumber: number)
-
-            // Check if the network is valid
-            if network == .unknown {
-                logger.debug(message: "⚠️ Validation failed: Unsupported card type")
-                parent.isValid = false
-                parent.errorMessage = "Unsupported card type"
-                return
-            }
-
-            // Check if the length is valid for this network
-            if let validation = network.validation {
-                if !validation.lengths.contains(number.count) {
-                    logger.debug(message: "⚠️ Validation failed: Invalid card number length (\(number.count)) for \(network.displayName)")
-                    parent.isValid = false
-                    parent.errorMessage = "Invalid card number length"
-                    return
-                }
-            }
-
-            // Check Luhn algorithm
-            if !isLuhnValid(number) {
-                logger.debug(message: "⚠️ Validation failed: Invalid card number (Luhn check)")
-                parent.isValid = false
-                parent.errorMessage = "Invalid card number"
-                return
-            }
-
-            // All checks passed
-            logger.debug(message: "✅ Validation passed: Card number is valid")
-            parent.isValid = true
-            parent.errorMessage = nil
         }
 
-        // Luhn algorithm implementation
-        private func isLuhnValid(_ number: String) -> Bool {
-            let digitOnly = number.filter { $0.isNumber }
-            if digitOnly.isEmpty { return false }
-
-            let reversedDigits = digitOnly.reversed().map { Int(String($0))! }
-            var sum = 0
-
-            for (index, digit) in reversedDigits.enumerated() {
-                if index % 2 == 1 {
-                    let doubledValue = digit * 2
-                    sum += doubledValue > 9 ? doubledValue - 9 : doubledValue
-                } else {
-                    sum += digit
-                }
-            }
-
-            return sum % 10 == 0
+        deinit {
+            validationTimer?.invalidate()
         }
-    }
-}
-
-// Helper extensions
-extension String {
-    func inserting(contentsOf string: String, at index: String.Index) -> String {
-        var result = self
-        result.insert(contentsOf: string, at: index)
-        return result
-    }
-
-    func removing(at index: String.Index) -> String {
-        var result = self
-        result.remove(at: index)
-        return result
     }
 }
 

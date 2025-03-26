@@ -115,7 +115,14 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
 
     func updateCardNumber(_ value: String) {
         let sanitized = value.replacingOccurrences(of: " ", with: "")
-        let error = cardValidator.validateCardNumber(sanitized)
+
+        // Use cardValidator for validation
+        let validationErrors = cardValidator.getValidatedCardFields(
+            cardFields: [.cardNumber: sanitized]
+        )
+
+        // Unwrap one level of optionality
+        let error = validationErrors[.cardNumber] ?? nil
 
         updateState { state in
             var newState = state
@@ -137,9 +144,15 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
         }
     }
 
-    // Method to update cardholder name
+    // // Method to update cardholder name
     func updateCardholderName(_ value: String) {
-        let error = cardValidator.validateCardholderName(value)
+        // Use cardValidator for validation
+        let validationErrors = cardValidator.getValidatedCardFields(
+            cardFields: [.cardholderName: value]
+        )
+
+        // Unwrap one level of optionality
+        let error = validationErrors[.cardholderName] ?? nil
 
         updateState { state in
             var newState = state
@@ -156,8 +169,13 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
 
     // Method to update CVV
     func updateCvv(_ value: String) {
-        let network = uiState.cardNetworkData.selectedNetwork ?? .unknown
-        let error = cardValidator.validateCvv(value, cardNetwork: network)
+        // Use cardValidator for validation
+        let validationErrors = cardValidator.getValidatedCardFields(
+            cardFields: [.cvv: value]
+        )
+
+        // Unwrap one level of optionality
+        let error = validationErrors[.cvv] ?? nil
 
         updateState { state in
             var newState = state
@@ -196,12 +214,13 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
 
     // Helper method to update the expiration value
     private func updateExpirationValue(_ value: String) {
-        // Extract month and year for validation
-        let components = value.components(separatedBy: "/")
-        let month = components.count > 0 ? components[0] : ""
-        let year = components.count > 1 ? components[1] : ""
+        // Use cardValidator for validation
+        let validationErrors = cardValidator.getValidatedCardFields(
+            cardFields: [.expiryDate: value]
+        )
 
-        let error = cardValidator.validateExpiration(month: month, year: year)
+        // Unwrap one level of optionality
+        let error = validationErrors[.expiryDate] ?? nil
 
         updateState { state in
             var newState = state
@@ -578,10 +597,9 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
 
         // Only validate required fields with empty values
         if value.isEmpty && currentField.isRequired {
-            let validator = DefaultBillingAddressValidator()
             let inputType = billingAddressFieldToInputElementType(field)
 
-            let validationErrors = validator.getValidatedBillingAddress(
+            let validationErrors = billingAddressValidator.getValidatedBillingAddress(
                 billingAddress: [inputType: value]
             )
 
@@ -654,36 +672,18 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
     }
 
     private func validateAllFields() async -> Bool {
-        var isValid = true
+        // Create a map of all card fields
+        let cardFieldsMap: [PrimerInputElementType: String?] = [
+            .cardNumber: uiState.cardData.cardNumber.value,
+            .expiryDate: uiState.cardData.expiration.value,
+            .cvv: uiState.cardData.cvv.value,
+            .cardholderName: uiState.cardData.cardholderName.value
+        ]
 
-        // Validate card data
-        let cardNumberError = cardValidator.validateCardNumber(uiState.cardData.cardNumber.value)
-        if cardNumberError != nil {
-            isValid = false
-        }
+        // Validate all card fields at once
+        let cardValidationErrors = cardValidator.getValidatedCardFields(cardFields: cardFieldsMap)
 
-        // Extract month and year from expiration
-        let components = uiState.cardData.expiration.value.components(separatedBy: "/")
-        let month = components.count > 0 ? components[0] : ""
-        let year = components.count > 1 ? components[1] : ""
-
-        let expirationError = cardValidator.validateExpiration(month: month, year: year)
-        if expirationError != nil {
-            isValid = false
-        }
-
-        let network = CardNetwork(cardNumber: uiState.cardData.cardNumber.value.replacingOccurrences(of: " ", with: ""))
-        let cvvError = cardValidator.validateCvv(uiState.cardData.cvv.value, cardNetwork: network)
-        if cvvError != nil {
-            isValid = false
-        }
-
-        let cardholderNameError = cardValidator.validateCardholderName(uiState.cardData.cardholderName.value)
-        if cardholderNameError != nil {
-            isValid = false
-        }
-
-        // Validate billing address fields (only required ones)
+        // Create a map of all billing address fields
         let billingAddressMap: [PrimerInputElementType: String?] = [
             .countryCode: uiState.billingAddress.country.isRequired ? uiState.billingAddress.country.value : nil,
             .firstName: uiState.billingAddress.firstName.isRequired ? uiState.billingAddress.firstName.value : nil,
@@ -694,12 +694,14 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
             .state: uiState.billingAddress.state.isRequired ? uiState.billingAddress.state.value : nil
         ]
 
+        // Validate all billing address fields at once
         let billingAddressErrors = billingAddressValidator.getValidatedBillingAddress(billingAddress: billingAddressMap)
-        if billingAddressErrors.values.contains(where: { $0 != nil }) {
-            isValid = false
-        }
 
-        return isValid
+        // Check if any fields have validation errors
+        let hasCardErrors = cardValidationErrors.values.contains(where: { $0 != nil })
+        let hasAddressErrors = billingAddressErrors.values.contains(where: { $0 != nil })
+
+        return !hasCardErrors && !hasAddressErrors
     }
 
     deinit {

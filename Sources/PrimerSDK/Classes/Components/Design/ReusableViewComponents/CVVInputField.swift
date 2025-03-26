@@ -26,6 +26,9 @@ struct CVVInputField: View {
 
     // MARK: - Private Properties
 
+    /// The validation service used to validate the CVV
+    private let validationService: ValidationService
+
     /// The CVV entered by the user
     @State private var cvv: String = ""
 
@@ -36,6 +39,22 @@ struct CVVInputField: View {
     @State private var errorMessage: String?
 
     @Environment(\.designTokens) private var tokens
+
+    // MARK: - Initialization
+
+    init(
+        label: String,
+        placeholder: String,
+        cardNetwork: CardNetwork,
+        validationService: ValidationService = DefaultValidationService(),
+        onValidationChange: ((Bool) -> Void)? = nil
+    ) {
+        self.label = label
+        self.placeholder = placeholder
+        self.cardNetwork = cardNetwork
+        self.validationService = validationService
+        self.onValidationChange = onValidationChange
+    }
 
     // MARK: - Body
 
@@ -52,7 +71,8 @@ struct CVVInputField: View {
                 isValid: $isValid,
                 errorMessage: $errorMessage,
                 placeholder: placeholder,
-                cardNetwork: cardNetwork
+                cardNetwork: cardNetwork,
+                validationService: validationService
             )
             .padding()
             .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
@@ -91,6 +111,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
     @Binding var errorMessage: String?
     var placeholder: String
     var cardNetwork: CardNetwork
+    let validationService: ValidationService
 
     func makeUIView(context: Context) -> UITextField {
         let textField = PrimerCVVTextField()
@@ -132,20 +153,49 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(self)
+        Coordinator(
+            validationService: validationService,
+            cardNetwork: cardNetwork,
+            updateCVV: { newValue in
+                self.cvv = newValue
+            },
+            updateValidationState: { isValid, errorMessage in
+                self.isValid = isValid
+                self.errorMessage = errorMessage
+            }
+        )
     }
 
-    class Coordinator: NSObject, UITextFieldDelegate {
-        var parent: CVVTextField
+    class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+        // MARK: - Properties
+
+        private let validationService: ValidationService
+        private let cardNetwork: CardNetwork
+        private let updateCVV: (String) -> Void
+        private let updateValidationState: (Bool?, String?) -> Void
+
         var expectedCVVLength: Int = 3 // Default length, will be updated based on card type
 
         // Add a flag to prevent update cycles
         private var isUpdating = false
 
-        init(_ parent: CVVTextField) {
-            self.parent = parent
+        // MARK: - Initialization
+
+        init(
+            validationService: ValidationService,
+            cardNetwork: CardNetwork,
+            updateCVV: @escaping (String) -> Void,
+            updateValidationState: @escaping (Bool?, String?) -> Void
+        ) {
+            self.validationService = validationService
+            self.cardNetwork = cardNetwork
+            self.updateCVV = updateCVV
+            self.updateValidationState = updateValidationState
             super.init()
+            logger.debug(message: "📝 CVV field coordinator initialized")
         }
+
+        // MARK: - UIActions
 
         @objc func doneButtonTapped() {
             logger.debug(message: "⌨️ Done button tapped")
@@ -154,10 +204,12 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
             }
         }
 
+        // MARK: - UITextFieldDelegate
+
         func textFieldDidBeginEditing(_ textField: UITextField) {
             logger.debug(message: "⌨️ CVV field began editing")
             // Clear error message when user starts editing
-            parent.errorMessage = nil
+            updateValidationState(nil, nil)
         }
 
         func textFieldDidEndEditing(_ textField: UITextField) {
@@ -207,7 +259,7 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
             isUpdating = true
             cvvTextField.internalText = newText
             cvvTextField.text = newText
-            parent.cvv = newText
+            updateCVV(newText)
             isUpdating = false
 
             // Validate while typing
@@ -216,53 +268,45 @@ struct CVVTextField: UIViewRepresentable, LogReporter {
             return false
         }
 
+        // MARK: - Validation Methods
+
         // Validation while typing - keep it minimal during input
         private func validateCVVWhileTyping(_ cvv: String) {
             if cvv.isEmpty {
-                parent.isValid = nil
-                parent.errorMessage = nil
+                updateValidationState(nil, nil)
                 return
             }
 
+            // Simple validation during typing - we'll use the simpler verification
+            // for immediate feedback and use the full validation service on blur
+
             // Check if all characters are numeric
-            if !cvv.isNumeric {
-                parent.isValid = false
-                parent.errorMessage = "CVV must contain only numbers"
+            if !cvv.allSatisfy({ $0.isNumber }) {
+                updateValidationState(false, "CVV must contain only numbers")
                 return
             }
 
             // Check length based on card type
             if cvv.count == expectedCVVLength {
-                parent.isValid = true
-                parent.errorMessage = nil
+                updateValidationState(true, nil)
             } else {
-                parent.isValid = nil
-                parent.errorMessage = nil
+                updateValidationState(nil, nil)
             }
         }
 
         // Full validation when field loses focus
         private func validateCVVFully(_ cvv: String) {
-            if cvv.isEmpty {
-                parent.isValid = false
-                parent.errorMessage = "CVV cannot be blank"
-                return
-            }
+            // Use the validation service with the CVVRule
+            let validationResult = validationService.validateCVV(cvv, cardNetwork: cardNetwork)
 
-            if !cvv.isNumeric {
-                parent.isValid = false
-                parent.errorMessage = "CVV must contain only numbers"
-                return
-            }
+            // Update state based on validation result
+            updateValidationState(validationResult.isValid, validationResult.errorMessage)
 
-            if cvv.count != expectedCVVLength {
-                parent.isValid = false
-                parent.errorMessage = "CVV must be \(expectedCVVLength) digits"
-                return
+            if validationResult.isValid {
+                logger.debug(message: "✅ Validation passed: CVV is valid")
+            } else {
+                logger.debug(message: "⚠️ Validation failed: \(validationResult.errorMessage ?? "Unknown error")")
             }
-
-            parent.isValid = true
-            parent.errorMessage = nil
         }
     }
 }
@@ -285,30 +329,3 @@ class PrimerCVVTextField: UITextField {
         }
     }
 }
-
-#if DEBUG
-// MARK: - Preview
-@available(iOS 15.0, *)
-struct CVVInputField_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack(spacing: 20) {
-            CVVInputField(
-                label: "CVV",
-                placeholder: "123",
-                cardNetwork: .visa,
-                onValidationChange: { _ in }
-            )
-            .padding()
-
-            CVVInputField(
-                label: "Security Code",
-                placeholder: "1234",
-                cardNetwork: .amex,
-                onValidationChange: { _ in }
-            )
-            .padding()
-        }
-        .previewLayout(.sizeThatFits)
-    }
-}
-#endif

@@ -5,12 +5,6 @@
 //  Created by Boris on 21.3.25..
 //
 
-//
-//  ExpiryDateInputField.swift
-//
-//  Created on 21.03.2025.
-//
-
 import SwiftUI
 import UIKit
 
@@ -37,6 +31,9 @@ struct ExpiryDateInputField: View, LogReporter {
 
     // MARK: - Private Properties
 
+    /// The validation service used to validate the expiry date
+    private let validationService: ValidationService
+
     /// The expiry date entered by the user
     @State private var expiryDate: String = ""
 
@@ -54,6 +51,24 @@ struct ExpiryDateInputField: View, LogReporter {
 
     @Environment(\.designTokens) private var tokens
 
+    // MARK: - Initialization
+
+    init(
+        label: String,
+        placeholder: String,
+        validationService: ValidationService = DefaultValidationService(),
+        onValidationChange: ((Bool) -> Void)? = nil,
+        onMonthChange: ((String) -> Void)? = nil,
+        onYearChange: ((String) -> Void)? = nil
+    ) {
+        self.label = label
+        self.placeholder = placeholder
+        self.validationService = validationService
+        self.onValidationChange = onValidationChange
+        self.onMonthChange = onMonthChange
+        self.onYearChange = onYearChange
+    }
+
     // MARK: - Body
 
     var body: some View {
@@ -70,7 +85,8 @@ struct ExpiryDateInputField: View, LogReporter {
                 year: $year,
                 isValid: $isValid,
                 errorMessage: $errorMessage,
-                placeholder: placeholder
+                placeholder: placeholder,
+                validationService: validationService
             )
             .padding()
             .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
@@ -138,6 +154,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
     @Binding var isValid: Bool?
     @Binding var errorMessage: String?
     var placeholder: String
+    let validationService: ValidationService
 
     func makeUIView(context: Context) -> UITextField {
         let textField = PrimerExpiryDateTextField()
@@ -179,18 +196,50 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(self)
+        Coordinator(
+            validationService: validationService,
+            updateExpiryDate: { newValue in
+                self.expiryDate = newValue
+            },
+            updateValidationState: { isValid, errorMessage in
+                self.isValid = isValid
+                self.errorMessage = errorMessage
+            },
+            updateMonthYear: { month, year in
+                self.month = month
+                self.year = year
+            }
+        )
     }
 
     class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
-        var parent: ExpiryDateTextField
-        private var isUpdating = false
+        // MARK: - Properties
 
-        init(_ parent: ExpiryDateTextField) {
-            self.parent = parent
+        private let validationService: ValidationService
+        private let updateExpiryDate: (String) -> Void
+        private let updateValidationState: (Bool?, String?) -> Void
+        private let updateMonthYear: (String, String) -> Void
+
+        private var isUpdating = false
+        private var activeTextFieldUpdateToken: UUID = UUID()
+
+        // MARK: - Initialization
+
+        init(
+            validationService: ValidationService,
+            updateExpiryDate: @escaping (String) -> Void,
+            updateValidationState: @escaping (Bool?, String?) -> Void,
+            updateMonthYear: @escaping (String, String) -> Void
+        ) {
+            self.validationService = validationService
+            self.updateExpiryDate = updateExpiryDate
+            self.updateValidationState = updateValidationState
+            self.updateMonthYear = updateMonthYear
             super.init()
             logger.debug(message: "📝 Expiry date field coordinator initialized")
         }
+
+        // MARK: - UIActions
 
         @objc func doneButtonTapped() {
             logger.debug(message: "⌨️ Done button tapped on expiry date field")
@@ -199,10 +248,12 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             }
         }
 
+        // MARK: - UITextFieldDelegate
+
         func textFieldDidBeginEditing(_ textField: UITextField) {
             logger.debug(message: "⌨️ Expiry date field began editing")
             // Clear error message when user starts editing
-            parent.errorMessage = nil
+            updateValidationState(nil, nil)
         }
 
         func textFieldDidEndEditing(_ textField: UITextField) {
@@ -251,6 +302,8 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
 
             return false
         }
+
+        // MARK: - Helper Methods
 
         private func processInput(currentText: String, range: NSRange, string: String) -> String {
             // Handle deletion
@@ -320,7 +373,6 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             return formattedText
         }
 
-        private var activeTextFieldUpdateToken: UUID = UUID()
         private func updateTextField(_ textField: PrimerExpiryDateTextField, newText: String) {
             let updateToken = UUID()
             activeTextFieldUpdateToken = updateToken
@@ -334,7 +386,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             // Update the binding
             DispatchQueue.main.async { [weak self] in
                 guard let self = self, self.activeTextFieldUpdateToken == updateToken else { return }
-                self.parent.expiryDate = newText
+                self.updateExpiryDate(newText)
 
                 // Extract month and year
                 self.extractMonthAndYear(from: newText)
@@ -353,23 +405,15 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             let month = parts.count > 0 ? parts[0] : ""
             let year = parts.count > 1 ? parts[1] : ""
 
-            if parent.month != month {
-                parent.month = month
-                logger.debug(message: "📅 Extracted month: \(month)")
-            }
-
-            if parent.year != year {
-                parent.year = year
-                logger.debug(message: "📅 Extracted year: \(year)")
-            }
+            updateMonthYear(month, year)
+            logger.debug(message: "📅 Extracted month: \(month), year: \(year)")
         }
 
         // Validation while typing - more lenient
         private func validateExpiryDateWhileTyping(_ text: String) {
             if text.isEmpty {
                 logger.debug(message: "🔍 Validation while typing: Empty date - marked as invalid (no error shown)")
-                parent.isValid = false
-                parent.errorMessage = nil // Don't show error during typing if empty
+                updateValidationState(false, nil) // Don't show error during typing if empty
                 return
             }
 
@@ -377,114 +421,50 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             let parts = text.components(separatedBy: "/")
             if parts.count < 2 || (parts.count == 2 && parts[1].count < 2) {
                 logger.debug(message: "🔍 Validation while typing: Incomplete date - status pending")
-                parent.isValid = nil
-                parent.errorMessage = nil
+                updateValidationState(nil, nil)
                 return
             }
 
-            // Now we have a complete date, validate it
-            if isExpiryDateValid(text) {
-                logger.debug(message: "✅ Validation while typing: Valid expiry date")
-                parent.isValid = true
-                parent.errorMessage = nil
-            } else {
-                logger.debug(message: "🔍 Validation while typing: Invalid expiry date - marked as invalid")
-                parent.isValid = false
-                parent.errorMessage = nil // Don't show error during typing
-            }
-        }
-
-        // Full validation when field loses focus
-        private func validateExpiryDateFully(_ text: String) {
-            if text.isEmpty {
-                logger.debug(message: "⚠️ Validation failed: Expiry date cannot be blank")
-                parent.isValid = false
-                parent.errorMessage = "Expiry date cannot be blank"
-                return
-            }
-
-            let parts = text.components(separatedBy: "/")
-            if parts.count < 2 {
-                logger.debug(message: "⚠️ Validation failed: Invalid expiry date format")
-                parent.isValid = false
-                parent.errorMessage = "Please enter date as MM/YY"
-                return
-            }
+            // Now we have a complete date, do a basic check
+            // We'll use a lightweight check for typing validation to provide immediate feedback
 
             let month = parts[0]
             let year = parts[1]
 
-            // Check month format
-            if month.count != 2 || !month.isNumeric {
-                logger.debug(message: "⚠️ Validation failed: Invalid month format")
-                parent.isValid = false
-                parent.errorMessage = "Month must be 2 digits (01-12)"
-                return
+            // Simple format validation during typing
+            if month.count == 2 && year.count == 2 &&
+                month.isNumeric && year.isNumeric &&
+                (Int(month) ?? 0) >= 1 && (Int(month) ?? 0) <= 12 {
+                updateValidationState(true, nil)
+                logger.debug(message: "✅ Validation while typing: Valid expiry date format")
+            } else {
+                updateValidationState(false, nil) // Don't show error during typing
+                logger.debug(message: "🔍 Validation while typing: Invalid expiry date format - marked as invalid")
             }
-
-            // Check year format
-            if year.count != 2 || !year.isNumeric {
-                logger.debug(message: "⚠️ Validation failed: Invalid year format")
-                parent.isValid = false
-                parent.errorMessage = "Year must be 2 digits"
-                return
-            }
-
-            // Check if month is valid (01-12)
-            if let monthInt = Int(month), monthInt < 1 || monthInt > 12 {
-                logger.debug(message: "⚠️ Validation failed: Month must be between 01 and 12")
-                parent.isValid = false
-                parent.errorMessage = "Month must be between 01 and 12"
-                return
-            }
-
-            // Check if expiry date is in the future
-            if !isExpiryDateValid(text) {
-                logger.debug(message: "⚠️ Validation failed: Expiry date must be in the future")
-                parent.isValid = false
-                parent.errorMessage = "Expiry date must be in the future"
-                return
-            }
-
-            // All checks passed
-            logger.debug(message: "✅ Validation passed: Expiry date is valid")
-            parent.isValid = true
-            parent.errorMessage = nil
         }
 
-        /// Checks if the expiry date is valid (not in the past)
-        private func isExpiryDateValid(_ text: String) -> Bool {
-            let parts = text.components(separatedBy: "/")
-            if parts.count < 2 {
-                return false
+        private func validateExpiryDateFully(_ text: String) {
+            // Create the ExpiryDateInput from the text
+            if let expiryDateInput = ExpiryDateInput(formattedDate: text) {
+                // Use the validation service with ExpiryDateRule
+                let validationResult = validationService.validateExpiry(
+                    month: expiryDateInput.month,
+                    year: expiryDateInput.year
+                )
+
+                // Update state based on validation result
+                updateValidationState(validationResult.isValid, validationResult.errorMessage)
+
+                if validationResult.isValid {
+                    logger.debug(message: "✅ Validation passed: Expiry date is valid")
+                } else {
+                    logger.debug(message: "⚠️ Validation failed: \(validationResult.errorMessage ?? "Unknown error")")
+                }
+            } else {
+                // Invalid format
+                updateValidationState(false, "Please enter date as MM/YY")
+                logger.debug(message: "⚠️ Validation failed: Invalid expiry date format")
             }
-
-            guard let month = Int(parts[0]), let year = Int(parts[1]) else {
-                return false
-            }
-
-            // Get current date components
-            let calendar = Calendar.current
-            let currentDateComponents = calendar.dateComponents([.year, .month], from: Date())
-
-            // Validate month value (1-12)
-            if month < 1 || month > 12 {
-                return false
-            }
-
-            // Get current year's last two digits
-            let currentYear = currentDateComponents.year! % 100
-            let currentMonth = currentDateComponents.month!
-
-            // The card expires at the end of the month
-            // If it's the current year, make sure the month is in the future
-            if year < currentYear {
-                return false
-            } else if year == currentYear && month < currentMonth {
-                return false
-            }
-
-            return true
         }
     }
 }

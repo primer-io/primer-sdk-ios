@@ -166,12 +166,12 @@ struct PrimerInputField: View {
                     .disabled(!enabled || readOnly)
                     // Update focus state when editing begins and ends
                     .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidBeginEditingNotification)) { obj in
-                        if let _ = obj.object as? UITextField {
+                        if (obj.object as? UITextField) != nil {
                             isFocused = true
                         }
                     }
                     .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidEndEditingNotification)) { obj in
-                        if let _ = obj.object as? UITextField {
+                        if (obj.object as? UITextField) != nil {
                             isFocused = false
                         }
                     }
