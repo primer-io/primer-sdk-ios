@@ -32,8 +32,5 @@ identifier_name:
   max_length: 40
   excluded:
     - '^i$'  # Regex to ignore identifier "i" in for loops
+    - '^id$' # Regex to ignore identifier "id"
 
-# Configuration for type body length:
-# Updates the maximum allowed type body length to 500 lines.
-#type_body_length:
-#  max: 500

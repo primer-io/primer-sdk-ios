@@ -37,7 +37,18 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
         return AsyncStream { continuation in
             self.stateContinuation = continuation
             continuation.yield(uiState)
+
+            continuation.onTermination = { [weak self] _ in
+                Task {
+                    await self?.clearStateContinuation()
+                }
+            }
         }
+    }
+
+    @MainActor
+    private func clearStateContinuation() {
+        stateContinuation = nil
     }
 
     // Add this method to CardViewModel
@@ -702,6 +713,10 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
         }
 
         return isValid
+    }
+
+    deinit {
+        stateContinuation?.finish()
     }
 }
 

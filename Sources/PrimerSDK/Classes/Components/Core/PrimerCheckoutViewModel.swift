@@ -79,14 +79,36 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope {
         AsyncStream { continuation in
             self.paymentMethodsContinuation = continuation
             continuation.yield(availablePaymentMethods)
+
+            continuation.onTermination = { [weak self] _ in
+                Task {
+                    await self?.clearPaymentMethodsContinuation()
+                }
+            }
         }
+    }
+
+    @MainActor
+    private func clearPaymentMethodsContinuation() {
+        paymentMethodsContinuation = nil
     }
 
     func selectedPaymentMethod() -> AsyncStream<(any PaymentMethodProtocol)?> {
         AsyncStream { continuation in
             self.selectedMethodContinuation = continuation
             continuation.yield(currentSelectedMethod)
+
+            continuation.onTermination = { [weak self] _ in
+                Task {
+                    await self?.clearSelectedMethodContinuation()
+                }
+            }
         }
+    }
+
+    @MainActor
+    private func clearSelectedMethodContinuation() {
+        selectedMethodContinuation = nil
     }
 
     func selectPaymentMethod(_ method: (any PaymentMethodProtocol)?) async {
@@ -108,5 +130,10 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope {
             CardPaymentMethod()
             // Add other payment methods as they become available
         ]
+    }
+
+    deinit {
+        paymentMethodsContinuation?.finish()
+        selectedMethodContinuation?.finish()
     }
 }

@@ -22,8 +22,11 @@ class CardPaymentMethod: PaymentMethodProtocol {
     var type: PaymentMethodType = .paymentCard
 
     @MainActor
+    private let _scope = CardViewModel()
+
+    @MainActor
     var scope: CardViewModel {
-        CardViewModel()
+        _scope
     }
 
     /**

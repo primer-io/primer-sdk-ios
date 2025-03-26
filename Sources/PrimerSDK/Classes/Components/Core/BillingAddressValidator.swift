@@ -22,18 +22,20 @@ class DefaultBillingAddressValidator: BillingAddressValidator {
     func getValidatedBillingAddress(
         billingAddress: [PrimerInputElementType: String?]
     ) -> [PrimerInputElementType: ValidationError?] {
-        return billingAddress.mapValues { value in
-            if value?.isEmpty != false {
-                return ValidationError(
-                    code: errorIdBy(inputType: billingAddress.keys.first ?? .all),
-                    message: errorDescriptionBy(inputType: billingAddress.keys.first ?? .all)
+        var result: [PrimerInputElementType: ValidationError?] = [:]
+        for (inputType, value) in billingAddress {
+            if value?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty != false {
+                result[inputType] = ValidationError(
+                    code: errorIdBy(inputType: inputType),
+                    message: errorDescriptionBy(inputType: inputType)
                 )
             } else {
-                return nil
+                result[inputType] = nil
             }
         }
+        return result
     }
-
+    
     // TODO: Use string resources
     private func errorDescriptionBy(inputType: PrimerInputElementType) -> String {
         switch inputType {
