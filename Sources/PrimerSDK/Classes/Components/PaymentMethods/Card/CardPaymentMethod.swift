@@ -5,7 +5,6 @@
 //  Created by Boris on 24.3.25..
 //
 
-
 import SwiftUI
 
 /**
@@ -17,16 +16,16 @@ import SwiftUI
 @available(iOS 15.0, *)
 class CardPaymentMethod: PaymentMethodProtocol {
     typealias ScopeType = CardViewModel
-    
+
     var id: String = UUID().uuidString
     var name: String? = "Card"
     var type: PaymentMethodType = .paymentCard
-    
+
     @MainActor
     var scope: CardViewModel {
         CardViewModel()
     }
-    
+
     /**
      * Displays custom content within the card payment method's scope, replacing the
      * default implementation.
@@ -46,7 +45,7 @@ class CardPaymentMethod: PaymentMethodProtocol {
         let viewModel = scope
         return AnyView(content(viewModel))
     }
-    
+
     /**
      * Provides the default experience for card based payments.
      */

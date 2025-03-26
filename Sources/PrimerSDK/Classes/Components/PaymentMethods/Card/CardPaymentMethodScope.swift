@@ -1,6 +1,6 @@
 //
 //  CardPaymentMethodScope.swift
-//  
+//
 //
 //  Created by Boris on 24.3.25..
 //
@@ -30,38 +30,38 @@ import SwiftUI
 @MainActor
 protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPaymentUiState {
     // MARK: - Submission methods
-    
+
     /// Submits the card information for processing. To be used in custom Pay button implementations.
     func submit()
-    
+
     // MARK: - Card field update methods
-    
+
     /// Updates the card number in the payment method state
     /// - Parameter value: The new card number value
     func updateCardNumber(_ value: String)
-    
+
     /// Updates the cardholder name in the payment method state
     /// - Parameter value: The new cardholder name value
     func updateCardholderName(_ value: String)
-    
+
     /// Updates the CVV in the payment method state
     /// - Parameter value: The new CVV value
     func updateCvv(_ value: String)
-    
+
     /// Updates the expiry month in the payment method state
     /// - Parameter value: The new expiry month value
     func updateExpiryMonth(_ value: String)
-    
+
     /// Updates the expiry year in the payment method state
     /// - Parameter value: The new expiry year value
     func updateExpiryYear(_ value: String)
-    
+
     /// Updates the card network in the payment method state
     /// - Parameter network: The detected or selected card network
     func updateCardNetwork(_ network: CardNetwork) async
-    
+
     // MARK: - Card field components
-    
+
     /// Use this function to display a cardholder name input field in your custom card form implementation.
     /// - Parameters:
     ///   - modifier: The SwiftUI modifier to be applied to the component
@@ -70,7 +70,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
         modifier: Any,
         label: String?
     ) -> any View
-    
+
     /// Use this function to display a card number input field in your custom card form implementation.
     /// - Parameters:
     ///   - modifier: The SwiftUI modifier to be applied to the component
@@ -79,7 +79,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
         modifier: Any,
         label: String?
     ) -> any View
-    
+
     /// Use this function to display a CVV input field in your custom card form implementation.
     /// - Parameters:
     ///   - modifier: The SwiftUI modifier to be applied to the component
@@ -88,7 +88,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
         modifier: Any,
         label: String?
     ) -> any View
-    
+
     /// Use this function to display a card expiration input field in your custom card form implementation.
     /// - Parameters:
     ///   - modifier: The SwiftUI modifier to be applied to the component
@@ -97,9 +97,9 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
         modifier: Any,
         label: String?
     ) -> any View
-    
+
     // MARK: - Billing address field components
-    
+
     /// Use this function to display a country picker field in your custom card form implementation.
     /// - Parameters:
     ///   - modifier: The SwiftUI modifier to be applied to the component
@@ -108,7 +108,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
         modifier: Any,
         label: String?
     ) -> any View
-    
+
     /// Use this function to display a first name input field in your custom card form implementation.
     /// - Parameters:
     ///   - modifier: The SwiftUI modifier to be applied to the component
@@ -117,7 +117,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
         modifier: Any,
         label: String?
     ) -> any View
-    
+
     /// Use this function to display a last name input field in your custom card form implementation.
     /// - Parameters:
     ///   - modifier: The SwiftUI modifier to be applied to the component
@@ -126,7 +126,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
         modifier: Any,
         label: String?
     ) -> any View
-    
+
     /// Use this function to display an address line 1 input field in your custom card form implementation.
     /// - Parameters:
     ///   - modifier: The SwiftUI modifier to be applied to the component
@@ -135,7 +135,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
         modifier: Any,
         label: String?
     ) -> any View
-    
+
     /// Use this function to display an address line 2 input field in your custom card form implementation.
     /// - Parameters:
     ///   - modifier: The SwiftUI modifier to be applied to the component
@@ -144,7 +144,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
         modifier: Any,
         label: String?
     ) -> any View
-    
+
     /// Use this function to display a postal code input field in your custom card form implementation.
     /// - Parameters:
     ///   - modifier: The SwiftUI modifier to be applied to the component
@@ -153,7 +153,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
         modifier: Any,
         label: String?
     ) -> any View
-    
+
     /// Use this function to display a city input field in your custom card form implementation.
     /// - Parameters:
     ///   - modifier: The SwiftUI modifier to be applied to the component
@@ -162,7 +162,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
         modifier: Any,
         label: String?
     ) -> any View
-    
+
     /// Use this function to display a state input field in your custom card form implementation.
     /// - Parameters:
     ///   - modifier: The SwiftUI modifier to be applied to the component
@@ -171,7 +171,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
         modifier: Any,
         label: String?
     ) -> any View
-    
+
     /// Use this function to display a pay button in your custom card form implementation.
     /// - Parameters:
     ///   - enabled: Whether the button should be enabled or not

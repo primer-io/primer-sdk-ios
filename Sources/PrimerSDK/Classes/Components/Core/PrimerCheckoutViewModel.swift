@@ -105,7 +105,7 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope {
     private func loadPaymentMethods() async -> [any PaymentMethodProtocol] {
         // Simulate loading payment methods from SDK
         return [
-            CardPaymentMethod(),
+            CardPaymentMethod()
             // Add other payment methods as they become available
         ]
     }

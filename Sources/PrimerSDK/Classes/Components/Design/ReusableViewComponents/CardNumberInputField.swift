@@ -311,7 +311,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                     var unformattedPos = 0
                     for i in 0..<range.location {
                         if i < (textField.text?.count ?? 0) &&
-                           (textField.text?[textField.text!.index(textField.text!.startIndex, offsetBy: i)].isNumber ?? false) {
+                            (textField.text?[textField.text!.index(textField.text!.startIndex, offsetBy: i)].isNumber ?? false) {
                             unformattedPos += 1
                         }
                     }
@@ -345,7 +345,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 var unformattedPos = 0
                 for i in 0..<range.location {
                     if i < (textField.text?.count ?? 0) &&
-                       (textField.text?[textField.text!.index(textField.text!.startIndex, offsetBy: i)].isNumber ?? false) {
+                        (textField.text?[textField.text!.index(textField.text!.startIndex, offsetBy: i)].isNumber ?? false) {
                         unformattedPos += 1
                     }
                 }
@@ -517,7 +517,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                         var digitCountBeforeCursor = 0
                         for i in 0..<cursorPosition {
                             if i < currentFormattedText.count &&
-                               currentFormattedText[currentFormattedText.index(currentFormattedText.startIndex, offsetBy: i)].isNumber {
+                                currentFormattedText[currentFormattedText.index(currentFormattedText.startIndex, offsetBy: i)].isNumber {
                                 digitCountBeforeCursor += 1
                             }
                         }
@@ -552,7 +552,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 // Convert cursor position to digit position
                 for i in 0..<min(cursorPosition, currentFormattedText.count) {
                     if i < currentFormattedText.count &&
-                       currentFormattedText[currentFormattedText.index(currentFormattedText.startIndex, offsetBy: i)].isNumber {
+                        currentFormattedText[currentFormattedText.index(currentFormattedText.startIndex, offsetBy: i)].isNumber {
                         targetDigitPosition += 1
                     }
                 }
