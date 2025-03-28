@@ -5,30 +5,104 @@
 //  Created by Boris on 24.3.25..
 //
 
-// swiftlint:disable all
-
+// swiftlint:disable file_length
 import Foundation
 import SwiftUI
 
 @available(iOS 15.0, *)
 @MainActor
-class CardViewModel: ObservableObject, CardPaymentMethodScope {
+class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
     // MARK: - Properties
 
     @Published private var uiState: CardPaymentUiState = .empty
     private var stateContinuation: AsyncStream<CardPaymentUiState?>.Continuation?
 
-    private let cardValidator: CardValidator
-    private let billingAddressValidator: BillingAddressValidator
+    // Validation services
+    private let validationService: ValidationService
+    private let formValidator: FormValidator
+
+    // Field validators for real-time validation during typing
+    private lazy var cardNumberValidator = CardNumberValidator(
+        validationService: validationService,
+        onValidationChange: { [weak self] isValid in
+            self?.updateCardNumberValidationState(isValid: isValid)
+        },
+        onErrorMessageChange: { [weak self] errorMessage in
+            self?.updateCardNumberErrorMessage(errorMessage)
+        }
+    )
+
+    private lazy var cvvValidator = CVVValidator(
+        validationService: validationService,
+        cardNetwork: .unknown,
+        onValidationChange: { [weak self] isValid in
+            self?.updateCvvValidationState(isValid: isValid)
+        },
+        onErrorMessageChange: { [weak self] errorMessage in
+            self?.updateCvvErrorMessage(errorMessage)
+        }
+    )
+
+    private lazy var expiryDateValidator = ExpiryDateValidator(
+        validationService: validationService,
+        onValidationChange: { [weak self] isValid in
+            self?.updateExpiryValidationState(isValid: isValid)
+        },
+        onErrorMessageChange: { [weak self] errorMessage in
+            self?.updateExpiryErrorMessage(errorMessage)
+        },
+        onMonthChange: { [weak self] month in
+            self?.handleExpiryMonthChange(month)
+        },
+        onYearChange: { [weak self] year in
+            self?.handleExpiryYearChange(year)
+        }
+    )
+
+    private lazy var cardholderNameValidator = CardholderNameValidator(
+        validationService: validationService,
+        onValidationChange: { [weak self] isValid in
+            self?.updateCardholderNameValidationState(isValid: isValid)
+        },
+        onErrorMessageChange: { [weak self] errorMessage in
+            self?.updateCardholderNameErrorMessage(errorMessage)
+        }
+    )
 
     // MARK: - Initialization
 
     init(
-        cardValidator: CardValidator = DefaultCardValidator(),
-        billingAddressValidator: BillingAddressValidator = DefaultBillingAddressValidator()
+        validationService: ValidationService = DefaultValidationService()
     ) {
-        self.cardValidator = cardValidator
-        self.billingAddressValidator = billingAddressValidator
+        self.validationService = validationService
+        self.formValidator = CardFormValidator(validationService: validationService)
+
+        // Setup network change handler
+        cardNumberValidator.onCardNetworkChange = { [weak self] network in
+            guard let self = self else { return }
+
+            // Update the context in form validator
+            self.formValidator.updateContext(key: "cardNetwork", value: network)
+
+            // Update the CVV validator with the new network
+            self.cvvValidator = CVVValidator(
+                validationService: self.validationService,
+                cardNetwork: network,
+                onValidationChange: { [weak self] isValid in
+                    self?.updateCvvValidationState(isValid: isValid)
+                },
+                onErrorMessageChange: { [weak self] errorMessage in
+                    self?.updateCvvErrorMessage(errorMessage)
+                }
+            )
+
+            // Update the card network in the state
+            Task {
+                await self.updateCardNetwork(network)
+            }
+        }
+
+        logger.debug(message: "📝 CardViewModel initialized with new validation system")
     }
 
     // MARK: - PrimerPaymentMethodScope Implementation
@@ -61,10 +135,14 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
                     return newState
                 }
 
+                logger.debug(message: "🔄 Processing payment submission")
+
                 // Validate all fields
                 let isValid = await validateAllFields()
 
                 if isValid {
+                    logger.debug(message: "✅ Form validation successful, processing payment")
+
                     // Process payment
                     do {
                         // Simulate network call
@@ -76,6 +154,8 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
                             currency: "USD"
                         )
 
+                        logger.debug(message: "✅ Payment processed successfully: \(result.transactionId)")
+
                         // Reset processing state
                         updateState { state in
                             var newState = state
@@ -85,6 +165,8 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
 
                         continuation.resume(returning: result)
                     } catch {
+                        logger.error(message: "❌ Payment processing failed: \(error.localizedDescription)")
+
                         updateState { state in
                             var newState = state
                             newState.isProcessing = false
@@ -95,6 +177,8 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
                     }
                 } else {
                     // Invalid form
+                    logger.error(message: "❌ Form validation failed, cannot submit payment")
+
                     updateState { state in
                         var newState = state
                         newState.isProcessing = false
@@ -108,90 +192,84 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
     }
 
     func cancel() async {
+        logger.debug(message: "🛑 Payment flow cancelled")
         updateState { _ in .empty }
     }
 
     // MARK: - Card Field Update Methods
 
     func updateCardNumber(_ value: String) {
+        logger.debug(message: "🔄 Updating card number: \(value.isEmpty ? "[empty]" : "[masked]")")
+
         let sanitized = value.replacingOccurrences(of: " ", with: "")
 
-        // Use cardValidator for validation
-        let validationErrors = cardValidator.getValidatedCardFields(
-            cardFields: [.cardNumber: sanitized]
-        )
-
-        // Unwrap one level of optionality
-        let error = validationErrors[.cardNumber] ?? nil
+        // Use formValidator for validation
+        let validationResult = formValidator.validateField(type: .cardNumber, value: sanitized)
 
         updateState { state in
             var newState = state
             newState.cardData.cardNumber = InputFieldState(
                 value: sanitized,
-                validationError: error,
+                validationError: validationResult.toValidationError,
                 isVisible: state.cardData.cardNumber.isVisible,
                 isRequired: state.cardData.cardNumber.isRequired,
                 isLast: state.cardData.cardNumber.isLast
             )
 
-            // Update card network based on card number
-            let network = CardNetwork(cardNumber: sanitized)
-            if network != .unknown {
-                newState.cardNetworkData.selectedNetwork = network
-            }
-
             return newState
         }
+
+        // Also trigger real-time validation for immediate feedback
+        cardNumberValidator.handleTextChange(input: sanitized)
     }
 
-    // // Method to update cardholder name
     func updateCardholderName(_ value: String) {
-        // Use cardValidator for validation
-        let validationErrors = cardValidator.getValidatedCardFields(
-            cardFields: [.cardholderName: value]
-        )
+        logger.debug(message: "🔄 Updating cardholder name: \(value.isEmpty ? "[empty]" : value)")
 
-        // Unwrap one level of optionality
-        let error = validationErrors[.cardholderName] ?? nil
+        // Use formValidator for validation
+        let validationResult = formValidator.validateField(type: .cardholderName, value: value)
 
         updateState { state in
             var newState = state
             newState.cardData.cardholderName = InputFieldState(
                 value: value,
-                validationError: error,
+                validationError: validationResult.toValidationError,
                 isVisible: state.cardData.cardholderName.isVisible,
                 isRequired: state.cardData.cardholderName.isRequired,
                 isLast: state.cardData.cardholderName.isLast
             )
             return newState
         }
+
+        // Also trigger real-time validation for immediate feedback
+        cardholderNameValidator.handleTextChange(input: value)
     }
 
-    // Method to update CVV
     func updateCvv(_ value: String) {
-        // Use cardValidator for validation
-        let validationErrors = cardValidator.getValidatedCardFields(
-            cardFields: [.cvv: value]
-        )
+        logger.debug(message: "🔄 Updating CVV: \(value.isEmpty ? "[empty]" : "[masked]")")
 
-        // Unwrap one level of optionality
-        let error = validationErrors[.cvv] ?? nil
+        // Use formValidator for validation
+        let validationResult = formValidator.validateField(type: .cvv, value: value)
 
         updateState { state in
             var newState = state
             newState.cardData.cvv = InputFieldState(
                 value: value,
-                validationError: error,
+                validationError: validationResult.toValidationError,
                 isVisible: state.cardData.cvv.isVisible,
                 isRequired: state.cardData.cvv.isRequired,
                 isLast: state.cardData.cvv.isLast
             )
             return newState
         }
+
+        // Also trigger real-time validation for immediate feedback
+        cvvValidator.handleTextChange(input: value)
     }
 
-    // Method to update expiry month
     func updateExpiryMonth(_ value: String) {
+        logger.debug(message: "🔄 Updating expiry month: \(value)")
+
         // Extract current year from the expiry value
         let components = uiState.cardData.expiration.value.components(separatedBy: "/")
         let currentYear = components.count > 1 ? components[1] : ""
@@ -201,8 +279,9 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
         updateExpirationValue(newExpiryValue)
     }
 
-    // Method to update expiry year
     func updateExpiryYear(_ value: String) {
+        logger.debug(message: "🔄 Updating expiry year: \(value)")
+
         // Extract current month from the expiry value
         let components = uiState.cardData.expiration.value.components(separatedBy: "/")
         let currentMonth = components.count > 0 ? components[0] : ""
@@ -214,43 +293,258 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
 
     // Helper method to update the expiration value
     private func updateExpirationValue(_ value: String) {
-        // Use cardValidator for validation
-        let validationErrors = cardValidator.getValidatedCardFields(
-            cardFields: [.expiryDate: value]
-        )
-
-        // Unwrap one level of optionality
-        let error = validationErrors[.expiryDate] ?? nil
+        // Use formValidator for validation
+        let validationResult = formValidator.validateField(type: .expiryDate, value: value)
 
         updateState { state in
             var newState = state
             newState.cardData.expiration = InputFieldState(
                 value: value,
-                validationError: error,
+                validationError: validationResult.toValidationError,
                 isVisible: state.cardData.expiration.isVisible,
                 isRequired: state.cardData.expiration.isRequired,
                 isLast: state.cardData.expiration.isLast
             )
             return newState
         }
+
+        // Also trigger real-time validation for immediate feedback
+        expiryDateValidator.handleTextChange(input: value)
     }
 
-    // Method to update card network
     func updateCardNetwork(_ network: CardNetwork) async {
+        logger.debug(message: "🔄 Updating card network to: \(network.displayName)")
+
         updateState { state in
             var newState = state
             newState.cardNetworkData.selectedNetwork = network
             newState.surcharge = getFormattedSurchargeOrNull(network)
             return newState
         }
+
+        // Update the CVV validator to use the new network
+        cvvValidator = CVVValidator(
+            validationService: validationService,
+            cardNetwork: network,
+            onValidationChange: { [weak self] isValid in
+                self?.updateCvvValidationState(isValid: isValid)
+            },
+            onErrorMessageChange: { [weak self] errorMessage in
+                self?.updateCvvErrorMessage(errorMessage)
+            }
+        )
+
+        // Update context in the form validator
+        formValidator.updateContext(key: "cardNetwork", value: network)
     }
 
-    // Helper method for formatted surcharge - you should have something similar already
-    private func getFormattedSurchargeOrNull(_ network: CardNetwork) -> String? {
-        // Implementation would depend on your surcharge calculation logic
-        // This is a placeholder
-        return nil
+    // MARK: - Billing Address Update Methods
+
+    func updateCountry(_ country: Country) {
+        logger.debug(message: "🔄 Updating country: \(country.name)")
+
+        updateState { state in
+            var newState = state
+
+            // Validate using form validator
+            let validationResult = formValidator.validateField(type: .countryCode, value: country.name)
+
+            newState.billingAddress.country = InputFieldState(
+                value: country.name,
+                validationError: validationResult.toValidationError,
+                isVisible: state.billingAddress.country.isVisible,
+                isRequired: state.billingAddress.country.isRequired,
+                isLast: state.billingAddress.country.isLast
+            )
+            return newState
+        }
     }
+
+    func updateFirstName(_ value: String) {
+        updateBillingFieldState(
+            keyPath: \CardPaymentUiState.BillingAddress.firstName,
+            value: value,
+            inputType: .firstName
+        )
+    }
+
+    func updateLastName(_ value: String) {
+        updateBillingFieldState(
+            keyPath: \CardPaymentUiState.BillingAddress.lastName,
+            value: value,
+            inputType: .lastName
+        )
+    }
+
+    func updateAddressLine1(_ value: String) {
+        updateBillingFieldState(
+            keyPath: \CardPaymentUiState.BillingAddress.addressLine1,
+            value: value,
+            inputType: .addressLine1
+        )
+    }
+
+    func updateAddressLine2(_ value: String) {
+        updateBillingFieldState(
+            keyPath: \CardPaymentUiState.BillingAddress.addressLine2,
+            value: value,
+            inputType: .addressLine2
+        )
+    }
+
+    func updatePostalCode(_ value: String) {
+        updateBillingFieldState(
+            keyPath: \CardPaymentUiState.BillingAddress.postalCode,
+            value: value,
+            inputType: .postalCode
+        )
+    }
+
+    func updateCity(_ value: String) {
+        updateBillingFieldState(
+            keyPath: \CardPaymentUiState.BillingAddress.city,
+            value: value,
+            inputType: .city
+        )
+    }
+
+    func updateState(_ value: String) {
+        updateBillingFieldState(
+            keyPath: \CardPaymentUiState.BillingAddress.state,
+            value: value,
+            inputType: .state
+        )
+    }
+
+    // MARK: - Validation State Update Methods
+
+    private func updateCardNumberValidationState(isValid: Bool) {
+        logger.debug(message: "🔄 Card number validation state changed: \(isValid)")
+        // This is intentionally left empty as we're setting the validation state
+        // directly in the updateCardNumber method using formValidator
+    }
+
+    private func updateCardNumberErrorMessage(_ errorMessage: String?) {
+        if let errorMessage = errorMessage {
+            logger.debug(message: "⚠️ Card number error: \(errorMessage)")
+        } else {
+            logger.debug(message: "✅ Card number error cleared")
+        }
+
+        // Only update the error message in UI state when explicitly provided
+        if errorMessage != nil {
+            updateState { state in
+                var newState = state
+                newState.cardData.cardNumber = InputFieldState(
+                    value: state.cardData.cardNumber.value,
+                    validationError: errorMessage != nil ? ValidationError(code: "invalid-card-number", message: errorMessage!) : nil,
+                    isVisible: state.cardData.cardNumber.isVisible,
+                    isRequired: state.cardData.cardNumber.isRequired,
+                    isLast: state.cardData.cardNumber.isLast
+                )
+                return newState
+            }
+        }
+    }
+
+    private func updateCvvValidationState(isValid: Bool) {
+        logger.debug(message: "🔄 CVV validation state changed: \(isValid)")
+        // This is intentionally left empty as we're setting the validation state
+        // directly in the updateCvv method using formValidator
+    }
+
+    private func updateCvvErrorMessage(_ errorMessage: String?) {
+        if let errorMessage = errorMessage {
+            logger.debug(message: "⚠️ CVV error: \(errorMessage)")
+        } else {
+            logger.debug(message: "✅ CVV error cleared")
+        }
+
+        // Only update the error message in UI state when explicitly provided
+        if errorMessage != nil {
+            updateState { state in
+                var newState = state
+                newState.cardData.cvv = InputFieldState(
+                    value: state.cardData.cvv.value,
+                    validationError: errorMessage != nil ? ValidationError(code: "invalid-cvv", message: errorMessage!) : nil,
+                    isVisible: state.cardData.cvv.isVisible,
+                    isRequired: state.cardData.cvv.isRequired,
+                    isLast: state.cardData.cvv.isLast
+                )
+                return newState
+            }
+        }
+    }
+
+    private func updateExpiryValidationState(isValid: Bool) {
+        logger.debug(message: "🔄 Expiry validation state changed: \(isValid)")
+        // This is intentionally left empty as we're setting the validation state
+        // directly in the updateExpirationValue method using formValidator
+    }
+
+    private func updateExpiryErrorMessage(_ errorMessage: String?) {
+        if let errorMessage = errorMessage {
+            logger.debug(message: "⚠️ Expiry error: \(errorMessage)")
+        } else {
+            logger.debug(message: "✅ Expiry error cleared")
+        }
+
+        // Only update the error message in UI state when explicitly provided
+        if errorMessage != nil {
+            updateState { state in
+                var newState = state
+                newState.cardData.expiration = InputFieldState(
+                    value: state.cardData.expiration.value,
+                    validationError: errorMessage != nil ? ValidationError(code: "invalid-expiry-date", message: errorMessage!) : nil,
+                    isVisible: state.cardData.expiration.isVisible,
+                    isRequired: state.cardData.expiration.isRequired,
+                    isLast: state.cardData.expiration.isLast
+                )
+                return newState
+            }
+        }
+    }
+
+    private func updateCardholderNameValidationState(isValid: Bool) {
+        logger.debug(message: "🔄 Cardholder name validation state changed: \(isValid)")
+        // This is intentionally left empty as we're setting the validation state
+        // directly in the updateCardholderName method using formValidator
+    }
+
+    private func updateCardholderNameErrorMessage(_ errorMessage: String?) {
+        if let errorMessage = errorMessage {
+            logger.debug(message: "⚠️ Cardholder name error: \(errorMessage)")
+        } else {
+            logger.debug(message: "✅ Cardholder name error cleared")
+        }
+
+        // Only update the error message in UI state when explicitly provided
+        if errorMessage != nil {
+            updateState { state in
+                var newState = state
+                newState.cardData.cardholderName = InputFieldState(
+                    value: state.cardData.cardholderName.value,
+                    validationError: errorMessage != nil ? ValidationError(code: "invalid-cardholder-name", message: errorMessage!) : nil,
+                    isVisible: state.cardData.cardholderName.isVisible,
+                    isRequired: state.cardData.cardholderName.isRequired,
+                    isLast: state.cardData.cardholderName.isLast
+                )
+                return newState
+            }
+        }
+    }
+
+    private func handleExpiryMonthChange(_ month: String) {
+        logger.debug(message: "📅 Expiry month changed: \(month)")
+        // This is handled in updateExpiryMonth which is called by the view
+    }
+
+    private func handleExpiryYearChange(_ year: String) {
+        logger.debug(message: "📅 Expiry year changed: \(year)")
+        // This is handled in updateExpiryYear which is called by the view
+    }
+
+    // swiftlint:disable identifier_name
 
     // MARK: - CardPaymentMethodScope Component Methods
 
@@ -258,8 +552,9 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
         return CardholderNameInputField(
             label: label ?? "Cardholder Name",
             placeholder: "John Doe",
-            onValidationChange: { isValid in
-                // Handle validation change
+            validationService: validationService,
+            onValidationChange: { _ in
+                // Validation state is handled in the validator
             }
         )
     }
@@ -268,11 +563,14 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
         return CardNumberInputField(
             label: label ?? "Card Number",
             placeholder: "1234 5678 9012 3456",
-            onCardNetworkChange: { network in
-                // Handle card network change
+            validationService: validationService,
+            onCardNetworkChange: { [weak self] network in
+                Task {
+                    await self?.updateCardNetwork(network)
+                }
             },
-            onValidationChange: { isValid in
-                // Handle validation change
+            onValidationChange: { _ in
+                // Validation state is handled in the validator
             }
         )
     }
@@ -282,8 +580,9 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
             label: label ?? "CVV",
             placeholder: "123",
             cardNetwork: uiState.cardNetworkData.selectedNetwork ?? .unknown,
-            onValidationChange: { isValid in
-                // Handle validation change
+            validationService: validationService,
+            onValidationChange: { _ in
+                // Validation state is handled in the validator
             }
         )
     }
@@ -292,20 +591,20 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
         return ExpiryDateInputField(
             label: label ?? "Expiry Date",
             placeholder: "MM/YY",
-            onValidationChange: { isValid in
-                // Handle validation change
+            validationService: validationService,
+            onValidationChange: { _ in
+                // Validation state is handled in the validator
             },
-            onMonthChange: { month in
-                // Handle month change
+            onMonthChange: { [weak self] month in
+                self?.updateExpiryMonth(month)
             },
-            onYearChange: { year in
-                // Handle year change
+            onYearChange: { [weak self] year in
+                self?.updateExpiryYear(year)
             }
         )
     }
 
-    // MARK: - Billing Address Field Components
-
+    // (Keeping the existing billing address field component methods as they are)
     func PrimerCountryField(modifier: Any, label: String?) -> any View {
         // Only show if configured to be visible
         guard uiState.billingAddress.country.isVisible else {
@@ -439,87 +738,19 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
             text: text ?? "Pay",
             isLoading: uiState.isProcessing,
             isEnabled: enabled && !uiState.isProcessing,
-            action: {
+            action: { [weak self] in
                 Task {
+                    guard let self = self else { return }
                     do {
-                        // Explicitly discard the result with _ =
                         _ = try await self.submit()
-                        // Or handle the result:
-                        // let result = try await self.submit()
-                        // print("Payment successful: \(result.transactionId)")
                     } catch {
-                        // Handle error
-                        print("Payment failed: \(error)")
+                        self.logger.error(message: "❌ Payment button action failed: \(error.localizedDescription)")
                     }
                 }
             }
         )
     }
-
-    // MARK: - Update Methods for Billing Address Fields
-
-    func updateCountry(_ country: Country) {
-        updateState { state in
-            var newState = state
-            newState.billingAddress.country = InputFieldState(
-                value: country.name,
-                validationError: nil,
-                isVisible: state.billingAddress.country.isVisible,
-                isRequired: state.billingAddress.country.isRequired,
-                isLast: state.billingAddress.country.isLast
-            )
-            return newState
-        }
-    }
-
-    func updateFirstName(_ value: String) {
-        updateBillingFieldState(
-            keyPath: \CardPaymentUiState.BillingAddress.firstName,
-            value: value
-        )
-    }
-
-    func updateLastName(_ value: String) {
-        updateBillingFieldState(
-            keyPath: \CardPaymentUiState.BillingAddress.lastName,
-            value: value
-        )
-    }
-
-    func updateAddressLine1(_ value: String) {
-        updateBillingFieldState(
-            keyPath: \CardPaymentUiState.BillingAddress.addressLine1,
-            value: value
-        )
-    }
-
-    func updateAddressLine2(_ value: String) {
-        updateBillingFieldState(
-            keyPath: \CardPaymentUiState.BillingAddress.addressLine2,
-            value: value
-        )
-    }
-
-    func updatePostalCode(_ value: String) {
-        updateBillingFieldState(
-            keyPath: \CardPaymentUiState.BillingAddress.postalCode,
-            value: value
-        )
-    }
-
-    func updateCity(_ value: String) {
-        updateBillingFieldState(
-            keyPath: \CardPaymentUiState.BillingAddress.city,
-            value: value
-        )
-    }
-
-    func updateState(_ value: String) {
-        updateBillingFieldState(
-            keyPath: \CardPaymentUiState.BillingAddress.state,
-            value: value
-        )
-    }
+    // swiftlint:enable identifier_name
 
     // MARK: - Helper Methods
 
@@ -528,7 +759,13 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
         stateContinuation?.yield(uiState)
     }
 
-    private func updateBillingFieldState(keyPath: KeyPath<CardPaymentUiState.BillingAddress, InputFieldState>, value: String) {
+    private func updateBillingFieldState(
+        keyPath: KeyPath<CardPaymentUiState.BillingAddress, InputFieldState>,
+        value: String,
+        inputType: PrimerInputElementType
+    ) {
+        logger.debug(message: "🔄 Updating billing field \(inputType.rawValue): \(value)")
+
         updateState { state in
             var newState = state
 
@@ -536,11 +773,14 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
             let currentBillingAddress = state.billingAddress
             var updatedFields: [KeyPath<CardPaymentUiState.BillingAddress, InputFieldState>: InputFieldState] = [:]
 
+            // Get validation result from form validator
+            let validationResult = formValidator.validateField(type: inputType, value: value)
+
             // Update the specific field
             let currentField = currentBillingAddress[keyPath: keyPath]
             let updatedField = InputFieldState(
                 value: value,
-                validationError: nil,
+                validationError: validationResult.toValidationError,
                 isVisible: currentField.isVisible,
                 isRequired: currentField.isRequired,
                 isLast: currentField.isLast
@@ -553,15 +793,8 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
                 updatedFields: updatedFields
             )
 
-            // Run validation if needed
-            let validatedBillingAddress = validateBillingAddressIfNeeded(
-                billingAddress: newBillingAddress,
-                field: keyPath,
-                value: value
-            )
-
             // Update the state with the new billing address
-            newState = newState.copyWithBillingAddress(validatedBillingAddress)
+            newState = newState.copyWithBillingAddress(newBillingAddress)
 
             return newState
         }
@@ -572,7 +805,6 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
         currentBillingAddress: CardPaymentUiState.BillingAddress,
         updatedFields: [KeyPath<CardPaymentUiState.BillingAddress, InputFieldState>: InputFieldState]
     ) -> CardPaymentUiState.BillingAddress {
-
         // Create a new billing address with updates
         return CardPaymentUiState.BillingAddress(
             country: updatedFields[\CardPaymentUiState.BillingAddress.country] ?? currentBillingAddress.country,
@@ -586,92 +818,9 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
         )
     }
 
-    // Helper to validate a field if needed
-    private func validateBillingAddressIfNeeded(
-        billingAddress: CardPaymentUiState.BillingAddress,
-        field: KeyPath<CardPaymentUiState.BillingAddress, InputFieldState>,
-        value: String
-    ) -> CardPaymentUiState.BillingAddress {
-
-        let currentField = billingAddress[keyPath: field]
-
-        // Only validate required fields with empty values
-        if value.isEmpty && currentField.isRequired {
-            let inputType = billingAddressFieldToInputElementType(field)
-
-            let validationErrors = billingAddressValidator.getValidatedBillingAddress(
-                billingAddress: [inputType: value]
-            )
-
-            if let error = validationErrors[inputType] {
-                var updatedFields: [KeyPath<CardPaymentUiState.BillingAddress, InputFieldState>: InputFieldState] = [:]
-
-                updatedFields[field] = InputFieldState(
-                    value: value,
-                    validationError: error,
-                    isVisible: currentField.isVisible,
-                    isRequired: currentField.isRequired,
-                    isLast: currentField.isLast
-                )
-
-                return createUpdatedBillingAddress(
-                    currentBillingAddress: billingAddress,
-                    updatedFields: updatedFields
-                )
-            }
-        }
-
-        return billingAddress
-    }
-
-    // Fixed method to convert KeyPath to PrimerInputElementType
-    private func billingAddressFieldToInputElementType(_ keyPath: KeyPath<CardPaymentUiState.BillingAddress, InputFieldState>) -> PrimerInputElementType {
-        if keyPath == \CardPaymentUiState.BillingAddress.country {
-            return .countryCode
-        } else if keyPath == \CardPaymentUiState.BillingAddress.firstName {
-            return .firstName
-        } else if keyPath == \CardPaymentUiState.BillingAddress.lastName {
-            return .lastName
-        } else if keyPath == \CardPaymentUiState.BillingAddress.addressLine1 {
-            return .addressLine1
-        } else if keyPath == \CardPaymentUiState.BillingAddress.addressLine2 {
-            return .addressLine2
-        } else if keyPath == \CardPaymentUiState.BillingAddress.city {
-            return .city
-        } else if keyPath == \CardPaymentUiState.BillingAddress.postalCode {
-            return .postalCode
-        } else if keyPath == \CardPaymentUiState.BillingAddress.state {
-            return .state
-        } else {
-            return .unknown // Fallback to unknown
-        }
-    }
-
-
-    private func keyPathToInputElementType(_ keyPath: WritableKeyPath<CardPaymentUiState.BillingAddress, InputFieldState>) -> PrimerInputElementType {
-        switch keyPath {
-        case \CardPaymentUiState.BillingAddress.country:
-            return .countryCode
-        case \CardPaymentUiState.BillingAddress.firstName:
-            return .firstName
-        case \CardPaymentUiState.BillingAddress.lastName:
-            return .lastName
-        case \CardPaymentUiState.BillingAddress.addressLine1:
-            return .addressLine1
-        case \CardPaymentUiState.BillingAddress.addressLine2:
-            return .addressLine2
-        case \CardPaymentUiState.BillingAddress.city:
-            return .city
-        case \CardPaymentUiState.BillingAddress.postalCode:
-            return .postalCode
-        case \CardPaymentUiState.BillingAddress.state:
-            return .state
-        default:
-            return .all
-        }
-    }
-
     private func validateAllFields() async -> Bool {
+        logger.debug(message: "🔍 Validating all fields for form submission")
+
         // Create a map of all card fields
         let cardFieldsMap: [PrimerInputElementType: String?] = [
             .cardNumber: uiState.cardData.cardNumber.value,
@@ -680,10 +829,7 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
             .cardholderName: uiState.cardData.cardholderName.value
         ]
 
-        // Validate all card fields at once
-        let cardValidationErrors = cardValidator.getValidatedCardFields(cardFields: cardFieldsMap)
-
-        // Create a map of all billing address fields
+        // Create a map of all billing address fields (only required fields)
         let billingAddressMap: [PrimerInputElementType: String?] = [
             .countryCode: uiState.billingAddress.country.isRequired ? uiState.billingAddress.country.value : nil,
             .firstName: uiState.billingAddress.firstName.isRequired ? uiState.billingAddress.firstName.value : nil,
@@ -694,17 +840,120 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope {
             .state: uiState.billingAddress.state.isRequired ? uiState.billingAddress.state.value : nil
         ]
 
-        // Validate all billing address fields at once
-        let billingAddressErrors = billingAddressValidator.getValidatedBillingAddress(billingAddress: billingAddressMap)
+        // Combine all fields into one map
+        var allFields = cardFieldsMap
+        for (key, value) in billingAddressMap where value != nil {
+            // Only include fields that need validation
+            allFields[key] = value
+        }
 
-        // Check if any fields have validation errors
-        let hasCardErrors = cardValidationErrors.values.contains(where: { $0 != nil })
-        let hasAddressErrors = billingAddressErrors.values.contains(where: { $0 != nil })
+        // Use form validator to validate all fields at once
+        let validationErrors = formValidator.validateForm(fields: allFields)
 
-        return !hasCardErrors && !hasAddressErrors
+        // Update UI state with validation errors
+        updateState { state in
+            var newState = state
+
+            // Update card fields validation errors
+            newState.cardData.cardNumber = updateFieldWithError(
+                field: state.cardData.cardNumber,
+                error: validationErrors[.cardNumber] ?? nil
+            )
+
+            newState.cardData.expiration = updateFieldWithError(
+                field: state.cardData.expiration,
+                error: validationErrors[.expiryDate] ?? nil
+            )
+
+            newState.cardData.cvv = updateFieldWithError(
+                field: state.cardData.cvv,
+                error: validationErrors[.cvv] ?? nil
+            )
+
+            newState.cardData.cardholderName = updateFieldWithError(
+                field: state.cardData.cardholderName,
+                error: validationErrors[.cardholderName] ?? nil
+            )
+
+            // Update billing address fields validation errors
+            let newBillingAddress = CardPaymentUiState.BillingAddress(
+                country: updateFieldWithError(
+                    field: state.billingAddress.country,
+                    error: validationErrors[.countryCode] ?? nil
+                ),
+                firstName: updateFieldWithError(
+                    field: state.billingAddress.firstName,
+                    error: validationErrors[.firstName] ?? nil
+                ),
+                lastName: updateFieldWithError(
+                    field: state.billingAddress.lastName,
+                    error: validationErrors[.lastName] ?? nil
+                ),
+                addressLine1: updateFieldWithError(
+                    field: state.billingAddress.addressLine1,
+                    error: validationErrors[.addressLine1] ?? nil
+                ),
+                addressLine2: updateFieldWithError(
+                    field: state.billingAddress.addressLine2,
+                    error: validationErrors[.addressLine2] ?? nil
+                ),
+                city: updateFieldWithError(
+                    field: state.billingAddress.city,
+                    error: validationErrors[.city] ?? nil
+                ),
+                postalCode: updateFieldWithError(
+                    field: state.billingAddress.postalCode,
+                    error: validationErrors[.postalCode] ?? nil
+                ),
+                state: updateFieldWithError(
+                    field: state.billingAddress.state,
+                    error: validationErrors[.state] ?? nil
+                )
+            )
+
+            newState = newState.copyWithBillingAddress(newBillingAddress)
+
+            return newState
+        }
+
+        // Check if any field has validation errors
+        let hasErrors = validationErrors.values.contains { $0 != nil }
+
+        if hasErrors {
+            logger.error(message: "❌ Form validation found errors")
+
+            // Log the specific errors for debugging
+            for (field, error) in validationErrors {
+                if let error = error {
+                    logger.error(message: "❌ Field \(field.rawValue) error: \(error.message)")
+                }
+            }
+        } else {
+            logger.debug(message: "✅ Form validation successful")
+        }
+
+        return !hasErrors
+    }
+
+    private func updateFieldWithError(field: InputFieldState, error: ValidationError?) -> InputFieldState {
+        return InputFieldState(
+            value: field.value,
+            validationError: error,
+            isVisible: field.isVisible,
+            isRequired: field.isRequired,
+            isLast: field.isLast
+        )
+    }
+
+    // Helper method for formatted surcharge
+    private func getFormattedSurchargeOrNull(_ network: CardNetwork) -> String? {
+        // Implementation would depend on your surcharge calculation logic
+        // This is a placeholder
+        return nil
     }
 
     deinit {
+        logger.debug(message: "🗑️ CardViewModel deallocated")
         stateContinuation?.finish()
     }
 }
@@ -848,4 +1097,5 @@ struct CountryPickerView: View {
         }
     }
 }
-// swiftlint:enable all
+
+// swiftlint:enable file_length

@@ -485,8 +485,8 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
 
                 // Count digits in the selection
                 for index in formattedRange.location..<rangeEnd
-                    where index < formattedText.count &&
-                          formattedText[formattedText.index(formattedText.startIndex, offsetBy: index)].isNumber {
+                where index < formattedText.count &&
+                    formattedText[formattedText.index(formattedText.startIndex, offsetBy: index)].isNumber {
 
                     // Increment only when the character is a number
                     unformattedLength += 1

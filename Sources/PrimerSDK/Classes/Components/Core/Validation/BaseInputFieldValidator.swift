@@ -1,19 +1,23 @@
 //
 //  BaseInputFieldValidator.swift
-//  
+//
 //
 //  Created by Boris on 26.3.25..
 //
 
+import Foundation
 
-/// Base implementation that handles timing of validation events
-class BaseInputFieldValidator<T>: ValidationCoordinator {
-    typealias InputType = T
-    
+/// Base validator that handles common validation timing behavior
+class BaseInputFieldValidator<T> {
+    /// The validation service used for actual validation rules
     let validationService: ValidationService
+
+    /// Callback when validation state changes (valid/invalid)
     let onValidationChange: ((Bool) -> Void)?
+
+    /// Callback when error message changes
     let onErrorMessageChange: ((String?) -> Void)?
-    
+
     init(
         validationService: ValidationService,
         onValidationChange: ((Bool) -> Void)? = nil,
@@ -23,36 +27,44 @@ class BaseInputFieldValidator<T>: ValidationCoordinator {
         self.onValidationChange = onValidationChange
         self.onErrorMessageChange = onErrorMessageChange
     }
-    
-    /// Handle text field beginning edit - typically clears errors
+
+    /// Called when field begins editing - typically clears errors
     func handleDidBeginEditing() {
         // Clear error message when user starts editing
         onErrorMessageChange?(nil)
     }
-    
-    /// Handle text changes during typing
+
+    /// Called during typing - uses lightweight validation
     func handleTextChange(input: T) {
         let result = validateWhileTyping(input)
-        
+
         // During typing, update validation state but don't show error messages
         onValidationChange?(result.isValid)
+
+        // Optionally show errors during typing if explicitly provided
+        if !result.isValid && result.errorMessage != nil {
+            onErrorMessageChange?(result.errorMessage)
+        }
     }
-    
-    /// Handle text field ending edit - show full validation
+
+    /// Called when field loses focus - uses full validation
     func handleDidEndEditing(input: T) {
         let result = validateOnBlur(input)
-        
+
         // When focus lost, update validation state and show error messages
         onValidationChange?(result.isValid)
         onErrorMessageChange?(result.errorMessage)
     }
-    
-    // Default implementations to be overridden by subclasses
+
+    // Methods to be overridden by subclasses
+
+    /// Lighter validation during typing
     func validateWhileTyping(_ input: T) -> ValidationResult {
-        return .valid // Simple default
+        return .valid // Default implementation
     }
-    
+
+    /// Complete validation when field loses focus
     func validateOnBlur(_ input: T) -> ValidationResult {
-        return .valid // Simple default
+        return .valid // Default implementation
     }
 }
