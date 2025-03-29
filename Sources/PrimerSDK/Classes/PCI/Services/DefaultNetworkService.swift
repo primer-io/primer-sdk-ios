@@ -20,7 +20,6 @@ extension ResponseMetadata {
 }
 
 extension HTTPURLResponse: ResponseMetadata {
-
     var responseUrl: String? {
         url?.absoluteString
     }
@@ -35,7 +34,6 @@ extension HTTPURLResponse: ResponseMetadata {
 }
 
 class DefaultNetworkService: NetworkService, LogReporter {
-
     let requestFactory: NetworkRequestFactory
     let requestDispatcher: RequestDispatcher
     let reportingService: NetworkReportingService
@@ -50,14 +48,13 @@ class DefaultNetworkService: NetworkService, LogReporter {
 
     init(withUrlSession urlSession: URLSession = .shared,
          analyticsService: Analytics.Service = .shared) {
-        self.requestFactory = DefaultNetworkRequestFactory()
-        self.requestDispatcher = DefaultRequestDispatcher(urlSession: urlSession)
-        self.reportingService = DefaultNetworkReportingService(analyticsService: analyticsService)
+        requestFactory = DefaultNetworkRequestFactory()
+        requestDispatcher = DefaultRequestDispatcher(urlSession: urlSession)
+        reportingService = DefaultNetworkReportingService(analyticsService: analyticsService)
     }
 
     @discardableResult
-    func request<T: Decodable>(_ endpoint: Endpoint,
-                               completion: @escaping ResponseCompletion<T>) -> PrimerCancellable? {
+    func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResponseCompletion<T>) -> PrimerCancellable? {
         do {
             let identifier = String.randomString(length: 32)
 
@@ -81,15 +78,39 @@ class DefaultNetworkService: NetworkService, LogReporter {
         }
     }
 
-    @discardableResult
-    func request<T: Decodable>(_ endpoint: Endpoint,
-                               completion: @escaping ResponseCompletionWithHeaders<T>) -> PrimerCancellable? {
-        return request(endpoint, retryConfig: nil, completion: completion)
+    func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.request(endpoint) { (result: Result<T, Error>) in
+                switch result {
+                case let .success(response):
+                    continuation.resume(returning: response)
+                case let .failure(error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
     }
 
     @discardableResult
-    func request<T: Decodable>(_ endpoint: Endpoint,
-                               retryConfig: RetryConfig?,
+    func request<T: Decodable>(_ endpoint: Endpoint, completion: @escaping ResponseCompletionWithHeaders<T>) -> PrimerCancellable? {
+        return request(endpoint, retryConfig: nil, completion: completion)
+    }
+
+    func request<T: Decodable>(_ endpoint: Endpoint) async throws -> (T, [String: String]?) {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.request(endpoint) { (result: Result<T, Error>, headers: [String: String]?) in
+                switch result {
+                case let .success(response):
+                    continuation.resume(returning: (response, headers))
+                case let .failure(error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
+    @discardableResult
+    func request<T: Decodable>(_ endpoint: Endpoint, retryConfig: RetryConfig?,
                                completion: @escaping ResponseCompletionWithHeaders<T>) -> PrimerCancellable? {
         do {
             let identifier = String.randomString(length: 32)
@@ -111,6 +132,19 @@ class DefaultNetworkService: NetworkService, LogReporter {
         }
     }
 
+    func request<T: Decodable>(_ endpoint: Endpoint, retryConfig: RetryConfig?) async throws -> (T, [String: String]?) {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.request(endpoint, retryConfig: retryConfig) { (result: Result<T, Error>, headers: [String: String]?) in
+                switch result {
+                case let .success(response):
+                    continuation.resume(returning: (response, headers))
+                case let .failure(error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
     private func createDispatchFunction(retryConfig: RetryConfig?) -> (URLRequest, @escaping DispatcherCompletion) -> PrimerCancellable? {
         return { request, completion in
             if let retryConfig = retryConfig, retryConfig.enabled {
@@ -128,9 +162,9 @@ class DefaultNetworkService: NetworkService, LogReporter {
                                                     endpoint: Endpoint,
                                                     completion: @escaping ResponseCompletion<T>) {
         switch result {
-        case .success(let response):
+        case let .success(response):
             handleSuccess(response: response, identifier: identifier, endpoint: endpoint, completion: completion)
-        case .failure(let error):
+        case let .failure(error):
             completion(.failure(error))
         }
     }
@@ -140,9 +174,9 @@ class DefaultNetworkService: NetworkService, LogReporter {
                                                     endpoint: Endpoint,
                                                     completion: @escaping ResponseCompletionWithHeaders<T>) {
         switch result {
-        case .success(let response):
+        case let .success(response):
             handleSuccess(response: response, identifier: identifier, endpoint: endpoint, completion: completion)
-        case .failure(let error):
+        case let .failure(error):
             completion(.failure(error), nil)
         }
     }
@@ -163,7 +197,7 @@ class DefaultNetworkService: NetworkService, LogReporter {
             return
         }
 
-        self.logger.debug(message: response.metadata.description)
+        logger.debug(message: response.metadata.description)
         guard let data = response.data else {
             completion(.failure(InternalError.noData(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)))
             return
@@ -193,7 +227,7 @@ class DefaultNetworkService: NetworkService, LogReporter {
             return
         }
 
-        self.logger.debug(message: response.metadata.description)
+        logger.debug(message: response.metadata.description)
         guard let data = response.data else {
             completion(.failure(InternalError.noData(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)), nil)
             return

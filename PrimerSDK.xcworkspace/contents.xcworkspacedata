@@ -2573,7 +2573,7 @@
                   location = "group:MockAPIClient.swift">
                </FileRef>
                <FileRef
-                  location = "group:NetworkService.swift">
+                  location = "group:MockNetworkService.swift">
                </FileRef>
                <FileRef
                   location = "group:MockBINDataAPIClient.swift">
