@@ -129,19 +129,25 @@ struct ExpiryDateInputField: View, LogReporter {
     /// Retrieves the current month value
     /// - Returns: Current month (MM)
     func getMonth() -> String {
-        return month
+        let value = month
+        logger.debug(message: "📤 getMonth() returning: '\(value)'")
+        return value
     }
 
     /// Retrieves the current year value
     /// - Returns: Current year (YY)
     func getYear() -> String {
-        return year
+        let value = year
+        logger.debug(message: "📤 getYear() returning: '\(value)'")
+        return value
     }
 
     /// Retrieves the formatted expiry date
     /// - Returns: Current expiry date (MM/YY)
     func getExpiryDate() -> String {
-        return expiryDate
+        let value = expiryDate
+        logger.debug(message: "📤 getExpiryDate() returning: '\(value)'")
+        return value
     }
 }
 

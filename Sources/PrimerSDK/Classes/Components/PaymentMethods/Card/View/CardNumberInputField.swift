@@ -10,7 +10,7 @@ import UIKit
 /// A SwiftUI component for credit card number input with automatic formatting,
 /// validation, and card network detection.
 @available(iOS 15.0, *)
-struct CardNumberInputField: View {
+struct CardNumberInputField: View, LogReporter {
     // MARK: - Public Properties
 
     /// The label text shown above the field
@@ -121,7 +121,9 @@ struct CardNumberInputField: View {
     /// Retrieves the sanitized card number
     /// - Returns: Current card number without formatting
     func getCardNumber() -> String {
-        return cardNumber
+        let value = cardNumber
+        logger.debug(message: "📤 getCardNumber() returning: '\(value)'")
+        return value
     }
 }
 
@@ -231,6 +233,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
         return formatted
     }
 
+    // TODO: Needs to be udpated with new ValidationCoordinator implementation like
     class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
         // MARK: - Properties
 

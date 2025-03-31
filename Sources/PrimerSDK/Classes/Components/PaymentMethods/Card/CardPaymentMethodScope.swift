@@ -53,7 +53,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
 
     /// Updates the card network in the payment method state
     /// - Parameter network: The detected or selected card network
-    func updateCardNetwork(_ network: CardNetwork) async
+    func updateCardNetwork(_ network: CardNetwork)
 
     // MARK: - Card field components
 

@@ -8,7 +8,7 @@
 import Foundation
 
 /// Implementation that handles both card fields and billing address validation
-class CardFormValidator: FormValidator {
+class CardFormValidator: FormValidator, LogReporter {
     private let validationService: ValidationService
 
     // Current card network for CVV validation
@@ -30,15 +30,24 @@ class CardFormValidator: FormValidator {
     }
 
     func validateField(type: PrimerInputElementType, value: String?) -> ValidationResult {
+        // Log the validation input to help debug
+        logger.debug(message: "Validating field \(type.rawValue) with value: \(value?.isEmpty == true ? "[empty]" : (value == nil ? "[nil]" : "[filled]"))")
+
         guard let value = value else {
             // Handle nil values with appropriate error messages
             let message = errorMessageFor(fieldType: type, errorType: .required)
             return .invalid(code: "required-\(type.rawValue)", message: message)
         }
 
+        // Check for empty strings and treat them as missing values for required fields
+        if value.isEmpty {
+            let message = errorMessageFor(fieldType: type, errorType: .required)
+            return .invalid(code: "required-\(type.rawValue)", message: message)
+        }
+
         // Validate based on field type
         switch type {
-            // Card fields
+        // Card fields
         case .cardNumber:
             return validationService.validateCardNumber(value)
         case .cvv:
@@ -51,8 +60,7 @@ class CardFormValidator: FormValidator {
         case .cardholderName:
             return validationService.validateCardholderName(value)
 
-            //
-            // Billing address fields
+        // Billing address fields
         case .postalCode, .countryCode, .city, .state, .addressLine1, .addressLine2, .firstName, .lastName:
             if value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 let message = errorMessageFor(fieldType: type, errorType: .required)
@@ -60,7 +68,7 @@ class CardFormValidator: FormValidator {
             }
             return .valid
 
-            // Handle other field types
+        // Handle other field types
         default:
             return validationService.validateField(type: type, value: value)
         }
@@ -69,6 +77,7 @@ class CardFormValidator: FormValidator {
     func updateContext(key: String, value: Any) {
         if key == "cardNetwork", let network = value as? CardNetwork {
             currentCardNetwork = network
+            logger.debug(message: "Updated card network in form validator to: \(network.displayName)")
         }
     }
 

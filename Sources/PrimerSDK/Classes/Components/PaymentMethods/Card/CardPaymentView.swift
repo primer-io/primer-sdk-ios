@@ -8,7 +8,7 @@ import SwiftUI
 
 /// Default UI for card payments.
 @available(iOS 15.0, *)
-struct CardPaymentView: View {
+struct CardPaymentView: View, LogReporter {
     let scope: any CardPaymentMethodScope
 
     // Reference to the input fields for direct access
@@ -61,28 +61,23 @@ struct CardPaymentView: View {
             cardInputField
                 .onCardNetworkChange { network in
                     currentCardNetwork = network
-                    // Update CVV field's card network to adjust validation rules
                     cvvInputField = CVVInputField(
                         label: "CVV",
                         placeholder: network == .amex ? "1234" : "123",
                         cardNetwork: network,
                         onValidationChange: cvvInputField.onValidationChange
                     )
-                    Task {
-                        await scope.updateCardNetwork(network)
-                    }
+
+                    scope.updateCardNetwork(network)
                 }
                 .onValidationChange { isValid in
                     isCardNumberValid = isValid
                     updateFormValidity()
 
-                    // Get card number directly from the field and update the scope
+                    // Get the value and update synchronously
                     let cardNumber = cardInputField.getCardNumber()
-                    Task {
-                        scope.updateCardNumber(cardNumber)
-                    }
+                    scope.updateCardNumber(cardNumber)
                 }
-
             // MARK: - Expiry Date and CVV Row
             HStack(spacing: 16) {
                 // Expiry date field using our new component
@@ -92,14 +87,10 @@ struct CardPaymentView: View {
                         updateFormValidity()
                     }
                     .onMonthChange { month in
-                        Task {
-                            scope.updateExpiryMonth(month)
-                        }
+                        scope.updateExpiryMonth(month)
                     }
                     .onYearChange { year in
-                        Task {
-                            scope.updateExpiryYear(year)
-                        }
+                        scope.updateExpiryYear(year)
                     }
 
                 // CVV field using our CVVInputField component
@@ -110,9 +101,8 @@ struct CardPaymentView: View {
 
                         // Get CVV directly from the field and update the scope
                         let cvvValue = cvvInputField.getCVV()
-                        Task {
-                            scope.updateCvv(cvvValue)
-                        }
+
+                        scope.updateCvv(cvvValue)
                     }
             }
 
@@ -124,21 +114,39 @@ struct CardPaymentView: View {
 
                     // Get cardholder name directly from the field and update the scope
                     let name = cardholderNameInputField.getCardholderName()
-                    Task {
-                        scope.updateCardholderName(name)
-                    }
+
+                    scope.updateCardholderName(name)
                 }
 
             // MARK: - Submit Button
             Button {
+                // Get the latest values directly from the fields
+                let cardNumber = cardInputField.getCardNumber()
+                let expiryDate = expiryDateInputField.getExpiryDate()
+                let cvv = cvvInputField.getCVV()
+                let name = cardholderNameInputField.getCardholderName()
+
+                // Force update all fields in the model
+                scope.updateCardNumber(cardNumber)
+
+                let parts = expiryDate.components(separatedBy: "/")
+                if parts.count == 2 {
+                    scope.updateExpiryMonth(parts[0])
+                    scope.updateExpiryYear(parts[1])
+                }
+
+                scope.updateCvv(cvv)
+                scope.updateCardholderName(name)
+
+                // Now submit after ensuring all fields are updated
                 isSubmitting = true
                 Task {
                     do {
                         let result = try await scope.submit()
-                        print("Payment successful: \(result)")
+                        logger.debug(message: "Payment successful: \(result)")
                         // Handle successful payment here
                     } catch {
-                        print("Payment failed: \(error)")
+                        logger.debug(message: "Payment failed: \(error)")
                         // Handle payment failure here
                     }
                     isSubmitting = false
@@ -169,21 +177,45 @@ struct CardPaymentView: View {
 
     /// Updates the overall form validity based on field-level validation
     private func updateFormValidity() {
+        // First get all the current values
+        let cardNumberValue = cardInputField.getCardNumber()
+        let expiryDateValue = expiryDateInputField.getExpiryDate()
+        let cvvValue = cvvInputField.getCVV()
+        let nameValue = cardholderNameInputField.getCardholderName()
+
+        // Log them to verify they're correct
+        logger.debug(message: "💳 Card form validation - Current values:")
+        logger.debug(message: "Card number: \(cardNumberValue.isEmpty ? "[empty]" : "[filled]")")
+        logger.debug(message: "Expiry date: \(expiryDateValue)")
+        logger.debug(message: "CVV: \(cvvValue.isEmpty ? "[empty]" : "[filled]")")
+        logger.debug(message: "Name: \(nameValue)")
+
+        // Check if any required field is empty
+        let hasEmptyRequiredField = cardNumberValue.isEmpty ||
+                                   expiryDateValue.isEmpty ||
+                                   cvvValue.isEmpty ||
+                                   nameValue.isEmpty
+
         // Combine the individual field validations
-        isValid = isCardNumberValid && isExpiryDateValid && isCvvValid && isCardholderNameValid
+        isValid = isCardNumberValid &&
+                  isExpiryDateValid &&
+                  isCvvValid &&
+                  isCardholderNameValid &&
+                  !hasEmptyRequiredField
+
+        logger.debug(message: "Form validity: \(isValid)")
+    }
+
+    /// Debug function to print values before submission
+    private func debugPrintFormValues() {
+        logger.debug(message: "📋 CARD FORM SUBMISSION - FORM VALUES:")
+        logger.debug(message: "Card Number: \(cardInputField.getCardNumber().isEmpty ? "[empty]" : "[filled]")")
+        logger.debug(message: "Expiry Date: \(expiryDateInputField.getExpiryDate())")
+        logger.debug(message: "CVV: \(cvvInputField.getCVV().isEmpty ? "[empty]" : "[filled]")")
+        logger.debug(message: "Cardholder Name: \(cardholderNameInputField.getCardholderName())")
+        logger.debug(message: "Form Valid State: \(isValid)")
     }
 }
-
-// MARK: - Helper Extension for CardPaymentMethodScope
-
-extension CardPaymentMethodScope {
-    /// Update the card network when it changes.
-    func updateCardNetwork(_ network: CardNetwork) async {
-        // Implement your network update logic here.
-    }
-}
-
-// MARK: - Extensions for applying callback functions via view modifiers
 
 @available(iOS 15.0, *)
 extension CardNumberInputField {

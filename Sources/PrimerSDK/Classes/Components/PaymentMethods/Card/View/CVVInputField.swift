@@ -9,7 +9,7 @@ import UIKit
 
 /// A SwiftUI component for credit card CVV input with validation based on card network.
 @available(iOS 15.0, *)
-struct CVVInputField: View {
+struct CVVInputField: View, LogReporter {
     // MARK: - Public Properties
 
     /// The label text shown above the field
@@ -99,7 +99,9 @@ struct CVVInputField: View {
     /// Retrieves the current CVV value
     /// - Returns: Current CVV
     func getCVV() -> String {
-        return cvv
+        let value = cvv
+        logger.debug(message: "📤 getCVV() returning: '\(value)'")
+        return value
     }
 }
 

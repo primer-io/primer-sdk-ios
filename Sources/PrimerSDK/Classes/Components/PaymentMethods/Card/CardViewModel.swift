@@ -96,10 +96,7 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
                 }
             )
 
-            // Update the card network in the state
-            Task {
-                await self.updateCardNetwork(network)
-            }
+            self.updateCardNetwork(network)
         }
 
         logger.debug(message: "📝 CardViewModel initialized with new validation system")
@@ -212,7 +209,7 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
                 value: sanitized,
                 validationError: validationResult.toValidationError,
                 isVisible: state.cardData.cardNumber.isVisible,
-                isRequired: state.cardData.cardNumber.isRequired,
+                isRequired: true, // Set to true if this field is required
                 isLast: state.cardData.cardNumber.isLast
             )
 
@@ -235,7 +232,7 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
                 value: value,
                 validationError: validationResult.toValidationError,
                 isVisible: state.cardData.cardholderName.isVisible,
-                isRequired: state.cardData.cardholderName.isRequired,
+                isRequired: true, // Set to true if this field is required
                 isLast: state.cardData.cardholderName.isLast
             )
             return newState
@@ -257,7 +254,7 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
                 value: value,
                 validationError: validationResult.toValidationError,
                 isVisible: state.cardData.cvv.isVisible,
-                isRequired: state.cardData.cvv.isRequired,
+                isRequired: true, // Set to true if this field is required
                 isLast: state.cardData.cvv.isLast
             )
             return newState
@@ -312,7 +309,7 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
         expiryDateValidator.handleTextChange(input: value)
     }
 
-    func updateCardNetwork(_ network: CardNetwork) async {
+    func updateCardNetwork(_ network: CardNetwork) {
         logger.debug(message: "🔄 Updating card network to: \(network.displayName)")
 
         updateState { state in
@@ -565,9 +562,7 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
             placeholder: "1234 5678 9012 3456",
             validationService: validationService,
             onCardNetworkChange: { [weak self] network in
-                Task {
-                    await self?.updateCardNetwork(network)
-                }
+                self?.updateCardNetwork(network)
             },
             onValidationChange: { _ in
                 // Validation state is handled in the validator
