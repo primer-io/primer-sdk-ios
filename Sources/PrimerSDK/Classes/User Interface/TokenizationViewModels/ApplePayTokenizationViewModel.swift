@@ -238,31 +238,39 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     seal.reject(err)
                     return
                 }
+                
+                let amount = AppState.current.amount
 
                 let shippingMethodsInfo = self.getShippingMethodsInfo()
 
                 let orderItems: [ApplePayOrderItem]
+                let session: ClientSession.APIResponse
+                
+                let applePayOptions: ApplePayOptions? = self.getApplePayOptions()
 
                 do {
-                    let session = AppState.current.apiConfiguration!.clientSession!
-
+                    session = AppState.current.apiConfiguration!.clientSession!
                     orderItems = try self.createOrderItemsFromClientSession(
                         session,
-                        applePayOptions: self.getApplePayOptions(),
+                        applePayOptions: applePayOptions,
                         selectedShippingItem: shippingMethodsInfo.selectedShippingMethodOrderItem
                     )
-
                 } catch {
                     seal.reject(error)
                     return
                 }
-
+                
                 let applePayRequest = ApplePayRequest(
+                    amount: amount,
+                    paymentDescriptor: session.paymentMethod?.descriptor,
                     currency: currency,
                     merchantIdentifier: merchantIdentifier,
                     countryCode: countryCode,
                     items: orderItems,
-                    shippingMethods: shippingMethodsInfo.shippingMethods
+                    shippingMethods: shippingMethodsInfo.shippingMethods,
+                    recurringPaymentRequest: applePayOptions?.recurringPaymentRequest,
+                    deferredPaymentRequest: applePayOptions?.deferredPaymentRequest,
+                    automaticReloadRequest: applePayOptions?.automaticReloadRequest
                 )
 
                 if self.applePayPresentationManager.isPresentable {
