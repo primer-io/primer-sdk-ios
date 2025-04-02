@@ -667,8 +667,6 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
 
     /// Tests that `setupSession` updates the configuration when an action is triggered.
     /// Caching is enabled for this test.
-    ///
-    // FIX: There is something wrong with the test. Please check 'updateSession'
     func test_setupSession_updatesConfigurationWhenActionIsTriggered() {
         let setupSessionExpectation = XCTestExpectation(description: "Setup session completes successfully")
 
@@ -687,7 +685,7 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
             pciUrl: "https://pci.primer.io",
             binDataUrl: "https://bindata.primer.io",
             assetsUrl: "https://assets.staging.core.primer.io",
-            clientSession: nil,
+            clientSession: .mock_pre,
             paymentMethods: [],
             primerAccountId: nil,
             keys: nil,
@@ -699,7 +697,7 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
             pciUrl: "https://pci.primer.io",
             binDataUrl: "https://bindata.primer.io",
             assetsUrl: "https://assets.staging.core.primer.io",
-            clientSession: nil,
+            clientSession: .mock_post,
             paymentMethods: [],
             primerAccountId: nil,
             keys: nil,
@@ -719,11 +717,15 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
             apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
         }
         .then { () -> Promise<Void> in
+
+            // Verify the configurations are matching with the config_pre
             XCTAssert(PrimerAPIConfigurationModule.clientToken == MockAppState.mockClientToken)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.coreUrl == config_pre.coreUrl)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.pciUrl == config_pre.pciUrl)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.binDataUrl == config_pre.binDataUrl)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.assetsUrl == config_pre.assetsUrl)
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.clientSessionId == config_pre.clientSession?.clientSessionId)
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.first?.type == config_pre.checkoutModules?.first?.type)
 
             return apiConfigurationModule.updateSession(withActions:
                 ClientSessionUpdateRequest(actions: ClientSessionAction(actions: [ClientSession.Action(
@@ -731,15 +733,17 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
                     params: ["": ""]
                 )])))
         }
-        .then {
-            apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
-        }
         .done {
-            // Verify the updated configuration
-            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.coreUrl == config_post.coreUrl)
-            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.pciUrl == config_post.pciUrl)
-            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.binDataUrl == config_post.binDataUrl)
-            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.assetsUrl == config_post.assetsUrl)
+            // Verify the configurations are still matching with the config_pre
+            XCTAssert(PrimerAPIConfigurationModule.clientToken == MockAppState.mockClientToken)
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.coreUrl == config_pre.coreUrl)
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.pciUrl == config_pre.pciUrl)
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.binDataUrl == config_pre.binDataUrl)
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.assetsUrl == config_pre.assetsUrl)
+
+            // Verify the configurations are updated with the config_post
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.clientSessionId == config_post.clientSession?.clientSessionId)
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.first?.type == config_post.checkoutModules?.first?.type)
             setupSessionExpectation.fulfill()
         }.catch { err in
             XCTAssert(false, err.localizedDescription)
@@ -748,11 +752,114 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
 
         wait(for: [setupSessionExpectation], timeout: 5.0)
     }
+
+    func test_setupSession_updatesConfigurationWhenActionIsTriggered_async() async throws {
+        let setupSessionExpectation = XCTestExpectation(description: "Setup session completes successfully")
+
+        // Start the headless
+        let headlessExpectation = expectation(description: "Headless checkout loaded successfully")
+        let settings = PrimerSettings(clientSessionCachingEnabled: true)
+        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { _, _ in
+            headlessExpectation.fulfill()
+        }
+        await fulfillment(of: [headlessExpectation], timeout: 5.0)
+
+        // Mock the configuration
+        let proxyId = "proxy-identifier"
+        let config_pre = PrimerAPIConfiguration(
+            coreUrl: proxyId,
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bindata.primer.io",
+            assetsUrl: "https://assets.staging.core.primer.io",
+            clientSession: .mock_pre,
+            paymentMethods: [],
+            primerAccountId: nil,
+            keys: nil,
+            checkoutModules: nil
+        )
+
+        let config_post = PrimerAPIConfiguration(
+            coreUrl: "https://core.primer.io",
+            pciUrl: "https://pci.primer.io",
+            binDataUrl: "https://bindata.primer.io",
+            assetsUrl: "https://assets.staging.core.primer.io",
+            clientSession: .mock_post,
+            paymentMethods: [],
+            primerAccountId: nil,
+            keys: nil,
+            checkoutModules: nil
+        )
+
+        // Create a mock ApiClient and set it to the configuration module as a static property
+        let mockApiClient = MockPrimerAPIClient(responseHeaders: [ConfigurationCachedData.CacheHeaderKey: "3600"])
+        mockApiClient.fetchConfigurationResult = (config_pre, nil)
+        mockApiClient.fetchConfigurationWithActionsResult = (config_post, nil)
+        PrimerAPIConfigurationModule.apiClient = mockApiClient
+
+        // Create ApiConfigurationModule
+        let apiConfigurationModule = PrimerAPIConfigurationModule()
+
+        do {
+            // Call the async function
+            try await apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
+
+            // Verify the configurations are matching with the config_pre
+            XCTAssert(PrimerAPIConfigurationModule.clientToken == MockAppState.mockClientToken)
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.coreUrl == config_pre.coreUrl)
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.pciUrl == config_pre.pciUrl)
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.binDataUrl == config_pre.binDataUrl)
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.assetsUrl == config_pre.assetsUrl)
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.clientSessionId == config_pre.clientSession?.clientSessionId)
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.first?.type == config_pre.checkoutModules?.first?.type)
+
+            try await apiConfigurationModule.updateSession(withActions:
+                ClientSessionUpdateRequest(actions: ClientSessionAction(actions: [ClientSession.Action(
+                    type: .selectPaymentMethod,
+                    params: ["": ""]
+                )])))
+
+            // Verify the configurations are still matching with the config_pre
+            XCTAssert(PrimerAPIConfigurationModule.clientToken == MockAppState.mockClientToken)
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.coreUrl == config_pre.coreUrl)
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.pciUrl == config_pre.pciUrl)
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.binDataUrl == config_pre.binDataUrl)
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.assetsUrl == config_pre.assetsUrl)
+
+            // Verify the configurations are updated with the config_post
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.clientSessionId == config_post.clientSession?.clientSessionId)
+            XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?.first?.type == config_post.checkoutModules?.first?.type)
+
+            setupSessionExpectation.fulfill()
+        } catch {
+            XCTFail("Unexpected error: \(error.localizedDescription)")
+            setupSessionExpectation.fulfill()
+        }
+    }
 }
 
 extension MockPrimerAPIClient {
     convenience init(responseHeaders: [String: String]) {
         self.init()
         self.responseHeaders = responseHeaders
+    }
+}
+
+extension ClientSession.APIResponse {
+    static var mock_pre: ClientSession.APIResponse {
+        .init(clientSessionId: "mock_pre", paymentMethod: nil, order: nil, customer: nil, testId: nil)
+    }
+
+    static var mock_post: ClientSession.APIResponse {
+        .init(clientSessionId: "mock_post", paymentMethod: nil, order: nil, customer: nil, testId: nil)
+    }
+}
+
+extension Response.Body.Configuration.CheckoutModule {
+    static var mock_pre: Response.Body.Configuration.CheckoutModule {
+        .init(type: "mock_pre", requestUrlStr: nil, options: nil)
+    }
+
+    static var mock_post: Response.Body.Configuration.CheckoutModule {
+        .init(type: "mock_post", requestUrlStr: nil, options: nil)
     }
 }
