@@ -28,10 +28,13 @@ final class PrimerHeadlessFormWithRedirectManagerTests: XCTestCase {
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
                 options: nil,
-                orderedAllowedCardNetworks: nil),
+                orderedAllowedCardNetworks: nil,
+                descriptor: nil
+            ),
             order: nil,
             customer: nil,
-            testId: nil)
+            testId: nil
+        )
         let idealFormWithRedirectPaymentMethod = Mocks.PaymentMethods.idealFormWithRedirectPaymentMethod
         idealFormWithRedirectPaymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
 
