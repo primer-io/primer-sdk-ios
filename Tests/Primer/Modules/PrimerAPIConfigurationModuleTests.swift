@@ -203,7 +203,7 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
         PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { _, _ in
             headlessExpectation.fulfill()
         }
-        wait(for: [headlessExpectation])
+        wait(for: [headlessExpectation], timeout: 5.0)
 
         // Mock the configuration
         let proxyId = "proxy-identifier"
@@ -277,12 +277,13 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
         let setupSessionExpectation = XCTestExpectation(description: "Setup session completes successfully")
 
         // Start the headless
-        let headlessExpectation = expectation(description: "Headless checkout loaded successfully")
         let settings = PrimerSettings(clientSessionCachingEnabled: true)
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { _, _ in
-            headlessExpectation.fulfill()
+        do {
+            let _ = try await PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings)
+        } catch {
+            // We expect this to fail because the client token is empty
+            XCTAssertTrue(error.localizedDescription.lowercased().contains("client token is not valid"))
         }
-        await fulfillment(of: [headlessExpectation], timeout: 5.0)
 
         // Mock the configuration
         let proxyId = "proxy-identifier"
@@ -433,12 +434,13 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
         let setupSessionExpectation = XCTestExpectation(description: "Setup session completes successfully")
 
         // Start the headless
-        let headlessExpectation = expectation(description: "Headless checkout loaded successfully")
         let settings = PrimerSettings(clientSessionCachingEnabled: false)
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { _, _ in
-            headlessExpectation.fulfill()
+        do {
+            let _ = try await PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings)
+        } catch {
+            // We expect this to fail because the client token is empty
+            XCTAssertTrue(error.localizedDescription.lowercased().contains("client token is not valid"))
         }
-        await fulfillment(of: [headlessExpectation], timeout: 5.0)
 
         // Mock the configuration
         let proxyId = "proxy-identifier"
@@ -554,7 +556,7 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
         firstly {
             apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
         }
-        .then { () -> Promise<Void> in
+        .then {
             XCTAssert(PrimerAPIConfigurationModule.clientToken == MockAppState.mockClientToken)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.coreUrl == config_pre.coreUrl)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.pciUrl == config_pre.pciUrl)
@@ -591,12 +593,13 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
         let setupSessionExpectation = XCTestExpectation(description: "Setup session completes successfully")
 
         // Start the headless
-        let headlessExpectation = expectation(description: "Headless checkout loaded successfully")
         let settings = PrimerSettings(clientSessionCachingEnabled: true)
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { _, _ in
-            headlessExpectation.fulfill()
+        do {
+            let _ = try await PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings)
+        } catch {
+            // We expect this to fail because the client token is empty
+            XCTAssertTrue(error.localizedDescription.lowercased().contains("client token is not valid"))
         }
-        await fulfillment(of: [headlessExpectation], timeout: 5.0)
 
         // Mock the configuration
         let proxyId = "proxy-identifier"
@@ -716,8 +719,7 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
         firstly {
             apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)
         }
-        .then { () -> Promise<Void> in
-
+        .then {
             // Verify the configurations are matching with the config_pre
             XCTAssert(PrimerAPIConfigurationModule.clientToken == MockAppState.mockClientToken)
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.coreUrl == config_pre.coreUrl)
@@ -757,12 +759,13 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
         let setupSessionExpectation = XCTestExpectation(description: "Setup session completes successfully")
 
         // Start the headless
-        let headlessExpectation = expectation(description: "Headless checkout loaded successfully")
         let settings = PrimerSettings(clientSessionCachingEnabled: true)
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { _, _ in
-            headlessExpectation.fulfill()
+        do {
+            let _ = try await PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings)
+        } catch {
+            // We expect this to fail because the client token is empty
+            XCTAssertTrue(error.localizedDescription.lowercased().contains("client token is not valid"))
         }
-        await fulfillment(of: [headlessExpectation], timeout: 5.0)
 
         // Mock the configuration
         let proxyId = "proxy-identifier"

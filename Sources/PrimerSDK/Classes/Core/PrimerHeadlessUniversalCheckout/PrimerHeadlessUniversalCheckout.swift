@@ -11,7 +11,6 @@
 import UIKit
 
 public class PrimerHeadlessUniversalCheckout: LogReporter {
-
     public static let current = PrimerHeadlessUniversalCheckout()
 
     public weak var delegate: PrimerHeadlessUniversalCheckoutDelegate? {
@@ -19,16 +18,18 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
             PrimerInternal.shared.sdkIntegrationType = .headless
         }
     }
+
     public weak var uiDelegate: PrimerHeadlessUniversalCheckoutUIDelegate? {
         didSet {
             PrimerInternal.shared.sdkIntegrationType = .headless
         }
     }
-    private(set) public var clientToken: String?
 
-    internal let sdkSessionId = UUID().uuidString
-    internal private(set) var checkoutSessionId: String?
-    internal private(set) var timingEventId: String?
+    public private(set) var clientToken: String?
+
+    let sdkSessionId = UUID().uuidString
+    private(set) var checkoutSessionId: String?
+    private(set) var timingEventId: String?
 
     private var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
     private let unsupportedPaymentMethodTypes: [String] = [
@@ -38,7 +39,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         PrimerPaymentMethodType.primerTestKlarna.rawValue,
         PrimerPaymentMethodType.primerTestPayPal.rawValue,
         PrimerPaymentMethodType.primerTestSofort.rawValue,
-        PrimerPaymentMethodType.xfersPayNow.rawValue
+        PrimerPaymentMethodType.xfersPayNow.rawValue,
     ]
 
     fileprivate init() {
@@ -69,10 +70,10 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
 
         if PrimerHeadlessUniversalCheckout.current.delegate == nil {
             let message = """
-                PrimerHeadlessUniversalCheckout delegate has not been set, \
-                and you won't be able to receive the Payment Method Token \
-                data to create a payment."
-                """
+            PrimerHeadlessUniversalCheckout delegate has not been set, \
+            and you won't be able to receive the Payment Method Token \
+            data to create a payment."
+            """
             logger.warn(message: message)
         }
 
@@ -83,7 +84,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
 
         let sdkEvent = Analytics.Event.sdk(
             name: "\(Self.self).\(#function)",
-            params: [ "intent": PrimerInternal.shared.intent?.rawValue ?? "null" ]
+            params: ["intent": PrimerInternal.shared.intent?.rawValue ?? "null"]
         )
 
         let connectivityEvent = Analytics.Event.networkConnectivity(networkType: Connectivity.networkType)
@@ -106,7 +107,8 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
                 forClientToken: clientToken,
                 requestDisplayMetadata: true,
                 requestClientTokenValidation: false,
-                requestVaultedPaymentMethods: false)
+                requestVaultedPaymentMethods: false
+            )
         }
         .done {
             let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(), networkService: CurrencyNetworkService())
@@ -132,6 +134,26 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         .catch { err in
             DispatchQueue.main.async {
                 completion(nil, err)
+            }
+        }
+    }
+
+    public func start(
+        withClientToken clientToken: String,
+        settings: PrimerSettings? = nil,
+        delegate: PrimerHeadlessUniversalCheckoutDelegate? = nil,
+        uiDelegate: PrimerHeadlessUniversalCheckoutUIDelegate? = nil
+    ) async throws -> [PrimerHeadlessUniversalCheckout.PaymentMethod]? {
+        return try await withCheckedThrowingContinuation { continuation in
+            start(withClientToken: clientToken,
+                  settings: settings,
+                  delegate: delegate,
+                  uiDelegate: uiDelegate) { paymentMethods, err in
+                if let err = err {
+                    continuation.resume(throwing: err)
+                } else {
+                    continuation.resume(returning: paymentMethods)
+                }
             }
         }
     }
@@ -196,7 +218,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         }
     }
 
-    internal func validateSession() -> Promise<Void> {
+    func validateSession() -> Promise<Void> {
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
                 let info = ["reason": "Client token is nil"]
@@ -239,50 +261,51 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         }
     }
 
-    internal func listAvailablePaymentMethodsTypes() -> [String]? {
+    func listAvailablePaymentMethodsTypes() -> [String]? {
         var paymentMethods = PrimerAPIConfiguration.paymentMethodConfigs
 
         #if !canImport(PrimerKlarnaSDK)
-        if let klarnaIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
-            paymentMethods?.remove(at: klarnaIndex)
-            let message =
-                """
-Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing. \
-Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your Podfile, \
-or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager
-"""
-            logger.warn(message: message)
-        }
+            if let klarnaIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.klarna.rawValue }) {
+                paymentMethods?.remove(at: klarnaIndex)
+                let message =
+                    """
+                    Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing. \
+                    Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your Podfile, \
+                    or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager
+                    """
+                logger.warn(message: message)
+            }
         #endif
 
         #if !canImport(PrimerIPay88MYSDK)
-        if let iPay88ViewModelIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
-            paymentMethods?.remove(at: iPay88ViewModelIndex)
-            let message =
-                """
-iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. \
-Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your Podfile.
-"""
-            logger.warn(message: message)
-        }
+            if let iPay88ViewModelIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.iPay88Card.rawValue }) {
+                paymentMethods?.remove(at: iPay88ViewModelIndex)
+                let message =
+                    """
+                    iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. \
+                    Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your Podfile.
+                    """
+                logger.warn(message: message)
+            }
         #endif
 
         #if !canImport(PrimerNolPaySDK)
-        if let nolPayViewModelIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.nolPay.rawValue }) {
-            paymentMethods?.remove(at: nolPayViewModelIndex)
-            let message =
-                """
-NolPay configuration has been found but module 'PrimerNolPaySDK' is missing. \
-Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in your Podfile.
-"""
-            logger.warn(message: message)
-        }
+            if let nolPayViewModelIndex = paymentMethods?.firstIndex(where: { $0.type == PrimerPaymentMethodType.nolPay.rawValue }) {
+                paymentMethods?.remove(at: nolPayViewModelIndex)
+                let message =
+                    """
+                    NolPay configuration has been found but module 'PrimerNolPaySDK' is missing. \
+                    Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in your Podfile.
+                    """
+                logger.warn(message: message)
+            }
         #endif
 
-        return paymentMethods?.compactMap({ $0.type }).filter({ !unsupportedPaymentMethodTypes.contains($0) })
+        return paymentMethods?.compactMap { $0.type }.filter { !unsupportedPaymentMethodTypes.contains($0) }
     }
 
-    private static let queue: DispatchQueue = DispatchQueue(label: "primer.headlessUniversalCheckout", qos: .default)
+    private static let queue: DispatchQueue = .init(label: "primer.headlessUniversalCheckout", qos: .default)
 }
+
 // swiftlint:enable function_body_length
 // swiftlint:enable type_body_length
