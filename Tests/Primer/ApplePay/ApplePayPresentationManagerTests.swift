@@ -32,7 +32,7 @@ final class ApplePayPresentationManagerTests: XCTestCase {
                                                           taxAmount: nil)
                                               ],
                                               shippingMethods: [.init(label: "Shipping", amount: 100)])
-        let request = sut.createRequest(for: applePayRequest)
+        let request = try sut.createRequest(for: applePayRequest)
 
         XCTAssertEqual(request.countryCode, "GB")
         XCTAssertEqual(request.currencyCode, "GBP")
@@ -156,7 +156,7 @@ final class ApplePayPresentationManagerTests: XCTestCase {
                                                                                                   options: nil,
                                                                                                   orderedAllowedCardNetworks: [
                                                                                                     "CARTES_BANCAIRES"
-                                                                                                  ]),
+                                                                                                  ], descriptor: nil),
                                                                              order: nil,
                                                                              customer: nil,
                                                                              testId: nil)
