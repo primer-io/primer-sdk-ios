@@ -101,21 +101,18 @@ struct MerchantMockDataManager {
             merchantName: nil,
             networks: nil))
 
-    static var extraMerchantData: [String: Any] = [
-        "subscription": [
-            [
-                "subscription_name": "Implant_lenses",
-                "start_time": "2020-11-24T15:00",
-                "end_time": "2021-11-24T15:00",
-                "auto_renewal_of_subscription": false
-            ]
+    static var extraMerchantData: ExtraMerchantData = ExtraMerchantData(
+        subscription: [
+            ExtraMerchantData.Subscription(
+                subscriptionName: "Implant_lenses",
+                startTime: "2020-11-24T15:00",
+                endTime: "2021-11-24T15:00",
+                autoRenewalOfSubscription: false)
         ],
-        "customer_account_info": [
-            [
-                "unique_account_identifier": "Owen Owenson",
-                "account_registration_date": "2020-11-24T15:00",
-                "account_last_modified": "2020-11-24T15:00"
-            ]
-        ]
-    ]
+        customerAccountInfo: [
+            ExtraMerchantData.CustomerAccountInfo(
+                uniqueAccountIdentifier: "Owen Owenson",
+                accountRegistrationDate: "2020-11-24T15:00",
+                accountLastModified: "2020-11-24T15:00")
+        ])
 }

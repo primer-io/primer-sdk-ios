@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Niall Quinn on 06/08/24.
 //
@@ -14,7 +14,7 @@ final class CheckoutSessionTests: XCTestCase {
 
         let expectation = self.expectation(description: "Wait for headless load")
 
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "") { paymentMethods, err in
+        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "") { _, _ in
             XCTAssertTrue(Primer.shared.checkoutSessionIsActive())
             expectation.fulfill()
         }
@@ -27,7 +27,7 @@ final class CheckoutSessionTests: XCTestCase {
     func test_headless_delegates() throws {
         let mockDelegate = MockDelegate()
         let expectation = self.expectation(description: "Wait for headless load")
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", delegate: mockDelegate, uiDelegate: mockDelegate) { paymentMethods, err in
+        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", delegate: mockDelegate, uiDelegate: mockDelegate) { _, _ in
             expectation.fulfill()
         }
 
@@ -36,7 +36,7 @@ final class CheckoutSessionTests: XCTestCase {
             XCTFail("Delegates not set")
             return
         }
-        
+
         XCTAssertEqual(mockDelegate.id, "mock-id")
         XCTAssertEqual(mockUIDelegate.id, "mock-id")
     }

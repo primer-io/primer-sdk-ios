@@ -9,7 +9,7 @@ import XCTest
 import PrimerSDK
 
 class MockPrimerHeadlessUniversalCheckoutDelegate: PrimerHeadlessUniversalCheckoutDelegate {
-    
+
     // When set, this will cause a test failure if a delegate method is called without the
     // relevant closure being set
     var strictMode: Bool = false
@@ -103,7 +103,7 @@ class MockPrimerHeadlessUniversalCheckoutDelegate: PrimerHeadlessUniversalChecko
 
     var onDidResumeWith: ((String, ResumeDecisionHandler) -> Void)?
 
-    func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, 
+    func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String,
                                                       decisionHandler: @escaping ResumeDecisionHandler) {
         if strictMode {
             XCTAssertNotNil(onDidResumeWith)
@@ -144,7 +144,7 @@ class MockPrimerHeadlessUniversalCheckoutDelegate: PrimerHeadlessUniversalChecko
         onDidFail?(err)
     }
 
-    // MARK:
+    // MARK: 
 
     var onDidAbort: ((Error) -> Void)?
 
@@ -198,7 +198,7 @@ class MockPrimerHeadlessUniversalCheckoutUIDelegate: PrimerHeadlessUniversalChec
 }
 
 class MockPrimerHeadlessUniversalCheckoutRawDataManagerDelegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
-    
+
     // When set, this will cause a test failure if a delegate method is called without the
     // relevant closure being set
     var strictMode: Bool = false

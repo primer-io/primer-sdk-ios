@@ -525,7 +525,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
     func handleSuccessfulFlow() {
         if let paymentMethodType = config.internalPaymentMethodType,
-              paymentMethodType == .stripeAch {
+           paymentMethodType == .stripeAch {
             PrimerUIManager.showResultScreen(for: paymentMethodType, error: nil)
         } else {
             let categories = self.config.paymentMethodManagerCategories

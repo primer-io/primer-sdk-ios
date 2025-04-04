@@ -13,7 +13,7 @@ import PrimerSDK
 struct StripeAchFieldsView: View {
     @ObservedObject var viewModel = StripeAchFieldsViewModel()
     var onSubmitPressed: () -> Void
-    
+
     var body: some View {
         VStack {
             Text("Stripe ACH session")
@@ -50,7 +50,7 @@ struct StripeAchFieldsView: View {
             .addAccessibilityIdentifier(identifier: AccessibilityIdentifier.StripeAchUserDetailsComponent.submitButton.rawValue)
         }
     }
-    
+
     private func submitAction() {
         onSubmitPressed()
     }

@@ -1,3 +1,45 @@
+## 2.36.0 (2025-03-24)
+
+### Feat
+
+- Update default api version to 2.4 (#1135)
+
+### Fix
+
+- Currency formatting incorrect in CTA (#1133)
+- **currency-formatting**: Ensure French locale places symbol on the right & add more unit tests
+
+## 2.35.3 (2025-03-18)
+
+### Fix
+
+- Decode errors properly for 2xx response codes (#1131)
+
+## 2.35.2 (2025-02-25)
+
+### Fix
+
+- Do not track image failures in analytics (#1122)
+- Record retry event only if we have one or more retries (#1123)
+- Fix Additional Fees text in Drop-in (#1118)
+
+## 2.35.1 (2025-02-11)
+
+### Fix
+
+- Update /payment and /resume timeouts to 60s (#1112)
+- Card Form for RTL languages (#1110)
+
+## 2.35.0 (2025-02-04)
+
+### Feat
+
+- add missing localizations (#1097)
+
+### Fix
+
+- ACC-4826 Update 3DS SDK Keys for Non-Production Environments (#1096)
+
 ## 2.34.0 (2025-01-23)
 
 ### Experimental

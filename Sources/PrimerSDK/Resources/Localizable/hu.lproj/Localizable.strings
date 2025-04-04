@@ -1,0 +1,306 @@
+/* An error message displayed when the Address line 1 is not correct */
+"addressLine1ErrorInvalid" = "Érvénytelen 1. címsor";
+
+/* State, Region or County is required - Form Validation */
+"addressLine1ErrorRequired" = "Az 1. címsor kötelező";
+
+/* The billing address Address line 1 container view label */
+"addressLine1Label" = "1. címsor";
+
+/* Form Text Field Placeholder (Address line 1) */
+"addressLine1Placeholder" = "Címsor 1";
+
+/* An error message displayed when the Address line 2 is not correct */
+"addressLine2ErrorInvalid" = "Érvénytelen 2. címsor";
+
+/* State, Region or County is required - Form Validation */
+"addressLine2ErrorRequired" = "A 2. címsor megadása kötelező";
+
+/* The billing address Address line 2 container view label */
+"addressLine2Label" = "2. címsor";
+
+/* Form Text Field Placeholder (Address line 2) */
+"addressLine2Placeholder" = "Címsor 2";
+
+"card_expiry_date" = "HH/ÉÉ";
+
+/* An error message displayed when the city field is not correct */
+"cardholderErrorInvalid" = "Érvénytelen kártyabirtokos név";
+
+/* Choose your bank - Choose your bank title label */
+"choose-your-bank-title-label" = "Válassza ki bankját";
+
+/* An error message displayed when the city field is not correct */
+"cityErrorInvalid" = "Érvénytelen város";
+
+/* City is required - Form Validation */
+"cityErrorRequired" = "Város megadása kötelező";
+
+/* The billing address city container view label */
+"cityLabel" = "Város";
+
+/* Form Text Field Placeholder (Address city) */
+"cityPlaceholder" = "Cape Town";
+
+/* Complete your payment - Account info payment title label */
+"completeYourPayment" = "Fizetés teljesítése";
+
+/* Continue */
+"continue" = "Folytatás";
+
+/* An error message displayed when the Country is not correct */
+"countryCodeErrorInvalid" = "Érvénytelen ország";
+
+/* Country is required - Form Validation */
+"countryCodeErrorRequired" = "Az ország megadása kötelező";
+
+/* The billing address Country code container view label */
+"countryCodeLabel" = "Országkód";
+
+/* Form Text Field Placeholder (Country code) */
+"countryCodePlaceholder" = "Országkód";
+
+/* Select a country - Choose your country title label */
+"countrySelectPlaceholder" = "Válassz országot";
+
+/* The prefix copy we put before the expiration date */
+"dueAt" = "Esedékesség:";
+
+/* An error message displayed when the First Name is not correct */
+"firstNameErrorInvalid" = "Érvénytelen keresztnév";
+
+/* First name is required - Form Validation */
+"firstNameErrorRequired" = "Keresztnév kötelező";
+
+/* The billing address First name container view label */
+"firstNameLabel" = "Keresztnév";
+
+/* Form Text Field Placeholder (First name) */
+"firstNamePlaceholder" = "Keresztnév";
+
+"form_error_card_holder_name_length" = "A névnek 2 és 45 karakter között kell lenni";
+
+"form_error_card_type_not_supported" = "Nem támogatott kártyatípus";
+
+/* Get the code from your banking app - Blik descriptor */
+"input_description_otp" = "A kód a banki alkalmazásból érhető el.";
+
+/* 6 digit code - Text field top placeholder */
+"input_hint_form_blik_otp" = "6 számjegyű kód";
+
+/* An error message displayed when the Last Name is not correct */
+"lastNameErrorInvalid" = "Érvénytelen vezetéknév";
+
+/* Last name is required - Form Validation */
+"lastNameErrorRequired" = "Vezetéknév kötelező";
+
+/* The billing address Last name container view label */
+"lastNameLabel" = "Vezetéknév";
+
+/* Form Text Field Placeholder (Last name) */
+"lastNamePlaceholder" = "Vezetéknév";
+
+/* No additional fee - Universal Checkout section text */
+"no_additional_fee" = "Nincs további díj";
+
+/* Enter your one time password - Text field placeholder */
+"payment_method_blik_loading_placeholder" = "Fejezze be a fizetést a Blik alkalmazásban";
+
+/* Pay with card - Payment Method Type (Card Not Vaulted */
+"payment-method-type-card-not-vaulted" = "Fizetés kártyával";
+
+/* The message copy that tells the user how to transfer funds given a displayed account code */
+"pleaseTransferFunds" = "Kérjük, utalj át pénzt a megadott DBS bankszámlára a szingapúri székhelyű bankszámláddal FAST (preferált), MEPS vagy GIRO által.";
+
+/* An error message displayed when the postal code field is not correct */
+"postalCodeErrorInvalid" = "Érvénytelen irányítószám";
+
+/* Postal code is required - Form Validation */
+"postalCodeErrorRequired" = "Irányítószám megadása kötelező";
+
+/* The billing address postal code container view label */
+"postalCodeLabel" = "Irányítószám";
+
+/* Form Text Field Placeholder (Address postal code) */
+"postalCodePlaceholder" = "90210";
+
+/* Cancel - Alert button cancel */
+"primer-alert-button-cancel" = "Mégsem";
+
+/* Delete - Alert button delete */
+"primer-alert-button-delete" = "Törlés";
+
+/* The title of the primer 'pay in installments' button */
+"primer-button-title-pay-in-installments" = "Fizessen részletekben";
+
+/* Add card - Card Form (Vault title text) */
+"primer-card-form-add-card" = "Kártya hozzáadása";
+
+/* Checkout - Card Form (Checkout Title Text) */
+"primer-card-form-checkout" = "Pénztár";
+
+/* CVV - Card Form (CVV Text Field placeholder text) */
+"primer-card-form-cvv" = "CVV";
+
+/* Cardholder name */
+"primer-card-form-name" = "Név";
+
+/* Pay - Card Form (Checkout submit button text) */
+"primer-card-form-pay" = "Fizetés";
+
+/* Save - Card Form (Vault submit button text) */
+"primer-card-form-save" = "Mentés";
+
+/* Choose payment method - Vault Navigation Bar Title */
+"primer-checkout-nav-bar-title" = "Válasszon fizetési módot";
+
+/* Add Bank Account - Confirm Mandate (Top title text_ */
+"primer-confirm-mandate-add-bank-account" = "Bankszámla hozzáadása";
+
+/* Confirm - Confirm Mandate (Button text) */
+"primer-confirm-mandate-confirm" = "Megerősítés";
+
+/* Confirm SEPA Direct Debit - Confirm Mandate (Main title text) */
+"primer-confirm-mandate-confirm-sepa-direct-debit" = "Erősítse meg a SEPA csoportos beszedési megbízást";
+
+/* CVV- CVV recapture explanation label */
+"primer-cvv-recapture-explanation" = "Adja meg kártyáján lévő %d számjegyű biztonsági kódot a biztonságos fizetés érdekében.";
+
+/* CVV - CVV recapture screen title */
+"primer-cvv-recapture-title" = "Adja meg a CVV-t";
+
+/* Do you want to delete this payment method? - Delete alert title */
+"primer-delete-alert-title" = "Biztos benne, hogy törli ezt a fizetési módot?";
+
+/* Apple pay - Direct Checkout (Apple pay button text) */
+"primer-direct-checkout-apple-pay" = "Apple pay";
+
+/* Pay by card - Direct Checkout (Card button text) */
+"primer-direct-checkout-pay-by-card" = "Fizetés kártyával";
+
+/* PayPal - Direct Checkout (PayPal button text */
+"primer-direct-checkout-paypal" = "PayPal";
+
+/* An error message displayed when the cvv code is not correct */
+"primer-error-card-form-card-cvv" = "Érvénytelen CVV";
+
+/* An error message displayed when the card expiration date is not correct */
+"primer-error-card-form-card-expiration-date" = "Érvénytelen dátum";
+
+/* An error message displayed when the card number is not correct */
+"primer-error-card-form-card-number" = "Érvénytelen kártyaszám";
+
+/* A suffix to mark a required field or action being performed */
+"primer-error-is-required-suffix" = "kötelező";
+
+/* Something went wrong, please try again. - Error Screen Message */
+"primer-error-screen" = "Hiba történt, kérjük, próbálja meg újra.";
+
+/* e.g. John Doe - Form Text Field Placeholder (Cardholder name) */
+"primer-form-text-field-placeholder-cardholder" = "pl. Ismeretlen";
+
+/* Card number - Form Text Field Title (Card number) */
+"primer-form-text-field-title-card-number" = "Kártyaszám";
+
+/* Expiry date - Form Text Field Title (Expiry date) */
+"primer-form-text-field-title-expiry-date" = "Lejárati dátum";
+
+/* Enter your card details - Form Type Main Title (Card) */
+"primer-form-type-main-title-card-form" = "Adja meg a kártya adatait";
+
+/* Card form - Navigation Bar Title */
+"primer-form-type-nav-bar-title" = "Fizetőkártya";
+
+/* Add Bank Account - IBAN Form (Main title) */
+"primer-iban-form-add-bank-account" = "Bankszámla hozzáadása";
+
+/* Enter IBAN - IBAN Form (Text field placeholder text */
+"primer-iban-form-enter-iban" = "Írja be az IBAN-t";
+
+/* Your monthly fee will be automatically deducted from this account, using SEPA Core DirectDebit Mandate - IBAN Form (Subtitle text) */
+"primer-iban-form-monthly-fee-automatically-deducted" = "Havi díját automatikusan levonjuk erről a számláról a SEPA alapvető közvetlen beszedési megbízás segítségével";
+
+/* Next - IBAN Form (Button text) */
+"primer-iban-form-next" = "Következő";
+
+/* Use an account number instead - IBAN Form (Switch text) */
+"primer-iban-form-use-account-number-instead" = "Használjon helyette számlaszámot";
+
+/* Expires - Saved card */
+"primer-saved-card" = "Lejár";
+
+/* Manual input - Scanner view (Button text) */
+"primer-scanner-view-manual-input" = "Manuális bevitel";
+
+/* Scan card - Scanner view (Title text) */
+"primer-scanner-view-scan-card" = "Kártya beolvasása";
+
+/* Scan the front of your card - Scanner view (Description text) */
+"primer-scanner-view-scan-front-card" = "Olvassa be a kártya első oldalát";
+
+/* The title of the header for the flow decision view */
+"primer-test-header-description" = "Ez egy teszt továbbítás a sandbox felé. Válassza ki a tesztelni kívánt eredményt az alábbi listából.";
+
+/* The title of the mocked declined flow for a Test Payment Method */
+"primer-test-payment-method-decline-flow-title" = "Elutasítva";
+
+/* The title of the mocked failed flow for a Test Payment Method */
+"primer-test-payment-method-fail-flow-title" = "Sikertelen";
+
+/* The title of the mocked successful flow for a Test Payment Method */
+"primer-test-payment-method-success-flow-title" = "Jogosult";
+
+/* SAVED CARD - Vault Checkout Card Title */
+"primer-vault-checkout-payment-method-title" = "MENTETT FIZETÉSI MÓD";
+
+/* Add payment method - Checkout Navigation Bar Title */
+"primer-vault-nav-bar-title" = "Adjon hozzá fizetési módot";
+
+/* Add new card - Vault Payment Method (Button text) */
+"primer-vault-payment-method-add-new-card" = "Új kártya hozzáadása";
+
+/* Available payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-available-payment-methods" = "Rendelkezésre álló fizetési módok";
+
+/* Edit - Vault Payment Method (Button text) */
+"primer-vault-payment-method-edit" = "Módosítás";
+
+/* Saved payment methods - Vault Payment Method (Main title text) */
+"primer-vault-payment-method-saved-payment-methods" = "Mentett fizetési módok";
+
+/* QR Code - QR code screen subtitle label */
+"qrCode" = "QR-kód";
+
+/* Scan to pay or take a screenshot - QR code screen title label */
+"scanToPay" = "Fizetéshez szkennelje be vagy készítsen képernyőképet";
+
+/* Search bank - Search bank textfield placeholder */
+"search-bank-placeholder" = "Bank keresése";
+
+/* Search country - Search country textfield placeholder */
+"search-country-placeholder" = "Ország keresése";
+
+/* See all - Universal checkout */
+"see-all" = "Összes megtekintése";
+
+/* "Shipping" label displayed next to the shipping amount, for example: "Shipping $2.50" */
+"shipping" = "Szállítás";
+
+/* An error message displayed when the State, Region or County field is not correct */
+"stateErrorInvalid" = "Érvénytelen állam, régió vagy megye";
+
+/* State, Region or County is required - Form Validation */
+"stateErrorRequired" = "Állam, Régió, Megye kötelező";
+
+/* The billing address state container view label */
+"stateLabel" = "Állam / Régió / Megye";
+
+/* Form Text Field Placeholder (Address State / Region / County) */
+"statePlaceholder" = "Állam / Régió / Megye";
+
+/* Additional fee may apply - Surcharge (Label) */
+"surcharge-additional-fee" = "Lehetséges, hogy további díjat kell fizetni";
+
+/* Upload the screenshot in your banking app. - QR code screen subtitle label */
+"uploadScreenshot" = "Töltse fel a képernyőképet a banki alkalmazásban.";
+

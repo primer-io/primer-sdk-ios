@@ -1,6 +1,6 @@
 //
 //  UserDefaultsExtensionTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 10/05/2024.
 //
@@ -18,7 +18,7 @@ final class UserDefaultsExtensionTests: XCTestCase {
         UserDefaults.primerFramework.set("test", forKey: "test")
         XCTAssertEqual(UserDefaults(suiteName: Bundle.primerFrameworkIdentifier)!.string(forKey: "test"), "test")
     }
- 
+
     func testUserDefaults_RN() {
         Primer.shared.integrationOptions = PrimerIntegrationOptions(reactNativeVersion: "123")
         UserDefaults.primerFramework.set("test", forKey: "test")

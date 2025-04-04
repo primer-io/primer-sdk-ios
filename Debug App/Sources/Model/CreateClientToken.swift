@@ -109,7 +109,7 @@ struct ClientSessionRequestBody: Encodable {
         struct PaymentMethodOption: Codable {
             var surcharge: SurchargeOption?
             var instalmentDuration: String?
-            var extraMerchantData: [String: Any]?
+            var extraMerchantData: ExtraMerchantData?
             var captureVaultedCardCvv: Bool?
             var merchantName: String?
             var networks: NetworkOptionGroup?
@@ -120,7 +120,7 @@ struct ClientSessionRequestBody: Encodable {
 
             init(surcharge: SurchargeOption?,
                  instalmentDuration: String?,
-                 extraMerchantData: [String: Any]?,
+                 extraMerchantData: ExtraMerchantData?,
                  captureVaultedCardCvv: Bool?,
                  merchantName: String?,
                  networks: NetworkOptionGroup?) {
@@ -170,7 +170,7 @@ struct ClientSessionRequestBody: Encodable {
 
                 if let jsonString = try container.decodeIfPresent(String.self, forKey: .extraMerchantData),
                    let jsonData = jsonString.data(using: .utf8) {
-                    extraMerchantData = try JSONSerialization.jsonObject(with: jsonData) as? [String: Any]
+                    extraMerchantData = try JSONSerialization.jsonObject(with: jsonData) as? ExtraMerchantData
                 } else {
                     extraMerchantData = nil
                 }
@@ -223,6 +223,44 @@ struct ClientSessionRequestBody: Encodable {
         }
     }
 }
+
+struct ExtraMerchantData: Codable {
+    let subscription: [Subscription]
+    let customerAccountInfo: [CustomerAccountInfo]
+
+    enum CodingKeys: String, CodingKey {
+        case subscription
+        case customerAccountInfo = "customer_account_info"
+    }
+
+    struct Subscription: Codable {
+        let subscriptionName: String
+        let startTime: String
+        let endTime: String
+        let autoRenewalOfSubscription: Bool
+
+        enum CodingKeys: String, CodingKey {
+            case subscriptionName = "subscription_name"
+            case autoRenewalOfSubscription = "auto_renewal_of_subscription"
+            case endTime = "end_time"
+            case startTime = "start_time"
+        }
+    }
+
+    struct CustomerAccountInfo: Codable {
+        let uniqueAccountIdentifier: String
+        let accountRegistrationDate: String
+        let accountLastModified: String
+
+        enum CodingKeys: String, CodingKey {
+            case accountRegistrationDate = "account_registration_date"
+            case uniqueAccountIdentifier = "unique_account_identifier"
+            case accountLastModified = "account_last_modified"
+        }
+    }
+}
+
+
 
 extension String {
 

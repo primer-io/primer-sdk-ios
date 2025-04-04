@@ -11,9 +11,9 @@ import Foundation
 class MockTokenizationService: TokenizationServiceProtocol {
 
     static var apiClient: (any PrimerSDK.PrimerAPIClientProtocol)?
-    
+
     var paymentMethodTokenData: PrimerSDK.PrimerPaymentMethodTokenData?
-    
+
     // MARK: tokenize
 
     var onTokenize: ((Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData>)?

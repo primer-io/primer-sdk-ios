@@ -74,6 +74,7 @@ public class ThreeDS {
     internal struct Keys: Codable {
 
         let threeDSecureIoCertificates: [ThreeDS.Certificate]?
+        let threeDsProviderCertificates: [ThreeDS.Certificate]?
         let netceteraApiKey: String?
     }
 

@@ -1,6 +1,6 @@
 //
 //  ClassNameExtensionTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 10/05/2024.
 //

@@ -10,7 +10,7 @@ import PrimerSDK
 import UIKit
 
 var environment: Environment = .sandbox
-var apiVersion: PrimerApiVersion = .V2_3
+var apiVersion: PrimerApiVersion = .V2_4
 var customDefinedApiKey: String?
 var performPaymentAfterVaulting: Bool = false
 var paymentSessionType: MerchantMockDataManager.SessionType = .generic
@@ -367,7 +367,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         case 2:
             apiVersion = .latest
         default:
-            apiVersion = .V2_3
+            apiVersion = .V2_4
         }
     }
 
@@ -446,7 +446,6 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             }
         }
     }
-
 
     @IBAction func applePayBillingContactEmailField(_ sender: UISwitch) {
         if sender.isOn {
@@ -779,11 +778,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         let mandateData = PrimerStripeOptions.MandateData.templateMandate(merchantName: "Primer Inc.")
 
         let shippingOptions = applePayCaptureShippingDetails ?
-        PrimerApplePayOptions.ShippingOptions(shippingContactFields: applePayShippingAdditionalContactFields,
-                                              requireShippingMethod: applePayRequireShippingMethod) : nil
+            PrimerApplePayOptions.ShippingOptions(shippingContactFields: applePayShippingAdditionalContactFields,
+                                                  requireShippingMethod: applePayRequireShippingMethod) : nil
 
         let billingOptions = applePayCaptureBillingAddress ?
-        PrimerApplePayOptions.BillingOptions(requiredBillingContactFields: applePayBillingAdditionalContactFields) : nil
+            PrimerApplePayOptions.BillingOptions(requiredBillingContactFields: applePayBillingAdditionalContactFields) : nil
 
         let stripePublishableKey = SecretsManager.shared.value(forKey: .stripePublishableKey)
 
@@ -826,11 +825,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
 
         let shippingOptions = applePayCaptureShippingDetails ?
-        PrimerApplePayOptions.ShippingOptions(shippingContactFields: applePayShippingAdditionalContactFields,
-                                              requireShippingMethod: applePayRequireShippingMethod) : nil
+            PrimerApplePayOptions.ShippingOptions(shippingContactFields: applePayShippingAdditionalContactFields,
+                                                  requireShippingMethod: applePayRequireShippingMethod) : nil
 
         let billingOptions = applePayCaptureBillingAddress ?
-        PrimerApplePayOptions.BillingOptions(requiredBillingContactFields: applePayBillingAdditionalContactFields) : nil
+            PrimerApplePayOptions.BillingOptions(requiredBillingContactFields: applePayBillingAdditionalContactFields) : nil
 
         let stripePublishableKey = SecretsManager.shared.value(forKey: .stripePublishableKey)
 
@@ -897,8 +896,7 @@ extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPi
     }
 
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int)
-    -> String?
-    {
+    -> String? {
         if row == 0 {
             return "-"
         } else {

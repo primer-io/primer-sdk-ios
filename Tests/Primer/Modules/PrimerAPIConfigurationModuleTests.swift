@@ -61,7 +61,7 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
         let proxyId = "proxy-identifier"
 
         let settings = PrimerSettings(clientSessionCachingEnabled: true)
-        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { paymentMethods, err in
+        PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { _, _ in
             headlessExpectation.fulfill()
         }
 
@@ -219,7 +219,7 @@ class PrimerAPIConfigurationModuleTests: XCTestCase {
         }
         .then { () -> Promise<Void> in
             XCTAssert(PrimerAPIConfigurationModule.apiConfiguration?.coreUrl == config_pre.coreUrl)
-            return apiConfigurationModule.updateSession(withActions: ClientSessionUpdateRequest(actions: ClientSessionAction(actions: [ClientSession.Action(type: .selectPaymentMethod, params: ["":""])])))
+            return apiConfigurationModule.updateSession(withActions: ClientSessionUpdateRequest(actions: ClientSessionAction(actions: [ClientSession.Action(type: .selectPaymentMethod, params: ["": ""])])))
         }
         .then { () -> Promise<Void> in
             return apiConfigurationModule.setupSession(forClientToken: MockAppState.mockClientToken)

@@ -215,7 +215,7 @@ internal class PrimerAPIClient: PrimerAPIClientProtocol {
         let endpoint = PrimerAPI.resumePayment(clientToken: clientToken, paymentId: paymentId, paymentResumeRequest: paymentResumeRequest)
         execute(endpoint, completion: completion)
     }
-    
+
     func completePayment(clientToken: DecodedJWTToken,
                          url: URL,
                          paymentRequest: Request.Body.Payment.Complete,

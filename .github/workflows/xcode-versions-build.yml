@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     name: "Build App"
-    runs-on: macos-13
+    runs-on: macos-latest
     strategy:
       max-parallel: 3
       matrix:
@@ -19,7 +19,7 @@ jobs:
           - cocoapods
           - spm
         xcode: 
-          - 14.3.1
+          - 16.2.0
     steps:
       - name: Git - Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -35,15 +35,15 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           name: id_rsa_github_actions
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
-      - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
+      - uses: webfactory/ssh-agent@a6f90b1f127823b31d4d4a8d96047790581349bd # v0.9.1
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
-      - uses: ruby/setup-ruby@28c4deda893d5a96a6b2d958c5b47fc18d65c9d3  # v1.213.0
+      - uses: ruby/setup-ruby@354a1ad156761f5ee2b7b13fa8e09943a5e8d252  # v1.229.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
       - name: Setup node
-        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af #v4.1.0
+        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e #v4.3.0
         with:
           node-version: 18.3.0
       - run: npm install --save slack-message-builder
@@ -93,7 +93,7 @@ jobs:
         with:
           ref: ${{ github.ref }}
       - name: Setup node
-        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af #v4.1.0
+        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e #v4.3.0
         with:
           node-version: 18.3.0
       - run: npm install --save slack-message-builder

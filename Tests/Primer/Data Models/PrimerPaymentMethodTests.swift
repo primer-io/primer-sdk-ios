@@ -1,6 +1,6 @@
 //
 //  PrimerPaymentMethodTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 19/05/2024.
 //
@@ -26,7 +26,7 @@ final class PrimerPaymentMethodTests: XCTestCase {
     func testLogo_NoImage() {
         XCTAssertNil(paymentMethod.logo)
     }
-    
+
     func testLogo_NilImages() {
         paymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: nil, light: nil, dark: nil)
         XCTAssertNil(paymentMethod.logo)
@@ -160,7 +160,6 @@ final class PrimerPaymentMethodTests: XCTestCase {
             XCTAssertTrue(paymentMethod.tokenizationViewModel is PrimerTestPaymentMethodTokenizationViewModel)
         }
 
-
         let applePayPaymentMethod = createPaymentMethod(withImplementationType: .nativeSdk, paymentType: .applePay)
         XCTAssertTrue(applePayPaymentMethod.tokenizationViewModel is ApplePayTokenizationViewModel)
 
@@ -231,7 +230,6 @@ final class PrimerPaymentMethodTests: XCTestCase {
         let primerPaymentMethod = createPaymentMethod(withImplementationType: .nativeSdk)
         let paymentMethodProvider = TestPaymentMethodProvider(paymentMethod: primerPaymentMethod)
         let pm = PrimerHeadlessUniversalCheckout.PaymentMethod(paymentMethodType: primerPaymentMethod.type, paymentMethodProvider: paymentMethodProvider)
-
 
         let headlessPaymentMethod = PrimerHeadlessUniversalCheckout.PaymentMethod(paymentMethodType: "PAYMENT_CARD")
 

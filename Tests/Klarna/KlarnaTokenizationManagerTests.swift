@@ -28,10 +28,10 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         sut = nil
         createResumePaymentService = nil
         tokenizationService = nil
-        
+
         let settings = PrimerSettings()
         DependencyContainer.register(settings as PrimerSettingsProtocol)
-        
+
         SDKSessionHelper.tearDown()
         super.tearDown()
     }
@@ -39,15 +39,15 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
     func test_tokenizeHeadless_success() {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: true)
         let expectation = XCTestExpectation(description: "Successful Tokenize Klarna Payment Session")
-        
+
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        tokenizationService.onTokenize = { body in
+        tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
             return Promise.fulfilled(KlarnaTestsMocks.tokenizationResponseBody)
         }
-        
+
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
-        createResumePaymentService.onCreatePayment = { body in
+        createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return KlarnaTestsMocks.paymentResponseBody
         }
@@ -59,7 +59,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
             XCTAssertNotNil(tokenData, "Result should not be nil")
             expectation.fulfill()
         }
-        .catch { error in
+        .catch { _ in
             XCTFail("Result should be nil")
             expectation.fulfill()
         }
@@ -76,7 +76,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Failure Tokenize Klarna Payment Session")
 
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        tokenizationService.onTokenize = { body in
+        tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
             return Promise.rejected(PrimerError.unknown(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString))
         }
@@ -102,9 +102,9 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
     func test_tokenizeDropIn_success() {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: true)
         let expectation = XCTestExpectation(description: "Successful Tokenize Klarna Payment Session")
-        
+
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        tokenizationService.onTokenize = { body in
+        tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
             return Promise.fulfilled(KlarnaTestsMocks.tokenizationResponseBody)
         }
@@ -130,9 +130,9 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
     func test_tokenizeDropIn_failure() {
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: false)
         let expectation = XCTestExpectation(description: "Failure Tokenize Klarna Payment Session")
-        
+
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        tokenizationService.onTokenize = { body in
+        tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
             return Promise.rejected(PrimerError.unknown(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString))
         }
@@ -154,30 +154,30 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
             expectation
         ], timeout: 10.0, enforceOrder: true)
     }
-    
+
     func test_tokenizeHeadless_maunualHandling_success() {
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
-        
+
         let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: true)
         let expectation = XCTestExpectation(description: "Successful Tokenize Klarna Payment Session")
-        
+
         let settings = PrimerSettings(paymentHandling: .manual)
         DependencyContainer.register(settings as PrimerSettingsProtocol)
-        
+
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        tokenizationService.onTokenize = { body in
+        tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
             return Promise.fulfilled(KlarnaTestsMocks.tokenizationResponseBody)
         }
-        
+
         let expectOnDidTokenizePaymentMethod = self.expectation(description: "onDidTokenizePaymentMethod is called")
         delegate.onDidTokenizePaymentMethod = { data, decision in
             XCTAssertEqual(data.paymentMethodType, "KLARNA")
             decision(.complete())
             expectOnDidTokenizePaymentMethod.fulfill()
         }
-        
+
         firstly {
             sut.tokenizeHeadless(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId)
         }
@@ -189,7 +189,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
             XCTFail("Result should be nil")
             expectation.fulfill()
         }
-        
+
         wait(for: [
             expectDidTokenize,
             expectOnDidTokenizePaymentMethod,
