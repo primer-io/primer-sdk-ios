@@ -58,7 +58,7 @@ internal extension ApplePayRecurringPaymentRequest {
             ErrorHandler.handle(error: err)
             throw err
         }
-        
+
         guard let managementURL = URL(string: self.managementUrl) else {
             let err = PrimerError.invalidValue(key: "recurringPaymentRequest.managementUrl",
                                                value: nil,
@@ -106,7 +106,7 @@ internal extension ApplePayDeferredPaymentRequest {
             ErrorHandler.handle(error: err)
             throw err
         }
-        
+
         guard let managementURL = URL(string: self.managementUrl) else {
             let err = PrimerError.invalidValue(key: "deferredPaymentRequest.managementUrl",
                                                value: nil,
@@ -166,7 +166,7 @@ internal extension ApplePayAutomaticReloadRequest {
             ErrorHandler.handle(error: err)
             throw err
         }
-        
+
         guard let managementURL = URL(string: self.managementUrl) else {
             let err = PrimerError.invalidValue(key: "automaticReloadRequest.managementUrl",
                                                value: nil,
@@ -212,9 +212,7 @@ internal extension ApplePayOptions {
                 currency: currency,
                 descriptor: descriptor
             )
-        }
 
-        if #available(iOS 16.0, *) {
             paymentUpdate.automaticReloadPaymentRequest = try self.automaticReloadRequest?.toPKAutomaticReloadPaymentRequest(
                 orderAmount: orderAmount,
                 currency: currency,
