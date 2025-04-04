@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - ApplePayBillingBase to PKRecurringPaymentSummaryItem
 @available(iOS 15.0, *)
-extension ApplePayBillingBase {
+internal extension ApplePayBillingBase {
 
     func toPKRecurringPaymentSummaryItem(
         totalAmount: Int,
@@ -58,11 +58,20 @@ internal extension ApplePayRecurringPaymentRequest {
             ErrorHandler.handle(error: err)
             throw err
         }
+        
+        guard let managementURL = URL(string: self.managementUrl) else {
+            let err = PrimerError.invalidValue(key: "recurringPaymentRequest.managementUrl",
+                                               value: nil,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
 
         let request = PKRecurringPaymentRequest(
             paymentDescription: paymentDescription,
             regularBilling: self.regularBilling.toPKRecurringPaymentSummaryItem(totalAmount: totalAmount, currency: currency),
-            managementURL: URL(string: self.managementURL)!)
+            managementURL: managementURL)
 
         if let trialBilling = self.trialBilling {
             request.trialBilling = trialBilling.toPKRecurringPaymentSummaryItem(totalAmount: trialBilling.amount ?? 0, currency: currency)
@@ -97,6 +106,15 @@ internal extension ApplePayDeferredPaymentRequest {
             ErrorHandler.handle(error: err)
             throw err
         }
+        
+        guard let managementURL = URL(string: self.managementUrl) else {
+            let err = PrimerError.invalidValue(key: "deferredPaymentRequest.managementUrl",
+                                               value: nil,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
 
         let summaryItem: PKDeferredPaymentSummaryItem = PKDeferredPaymentSummaryItem(
             label: self.deferredBilling.label,
@@ -107,7 +125,7 @@ internal extension ApplePayDeferredPaymentRequest {
         let request = PKDeferredPaymentRequest(
             paymentDescription: paymentDescription,
             deferredBilling: summaryItem,
-            managementURL: URL(string: self.managementURL)!
+            managementURL: managementURL
         )
 
         if let freeCancellationDate = self.freeCancellationDate {
@@ -148,6 +166,15 @@ internal extension ApplePayAutomaticReloadRequest {
             ErrorHandler.handle(error: err)
             throw err
         }
+        
+        guard let managementURL = URL(string: self.managementUrl) else {
+            let err = PrimerError.invalidValue(key: "automaticReloadRequest.managementUrl",
+                                               value: nil,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
 
         let summaryItem: PKAutomaticReloadPaymentSummaryItem = PKAutomaticReloadPaymentSummaryItem(
             label: self.automaticReloadBilling.label,
@@ -160,7 +187,7 @@ internal extension ApplePayAutomaticReloadRequest {
         let request = PKAutomaticReloadPaymentRequest(
             paymentDescription: paymentDescription,
             automaticReloadBilling: summaryItem,
-            managementURL: URL(string: self.managementURL)!
+            managementURL: managementURL
         )
 
         if let tokenManagementUrl = self.tokenManagementUrl {

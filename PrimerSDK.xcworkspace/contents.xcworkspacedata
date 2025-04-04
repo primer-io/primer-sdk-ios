@@ -2316,6 +2316,9 @@
          <Group
             location = "group:Utils"
             name = "Utils">
+            <FileRef
+               location = "group:ApplePayPaymentRequest+PK.swift">
+            </FileRef>
             <Group
                location = "group:CurrencyFormatting"
                name = "CurrencyFormatting">

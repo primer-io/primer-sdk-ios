@@ -84,7 +84,7 @@ struct ApplePayAutomaticReloadBillingOption: Codable {
 protocol ApplePayPaymentRequestBase: Codable {
     var paymentDescription: String? { get }
     var billingAgreement: String? { get }
-    var managementURL: String { get }
+    var managementUrl: String { get }
     var tokenManagementUrl: String? { get }
 }
 
@@ -92,7 +92,7 @@ protocol ApplePayPaymentRequestBase: Codable {
 struct ApplePayRecurringPaymentRequest: ApplePayPaymentRequestBase {
     let paymentDescription: String?
     let billingAgreement: String?
-    let managementURL: String
+    let managementUrl: String
     let regularBilling: ApplePayRegularBillingOption
     let trialBilling: ApplePayTrialBillingOption?
     let tokenManagementUrl: String?
@@ -102,7 +102,7 @@ struct ApplePayRecurringPaymentRequest: ApplePayPaymentRequestBase {
 struct ApplePayDeferredPaymentRequest: ApplePayPaymentRequestBase {
     let paymentDescription: String?
     let billingAgreement: String?
-    let managementURL: String
+    let managementUrl: String
     let deferredBilling: ApplePayDeferredBillingOption
     let freeCancellationDate: Date?
     let freeCancellationTimeZone: String?
@@ -113,7 +113,7 @@ struct ApplePayDeferredPaymentRequest: ApplePayPaymentRequestBase {
 struct ApplePayAutomaticReloadRequest: ApplePayPaymentRequestBase {
     let paymentDescription: String?
     let billingAgreement: String?
-    let managementURL: String
+    let managementUrl: String
     let automaticReloadBilling: ApplePayAutomaticReloadBillingOption
     let tokenManagementUrl: String?
 }
