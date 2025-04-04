@@ -78,7 +78,7 @@ internal extension ApplePayRecurringPaymentRequest {
 
 // MARK: - ApplePayDeferredPaymentRequest to PKDeferredPaymentRequest
 @available(iOS 16.4, *)
-extension ApplePayDeferredPaymentRequest {
+internal extension ApplePayDeferredPaymentRequest {
     func toPKDeferredPaymentRequest(orderAmount: Int?, currency: Currency, descriptor: String?) throws -> PKDeferredPaymentRequest {
         guard let totalAmount = deferredBilling.amount ?? AppState.current.amount else {
             let err = PrimerError.invalidValue(key: "deferredBilling.amount or amount",
@@ -129,7 +129,7 @@ extension ApplePayDeferredPaymentRequest {
 
 // MARK: - ApplePayAutomaticReloadRequest to PKAutomaticReloadPaymentRequest
 @available(iOS 16.0, *)
-extension ApplePayAutomaticReloadRequest {
+internal extension ApplePayAutomaticReloadRequest {
     func toPKAutomaticReloadPaymentRequest(orderAmount: Int?, currency: Currency, descriptor: String?) throws -> PKAutomaticReloadPaymentRequest {
         guard let totalAmount = automaticReloadBilling.amount ?? orderAmount else {
             let err = PrimerError.invalidValue(key: "automaticReloadBilling.amount or amount",
@@ -169,5 +169,38 @@ extension ApplePayAutomaticReloadRequest {
         request.billingAgreement = self.billingAgreement
 
         return request
+    }
+}
+
+internal extension ApplePayOptions {
+    func updatePKPaymentRequestUpdate(
+        _ paymentUpdate: PKPaymentRequestUpdate,
+        orderAmount: Int?,
+        currency: Currency,
+        descriptor: String?
+    ) throws {
+        if #available(iOS 16.0, *) {
+            paymentUpdate.recurringPaymentRequest = try self.recurringPaymentRequest?.toPKRecurringPaymentRequest(
+                orderAmount: orderAmount,
+                currency: currency,
+                descriptor: descriptor
+            )
+        }
+
+        if #available(iOS 16.0, *) {
+            paymentUpdate.automaticReloadPaymentRequest = try self.automaticReloadRequest?.toPKAutomaticReloadPaymentRequest(
+                orderAmount: orderAmount,
+                currency: currency,
+                descriptor: descriptor
+            )
+        }
+
+        if #available(iOS 16.4, *) {
+            paymentUpdate.deferredPaymentRequest = try self.deferredPaymentRequest?.toPKDeferredPaymentRequest(
+                orderAmount: orderAmount,
+                currency: currency,
+                descriptor: descriptor
+            )
+        }
     }
 }
