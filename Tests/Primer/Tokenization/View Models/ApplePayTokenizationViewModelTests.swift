@@ -233,7 +233,12 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         let fees = [ClientSession.Order.Fee(type: .surcharge, amount: surchargeAmount)]
 
         let merchantName = "Merchant Name"
-        let applePayOptions = ApplePayOptions(merchantName: merchantName)
+        let applePayOptions = ApplePayOptions(
+            merchantName: merchantName,
+            recurringPaymentRequest: nil,
+            deferredPaymentRequest: nil,
+            automaticReloadRequest: nil
+        )
 
         let apiResponse = ClientSession.APIResponse(
             clientSessionId: nil,
@@ -301,7 +306,12 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         let fees = [ClientSession.Order.Fee(type: .surcharge, amount: surchargeAmount)]
 
         let merchantName = "Merchant Name"
-        let applePayOptions = ApplePayOptions(merchantName: merchantName)
+        let applePayOptions = ApplePayOptions(
+            merchantName: merchantName,
+            recurringPaymentRequest: nil,
+            deferredPaymentRequest: nil,
+            automaticReloadRequest: nil
+        )
 
         let apiResponse = ClientSession.APIResponse(
             clientSessionId: nil,
@@ -342,7 +352,12 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         let shippingAmount = 100
 
         let merchantName = "Merchant Name"
-        let applePayOptions = ApplePayOptions(merchantName: merchantName)
+        let applePayOptions = ApplePayOptions(
+            merchantName: merchantName,
+            recurringPaymentRequest: nil,
+            deferredPaymentRequest: nil,
+            automaticReloadRequest: nil
+        )
 
         let selectedShippingMethod = PKShippingMethod(label: shippingMethodName, amount: 100)
         selectedShippingMethod.identifier = shippingMethodId
