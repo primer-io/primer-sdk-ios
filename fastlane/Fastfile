@@ -301,6 +301,7 @@ platform :ios do
     spec.version.to_s
   end
 
+
   def get_version_name(build_type, pr_number, branch)
     case build_type
     when "nightly"
@@ -308,14 +309,16 @@ platform :ios do
     when "release"
       return "release_#{get_sdk_version}"
     else
-   	if pr_number && !pr_number.empty?
-    	  return "preview_#{pr_number}"
-    	elsif branch && !branch.empty?
-      	  return "preview_#{branch}"
-    	else
-      	  return "preview_unknown"
+      if pr_number && !pr_number.empty?
+        return "preview_#{pr_number}"
+      elsif branch && !branch.empty?
+        return "preview_#{branch}"
+      else
+        return "preview_unknown"
+      end
     end
   end
+
 
   def update_deployment_url(pub_url)
     sh("echo APPETIZE_APP_URL=#{pub_url} >> $GITHUB_ENV")
