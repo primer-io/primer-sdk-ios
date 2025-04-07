@@ -5,10 +5,6 @@ default_platform(:ios)
 # Appetize
 appetize_api_token = ENV['APPETIZE_API_TOKEN']
 
-# Github
-github_run_id = ENV["GITHUB_RUN_ID"]
-github_run_number = ENV["GITHUB_RUN_NUMBER"]
-
 # Xcode
 app_workspace = "PrimerSDK.xcworkspace"
 
@@ -218,7 +214,7 @@ platform :ios do
 
     # Find public key of appetize
     # If a build exists with this name, we will overwrite it
-    url_end = get_appetize_version_name(build_type, pr_number)
+    url_end = get_version_name(build_type, pr_number, source_branch_trimmed)
     uri = URI(sdk_demo_api_url + "#{url_end}")
     public_key = Net::HTTP.get(uri)
     puts "public_key: " + public_key
@@ -291,7 +287,7 @@ platform :ios do
     # The version number is important only for Appetize
     # The build is identified by the contents of CFBundleVersion in Info.plist
 
-    version_name = get_appetize_version_name(build_type, pr_number)
+    version_name = get_version_name(build_type, pr_number, source_branch_trimmed)
 
     set_info_plist_value(path: info_plist_path, key: "CFBundleVersion", value: version_name)
     set_info_plist_value(path: info_plist_path, key: "CFBundleShortVersionString", value: "#{version_name}")
@@ -305,14 +301,19 @@ platform :ios do
     spec.version.to_s
   end
 
-  def get_appetize_version_name(build_type, pr_number)
+  def get_version_name(build_type, pr_number, branch)
     case build_type
     when "nightly"
       return "nightly_#{Time.now.strftime("%d.%m.%Y")}"
     when "release"
       return "release_#{get_sdk_version}"
     else
-      return "preview_#{pr_number}"
+   	if pr_number && !pr_number.empty?
+    	  return "preview_#{pr_number}"
+    	elsif branch && !branch.empty?
+      	  return "preview_#{branch}"
+    	else
+      	  return "preview_unknown"
     end
   end
 
