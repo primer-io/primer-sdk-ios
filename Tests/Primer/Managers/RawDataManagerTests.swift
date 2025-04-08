@@ -192,6 +192,62 @@ final class RawDataManagerTests: XCTestCase {
         waitForExpectations(timeout: 5.0)
     }
 
+    func testDelegateNotifiedOnValidation() {
+        // Arrange
+        let expectDidValidate = self.expectation(description: "Delegate was notified")
+        var didCallDelegate = false
+
+        rawDataManagerDelegate.onDataIsValid = { _, isValid, errors in
+            didCallDelegate = true
+            expectDidValidate.fulfill()
+        }
+
+        // Act
+        sut.rawData = PrimerCardData(cardNumber: "4111111111111111",
+                                     expiryDate: "03/2030",
+                                     cvv: "123",
+                                     cardholderName: "Test Name")
+
+        // Assert
+        waitForExpectations(timeout: 3.0)
+        XCTAssertTrue(didCallDelegate, "Delegate should have been notified")
+    }
+
+    func testDelegateNotifiedOnConsecutiveValidations() {
+        // Arrange
+        let expectFirstValidation = self.expectation(description: "First validation notification")
+        let expectSecondValidation = self.expectation(description: "Second validation notification")
+        var validationCount = 0
+
+        rawDataManagerDelegate.onDataIsValid = { _, isValid, errors in
+            validationCount += 1
+            if validationCount == 1 {
+                expectFirstValidation.fulfill()
+            } else if validationCount == 2 {
+                expectSecondValidation.fulfill()
+            }
+        }
+
+        // Act - First set valid data
+        sut.rawData = PrimerCardData(cardNumber: "4111111111111111",
+                                     expiryDate: "03/2030",
+                                     cvv: "123",
+                                     cardholderName: "Test Name")
+
+        // Wait for first validation
+        wait(for: [expectFirstValidation], timeout: 3.0)
+
+        // Act - Then set identical data to ensure delegate is still called
+        sut.rawData = PrimerCardData(cardNumber: "4111111111111111",
+                                     expiryDate: "03/2030",
+                                     cvv: "123",
+                                     cardholderName: "Test Name")
+
+        // Assert
+        wait(for: [expectSecondValidation], timeout: 3.0)
+        XCTAssertEqual(validationCount, 2, "Delegate should be notified twice")
+    }
+
     // MARK: Helpers
 
     var tokenizationResponseBody: Response.Body.Tokenization {
