@@ -218,6 +218,16 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         }
     }
 
+    private func continueValidateSession() async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            continueValidateSession().done {
+                continuation.resume()
+            }.catch { err in
+                continuation.resume(throwing: err)
+            }
+        }
+    }
+
     func validateSession() -> Promise<Void> {
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
@@ -258,6 +268,16 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
             }
 
             seal.fulfill()
+        }
+    }
+
+    func validateSession() async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            validateSession().done {
+                continuation.resume()
+            }.catch { err in
+                continuation.resume(throwing: err)
+            }
         }
     }
 
