@@ -268,7 +268,11 @@ class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                     countryCode: countryCode,
                     items: orderItems,
                     shippingMethods: shippingMethodsInfo.shippingMethods,
-                    recurringPaymentRequest: applePayOptions?.recurringPaymentRequest,
+                    recurringPaymentRequest: ApplePayRecurringPaymentRequest(paymentDescription:"testing",
+                                                                             billingAgreement:"testing",
+                                                                             managementUrl: "https://www.primer.io", regularBilling: ApplePayRegularBillingOption(label: "Subscription", amount: 100, recurringStartDate: Date(milliseconds: 1744189588238), recurringEndDate: Date(milliseconds: 1744189588838), recurringIntervalUnit: nil, recurringIntervalCount: nil),
+                                                                            trialBilling: nil,
+                                                                             tokenManagementUrl: nil),
                     deferredPaymentRequest: applePayOptions?.deferredPaymentRequest,
                     automaticReloadRequest: applePayOptions?.automaticReloadRequest
                 )
