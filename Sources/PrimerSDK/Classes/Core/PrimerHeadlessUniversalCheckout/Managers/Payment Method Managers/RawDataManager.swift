@@ -93,7 +93,14 @@ extension PrimerHeadlessUniversalCheckout {
 
         var apiClient: PrimerAPIClientXenditProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
 
-        required public init(paymentMethodType: String, delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? = nil) throws {
+        required public init(paymentMethodType: String,
+                             delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? = nil,
+                             isUsedInDropIn: Bool = false) throws {
+            if isUsedInDropIn {
+                PrimerInternal.shared.sdkIntegrationType = .dropIn
+            } else {
+                PrimerInternal.shared.sdkIntegrationType = .headless
+            }
 
             let sdkEvent = Analytics.Event.sdk(
                 name: "\(Self.self).\(#function)",

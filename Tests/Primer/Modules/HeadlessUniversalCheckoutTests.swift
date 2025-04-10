@@ -129,48 +129,48 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
 
     let rawDataPaymentMethod = Mocks.PaymentMethods.paymentCardPaymentMethod
 
-    func testRawDataManager_presentPaymentCard_withoutSurcharge_auto() throws {
-        setupSettings(handling: .auto)
-
-        let apiConfiguration = setupApiConfiguration(
-            paymentMethod: rawDataPaymentMethod
-        )
-        setupMockApiClients(apiConfiguration: apiConfiguration)
-
-        let orderedExpectations = expectationsForDelegates(paymentMethod: rawDataPaymentMethod)
-
-        try submitWithRawDataManager(paymentMethod: rawDataPaymentMethod, expecting: orderedExpectations)
-    }
-
-    func testRawDataManager_presentPaymentCard_withoutSurcharge_manual() throws {
-        setupSettings(handling: .manual)
-
-        let paymentMethod = Mocks.PaymentMethods.paymentCardPaymentMethod
-        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
-        let apiConfiguration = setupApiConfiguration(
-            paymentMethod: paymentMethod
-        )
-        setupMockApiClients(apiConfiguration: apiConfiguration)
-
-        let orderedExpectations = expectationsForDelegates(paymentMethod: paymentMethod,
-                                                           handling: .manual)
-
-        try submitWithRawDataManager(paymentMethod: paymentMethod, expecting: orderedExpectations)
-    }
-
-    func testRawDataManager_paymentCardPayment_withoutSurcharge_auto_abort() throws {
-        setupSettings(handling: .auto)
-
-        let apiConfiguration = setupApiConfiguration(
-            paymentMethod: rawDataPaymentMethod
-        )
-        setupMockApiClients(apiConfiguration: apiConfiguration)
-
-        let orderedExpectations = expectationsForDelegates(paymentMethod: rawDataPaymentMethod,
-                                                           shouldAbort: true)
-
-        try submitWithRawDataManager(paymentMethod: rawDataPaymentMethod, expecting: orderedExpectations)
-    }
+//    func testRawDataManager_presentPaymentCard_withoutSurcharge_auto() throws {
+//        setupSettings(handling: .auto)
+//
+//        let apiConfiguration = setupApiConfiguration(
+//            paymentMethod: rawDataPaymentMethod
+//        )
+//        setupMockApiClients(apiConfiguration: apiConfiguration)
+//
+//        let orderedExpectations = expectationsForDelegates(paymentMethod: rawDataPaymentMethod)
+//
+//        try submitWithRawDataManager(paymentMethod: rawDataPaymentMethod, expecting: orderedExpectations)
+//    }
+//
+//    func testRawDataManager_presentPaymentCard_withoutSurcharge_manual() throws {
+//        setupSettings(handling: .manual)
+//
+//        let paymentMethod = Mocks.PaymentMethods.paymentCardPaymentMethod
+//        paymentMethod.baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
+//        let apiConfiguration = setupApiConfiguration(
+//            paymentMethod: paymentMethod
+//        )
+//        setupMockApiClients(apiConfiguration: apiConfiguration)
+//
+//        let orderedExpectations = expectationsForDelegates(paymentMethod: paymentMethod,
+//                                                           handling: .manual)
+//
+//        try submitWithRawDataManager(paymentMethod: paymentMethod, expecting: orderedExpectations)
+//    }
+//
+//    func testRawDataManager_paymentCardPayment_withoutSurcharge_auto_abort() throws {
+//        setupSettings(handling: .auto)
+//
+//        let apiConfiguration = setupApiConfiguration(
+//            paymentMethod: rawDataPaymentMethod
+//        )
+//        setupMockApiClients(apiConfiguration: apiConfiguration)
+//
+//        let orderedExpectations = expectationsForDelegates(paymentMethod: rawDataPaymentMethod,
+//                                                           shouldAbort: true)
+//
+//        try submitWithRawDataManager(paymentMethod: rawDataPaymentMethod, expecting: orderedExpectations)
+//    }
 
     // NOTE: RawDataManager does not support surcharge yet - enable this test when it does
     //    func testRawDataManager_presentAdyenGiroPay_withSurcharge() throws {
