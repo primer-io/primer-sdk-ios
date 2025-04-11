@@ -1,5 +1,5 @@
 //
-//  PrimerRawCardDataRedirectTokenizationBuilder.swift
+//  PrimerBancontactRawCardDataRedirectTokenizationBuilder.swift
 //  PrimerSDK
 //
 //  Created by Dario Carlomagno on 27/09/22.
@@ -11,41 +11,13 @@ import Foundation
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 
-class PrimerRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
-
-    var requiredInputElementTypes: [PrimerInputElementType]
-
-    var paymentMethodType: String
-
-    var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
-
-    var isDataValid: Bool
-
-    var rawData: PrimerRawData?
-
-    required init(paymentMethodType: String) {
-        fatalError("\(#function) must be overriden")
-    }
-
-    func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
-        fatalError("\(#function) must be overriden")
-    }
-
-    func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization> {
-        fatalError("\(#function) must be overriden")
-    }
-
-    func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
-        fatalError("\(#function) must be overriden")
-    }
-}
-
 class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var rawData: PrimerRawData? {
         didSet {
             if let rawCardData = self.rawData as? PrimerBancontactCardData {
-                rawCardData.onDataDidChange = {
+                rawCardData.onDataDidChange = { [weak self] in
+                    guard let self = self else { return }
                     _ = self.validateRawData(rawCardData)
 
                     let newCardNetwork = CardNetwork(cardNumber: rawCardData.cardNumber)
@@ -150,17 +122,12 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
                     errors.append(err)
                     ErrorHandler.handle(error: err)
 
-                    self.isDataValid = false
+                    self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
 
                     DispatchQueue.main.async {
-                        if let rawDataManager = self.rawDataManager {
-                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager,
-                                                                                 dataIsValid: self.isDataValid,
-                                                                                 errors: errors.count == 0 ? nil : errors)
-                        }
-
                         seal.reject(err)
                     }
+
                     return
                 }
 
@@ -207,33 +174,35 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
                         errors: errors,
                         userInfo: .errorUserInfoDictionary(),
                         diagnosticsId: UUID().uuidString)
+                    ErrorHandler.handle(error: err)
 
-                    self.isDataValid = false
+                    self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
 
                     DispatchQueue.main.async {
-                        if let rawDataManager = self.rawDataManager {
-                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager,
-                                                                                 dataIsValid: self.isDataValid,
-                                                                                 errors: errors.count == 0 ? nil : errors)
-                        }
-
                         seal.reject(err)
                     }
-
                 } else {
-                    self.isDataValid = true
+                    self.notifyDelegateOfValidationResult(isValid: true, errors: nil)
 
                     DispatchQueue.main.async {
-                        if let rawDataManager = self.rawDataManager {
-                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager,
-                                                                                 dataIsValid: self.isDataValid,
-                                                                                 errors: errors.count == 0 ? nil : errors)
-                        }
-
                         seal.fulfill()
                     }
                 }
             }
+        }
+    }
+
+    private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {
+        self.isDataValid = isValid
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self, let rawDataManager = self.rawDataManager else { return }
+
+            rawDataManager.delegate?.primerRawDataManager?(
+                rawDataManager,
+                dataIsValid: isValid,
+                errors: errors
+            )
         }
     }
 }

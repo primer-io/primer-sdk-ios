@@ -59,8 +59,12 @@ extension PrimerHeadlessUniversalCheckout {
         public private(set) var paymentMethodType: String
         public var rawData: PrimerRawData? {
             didSet {
-                DispatchQueue.main.async {
-                    self.rawDataTokenizationBuilder.rawData = self.rawData
+                // Synchronously update rawDataTokenizationBuilder
+                rawDataTokenizationBuilder.rawData = rawData
+
+                // Explicitly validate if data exists
+                if let data = rawData {
+                    _ = validateRawData(data)
                 }
             }
         }
@@ -80,7 +84,14 @@ extension PrimerHeadlessUniversalCheckout {
         }
         private var resumePaymentId: String?
         public private(set) var paymentCheckoutData: PrimerCheckoutData?
+
+        // MARK: validation related vars
         public private(set) var isDataValid: Bool = false
+        private let validationQueue = DispatchQueue(label: "com.primer.rawDataManager.validationQueue", qos: .userInteractive)
+        private var isValidationInProgress = false
+        private var pendingValidation = false
+        private var latestDataForValidation: PrimerRawData?
+
         var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
         var initializationData: PrimerInitializationData?
@@ -223,6 +234,7 @@ extension PrimerHeadlessUniversalCheckout {
 
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidStartPreparation(for: self.paymentMethodType)
 
+            // Force a validation first to ensure data is valid and delegate is notified
             firstly {
                 PrimerHeadlessUniversalCheckout.current.validateSession()
             }
@@ -230,6 +242,13 @@ extension PrimerHeadlessUniversalCheckout {
                 return self.validateRawData(rawData)
             }
             .then { () -> Promise<Void> in
+                // Only proceed if validation succeeded
+                guard self.isDataValid else {
+                    let err = PrimerError.invalidValue(key: "rawData", value: nil,
+                                                       userInfo: .errorUserInfoDictionary(),
+                                                       diagnosticsId: UUID().uuidString)
+                    throw err
+                }
                 return self.handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.paymentMethodType))
             }
             .then { () -> Promise<Request.Body.Tokenization> in
@@ -259,9 +278,52 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
-            return rawDataTokenizationBuilder.validateRawData(data)
-        }
+            return Promise { seal in
+                validationQueue.async { [weak self] in
+                    guard let self = self else {
+                        seal.fulfill()
+                        return
+                    }
 
+                    // Store the latest data
+                    self.latestDataForValidation = data
+
+                    // If validation is already running, mark for re-validation
+                    if self.isValidationInProgress {
+                        self.pendingValidation = true
+                        self.logger.debug(message: "Marking for validation after current one completes")
+                        seal.fulfill()
+                        return
+                    }
+
+                    // Mark validation as started
+                    self.isValidationInProgress = true
+
+                    firstly {
+                        self.rawDataTokenizationBuilder.validateRawData(data)
+                    }
+                    .done {
+                        // Sync our isDataValid with the builder's value
+                        self.isDataValid = self.rawDataTokenizationBuilder.isDataValid
+                        seal.fulfill()
+                    }
+                    .catch { error in
+                        seal.reject(error)
+                    }
+                    .finally {
+                        // Check if we need to validate again with newer data
+                        let needsRevalidation = self.pendingValidation
+                        self.isValidationInProgress = false
+                        self.pendingValidation = false
+
+                        if needsRevalidation, let latestData = self.latestDataForValidation {
+                            _ = self.validateRawData(latestData)
+                        }
+                    }
+                }
+            }
+        }
+        
         func validateRawData(withCardNetworksMetadata cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> Promise<Void>? {
             guard let rawData = self.rawData else {
                 logger.warn(message: "Unable to validate with card networks metadata as `rawData` was nil")
