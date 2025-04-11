@@ -14,7 +14,8 @@ class PrimerRawOTPDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProto
     var rawData: PrimerRawData? {
         didSet {
             if let rawOTPInput = self.rawData as? PrimerOTPData {
-                rawOTPInput.onDataDidChange = {
+                rawOTPInput.onDataDidChange = { [weak self] in
+                    guard let self = self else { return }
                     _ = self.validateRawData(rawOTPInput)
                 }
             }
@@ -88,17 +89,12 @@ class PrimerRawOTPDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProto
                     errors.append(err)
                     ErrorHandler.handle(error: err)
 
-                    self.isDataValid = false
+                    self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
 
                     DispatchQueue.main.async {
-                        if let rawDataManager = self.rawDataManager {
-                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager,
-                                                                                 dataIsValid: self.isDataValid,
-                                                                                 errors: errors.count == 0 ? nil : errors)
-                        }
-
                         seal.reject(err)
                     }
+
                     return
                 }
 
@@ -116,31 +112,33 @@ class PrimerRawOTPDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProto
                         diagnosticsId: UUID().uuidString)
                     ErrorHandler.handle(error: err)
 
-                    self.isDataValid = false
+                    self.notifyDelegateOfValidationResult(isValid: false, errors: errors)
 
                     DispatchQueue.main.async {
-                        if let rawDataManager = self.rawDataManager {
-                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager,
-                                                                                 dataIsValid: self.isDataValid,
-                                                                                 errors: errors.count == 0 ? nil : errors)
-                        }
-
                         seal.reject(err)
                     }
                 } else {
-                    self.isDataValid = true
+                    self.notifyDelegateOfValidationResult(isValid: true, errors: nil)
 
                     DispatchQueue.main.async {
-                        if let rawDataManager = self.rawDataManager {
-                            self.rawDataManager?.delegate?.primerRawDataManager?(rawDataManager,
-                                                                                 dataIsValid: self.isDataValid,
-                                                                                 errors: errors.count == 0 ? nil : errors)
-                        }
-
                         seal.fulfill()
                     }
                 }
             }
+        }
+    }
+
+    private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {
+        self.isDataValid = isValid
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self, let rawDataManager = self.rawDataManager else { return }
+
+            rawDataManager.delegate?.primerRawDataManager?(
+                rawDataManager,
+                dataIsValid: isValid,
+                errors: errors
+            )
         }
     }
 }

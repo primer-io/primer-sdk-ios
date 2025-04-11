@@ -92,7 +92,7 @@
                      location = "group:PrimerOTPData.swift">
                   </FileRef>
                   <FileRef
-                     location = "group:PrimerRawCardDataRedirectTokenizationBuilder.swift">
+                     location = "group:PrimerBancontactRawCardDataRedirectTokenizationBuilder.swift">
                   </FileRef>
                   <FileRef
                      location = "group:PrimerCardRedirectData.swift">
