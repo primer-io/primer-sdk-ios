@@ -38,7 +38,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     private let cardPaymentMethodName = "PAYMENT_CARD"
     private lazy var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager? = {
         // If the manager is not resolved (nil) Co-Badged cards feature will just not work and the card form should be working as before
-        let manager = try? PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: cardPaymentMethodName, delegate: self, isUsedInDropIn: true)
+        let manager = try? PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: cardPaymentMethodName,
+                                                                          delegate: self)
         return manager
     }()
 
