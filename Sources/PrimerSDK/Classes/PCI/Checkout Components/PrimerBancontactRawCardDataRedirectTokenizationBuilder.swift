@@ -127,7 +127,7 @@ class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataToken
                     DispatchQueue.main.async {
                         seal.reject(err)
                     }
-                    
+
                     return
                 }
 
