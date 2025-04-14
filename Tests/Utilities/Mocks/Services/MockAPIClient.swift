@@ -141,9 +141,9 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         return Promise { seal in
             self.fetchVaultedPaymentMethods(clientToken: clientToken) { result in
                 switch result {
-                case let .failure(err):
+                case .failure(let err):
                     seal.reject(err)
-                case let .success(res):
+                case .success(let res):
                     seal.fulfill(res)
                 }
             }
@@ -751,6 +751,25 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
+    func createPayment(clientToken _: DecodedJWTToken,
+                       paymentRequestBody _: Request.Body.Payment.Create) async throws -> Response.Body.Payment {
+        guard let result = paymentResult else {
+            XCTAssert(false, "Set 'paymentResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        if let errorResult = result.1 {
+            throw errorResult
+        } else if let successResult = result.0 {
+            return successResult
+        } else {
+            XCTAssert(false, "Set 'paymentResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+    }
+
     func resumePayment(
         clientToken _: DecodedJWTToken,
         paymentId _: String,
@@ -770,6 +789,26 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             } else if let successResult = result.0 {
                 completion(.success(successResult))
             }
+        }
+    }
+
+    func resumePayment(clientToken _: DecodedJWTToken,
+                       paymentId _: String,
+                       paymentResumeRequest _: Request.Body.Payment.Resume) async throws -> Response.Body.Payment {
+        guard let result = resumePaymentResult else {
+            XCTAssert(false, "Set 'resumePaymentResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        if let errorResult = result.1 {
+            throw errorResult
+        } else if let successResult = result.0 {
+            return successResult
+        } else {
+            XCTAssert(false, "Set 'resumePaymentResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
         }
     }
 
@@ -821,6 +860,24 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
 
         return nil
+    }
+
+    func listCardNetworks(clientToken _: DecodedJWTToken, bin _: String) async throws -> Response.Body.Bin.Networks {
+        guard let result = listCardNetworksResult else {
+            XCTFail("Set 'listCardNetworksResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        if let errorResult = result.1 {
+            throw errorResult
+        } else if let successResult = result.0 {
+            return successResult
+        } else {
+            XCTFail("Set 'listCardNetworksResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
     }
 
     func fetchNolSdkSecret(
@@ -910,6 +967,26 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             } else if let successResult = result.0 {
                 completion(.success(successResult))
             }
+        }
+    }
+
+    func completePayment(clientToken _: PrimerSDK.DecodedJWTToken,
+                         url _: URL,
+                         paymentRequest _: PrimerSDK.Request.Body.Payment.Complete) async throws -> PrimerSDK.Response.Body.Complete {
+        guard let result = sdkCompleteUrlResult else {
+            XCTAssert(false, "Set 'completePayment' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        if let errorResult = result.1 {
+            throw errorResult
+        } else if let successResult = result.0 {
+            return successResult
+        } else {
+            XCTAssert(false, "Set 'completePayment' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
         }
     }
 

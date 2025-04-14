@@ -144,6 +144,8 @@ class Mocks {
         paymentFailureReason: nil
     )
 
+    static var tokenizationRequestBody = Request.Body.Tokenization(paymentInstrument: MockTokenizationRequestBodyPaymentInstrument())
+
     static func createMockAPIConfiguration(
         clientSession: ClientSession.APIResponse?,
         paymentMethods: [PrimerPaymentMethod]?
@@ -595,3 +597,5 @@ class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
         PrimerAPIConfigurationModule.clientToken = newClientToken
     }
 }
+
+class MockTokenizationRequestBodyPaymentInstrument: TokenizationRequestBodyPaymentInstrument {}

@@ -5,11 +5,10 @@
 //  Created by Niall Quinn on 01/08/24.
 //
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class CreateResumePaymentServiceTests: XCTestCase {
-
     typealias Payment = Response.Body.Payment
 
     func test_createNoJWT() throws {
@@ -241,18 +240,15 @@ final class CreateResumePaymentServiceTests: XCTestCase {
 
         _ = createResumeService.completePayment(clientToken: clientToken,
                                                 completeUrl: URL(string: "https://example.com")!,
-                                                body: StripeAchTokenizationViewModel.defaultCompleteBodyWithTimestamp
-        ).done {
+                                                body: StripeAchTokenizationViewModel.defaultCompleteBodyWithTimestamp).done {
             expectation.fulfill()
         }
 
         waitForExpectations(timeout: 5, handler: nil)
     }
-
 }
 
 private class MockCreateResumeAPI: PrimerAPIClientCreateResumePaymentProtocol {
-
     var resumeResponse: APIResult<Response.Body.Payment>?
     var createResponse: APIResult<Response.Body.Payment>?
     var completeResponse: APIResult<Response.Body.Complete>?
@@ -265,7 +261,11 @@ private class MockCreateResumeAPI: PrimerAPIClientCreateResumePaymentProtocol {
         self.completeResponse = completeResponse
     }
 
-    func createPayment(clientToken: DecodedJWTToken, paymentRequestBody: Request.Body.Payment.Create, completion: @escaping APICompletion<Response.Body.Payment>) {
+    func createPayment(
+        clientToken: DecodedJWTToken,
+        paymentRequestBody: Request.Body.Payment.Create,
+        completion: @escaping APICompletion<Response.Body.Payment>
+    ) {
         guard let createResponse else {
             XCTFail("No create response set")
             return
@@ -273,12 +273,44 @@ private class MockCreateResumeAPI: PrimerAPIClientCreateResumePaymentProtocol {
         completion(createResponse)
     }
 
-    func resumePayment(clientToken: DecodedJWTToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping APICompletion<Response.Body.Payment>) {
+    func createPayment(clientToken: DecodedJWTToken, paymentRequestBody: Request.Body.Payment.Create) async throws -> Response.Body.Payment {
+        guard let createResponse else {
+            XCTFail("No create response set")
+            throw NSError(domain: "MockCreateResumeAPI", code: 1, userInfo: nil)
+        }
+        switch createResponse {
+        case .success(let value):
+            return value
+        case .failure(let error):
+            throw error
+        }
+    }
+
+    func resumePayment(
+        clientToken: DecodedJWTToken,
+        paymentId: String,
+        paymentResumeRequest: Request.Body.Payment.Resume,
+        completion: @escaping APICompletion<Response.Body.Payment>
+    ) {
         guard let resumeResponse else {
             XCTFail("No resume response set")
             return
         }
         completion(resumeResponse)
+    }
+
+    func resumePayment(clientToken: DecodedJWTToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response
+        .Body.Payment {
+        guard let resumeResponse else {
+            XCTFail("No resume response set")
+            throw NSError(domain: "MockCreateResumeAPI", code: 1, userInfo: nil)
+        }
+        switch resumeResponse {
+        case .success(let value):
+            return value
+        case .failure(let error):
+            throw error
+        }   
     }
 
     func completePayment(clientToken: DecodedJWTToken,
@@ -289,6 +321,20 @@ private class MockCreateResumeAPI: PrimerAPIClientCreateResumePaymentProtocol {
             return
         }
         completion(completeResponse)
+    }
+
+    func completePayment(clientToken: DecodedJWTToken, url: URL, paymentRequest: Request.Body.Payment.Complete) async throws -> Response.Body
+        .Complete {
+        guard let completeResponse else {
+            XCTFail("No complete response set")
+            throw NSError(domain: "MockCreateResumeAPI", code: 1, userInfo: nil)
+        }
+        switch completeResponse {
+        case .success(let value):
+            return value
+        case .failure(let error):
+            throw error
+        }
     }
 }
 

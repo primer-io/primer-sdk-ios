@@ -82,9 +82,9 @@ class DefaultNetworkService: NetworkService, LogReporter {
         return try await withCheckedThrowingContinuation { continuation in
             self.request(endpoint) { (result: Result<T, Error>) in
                 switch result {
-                case let .success(response):
+                case .success(let response):
                     continuation.resume(returning: response)
-                case let .failure(error):
+                case .failure(let error):
                     continuation.resume(throwing: error)
                 }
             }
@@ -100,9 +100,9 @@ class DefaultNetworkService: NetworkService, LogReporter {
         return try await withCheckedThrowingContinuation { continuation in
             self.request(endpoint) { (result: Result<T, Error>, headers: [String: String]?) in
                 switch result {
-                case let .success(response):
+                case .success(let response):
                     continuation.resume(returning: (response, headers))
-                case let .failure(error):
+                case .failure(let error):
                     continuation.resume(throwing: error)
                 }
             }
@@ -136,9 +136,9 @@ class DefaultNetworkService: NetworkService, LogReporter {
         return try await withCheckedThrowingContinuation { continuation in
             self.request(endpoint, retryConfig: retryConfig) { (result: Result<T, Error>, headers: [String: String]?) in
                 switch result {
-                case let .success(response):
+                case .success(let response):
                     continuation.resume(returning: (response, headers))
-                case let .failure(error):
+                case .failure(let error):
                     continuation.resume(throwing: error)
                 }
             }
@@ -162,9 +162,9 @@ class DefaultNetworkService: NetworkService, LogReporter {
                                                     endpoint: Endpoint,
                                                     completion: @escaping ResponseCompletion<T>) {
         switch result {
-        case let .success(response):
+        case .success(let response):
             handleSuccess(response: response, identifier: identifier, endpoint: endpoint, completion: completion)
-        case let .failure(error):
+        case .failure(let error):
             completion(.failure(error))
         }
     }
@@ -174,9 +174,9 @@ class DefaultNetworkService: NetworkService, LogReporter {
                                                     endpoint: Endpoint,
                                                     completion: @escaping ResponseCompletionWithHeaders<T>) {
         switch result {
-        case let .success(response):
+        case .success(let response):
             handleSuccess(response: response, identifier: identifier, endpoint: endpoint, completion: completion)
-        case let .failure(error):
+        case .failure(let error):
             completion(.failure(error), nil)
         }
     }

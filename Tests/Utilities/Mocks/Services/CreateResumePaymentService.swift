@@ -9,6 +9,10 @@ import Foundation
 @testable import PrimerSDK
 
 class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
+    //    static var apiClient: (any PrimerSDK.PrimerAPIClientProtocol)?
+
+    // MARK: completePayment
+
     func completePayment(clientToken: PrimerSDK.DecodedJWTToken,
                          completeUrl: URL,
                          body: Request.Body.Payment.Complete) -> PrimerSDK.Promise<Void> {
@@ -17,9 +21,9 @@ class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
         }
     }
 
-    static var apiClient: (any PrimerSDK.PrimerAPIClientProtocol)?
+    func completePayment(clientToken: DecodedJWTToken, completeUrl: URL, body: Request.Body.Payment.Complete) async throws {}
 
-    // MARL: createPayment
+    // MARK: createPayment
 
     var onCreatePayment: ((Request.Body.Payment.Create) -> Response.Body.Payment?)?
 
@@ -30,6 +34,14 @@ class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
             } else {
                 seal.reject(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
             }
+        }
+    }
+
+    func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment {
+        if let result = onCreatePayment?(paymentRequest) {
+            return result
+        } else {
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         }
     }
 
@@ -45,6 +57,14 @@ class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
             } else {
                 seal.reject(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
             }
+        }
+    }
+
+    func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response.Body.Payment {
+        if let result = onResumePayment?(paymentId, paymentResumeRequest) {
+            return result
+        } else {
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         }
     }
 }

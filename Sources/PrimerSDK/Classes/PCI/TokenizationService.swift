@@ -5,7 +5,13 @@ import Foundation
 internal protocol TokenizationServiceProtocol {
     var paymentMethodTokenData: PrimerPaymentMethodTokenData? { get set }
     func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData>
-    func exchangePaymentMethodToken(_ paymentMethodTokenId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?) -> Promise<PrimerPaymentMethodTokenData>
+    func tokenize(requestBody: Request.Body.Tokenization) async throws -> PrimerPaymentMethodTokenData
+    func exchangePaymentMethodToken(_ paymentMethodTokenId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?)
+        -> Promise<PrimerPaymentMethodTokenData>
+    func exchangePaymentMethodToken(
+        _ paymentMethodTokenId: String,
+        vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?
+    ) async throws -> PrimerPaymentMethodTokenData
 }
 
 internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
@@ -53,7 +59,7 @@ internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
                 return
             }
             self.logger.debug(message: "URL: \(url)")
-            self.apiClient.tokenizePaymentMethod(clientToken: decodedJWTToken, tokenizationRequestBody: requestBody) { (result) in
+            self.apiClient.tokenizePaymentMethod(clientToken: decodedJWTToken, tokenizationRequestBody: requestBody) { result in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
@@ -64,12 +70,27 @@ internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
             }
         }
     }
-    func exchangePaymentMethodToken( _ vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?) -> Promise<PrimerPaymentMethodTokenData> {
+
+    func tokenize(requestBody: Request.Body.Tokenization) async throws -> PrimerPaymentMethodTokenData {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.tokenize(requestBody: requestBody).done { paymentMethodTokenData in
+                continuation.resume(returning: paymentMethodTokenData)
+            }.catch { error in
+                continuation.resume(throwing: error)
+            }
+        }
+    }
+
+    func exchangePaymentMethodToken(
+        _ vaultedPaymentMethodId: String,
+        vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?
+    ) -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(
                     userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
+                    diagnosticsId: UUID().uuidString
+                )
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -77,7 +98,8 @@ internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
             self.apiClient.exchangePaymentMethodToken(
                 clientToken: decodedJWTToken,
                 vaultedPaymentMethodId: vaultedPaymentMethodId,
-                vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData) { result in
+                vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData
+            ) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let singleUsePaymentMethod):
@@ -89,5 +111,22 @@ internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
             }
         }
     }
+
+    func exchangePaymentMethodToken(
+        _ paymentMethodTokenId: String,
+        vaultedPaymentMethodAdditionalData: (any PrimerVaultedPaymentMethodAdditionalData)?
+    ) async throws -> PrimerPaymentMethodTokenData {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.exchangePaymentMethodToken(
+                paymentMethodTokenId,
+                vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData
+            ).done { paymentMethodTokenData in
+                continuation.resume(returning: paymentMethodTokenData)
+            }.catch { error in
+                continuation.resume(throwing: error)
+            }
+        }
+    }
 }
+
 // swiftlint:enable function_body_length

@@ -14,13 +14,6 @@ class MockRequestDispatcher: RequestDispatcher {
 
     var responseModel: DispatcherResponse!
 
-    func dispatch(request _: URLRequest) async throws -> any PrimerSDK.DispatcherResponse {
-        if let error = error {
-            throw error
-        }
-        return responseModel
-    }
-
     func dispatch(request _: URLRequest, completion: @escaping PrimerSDK.DispatcherCompletion) -> (any PrimerSDK.PrimerCancellable)? {
         if let error = error {
             completion(.failure(error))
@@ -28,6 +21,13 @@ class MockRequestDispatcher: RequestDispatcher {
             completion(.success(responseModel))
         }
         return nil
+    }
+
+    func dispatch(request _: URLRequest) async throws -> any PrimerSDK.DispatcherResponse {
+        if let error = error {
+            throw error
+        }
+        return responseModel
     }
 
     func dispatchWithRetry(request _: URLRequest, retryConfig _: PrimerSDK.RetryConfig,
@@ -38,6 +38,13 @@ class MockRequestDispatcher: RequestDispatcher {
             completion(.success(responseModel))
         }
         return nil
+    }
+
+    func dispatchWithRetry(request: URLRequest, retryConfig: PrimerSDK.RetryConfig) async throws -> any PrimerSDK.DispatcherResponse {
+        if let error {
+            throw error
+        }
+        return responseModel
     }
 }
 
@@ -78,7 +85,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken, requestParameters: nil)
         let cancellable = defaultNetworkService.request(endpoint) { (result: APIResult<PrimerAPIConfiguration>) in
             switch result {
-            case let .success(model):
+            case .success(let model):
                 XCTAssertEqual(model.coreUrl, "https://core_url")
                 XCTAssertEqual(model.pciUrl, "https://pci_url")
                 XCTAssertEqual(model.binDataUrl, "https://bin_data_url")
@@ -144,9 +151,9 @@ final class DefaultNetworkServiceTests: XCTestCase {
             switch result {
             case .success:
                 XCTFail(); return
-            case let .failure(error):
+            case .failure(let error):
                 switch error as! PrimerSDK.InternalError {
-                case let .failedToDecode(message, _, _):
+                case .failedToDecode(let message, _, _):
                     XCTAssertEqual(message, "Failed to decode response of type \'Configuration\' from URL: https://response_url")
                 default:
                     XCTFail()
@@ -172,7 +179,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
             XCTFail()
         } catch {
             switch error as! PrimerSDK.InternalError {
-            case let .failedToDecode(message, _, _):
+            case .failedToDecode(let message, _, _):
                 XCTAssertEqual(message, "Failed to decode response of type \'Configuration\' from URL: https://response_url")
             default:
                 XCTFail()
@@ -262,7 +269,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
             switch result {
             case .success:
                 XCTFail("Expected failure due to network error")
-            case let .failure(error):
+            case .failure(let error):
                 XCTAssertEqual((error as NSError).domain, NSURLErrorDomain)
                 XCTAssertEqual((error as NSError).code, NSURLErrorNotConnectedToInternet)
                 expectation.fulfill()
@@ -307,7 +314,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken, requestParameters: nil)
         let cancellable = defaultNetworkService.request(endpoint) { (result: APIResult<PrimerAPIConfiguration>, headers: [String: String]?) in
             switch result {
-            case let .success(model):
+            case .success(let model):
                 XCTAssertEqual(model.coreUrl, "https://core_url")
                 XCTAssertEqual(headers?["X-Test-Key"], "X-Test-Value")
                 expectation.fulfill()

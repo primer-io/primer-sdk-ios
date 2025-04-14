@@ -9,10 +9,15 @@ import Foundation
 
 internal protocol CreateResumePaymentServiceProtocol {
     func createPayment(paymentRequest: Request.Body.Payment.Create) -> Promise<Response.Body.Payment>
+    func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment
     func completePayment(clientToken: DecodedJWTToken,
                          completeUrl: URL,
                          body: Request.Body.Payment.Complete) -> Promise<Void>
+    func completePayment(clientToken: DecodedJWTToken,
+                         completeUrl: URL,
+                         body: Request.Body.Payment.Complete) async throws
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) -> Promise<Response.Body.Payment>
+    func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response.Body.Payment
 }
 
 private enum CreateResumePaymentCallType: String {
@@ -21,7 +26,6 @@ private enum CreateResumePaymentCallType: String {
 }
 
 internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
-
     let apiClient: PrimerAPIClientCreateResumePaymentProtocol
 
     let paymentMethodType: String
@@ -58,17 +62,27 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         }
     }
 
-    private func validateResponse(paymentResponse: Response.Body.Payment, callType: CreateResumePaymentCallType) throws {
+    func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.createPayment(paymentRequest: paymentRequest).done { paymentResponse in
+                continuation.resume(returning: paymentResponse)
+            }.catch { error in
+                continuation.resume(throwing: error)
+            }
+        }
+    }
 
+    private func validateResponse(paymentResponse: Response.Body.Payment, callType: CreateResumePaymentCallType) throws {
         if paymentResponse.id == nil || paymentResponse.status == .failed ||
             (callType == .resume && paymentResponse.status == .pending && paymentResponse.showSuccessCheckoutOnPendingPayment == false) {
             let err = PrimerError.paymentFailed(
-                paymentMethodType: self.paymentMethodType,
+                paymentMethodType: paymentMethodType,
                 paymentId: paymentResponse.id ?? "unknown",
                 orderId: paymentResponse.orderId ?? nil,
                 status: paymentResponse.status.rawValue,
                 userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
+                diagnosticsId: UUID().uuidString
+            )
             ErrorHandler.handle(error: err)
             throw err
         }
@@ -92,7 +106,8 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                         paymentMethodType: self.paymentMethodType,
                         description: err.localizedDescription,
                         userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
+                        diagnosticsId: UUID().uuidString
+                    )
 
                     seal.reject(error)
                 case .success(let paymentResponse):
@@ -103,6 +118,16 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                         seal.reject(error)
                     }
                 }
+            }
+        }
+    }
+
+    func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response.Body.Payment {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.resumePaymentWithPaymentId(paymentId, paymentResumeRequest: paymentResumeRequest).done { paymentResponse in
+                continuation.resume(returning: paymentResponse)
+            }.catch { error in
+                continuation.resume(throwing: error)
             }
         }
     }
@@ -133,6 +158,18 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                 case .failure(let error):
                     seal.reject(error)
                 }
+            }
+        }
+    }
+
+    func completePayment(clientToken: DecodedJWTToken,
+                         completeUrl: URL,
+                         body: Request.Body.Payment.Complete) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.completePayment(clientToken: clientToken, completeUrl: completeUrl, body: body).done {
+                continuation.resume()
+            }.catch { error in
+                continuation.resume(throwing: error)
             }
         }
     }
