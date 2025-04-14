@@ -54,8 +54,8 @@ extension UserDefaults: AppetizePayloadProviding {
 struct AppetizeUrlHandler {
     // Handle incoming livedemostore url
     static func handleUrl(_ url: URL) -> Bool {
-        if url.absoluteString.contains("livedemostore.common.primer.io"),
-           let p = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems?.first(where: { $0.name == "p"}) {
+        if url.absoluteString.contains("https://sdk-demo.primer.io"),
+            let p = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems?.first(where: { $0.name == "p"}) {
             let DeeplinkConfigProvider = DeeplinkConfigProvider(isAppetize: true, configJwt: p.value)
             NotificationCenter.default.post(name: .appetizeURLHandled, object: DeeplinkConfigProvider)
             return true
