@@ -156,6 +156,8 @@ extension Response.Body.Tokenization {
         public let bankName: String?
         public let accountNumberLast4Digits: String?
 
+        public let applePayMerchantTokenIdentifier: String?
+
         // swiftlint:disable:next nesting
         public struct SessionInfo: Codable {
             public let locale: String?
@@ -190,6 +192,7 @@ extension Response.Body.Tokenization {
             case sessionInfo
             case bankName
             case accountNumberLast4Digits = "accountNumberLastFourDigits"
+            case applePayMerchantTokenIdentifier
         }
     }
 }

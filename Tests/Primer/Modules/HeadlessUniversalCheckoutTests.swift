@@ -387,7 +387,8 @@ extension HeadlessUniversalCheckoutTests {
                 orderedAllowedCardNetworks: [
                     CardNetwork.visa.rawValue,
                     CardNetwork.masterCard.rawValue
-                ]
+                ],
+                descriptor: nil
             ),
             order: nil,
             customer: nil,

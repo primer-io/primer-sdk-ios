@@ -25,7 +25,8 @@ final class IdealPaymentMethodTests: XCTestCase {
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
                 options: nil,
-                orderedAllowedCardNetworks: nil),
+                orderedAllowedCardNetworks: nil,
+                descriptor: nil),
             order: nil,
             customer: nil,
             testId: nil)

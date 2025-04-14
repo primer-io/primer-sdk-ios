@@ -8,11 +8,16 @@ public enum MerchantCapability {
 }
 
 struct ApplePayRequest {
+    var amount: Int?
+    var paymentDescriptor: String?
     var currency: Currency
     var merchantIdentifier: String
     var countryCode: CountryCode
     var items: [ApplePayOrderItem]
     var shippingMethods: [PKShippingMethod]?
+    var recurringPaymentRequest: ApplePayRecurringPaymentRequest?
+    var deferredPaymentRequest: ApplePayDeferredPaymentRequest?
+    var automaticReloadRequest: ApplePayAutomaticReloadRequest?
 }
 
 struct ApplePayPaymentResponse {

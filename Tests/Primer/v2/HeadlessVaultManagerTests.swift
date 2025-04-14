@@ -19,7 +19,8 @@ final class HeadlessVaultManagerTests: XCTestCase {
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
                 options: nil,
-                orderedAllowedCardNetworks: nil
+                orderedAllowedCardNetworks: nil,
+                descriptor: nil
             ),
             order: ClientSession.Order(
                 id: "mock-client-session-order-id-1",
@@ -104,7 +105,8 @@ final class HeadlessVaultManagerTests: XCTestCase {
                                                                                                                  paymentMethodType: nil,
                                                                                                                  sessionInfo: nil,
                                                                                                                  bankName: nil,
-                                                                                                                 accountNumberLast4Digits: nil),
+                                                                                                                 accountNumberLast4Digits: nil,
+                                                                                                                applePayMerchantTokenIdentifier: nil),
                                          threeDSecureAuthentication: nil,
                                          token: "anything",
                                          tokenType: .multiUse,
@@ -153,7 +155,8 @@ final class HeadlessVaultManagerTests: XCTestCase {
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
                 options: nil,
-                orderedAllowedCardNetworks: nil
+                orderedAllowedCardNetworks: nil,
+                descriptor: nil
             ),
             order: ClientSession.Order(
                 id: "mock-client-session-order-id-1",
@@ -220,7 +223,8 @@ final class HeadlessVaultManagerTests: XCTestCase {
             paymentMethod: ClientSession.PaymentMethod(
                 vaultOnSuccess: false,
                 options: nil,
-                orderedAllowedCardNetworks: nil
+                orderedAllowedCardNetworks: nil,
+                descriptor: nil
             ),
             order: ClientSession.Order(
                 id: "mock-client-session-order-id-1",
@@ -305,7 +309,8 @@ final class HeadlessVaultManagerTests: XCTestCase {
                                                                                                                  paymentMethodType: nil,
                                                                                                                  sessionInfo: nil,
                                                                                                                  bankName: nil,
-                                                                                                                 accountNumberLast4Digits: nil),
+                                                                                                                 accountNumberLast4Digits: nil,
+                                                                                                                applePayMerchantTokenIdentifier: nil),
                                          threeDSecureAuthentication: nil,
                                          token: "anything",
                                          tokenType: .multiUse,
@@ -395,7 +400,8 @@ final class HeadlessVaultManagerTests: XCTestCase {
                     paymentMethodType: nil,
                     sessionInfo: nil,
                     bankName: nil,
-                    accountNumberLast4Digits: nil),
+                    accountNumberLast4Digits: nil,
+                    applePayMerchantTokenIdentifier: nil),
                 analyticsId: "analytics-id")
         ]
 
@@ -474,7 +480,8 @@ final class HeadlessVaultManagerTests: XCTestCase {
                     paymentMethodType: nil,
                     sessionInfo: nil,
                     bankName: nil,
-                    accountNumberLast4Digits: nil),
+                    accountNumberLast4Digits: nil,
+                    applePayMerchantTokenIdentifier: nil),
                 analyticsId: "analytics-id")
         ]
 
@@ -515,7 +522,8 @@ final class HeadlessVaultManagerTests: XCTestCase {
                     paymentMethodType: nil,
                     sessionInfo: nil,
                     bankName: nil,
-                    accountNumberLast4Digits: nil),
+                    accountNumberLast4Digits: nil,
+                    applePayMerchantTokenIdentifier: nil),
                 analyticsId: "analytics-id")
         ]
 
