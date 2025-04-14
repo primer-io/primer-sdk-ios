@@ -11,7 +11,7 @@
 import Foundation
 import UIKit
 
-struct AnalyticsContextKeys {
+enum AnalyticsContextKeys {
     static let createdAt = "createdAt"
     static let paymentMethodType = "paymentMethodType"
     static let reasonCode = "reasonCode"
@@ -73,6 +73,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, userInfo: [String: String]?, diagnosticsId: String)
     case nolError(code: String?, message: String?, userInfo: [String: String]?, diagnosticsId: String)
     case klarnaError(message: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case klarnaUserNotApproved(userInfo: [String: String]?, diagnosticsId: String)
     case stripeError(key: String, message: String?, userInfo: [String: String]?, diagnosticsId: String)
     case unableToPresentApplePay(userInfo: [String: String]?, diagnosticsId: String)
     case unknown(userInfo: [String: String]?, diagnosticsId: String)
@@ -133,6 +134,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "nol-pay-sdk-error"
         case .klarnaError:
             return "klarna-sdk-error"
+        case .klarnaUserNotApproved:
+            return "klarna-user-not-approved"
         case .stripeError(let key, _, _, _):
             return key
         case .unableToPresentApplePay:
@@ -209,6 +212,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .klarnaError(_, _, let diagnosticsId):
             return diagnosticsId
+        case .klarnaUserNotApproved(_, let diagnosticsId):
+            return diagnosticsId
         case .stripeError(_, _, _, let diagnosticsId):
             return diagnosticsId
         case .unknown(_, let diagnosticsId):
@@ -219,7 +224,7 @@ public enum PrimerError: PrimerErrorProtocol {
     var plainDescription: String? {
         switch self {
         case .uninitializedSDKSession:
-            return "[\(errorId)] SDK session has not been initialzed (diagnosticsId: \(self.diagnosticsId)"
+            return "[\(errorId)] SDK session has not been initialzed (diagnosticsId: \(diagnosticsId)"
         case .invalidClientToken:
             return "Client token is not valid"
         case .missingPrimerConfiguration:
@@ -272,6 +277,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Nol SDK encountered an error: \(String(describing: code)), \(String(describing: message))"
         case .klarnaError(let message, _, _):
             return "Klarna wrapper SDK encountered an error: \(String(describing: message))"
+        case .klarnaUserNotApproved:
+            return "User is not approved to perform Klarna payments"
         case .stripeError(_, let message, _, _):
             return "Stripe wrapper SDK encountered an error: \(String(describing: message))"
         case .unableToPresentApplePay:
@@ -282,7 +289,7 @@ public enum PrimerError: PrimerErrorProtocol {
     }
 
     public var errorDescription: String? {
-        return "[\(errorId)] \(plainDescription ?? "") (diagnosticsId: \(self.errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
+        return "[\(errorId)] \(plainDescription ?? "") (diagnosticsId: \(errorUserInfo["diagnosticsId"] as? String ?? "nil"))"
     }
 
     var info: InfoType? {
@@ -316,10 +323,11 @@ public enum PrimerError: PrimerErrorProtocol {
              .invalidVaultedPaymentMethodId(_, let userInfo, _),
              .nolError(_, _, let userInfo, _),
              .klarnaError(_, let userInfo, _),
+             .klarnaUserNotApproved(let userInfo, _),
              .stripeError(_, _, let userInfo, _),
              .unableToPresentApplePay(let userInfo, _),
              .unknown(let userInfo, _):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { _, new in new }
         }
 
         return tmpUserInfo
@@ -328,7 +336,7 @@ public enum PrimerError: PrimerErrorProtocol {
     public var errorUserInfo: [String: Any] {
         let tmpUserInfo: [String: Any] = [
             "createdAt": Date().toString(),
-            "diagnosticsId": diagnosticsId
+            "diagnosticsId": diagnosticsId,
         ]
 
         return tmpUserInfo
@@ -347,11 +355,11 @@ public enum PrimerError: PrimerErrorProtocol {
         case .misconfiguredPaymentMethods:
             let message =
                 """
-Payment Methods are not configured correctly. \
-Ensure that you have configured them in the Connection, \
-and/or that they are set up for the specified conditions \
-on your dashboard https://dashboard.primer.io/
-"""
+                Payment Methods are not configured correctly. \
+                Ensure that you have configured them in the Connection, \
+                and/or that they are set up for the specified conditions \
+                on your dashboard https://dashboard.primer.io/
+                """
             return message
         case .cancelled:
             return nil
@@ -364,7 +372,7 @@ on your dashboard https://dashboard.primer.io/
         case .invalidClientSessionValue(let name, _, let allowedValue, _, _):
             var str = "Check if you have provided a valid value for \"\(name)\" in your client session."
             if let allowedValue {
-                str +=  " Allowed values are [\(allowedValue)]."
+                str += " Allowed values are [\(allowedValue)]."
             }
             return str
         case .invalidMerchantIdentifier:
@@ -375,9 +383,9 @@ on your dashboard https://dashboard.primer.io/
             return nil
         case .unableToPresentPaymentMethod:
             let message = """
-Check if all necessary values have been provided on your client session.\
- You can find the necessary values on our documentation (website).
-"""
+            Check if all necessary values have been provided on your client session.\
+             You can find the necessary values on our documentation (website).
+            """
             return message
         case .unsupportedIntent(let intent, _, _):
             if intent == .checkout {
@@ -407,16 +415,18 @@ Check if all necessary values have been provided on your client session.\
             return nil
         case .klarnaError:
             return nil
+        case .klarnaUserNotApproved:
+            return nil
         case .stripeError:
             return nil
         case .unableToPresentApplePay:
             let message = """
-PassKit was unable to present the Apple Pay UI. Check merchantIdentifier \
-and other parameters are set correctly for the current environment.
-"""
+            PassKit was unable to present the Apple Pay UI. Check merchantIdentifier \
+            and other parameters are set correctly for the current environment.
+            """
             return message
         case .unknown:
-            return "Contact Primer and provide them diagnostics id \(self.diagnosticsId)"
+            return "Contact Primer and provide them diagnostics id \(diagnosticsId)"
         }
     }
 
