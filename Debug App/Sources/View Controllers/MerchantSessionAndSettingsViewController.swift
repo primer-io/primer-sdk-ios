@@ -169,6 +169,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var applePayShippingAdditionalContactFields: [PrimerApplePayOptions.RequiredContactField]? = []
     var applePayCheckProvidedNetworks = false
 
+    private var deepLinkSettings: PrimerSettings?
+    private var deepLinkClientToken: String?
+
     func setAccessibilityIds() {
         self.view.accessibilityIdentifier = "Background View"
         self.testingModeSegmentedControl.accessibilityIdentifier = "Testing Mode Segmented Control"
@@ -233,8 +236,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     }
 
     private func handleAppetizeIfNeeded(_ configProvider: AppetizeConfigProvider) {
-        if let config = configProvider.fetchConfig() {
-            updateUI(for: config)
+        if let settings = configProvider.fetchConfig() {
+            self.deepLinkSettings = settings
+        }
+        if let clientToken = configProvider.fetchClientToken() {
+            self.deepLinkClientToken = clientToken
         }
     }
 
@@ -741,6 +747,13 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     }
 
     @IBAction func primerSDKButtonTapped(_ sender: Any) {
+        if let clientToken = self.deepLinkClientToken, let settings = self.deepLinkSettings {
+            let vc = MerchantDropInUIViewController.instantiate(
+                settings: settings, clientSession: nil, clientToken: clientToken)
+            navigationController?.pushViewController(vc, animated: true)
+            return
+        }
+
         customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
 
         let selectedDismissalMechanisms: [DismissalMechanism] = {
@@ -808,6 +821,15 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     }
 
     @IBAction func primerHeadlessButtonTapped(_ sender: Any) {
+        if let clientToken = self.deepLinkClientToken, let settings = self.deepLinkSettings {
+            let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(
+                settings: settings,
+                clientSession: nil,
+                clientToken: clientToken)
+            navigationController?.pushViewController(vc, animated: true)
+            return
+        }
+
         customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
 
         let shippingOptions = applePayCaptureShippingDetails ?
