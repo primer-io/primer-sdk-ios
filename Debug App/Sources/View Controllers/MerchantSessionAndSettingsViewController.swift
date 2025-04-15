@@ -226,7 +226,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         customerIdTextField.addTarget(
             self, action: #selector(customerIdChanged(_:)), for: .editingDidEnd)
 
-        handleAppetizeIfNeeded(AppetizeConfigProvider())
+        handleAppetizeIfNeeded(AppLinkConfigProvider())
 
         render()
 
@@ -237,11 +237,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
     @objc func handleAppetizeConfig(_ notification: NSNotification) {
         if let payloadProvider = notification.object as? DeeplinkConfigProvider {
-            handleAppetizeIfNeeded(AppetizeConfigProvider(payloadProvider: payloadProvider))
+            handleAppetizeIfNeeded(AppLinkConfigProvider(payloadProvider: payloadProvider))
         }
     }
 
-    private func handleAppetizeIfNeeded(_ configProvider: AppetizeConfigProvider) {
+    private func handleAppetizeIfNeeded(_ configProvider: AppLinkConfigProvider) {
         if let settings = configProvider.fetchConfig() {
             self.deepLinkSettings = settings
             self.dlSettingsDisplay.text = prettyPrint(settings)
@@ -980,48 +980,5 @@ extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPi
         }
 
         render()
-    }
-}
-
-extension MerchantSessionAndSettingsViewController {
-    private func updateUI(for config: SessionConfiguration) {
-        apiKeyTextField.text = config.customApiKey
-        customerIdTextField.text = config.customerId.isEmpty ? "ios-customer-id" : config.customerId
-
-        switch config.env {
-        case .dev:
-            environmentSegmentedControl.selectedSegmentIndex = 0
-        case .sandbox:
-            environmentSegmentedControl.selectedSegmentIndex = 2
-        case .staging:
-            environmentSegmentedControl.selectedSegmentIndex = 1
-        case .production:
-            environmentSegmentedControl.selectedSegmentIndex = 3
-        case .local:
-            environmentSegmentedControl.selectedSegmentIndex = 2
-        }
-        environment = config.env
-
-        switch config.paymentHandling {
-        case .auto:
-            checkoutFlowSegmentedControl.selectedSegmentIndex = 0
-        case .manual:
-            checkoutFlowSegmentedControl.selectedSegmentIndex = 1
-        }
-
-        currencyTextField.text = config.currency
-        countryCodeTextField.text = config.countryCode
-
-        let lineItem = ClientSessionRequestBody.Order.LineItem(
-            itemId: "ld-lineitem",
-            description: "Fancy Shoes",
-            amount: Int(config.value) ?? 100,
-            quantity: 1,
-            discountAmount: nil,
-            taxAmount: nil)
-
-        self.lineItems = [lineItem]
-
-        metadataTextField.text = config.metadata
     }
 }

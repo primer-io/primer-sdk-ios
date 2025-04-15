@@ -17,7 +17,6 @@
 		04921D0D2BFB79DC004DFB4D /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04921D0B2BFB79DC004DFB4D /* MerchantHeadlessCheckoutNolPayViewController.swift */; };
 		049A055E2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
 		04F3235C2BD2F99000F5927C /* UIApplication+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F3235B2BD2F99000F5927C /* UIApplication+Extensions.swift */; };
-		04F323612BD408C600F5927C /* AppetizeConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F3235D2BD408C600F5927C /* AppetizeConfigTests.swift */; };
 		04F323622BD408C600F5927C /* Debug App Tests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04F3235E2BD408C600F5927C /* Debug App Tests-Info.plist */; };
 		04F323632BD408C600F5927C /* MetadataParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F3235F2BD408C600F5927C /* MetadataParserTests.swift */; };
 		04F323642BD409FE00F5927C /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47512B06C5030091C31F /* BanksListModel.swift */; };
@@ -63,8 +62,7 @@
 		F03699592AC2E63700E4179D /* (null) in Sources */ = {isa = PBXBuildFile; };
 		F046FCBA2DACE84300B2A4E7 /* TestSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F046FCB92DACE83A00B2A4E7 /* TestSettings.swift */; };
 		F046FCBC2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F046FCBB2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift */; };
-		F08F63D82B9B5A7C006EF9A9 /* SessionConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63D72B9B5A7C006EF9A9 /* SessionConfiguration.swift */; };
-		F08F63DA2B9B5BC5006EF9A9 /* AppetizeConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63D92B9B5BC5006EF9A9 /* AppetizeConfigProvider.swift */; };
+		F08F63DA2B9B5BC5006EF9A9 /* AppLinkConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63D92B9B5BC5006EF9A9 /* AppLinkConfigProvider.swift */; };
 		F08F63DC2B9F27B0006EF9A9 /* MetadataParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63DB2B9F27B0006EF9A9 /* MetadataParser.swift */; };
 		F09978822D00B7620058E4B5 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09978812D00B7620058E4B5 /* Metadata.swift */; };
 		F0C2147F6FA26527BE55549A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC701AFD94F96F0F1D108D1A /* LaunchScreen.xib */; };
@@ -119,7 +117,6 @@
 		049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MerchantHeadlessVaultManagerViewController.swift; sourceTree = "<group>"; };
 		04C1906F2BEA5B75009A225A /* UnitTestsTestPlan.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = UnitTestsTestPlan.xctestplan; sourceTree = "<group>"; };
 		04F3235B2BD2F99000F5927C /* UIApplication+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+Extensions.swift"; sourceTree = "<group>"; };
-		04F3235D2BD408C600F5927C /* AppetizeConfigTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppetizeConfigTests.swift; sourceTree = "<group>"; };
 		04F3235E2BD408C600F5927C /* Debug App Tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Debug App Tests-Info.plist"; sourceTree = "<group>"; };
 		04F3235F2BD408C600F5927C /* MetadataParserTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetadataParserTests.swift; sourceTree = "<group>"; };
 		0DA32ABCF07A4EBED014327B /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -238,8 +235,7 @@
 		E8DE1E4FB055B60582977315 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
 		F046FCB92DACE83A00B2A4E7 /* TestSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSettings.swift; sourceTree = "<group>"; };
 		F046FCBB2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNPrimerSettingsTests.swift; sourceTree = "<group>"; };
-		F08F63D72B9B5A7C006EF9A9 /* SessionConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionConfiguration.swift; sourceTree = "<group>"; };
-		F08F63D92B9B5BC5006EF9A9 /* AppetizeConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppetizeConfigProvider.swift; sourceTree = "<group>"; };
+		F08F63D92B9B5BC5006EF9A9 /* AppLinkConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinkConfigProvider.swift; sourceTree = "<group>"; };
 		F08F63DB2B9F27B0006EF9A9 /* MetadataParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataParser.swift; sourceTree = "<group>"; };
 		F09978812D00B7620058E4B5 /* Metadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = "<group>"; };
 		F0CD61552DACEFB600582D59 /* TestSettings+PrimerSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TestSettings+PrimerSettings.swift"; sourceTree = "<group>"; };
@@ -284,7 +280,7 @@
 			children = (
 				044DE11C2CBFF97D00AAE28A /* SecretsManager.swift */,
 				0489E2BA2B68F71300FA0682 /* TapGestureRecognizer.swift */,
-				F08F63D92B9B5BC5006EF9A9 /* AppetizeConfigProvider.swift */,
+				F08F63D92B9B5BC5006EF9A9 /* AppLinkConfigProvider.swift */,
 				F08F63DB2B9F27B0006EF9A9 /* MetadataParser.swift */,
 				0478EAFD2C247BD600A4F5E2 /* TestHelper.swift */,
 			);
@@ -306,7 +302,6 @@
 				0453CB3A2C0A08AD00C8C750 /* DebugAppTestPlan.xctestplan */,
 				04C1906F2BEA5B75009A225A /* UnitTestsTestPlan.xctestplan */,
 				04F3235E2BD408C600F5927C /* Debug App Tests-Info.plist */,
-				04F3235D2BD408C600F5927C /* AppetizeConfigTests.swift */,
 				04F3235F2BD408C600F5927C /* MetadataParserTests.swift */,
 				044DE11E2CC0023200AAE28A /* SecretsManagerTests.swift */,
 				F046FCBB2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift */,
@@ -456,7 +451,6 @@
 				229849A3DBE0858EE90673B9 /* CreateClientToken.swift */,
 				A6AEF11B151368BF993C3EA9 /* TestScenario.swift */,
 				70D3D6CF0F006A06B7CEC71B /* TransactionResponse.swift */,
-				F08F63D72B9B5A7C006EF9A9 /* SessionConfiguration.swift */,
 				F09978812D00B7620058E4B5 /* Metadata.swift */,
 			);
 			path = Model;
@@ -722,7 +716,6 @@
 				F046FCBC2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift in Sources */,
 				F03699592AC2E63700E4179D /* (null) in Sources */,
 				044DE11F2CC0023200AAE28A /* SecretsManagerTests.swift in Sources */,
-				04F323612BD408C600F5927C /* AppetizeConfigTests.swift in Sources */,
 				04F323632BD408C600F5927C /* MetadataParserTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -747,7 +740,6 @@
 				04F323642BD409FE00F5927C /* BanksListModel.swift in Sources */,
 				87FC1AC92BE518BC00C9F474 /* MerchantHeadlessStripeAchFieldsView.swift in Sources */,
 				AAE3B30B64B6822A20987FCA /* CreateClientToken.swift in Sources */,
-				F08F63D82B9B5A7C006EF9A9 /* SessionConfiguration.swift in Sources */,
 				87FC1ACB2BE5194100C9F474 /* MerchantHeadlessStripeAchFieldsViewModel.swift in Sources */,
 				F09978822D00B7620058E4B5 /* Metadata.swift in Sources */,
 				04F323652BD40A0E00F5927C /* MerchantHeadlessCheckoutBankViewController.swift in Sources */,
@@ -774,7 +766,7 @@
 				0478EAFE2C247BD600A4F5E2 /* TestHelper.swift in Sources */,
 				876140EF2B6BE8C20058CA8C /* MerchantHelpers.swift in Sources */,
 				0489E2BB2B68F71300FA0682 /* TapGestureRecognizer.swift in Sources */,
-				F08F63DA2B9B5BC5006EF9A9 /* AppetizeConfigProvider.swift in Sources */,
+				F08F63DA2B9B5BC5006EF9A9 /* AppLinkConfigProvider.swift in Sources */,
 				E11F47562B06C5030091C31F /* ImageViewWithUrl.swift in Sources */,
 				34CDCA7B403C001E4C55D26D /* MerchantSessionAndSettingsViewController.swift in Sources */,
 				876140E62B67F3B30058CA8C /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift in Sources */,

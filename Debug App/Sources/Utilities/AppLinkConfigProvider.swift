@@ -11,31 +11,28 @@ import PrimerSDK
 
 protocol PaymentConfigProviding {}
 
-protocol AppetizePayloadProviding {
-    var isAppetize: Bool? { get }
+protocol AppLinkPayloadProviding {
     var clientToken: String? { get }
     var settingsJwt: String? { get }
 }
 
-class AppetizeConfigProvider {
+class AppLinkConfigProvider {
 
-    private let payloadProvider: AppetizePayloadProviding
+    private let payloadProvider: AppLinkPayloadProviding
 
-    init(payloadProvider: AppetizePayloadProviding = UserDefaults.standard) {
+    init(payloadProvider: AppLinkPayloadProviding = UserDefaults.standard) {
         self.payloadProvider = payloadProvider
     }
 
     func fetchClientToken() -> String? {
-        guard payloadProvider.isAppetize == true,
-              let clientToken = payloadProvider.clientToken else {
+        guard let clientToken = payloadProvider.clientToken else {
             return nil
         }
         return clientToken
     }
 
     func fetchConfig() -> PrimerSettings? {
-        guard payloadProvider.isAppetize == true,
-              let settingsJwt = payloadProvider.settingsJwt,
+        guard let settingsJwt = payloadProvider.settingsJwt,
               let settings = getSettings(from: settingsJwt) else {
             return nil
         }
@@ -50,15 +47,9 @@ class AppetizeConfigProvider {
     }
 }
 
-extension UserDefaults: AppetizePayloadProviding {
-    private static let isAppetizeKey = "isAppetize"
-
+extension UserDefaults: AppLinkPayloadProviding {
     private static let clientTokenKey = "clientToken"
     private static let settingsJwtKey = "settings"
-
-    var isAppetize: Bool? {
-        bool(forKey: Self.isAppetizeKey)
-    }
 
     var clientToken: String? {
         string(forKey: Self.clientTokenKey)
@@ -75,7 +66,7 @@ struct AppetizeUrlHandler {
         if url.absoluteString.contains("https://sdk-demo.primer.io"),
         let clientToken = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems?.first(where: { $0.name == "clientToken"}),
         let settings = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems?.first(where: { $0.name == "settings"}) {
-            let DeeplinkConfigProvider = DeeplinkConfigProvider(isAppetize: true, clientToken: clientToken.value, settingsJwt: settings.value)
+            let DeeplinkConfigProvider = DeeplinkConfigProvider(clientToken: clientToken.value, settingsJwt: settings.value)
             NotificationCenter.default.post(name: .appetizeURLHandled, object: DeeplinkConfigProvider)
             return true
         } else {
@@ -88,8 +79,7 @@ extension NSNotification.Name {
     static let appetizeURLHandled = NSNotification.Name("appetizeURLHandled")
 }
 
-struct DeeplinkConfigProvider: AppetizePayloadProviding {
-    let isAppetize: Bool?
+struct DeeplinkConfigProvider: AppLinkPayloadProviding {
     let clientToken: String?
     let settingsJwt: String?
 }
