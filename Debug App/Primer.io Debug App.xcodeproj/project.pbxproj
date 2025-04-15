@@ -18,7 +18,6 @@
 		049A055E2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049A055D2B4BF057002CEEBA /* MerchantHeadlessVaultManagerViewController.swift */; };
 		04F3235C2BD2F99000F5927C /* UIApplication+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F3235B2BD2F99000F5927C /* UIApplication+Extensions.swift */; };
 		04F323622BD408C600F5927C /* Debug App Tests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 04F3235E2BD408C600F5927C /* Debug App Tests-Info.plist */; };
-		04F323632BD408C600F5927C /* MetadataParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F3235F2BD408C600F5927C /* MetadataParserTests.swift */; };
 		04F323642BD409FE00F5927C /* BanksListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11F47512B06C5030091C31F /* BanksListModel.swift */; };
 		04F323652BD40A0E00F5927C /* MerchantHeadlessCheckoutBankViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E129D66F2B162022004694F9 /* MerchantHeadlessCheckoutBankViewController.swift */; };
 		04F323662BD40A2300F5927C /* MerchantNewLineItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */; };
@@ -62,8 +61,8 @@
 		F03699592AC2E63700E4179D /* (null) in Sources */ = {isa = PBXBuildFile; };
 		F046FCBA2DACE84300B2A4E7 /* TestSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F046FCB92DACE83A00B2A4E7 /* TestSettings.swift */; };
 		F046FCBC2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F046FCBB2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift */; };
+		F04DFC692DAE42390006AEDC /* AppLinkConfigProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC682DAE42390006AEDC /* AppLinkConfigProviderTests.swift */; };
 		F08F63DA2B9B5BC5006EF9A9 /* AppLinkConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63D92B9B5BC5006EF9A9 /* AppLinkConfigProvider.swift */; };
-		F08F63DC2B9F27B0006EF9A9 /* MetadataParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63DB2B9F27B0006EF9A9 /* MetadataParser.swift */; };
 		F09978822D00B7620058E4B5 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09978812D00B7620058E4B5 /* Metadata.swift */; };
 		F0C2147F6FA26527BE55549A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC701AFD94F96F0F1D108D1A /* LaunchScreen.xib */; };
 		F0CD61562DACEFC200582D59 /* TestSettings+PrimerSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0CD61552DACEFB600582D59 /* TestSettings+PrimerSettings.swift */; };
@@ -118,7 +117,6 @@
 		04C1906F2BEA5B75009A225A /* UnitTestsTestPlan.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = UnitTestsTestPlan.xctestplan; sourceTree = "<group>"; };
 		04F3235B2BD2F99000F5927C /* UIApplication+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+Extensions.swift"; sourceTree = "<group>"; };
 		04F3235E2BD408C600F5927C /* Debug App Tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Debug App Tests-Info.plist"; sourceTree = "<group>"; };
-		04F3235F2BD408C600F5927C /* MetadataParserTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetadataParserTests.swift; sourceTree = "<group>"; };
 		0DA32ABCF07A4EBED014327B /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		0ED746F8924E70AD868BC0F4 /* MerchantNewLineItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantNewLineItemViewController.swift; sourceTree = "<group>"; };
 		0FD08B8CE57A11D1E35A8684 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -235,8 +233,8 @@
 		E8DE1E4FB055B60582977315 /* Networking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Networking.swift; sourceTree = "<group>"; };
 		F046FCB92DACE83A00B2A4E7 /* TestSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSettings.swift; sourceTree = "<group>"; };
 		F046FCBB2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNPrimerSettingsTests.swift; sourceTree = "<group>"; };
+		F04DFC682DAE42390006AEDC /* AppLinkConfigProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinkConfigProviderTests.swift; sourceTree = "<group>"; };
 		F08F63D92B9B5BC5006EF9A9 /* AppLinkConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinkConfigProvider.swift; sourceTree = "<group>"; };
-		F08F63DB2B9F27B0006EF9A9 /* MetadataParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataParser.swift; sourceTree = "<group>"; };
 		F09978812D00B7620058E4B5 /* Metadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = "<group>"; };
 		F0CD61552DACEFB600582D59 /* TestSettings+PrimerSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TestSettings+PrimerSettings.swift"; sourceTree = "<group>"; };
 		F816A2444633C4336A7CB071 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
@@ -281,7 +279,6 @@
 				044DE11C2CBFF97D00AAE28A /* SecretsManager.swift */,
 				0489E2BA2B68F71300FA0682 /* TapGestureRecognizer.swift */,
 				F08F63D92B9B5BC5006EF9A9 /* AppLinkConfigProvider.swift */,
-				F08F63DB2B9F27B0006EF9A9 /* MetadataParser.swift */,
 				0478EAFD2C247BD600A4F5E2 /* TestHelper.swift */,
 			);
 			path = Utilities;
@@ -302,9 +299,9 @@
 				0453CB3A2C0A08AD00C8C750 /* DebugAppTestPlan.xctestplan */,
 				04C1906F2BEA5B75009A225A /* UnitTestsTestPlan.xctestplan */,
 				04F3235E2BD408C600F5927C /* Debug App Tests-Info.plist */,
-				04F3235F2BD408C600F5927C /* MetadataParserTests.swift */,
 				044DE11E2CC0023200AAE28A /* SecretsManagerTests.swift */,
 				F046FCBB2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift */,
+				F04DFC682DAE42390006AEDC /* AppLinkConfigProviderTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -713,10 +710,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F04DFC692DAE42390006AEDC /* AppLinkConfigProviderTests.swift in Sources */,
 				F046FCBC2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift in Sources */,
 				F03699592AC2E63700E4179D /* (null) in Sources */,
 				044DE11F2CC0023200AAE28A /* SecretsManagerTests.swift in Sources */,
-				04F323632BD408C600F5927C /* MetadataParserTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -745,7 +742,6 @@
 				04F323652BD40A0E00F5927C /* MerchantHeadlessCheckoutBankViewController.swift in Sources */,
 				876141082B8346650058CA8C /* MerchantHeadlessKlarnaInitializationView.swift in Sources */,
 				C75A11E6AEEFC2B7A29BBC04 /* TestScenario.swift in Sources */,
-				F08F63DC2B9F27B0006EF9A9 /* MetadataParser.swift in Sources */,
 				FD5ADBCFA70DB606339F3AF2 /* TransactionResponse.swift in Sources */,
 				F0CD61562DACEFC200582D59 /* TestSettings+PrimerSettings.swift in Sources */,
 				876140D52B63F7DB0058CA8C /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */,
