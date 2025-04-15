@@ -66,31 +66,23 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderAuthorizationDelega
     public func primerKlarnaWrapperAuthorized(approved: Bool, authToken: String?, finalizeRequired: Bool) {
         isFinalizationRequired = finalizeRequired
 
-        // Check if the user is approved.
         guard approved else {
             createSessionError(.klarnaUserNotApproved)
             return
         }
 
-        // Check if authToken is provided.
-        if let authToken {
-            // Check if the user is using the headless integration. If so, finalize the session since autoFinalize is set to false when using the
-            // headless integration.
+        if let authToken = authToken {
             if PrimerInternal.shared.sdkIntegrationType == .headless {
                 finalizeSession(token: authToken, fromAuthorization: true)
-                return
-            }
-
-            // If the user is not using the headless integration, we need to check if the finalization is required.
-            if finalizeRequired {
-                let step = KlarnaStep.paymentSessionFinalizationRequired
+            } else {
+                let checkoutData = PrimerCheckoutData(payment: nil)
+                let step = KlarnaStep.paymentSessionAuthorized(authToken: authToken, checkoutData: checkoutData)
                 stepDelegate?.didReceiveStep(step: step)
-                return
             }
+        }
 
-            // We can proceed with the payment session authorization.
-            let checkoutData = PrimerCheckoutData(payment: nil)
-            let step = KlarnaStep.paymentSessionAuthorized(authToken: authToken, checkoutData: checkoutData)
+        if finalizeRequired {
+            let step = KlarnaStep.paymentSessionFinalizationRequired
             stepDelegate?.didReceiveStep(step: step)
         }
     }
