@@ -7,12 +7,14 @@
 //
 
 import Foundation
+import PrimerSDK
 
 protocol PaymentConfigProviding {}
 
 protocol AppetizePayloadProviding {
     var isAppetize: Bool? { get }
-    var configJwt: String? { get }
+    var clientToken: String? { get }
+    var settingsJwt: String? { get }
 }
 
 class AppetizeConfigProvider {
@@ -23,31 +25,47 @@ class AppetizeConfigProvider {
         self.payloadProvider = payloadProvider
     }
 
-    func fetchConfig() -> SessionConfiguration? {
+    func fetchClientToken() -> String? {
         guard payloadProvider.isAppetize == true,
-              let jwt = payloadProvider.configJwt,
-              let config = getConfig(from: jwt) else {
+              let clientToken = payloadProvider.clientToken else {
             return nil
         }
-        return config
+        return clientToken
     }
 
-    private func getConfig(from jwt: String) -> SessionConfiguration? {
-        guard let data = Data(base64Encoded: jwt, options: .ignoreUnknownCharacters) else { return nil }
-        return (try? JSONDecoder().decode(SessionConfiguration.self, from: data))
+    func fetchConfig() -> PrimerSettings? {
+        guard payloadProvider.isAppetize == true,
+              let settingsJwt = payloadProvider.settingsJwt,
+              let settings = getSettings(from: settingsJwt) else {
+            return nil
+        }
+        return settings
+    }
+
+    private func getSettings(from jwt: String) -> PrimerSettings? {
+        guard let data = Data(base64Encoded: jwt, options: .ignoreUnknownCharacters),
+              let rnSettings = try? JSONDecoder().decode(RNPrimerSettings.self, from: data)
+        else { return nil }
+        return RNPrimerSettingsMapper.map(from: rnSettings)
     }
 }
 
 extension UserDefaults: AppetizePayloadProviding {
     private static let isAppetizeKey = "isAppetize"
-    private static let configJwtKey = "p"
+
+    private static let clientTokenKey = "clientToken"
+    private static let settingsJwtKey = "settings"
 
     var isAppetize: Bool? {
         bool(forKey: Self.isAppetizeKey)
     }
 
-    var configJwt: String? {
-        string(forKey: Self.configJwtKey)
+    var clientToken: String? {
+        string(forKey: Self.clientTokenKey)
+    }
+
+    var settingsJwt: String? {
+        string(forKey: Self.settingsJwtKey)
     }
 }
 
@@ -55,8 +73,9 @@ struct AppetizeUrlHandler {
     // Handle incoming livedemostore url
     static func handleUrl(_ url: URL) -> Bool {
         if url.absoluteString.contains("https://sdk-demo.primer.io"),
-            let p = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems?.first(where: { $0.name == "p"}) {
-            let DeeplinkConfigProvider = DeeplinkConfigProvider(isAppetize: true, configJwt: p.value)
+        let clientToken = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems?.first(where: { $0.name == "clientToken"}),
+        let settings = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems?.first(where: { $0.name == "settings"}) {
+            let DeeplinkConfigProvider = DeeplinkConfigProvider(isAppetize: true, clientToken: clientToken.value, settingsJwt: settings.value)
             NotificationCenter.default.post(name: .appetizeURLHandled, object: DeeplinkConfigProvider)
             return true
         } else {
@@ -71,5 +90,6 @@ extension NSNotification.Name {
 
 struct DeeplinkConfigProvider: AppetizePayloadProviding {
     let isAppetize: Bool?
-    let configJwt: String?
+    let clientToken: String?
+    let settingsJwt: String?
 }
