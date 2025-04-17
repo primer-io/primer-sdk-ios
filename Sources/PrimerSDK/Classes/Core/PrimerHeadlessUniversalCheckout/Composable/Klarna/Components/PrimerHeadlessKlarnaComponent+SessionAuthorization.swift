@@ -17,6 +17,7 @@ extension PrimerHeadlessKlarnaComponent {
 }
 
 // MARK: - Session authorization
+
 extension PrimerHeadlessKlarnaComponent {
     func authorizeSession() {
         var isMocked = false
@@ -52,6 +53,7 @@ extension PrimerHeadlessKlarnaComponent {
 }
 
 // MARK: - PrimerKlarnaProviderAuthorizationDelegate
+
 extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderAuthorizationDelegate {
     /**
      * Handles the authorization response from the Primer Klarna Wrapper.
@@ -63,28 +65,28 @@ extension PrimerHeadlessKlarnaComponent: PrimerKlarnaProviderAuthorizationDelega
      */
     public func primerKlarnaWrapperAuthorized(approved: Bool, authToken: String?, finalizeRequired: Bool) {
         isFinalizationRequired = finalizeRequired
-        if approved == false {
-            if finalizeRequired == true {
-                let step = KlarnaStep.paymentSessionFinalizationRequired
-                stepDelegate?.didReceiveStep(step: step)
-            } else {
-                createSessionError(.klarnaAuthorizationFailed)
-            }
+
+        guard approved else {
+            createSessionError(.klarnaUserNotApproved)
+            return
         }
-        if let authToken = authToken, approved == true {
+
+        if let authToken = authToken {
             if PrimerInternal.shared.sdkIntegrationType == .headless {
                 finalizeSession(token: authToken, fromAuthorization: true)
             } else {
                 let checkoutData = PrimerCheckoutData(payment: nil)
                 let step = KlarnaStep.paymentSessionAuthorized(authToken: authToken, checkoutData: checkoutData)
-                self.stepDelegate?.didReceiveStep(step: step)
+                stepDelegate?.didReceiveStep(step: step)
             }
         }
-        if finalizeRequired == true {
+
+        if finalizeRequired {
             let step = KlarnaStep.paymentSessionFinalizationRequired
             stepDelegate?.didReceiveStep(step: step)
         }
     }
+
     /**
      * Handles the re-authorization response from the Primer Klarna Wrapper.
      * It processes the result of the re-authorization attempt, which can lead to various outcomes based on the combination of:

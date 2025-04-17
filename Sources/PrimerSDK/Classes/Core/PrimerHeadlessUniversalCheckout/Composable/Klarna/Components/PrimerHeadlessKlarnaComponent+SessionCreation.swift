@@ -20,6 +20,7 @@ import UIKit
  *  - sessionAuthorizationFailed: Indicates a failure during the authorization phase of the payment, encapsulating the underlying `Error` that caused the authorization to fail.
  *  - klarnaAuthorizationFailed: Represents a failure specific to Klarna's authorization process, which is a step where Klarna verifies and authorizes the payment details provided by the user.
  *  - klarnaFinalizationFailed: Indicates that the finalization step of the Klarna payment process has failed.
+ *  - klarnaUserNotApproved:  Indicates that the user has not been approved for the Klarna payment method, due to various reasons such as "Invalid Card Information" or "User Cancels The Authorization" or "Missing or Invalid Fields in Authorize Data". For more information, https://docs.klarna.com/payments/mobile-payments/before-you-start/flows-and-error-handling
  */
 enum KlarnaSessionError {
     case missingConfiguration
@@ -28,9 +29,11 @@ enum KlarnaSessionError {
     case sessionAuthorizationFailed(error: Error)
     case klarnaAuthorizationFailed
     case klarnaFinalizationFailed
+    case klarnaUserNotApproved
 }
 
 // MARK: - Start
+
 extension PrimerHeadlessKlarnaComponent {
     /**
      * Initiates the process of creating a payment session.
@@ -55,6 +58,7 @@ extension PrimerHeadlessKlarnaComponent {
 }
 
 // MARK: - Private
+
 extension PrimerHeadlessKlarnaComponent: LogReporter {
     /**
      * Processes and communicates the successful creation of a payment session.
@@ -70,6 +74,7 @@ extension PrimerHeadlessKlarnaComponent: LogReporter {
         )
         stepDelegate?.didReceiveStep(step: step)
     }
+
     /**
      * Handles errors encountered during the payment session creation process.
      * This method processes a specific `KlarnaPaymentSessionCreationComponentError` and converts it into a more generalized `PrimerError`.
@@ -117,6 +122,11 @@ extension PrimerHeadlessKlarnaComponent: LogReporter {
                 userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString
             )
+        case .klarnaUserNotApproved:
+            primerError = PrimerError.klarnaUserNotApproved(
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
         }
         handleReceivedError(error: primerError)
     }
@@ -144,15 +154,16 @@ extension PrimerHeadlessKlarnaComponent: LogReporter {
                         case .continue:
                             seal.fulfill()
                         }
-                    })
+                    }
+                )
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
                     if !decisionHandlerHasBeenCalled {
                         let message =
                             """
-The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. \
-Make sure you call the decision handler otherwise the SDK will hang.
-"""
+                            The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. \
+                            Make sure you call the decision handler otherwise the SDK will hang.
+                            """
                         self?.logger.warn(message: message)
                     }
                 }
