@@ -97,8 +97,19 @@ struct RNPrimerSettingsMapper {
             isInitScreenEnabled: options?.isInitScreenEnabled,
             isSuccessScreenEnabled: options?.isSuccessScreenEnabled,
             isErrorScreenEnabled: options?.isErrorScreenEnabled,
-            dismissalMechanism: nil,
-            theme: nil // theme mapping omitted as per instructions
+            dismissalMechanism: mapDismissalMechanisms(options?.dismissalMechanism) ?? [.gestures],
+            theme: nil
         )
+    }
+
+    static func mapDismissalMechanisms(_ mechanisms: [RNDismissalMechanism]?) -> [DismissalMechanism]? {
+        mechanisms?.compactMap {
+            switch $0 {
+            case .gestures:
+                return .gestures
+            case .closeButton:
+                return .closeButton
+            }
+        }
     }
 }
