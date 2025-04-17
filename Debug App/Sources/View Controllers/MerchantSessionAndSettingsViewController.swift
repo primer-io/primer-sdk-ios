@@ -250,6 +250,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             self.deepLinkClientToken = clientToken
             clientTokenTextField.text = clientToken
             self.dlClientTokenDisplay.text = clientToken
+            self.testingModeSegmentedControl.selectedSegmentIndex = RenderMode.deepLink.rawValue
             setRenderMode(.deepLink)
         }
     }
@@ -911,6 +912,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBAction func clearAppLinkButtonTapped(_ sender: Any) {
         self.deepLinkClientToken = nil
         self.deepLinkSettings = nil
+        self.testingModeSegmentedControl.selectedSegmentIndex = RenderMode.createClientSession.rawValue
         setRenderMode(.createClientSession)
         dlSettingsDisplay.text = ""
         dlClientTokenDisplay.text = ""
