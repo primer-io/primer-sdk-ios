@@ -7,11 +7,10 @@
 //
 
 #if canImport(PrimerKlarnaSDK)
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class KlarnaTokenizationComponentTests: XCTestCase {
-
     var tokenizationComponent: KlarnaTokenizationComponent!
     var paymentMethod: PrimerPaymentMethod!
 
@@ -138,7 +137,6 @@ final class KlarnaTokenizationComponentTests: XCTestCase {
 
         wait(for: [expectation], timeout: 10.0)
     }
-
 }
 
 extension KlarnaTokenizationComponentTests {
@@ -167,7 +165,7 @@ extension KlarnaTokenizationComponentTests {
 
     private func getInvalidTokenError() -> PrimerError {
         let error = PrimerError.invalidClientToken(
-            userInfo: self.getErrorUserInfo(),
+            userInfo: getErrorUserInfo(),
             diagnosticsId: UUID().uuidString
         )
         ErrorHandler.handle(error: error)
@@ -181,7 +179,7 @@ extension KlarnaTokenizationComponentTests {
         let error = PrimerError.invalidValue(
             key: key,
             value: value,
-            userInfo: self.getErrorUserInfo(),
+            userInfo: getErrorUserInfo(),
             diagnosticsId: UUID().uuidString
         )
         ErrorHandler.handle(error: error)
@@ -194,7 +192,7 @@ extension KlarnaTokenizationComponentTests {
         let error = PrimerError.invalidValue(
             key: name,
             value: nil,
-            userInfo: self.getErrorUserInfo(),
+            userInfo: getErrorUserInfo(),
             diagnosticsId: UUID().uuidString
         )
         ErrorHandler.handle(error: error)

@@ -22,8 +22,10 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
     override func setUpWithError() throws {
         createResumePaymentService = MockCreateResumePaymentService()
         tokenizationService = MockTokenizationService()
-        sut = KlarnaTokenizationManager(createResumePaymentService: createResumePaymentService,
-                                        tokenizationService: tokenizationService)
+        sut = KlarnaTokenizationManager(
+            createResumePaymentService: createResumePaymentService,
+            tokenizationService: tokenizationService
+        )
     }
 
     override func tearDownWithError() throws {
