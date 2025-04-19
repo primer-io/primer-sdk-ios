@@ -43,7 +43,7 @@ class KlarnaTokenizationComponent: KlarnaTokenizationManager, KlarnaTokenization
 
         super.init(
             tokenizationService: tokenizationService,
-            createResumePaymentService: CreateResumePaymentService(paymentMethodType: paymentMethod.type),
+            createResumePaymentService: CreateResumePaymentService(paymentMethodType: paymentMethod.type)
         )
     }
 }
