@@ -30,7 +30,16 @@
 				<string>merchant</string>
 			</array>
 		</dict>
-		<dict/>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>ui-tests</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>ui-tests</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>

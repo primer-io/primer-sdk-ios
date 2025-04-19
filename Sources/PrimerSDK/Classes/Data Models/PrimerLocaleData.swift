@@ -9,9 +9,9 @@ import Foundation
 
 public struct PrimerLocaleData: Codable {
 
-    let languageCode: String
-    let localeCode: String
-    let regionCode: String?
+    public let languageCode: String
+    public let localeCode: String
+    public let regionCode: String?
 
     public init(languageCode: String? = nil, regionCode: String? = nil) {
         self.languageCode = (languageCode ?? Locale.current.languageCode) ?? "en"
