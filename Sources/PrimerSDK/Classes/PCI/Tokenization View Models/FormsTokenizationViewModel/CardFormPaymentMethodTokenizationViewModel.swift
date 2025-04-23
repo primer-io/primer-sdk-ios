@@ -96,6 +96,8 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return textField
     }()
 
+    private var lastRemoteNetworkValues: [CardNetwork]?
+
     var defaultCardNetwork: CardNetwork? {
         didSet {
             cvvField.cardNetwork = defaultCardNetwork ?? .unknown
@@ -964,16 +966,11 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         enableSubmitButtonIfNeeded()
     }
 
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?) {
-        self.defaultCardNetwork = cardNetwork
-
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView,
+                             didDetectCardNetwork cardNetwork: CardNetwork?) {
         if let text = primerTextFieldView.textField.internalText {
             rawCardData.cardNumber = text.replacingOccurrences(of: " ", with: "")
             rawDataManager?.rawData = rawCardData
-        }
-
-        DispatchQueue.main.async {
-            self.handleCardNetworkDetection(cardNetwork)
         }
     }
 
@@ -1133,34 +1130,43 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
                               didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
                               forState cardState: PrimerValidationState) {
-
-        guard let metadata = metadata as? PrimerCardNumberEntryMetadata,
-              let cardState = cardState as? PrimerCardNumberEntryState else {
+        guard let metadataModel = metadata as? PrimerCardNumberEntryMetadata,
+              let stateModel = cardState as? PrimerCardNumberEntryState else {
             logger.error(message: "Received non-card metadata. Ignoring ...")
             return
         }
 
-        let metadataDescription = metadata.selectableCardNetworks?.items.map { $0.displayName }.joined(separator: ", ") ?? "n/a"
-        logger.debug(message: "didReceiveCardMetadata: (selectable ->) \(metadataDescription), cardState: \(cardState.cardNumber)")
+        let metadataDescription = metadataModel.selectableCardNetworks?.items
+            .map { $0.displayName }
+            .joined(separator: ", ") ?? "n/a"
+        logger.debug(message: "didReceiveCardMetadata: (selectable ->) \(metadataDescription), cardState: \(stateModel.cardNumber)")
 
-        if metadata.source == .remote, let networks = metadata.selectableCardNetworks?.items, !networks.isEmpty {
-            currentlyAvailableCardNetworks = metadata.selectableCardNetworks?.items
-        } else if let preferredDetectedNetwork = metadata.detectedCardNetworks.preferred {
-            currentlyAvailableCardNetworks = [preferredDetectedNetwork]
-        } else if let cardNetwork = metadata.detectedCardNetworks.items.first {
-            currentlyAvailableCardNetworks = [cardNetwork]
+        var primerNetworks: [PrimerCardNetwork]
+        if metadataModel.source == .remote,
+           let selectable = metadataModel.selectableCardNetworks?.items,
+           !selectable.isEmpty {
+            primerNetworks = selectable
+        } else if let preferred = metadataModel.detectedCardNetworks.preferred {
+            primerNetworks = [preferred]
+        } else if let first = metadataModel.detectedCardNetworks.items.first {
+            primerNetworks = [first]
         } else {
-            currentlyAvailableCardNetworks = []
+            primerNetworks = []
         }
 
-        currentlyAvailableCardNetworks = currentlyAvailableCardNetworks?.filter { $0.displayName != "Unknown" }
-        cardNumberContainerView.cardNetworks = currentlyAvailableCardNetworks ?? []
+        let filteredNetworks = primerNetworks.filter { $0.displayName != "Unknown" }
+        let newNetworks = filteredNetworks.map { $0.network }
+        guard newNetworks != lastRemoteNetworkValues else { return }
+        lastRemoteNetworkValues = newNetworks
 
-        if currentlyAvailableCardNetworks?.count ?? 0 < 2 {
+        currentlyAvailableCardNetworks = filteredNetworks
+        cardNumberContainerView.cardNetworks = filteredNetworks
+
+        if newNetworks.count == 1 {
             DispatchQueue.main.async {
                 self.cardNumberContainerView.resetCardNetworkSelection()
                 self.alternativelySelectedCardNetwork = nil
-                self.handleCardNetworkDetection(self.currentlyAvailableCardNetworks?.first?.network)
+                self.handleCardNetworkDetection(newNetworks[0])
             }
         }
     }
