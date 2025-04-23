@@ -325,7 +325,7 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
         }
-
+        
         func validateRawData(withCardNetworksMetadata cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> Promise<Void>? {
             guard let rawData = self.rawData else {
                 logger.warn(message: "Unable to validate with card networks metadata as `rawData` was nil")
