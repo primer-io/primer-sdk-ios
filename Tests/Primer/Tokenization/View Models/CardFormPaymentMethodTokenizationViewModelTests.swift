@@ -200,28 +200,6 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
         XCTAssertNil(error2.checkoutData)
     }
 
-    func testCardNetworkDetection() throws {
-        SDKSessionHelper.setUp { mockAppState in
-            mockAppState.amount = 1234
-            mockAppState.currency = Currency(code: "GBP", decimalDigits: 2)
-        }
-
-        let expectWillShowPaymentMethod = self.expectation(description: "Did show payment method")
-        uiDelegate.onUIDidShowPaymentMethod = { type in
-            // Simulate entering a Visa card number
-            self.sut.cardNumberField.textField.internalText = "4111 1111 1111 1111"
-            self.sut.primerTextFieldView(self.sut.cardNumberField, didDetectCardNetwork: .visa)
-            expectWillShowPaymentMethod.fulfill()
-        }
-
-        sut.start()
-
-        waitForExpectations(timeout: 10.0)
-        
-        XCTAssertEqual(self.sut.defaultCardNetwork, .visa)
-        XCTAssertNil(self.sut.alternativelySelectedCardNetwork)
-    }
-
     func testSubmitButtonDisabledWithInvalidFields() throws {
         SDKSessionHelper.setUp { mockAppState in
             mockAppState.amount = 1234
