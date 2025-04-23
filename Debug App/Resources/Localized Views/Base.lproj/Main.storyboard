@@ -168,6 +168,7 @@
                                     <segment title="Create session"/>
                                     <segment title="Client token"/>
                                     <segment title="Test scenario"/>
+                                    <segment title="AppLink"/>
                                 </segments>
                                 <connections>
                                     <action selector="testingModeSegmentedControlValueChanged:" destination="jAd-Lg-hf8" eventType="valueChanged" id="cJO-Y5-e1h"/>
@@ -177,7 +178,7 @@
                                 <rect key="frame" x="0.0" y="163" width="414" height="561"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="40" translatesAutoresizingMaskIntoConstraints="NO" id="Yce-hH-uhX">
-                                        <rect key="frame" x="20" y="20" width="374" height="4127"/>
+                                        <rect key="frame" x="20" y="20" width="374" height="4326"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="oCT-9e-d89" userLabel="Environment Stack View">
                                                 <rect key="frame" x="0.0" y="0.0" width="374" height="318.5"/>
@@ -1336,6 +1337,60 @@
                                                     </stackView>
                                                 </subviews>
                                             </stackView>
+                                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="TQ2-LG-HCd" userLabel="DeepLinkStackView">
+                                                <rect key="frame" x="0.0" y="4167" width="374" height="159"/>
+                                                <subviews>
+                                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dxK-cD-3YA">
+                                                        <rect key="frame" x="0.0" y="0.0" width="374" height="45"/>
+                                                        <subviews>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Applink Settings" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fSa-BK-50v">
+                                                                <rect key="frame" x="0.0" y="0.0" width="184" height="45"/>
+                                                                <fontDescription key="fontDescription" type="system" weight="thin" pointSize="28"/>
+                                                                <nil key="textColor"/>
+                                                                <nil key="highlightedColor"/>
+                                                            </label>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="trailing" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vrb-fD-qLk">
+                                                                <rect key="frame" x="184" y="0.0" width="190" height="45"/>
+                                                                <accessibility key="accessibilityConfiguration" identifier="Primer SDK Button"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="45" id="gno-zc-SKb"/>
+                                                                </constraints>
+                                                                <state key="normal" title="Primer SDK">
+                                                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                </state>
+                                                                <buttonConfiguration key="configuration" style="plain" title="clear"/>
+                                                                <connections>
+                                                                    <action selector="clearAppLinkButtonTapped:" destination="jAd-Lg-hf8" eventType="touchUpInside" id="dMD-nl-2Te"/>
+                                                                </connections>
+                                                            </button>
+                                                        </subviews>
+                                                    </stackView>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ClientToken" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ooR-fF-kQt">
+                                                        <rect key="frame" x="0.0" y="65" width="374" height="17"/>
+                                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MJY-H3-UbS">
+                                                        <rect key="frame" x="0.0" y="102" width="374" height="0.0"/>
+                                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Settings" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YD0-iB-DHm" userLabel="Settings">
+                                                        <rect key="frame" x="0.0" y="122" width="374" height="17"/>
+                                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EBW-4y-zdX">
+                                                        <rect key="frame" x="0.0" y="159" width="374" height="0.0"/>
+                                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                            </stackView>
                                         </subviews>
                                     </stackView>
                                 </subviews>
@@ -1429,6 +1484,7 @@
                         <outlet property="billingAddressStackView" destination="bM9-q3-7b4" id="tfD-RC-unz"/>
                         <outlet property="billingAddressStateTextField" destination="9XT-5Y-iB0" id="O4F-QT-v2W"/>
                         <outlet property="billingAddressSwitch" destination="Tgl-HM-zu5" id="0zQ-d2-QoW"/>
+                        <outlet property="clearAppLinkButton" destination="Vrb-fD-qLk" id="dR3-Lw-EKV"/>
                         <outlet property="clientTokenStackView" destination="IFG-cl-uk6" id="MaN-wY-MoO"/>
                         <outlet property="clientTokenTextField" destination="xjQ-Kj-2GL" id="5mh-UG-g6v"/>
                         <outlet property="closeButtonDismissalSwitch" destination="G04-bw-KwN" id="Qna-pK-NIB"/>
@@ -1440,9 +1496,12 @@
                         <outlet property="customerLastNameTextField" destination="v0r-BU-fAd" id="XPI-Q7-ZZe"/>
                         <outlet property="customerMobileNumberTextField" destination="jJ3-t3-3b1" id="dUq-IG-rCj"/>
                         <outlet property="customerStackView" destination="cka-yb-xqD" id="TaX-cQ-OLn"/>
+                        <outlet property="deepLinkStackView" destination="TQ2-LG-HCd" id="hWq-9t-pse"/>
                         <outlet property="disableErrorScreenSwitch" destination="RC1-bw-dHB" id="8Vu-yw-7ka"/>
                         <outlet property="disableInitScreenSwitch" destination="9ji-Ev-HnU" id="XJy-Z6-Jjc"/>
                         <outlet property="disableSuccessScreenSwitch" destination="h2a-FU-Cbb" id="dYl-8C-tNa"/>
+                        <outlet property="dlClientTokenDisplay" destination="MJY-H3-UbS" id="8PJ-0m-TFQ"/>
+                        <outlet property="dlSettingsDisplay" destination="EBW-4y-zdX" id="jyr-v0-Kxi"/>
                         <outlet property="enableCVVRecaptureFlowSwitch" destination="XZa-6j-T8o" id="M4Q-x4-pMw"/>
                         <outlet property="environmentSegmentedControl" destination="ekZ-3s-TxK" id="SsX-7s-JaH"/>
                         <outlet property="environmentStackView" destination="oCT-9e-d89" id="JnB-93-2Gv"/>
