@@ -18,8 +18,7 @@ protocol KlarnaTokenizationManagerProtocol {
      object on successful tokenization or rejects with an `Error` if the tokenization process fails.
      */
     func tokenizeHeadless(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerCheckoutData>
-    func tokenizeDropIn(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?)
-        -> Promise<PrimerPaymentMethodTokenData>
+    func tokenizeDropIn(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerPaymentMethodTokenData>
 }
 
 class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
@@ -65,8 +64,7 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
 
     // MARK: - Tokenize DropIn
 
-    func tokenizeDropIn(customerToken: Response.Body.Klarna.CustomerToken?,
-                        offSessionAuthorizationId: String?) -> Promise<PrimerPaymentMethodTokenData> {
+    func tokenizeDropIn(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             firstly {
                 getRequestBody(customerToken: customerToken, offSessionAuthorizationId: offSessionAuthorizationId)

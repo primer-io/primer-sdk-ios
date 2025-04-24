@@ -11,7 +11,7 @@
 import Foundation
 import UIKit
 
-enum AnalyticsContextKeys {
+struct AnalyticsContextKeys {
     static let createdAt = "createdAt"
     static let paymentMethodType = "paymentMethodType"
     static let reasonCode = "reasonCode"
@@ -336,7 +336,7 @@ public enum PrimerError: PrimerErrorProtocol {
     public var errorUserInfo: [String: Any] {
         let tmpUserInfo: [String: Any] = [
             "createdAt": Date().toString(),
-            "diagnosticsId": diagnosticsId,
+            "diagnosticsId": diagnosticsId
         ]
 
         return tmpUserInfo
