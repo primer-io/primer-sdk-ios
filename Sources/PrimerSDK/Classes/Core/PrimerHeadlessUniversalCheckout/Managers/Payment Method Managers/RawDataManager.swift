@@ -104,6 +104,10 @@ extension PrimerHeadlessUniversalCheckout {
 
         var apiClient: PrimerAPIClientXenditProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
 
+        /// Initializes a new instance of RawDataManager.
+        /// The `isUsedInDropIn` flag enables support for Drop-In integration flow,
+        /// expanding the utility of RawDataManager to both Headless and Drop-In use cases.
+        /// When set to true, it configures the RawDataManager to behave as a Drop-In integration.
         required public init(paymentMethodType: String,
                              delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? = nil,
                              isUsedInDropIn: Bool = false) throws {
@@ -329,7 +333,7 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
         }
-        
+
         func validateRawData(withCardNetworksMetadata cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> Promise<Void>? {
             guard let rawData = self.rawData else {
                 logger.warn(message: "Unable to validate with card networks metadata as `rawData` was nil")
