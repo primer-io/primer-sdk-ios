@@ -2255,9 +2255,6 @@
                location = "group:NativeUIManagerTests.swift">
             </FileRef>
             <FileRef
-               location = "group:KlarnaTokenizationManagerTests.swift">
-            </FileRef>
-            <FileRef
                location = "group:PrimerRawOTPDataTokenizationBuilderTests.swift">
             </FileRef>
             <FileRef

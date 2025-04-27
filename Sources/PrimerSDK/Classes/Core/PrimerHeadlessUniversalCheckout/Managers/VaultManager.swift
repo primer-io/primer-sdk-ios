@@ -746,6 +746,18 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
 
+        private func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
+            return try await withCheckedThrowingContinuation { continuation in
+                handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
+                    .done { checkoutData in
+                        continuation.resume(returning: checkoutData)
+                    }
+                    .catch { err in
+                        continuation.resume(throwing: err)
+                    }
+            }
+        }
+
         private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
             let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
             return createResumePaymentService.createPayment(paymentRequest: paymentRequest)
