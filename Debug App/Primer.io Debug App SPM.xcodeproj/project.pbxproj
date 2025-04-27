@@ -57,9 +57,10 @@
 		F00C66162ACC67FA00187028 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE259612A00F85709107B872 /* Main.storyboard */; };
 		F04510E32ACD98E100A0A48C /* PrimerSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F04510E22ACD98E100A0A48C /* PrimerSDK */; };
 		F04510E62ACD990A00A0A48C /* PrimerKlarnaSDK in Frameworks */ = {isa = PBXBuildFile; productRef = F04510E52ACD990A00A0A48C /* PrimerKlarnaSDK */; };
-		F08F63E02BA0BE83006EF9A9 /* SessionConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63DF2BA0BE83006EF9A9 /* SessionConfiguration.swift */; };
-		F08F63E32BA0BEAD006EF9A9 /* AppetizeConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63E12BA0BEAD006EF9A9 /* AppetizeConfigProvider.swift */; };
-		F08F63E42BA0BEAD006EF9A9 /* MetadataParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08F63E22BA0BEAD006EF9A9 /* MetadataParser.swift */; };
+		F04DFC6B2DAE4F130006AEDC /* AppLinkConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC6A2DAE4F130006AEDC /* AppLinkConfigProvider.swift */; };
+		F04DFC6D2DAE4F310006AEDC /* AppLinkConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC6C2DAE4F310006AEDC /* AppLinkConfigProvider.swift */; };
+		F04DFC6F2DAE4F4D0006AEDC /* TestSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC6E2DAE4F4D0006AEDC /* TestSettings.swift */; };
+		F04DFC712DAE4F5E0006AEDC /* TestSettings+PrimerSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC702DAE4F5E0006AEDC /* TestSettings+PrimerSettings.swift */; };
 		F09978842D0326860058E4B5 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F09978832D0326860058E4B5 /* Metadata.swift */; };
 /* End PBXBuildFile section */
 
@@ -154,9 +155,10 @@
 		EB6C18F747AEC20B8C63164C /* Pods_Debug_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Debug_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F00C661E2ACC67FA00187028 /* Debug App SPM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Debug App SPM.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F04510DE2ACD4EA500A0A48C /* primer-sdk-ios */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "primer-sdk-ios"; path = ..; sourceTree = "<group>"; };
-		F08F63DF2BA0BE83006EF9A9 /* SessionConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionConfiguration.swift; sourceTree = "<group>"; };
-		F08F63E12BA0BEAD006EF9A9 /* AppetizeConfigProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppetizeConfigProvider.swift; sourceTree = "<group>"; };
-		F08F63E22BA0BEAD006EF9A9 /* MetadataParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetadataParser.swift; sourceTree = "<group>"; };
+		F04DFC6A2DAE4F130006AEDC /* AppLinkConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppLinkConfigProvider.swift; path = Sources/Utilities/AppLinkConfigProvider.swift; sourceTree = "<group>"; };
+		F04DFC6C2DAE4F310006AEDC /* AppLinkConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLinkConfigProvider.swift; sourceTree = "<group>"; };
+		F04DFC6E2DAE4F4D0006AEDC /* TestSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSettings.swift; sourceTree = "<group>"; };
+		F04DFC702DAE4F5E0006AEDC /* TestSettings+PrimerSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TestSettings+PrimerSettings.swift"; sourceTree = "<group>"; };
 		F09978832D0326860058E4B5 /* Metadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Metadata.swift; path = Sources/Model/Metadata.swift; sourceTree = "<group>"; };
 		F816A2444633C4336A7CB071 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Main.strings; sourceTree = "<group>"; };
 		F9023841AFCE8E3205CB713A /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
@@ -194,8 +196,7 @@
 			children = (
 				040F19992CC7A186005C9707 /* SecretsManager.swift */,
 				043C7FA12C49749E0018929E /* TestHelper.swift */,
-				F08F63E12BA0BEAD006EF9A9 /* AppetizeConfigProvider.swift */,
-				F08F63E22BA0BEAD006EF9A9 /* MetadataParser.swift */,
+				F04DFC6C2DAE4F310006AEDC /* AppLinkConfigProvider.swift */,
 				0442C4062B7CE1E900EAD8EE /* TapGestureRecognizer.swift */,
 			);
 			path = Utilities;
@@ -242,6 +243,7 @@
 		1C9799A622D0CCDBBF94925B = {
 			isa = PBXGroup;
 			children = (
+				F04DFC6A2DAE4F130006AEDC /* AppLinkConfigProvider.swift */,
 				F09978832D0326860058E4B5 /* Metadata.swift */,
 				F04510DE2ACD4EA500A0A48C /* primer-sdk-ios */,
 				FBDF3F8B5F93A0EC28048640 /* Project */,
@@ -330,11 +332,12 @@
 		D9AC6F54A87D432982864A63 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				F04DFC6E2DAE4F4D0006AEDC /* TestSettings.swift */,
+				F04DFC702DAE4F5E0006AEDC /* TestSettings+PrimerSettings.swift */,
 				72845A3010F10A88F2EC7849 /* CheckoutTheme.swift */,
 				229849A3DBE0858EE90673B9 /* CreateClientToken.swift */,
 				A6AEF11B151368BF993C3EA9 /* TestScenario.swift */,
 				70D3D6CF0F006A06B7CEC71B /* TransactionResponse.swift */,
-				F08F63DF2BA0BE83006EF9A9 /* SessionConfiguration.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -491,13 +494,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F04DFC6B2DAE4F130006AEDC /* AppLinkConfigProvider.swift in Sources */,
 				F09978842D0326860058E4B5 /* Metadata.swift in Sources */,
+				F04DFC712DAE4F5E0006AEDC /* TestSettings+PrimerSettings.swift in Sources */,
 				8723ADE42B8E0FAB00A5FE23 /* MerchantHeadlessKlarnaInitializationView.swift in Sources */,
-				F08F63E42BA0BEAD006EF9A9 /* MetadataParser.swift in Sources */,
 				044F805D2C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsViewModel.swift in Sources */,
 				F00C65F82ACC67FA00187028 /* AppDelegate.swift in Sources */,
+				F04DFC6D2DAE4F310006AEDC /* AppLinkConfigProvider.swift in Sources */,
 				F00C65F92ACC67FA00187028 /* Data+Extensions.swift in Sources */,
-				F08F63E32BA0BEAD006EF9A9 /* AppetizeConfigProvider.swift in Sources */,
 				044F805A2C6B4F9800E9F878 /* MerchantHeadlessCheckoutStripeAchViewController.swift in Sources */,
 				F00C65FA2ACC67FA00187028 /* Range+Extensions.swift in Sources */,
 				8723ADE72B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController+Klarna.swift in Sources */,
@@ -509,6 +513,7 @@
 				043C7FA22C49749E0018929E /* TestHelper.swift in Sources */,
 				F00C65FE2ACC67FA00187028 /* ViewController+Primer.swift in Sources */,
 				F00C65FF2ACC67FA00187028 /* ViewController+PrimerUIHelpers.swift in Sources */,
+				F04DFC6F2DAE4F4D0006AEDC /* TestSettings.swift in Sources */,
 				F00C66002ACC67FA00187028 /* CheckoutTheme.swift in Sources */,
 				F00C66012ACC67FA00187028 /* CreateClientToken.swift in Sources */,
 				8723ADDD2B8E0F5100A5FE23 /* MerchantHelpers.swift in Sources */,
@@ -522,7 +527,6 @@
 				8723ADE82B8E0FAB00A5FE23 /* MerchantHeadlessCheckoutKlarnaViewController.swift in Sources */,
 				F00C66082ACC67FA00187028 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift in Sources */,
 				E11F475C2B06C5A40091C31F /* MerchantHeadlessCheckoutBankViewController.swift in Sources */,
-				F08F63E02BA0BE83006EF9A9 /* SessionConfiguration.swift in Sources */,
 				E11F475E2B06C5A40091C31F /* BanksListModel.swift in Sources */,
 				F00C660A2ACC67FA00187028 /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */,
 				044F805C2C6B4F9800E9F878 /* MerchantHeadlessStripeAchFieldsView.swift in Sources */,

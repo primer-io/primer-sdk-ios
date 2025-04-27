@@ -5,6 +5,7 @@
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>applinks:livedemostore.common.primer.io</string>
+		<string>applinks:sdk-demo.primer.io</string>
 	</array>
 	<key>com.apple.developer.in-app-payments</key>
 	<array>

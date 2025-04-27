@@ -20,11 +20,11 @@ public class PrimerSettings: PrimerSettingsProtocol, Codable {
         return primerSettings
     }
     public let paymentHandling: PrimerPaymentHandling
-    let localeData: PrimerLocaleData
-    let paymentMethodOptions: PrimerPaymentMethodOptions
-    let uiOptions: PrimerUIOptions
-    let debugOptions: PrimerDebugOptions
-    let clientSessionCachingEnabled: Bool
+    public let localeData: PrimerLocaleData
+    public let paymentMethodOptions: PrimerPaymentMethodOptions
+    public let uiOptions: PrimerUIOptions
+    public let debugOptions: PrimerDebugOptions
+    public let clientSessionCachingEnabled: Bool
     public let apiVersion: PrimerApiVersion
 
     public init(
@@ -207,7 +207,7 @@ public class PrimerApplePayOptions: Codable {
         }
     }
 
-    public enum RequiredContactField: Codable {
+    public enum RequiredContactField: String, Codable {
         case name, emailAddress, phoneNumber, postalAddress
     }
 }

@@ -92,7 +92,7 @@
                      location = "group:PrimerOTPData.swift">
                   </FileRef>
                   <FileRef
-                     location = "group:PrimerRawCardDataRedirectTokenizationBuilder.swift">
+                     location = "group:PrimerBancontactRawCardDataRedirectTokenizationBuilder.swift">
                   </FileRef>
                   <FileRef
                      location = "group:PrimerCardRedirectData.swift">
@@ -2071,7 +2071,7 @@
             location = "group:KlarnaTestsMocks.swift">
          </FileRef>
          <FileRef
-            location = "group:KlarnaComponentTests.swift">
+            location = "group:PrimerHeadlessKlarnaComponentTests.swift">
          </FileRef>
          <FileRef
             location = "group:KlarnaHeadlessManagerTests.swift">
@@ -2546,6 +2546,13 @@
          <Group
             location = "group:Mocks"
             name = "Mocks">
+            <Group
+               location = "group:Components"
+               name = "Components">
+               <FileRef
+                  location = "group:MockKlarnaTokenizationComponent.swift">
+               </FileRef>
+            </Group>
             <Group
                location = "group:ViewModels"
                name = "ViewModels">

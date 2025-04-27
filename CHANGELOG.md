@@ -1,3 +1,10 @@
+## 2.36.1 (2025-04-24)
+
+### Fix
+
+- Klarna Popup Dismissal Triggering authorizationFailed (#1147)
+- Fix RawDataManager Callback Triggering  (#1145)
+
 ## 2.36.0 (2025-03-24)
 
 ### Feat

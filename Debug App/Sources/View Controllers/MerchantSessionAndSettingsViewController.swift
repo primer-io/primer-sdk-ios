@@ -21,6 +21,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         case createClientSession = 0
         case clientToken
         case testScenario
+        case deepLink
     }
 
     // MARK: Stack Views
@@ -136,6 +137,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var primerSDKButton: UIButton!
     @IBOutlet weak var primerHeadlessSDKButton: UIButton!
 
+    @IBOutlet weak var deepLinkStackView: UIStackView!
+    @IBOutlet weak var dlClientTokenDisplay: UILabel!
+    @IBOutlet weak var dlSettingsDisplay: UILabel!
+    @IBOutlet weak var clearAppLinkButton: UIButton!
+
     var lineItems: [ClientSessionRequestBody.Order.LineItem] {
         get {
             return self.clientSession.order?.lineItems ?? []
@@ -168,6 +174,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     var applePayRequireShippingMethod = false
     var applePayShippingAdditionalContactFields: [PrimerApplePayOptions.RequiredContactField]? = []
     var applePayCheckProvidedNetworks = false
+
+    private var deepLinkSettings: PrimerSettings?
+    private var deepLinkClientToken: String?
 
     func setAccessibilityIds() {
         self.view.accessibilityIdentifier = "Background View"
@@ -217,7 +226,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         customerIdTextField.addTarget(
             self, action: #selector(customerIdChanged(_:)), for: .editingDidEnd)
 
-        handleAppetizeIfNeeded(AppetizeConfigProvider())
+        handleAppetizeIfNeeded(AppLinkConfigProvider())
 
         render()
 
@@ -228,13 +237,34 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
     @objc func handleAppetizeConfig(_ notification: NSNotification) {
         if let payloadProvider = notification.object as? DeeplinkConfigProvider {
-            handleAppetizeIfNeeded(AppetizeConfigProvider(payloadProvider: payloadProvider))
+            handleAppetizeIfNeeded(AppLinkConfigProvider(payloadProvider: payloadProvider))
         }
     }
 
-    private func handleAppetizeIfNeeded(_ configProvider: AppetizeConfigProvider) {
-        if let config = configProvider.fetchConfig() {
-            updateUI(for: config)
+    private func handleAppetizeIfNeeded(_ configProvider: AppLinkConfigProvider) {
+        if let settings = configProvider.fetchConfig() {
+            self.deepLinkSettings = settings
+            self.dlSettingsDisplay.text = prettyPrint(settings)
+        }
+        if let clientToken = configProvider.fetchClientToken() {
+            self.deepLinkClientToken = clientToken
+            clientTokenTextField.text = clientToken
+            self.dlClientTokenDisplay.text = clientToken
+            self.testingModeSegmentedControl.selectedSegmentIndex = RenderMode.deepLink.rawValue
+            setRenderMode(.deepLink)
+        }
+    }
+
+    // Function to pretty print
+    private func prettyPrint<T: Codable>(_ value: T) -> String {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+
+        do {
+            let data = try encoder.encode(value)
+            return String(data: data, encoding: .utf8) ?? "Encoding failed"
+        } catch {
+            return "Failed to encode: \(error)"
         }
     }
 
@@ -254,6 +284,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             customerStackView.isHidden = false
             surchargeGroupStackView.isHidden = false
             klarnaEMDStackView.isHidden = false
+            deepLinkStackView.isHidden = true
 
         case .clientToken:
             environmentStackView.isHidden = false
@@ -265,6 +296,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             customerStackView.isHidden = true
             surchargeGroupStackView.isHidden = true
             klarnaEMDStackView.isHidden = true
+            deepLinkStackView.isHidden = true
 
         case .testScenario:
             environmentStackView.isHidden = true
@@ -276,6 +308,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             customerStackView.isHidden = false
             surchargeGroupStackView.isHidden = false
             klarnaEMDStackView.isHidden = true
+            deepLinkStackView.isHidden = true
 
             testParamsStackView.isHidden = (selectedTestScenario == nil)
 
@@ -295,6 +328,17 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             default:
                 test3DSStackView.isHidden = true
             }
+        case .deepLink:
+            [environmentStackView,
+            testParamsGroupStackView,
+            apiKeyStackView,
+            clientTokenStackView,
+            sdkSettingsStackView,
+            orderStackView,
+            customerStackView,
+            surchargeGroupStackView,
+             klarnaEMDStackView].forEach { $0.isHidden = true }
+            deepLinkStackView.isHidden = false
         }
 
         gesturesDismissalSwitch.isOn = true  // Default value
@@ -355,7 +399,11 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     }
 
     @IBAction func testingModeSegmentedControlValueChanged(_ sender: UISegmentedControl) {
-        renderMode = RenderMode(rawValue: sender.selectedSegmentIndex)!
+        setRenderMode(RenderMode(rawValue: sender.selectedSegmentIndex) ?? .createClientSession)
+    }
+
+    private func setRenderMode(_ renderMode: RenderMode) {
+        self.renderMode = renderMode
         render()
     }
 
@@ -743,23 +791,86 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBAction func primerSDKButtonTapped(_ sender: Any) {
         customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
 
-        let selectedDismissalMechanisms: [DismissalMechanism] = {
-            var mechanisms = [DismissalMechanism]()
-            if gesturesDismissalSwitch.isOn {
-                mechanisms.append(.gestures)
-            }
-            if closeButtonDismissalSwitch.isOn {
-                mechanisms.append(.closeButton)
-            }
-            return mechanisms
-        }()
+        let settings = populateSettingsFromUI(dropIn: true)
 
-        let uiOptions = PrimerUIOptions(
-            isInitScreenEnabled: !disableInitScreenSwitch.isOn,
-            isSuccessScreenEnabled: !disableSuccessScreenSwitch.isOn,
-            isErrorScreenEnabled: !disableErrorScreenSwitch.isOn,
-            dismissalMechanism: selectedDismissalMechanisms,
-            theme: applyThemingSwitch.isOn ? CheckoutTheme.tropical : nil)
+        switch renderMode {
+        case .createClientSession, .testScenario:
+            configureClientSession()
+            if case .testScenario = renderMode {
+                configureTestScenario()
+            }
+            let vc = MerchantDropInUIViewController.instantiate(
+                settings: settings, clientSession: clientSession, clientToken: nil)
+            navigationController?.pushViewController(vc, animated: true)
+
+        case .clientToken:
+            let vc = MerchantDropInUIViewController.instantiate(
+                settings: settings, clientSession: nil, clientToken: clientTokenTextField.text)
+            navigationController?.pushViewController(vc, animated: true)
+
+        case .deepLink:
+            if let clientToken = self.deepLinkClientToken, let settings = self.deepLinkSettings {
+                let vc = MerchantDropInUIViewController.instantiate(
+                    settings: settings, clientSession: nil, clientToken: clientToken)
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        }
+    }
+
+    @IBAction func primerHeadlessButtonTapped(_ sender: Any) {
+        customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
+
+        let settings = populateSettingsFromUI(dropIn: false)
+
+        switch renderMode {
+        case .createClientSession, .testScenario:
+            configureClientSession()
+            if case .testScenario = renderMode {
+                configureTestScenario()
+            }
+            let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(
+                settings: settings,
+                clientSession: clientSession,
+                clientToken: nil)
+            navigationController?.pushViewController(vc, animated: true)
+        case .clientToken:
+            let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(
+                settings: settings,
+                clientSession: nil,
+                clientToken: clientTokenTextField.text)
+            navigationController?.pushViewController(vc, animated: true)
+        case .deepLink:
+            if let clientToken = self.deepLinkClientToken, let settings = self.deepLinkSettings {
+                let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(
+                    settings: settings,
+                    clientSession: nil,
+                    clientToken: clientToken)
+                navigationController?.pushViewController(vc, animated: true)
+            }
+        }
+    }
+
+    private func populateSettingsFromUI(dropIn: Bool) -> PrimerSettings {
+        var uiOptions: PrimerUIOptions?
+        if dropIn {
+            let selectedDismissalMechanisms: [DismissalMechanism] = {
+                var mechanisms = [DismissalMechanism]()
+                if gesturesDismissalSwitch.isOn {
+                    mechanisms.append(.gestures)
+                }
+                if closeButtonDismissalSwitch.isOn {
+                    mechanisms.append(.closeButton)
+                }
+                return mechanisms
+            }()
+
+            uiOptions = PrimerUIOptions(
+                isInitScreenEnabled: !disableInitScreenSwitch.isOn,
+                isSuccessScreenEnabled: !disableSuccessScreenSwitch.isOn,
+                isErrorScreenEnabled: !disableErrorScreenSwitch.isOn,
+                dismissalMechanism: selectedDismissalMechanisms,
+                theme: applyThemingSwitch.isOn ? CheckoutTheme.tropical : nil)
+        }
 
         let mandateData = PrimerStripeOptions.MandateData.templateMandate(merchantName: "Primer Inc.")
 
@@ -790,76 +901,21 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             apiVersion: apiVersion
         )
 
-        switch renderMode {
-        case .createClientSession, .testScenario:
-            configureClientSession()
-            if case .testScenario = renderMode {
-                configureTestScenario()
-            }
-            let vc = MerchantDropInUIViewController.instantiate(
-                settings: settings, clientSession: clientSession, clientToken: nil)
-            navigationController?.pushViewController(vc, animated: true)
-
-        case .clientToken:
-            let vc = MerchantDropInUIViewController.instantiate(
-                settings: settings, clientSession: nil, clientToken: clientTokenTextField.text)
-            navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-
-    @IBAction func primerHeadlessButtonTapped(_ sender: Any) {
-        customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
-
-        let shippingOptions = applePayCaptureShippingDetails ?
-            PrimerApplePayOptions.ShippingOptions(shippingContactFields: applePayShippingAdditionalContactFields,
-                                                  requireShippingMethod: applePayRequireShippingMethod) : nil
-
-        let billingOptions = applePayCaptureBillingAddress ?
-            PrimerApplePayOptions.BillingOptions(requiredBillingContactFields: applePayBillingAdditionalContactFields) : nil
-
-        let stripePublishableKey = SecretsManager.shared.value(forKey: .stripePublishableKey)
-
-        let settings = PrimerSettings(
-            paymentHandling: selectedPaymentHandling,
-            paymentMethodOptions: PrimerPaymentMethodOptions(
-                urlScheme: "merchant://primer.io",
-                applePayOptions: PrimerApplePayOptions(
-                    merchantIdentifier: "merchant.checkout.team",
-                    merchantName: merchantNameTextField.text ?? "Primer Merchant",
-                    isCaptureBillingAddressEnabled: applePayCaptureBillingAddress,
-                    showApplePayForUnsupportedDevice: false,
-                    checkProvidedNetworks: applePayCheckProvidedNetworks,
-                    shippingOptions: shippingOptions,
-                    billingOptions: billingOptions),
-                stripeOptions: stripePublishableKey == nil ? nil : PrimerStripeOptions(publishableKey: stripePublishableKey!)),
-            uiOptions: nil,
-            debugOptions: PrimerDebugOptions(is3DSSanityCheckEnabled: false),
-            apiVersion: apiVersion
-        )
-
-        switch renderMode {
-        case .createClientSession, .testScenario:
-            configureClientSession()
-            if case .testScenario = renderMode {
-                configureTestScenario()
-            }
-            let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(
-                settings: settings,
-                clientSession: clientSession,
-                clientToken: nil)
-            navigationController?.pushViewController(vc, animated: true)
-        case .clientToken:
-            let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(
-                settings: settings,
-                clientSession: nil,
-                clientToken: clientTokenTextField.text)
-            navigationController?.pushViewController(vc, animated: true)
-        }
+        return settings
     }
 
     @objc func customerIdChanged(_ textField: UITextField!) {
         guard let text = customerIdTextField.text else { return }
         UserDefaults.standard.set(text, forKey: MerchantMockDataManager.customerIdStorageKey)
+    }
+
+    @IBAction func clearAppLinkButtonTapped(_ sender: Any) {
+        self.deepLinkClientToken = nil
+        self.deepLinkSettings = nil
+        self.testingModeSegmentedControl.selectedSegmentIndex = RenderMode.createClientSession.rawValue
+        setRenderMode(.createClientSession)
+        dlSettingsDisplay.text = ""
+        dlClientTokenDisplay.text = ""
     }
 }
 
@@ -926,48 +982,5 @@ extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPi
         }
 
         render()
-    }
-}
-
-extension MerchantSessionAndSettingsViewController {
-    private func updateUI(for config: SessionConfiguration) {
-        apiKeyTextField.text = config.customApiKey
-        customerIdTextField.text = config.customerId.isEmpty ? "ios-customer-id" : config.customerId
-
-        switch config.env {
-        case .dev:
-            environmentSegmentedControl.selectedSegmentIndex = 0
-        case .sandbox:
-            environmentSegmentedControl.selectedSegmentIndex = 2
-        case .staging:
-            environmentSegmentedControl.selectedSegmentIndex = 1
-        case .production:
-            environmentSegmentedControl.selectedSegmentIndex = 3
-        case .local:
-            environmentSegmentedControl.selectedSegmentIndex = 2
-        }
-        environment = config.env
-
-        switch config.paymentHandling {
-        case .auto:
-            checkoutFlowSegmentedControl.selectedSegmentIndex = 0
-        case .manual:
-            checkoutFlowSegmentedControl.selectedSegmentIndex = 1
-        }
-
-        currencyTextField.text = config.currency
-        countryCodeTextField.text = config.countryCode
-
-        let lineItem = ClientSessionRequestBody.Order.LineItem(
-            itemId: "ld-lineitem",
-            description: "Fancy Shoes",
-            amount: Int(config.value) ?? 100,
-            quantity: 1,
-            discountAmount: nil,
-            taxAmount: nil)
-
-        self.lineItems = [lineItem]
-
-        metadataTextField.text = config.metadata
     }
 }

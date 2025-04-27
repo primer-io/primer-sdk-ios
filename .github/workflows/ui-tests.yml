@@ -58,6 +58,8 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 20
     name: "Distribute app to Firebase and Browserstack"
+    outputs:
+      artifact-url: ${{ steps.save_app_artifact_step.outputs.artifact-url }}
     steps:
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
@@ -85,7 +87,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - uses: ruby/setup-ruby@1a615958ad9d422dd932dc1d5823942ee002799f  # v1.227.0
+      - uses: ruby/setup-ruby@354a1ad156761f5ee2b7b13fa8e09943a5e8d252  # v1.229.0
         with:
           ruby-version: "3.2"
           bundler-cache: true
@@ -123,9 +125,17 @@ jobs:
         id: save_browserstack_id_step
         with:
           name: browserstack_id
+          retention-days: 1
           path: /var/tmp/browserstack_id.txt
           if-no-files-found: error
-
+      - name: Save App Artifact
+        id: save_app_artifact_step
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: app_artifact_id
+          retention-days: 1
+          path: '/Users/runner/work/primer-sdk-ios/primer-sdk-ios/Debug App.ipa'
+          if-no-files-found: error
   test-via-browserstack:
       runs-on: ubuntu-latest
       needs: build-and-upload-to-firebase-and-browserstack
@@ -155,6 +165,7 @@ jobs:
             slack-mobile-sdk-channel: ${{ secrets.SLACK_MOBILE_SDK_CHANNEL }}
             slack-reporter-bot-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
             ui-tests-secrets-api-key: ${{ secrets.UI_TESTS_SECRETS_API_KEY }}
+            test-app-artifact-url: ${{ needs.build-and-upload-to-firebase-and-browserstack.outputs.artifact-url }}
   
   test-via-browserstack-manual:
     runs-on: ubuntu-latest

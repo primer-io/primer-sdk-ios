@@ -7,11 +7,10 @@
 //
 
 #if canImport(PrimerKlarnaSDK)
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class KlarnaTokenizationManagerTests: XCTestCase {
-
     var sut: KlarnaTokenizationManager!
     var tokenizationService: MockTokenizationService!
     var createResumePaymentService: MockCreateResumePaymentService!
@@ -21,7 +20,10 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         SDKSessionHelper.setUp(order: KlarnaTestsMocks.klarnaOrder)
         tokenizationService = MockTokenizationService()
         createResumePaymentService = MockCreateResumePaymentService()
-        sut = KlarnaTokenizationManager(tokenizationService: tokenizationService, createResumePaymentService: createResumePaymentService)
+        sut = KlarnaTokenizationManager(
+            tokenizationService: tokenizationService,
+            createResumePaymentService: createResumePaymentService
+        )
     }
 
     override func tearDown() {
@@ -196,14 +198,12 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
             expectation
         ], timeout: 10.0, enforceOrder: true)
     }
-
 }
 
 extension KlarnaTokenizationManagerTests {
-
     private func getInvalidTokenError() -> PrimerError {
         let error = PrimerError.invalidClientToken(
-            userInfo: self.getErrorUserInfo(),
+            userInfo: getErrorUserInfo(),
             diagnosticsId: UUID().uuidString
         )
         ErrorHandler.handle(error: error)
