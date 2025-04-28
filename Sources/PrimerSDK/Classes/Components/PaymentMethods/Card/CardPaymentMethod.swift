@@ -22,7 +22,12 @@ class CardPaymentMethod: PaymentMethodProtocol {
     var type: PaymentMethodType = .paymentCard
 
     @MainActor
-    private let _scope = CardViewModel()
+    private let _scope: CardViewModel
+
+    @MainActor
+    init(validationService: ValidationService = DefaultValidationService()) {
+        self._scope = CardViewModel(validationService: validationService)
+    }
 
     @MainActor
     var scope: CardViewModel {
@@ -45,8 +50,7 @@ class CardPaymentMethod: PaymentMethodProtocol {
      */
     @MainActor
     func content<V: View>(@ViewBuilder content: @escaping (CardViewModel) -> V) -> AnyView {
-        let viewModel = scope
-        return AnyView(content(viewModel))
+        return AnyView(content(_scope))
     }
 
     /**
@@ -54,6 +58,6 @@ class CardPaymentMethod: PaymentMethodProtocol {
      */
     @MainActor
     func defaultContent() -> AnyView {
-        return AnyView(CardPaymentView(scope: scope))
+        return AnyView(CardPaymentView(scope: _scope))
     }
 }

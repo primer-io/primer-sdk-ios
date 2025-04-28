@@ -14,22 +14,23 @@ import SwiftUI
 @MainActor
 class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope {
     // MARK: - Published Properties
-
     @Published private(set) var clientToken: String?
     @Published private(set) var isClientTokenProcessed = false
     @Published private(set) var isCheckoutComplete = false
     @Published private(set) var error: ComponentsPrimerError?
 
     // MARK: - Private Properties
-
-    private var paymentMethodsContinuation: AsyncStream<[any PaymentMethodProtocol]>.Continuation?
-    private var selectedMethodContinuation: AsyncStream<(any PaymentMethodProtocol)?>.Continuation?
-
     private var availablePaymentMethods: [any PaymentMethodProtocol] = []
     private var currentSelectedMethod: (any PaymentMethodProtocol)?
 
-    // MARK: - Initialization
+    // Task manager to handle concurrent operations
+    private let taskManager = TaskManager()
 
+    // Streams for payment methods and selection
+    private var paymentMethodsStream: ContinuableStream<[any PaymentMethodProtocol]>?
+    private var selectedMethodStream: ContinuableStream<(any PaymentMethodProtocol)?>?
+
+    // MARK: - Initialization
     init() {
         // Initialize with empty state
     }
@@ -37,25 +38,13 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope {
     // MARK: - Public Methods
 
     /// Process the client token and initialize the SDK.
-    /// - Parameter token: The client token string
     func processClientToken(_ token: String) async {
-        guard clientToken != token else {
-            // Already processed this token
-            return
-        }
+        guard clientToken != token else { return }
 
         do {
             self.clientToken = token
-
-            // Configure SDK with token
             try await configureSDK(with: token)
-
-            // Load available payment methods
             self.availablePaymentMethods = await loadPaymentMethods()
-
-            // Notify any listeners
-            paymentMethodsContinuation?.yield(availablePaymentMethods)
-
             isClientTokenProcessed = true
         } catch {
             setError(ComponentsPrimerError.clientTokenError(error))
@@ -63,7 +52,6 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope {
     }
 
     /// Set an error that occurred during checkout.
-    /// - Parameter error: The error that occurred
     func setError(_ error: ComponentsPrimerError) {
         self.error = error
     }
@@ -75,65 +63,66 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope {
 
     // MARK: - PrimerCheckoutScope Implementation
 
+    /// Returns an AsyncStream of available payment methods.
     func paymentMethods() -> AsyncStream<[any PaymentMethodProtocol]> {
-        AsyncStream { continuation in
-            self.paymentMethodsContinuation = continuation
-            continuation.yield(availablePaymentMethods)
-
-            continuation.onTermination = { [weak self] _ in
-                Task {
-                    await self?.clearPaymentMethodsContinuation()
-                }
+        if let stream = paymentMethodsStream?.stream {
+            return stream
+        } else {
+            // Create a new stream that immediately yields available methods
+            let continuable = ContinuableStream<[any PaymentMethodProtocol]> { [weak self] continuation in
+                guard let self = self else { return }
+                continuation.yield(self.availablePaymentMethods)
             }
+            paymentMethodsStream = continuable
+            return continuable.stream
         }
     }
 
-    @MainActor
-    private func clearPaymentMethodsContinuation() {
-        paymentMethodsContinuation = nil
-    }
-
+    /// Returns an AsyncStream of the currently selected payment method.
     func selectedPaymentMethod() -> AsyncStream<(any PaymentMethodProtocol)?> {
-        AsyncStream { continuation in
-            self.selectedMethodContinuation = continuation
-            continuation.yield(currentSelectedMethod)
-
-            continuation.onTermination = { [weak self] _ in
-                Task {
-                    await self?.clearSelectedMethodContinuation()
-                }
+        if let stream = selectedMethodStream?.stream {
+            return stream
+        } else {
+            // Create a new continuously updatable stream.
+            let continuable = ContinuableStream<(any PaymentMethodProtocol)?> { [weak self] continuation in
+                guard let self = self else { return }
+                // Yield the current value immediately.
+                continuation.yield(self.currentSelectedMethod)
             }
+            selectedMethodStream = continuable
+            return continuable.stream
         }
     }
 
-    @MainActor
-    private func clearSelectedMethodContinuation() {
-        selectedMethodContinuation = nil
-    }
-
+    /// Updates the selected payment method and actively notifies subscribers.
     func selectPaymentMethod(_ method: (any PaymentMethodProtocol)?) async {
         currentSelectedMethod = method
-        selectedMethodContinuation?.yield(method)
+        // Actively yield the new method to the stored continuation.
+        selectedMethodStream?.yield(method)
     }
 
     // MARK: - Private Helpers
 
     private func configureSDK(with token: String) async throws {
-        // Here would be the SDK configuration logic
-        // For now, just simulate network delay
+        // This would integrate with the actual Primer SDK
+        // For now, simulate initialization delay
         try await Task.sleep(nanoseconds: 1 * 1_000_000_000)
     }
 
     private func loadPaymentMethods() async -> [any PaymentMethodProtocol] {
-        // Simulate loading payment methods from SDK
-        return [
-            CardPaymentMethod()
-            // Add other payment methods as they become available
-        ]
+        // In a real implementation, this would load payment methods from the SDK
+        // For now, return a card payment method
+        return [CardPaymentMethod()]
     }
 
     deinit {
-        paymentMethodsContinuation?.finish()
-        selectedMethodContinuation?.finish()
+        // Ensure all streams are properly closed
+        paymentMethodsStream?.finish()
+        selectedMethodStream?.finish()
+
+        // Cancel any pending tasks
+        Task.detached { [taskManager] in
+            await taskManager.cancelAllTasks()
+        }
     }
 }

@@ -12,12 +12,12 @@ import SwiftUI
 /// - Parameter T: The specific implementation of PrimerPaymentMethodUiState that represents
 ///                the UI state for this payment method.
 @MainActor
-protocol PrimerPaymentMethodScope<T> {
+public protocol PrimerPaymentMethodScope<T> {
     associatedtype T: PrimerPaymentMethodUiState
 
     /// AsyncStream containing the current UI state for this payment method.
     ///
-    /// This property provides observable access to the payment method's state, allowing UI components to react to state
+    /// This provides observable access to the payment method's state, allowing UI components to react to state
     /// changes. The state is of type T, which is the payment method-specific implementation of
     /// PrimerPaymentMethodUiState that contains all the relevant state information for this payment method.
     func state() -> AsyncStream<T?>
@@ -33,4 +33,4 @@ protocol PrimerPaymentMethodScope<T> {
 
 /// Base protocol for payment method UI state implementations implemented by all payment methods with their specific
 /// state information.
-protocol PrimerPaymentMethodUiState {}
+public protocol PrimerPaymentMethodUiState {}

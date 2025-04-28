@@ -9,7 +9,7 @@ import SwiftUI
 
 /// The main entry point to Primer's component-based SDK for implementing checkout functionality.
 @available(iOS 15.0, *)
-struct PrimerCheckout: View {
+public struct PrimerCheckout: View {
     private let clientToken: String
     private let successContent: (() -> AnyView)?
     private let failureContent: ((ComponentsPrimerError) -> AnyView)?
@@ -48,7 +48,7 @@ struct PrimerCheckout: View {
         self.content = content
     }
 
-    var body: some View {
+    public var body: some View {
         ZStack {
             if !viewModel.isClientTokenProcessed {
                 ProgressView("Processing client token...")

@@ -26,12 +26,12 @@ struct CardPaymentUiState: PrimerPaymentMethodUiState {
     // Surcharge data
     var surcharge: String?
 
-    /// Indicates whether the form is empty, meaning no user input has been provided.
+    /// Indicates whether the form is empty, meaning no user input has been provided
     var isFormEmpty: Bool {
-        return cardData.fields.filter { $0.isRequired }.all { $0.value.isEmpty }
+        return cardData.fields.filter { $0.isRequired }.allSatisfy { $0.value.isEmpty }
     }
 
-    /// Validation errors for the form fields.
+    /// Validation errors for the form fields
     var validationErrors: [ValidationError] {
         return (cardData.validationErrors + billingAddress.validationErrors).compactMap { $0 }
     }
@@ -80,10 +80,22 @@ struct CardPaymentUiState: PrimerPaymentMethodUiState {
         }
 
         var isVisible: Bool {
-            return visibleFields.isNotEmpty
+            return !visibleFields.isEmpty
         }
     }
 
+    /// Helper to create a new state with updated billing address
+    func copyWithBillingAddress(_ billingAddress: BillingAddress) -> CardPaymentUiState {
+        return CardPaymentUiState(
+            cardData: self.cardData,
+            cardNetworkData: self.cardNetworkData,
+            billingAddress: billingAddress,
+            isProcessing: self.isProcessing,
+            surcharge: self.surcharge
+        )
+    }
+
+    /// Creates an empty state
     static var empty: CardPaymentUiState {
         return CardPaymentUiState(
             cardData: CardData(
@@ -113,19 +125,7 @@ struct CardPaymentUiState: PrimerPaymentMethodUiState {
     }
 }
 
-extension CardPaymentUiState {
-    // Helper to create a new state with updated billing address
-    func copyWithBillingAddress(_ billingAddress: BillingAddress) -> CardPaymentUiState {
-        return CardPaymentUiState(
-            cardData: self.cardData,
-            cardNetworkData: self.cardNetworkData,
-            billingAddress: billingAddress,
-            isProcessing: self.isProcessing,
-            surcharge: self.surcharge
-        )
-    }
-}
-
+/// Represents the state of an input field including its validation status
 struct InputFieldState {
     let value: String
     let validationError: ValidationError?

@@ -11,7 +11,7 @@ import SwiftUI
 ///
 /// Each payment method has its own UI representation along with state management, encapsulated by its associated
 /// PrimerPaymentMethodScope. This protocol provides both a customizable UI interface and a default implementation.
-protocol PaymentMethodProtocol: Identifiable {
+public protocol PaymentMethodProtocol: Identifiable {
     associatedtype ScopeType: PrimerPaymentMethodScope
 
     /// The display name for the payment method.
@@ -36,7 +36,8 @@ protocol PaymentMethodProtocol: Identifiable {
     func defaultContent() -> AnyView
 }
 
-enum PaymentMethodType: String {
+/// Defines the types of payment methods supported by the SDK
+public enum PaymentMethodType: String {
     case paymentCard = "PAYMENT_CARD"
     case klarna = "KLARNA"
     case paypal = "PAYPAL"

@@ -13,7 +13,7 @@ public struct PaymentResult {
 }
 
 /// Error types for the Primer SDK
-enum ComponentsPrimerError: Error, LocalizedError {
+public enum ComponentsPrimerError: Error, LocalizedError {
     case clientTokenError(Error)
     case designTokensError(Error)
     case invalidCardDetails
@@ -21,7 +21,7 @@ enum ComponentsPrimerError: Error, LocalizedError {
     case networkError(Error)
     case unknownError(Error)
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .clientTokenError(let error):
             return "Failed to process client token: \(error.localizedDescription)"

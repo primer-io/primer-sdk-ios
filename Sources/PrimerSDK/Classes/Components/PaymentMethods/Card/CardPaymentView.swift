@@ -192,16 +192,16 @@ struct CardPaymentView: View, LogReporter {
 
         // Check if any required field is empty
         let hasEmptyRequiredField = cardNumberValue.isEmpty ||
-                                   expiryDateValue.isEmpty ||
-                                   cvvValue.isEmpty ||
-                                   nameValue.isEmpty
+            expiryDateValue.isEmpty ||
+            cvvValue.isEmpty ||
+            nameValue.isEmpty
 
         // Combine the individual field validations
         isValid = isCardNumberValid &&
-                  isExpiryDateValid &&
-                  isCvvValid &&
-                  isCardholderNameValid &&
-                  !hasEmptyRequiredField
+            isExpiryDateValid &&
+            isCvvValid &&
+            isCardholderNameValid &&
+            !hasEmptyRequiredField
 
         logger.debug(message: "Form validity: \(isValid)")
     }

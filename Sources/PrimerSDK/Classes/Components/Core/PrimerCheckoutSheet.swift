@@ -18,17 +18,6 @@ struct PrimerCheckoutSheet: View {
     @Environment(\.designTokens) private var tokens
 
     var body: some View {
-        if #available(iOS 15.0, *) {
-            mainContent
-        } else {
-            // Fallback for iOS 14
-            legacyContent
-        }
-    }
-
-    // Break down the view into smaller components
-    @available(iOS 15.0, *)
-    private var mainContent: some View {
         VStack(spacing: 0) {
             headerView
 
@@ -40,6 +29,7 @@ struct PrimerCheckoutSheet: View {
         }
         .padding(16)
         .background(tokens?.primerColorBackground ?? .white)
+        .cornerRadius(12)
         .task {
             for await methods in viewModel.paymentMethods() {
                 paymentMethods = methods
@@ -61,7 +51,7 @@ struct PrimerCheckoutSheet: View {
             .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
     }
 
-    @available(iOS 15.0, *)
+    @ViewBuilder
     private func selectedMethodView(_ method: any PaymentMethodProtocol) -> some View {
         VStack {
             HStack {
@@ -99,19 +89,6 @@ struct PrimerCheckoutSheet: View {
                 }
             )
             .padding(16)
-        }
-    }
-
-    // Fallback content for iOS 14
-    private var legacyContent: some View {
-        VStack {
-            Text("Payment Methods")
-                .font(.title)
-                .padding()
-
-            Text("Please update to iOS 15 or later for the full experience")
-                .multilineTextAlignment(.center)
-                .padding()
         }
     }
 }
