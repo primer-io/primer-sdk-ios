@@ -34,7 +34,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     }
 
     #if canImport(PrimerNolPaySDK)
-    private var nolPay: PrimerNolPayProtocol!
+    private var nolPay: PrimerNolPayProtocol?
     #endif
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
@@ -153,6 +153,13 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
             }
 
             #if canImport(PrimerNolPaySDK)
+
+            guard let nolPay
+            else {
+                handleNolPayInitializationError()
+                return
+            }
+
             nolPay.sendUnlinkOTP(to: mobileNumber,
                                  with: countryCode,
                                  and: cardNumber) { result in
@@ -192,6 +199,13 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
             }
 
             #if canImport(PrimerNolPaySDK)
+
+            guard let nolPay
+            else {
+                handleNolPayInitializationError()
+                return
+            }
+
             nolPay.unlinkCard(with: cardNumber, otp: otpCode, and: unlinkToken) { result in
                 switch result {
                 case .success(let success):

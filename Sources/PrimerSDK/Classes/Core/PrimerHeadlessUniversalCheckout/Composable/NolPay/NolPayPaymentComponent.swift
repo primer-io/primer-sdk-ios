@@ -27,7 +27,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     public typealias CardStepType = NolPayPaymentStep
 
     #if canImport(PrimerNolPaySDK)
-    private var nolPay: PrimerNolPayProtocol!
+    private var nolPay: PrimerNolPayProtocol?
     #endif
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
@@ -129,6 +129,14 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
                 return
             }
 
+            #if canImport(PrimerNolPaySDK)
+            guard let nolPay
+            else {
+                handleNolPayInitializationError()
+                return
+            }
+            #endif
+
             guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigViewModels
                     .filter({ $0.config.type == "NOL_PAY" })
                     .first as? NolPayTokenizationViewModel
@@ -142,7 +150,8 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
 
             paymentMethod.triggerAsyncAction = { (transactionNumber: String, completion: ((Result<Bool, Error>) -> Void)?)  in
                 #if canImport(PrimerNolPaySDK)
-                self.nolPay.requestPayment(for: cardNumber, and: transactionNumber) { result in
+
+                nolPay.requestPayment(for: cardNumber, and: transactionNumber) { result in
                     switch result {
 
                     case .success(let success):

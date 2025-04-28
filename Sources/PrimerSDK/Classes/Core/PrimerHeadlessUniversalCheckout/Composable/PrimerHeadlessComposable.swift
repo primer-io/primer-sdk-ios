@@ -70,6 +70,17 @@ extension PrimerHeadlessCollectDataComponent {
         PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { _ in }
         self.errorDelegate?.didReceiveError(error: error)
     }
+
+    public func handleNolPayInitializationError() {
+        let error = PrimerError.nolError(
+            code: "unknown",
+            message: "NolPay SDK is not initialized",
+            userInfo: .errorUserInfoDictionary(),
+            diagnosticsId: UUID().uuidString
+        )
+        ErrorHandler.handle(error: error)
+        self.errorDelegate?.didReceiveError(error: error)
+    }
 }
 
 extension PrimerHeadlessAnalyticsRecordable {

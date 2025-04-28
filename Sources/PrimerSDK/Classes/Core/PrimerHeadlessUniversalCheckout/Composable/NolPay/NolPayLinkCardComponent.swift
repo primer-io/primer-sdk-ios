@@ -29,7 +29,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
     public typealias STEPPABLE = NolPayLinkCardStep
 
     #if canImport(PrimerNolPaySDK)
-    private var nolPay: PrimerNolPayProtocol!
+    private var nolPay: PrimerNolPayProtocol?
     #endif
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
@@ -132,6 +132,13 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
             }
 
             #if canImport(PrimerNolPaySDK)
+
+            guard let nolPay
+            else {
+                handleNolPayInitializationError()
+                return
+            }
+
             nolPay.sendLinkOTP(to: mobileNumber,
                                with: countryCode,
                                and: linkToken) { result in
@@ -166,13 +173,20 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
                 return
             }
 
-            guard  let linkToken = linkToken
+            guard let linkToken = linkToken
             else {
                 makeAndHandleInvalidValueError(forKey: "linkToken")
                 return
             }
 
             #if canImport(PrimerNolPaySDK)
+
+            guard let nolPay
+            else {
+                handleNolPayInitializationError()
+                return
+            }
+
             nolPay.linkCard(for: otpCode, and: linkToken) { result in
                 switch result {
                 case .success(let success):
@@ -198,13 +212,21 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
             }
             #endif
         case .collectTagData:
+
             #if canImport(PrimerNolPaySDK)
+
+            guard let nolPay
+            else {
+                handleNolPayInitializationError()
+                return
+            }
+
             nolPay.scanNFCCard { result in
                 switch result {
 
                 case .success(let cardNumber):
                     self.cardNumber = cardNumber
-                    self.nolPay.makeLinkingToken(for: cardNumber) { result in
+                    nolPay.makeLinkingToken(for: cardNumber) { result in
                         switch result {
 
                         case .success(let token):
