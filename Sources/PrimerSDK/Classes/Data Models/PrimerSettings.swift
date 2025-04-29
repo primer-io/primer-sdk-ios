@@ -325,13 +325,9 @@ public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
 }
 
 /// New structure to control card-form button behavior
-public class PrimerCardFormUIOptions: Codable {
+public struct PrimerCardFormUIOptions: Codable {
     /// When true, Drop-In’s card form pay button shows “Add new card” instead of “Pay $x.xx”
     public let payButtonAddNewCard: Bool
-
-    public init(payButtonAddNewCard: Bool) {
-        self.payButtonAddNewCard = payButtonAddNewCard
-    }
 }
 
 // MARK: - DEBUG OPTIONS
