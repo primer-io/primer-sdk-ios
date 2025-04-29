@@ -1,10 +1,9 @@
 //
 //  BaseTextFieldCoordinator.swift
-//  
+//
 //
 //  Created by Boris on 29. 4. 2025..
 //
-
 
 import UIKit
 
@@ -66,7 +65,7 @@ public class BaseTextFieldCoordinator: NSObject, UITextFieldDelegate {
 
         return false
     }
-    
+
     public func textFieldDidEndEditing(_ textField: UITextField) {
         let result = validator.validateOnCommit(lastRaw)
         onValidationChange(result.isValid)

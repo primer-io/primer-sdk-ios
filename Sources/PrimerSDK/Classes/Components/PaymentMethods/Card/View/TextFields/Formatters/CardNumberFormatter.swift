@@ -1,16 +1,15 @@
 //
 //  CardNumberFormatter.swift
-//  
+//
 //
 //  Created by Boris on 29. 4. 2025..
 //
-
 
 import Foundation
 
 public struct CardNumberFormatter: FieldFormatter {
     private let groupSizes: [Int]
-    public init(groupSizes: [Int] = [4,4,4,4]) {
+    public init(groupSizes: [Int] = [4, 4, 4, 4]) {
         self.groupSizes = groupSizes
     }
     public func format(_ input: String) -> String {

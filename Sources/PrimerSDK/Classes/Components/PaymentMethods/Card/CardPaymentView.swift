@@ -115,8 +115,8 @@ struct CardPaymentView: View, LogReporter {
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(isValid
-                                ? (tokens?.primerColorBrand ?? .blue)
-                                : (tokens?.primerColorGray400 ?? .gray))
+                                    ? (tokens?.primerColorBrand ?? .blue)
+                                    : (tokens?.primerColorGray400 ?? .gray))
                     .foregroundColor(.white)
                     .cornerRadius(8)
             }
