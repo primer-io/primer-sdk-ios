@@ -276,10 +276,16 @@ public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
     public internal(set) var isSuccessScreenEnabled: Bool
     public internal(set) var isErrorScreenEnabled: Bool
     public internal(set) var dismissalMechanism: [DismissalMechanism]
+    public internal(set) var cardFormUIOptions: PrimerCardFormUIOptions?
     public let theme: PrimerTheme
 
     private enum CodingKeys: String, CodingKey {
-        case isInitScreenEnabled, isSuccessScreenEnabled, isErrorScreenEnabled, dismissalMechanism, theme
+        case isInitScreenEnabled,
+             isSuccessScreenEnabled,
+             isErrorScreenEnabled,
+             dismissalMechanism,
+             cardFormUIOptions,
+             theme
     }
 
     public init(
@@ -287,12 +293,14 @@ public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
         isSuccessScreenEnabled: Bool? = nil,
         isErrorScreenEnabled: Bool? = nil,
         dismissalMechanism: [DismissalMechanism]? = [.gestures],
+        cardFormUIOptions: PrimerCardFormUIOptions? = nil,
         theme: PrimerTheme? = nil
     ) {
         self.isInitScreenEnabled = isInitScreenEnabled != nil ? isInitScreenEnabled! : true
         self.isSuccessScreenEnabled = isSuccessScreenEnabled != nil ? isSuccessScreenEnabled! : true
         self.isErrorScreenEnabled = isErrorScreenEnabled != nil ? isErrorScreenEnabled! : true
         self.dismissalMechanism = dismissalMechanism ?? [.gestures]
+        self.cardFormUIOptions = cardFormUIOptions
         self.theme = theme ?? PrimerTheme()
     }
 
@@ -302,6 +310,7 @@ public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
         self.isSuccessScreenEnabled = try container.decode(Bool.self, forKey: .isSuccessScreenEnabled)
         self.isErrorScreenEnabled = try container.decode(Bool.self, forKey: .isErrorScreenEnabled)
         self.dismissalMechanism = try container.decode([DismissalMechanism].self, forKey: .dismissalMechanism)
+        self.cardFormUIOptions = try container.decodeIfPresent(PrimerCardFormUIOptions.self, forKey: .cardFormUIOptions)
         self.theme = PrimerTheme()
     }
 
@@ -311,6 +320,17 @@ public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
         try container.encode(isSuccessScreenEnabled, forKey: .isSuccessScreenEnabled)
         try container.encode(isErrorScreenEnabled, forKey: .isErrorScreenEnabled)
         try container.encode(dismissalMechanism, forKey: .dismissalMechanism)
+        try container.encodeIfPresent(cardFormUIOptions, forKey: .cardFormUIOptions)
+    }
+}
+
+/// New structure to control card-form button behavior
+public class PrimerCardFormUIOptions: Codable {
+    /// When true, Drop-In’s card form pay button shows “Add new card” instead of “Pay $x.xx”
+    public let payButtonAddNewCard: Bool
+
+    public init(payButtonAddNewCard: Bool) {
+        self.payButtonAddNewCard = payButtonAddNewCard
     }
 }
 
