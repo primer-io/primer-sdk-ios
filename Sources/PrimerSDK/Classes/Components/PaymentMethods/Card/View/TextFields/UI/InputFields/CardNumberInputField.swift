@@ -1,40 +1,40 @@
-//
-//  CardNumberInputField.swift
-//  
-//
-//  Created by Boris on 29. 4. 2025..
-//
-
-
 import SwiftUI
 import UIKit
 
 @available(iOS 15.0, *)
 public struct CardNumberInputField: UIViewRepresentable {
     public var placeholder: String
-    public var onFormattedChange: ((String) -> Void)?
-    public var onValidationChange: ((Bool) -> Void)?
-    public var onErrorChange: ((String?) -> Void)?
-
+    private let validationService: ValidationService
     private let coordinator: CardNumberCoordinator
 
     public init(
+        label: String? = nil,
         placeholder: String = "1234 5678 9012 3456",
-        validatorService: ValidationService = DefaultValidationService(),
+        validationService: ValidationService = DefaultValidationService(),
+        onCardNetworkChange: ((CardNetwork) -> Void)? = nil,
         onFormattedChange: ((String) -> Void)? = nil,
         onValidationChange: ((Bool) -> Void)? = nil,
         onErrorChange: ((String?) -> Void)? = nil
     ) {
         self.placeholder = placeholder
-        self.onFormattedChange = onFormattedChange
-        self.onValidationChange = onValidationChange
-        self.onErrorChange = onErrorChange
+        self.validationService = validationService
+
+        let formatter = CardNumberFormatter()
+
         self.coordinator = CardNumberCoordinator(
-            formatter: CardNumberFormatter(),
+            formatter: formatter,
             cursorManager: CardNumberCursorManager(),
-            validator: CardNumberFieldValidator(validationService: validatorService),
+            validator: CardNumberFieldValidator(validationService: validationService),
             onValidationChange: { isValid in onValidationChange?(isValid) },
-            onErrorMessageChange: { msg in onErrorChange?(msg) }
+            onErrorMessageChange: { msg in onErrorChange?(msg) },
+            onTextChange: { formattedText in
+                onFormattedChange?(formattedText)
+
+                // Detect card network from number
+                let digitsOnly = formattedText.filter { $0.isNumber }
+                let network = CardNetwork(cardNumber: digitsOnly)
+                onCardNetworkChange?(network)
+            }
         )
     }
 

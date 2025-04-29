@@ -12,22 +12,26 @@ import UIKit
 @available(iOS 15.0, *)
 public struct CardholderNameInputField: UIViewRepresentable {
     public var placeholder: String
-    private let coordinator: CardholderNameCoordinator
+    private let coordinator: BaseTextFieldCoordinator
+
     public init(
         placeholder: String = "John Doe",
         validatorService: ValidationService = DefaultValidationService(),
+        onFormattedChange: ((String) -> Void)? = nil,
         onValidationChange: ((Bool) -> Void)? = nil,
         onErrorChange: ((String?) -> Void)? = nil
     ) {
         self.placeholder = placeholder
-        self.coordinator = CardholderNameCoordinator(
+        self.coordinator = BaseTextFieldCoordinator(
             formatter: CardholderNameFormatter(),
             cursorManager: DefaultCursorManager(),
             validator: CardholderNameFieldValidator(validationService: validatorService),
             onValidationChange: { isValid in onValidationChange?(isValid) },
-            onErrorMessageChange: { msg in onErrorChange?(msg) }
+            onErrorMessageChange: { msg in onErrorChange?(msg) },
+            onTextChange: { formattedText in onFormattedChange?(formattedText) }
         )
     }
+
     public func makeUIView(context: Context) -> UITextField {
         let tf = UITextField()
         tf.delegate = coordinator
@@ -35,6 +39,8 @@ public struct CardholderNameInputField: UIViewRepresentable {
         tf.placeholder = placeholder
         return tf
     }
+
     public func updateUIView(_ uiView: UITextField, context: Context) {}
-    public func makeCoordinator() -> CardholderNameCoordinator { coordinator }
+
+    public func makeCoordinator() -> BaseTextFieldCoordinator { coordinator }
 }

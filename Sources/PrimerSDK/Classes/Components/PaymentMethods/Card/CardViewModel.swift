@@ -545,57 +545,61 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
 
     // MARK: - CardPaymentMethodScope Component Methods
 
-    func PrimerCardholderNameField(modifier: Any, label: String?) -> any View {
-        return CardholderNameInputField(
-            label: label ?? "Cardholder Name",
-            placeholder: "John Doe",
-            validationService: validationService,
-            onValidationChange: { _ in
-                // Validation state is handled in the validator
-            }
-        )
-    }
-
+    @available(iOS 15.0, *)
     func PrimerCardNumberField(modifier: Any, label: String?) -> any View {
         return CardNumberInputField(
-            label: label ?? "Card Number",
+            label: label,
             placeholder: "1234 5678 9012 3456",
             validationService: validationService,
             onCardNetworkChange: { [weak self] network in
                 self?.updateCardNetwork(network)
             },
+            onFormattedChange: { [weak self] formatted in
+                self?.updateCardNumber(formatted.filter { $0.isNumber })
+            },
             onValidationChange: { _ in
                 // Validation state is handled in the validator
             }
         )
     }
 
-    func PrimerCvvField(modifier: Any, label: String?) -> any View {
-        return CVVInputField(
-            label: label ?? "CVV",
-            placeholder: "123",
-            cardNetwork: uiState.cardNetworkData.selectedNetwork ?? .unknown,
-            validationService: validationService,
-            onValidationChange: { _ in
-                // Validation state is handled in the validator
-            }
-        )
-    }
-
+    // Updated PrimerCardExpirationField method with enhanced field
+    @available(iOS 15.0, *)
     func PrimerCardExpirationField(modifier: Any, label: String?) -> any View {
-        return ExpiryDateInputField(
-            label: label ?? "Expiry Date",
-            placeholder: "MM/YY",
-            validationService: validationService,
-            onValidationChange: { _ in
-                // Validation state is handled in the validator
+        ExpiryDateInputField(
+            placeholder: label ?? "Expiry Date",
+            onFormattedChange: { formattedText in
+                let parts = formattedText.split(separator: "/")
+                if parts.count == 2 {
+                    self.updateExpiryMonth(String(parts[0]))
+                    self.updateExpiryYear(String(parts[1]))
+                }
             },
-            onMonthChange: { [weak self] month in
-                self?.updateExpiryMonth(month)
-            },
-            onYearChange: { [weak self] year in
-                self?.updateExpiryYear(year)
-            }
+            onValidationChange: { _ in },
+            onErrorChange: { _ in }
+        )
+    }
+
+    // Updated PrimerCvvField method with enhanced field
+    @available(iOS 15.0, *)
+    func PrimerCvvField(modifier: Any, label: String?) -> any View {
+        CVVInputField(
+            placeholder: label ?? "CVV",
+            cardNetwork: uiState.cardNetworkData.selectedNetwork ?? .unknown,
+            onFormattedChange: { self.updateCvv($0) },
+            onValidationChange: { _ in },
+            onErrorChange: { _ in }
+        )
+    }
+
+    // Updated PrimerCardholderNameField method with enhanced field
+    @available(iOS 15.0, *)
+    func PrimerCardholderNameField(modifier: Any, label: String?) -> any View {
+        CardholderNameInputField(
+            placeholder: label ?? "Cardholder Name",
+            onFormattedChange: { self.updateCardholderName($0) },
+            onValidationChange: { _ in },
+            onErrorChange: { _ in }
         )
     }
 

@@ -15,6 +15,7 @@ public class BaseTextFieldCoordinator: NSObject, UITextFieldDelegate {
     let validator: FieldValidator
     let onValidationChange: (Bool) -> Void
     let onErrorMessageChange: (String?) -> Void
+    let onTextChange: (String) -> Void
 
     private var lastRaw: String = ""
 
@@ -23,13 +24,15 @@ public class BaseTextFieldCoordinator: NSObject, UITextFieldDelegate {
         cursorManager: CursorPositionManaging,
         validator: FieldValidator,
         onValidationChange: @escaping (Bool) -> Void,
-        onErrorMessageChange: @escaping (String?) -> Void
+        onErrorMessageChange: @escaping (String?) -> Void,
+        onTextChange: @escaping (String) -> Void
     ) {
         self.formatter = formatter
         self.cursorManager = cursorManager
         self.validator = validator
         self.onValidationChange = onValidationChange
         self.onErrorMessageChange = onErrorMessageChange
+        self.onTextChange = onTextChange
     }
 
     public func textField(_ textField: UITextField,
@@ -40,6 +43,10 @@ public class BaseTextFieldCoordinator: NSObject, UITextFieldDelegate {
         let newRaw = (raw as NSString).replacingCharacters(in: range, with: string)
         let formatted = formatter.format(newRaw)
         textField.text = formatted
+
+        // Notify about text change
+        onTextChange(formatted)
+
         // cursor
         let cursorPos = cursorManager.position(for: newRaw, formatted: formatted, original: range.location + string.count)
         if let pos = textField.position(from: textField.beginningOfDocument, offset: cursorPos) {
