@@ -1,6 +1,6 @@
 disabled_rules:
-    - superfluous_disable_command
-    - type_body_length
+  - superfluous_disable_command
+  - type_body_length
 
 line_length:
   warning: 150
@@ -17,20 +17,20 @@ excluded:
 
 # Configuration for type names:
 # Enforces a minimum length of 3 and a maximum length of 40 characters,
-# but excludes the generic type "T" from this rule.
+# but excludes the generic type "T".
 type_name:
   min_length: 3
   max_length: 40
   excluded:
-    - '^T$'  # Regex to ignore type name "T"
+    - '^T$'
 
 # Configuration for identifier names:
 # Enforces a minimum length of 3 and a maximum length of 40 characters,
-# but excludes the loop counter "i" from this rule.
+# excludes "i" and "id", and no longer requires starting lowercase.
 identifier_name:
   min_length: 3
   max_length: 40
   excluded:
-    - '^i$'  # Regex to ignore identifier "i" in for loops
-    - '^id$' # Regex to ignore identifier "id"
-
+    - '^i$'
+    - '^id$'
+  validates_start_with_lowercase: false
