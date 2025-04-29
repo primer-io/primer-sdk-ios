@@ -39,27 +39,34 @@ public class BaseTextFieldCoordinator: NSObject, UITextFieldDelegate {
                           shouldChangeCharactersIn range: NSRange,
                           replacementString string: String) -> Bool {
         guard let current = (textField.text ?? "") as String? else { return true }
-        let raw = (current.filter { $0.isNumber || $0.isLetter })
-        let newRaw = (raw as NSString).replacingCharacters(in: range, with: string)
-        let formatted = formatter.format(newRaw)
-        textField.text = formatted
 
-        // Notify about text change
+        // Convert to Swift range and apply edit to original text first
+        guard let swiftRange = Range(range, in: current) else { return false }
+        let updatedText = current.replacingCharacters(in: swiftRange, with: string)
+
+        // Then filter and format
+        let newRaw = updatedText.filter { $0.isNumber || $0.isLetter }
+        let formatted = formatter.format(newRaw)
+
+        textField.text = formatted
         onTextChange(formatted)
 
-        // cursor
-        let cursorPos = cursorManager.position(for: newRaw, formatted: formatted, original: range.location + string.count)
-        if let pos = textField.position(from: textField.beginningOfDocument, offset: cursorPos) {
+        // Calculate cursor position
+        let cursorPosition = range.location + string.count
+        let cursorPos = cursorManager.position(for: newRaw, formatted: formatted, original: cursorPosition)
+
+        if let pos = textField.position(from: textField.beginningOfDocument, offset: min(cursorPos, formatted.count)) {
             textField.selectedTextRange = textField.textRange(from: pos, to: pos)
         }
+
         lastRaw = newRaw
-        // validate while typing
         let result = validator.validateWhileTyping(newRaw)
         onValidationChange(result.isValid)
         onErrorMessageChange(result.errorMessage)
+
         return false
     }
-
+    
     public func textFieldDidEndEditing(_ textField: UITextField) {
         let result = validator.validateOnCommit(lastRaw)
         onValidationChange(result.isValid)
