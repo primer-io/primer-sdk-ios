@@ -67,6 +67,10 @@ final class NolPayLinkCardComponentTest: XCTestCase {
 
         // Then
         XCTAssertEqual(sut.mobileNumber, mobileNumber)
+        XCTAssertNil(sut.countryCode)
+        XCTAssertNil(sut.otpCode)
+        XCTAssertNil(sut.cardNumber)
+        XCTAssertNil(sut.linkToken)
     }
 
     func test_UpdateCollectedData_WhenOtpDataIsProvided_ThenOtpCodeIsUpdated() {
@@ -74,7 +78,151 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         sut.updateCollectedData(collectableData: .otpData(otpCode: otpCode))
 
         // Then
+        XCTAssertNil(sut.mobileNumber)
+        XCTAssertNil(sut.countryCode)
         XCTAssertEqual(sut.otpCode, otpCode)
+        XCTAssertNil(sut.cardNumber)
+        XCTAssertNil(sut.linkToken)
+    }
+
+    func test_UpdateCollectedData_WhenPhoneDataIsInvalid_ThenValidationErrorIsReturned() {
+        // Given
+        let expectedErrorKey = "INVALID_DATA"
+        let expectedError = PrimerError.invalidValue(key: expectedErrorKey, value: nil, userInfo: nil, diagnosticsId: "")
+        mockPhoneMetadataService.resultToReturn = .failure(expectedError)
+
+        // When
+        sut.updateCollectedData(collectableData: .phoneData(mobileNumber: mobileNumber))
+
+        // Then
+        XCTAssertEqual(sut.mobileNumber, mobileNumber)
+        XCTAssertNil(sut.countryCode)
+        XCTAssertNil(sut.otpCode)
+        XCTAssertNil(sut.cardNumber)
+        XCTAssertNil(sut.linkToken)
+        XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
+        if case .error(let error) = mockValidationDelegate.validationsReceived {
+            if case PrimerError.invalidValue(let key, _, _, _) = error {
+                XCTAssertEqual(key, expectedErrorKey)
+            } else {
+                XCTFail("Expected invalidValue error")
+            }
+        } else {
+            XCTFail(
+                "Expected validation status to be .error with errors, but got \(String(describing: mockValidationDelegate.validationsReceived))"
+            )
+        }
+    }
+
+    func test_UpdateCollectedData_WhenPhoneDataIsInvalidWithSpecificError_ThenExpectedValidationErrorIsReturned() {
+        // Given
+        let expectedError = PrimerValidationError.invalidPhoneNumber(
+            message: "EXPECTED_ERROR_MESSAGE",
+            userInfo: [:],
+            diagnosticsId: ""
+        )
+        mockPhoneMetadataService.resultToReturn = .success((.invalid(errors: [expectedError]), nil, nil))
+
+        // When
+        sut.updateCollectedData(collectableData: .phoneData(mobileNumber: mobileNumber))
+
+        // Then
+        XCTAssertEqual(sut.mobileNumber, mobileNumber)
+        XCTAssertNil(sut.countryCode)
+        XCTAssertNil(sut.otpCode)
+        XCTAssertNil(sut.cardNumber)
+        XCTAssertNil(sut.linkToken)
+        XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
+        if case .invalid(let errors) = mockValidationDelegate.validationsReceived {
+            XCTAssertEqual(errors.count, 1)
+            guard let primerValidationError = errors.first else {
+                XCTFail("Expected error to be of type PrimerValidationError, but got \(String(describing: errors.first))")
+                return
+            }
+
+            XCTAssertEqual(primerValidationError.errorId, expectedError.errorId)
+        } else {
+            XCTFail(
+                "Expected validation status to be .invalid with errors, but got \(String(describing: mockValidationDelegate.validationsReceived))"
+            )
+        }
+    }
+
+    func test_UpdateCollectedData_WhenPhoneDataIsValid_ThenValidationSucceeds() {
+        // Given
+        mockPhoneMetadataService.resultToReturn = .success((.valid, countryCode, mobileNumber))
+
+        // When
+        sut.updateCollectedData(collectableData: .phoneData(mobileNumber: mobileNumber))
+
+        // Then
+        XCTAssertEqual(sut.mobileNumber, mobileNumber)
+        XCTAssertEqual(sut.countryCode, countryCode)
+        XCTAssertNil(sut.otpCode)
+        XCTAssertNil(sut.cardNumber)
+        XCTAssertNil(sut.linkToken)
+        XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
+        if case .valid = mockValidationDelegate.validationsReceived {
+            // Validation status is valid, no further assertions needed
+        } else {
+            XCTFail(
+                "Expected validation status to be .valid, but got \(String(describing: mockValidationDelegate.validationsReceived))"
+            )
+        }
+    }
+
+    func test_UpdateCollectedData_WhenOtpDataIsEmpty_ThenValidationErrorIsReturned() {
+        // Given
+        let expectedErrorMessage = "OTP is not valid."
+
+        // When
+        sut.updateCollectedData(collectableData: .otpData(otpCode: ""))
+
+        // Then
+        XCTAssertNil(sut.mobileNumber)
+        XCTAssertNil(sut.countryCode)
+        XCTAssertEqual(sut.otpCode, "")
+        XCTAssertNil(sut.cardNumber)
+        XCTAssertNil(sut.linkToken)
+        XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
+        if case .invalid(let errors) = mockValidationDelegate.validationsReceived {
+            XCTAssertEqual(errors.count, 1)
+            guard let primerValidationError = errors.first else {
+                XCTFail("Expected error to be of type PrimerValidationError, but got \(String(describing: errors.first))")
+                return
+            }
+
+            switch primerValidationError {
+            case .invalidOTPCode(let message, _, _):
+                XCTAssertEqual(message, expectedErrorMessage)
+            default:
+                XCTFail("primerError should be of type invalidOTPCode")
+            }
+        } else {
+            XCTFail(
+                "Expected validation status to be .invalid with errors, but got \(String(describing: mockValidationDelegate.validationsReceived))"
+            )
+        }
+    }
+
+    func test_UpdateCollectedData_WhenOtpDataIsValid_ThenValidationSucceeds() {
+        // When
+        sut.updateCollectedData(collectableData: .otpData(otpCode: otpCode))
+
+        // Then
+        XCTAssertNil(sut.mobileNumber)
+        XCTAssertNil(sut.countryCode)
+        XCTAssertEqual(sut.otpCode, otpCode)
+        XCTAssertNil(sut.cardNumber)
+        XCTAssertNil(sut.linkToken)
+        XCTAssertTrue(mockValidationDelegate.wasValidatedCalled)
+        if case .valid = mockValidationDelegate.validationsReceived {
+            // Validation status is valid, no further assertions needed
+        } else {
+            XCTFail(
+                "Expected validation status to be .valid, but got \(String(describing: mockValidationDelegate.validationsReceived))"
+            )
+        }
     }
 
     func test_Submit_WhenCollectPhoneDataAndMobileNumberIsNil_ThenErrorIsReturned() {
@@ -374,6 +522,23 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         XCTAssertEqual(actualStep, expectedStep)
     }
 
+    func test_Submit_WhenCollectTagDataAndSDKIsNotInitialized_ThenErrorIsReturned() {
+        // Given
+        let expectedError = PrimerError.nolSdkInitError(userInfo: nil, diagnosticsId: "")
+        sut.nextDataStep = .collectTagData
+
+        // When
+        sut.submit()
+
+        // Then
+        guard let primerError = mockErrorDelegate.errorReceived as? PrimerError else {
+            XCTFail("Error should be of type PrimerError")
+            return
+        }
+
+        XCTAssertEqual(primerError.plainDescription, expectedError.plainDescription)
+    }
+
     func test_Submit_WhenScanNFCCardFails_ShouldReturnExpectedError() {
         // Given
         let expectedErrorDescription = "ERROR_DESCRIPTION"
@@ -504,6 +669,11 @@ final class NolPayLinkCardComponentTest: XCTestCase {
             return
         }
         XCTAssertEqual(primerError.errorId, "invalid-client-token")
+    }
+
+    func test_Start() {
+        // When
+        sut.start()
     }
 }
 #endif
