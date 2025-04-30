@@ -33,7 +33,6 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
-    private let phoneMetadataService: NolPayPhoneMetadataServiceProtocol
 
     public var mobileNumber: String?
     public var countryCode: String?
@@ -42,11 +41,15 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
     public var linkToken: String?
     public var nextDataStep: NolPayLinkCardStep = .collectTagData
 
+    private let apiClient: PrimerAPIClientProtocol
+    private let phoneMetadataService: NolPayPhoneMetadataServiceProtocol
+
     public convenience init() {
-        self.init(phoneMetadataService: NolPayPhoneMetadataService())
+        self.init(apiClient: PrimerAPIClient(), phoneMetadataService: NolPayPhoneMetadataService())
     }
 
-    init(phoneMetadataService: NolPayPhoneMetadataServiceProtocol) {
+    init(apiClient: PrimerAPIClientProtocol, phoneMetadataService: NolPayPhoneMetadataServiceProtocol) {
+        self.apiClient = apiClient
         self.phoneMetadataService = phoneMetadataService
     }
 
@@ -264,7 +267,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?
                 .first(where: { $0.internalPaymentMethodType == .nolPay })?
                 .options as? MerchantOptions,
-              let appId = nolPaymentMethodOption.appId
+              let nolPayAppId = nolPaymentMethodOption.appId
         else {
             makeAndHandleInvalidValueError(forKey: "nolPayAppId")
             return
@@ -285,15 +288,15 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         #endif
 
         #if canImport(PrimerNolPaySDK)
-        nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
+        nolPay = PrimerNolPay(appId: nolPayAppId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
 
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
                                                                                 nolAppId: sdkId,
                                                                                 phoneVendor: "Apple",
                                                                                 phoneModel: UIDevice.modelIdentifier!)
-            let client = PrimerAPIClient()
+
             return try await withCheckedThrowingContinuation { continuation in
-                client.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
+                self.apiClient.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
                     switch result {
                     case .success(let appSecret):
                         continuation.resume(returning: appSecret.sdkSecret)

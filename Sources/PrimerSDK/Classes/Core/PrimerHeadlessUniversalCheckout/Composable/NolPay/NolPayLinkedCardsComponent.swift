@@ -23,7 +23,7 @@ public class NolPayLinkedCardsComponent {
     private var countryCode: String?
 
     private let apiClient: PrimerAPIClientProtocol
-    private var phoneMetadataService: NolPayPhoneMetadataServiceProtocol
+    private let phoneMetadataService: NolPayPhoneMetadataServiceProtocol
 
     public convenience init() {
         self.init(apiClient: PrimerAPIClient(), phoneMetadataService: NolPayPhoneMetadataService())
@@ -60,11 +60,11 @@ public class NolPayLinkedCardsComponent {
         }
     }
 
-    private func start(completion: @escaping (Result<Void, PrimerError>) -> Void) {
+    func start(completion: @escaping (Result<Void, PrimerError>) -> Void) {
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?
                 .first(where: { $0.internalPaymentMethodType == .nolPay })?
                 .options as? MerchantOptions,
-              let appId = nolPaymentMethodOption.appId
+              let nolPayAppId = nolPaymentMethodOption.appId
         else {
             let error = PrimerError.invalidValue(key: "nolPayAppId",
                                                  value: nil,
@@ -72,6 +72,7 @@ public class NolPayLinkedCardsComponent {
                                                  diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: error)
             errorDelegate?.didReceiveError(error: error)
+            completion(.failure(error))
             return
         }
 
@@ -80,6 +81,7 @@ public class NolPayLinkedCardsComponent {
                                                      diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             errorDelegate?.didReceiveError(error: err)
+            completion(.failure(err))
             return
         }
 
@@ -96,7 +98,7 @@ public class NolPayLinkedCardsComponent {
             return
         }
 
-        nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
+        nolPay = PrimerNolPay(appId: nolPayAppId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
 
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
                                                                                 nolAppId: sdkId,
@@ -122,8 +124,8 @@ public class NolPayLinkedCardsComponent {
         #endif
     }
 
-    private func continueWithLinkedCardsFetch(mobileNumber: String,
-                                              completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
+    func continueWithLinkedCardsFetch(mobileNumber: String,
+                                      completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
         let sdkEvent = Analytics.Event.sdk(
             name: NolPayAnalyticsConstants.linkedCardsGetCardsMethod,
             params: ["category": "NOL_PAY"]
@@ -132,9 +134,7 @@ public class NolPayLinkedCardsComponent {
         #if canImport(PrimerNolPaySDK)
 
         guard let nolPay else {
-            let error = PrimerError.nolError(
-                code: "unknown",
-                message: "NolPay SDK is not initialized",
+            let error = PrimerError.nolSdkInitError(
                 userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString
             )
@@ -160,6 +160,7 @@ public class NolPayLinkedCardsComponent {
                                                              diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: error)
                         self.errorDelegate?.didReceiveError(error: error)
+                        completion(.failure(error))
                         return
                     }
 
@@ -170,6 +171,7 @@ public class NolPayLinkedCardsComponent {
                                                              diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: error)
                         self.errorDelegate?.didReceiveError(error: error)
+                        completion(.failure(error))
                         return
                     }
                     #if canImport(PrimerNolPaySDK)
@@ -192,10 +194,16 @@ public class NolPayLinkedCardsComponent {
                 case .invalid(errors: let validationErrors):
                     self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: validationErrors), for: nil)
 
+                    let err = PrimerError.underlyingErrors(errors: validationErrors,
+                                                           userInfo: .errorUserInfoDictionary(),
+                                                           diagnosticsId: UUID().uuidString)
+                    completion(.failure(err))
+
                 default: break
                 }
             case .failure(let error):
                 self.errorDelegate?.didReceiveError(error: error)
+                completion(.failure(error))
             }
         }
     }

@@ -13,6 +13,7 @@ import XCTest
 
 final class NolPayUnlinkCardComponentTest: XCTestCase {
     var sut: NolPayUnlinkCardComponent!
+    var mockApiClient: MockPrimerAPIClient!
     var mockErrorDelegate: MockErrorDelegate!
     var mockValidationDelegate: MockValidationDelegate!
     var mockStepDelegate: MockStepDelegate!
@@ -34,6 +35,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
         let paymentMethod = Mocks.PaymentMethods.nolPaymentMethod
         SDKSessionHelper.setUp(withPaymentMethods: [paymentMethod])
 
+        mockApiClient = MockPrimerAPIClient()
         mockErrorDelegate = MockErrorDelegate()
         mockValidationDelegate = MockValidationDelegate()
         mockStepDelegate = MockStepDelegate()
@@ -43,7 +45,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
             "appSecret"
         })
 
-        sut = NolPayUnlinkCardComponent(phoneMetadataService: mockPhoneMetadataService)
+        sut = NolPayUnlinkCardComponent(apiClient: mockApiClient, phoneMetadataService: mockPhoneMetadataService)
         sut.errorDelegate = mockErrorDelegate
         sut.validationDelegate = mockValidationDelegate
         sut.stepDelegate = mockStepDelegate
@@ -51,6 +53,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
 
     override func tearDown() {
         sut = nil
+        mockApiClient = nil
         mockErrorDelegate = nil
         mockValidationDelegate = nil
         mockStepDelegate = nil
@@ -547,7 +550,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
         XCTAssertEqual(actualStep, expectedStep)
     }
 
-    func test_Start__WithInvalidAppID_ShouldReturnError() {
+    func test_Start_WithInvalidAppID_ShouldReturnError() {
         // Given
         SDKSessionHelper.tearDown()
 
@@ -568,7 +571,7 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
         }
     }
 
-    func test_Start__WithNoClientToken_ShouldReturnError() {
+    func test_Start_WithNoClientToken_ShouldReturnError() {
         // Given
         AppState.current.clientToken = nil
 
@@ -583,9 +586,35 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
         XCTAssertEqual(primerError.errorId, "invalid-client-token")
     }
 
-    func test_Start__ShouldInitializeSuccessfully() {
+    func test_Start_WhenSDKFailsWithError() {
+        // Given
+        let exp = expectation(description: "Wait for start to complete")
+        let expectedErrorCode = "EXPECTED_ERROR_CODE"
+        mockApiClient.fetchNolSdkSecretResult = {
+            exp.fulfill()
+            return .failure(PrimerError.nolError(code: expectedErrorCode, message: "", userInfo: nil, diagnosticsId: ""))
+        }
+
         // When
         sut.start()
+
+        // Then
+        wait(for: [exp], timeout: 5.0)
+    }
+
+    func test_Start_WhenSDKStartsSuccessfully() {
+        // Given
+        let exp = expectation(description: "Wait for start to complete")
+        mockApiClient.fetchNolSdkSecretResult = {
+            exp.fulfill()
+            return .success(Response.Body.NolPay.NolPaySecretDataResponse(sdkSecret: ""))
+        }
+
+        // When
+        sut.start()
+
+        // Then
+        wait(for: [exp], timeout: 5.0)
     }
 }
 #endif

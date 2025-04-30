@@ -35,7 +35,6 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
     public weak var stepDelegate: PrimerHeadlessSteppableDelegate?
-    private var phoneMetadataService: NolPayPhoneMetadataServiceProtocol
 
     public var mobileNumber: String?
     public var countryCode: String?
@@ -44,11 +43,15 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     public var unlinkToken: String?
     public var nextDataStep: NolPayUnlinkDataStep = .collectCardAndPhoneData
 
+    private let apiClient: PrimerAPIClientProtocol
+    private let phoneMetadataService: NolPayPhoneMetadataServiceProtocol
+
     public convenience init() {
-        self.init(phoneMetadataService: NolPayPhoneMetadataService())
+        self.init(apiClient: PrimerAPIClient(), phoneMetadataService: NolPayPhoneMetadataService())
     }
 
-    init(phoneMetadataService: NolPayPhoneMetadataServiceProtocol) {
+    init(apiClient: PrimerAPIClientProtocol, phoneMetadataService: NolPayPhoneMetadataServiceProtocol) {
+        self.apiClient = apiClient
         self.phoneMetadataService = phoneMetadataService
     }
 
@@ -89,26 +92,27 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
             }
 
             phoneMetadataService.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
+                guard let self else { return }
                 switch result {
                 case .success((let validationStatus, let countryCode, let mobileNumber)):
                     switch validationStatus {
                     case .valid:
                         if errors.isEmpty {
-                            self?.countryCode = countryCode
-                            self?.mobileNumber = mobileNumber
-                            self?.validationDelegate?.didUpdate(validationStatus: .valid, for: data)
+                            self.countryCode = countryCode
+                            self.mobileNumber = mobileNumber
+                            self.validationDelegate?.didUpdate(validationStatus: .valid, for: data)
                         } else {
-                            self?.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
+                            self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
                         }
 
                     case .invalid(errors: let validationErrors):
                         errors += validationErrors
-                        self?.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
+                        self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: errors), for: data)
 
                     default: break
                     }
                 case .failure(let error):
-                    self?.validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)
+                    self.validationDelegate?.didUpdate(validationStatus: .error(error: error), for: data)
                 }
             }
         case .otpData(otpCode: let otpCode):
@@ -264,10 +268,9 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                                                                                 nolAppId: sdkId,
                                                                                 phoneVendor: "Apple",
                                                                                 phoneModel: UIDevice.modelIdentifier!)
-            let client = PrimerAPIClient()
 
             return try await withCheckedThrowingContinuation { continuation in
-                client.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
+                self.apiClient.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: requestBody) { result in
                     switch result {
                     case .success(let appSecret):
                         continuation.resume(returning: appSecret.sdkSecret)
