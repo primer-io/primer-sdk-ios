@@ -17,8 +17,8 @@ class NolPayPaymentComponentTests: XCTestCase {
     var mockValidationDelegate: MockValidationDelegate!
     var mockStepDelegate: MockStepDelegate!
     var mockPhoneMetadataService: MockPhoneMetadataService!
-    var mockNolPay: MockPrimerNolPay!
     var mockNolPayTokenizationViewModel: MockNolPayTokenizationViewModel!
+    var mockNolPay: MockPrimerNolPay!
 
     override func setUp() {
         super.setUp()
@@ -27,20 +27,19 @@ class NolPayPaymentComponentTests: XCTestCase {
         let paymentMethod = Mocks.PaymentMethods.nolPaymentMethod
         SDKSessionHelper.setUp(withPaymentMethods: [paymentMethod])
 
-        mockPhoneMetadataService = MockPhoneMetadataService()
-        mockNolPayTokenizationViewModel = MockNolPayTokenizationViewModel(config: paymentMethod)
-        sut = NolPayPaymentComponent(
-            tokenizationViewModel: mockNolPayTokenizationViewModel,
-            phoneMetadataService: mockPhoneMetadataService
-        )
-
         mockErrorDelegate = MockErrorDelegate()
         mockValidationDelegate = MockValidationDelegate()
         mockStepDelegate = MockStepDelegate()
+        mockPhoneMetadataService = MockPhoneMetadataService()
+        mockNolPayTokenizationViewModel = MockNolPayTokenizationViewModel(config: paymentMethod)
         mockNolPay = MockPrimerNolPay(appId: "123", isDebug: true, isSandbox: true, appSecretHandler: { _, _ in
             "appSecret"
         })
 
+        sut = NolPayPaymentComponent(
+            tokenizationViewModel: mockNolPayTokenizationViewModel,
+            phoneMetadataService: mockPhoneMetadataService
+        )
         sut.errorDelegate = mockErrorDelegate
         sut.validationDelegate = mockValidationDelegate
         sut.stepDelegate = mockStepDelegate
@@ -51,6 +50,11 @@ class NolPayPaymentComponentTests: XCTestCase {
         mockErrorDelegate = nil
         mockValidationDelegate = nil
         mockStepDelegate = nil
+        mockPhoneMetadataService = nil
+        mockNolPay = nil
+        mockNolPayTokenizationViewModel = nil
+
+        SDKSessionHelper.tearDown()
         super.tearDown()
     }
 

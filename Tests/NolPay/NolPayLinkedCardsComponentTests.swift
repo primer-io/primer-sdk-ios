@@ -45,6 +45,7 @@ class NolPayLinkedCardsComponentTests: XCTestCase {
         let mockNolPay = MockPrimerNolPay(appId: "123", isDebug: true, isSandbox: true, appSecretHandler: { _, _ in
             "appSecret"
         })
+        mockNolPay.getAvailableCardsResult = .success([PrimerNolPayCard(cardNumber: "1234567890123456", expiredTime: "")])
 
         mockPhoneMetadataService.resultToReturn = .success((.valid, "+123", "1234567890"))
         sut.nolPay = mockNolPay

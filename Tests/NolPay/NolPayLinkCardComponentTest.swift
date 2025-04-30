@@ -14,27 +14,54 @@ import XCTest
 final class NolPayLinkCardComponentTest: XCTestCase {
     var sut: NolPayLinkCardComponent!
     var mockErrorDelegate: MockErrorDelegate!
+    var mockValidationDelegate: MockValidationDelegate!
+    var mockStepDelegate: MockStepDelegate!
     var mockPhoneMetadataService: MockPhoneMetadataService!
+    var mockNolPayTokenizationViewModel: MockNolPayTokenizationViewModel!
+    var mockNolPay: MockPrimerNolPay!
+
+    let mobileNumber = "+111123123123123"
+    let countryCode = "+1"
+    let otpCode = "123456"
+    let cardNumber = "1234567890123456"
+    let linkToken = "LINK_TOKEN"
 
     override func setUp() {
         super.setUp()
+        PrimerInternal.shared.intent = .checkout
 
-        mockPhoneMetadataService = MockPhoneMetadataService()
-        sut = NolPayLinkCardComponent(phoneMetadataService: mockPhoneMetadataService)
+        let paymentMethod = Mocks.PaymentMethods.nolPaymentMethod
+        SDKSessionHelper.setUp(withPaymentMethods: [paymentMethod])
+
         mockErrorDelegate = MockErrorDelegate()
+        mockValidationDelegate = MockValidationDelegate()
+        mockStepDelegate = MockStepDelegate()
+        mockPhoneMetadataService = MockPhoneMetadataService()
+        mockNolPayTokenizationViewModel = MockNolPayTokenizationViewModel(config: paymentMethod)
+        mockNolPay = MockPrimerNolPay(appId: "123", isDebug: true, isSandbox: true, appSecretHandler: { _, _ in
+            "appSecret"
+        })
+
+        sut = NolPayLinkCardComponent(phoneMetadataService: mockPhoneMetadataService)
         sut.errorDelegate = mockErrorDelegate
+        sut.validationDelegate = mockValidationDelegate
+        sut.stepDelegate = mockStepDelegate
     }
 
     override func tearDown() {
         sut = nil
         mockErrorDelegate = nil
+        mockValidationDelegate = nil
+        mockStepDelegate = nil
+        mockPhoneMetadataService = nil
+        mockNolPay = nil
+        mockNolPayTokenizationViewModel = nil
+
+        SDKSessionHelper.tearDown()
         super.tearDown()
     }
 
     func test_UpdateCollectedData_WhenPhoneDataIsProvided_ThenMobileNumberIsUpdated() {
-        // Given
-        let mobileNumber = "+111123123123123"
-
         // When
         sut.updateCollectedData(collectableData: .phoneData(mobileNumber: mobileNumber))
 
@@ -43,9 +70,6 @@ final class NolPayLinkCardComponentTest: XCTestCase {
     }
 
     func test_UpdateCollectedData_WhenOtpDataIsProvided_ThenOtpCodeIsUpdated() {
-        // Given
-        let otpCode = "123456"
-
         // When
         sut.updateCollectedData(collectableData: .otpData(otpCode: otpCode))
 
@@ -55,7 +79,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
 
     func test_Submit_WhenCollectPhoneDataAndMobileNumberIsNil_ThenErrorIsReturned() {
         // Given
-        sut.nextDataStep = .collectPhoneData(cardNumber: "1234")
+        sut.nextDataStep = .collectPhoneData(cardNumber: cardNumber)
 
         // When
         sut.submit()
@@ -76,8 +100,8 @@ final class NolPayLinkCardComponentTest: XCTestCase {
 
     func test_Submit_WhenCollectPhoneDataAndCountryCodeIsNil_ThenErrorIsReturned() {
         // Given
-        sut.mobileNumber = "1234567890"
-        sut.nextDataStep = .collectPhoneData(cardNumber: "1234")
+        sut.mobileNumber = mobileNumber
+        sut.nextDataStep = .collectPhoneData(cardNumber: cardNumber)
 
         // When
         sut.submit()
@@ -96,33 +120,11 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
     }
 
-    func test_Submit_WhenCollectPhoneDataAndNoMobileNumber_ThenErrorIsReturned() {
+    func test_Submit_WhenCollectPhoneDataAndLinkTokenIsNil_ThenErrorIsReturned() {
         // Given
-        sut.countryCode = "+111"
-        sut.nextDataStep = .collectPhoneData(cardNumber: "12341234")
-
-        // When
-        sut.submit()
-
-        // Then
-        guard let primerError = mockErrorDelegate.errorReceived as? PrimerError else {
-            XCTFail("Error should be of type PrimerError")
-            return
-        }
-
-        switch primerError {
-        case .invalidValue(let key, _, _, _):
-            XCTAssertTrue(key == "mobileNumber")
-        default:
-            XCTFail("primerError should be of type invalidSetting")
-        }
-    }
-
-    func test_Submit_WhenCollectPhoneDataAndNoLinkToken_ThenErrorIsReturned() {
-        // Given
-        sut.mobileNumber = "1234567890"
-        sut.countryCode = "+111"
-        sut.nextDataStep = .collectPhoneData(cardNumber: "1234")
+        sut.mobileNumber = mobileNumber
+        sut.countryCode = countryCode
+        sut.nextDataStep = .collectPhoneData(cardNumber: cardNumber)
 
         // When
         sut.submit()
@@ -144,10 +146,10 @@ final class NolPayLinkCardComponentTest: XCTestCase {
     func test_Submit_WhenCollectPhoneDataAndSDKIsNotInitialized_ThenErrorIsReturned() {
         // Given
         let expectedError = PrimerError.nolSdkInitError(userInfo: nil, diagnosticsId: "")
-        sut.mobileNumber = "1234567890"
-        sut.countryCode = "+111"
-        sut.linkToken = "linkToken123"
-        sut.nextDataStep = .collectPhoneData(cardNumber: "1234")
+        sut.mobileNumber = mobileNumber
+        sut.countryCode = countryCode
+        sut.linkToken = linkToken
+        sut.nextDataStep = .collectPhoneData(cardNumber: cardNumber)
 
         // When
         sut.submit()
@@ -161,9 +163,16 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         XCTAssertEqual(primerError.errorId, expectedError.errorId)
     }
 
-    func test_Submit_WhenCollectOtpDataAndOtpCodeIsNil_ThenErrorIsReturned() {
+    func test_Submit_WhenSendLinkOTPRequestFailsWithError_ShouldReturnExpectedError() {
         // Given
-        sut.nextDataStep = .collectOtpData(phoneNumber: "")
+        let expectedErrorDescription = "ERROR_DESCRIPTION"
+        sut.mobileNumber = mobileNumber
+        sut.countryCode = countryCode
+        sut.linkToken = linkToken
+        sut.nextDataStep = .collectPhoneData(cardNumber: cardNumber)
+
+        mockNolPay.sendLinkOTPResult = .failure(PrimerNolPayError(description: expectedErrorDescription))
+        sut.nolPay = mockNolPay
 
         // When
         sut.submit()
@@ -175,17 +184,64 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
 
         switch primerError {
-        case .invalidValue(let key, _, _, _):
-            XCTAssertTrue(key == "otpCode")
+        case .nolError(_, let message, _, _):
+            XCTAssertTrue(message == expectedErrorDescription)
         default:
-            XCTFail("primerError should be of type invalidSetting")
+            XCTFail("primerError should be of type nolError")
         }
+    }
+
+    func test_Submit_WhenSendLinkOTPRequestFails_ShouldReturnUnknownError() {
+        // Given
+        sut.mobileNumber = mobileNumber
+        sut.countryCode = countryCode
+        sut.linkToken = linkToken
+        sut.nextDataStep = .collectPhoneData(cardNumber: cardNumber)
+
+        mockNolPay.sendLinkOTPResult = .success(false)
+        sut.nolPay = mockNolPay
+
+        // When
+        sut.submit()
+
+        // Then
+        guard let primerError = mockErrorDelegate.errorReceived as? PrimerError else {
+            XCTFail("Error should be of type PrimerError")
+            return
+        }
+
+        switch primerError {
+        case .nolError(let code, let message, _, _):
+            XCTAssertTrue(code == "unknown")
+            XCTAssertTrue(message == "Sending of OTP SMS failed from unknown reason")
+        default:
+            XCTFail("primerError should be of type nolError")
+        }
+    }
+
+    func test_Submit_WhenSendLinkOTPSucceeds_ShouldProceedToNextStep() {
+        // Given
+        sut.mobileNumber = mobileNumber
+        sut.countryCode = countryCode
+        sut.linkToken = linkToken
+        sut.nextDataStep = .collectPhoneData(cardNumber: cardNumber)
+
+        mockNolPay.sendLinkOTPResult = .success(true)
+        sut.nolPay = mockNolPay
+
+        // When
+        sut.submit()
+
+        // Then
+        XCTAssertNil(mockErrorDelegate.errorReceived)
+        let expectedStep = String(describing: NolPayLinkCardStep.collectOtpData(phoneNumber: "\(countryCode) \(mobileNumber)"))
+        let actualStep = String(describing: sut.nextDataStep)
+        XCTAssertEqual(actualStep, expectedStep)
     }
 
     func test_Submit_WhenCollectOtpDataAndNoOtpCode_ThenErrorIsReturned() {
         // Given
-        sut.nextDataStep = .collectOtpData(phoneNumber: "")
-        sut.linkToken = "linkToken123"
+        sut.nextDataStep = .collectOtpData(phoneNumber: mobileNumber)
 
         // When
         sut.submit()
@@ -207,7 +263,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
     func test_Submit_WhenCollectOtpDataAndNoLinkToken_ThenErrorIsReturned() {
         // Given
         sut.nextDataStep = .collectOtpData(phoneNumber: "")
-        sut.otpCode = "123456"
+        sut.otpCode = otpCode
 
         // When
         sut.submit()
@@ -230,8 +286,8 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         // Given
         let expectedError = PrimerError.nolSdkInitError(userInfo: nil, diagnosticsId: "")
         sut.nextDataStep = .collectOtpData(phoneNumber: "")
-        sut.otpCode = "123456"
-        sut.linkToken = "linkToken123"
+        sut.otpCode = otpCode
+        sut.linkToken = linkToken
 
         // When
         sut.submit()
@@ -245,10 +301,15 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         XCTAssertEqual(primerError.plainDescription, expectedError.plainDescription)
     }
 
-    func test_Submit_WhenCollectTagDataAndSDKIsNotInitialized_ThenErrorIsReturned() {
+    func test_Submit_WhenLinkCardRequestFailsWithError_ShouldReturnExpectedError() {
         // Given
-        let expectedError = PrimerError.nolSdkInitError(userInfo: nil, diagnosticsId: "")
-        sut.nextDataStep = .collectTagData
+        let expectedErrorDescription = "ERROR_DESCRIPTION"
+        sut.otpCode = otpCode
+        sut.linkToken = linkToken
+        sut.nextDataStep = .collectOtpData(phoneNumber: mobileNumber)
+
+        mockNolPay.linkCardResult = .failure(PrimerNolPayError(description: expectedErrorDescription))
+        sut.nolPay = mockNolPay
 
         // When
         sut.submit()
@@ -259,12 +320,133 @@ final class NolPayLinkCardComponentTest: XCTestCase {
             return
         }
 
-        XCTAssertEqual(primerError.plainDescription, expectedError.plainDescription)
+        switch primerError {
+        case .nolError(_, let message, _, _):
+            XCTAssertTrue(message == expectedErrorDescription)
+        default:
+            XCTFail("primerError should be of type nolError")
+        }
+    }
+
+    func test_Submit_WhenLinkCardRequestFails_ShouldReturnUnknownError() {
+        // Given
+        sut.otpCode = otpCode
+        sut.linkToken = linkToken
+        sut.nextDataStep = .collectOtpData(phoneNumber: mobileNumber)
+
+        mockNolPay.linkCardResult = .success(false)
+        sut.nolPay = mockNolPay
+
+        // When
+        sut.submit()
+
+        // Then
+        guard let primerError = mockErrorDelegate.errorReceived as? PrimerError else {
+            XCTFail("Error should be of type PrimerError")
+            return
+        }
+
+        switch primerError {
+        case .nolError(let code, let message, _, _):
+            XCTAssertTrue(code == "unknown")
+            XCTAssertTrue(message == "Linking of the card failed failed from unknown reason")
+        default:
+            XCTFail("primerError should be of type nolError")
+        }
+    }
+
+    func test_Submit_WhenLinkCardSucceeds_ShouldProceedToNextStep() {
+        // Given
+        sut.otpCode = otpCode
+        sut.linkToken = linkToken
+        sut.nextDataStep = .collectOtpData(phoneNumber: mobileNumber)
+
+        mockNolPay.linkCardResult = .success(true)
+        sut.nolPay = mockNolPay
+
+        // When
+        sut.submit()
+
+        // Then
+        XCTAssertNil(mockErrorDelegate.errorReceived)
+        let expectedStep = String(describing: NolPayLinkCardStep.cardLinked)
+        let actualStep = String(describing: sut.nextDataStep)
+        XCTAssertEqual(actualStep, expectedStep)
+    }
+
+    func test_Submit_WhenScanNFCCardFails_ShouldReturnExpectedError() {
+        // Given
+        let expectedErrorDescription = "ERROR_DESCRIPTION"
+        sut.nextDataStep = .collectTagData
+
+        mockNolPay.scanNFCCardResult = .failure(PrimerNolPayError(description: expectedErrorDescription))
+        sut.nolPay = mockNolPay
+
+        // When
+        sut.submit()
+
+        // Then
+        guard let primerError = mockErrorDelegate.errorReceived as? PrimerError else {
+            XCTFail("Error should be of type PrimerError")
+            return
+        }
+
+        switch primerError {
+        case .nolError(_, let message, _, _):
+            XCTAssertTrue(message == expectedErrorDescription)
+        default:
+            XCTFail("primerError should be of type nolError")
+        }
+    }
+
+    func test_Submit_WhenMakeLinkingTokenFails_ShouldReturnExpectedError() {
+        // Given
+        let expectedErrorDescription = "ERROR_DESCRIPTION"
+        sut.nextDataStep = .collectTagData
+
+        mockNolPay.scanNFCCardResult = .success(cardNumber)
+        mockNolPay.makeLinkingTokenResult = .failure(PrimerNolPayError(description: expectedErrorDescription))
+        sut.nolPay = mockNolPay
+
+        // When
+        sut.submit()
+
+        // Then
+        guard let primerError = mockErrorDelegate.errorReceived as? PrimerError else {
+            XCTFail("Error should be of type PrimerError")
+            return
+        }
+
+        switch primerError {
+        case .nolError(_, let message, _, _):
+            XCTAssertTrue(message == expectedErrorDescription)
+        default:
+            XCTFail("primerError should be of type nolError")
+        }
+    }
+
+    func test_Submit_WhenMakeLinkingTokenSucceeds_ShouldProceedToNextStep() {
+        // Given
+        sut.nextDataStep = .collectTagData
+
+        mockNolPay.scanNFCCardResult = .success(cardNumber)
+        mockNolPay.makeLinkingTokenResult = .success(linkToken)
+        sut.nolPay = mockNolPay
+
+        // When
+        sut.submit()
+
+        // Then
+        XCTAssertNil(mockErrorDelegate.errorReceived)
+        let expectedStep = String(describing: NolPayLinkCardStep.collectPhoneData(cardNumber: cardNumber))
+        let actualStep = String(describing: sut.nextDataStep)
+        XCTAssertEqual(actualStep, expectedStep)
+        XCTAssertEqual(sut.cardNumber, cardNumber)
     }
 
     func test_UpdateCollectedData_WhenPhoneDataIsProvided_ThenNextStepIsCollectPhoneData() {
         // Given
-        let phoneData = NolPayLinkCollectableData.phoneData(mobileNumber: "1234567890")
+        let phoneData = NolPayLinkCollectableData.phoneData(mobileNumber: mobileNumber)
 
         // When
         sut.updateCollectedData(collectableData: phoneData)
@@ -277,7 +459,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
 
     func test_UpdateCollectedData_WhenOtpDataIsProvided_ThenNextStepIsCollectOtpData() {
         // Given
-        let otpData = NolPayLinkCollectableData.otpData(otpCode: "123456")
+        let otpData = NolPayLinkCollectableData.otpData(otpCode: otpCode)
 
         // When
         sut.updateCollectedData(collectableData: otpData)
@@ -289,6 +471,9 @@ final class NolPayLinkCardComponentTest: XCTestCase {
     }
 
     func test_Start_WhenAppIDIsInvalid_ThenErrorIsReturned() {
+        // Given
+        SDKSessionHelper.tearDown()
+
         // When
         sut.start()
 
@@ -308,8 +493,6 @@ final class NolPayLinkCardComponentTest: XCTestCase {
 
     func test_Start_WhenNoClientToken_ThenErrorIsReturned() {
         // Given
-        let paymentMethod = Mocks.PaymentMethods.nolPaymentMethod
-        SDKSessionHelper.setUp(withPaymentMethods: [paymentMethod])
         AppState.current.clientToken = nil
 
         // When

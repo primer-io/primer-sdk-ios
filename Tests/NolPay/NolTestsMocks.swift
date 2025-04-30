@@ -26,44 +26,71 @@ enum NolPayMocks {
 
 class MockPrimerNolPay: PrimerNolPayProtocol {
     // Mock responses for the mock methods
-    var mockCardNumber: String = "1234567890123456"
-    var mockBoolResponse: Bool = true
-    var mockOTPResponse: (String, String) = ("mockOTP", "mockToken")
     var mockCards: [PrimerNolPayCard] = [PrimerNolPayCard(cardNumber: "1234567890123456", expiredTime: "12/34")]
 
     required init(appId: String, isDebug: Bool, isSandbox: Bool, appSecretHandler: @escaping (String, String) async throws -> String) {}
 
+    var scanNFCCardResult: Result<String, PrimerNolPayError>?
     func scanNFCCard(completion: @escaping (Result<String, PrimerNolPayError>) -> Void) {
-        completion(.success(mockCardNumber))
+        guard let result = scanNFCCardResult else {
+            completion(.failure(PrimerNolPayError(description: "Unknown error")))
+            return
+        }
+        completion(result)
     }
 
+    var makeLinkingTokenResult: Result<String, PrimerNolPayError>?
     func makeLinkingToken(for cardNumber: String, completion: @escaping (Result<String, PrimerNolPayError>) -> Void) {
-        completion(.success("mockLinkingToken"))
+        guard let result = makeLinkingTokenResult else {
+            completion(.failure(PrimerNolPayError(description: "Unknown error")))
+            return
+        }
+        completion(result)
     }
 
+    var sendLinkOTPResult: Result<Bool, PrimerNolPayError>?
     func sendLinkOTP(to mobileNumber: String, with countryCode: String, and token: String, completion: ((Result<Bool, PrimerNolPayError>) -> Void)?) {
-        completion?(.success(mockBoolResponse))
+        guard let result = sendLinkOTPResult else {
+            completion?(.failure(PrimerNolPayError(description: "Unknown error")))
+            return
+        }
+        completion?(result)
     }
 
+    var linkCardResult: Result<Bool, PrimerNolPayError>?
     func linkCard(for otp: String, and linkToken: String, completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void) {
-        completion(.success(mockBoolResponse))
+        guard let result = linkCardResult else {
+            completion(.failure(PrimerNolPayError(description: "Unknown error")))
+            return
+        }
+        completion(result)
     }
 
+    var sendUnlinkOTPResult: Result<(String, String), PrimerNolPayError>?
     func sendUnlinkOTP(
         to mobileNumber: String,
         with countryCode: String,
         and cardNumber: String,
-        completion: @escaping (Result<(String, String), PrimerNolPayError>) -> Void
+        completion: @escaping (Result<(String, String), PrimerNolPayError>)
+            -> Void
     ) {
-        completion(.success(mockOTPResponse))
+        guard let result = sendUnlinkOTPResult else {
+            completion(.failure(PrimerNolPayError(description: "Unknown error")))
+            return
+        }
+        completion(result)
     }
 
+    var unlinkCardResult: Result<Bool, PrimerNolPayError>?
     func unlinkCard(with cardNumber: String, otp: String, and unlinkToken: String, completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void) {
-        completion(.success(mockBoolResponse))
+        guard let result = unlinkCardResult else {
+            completion(.failure(PrimerNolPayError(description: "Unknown error")))
+            return
+        }
+        completion(result)
     }
 
     var requestPaymentResult: Result<Bool, PrimerNolPayError>?
-
     func requestPayment(for cardNumber: String, and transactionNumber: String, completion: @escaping (Result<Bool, PrimerNolPayError>) -> Void) {
         guard let result = requestPaymentResult else {
             completion(.failure(PrimerNolPayError(description: "Unknown error")))
@@ -72,16 +99,17 @@ class MockPrimerNolPay: PrimerNolPayProtocol {
         completion(result)
     }
 
+    var getAvailableCardsResult: Result<[PrimerNolPayCard], PrimerNolPayError>?
     func getAvailableCards(
         for mobileNumber: String,
         with countryCode: String,
         completion: @escaping (Result<[PrimerNolPayCard], PrimerNolPayError>) -> Void
     ) {
-        if mockCards.count > 0 {
-            completion(.success(mockCards))
-        } else {
-            completion(.failure(PrimerNolPayError.nolPaySdkError(message: "Failed")))
+        guard let result = getAvailableCardsResult else {
+            completion(.failure(PrimerNolPayError(description: "Unknown error")))
+            return
         }
+        completion(result)
     }
 }
 
