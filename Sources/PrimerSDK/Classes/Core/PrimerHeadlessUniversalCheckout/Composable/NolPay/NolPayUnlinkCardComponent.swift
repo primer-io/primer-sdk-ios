@@ -41,7 +41,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     public var countryCode: String?
     public var otpCode: String?
     public var cardNumber: String?
-    private var unlinkToken: String?
+    public var unlinkToken: String?
     public var nextDataStep: NolPayUnlinkDataStep = .collectCardAndPhoneData
 
     public convenience init() {
@@ -73,7 +73,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         validateData(for: collectableData)
     }
 
-    public func validateData(for data: NolPayUnlinkCollectableData) {
+    private func validateData(for data: NolPayUnlinkCollectableData) {
         validationDelegate?.didUpdate(validationStatus: .validating, for: data)
         var errors: [PrimerValidationError] = []
 
@@ -82,7 +82,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
 
             if card.cardNumber.isEmpty || !card.cardNumber.isNumeric {
                 errors.append(PrimerValidationError.invalidCardnumber(
-                    message: "Invalid Nol card number",
+                    message: "Card number is not valid.",
                     userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString
                 ))
@@ -235,9 +235,9 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         Analytics.Service.record(events: [sdkEvent])
 
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?
-            .first(where: { $0.internalPaymentMethodType == .nolPay })?
-            .options as? MerchantOptions,
-            let nolPayAppId = nolPaymentMethodOption.appId
+                .first(where: { $0.internalPaymentMethodType == .nolPay })?
+                .options as? MerchantOptions,
+              let nolPayAppId = nolPaymentMethodOption.appId
         else {
             makeAndHandleInvalidValueError(forKey: "nolPayAppId")
             return

@@ -61,7 +61,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         super.tearDown()
     }
 
-    func test_UpdateCollectedData_WhenPhoneDataIsProvided_ThenMobileNumberIsUpdated() {
+    func test_UpdateCollectedData_PhoneData__WithValidPhoneData_ShouldUpdateMobileNumber() {
         // When
         sut.updateCollectedData(collectableData: .phoneData(mobileNumber: mobileNumber))
 
@@ -73,7 +73,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         XCTAssertNil(sut.linkToken)
     }
 
-    func test_UpdateCollectedData_WhenOtpDataIsProvided_ThenOtpCodeIsUpdated() {
+    func test_UpdateCollectedData_OtpData__WithValidOtp_ShouldUpdateOtpCode() {
         // When
         sut.updateCollectedData(collectableData: .otpData(otpCode: otpCode))
 
@@ -85,7 +85,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         XCTAssertNil(sut.linkToken)
     }
 
-    func test_UpdateCollectedData_WhenPhoneDataIsInvalid_ThenValidationErrorIsReturned() {
+    func test_UpdateCollectedData_PhoneData__WithInvalidPhoneData_ShouldReturnValidationError() {
         // Given
         let expectedErrorKey = "INVALID_DATA"
         let expectedError = PrimerError.invalidValue(key: expectedErrorKey, value: nil, userInfo: nil, diagnosticsId: "")
@@ -114,7 +114,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
     }
 
-    func test_UpdateCollectedData_WhenPhoneDataIsInvalidWithSpecificError_ThenExpectedValidationErrorIsReturned() {
+    func test_UpdateCollectedData_PhoneData__WithInvalidPhoneDataAndSpecificError_ShouldReturnExpectedValidationError() {
         // Given
         let expectedError = PrimerValidationError.invalidPhoneNumber(
             message: "EXPECTED_ERROR_MESSAGE",
@@ -148,7 +148,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
     }
 
-    func test_UpdateCollectedData_WhenPhoneDataIsValid_ThenValidationSucceeds() {
+    func test_UpdateCollectedData_PhoneData__WithValidPhoneData_ShouldSucceedValidation() {
         // Given
         mockPhoneMetadataService.resultToReturn = .success((.valid, countryCode, mobileNumber))
 
@@ -171,7 +171,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
     }
 
-    func test_UpdateCollectedData_WhenOtpDataIsEmpty_ThenValidationErrorIsReturned() {
+    func test_UpdateCollectedData_OtpData__WithEmptyOtp_ShouldReturnValidationError() {
         // Given
         let expectedErrorMessage = "OTP is not valid."
 
@@ -205,7 +205,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
     }
 
-    func test_UpdateCollectedData_WhenOtpDataIsValid_ThenValidationSucceeds() {
+    func test_UpdateCollectedData_OtpData__WithValidOtp_ShouldSucceedValidation() {
         // When
         sut.updateCollectedData(collectableData: .otpData(otpCode: otpCode))
 
@@ -225,7 +225,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
     }
 
-    func test_Submit_WhenCollectPhoneDataAndMobileNumberIsNil_ThenErrorIsReturned() {
+    func test_Submit_CollectPhoneData__WithMissingMobileNumber_ShouldReturnError() {
         // Given
         sut.nextDataStep = .collectPhoneData(cardNumber: cardNumber)
 
@@ -246,7 +246,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
     }
 
-    func test_Submit_WhenCollectPhoneDataAndCountryCodeIsNil_ThenErrorIsReturned() {
+    func test_Submit_CollectPhoneData__WithMissingCountryCode_ShouldReturnError() {
         // Given
         sut.mobileNumber = mobileNumber
         sut.nextDataStep = .collectPhoneData(cardNumber: cardNumber)
@@ -268,7 +268,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
     }
 
-    func test_Submit_WhenCollectPhoneDataAndLinkTokenIsNil_ThenErrorIsReturned() {
+    func test_Submit_CollectPhoneData__WithMissingLinkToken_ShouldReturnError() {
         // Given
         sut.mobileNumber = mobileNumber
         sut.countryCode = countryCode
@@ -291,7 +291,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
     }
 
-    func test_Submit_WhenCollectPhoneDataAndSDKIsNotInitialized_ThenErrorIsReturned() {
+    func test_Submit_CollectPhoneData__WithUninitializedSDK_ShouldReturnError() {
         // Given
         let expectedError = PrimerError.nolSdkInitError(userInfo: nil, diagnosticsId: "")
         sut.mobileNumber = mobileNumber
@@ -311,7 +311,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         XCTAssertEqual(primerError.errorId, expectedError.errorId)
     }
 
-    func test_Submit_WhenSendLinkOTPRequestFailsWithError_ShouldReturnExpectedError() {
+    func test_Submit_CollectPhoneData__WhenSendLinkOTPRequestFailsWithError_ShouldReturnExpectedError() {
         // Given
         let expectedErrorDescription = "ERROR_DESCRIPTION"
         sut.mobileNumber = mobileNumber
@@ -339,7 +339,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
     }
 
-    func test_Submit_WhenSendLinkOTPRequestFails_ShouldReturnUnknownError() {
+    func test_Submit_CollectPhoneData__WhenSendLinkOTPRequestFails_ShouldReturnUnknownError() {
         // Given
         sut.mobileNumber = mobileNumber
         sut.countryCode = countryCode
@@ -367,7 +367,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
     }
 
-    func test_Submit_WhenSendLinkOTPSucceeds_ShouldProceedToNextStep() {
+    func test_Submit_CollectPhoneData__WhenSendLinkOTPSucceeds_ShouldProceedToNextStep() {
         // Given
         sut.mobileNumber = mobileNumber
         sut.countryCode = countryCode
@@ -387,7 +387,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         XCTAssertEqual(actualStep, expectedStep)
     }
 
-    func test_Submit_WhenCollectOtpDataAndNoOtpCode_ThenErrorIsReturned() {
+    func test_Submit_CollectOtpData__WithMissingOtpCode_ShouldReturnError() {
         // Given
         sut.nextDataStep = .collectOtpData(phoneNumber: mobileNumber)
 
@@ -408,7 +408,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
     }
 
-    func test_Submit_WhenCollectOtpDataAndNoLinkToken_ThenErrorIsReturned() {
+    func test_Submit_CollectOtpData__WithMissingLinkToken_ShouldReturnError() {
         // Given
         sut.nextDataStep = .collectOtpData(phoneNumber: "")
         sut.otpCode = otpCode
@@ -430,7 +430,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
     }
 
-    func test_Submit_WhenCollectOtpDataAndSDKIsNotInitialized_ThenErrorIsReturned() {
+    func test_Submit_CollectOtpData__WithUninitializedSDK_ShouldReturnError() {
         // Given
         let expectedError = PrimerError.nolSdkInitError(userInfo: nil, diagnosticsId: "")
         sut.nextDataStep = .collectOtpData(phoneNumber: "")
@@ -449,7 +449,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         XCTAssertEqual(primerError.plainDescription, expectedError.plainDescription)
     }
 
-    func test_Submit_WhenLinkCardRequestFailsWithError_ShouldReturnExpectedError() {
+    func test_Submit_CollectOtpData__WhenLinkCardRequestFailsWithError_ShouldReturnExpectedError() {
         // Given
         let expectedErrorDescription = "ERROR_DESCRIPTION"
         sut.otpCode = otpCode
@@ -476,7 +476,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
     }
 
-    func test_Submit_WhenLinkCardRequestFails_ShouldReturnUnknownError() {
+    func test_Submit_CollectOtpData__WhenLinkCardRequestFails_ShouldReturnUnknownError() {
         // Given
         sut.otpCode = otpCode
         sut.linkToken = linkToken
@@ -503,7 +503,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
     }
 
-    func test_Submit_WhenLinkCardSucceeds_ShouldProceedToNextStep() {
+    func test_Submit_CollectOtpData__WhenLinkCardSucceeds_ShouldProceedToNextStep() {
         // Given
         sut.otpCode = otpCode
         sut.linkToken = linkToken
@@ -522,7 +522,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         XCTAssertEqual(actualStep, expectedStep)
     }
 
-    func test_Submit_WhenCollectTagDataAndSDKIsNotInitialized_ThenErrorIsReturned() {
+    func test_Submit_CollectTagData__WithUninitializedSDK_ShouldReturnError() {
         // Given
         let expectedError = PrimerError.nolSdkInitError(userInfo: nil, diagnosticsId: "")
         sut.nextDataStep = .collectTagData
@@ -539,7 +539,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         XCTAssertEqual(primerError.plainDescription, expectedError.plainDescription)
     }
 
-    func test_Submit_WhenScanNFCCardFails_ShouldReturnExpectedError() {
+    func test_Submit_CollectTagData__WhenScanNFCCardFails_ShouldReturnExpectedError() {
         // Given
         let expectedErrorDescription = "ERROR_DESCRIPTION"
         sut.nextDataStep = .collectTagData
@@ -564,7 +564,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
     }
 
-    func test_Submit_WhenMakeLinkingTokenFails_ShouldReturnExpectedError() {
+    func test_Submit_CollectTagData__WhenMakeLinkingTokenFails_ShouldReturnExpectedError() {
         // Given
         let expectedErrorDescription = "ERROR_DESCRIPTION"
         sut.nextDataStep = .collectTagData
@@ -590,7 +590,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
     }
 
-    func test_Submit_WhenMakeLinkingTokenSucceeds_ShouldProceedToNextStep() {
+    func test_Submit_CollectTagData__WhenMakeLinkingTokenSucceeds_ShouldProceedToNextStep() {
         // Given
         sut.nextDataStep = .collectTagData
 
@@ -609,7 +609,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         XCTAssertEqual(sut.cardNumber, cardNumber)
     }
 
-    func test_UpdateCollectedData_WhenPhoneDataIsProvided_ThenNextStepIsCollectPhoneData() {
+    func test_UpdateCollectedData_PhoneData__WithValidPhoneData_ShouldSetNextStepToCollectPhoneData() {
         // Given
         let phoneData = NolPayLinkCollectableData.phoneData(mobileNumber: mobileNumber)
 
@@ -622,7 +622,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         XCTAssertEqual(actualStep, expectedStep, "The nextDataStep should be .collectPhoneData after updating with phoneData")
     }
 
-    func test_UpdateCollectedData_WhenOtpDataIsProvided_ThenNextStepIsCollectOtpData() {
+    func test_UpdateCollectedData_OtpData__WithValidOtp_ShouldSetNextStepToCollectOtpData() {
         // Given
         let otpData = NolPayLinkCollectableData.otpData(otpCode: otpCode)
 
@@ -635,7 +635,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         XCTAssertEqual(actualStep, expectedStep, "The nextDataStep should be .collectOtpData after updating with otpData")
     }
 
-    func test_Start_WhenAppIDIsInvalid_ThenErrorIsReturned() {
+    func test_Start__WithInvalidAppID_ShouldReturnError() {
         // Given
         SDKSessionHelper.tearDown()
 
@@ -656,7 +656,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         }
     }
 
-    func test_Start_WhenNoClientToken_ThenErrorIsReturned() {
+    func test_Start__WithNoClientToken_ShouldReturnError() {
         // Given
         AppState.current.clientToken = nil
 
@@ -671,7 +671,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
         XCTAssertEqual(primerError.errorId, "invalid-client-token")
     }
 
-    func test_Start() {
+    func test_Start__ShouldInitializeSuccessfully() {
         // When
         sut.start()
     }

@@ -69,7 +69,7 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         validateData(for: collectableData)
     }
 
-    func validateData(for data: NolPayLinkCollectableData) {
+    private func validateData(for data: NolPayLinkCollectableData) {
         validationDelegate?.didUpdate(validationStatus: .validating, for: data)
         var errors: [PrimerValidationError] = []
 
@@ -262,9 +262,9 @@ public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
         Analytics.Service.record(events: [sdkEvent])
 
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?
-            .first(where: { $0.internalPaymentMethodType == .nolPay })?
-            .options as? MerchantOptions,
-            let appId = nolPaymentMethodOption.appId
+                .first(where: { $0.internalPaymentMethodType == .nolPay })?
+                .options as? MerchantOptions,
+              let appId = nolPaymentMethodOption.appId
         else {
             makeAndHandleInvalidValueError(forKey: "nolPayAppId")
             return

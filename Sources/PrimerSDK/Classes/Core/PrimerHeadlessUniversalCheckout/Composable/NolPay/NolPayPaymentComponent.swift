@@ -73,7 +73,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
         validateData(for: collectableData)
     }
 
-    func validateData(for data: NolPayPaymentCollectableData) {
+    private func validateData(for data: NolPayPaymentCollectableData) {
         validationDelegate?.didUpdate(validationStatus: .validating, for: data)
         var errors: [PrimerValidationError] = []
         let sdkEvent = Analytics.Event.sdk(
@@ -86,7 +86,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
         case .paymentData(cardNumber: let cardNumber,
                           mobileNumber: let mobileNumber):
 
-            if cardNumber.isEmpty {
+            if cardNumber.isEmpty || !cardNumber.isNumeric {
                 errors.append(PrimerValidationError.invalidCardnumber(
                     message: "Card number is not valid.",
                     userInfo: .errorUserInfoDictionary(),
@@ -206,9 +206,9 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
         Analytics.Service.record(events: [sdkEvent])
 
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?
-            .first(where: { $0.internalPaymentMethodType == .nolPay })?
-            .options as? MerchantOptions,
-            let nolPayAppId = nolPaymentMethodOption.appId
+                .first(where: { $0.internalPaymentMethodType == .nolPay })?
+                .options as? MerchantOptions,
+              let nolPayAppId = nolPaymentMethodOption.appId
         else {
             makeAndHandleInvalidValueError(forKey: "nolPayAppId")
             return

@@ -64,7 +64,7 @@ class NolPayPaymentComponentTests: XCTestCase {
 
     // MARK: - Tests
 
-    func test_UpdateCollectedData_WhenDataIsValid_ShouldUpdateSuccessfully() {
+    func test_UpdateCollectedData_PaymentData__WithValidData_ShouldUpdateSuccessfully() {
         // When
         sut.updateCollectedData(collectableData: .paymentData(cardNumber: cardNumber, mobileNumber: mobileNumber))
 
@@ -74,7 +74,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         XCTAssertEqual(sut.cardNumber, cardNumber)
     }
 
-    func test_UpdateCollectedData_WhenCardNumberIsInvalidAndPhoneNumberIsValid_ShouldReturnCardNumberError() {
+    func test_UpdateCollectedData_PaymentData__WithInvalidCardNumberAndValidPhoneNumber_ShouldReturnCardNumberError() {
         // Given
         let expectedError = PrimerValidationError.invalidCardnumber(
             message: "Card number is not valid.",
@@ -106,7 +106,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         }
     }
 
-    func test_UpdateCollectedData_WhenCardNumberAndPhoneNumberAreInvalid_ShouldReturnBothErrors() {
+    func test_UpdateCollectedData_PaymentData__WithInvalidCardNumberAndPhoneNumber_ShouldReturnBothErrors() {
         // Given
         let expectedCardError = PrimerValidationError.invalidCardnumber(
             message: "Card number is not valid.",
@@ -145,7 +145,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         }
     }
 
-    func test_UpdateCollectedData_WhenPhoneMetadataServiceFails_ShouldReturnError() {
+    func test_UpdateCollectedData_PaymentData__WhenPhoneMetadataServiceFails_ShouldReturnError() {
         // Given
         let expectedErrorKey = "INVALID_DATA"
         let expectedError = PrimerError.invalidValue(key: expectedErrorKey, value: nil, userInfo: nil, diagnosticsId: "")
@@ -172,7 +172,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         }
     }
 
-    func test_UpdateCollectedData_WhenDataIsValid_ShouldReturnValidStatus() {
+    func test_UpdateCollectedData_PaymentData__WithValidData_ShouldReturnValidStatus() {
         // Given
         mockPhoneMetadataService.resultToReturn = .success((.valid, countryCode, mobileNumber))
 
@@ -193,7 +193,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         }
     }
 
-    func test_Submit_WhenCardNumberIsNotProvided_ThenCardNumberErrorIsReturned() {
+    func test_Submit_CollectCardAndPhoneData__WithMissingCardNumber_ShouldReturnCardNumberError() {
         // Given
         sut.nextDataStep = .collectCardAndPhoneData
 
@@ -214,7 +214,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         }
     }
 
-    func test_Submit_WhenMobileNumberIsNotProvided_ThenMobileNumberErrorIsReturned() {
+    func test_Submit_CollectCardAndPhoneData__WithMissingMobileNumber_ShouldReturnMobileNumberError() {
         // Given
         sut.cardNumber = cardNumber
         sut.nextDataStep = .collectCardAndPhoneData
@@ -236,7 +236,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         }
     }
 
-    func test_Submit_WhenCountryCodeIsNotProvided_ThenCountryCodeErrorIsReturned() {
+    func test_Submit_CollectCardAndPhoneData__WithMissingCountryCode_ShouldReturnCountryCodeError() {
         // Given
         sut.cardNumber = cardNumber
         sut.mobileNumber = mobileNumber
@@ -259,7 +259,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         }
     }
 
-    func test_Submit_WhenSdkIsNotInitialized_ThenNolSdkInitErrorIsReturned() {
+    func test_Submit_CollectCardAndPhoneData__WithUninitializedSDK_ShouldReturnNolSdkInitError() {
         // Given
         let expectedError = PrimerError.nolSdkInitError(userInfo: nil, diagnosticsId: "")
         sut.cardNumber = cardNumber
@@ -279,7 +279,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         XCTAssertEqual(primerError.errorId, expectedError.errorId)
     }
 
-    func test_Submit_WhenPaymentRequestFails_ShouldReturnError() {
+    func test_Submit_CollectCardAndPhoneData__WhenPaymentRequestFails_ShouldReturnUnknownError() {
         // Given
         sut.cardNumber = cardNumber
         sut.mobileNumber = mobileNumber
@@ -328,7 +328,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         XCTAssertEqual(mockNolPayTokenizationViewModel.mobileCountryCode, countryCode)
     }
 
-    func test_Submit_WhenPaymentRequestFailsWithError_ShouldReturnExpectedError() {
+    func test_Submit_CollectCardAndPhoneData__WhenPaymentRequestFailsWithError_ShouldReturnExpectedError() {
         // Given
         let expectedErrorDescription = "ERROR_DESCRIPTION"
         sut.cardNumber = cardNumber
@@ -376,7 +376,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         XCTAssertEqual(mockNolPayTokenizationViewModel.mobileCountryCode, countryCode)
     }
 
-    func test_Submit_WhenPaymentRequestSucceeds_ShouldReturnSuccess() {
+    func test_Submit_CollectCardAndPhoneData__WhenPaymentRequestSucceeds_ShouldReturnSuccess() {
         // Given
         sut.cardNumber = cardNumber
         sut.mobileNumber = mobileNumber
@@ -410,7 +410,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         XCTAssertEqual(mockNolPayTokenizationViewModel.mobileCountryCode, countryCode)
     }
 
-    func test_Start_WhenAppIDIsInvalid_ThenErrorIsReturned() {
+    func test_Start__WithInvalidAppID_ShouldReturnError() {
         // Given
         SDKSessionHelper.tearDown()
 
@@ -431,7 +431,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         }
     }
 
-    func test_Start_WhenNoClientToken_ThenErrorIsReturned() {
+    func test_Start__WithNoClientToken_ShouldReturnError() {
         // Given
         AppState.current.clientToken = nil
 
@@ -446,7 +446,7 @@ class NolPayPaymentComponentTests: XCTestCase {
         XCTAssertEqual(primerError.errorId, "invalid-client-token")
     }
 
-    func test_Start() {
+    func test_Start__ShouldInitializeSuccessfully() {
         // When
         sut.start()
     }
