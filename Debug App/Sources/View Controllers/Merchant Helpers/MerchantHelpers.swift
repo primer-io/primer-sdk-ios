@@ -98,7 +98,8 @@ struct MerchantMockDataManager {
             instalmentDuration: "test",
             extraMerchantData: extraMerchantData,
             captureVaultedCardCvv: false,
-            merchantName: nil))
+            merchantName: nil,
+            networks: nil))
 
     static var extraMerchantData: ExtraMerchantData = ExtraMerchantData(
         subscription: [

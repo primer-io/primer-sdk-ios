@@ -112,17 +112,116 @@ struct ClientSessionRequestBody: Encodable {
             var extraMerchantData: ExtraMerchantData?
             var captureVaultedCardCvv: Bool?
             var merchantName: String?
+            var networks: NetworkOptionGroup?
 
             enum CodingKeys: CodingKey {
-                case surcharge, instalmentDuration, extraMerchantData, captureVaultedCardCvv, merchantName
+                case surcharge, instalmentDuration, extraMerchantData, captureVaultedCardCvv, merchantName, networks
+            }
+
+            init(surcharge: SurchargeOption?,
+                 instalmentDuration: String?,
+                 extraMerchantData: ExtraMerchantData?,
+                 captureVaultedCardCvv: Bool?,
+                 merchantName: String?,
+                 networks: NetworkOptionGroup?) {
+                self.surcharge = surcharge
+                self.instalmentDuration = instalmentDuration
+                self.extraMerchantData = extraMerchantData
+                self.captureVaultedCardCvv = captureVaultedCardCvv
+                self.merchantName = merchantName
+                self.networks = networks
+            }
+
+            func encode(to encoder: Encoder) throws {
+                var container = encoder.container(keyedBy: CodingKeys.self)
+
+                if let surcharge = surcharge {
+                    try container.encode(surcharge, forKey: .surcharge)
+                }
+
+                if let instalmentDuration = instalmentDuration {
+                    try container.encode(instalmentDuration, forKey: .instalmentDuration)
+                }
+
+                if let extraMerchantData = extraMerchantData {
+                    let jsonData = try JSONSerialization.data(withJSONObject: extraMerchantData, options: [])
+                    let jsonString = String(data: jsonData, encoding: .utf8)
+                    try container.encode(jsonString, forKey: .extraMerchantData)
+                }
+
+                if let captureVaultedCardCvv = captureVaultedCardCvv {
+                    try container.encode(captureVaultedCardCvv, forKey: .captureVaultedCardCvv)
+                }
+
+                if let merchantName = merchantName {
+                    try container.encode(merchantName, forKey: .merchantName)
+                }
+
+                if let networks = networks {
+                    try container.encode(networks, forKey: .networks)
+                }
+            }
+
+            init(from decoder: Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+
+                surcharge = try container.decodeIfPresent(SurchargeOption.self, forKey: .surcharge)
+                instalmentDuration = try container.decodeIfPresent(String.self, forKey: .instalmentDuration)
+
+                if let jsonString = try container.decodeIfPresent(String.self, forKey: .extraMerchantData),
+                   let jsonData = jsonString.data(using: .utf8) {
+                    extraMerchantData = try JSONSerialization.jsonObject(with: jsonData) as? ExtraMerchantData
+                } else {
+                    extraMerchantData = nil
+                }
+
+                captureVaultedCardCvv = try container.decodeIfPresent(Bool.self, forKey: .captureVaultedCardCvv)
+                merchantName = try container.decodeIfPresent(String.self, forKey: .merchantName)
+                networks = try container.decodeIfPresent(NetworkOptionGroup.self, forKey: .networks)
             }
         }
 
         struct  SurchargeOption: Codable {
             var amount: Int?
+
+            var dictionaryValue: [String: Any] {
+                return ["amount": amount ?? 0]
+            }
+
+        }
+
+        struct NetworkOptionGroup: Codable {
+            var VISA: NetworkOption?
+            var MASTERCARD: NetworkOption?
+            var JCB: NetworkOption?
+
+            var dictionaryValue: [String: Any]? {
+                var dic: [String: Any] = [:]
+
+                if let VISA = VISA {
+                    dic["VISA"] = VISA.dictionaryValue
+                }
+
+                if let MASTERCARD = MASTERCARD {
+                    dic["MASTERCARD"] = MASTERCARD.dictionaryValue
+                }
+
+                if let JCB = JCB {
+                    dic["JCB"] = JCB.dictionaryValue
+                }
+
+                return dic.isEmpty ? nil : dic
+            }
+        }
+
+        struct NetworkOption: Codable {
+            var surcharge: SurchargeOption
+
+            var dictionaryValue: [String: Any] {
+                return ["surcharge": surcharge.dictionaryValue]
+            }
         }
     }
-
 }
 
 struct ExtraMerchantData: Codable {
