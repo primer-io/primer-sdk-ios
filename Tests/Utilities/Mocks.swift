@@ -187,7 +187,7 @@ class Mocks {
             processorConfigId: Mocks.Static.Strings.processorConfigId,
             surcharge: 0,
             options: MerchantOptions(merchantId: "user8", merchantAccountId: "123", appId: "test"),
-            displayMetadata: nil)
+            displayMetadata: nil,)
 
         static var adyenGiroPayRedirectPaymentMethod = PrimerPaymentMethod(
             id: Mocks.Static.Strings.adyenGiroPayRedirectPaymentMethodId,

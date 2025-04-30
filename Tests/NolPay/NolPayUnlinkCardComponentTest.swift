@@ -7,16 +7,22 @@
 //
 
 #if canImport(PrimerNolPaySDK)
-import XCTest
-@testable import PrimerSDK
 import PrimerNolPaySDK
+@testable import PrimerSDK
+import XCTest
 
 final class NolPayUnlinkCardComponentTest: XCTestCase {
     var sut: NolPayUnlinkCardComponent!
+    var mockPhoneMetadataService: MockPhoneMetadataService!
+    var mockValidationDelegate: MockValidationDelegate!
 
     override func setUp() {
         super.setUp()
-        sut = NolPayUnlinkCardComponent()
+        mockPhoneMetadataService = MockPhoneMetadataService()
+        sut = NolPayUnlinkCardComponent(phoneMetadataService: mockPhoneMetadataService)
+
+        mockValidationDelegate = MockValidationDelegate()
+        sut.validationDelegate = mockValidationDelegate
     }
 
     override func tearDown() {
@@ -25,29 +31,30 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
     }
 
     func testValidationTriggeredWhenUpdatingData() {
-        let sut = NolPayUnlinkCardComponent()
-        let mockValidationDelegate = MockValidationDelegate()
-        sut.validationDelegate = mockValidationDelegate
-
         // Provide data to component
-        sut.updateCollectedData(collectableData: .cardAndPhoneData(nolPaymentCard: PrimerNolPaymentCard(cardNumber: "", expiredTime: ""), mobileNumber: ""))
+        sut.updateCollectedData(collectableData: .cardAndPhoneData(
+            nolPaymentCard: PrimerNolPaymentCard(cardNumber: "", expiredTime: ""),
+            mobileNumber: ""
+        ))
 
         XCTAssertTrue(mockValidationDelegate.wasValidatedCalled, "Validation was not triggered when updating collected data.")
     }
 
     func testInvalidPhoneNumberValidationErrorReceived() {
-        let sut = NolPayUnlinkCardComponent()
-        let mockValidationDelegate = MockValidationDelegate()
-        sut.validationDelegate = mockValidationDelegate
-        let mockPhoneMetadataService = MockPhoneMetadataService()
-        mockPhoneMetadataService.resultToReturn = .success((.invalid(errors: [PrimerValidationError.invalidPhoneNumber(message: "", userInfo: nil, diagnosticsId: "")]), nil, nil))
-        sut.phoneMetadataService = mockPhoneMetadataService
+        mockPhoneMetadataService.resultToReturn = .success((
+            .invalid(errors: [PrimerValidationError.invalidPhoneNumber(message: "", userInfo: nil, diagnosticsId: "")]),
+            nil,
+            nil
+        ))
 
         // Provide data with invalid phone number to component
-        sut.updateCollectedData(collectableData: .cardAndPhoneData(nolPaymentCard: PrimerNolPaymentCard(cardNumber: "", expiredTime: ""), mobileNumber: "invalidNumber"))
+        sut.updateCollectedData(collectableData: .cardAndPhoneData(
+            nolPaymentCard: PrimerNolPaymentCard(cardNumber: "", expiredTime: ""),
+            mobileNumber: "invalidNumber"
+        ))
 
         XCTAssertNotNil(mockValidationDelegate.validationsReceived, "No validations received.")
-        if case let .invalid(errors: errors) = mockValidationDelegate.validationsReceived {
+        if case .invalid(errors: let errors) = mockValidationDelegate.validationsReceived {
             XCTAssertTrue(errors.contains(where: { $0.errorId == "invalid-phone-number" }) == true, "Expected invalid phone number validation error.")
         } else {
             XCTFail("Expected validation error")
@@ -55,15 +62,13 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
     }
 
     func testValidDataDoesNotTriggerValidationErrors() {
-        let sut = NolPayUnlinkCardComponent()
-        let mockValidationDelegate = MockValidationDelegate()
-        sut.validationDelegate = mockValidationDelegate
-        let mockPhoneMetadataService = MockPhoneMetadataService()
         mockPhoneMetadataService.resultToReturn = .success((.valid, "", ""))
-        sut.phoneMetadataService = mockPhoneMetadataService
 
         // Provide valid data to component
-        sut.updateCollectedData(collectableData: .cardAndPhoneData(nolPaymentCard: PrimerNolPaymentCard(cardNumber: "1234567890", expiredTime: "12/25"), mobileNumber: "+1121234567890"))
+        sut.updateCollectedData(collectableData: .cardAndPhoneData(
+            nolPaymentCard: PrimerNolPaymentCard(cardNumber: "1234567890", expiredTime: "12/25"),
+            mobileNumber: "+1121234567890"
+        ))
 
         XCTAssertNotNil(mockValidationDelegate.validationsReceived, "No validations received.")
         if case .valid = mockValidationDelegate.validationsReceived {
@@ -71,7 +76,6 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
         } else {
             XCTFail("Expected validation error")
         }
-
     }
 
     func testUpdateCollectedData_CardAndPhoneData_Success() {
@@ -99,42 +103,42 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
     }
 
     func testValidateData_InvalidCardNumber() {
-        let mockValidationDelegate = MockValidationDelegate()
-        sut.validationDelegate = mockValidationDelegate
         let dummyCard = PrimerNolPaymentCard(cardNumber: "abc", expiredTime: "12/25")
-        let mockPhoneMetadataService = MockPhoneMetadataService()
-        mockPhoneMetadataService.resultToReturn = .success((.invalid(errors: [PrimerValidationError.invalidCardnumber(message: "", userInfo: nil, diagnosticsId: "")]), "", ""))
-        sut.phoneMetadataService = mockPhoneMetadataService
+        mockPhoneMetadataService.resultToReturn = .success((
+            .invalid(errors: [PrimerValidationError.invalidCardnumber(message: "", userInfo: nil, diagnosticsId: "")]),
+            "",
+            ""
+        ))
 
         sut.validateData(for: .cardAndPhoneData(nolPaymentCard: dummyCard, mobileNumber: "+1234567890"))
 
-        if case let .invalid(errors: errors) = mockValidationDelegate.validationsReceived {
-            XCTAssertTrue(errors.contains(where: { $0.errorId == "invalid-card-number"}), "Unexpected validation errors received.")
+        if case .invalid(errors: let errors) = mockValidationDelegate.validationsReceived {
+            XCTAssertTrue(errors.contains(where: { $0.errorId == "invalid-card-number" }), "Unexpected validation errors received.")
         } else {
             XCTFail("Expected validation error")
         }
     }
 
     func testValidateData_InvalidPhoneNumber() {
-        let mockValidationDelegate = MockValidationDelegate()
-        sut.validationDelegate = mockValidationDelegate
-
-        let mockPhoneMetadataService = MockPhoneMetadataService()
-        mockPhoneMetadataService.resultToReturn = .success((.invalid(errors: [PrimerValidationError.invalidPhoneNumber(message: "", userInfo: nil, diagnosticsId: "")]), "", ""))
-        sut.phoneMetadataService = mockPhoneMetadataService
+        mockPhoneMetadataService.resultToReturn = .success((
+            .invalid(errors: [PrimerValidationError.invalidPhoneNumber(message: "", userInfo: nil, diagnosticsId: "")]),
+            "",
+            ""
+        ))
 
         let dummyCard = PrimerNolPaymentCard(cardNumber: "1234567890123456", expiredTime: "12/25")
         sut.cardNumber = dummyCard.cardNumber
         sut.validateData(for: .cardAndPhoneData(nolPaymentCard: dummyCard, mobileNumber: "abc"))
 
-        if case let .invalid(errors: errors) = mockValidationDelegate.validationsReceived {
-            XCTAssertTrue(errors.contains(where: { $0.errorId == "invalid-phone-number"}), "Unexpected validation errors received.")
+        if case .invalid(errors: let errors) = mockValidationDelegate.validationsReceived {
+            XCTAssertTrue(errors.contains(where: { $0.errorId == "invalid-phone-number" }), "Unexpected validation errors received.")
         } else {
             XCTFail("Expected validation error")
         }
     }
 
     // MARK: - Tests for submit() function
+
     func testSubmit_CollectCardAndPhoneData_MobileNumberNil() {
         sut.nextDataStep = .collectCardAndPhoneData
         let mockErrorDelegate = MockErrorDelegate()
@@ -158,8 +162,8 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
         sut.validationDelegate = mockValidationDelegate
         sut.updateCollectedData(collectableData: .otpData(otpCode: ""))
 
-        if case let .invalid(errors: errors) = mockValidationDelegate.validationsReceived {
-            XCTAssertTrue(errors.contains(where: { $0.errorId == "invalid-otp-code"}), "Expected empty OTP code validation error.")
+        if case .invalid(errors: let errors) = mockValidationDelegate.validationsReceived {
+            XCTAssertTrue(errors.contains(where: { $0.errorId == "invalid-otp-code" }), "Expected empty OTP code validation error.")
         } else {
             XCTFail("Expected validation error")
         }
@@ -210,6 +214,5 @@ final class NolPayUnlinkCardComponentTest: XCTestCase {
         let actualStep = String(describing: sut.nextDataStep)
         XCTAssertEqual(actualStep, expectedStep, "The nextDataStep should be .collectOtpData after updating with otpData")
     }
-
 }
 #endif

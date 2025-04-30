@@ -12,15 +12,14 @@ import Foundation
 
 typealias PhoneMetadataCompletion = (Result<(PrimerValidationStatus, String?, String?), PrimerError>) -> Void
 
-protocol NolPayPhoneMetadataProviding {
+protocol NolPayPhoneMetadataServiceProtocol {
     func getPhoneMetadata(mobileNumber: String, completion: @escaping PhoneMetadataCompletion)
 }
 
-struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
+struct NolPayPhoneMetadataService: NolPayPhoneMetadataServiceProtocol {
     var debouncer = Debouncer(delay: 0.275)
 
     func getPhoneMetadata(mobileNumber: String, completion: @escaping PhoneMetadataCompletion) {
-
         debouncer.debounce {
             guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
@@ -34,7 +33,8 @@ struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
                 let validationError = PrimerValidationError.invalidPhoneNumber(
                     message: "Phone number cannot be blank.",
                     userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
+                    diagnosticsId: UUID().uuidString
+                )
                 ErrorHandler.handle(error: validationError)
 
                 completion(.success((.invalid(errors: [validationError]), nil, nil)))
@@ -60,7 +60,8 @@ struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
                         let validationError = PrimerValidationError.invalidPhoneNumber(
                             message: "Phone number is not valid.",
                             userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString)
+                            diagnosticsId: UUID().uuidString
+                        )
                         ErrorHandler.handle(error: validationError)
 
                         completion(.success((.invalid(errors: [validationError]), nil, nil)))
@@ -69,7 +70,8 @@ struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
                     let primerError = PrimerError.underlyingErrors(
                         errors: [error],
                         userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
+                        diagnosticsId: UUID().uuidString
+                    )
                     ErrorHandler.handle(error: primerError)
 
                     completion(.failure(primerError))
@@ -78,5 +80,6 @@ struct NolPayPhoneMetadataService: NolPayPhoneMetadataProviding {
         }
     }
 }
+
 // swiftlint:enable large_tuple
 // swiftlint:enable function_body_length
