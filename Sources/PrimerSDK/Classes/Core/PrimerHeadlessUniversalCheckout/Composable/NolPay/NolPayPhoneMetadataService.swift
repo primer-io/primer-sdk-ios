@@ -16,8 +16,21 @@ protocol NolPayPhoneMetadataServiceProtocol {
     func getPhoneMetadata(mobileNumber: String, completion: @escaping PhoneMetadataCompletion)
 }
 
-struct NolPayPhoneMetadataService: NolPayPhoneMetadataServiceProtocol {
-    var debouncer = Debouncer(delay: 0.275)
+class NolPayPhoneMetadataService: NolPayPhoneMetadataServiceProtocol {
+    let apiClient: PrimerAPIClientProtocol
+    let debouncer = Debouncer(delay: 0.275)
+
+    init(apiClient: PrimerAPIClientProtocol? = nil) {
+        if let apiClient = apiClient {
+            self.apiClient = apiClient
+        } else {
+            let urlSessionConfiguration = URLSessionConfiguration.default
+            urlSessionConfiguration.requestCachePolicy = .returnCacheDataElseLoad
+            let urlSession = URLSession(configuration: urlSessionConfiguration)
+            let networkService = DefaultNetworkService(withUrlSession: urlSession)
+            self.apiClient = PrimerAPIClient(networkService: networkService)
+        }
+    }
 
     func getPhoneMetadata(mobileNumber: String, completion: @escaping PhoneMetadataCompletion) {
         debouncer.debounce {
@@ -41,14 +54,8 @@ struct NolPayPhoneMetadataService: NolPayPhoneMetadataServiceProtocol {
                 return
             }
 
-            let urlSessionConfiguration = URLSessionConfiguration.default
-            urlSessionConfiguration.requestCachePolicy = .returnCacheDataElseLoad
-            let urlSession = URLSession(configuration: urlSessionConfiguration)
-            let networkService = DefaultNetworkService(withUrlSession: urlSession)
-            let client = PrimerAPIClient(networkService: networkService)
-
             let requestBody = Request.Body.PhoneMetadata.PhoneMetadataDataRequest(phoneNumber: mobileNumber)
-            client.getPhoneMetadata(clientToken: clientToken, paymentRequestBody: requestBody) { result in
+            self.apiClient.getPhoneMetadata(clientToken: clientToken, paymentRequestBody: requestBody) { result in
 
                 switch result {
                 case .success(let phoneMetadataResponse):

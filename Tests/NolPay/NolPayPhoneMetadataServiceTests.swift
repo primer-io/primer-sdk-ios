@@ -7,92 +7,177 @@
 //
 
 #if canImport(PrimerNolPaySDK)
-import XCTest
-@testable import PrimerSDK
 import PrimerNolPaySDK
+@testable import PrimerSDK
+import XCTest
 
 final class NolPayPhoneMetadataServiceTests: XCTestCase {
+    var sut: NolPayPhoneMetadataService!
+    var mockApiClient: MockPrimerAPIClient!
 
-    typealias ValidationResult = Result<(PrimerValidationStatus, String?, String?), PrimerError>
+    let mobileNumber = "+111123123123123"
+    let countryCode = "+111"
+    let nationalNumber = "123123123123"
 
-    func testGetPhoneMetadata() {
-        let mockService = MockPhoneMetadataService()
-        let expectedResult = ValidationResult.success((.valid, "+123", "1234567890"))
+    override func setUp() {
+        super.setUp()
 
-        mockService.resultToReturn = expectedResult
+        let paymentMethod = Mocks.PaymentMethods.nolPaymentMethod
+        SDKSessionHelper.setUp(withPaymentMethods: [paymentMethod])
 
-        let expectation = self.expectation(description: "PhoneMetadata")
-
-        mockService.getPhoneMetadata(mobileNumber: "1234567890") { result in
-            switch result {
-
-            case let .success((validationStatus, countryCode, mobileNumber)):
-                switch validationStatus {
-                case .valid:
-                    break
-                default:
-                    XCTFail()
-                }
-                XCTAssert(countryCode == "+123")
-                XCTAssert(mobileNumber == "1234567890")
-                expectation.fulfill()
-            case .failure:
-                XCTFail("Expected succes but got failure")
-            }
-        }
-
-        waitForExpectations(timeout: 5, handler: nil)
+        mockApiClient = MockPrimerAPIClient()
+        sut = NolPayPhoneMetadataService(apiClient: mockApiClient)
     }
 
-    func testGetPhoneMetadata_InvalidPhoneNumber() {
-        let mockService = MockPhoneMetadataService()
-        let validationError = PrimerValidationError.invalidPhoneNumber(message: "Invalid", userInfo: [:], diagnosticsId: "1")
-        let expectedResult = ValidationResult.success((.invalid(errors: [validationError]), nil, nil))
-        mockService.resultToReturn = expectedResult
+    override func tearDown() {
+        mockApiClient = nil
+        sut = nil
 
-        let expectation = self.expectation(description: "PhoneMetadata")
-
-        mockService.getPhoneMetadata(mobileNumber: "invalid") { result in
-            switch result {
-            case let .success((validationStatus, _, _)):
-                switch validationStatus {
-                case .invalid(let errors):
-                    XCTAssertEqual(errors.map { $0.errorId }, [validationError].map { $0.errorId })
-                default:
-                    XCTFail()
-                }
-                expectation.fulfill()
-            case .failure:
-                XCTFail("Expected success but got failure")
-            }
-        }
-
-        waitForExpectations(timeout: 5, handler: nil)
+        SDKSessionHelper.tearDown()
+        super.tearDown()
     }
 
-    func testGetPhoneMetadata_ServiceFailure() {
-        let mockService = MockPhoneMetadataService()
-        let underlyingError = NSError(domain: "com.test", code: 27, userInfo: nil)
-        let expectedResult = ValidationResult.failure(.underlyingErrors(errors: [underlyingError], userInfo: [:], diagnosticsId: "1"))
-        mockService.resultToReturn = expectedResult
+    func test_getPhoneMetadata_withNilClientToken_shouldReturnInvalidClientTokenError() {
+        // Given
+        let exp = expectation(description: " Wait for getPhoneMetadata to complete")
+        AppState.current.clientToken = nil
 
-        let expectation = self.expectation(description: "PhoneMetadata")
-
-        mockService.getPhoneMetadata(mobileNumber: "1234567890") { result in
-            if case let .failure(error) = result {
-                switch error {
-                case .underlyingErrors:
-                    break
-                default:
-                    XCTFail("Expected underlyingErrors but got \(error)")
-                }
-                expectation.fulfill()
-            } else {
+        // When
+        sut.getPhoneMetadata(mobileNumber: mobileNumber) { result in
+            switch result {
+            case .success:
                 XCTFail("Expected failure but got success")
+            case .failure(let error):
+                XCTAssertEqual(error.errorId, "invalid-client-token")
             }
+            exp.fulfill()
         }
 
-        waitForExpectations(timeout: 5, handler: nil)
+        // Then
+        wait(for: [exp], timeout: 5.0)
+    }
+
+    func test_getPhoneMetadata_withEmptyMobileNumber_shouldReturnInvalidPhoneNumberError() {
+        // Given
+        let exp = expectation(description: " Wait for getPhoneMetadata to complete")
+        let expectedPhoneError = PrimerValidationError.invalidPhoneNumber(
+            message: "Phone number cannot be blank.",
+            userInfo: [:],
+            diagnosticsId: ""
+        )
+
+        // When
+        sut.getPhoneMetadata(mobileNumber: "") { result in
+            switch result {
+            case .success((let validationStatus, let countryCode, let mobileNumber)):
+                if case .invalid(let errors) = validationStatus {
+                    XCTAssertEqual(errors.map { $0.errorDescription }, [expectedPhoneError].map { $0.errorDescription })
+                    XCTAssertNil(countryCode)
+                    XCTAssertNil(mobileNumber)
+                } else {
+                    XCTFail("Expected invalid but got \(validationStatus)")
+                }
+
+            case .failure(let error):
+                XCTFail("Expected success but got failure: \(error)")
+            }
+            exp.fulfill()
+        }
+
+        // Then
+        wait(for: [exp], timeout: 5.0)
+    }
+
+    func test_getPhoneMetadata_withApiClientFailure_shouldReturnExpectedError() {
+        // Given
+        let exp = expectation(description: " Wait for getPhoneMetadata to complete")
+        let expectedErrorCode = "EXPECTED_ERROR_CODE"
+        let expectedError = PrimerError.nolError(code: expectedErrorCode, message: "", userInfo: nil, diagnosticsId: "")
+        mockApiClient.getPhoneMetadataResult = .failure(expectedError)
+
+        // When
+        sut.getPhoneMetadata(mobileNumber: mobileNumber) { result in
+            switch result {
+            case .success((let validationStatus, let countryCode, let mobileNumber)):
+                XCTFail("Expected failure but got success: \(validationStatus), \(countryCode ?? ""), \(mobileNumber ?? "")")
+            case .failure(let error):
+                switch error {
+                case .underlyingErrors(let errors, _, _):
+                    guard let firstPrimerError = errors.first as? PrimerError else {
+                        XCTFail("Expected PrimerError but got \(error)")
+                        return
+                    }
+                    switch firstPrimerError {
+                    case .nolError(let code, _, _, _):
+                        XCTAssertEqual(code, expectedErrorCode)
+                    default:
+                        XCTFail("Expected PrimerError.nolError but got \(firstPrimerError)")
+                    }
+                default:
+                    XCTFail("Expected PrimerError but got \(error)")
+                }
+            }
+            exp.fulfill()
+        }
+
+        // Then
+        wait(for: [exp], timeout: 5.0)
+    }
+
+    func test_getPhoneMetadata_withInvalidPhoneNumber_shouldReturnValidationError() {
+        // Given
+        let exp = expectation(description: " Wait for getPhoneMetadata to complete")
+        let expectedError = PrimerValidationError.invalidPhoneNumber(
+            message: "Phone number is not valid.",
+            userInfo: .errorUserInfoDictionary(),
+            diagnosticsId: UUID().uuidString
+        )
+        mockApiClient.getPhoneMetadataResult = .success(.init(isValid: false, countryCode: nil, nationalNumber: nil))
+
+        // When
+        sut.getPhoneMetadata(mobileNumber: mobileNumber) { result in
+            switch result {
+            case .success((let validationStatus, let countryCode, let mobileNumber)):
+                if case .invalid(let errors) = validationStatus {
+                    XCTAssertEqual(errors.map { $0.errorDescription }, [expectedError].map { $0.errorDescription })
+                    XCTAssertNil(countryCode)
+                    XCTAssertNil(mobileNumber)
+                } else {
+                    XCTFail("Expected invalid but got \(validationStatus)")
+                }
+            case .failure(let error):
+                XCTFail("Expected success but got failure: \(error)")
+            }
+            exp.fulfill()
+        }
+
+        // Then
+        wait(for: [exp], timeout: 5.0)
+    }
+
+    func test_getPhoneMetadata_withValidPhoneNumber_shouldReturnValidStatus() {
+        // Given
+        let exp = expectation(description: " Wait for getPhoneMetadata to complete")
+        mockApiClient.getPhoneMetadataResult = .success(.init(isValid: true, countryCode: countryCode, nationalNumber: nationalNumber))
+
+        // When
+        sut.getPhoneMetadata(mobileNumber: mobileNumber) { result in
+            switch result {
+            case .success((let validationStatus, let countryCode, let mobileNumber)):
+                if case .valid = validationStatus {
+                    XCTAssertEqual(countryCode, self.countryCode)
+                    XCTAssertEqual(mobileNumber, self.nationalNumber)
+                } else {
+                    XCTFail("Expected valid but got \(validationStatus)")
+                }
+            case .failure(let error):
+                XCTFail("Expected success but got failure: \(error)")
+            }
+            exp.fulfill()
+        }
+
+        // Then
+        wait(for: [exp], timeout: 5.0)
     }
 }
 #endif

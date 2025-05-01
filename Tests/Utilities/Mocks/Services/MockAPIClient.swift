@@ -37,7 +37,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     var listCardNetworksResult: (Response.Body.Bin.Networks?, Error?)?
     private var currentPollingIteration: Int = 0
     var fetchNolSdkSecretResult: (() -> Result<Response.Body.NolPay.NolPaySecretDataResponse, Error>)?
-    var phoneMetadataResult = Response.Body.PhoneMetadata.PhoneMetadataDataResponse(isValid: true, countryCode: "+111", nationalNumber: "12341234")
+    var getPhoneMetadataResult: Result<Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>?
     var sdkCompleteUrlResult: (Response.Body.Complete?, Error?)?
     var responseHeaders: [String: String]?
 
@@ -598,7 +598,11 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         paymentRequestBody: PrimerSDK.Request.Body.PhoneMetadata.PhoneMetadataDataRequest,
         completion: @escaping (Result<PrimerSDK.Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>) -> Void
     ) {
-        completion(.success(phoneMetadataResult))
+        guard let result = getPhoneMetadataResult else {
+            XCTAssert(false, "Set 'getPhoneMetadataResult' on your MockPrimerAPIClient")
+            return
+        }
+        completion(result)
     }
 
     func completePayment(

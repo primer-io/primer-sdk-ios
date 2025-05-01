@@ -22,7 +22,7 @@ final class NolPayLinkCardComponentTest: XCTestCase {
     var mockNolPay: MockPrimerNolPay!
 
     let mobileNumber = "+111123123123123"
-    let countryCode = "+1"
+    let countryCode = "+111"
     let otpCode = "123456"
     let cardNumber = "1234567890123456"
     let linkToken = "LINK_TOKEN"
