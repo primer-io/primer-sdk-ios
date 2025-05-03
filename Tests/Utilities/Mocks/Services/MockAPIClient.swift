@@ -643,7 +643,8 @@ extension MockPrimerAPIClient {
                 paymentMethod: ClientSession.PaymentMethod(
                     vaultOnSuccess: false,
                     options: nil,
-                    orderedAllowedCardNetworks: nil
+                    orderedAllowedCardNetworks: nil,
+                    descriptor: nil
                 ),
                 order: ClientSession.Order(
                     id: "mock-client-session-order-id-1",
