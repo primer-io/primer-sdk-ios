@@ -295,7 +295,8 @@ final class VaultManagerTests: XCTestCase {
                      orderId: "order_id",
                      requiredAction: nil,
                      status: .success,
-                     paymentFailureReason: nil)
+                     paymentFailureReason: nil,
+                     checkoutOutcome: nil)
     }
 
     var paymentResponseBodyWithRedirectAction: Response.Body.Payment {
@@ -331,7 +332,8 @@ final class VaultManagerTests: XCTestCase {
                                            name: .checkout,
                                            description: "description"),
                      status: .success,
-                     paymentFailureReason: nil)
+                     paymentFailureReason: nil,
+                     checkoutOutcome: nil)
     }
 
     var paymentACHResponseBody: Response.Body.Payment {
@@ -367,7 +369,8 @@ final class VaultManagerTests: XCTestCase {
                                            name: .checkout,
                                            description: "description"),
                      status: .success,
-                     paymentFailureReason: nil)
+                     paymentFailureReason: nil,
+                     checkoutOutcome: nil)
     }
 
     var paymentResponseAfterResume: Response.Body.Payment {
@@ -382,7 +385,8 @@ final class VaultManagerTests: XCTestCase {
               orderId: "order_id",
               requiredAction: nil,
               status: .success,
-              paymentFailureReason: nil)
+              paymentFailureReason: nil,
+              checkoutOutcome: nil)
     }
 
     var primerPaymentMethodTokenData = PrimerPaymentMethodTokenData(

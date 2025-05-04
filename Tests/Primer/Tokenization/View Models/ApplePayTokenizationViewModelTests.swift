@@ -662,7 +662,8 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
                      orderId: "order_id",
                      requiredAction: nil,
                      status: .success,
-                     paymentFailureReason: nil)
+                     paymentFailureReason: nil,
+                     checkoutOutcome: nil)
     }
 
     var tokenizationResponseBody: Response.Body.Tokenization {

@@ -131,6 +131,7 @@ extension Response.Body {
         public let status: Status
         public let paymentFailureReason: PrimerPaymentErrorCode.RawValue?
         public var showSuccessCheckoutOnPendingPayment: Bool? = false
+        public let checkoutOutcome: CheckoutOutcome?
 
         // swiftlint:disable:next nesting
         public enum CodingKeys: String, CodingKey {
@@ -145,7 +146,8 @@ extension Response.Body {
                  requiredAction,
                  status,
                  paymentFailureReason,
-                 showSuccessCheckoutOnPendingPayment
+                 showSuccessCheckoutOnPendingPayment,
+                 checkoutOutcome
             case dateStr = "date"
         }
 
@@ -161,6 +163,12 @@ extension Response.Body {
             case failed = "FAILED"
             case pending = "PENDING"
             case success = "SUCCESS"
+        }
+
+        // swiftlint:disable:next nesting
+        public enum CheckoutOutcome: String, Codable {
+            case checkoutComplete = "CHECKOUT_COMPLETE"
+            case checkoutFailure = "CHECKOUT_FAILURE"
         }
     }
 

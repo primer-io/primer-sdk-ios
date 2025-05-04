@@ -877,7 +877,8 @@ extension MockPrimerAPIClient {
             orderId: nil,
             requiredAction: nil,
             status: .success,
-            paymentFailureReason: nil)
+            paymentFailureReason: nil,
+            checkoutOutcome: nil)
         static let mockSendAnalyticsEvents = Analytics.Service.Response(
             id: "mock-id",
             result: "success")
@@ -901,7 +902,8 @@ extension MockPrimerAPIClient {
             orderId: nil,
             requiredAction: nil,
             status: .success,
-            paymentFailureReason: nil)
+            paymentFailureReason: nil,
+            checkoutOutcome: nil)
 
         static let mockFetchNolSdkSecret = Response.Body.NolPay.NolPaySecretDataResponse(sdkSecret: "")
         static let mockSdkCompleteUrl = Response.Body.Complete()

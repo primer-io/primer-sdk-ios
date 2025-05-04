@@ -306,7 +306,8 @@ final class RawDataManagerTests: XCTestCase {
                      orderId: "order_id",
                      requiredAction: nil,
                      status: .success,
-                     paymentFailureReason: nil)
+                     paymentFailureReason: nil,
+                     checkoutOutcome: nil)
     }
     
     var paymentResponseBodyWithRedirectAction: Response.Body.Payment {
@@ -342,7 +343,8 @@ final class RawDataManagerTests: XCTestCase {
                                            name: .checkout,
                                            description: "description"),
                      status: .success,
-                     paymentFailureReason: nil)
+                     paymentFailureReason: nil,
+                     checkoutOutcome: nil)
     }
     
     var paymentResponseAfterResume: Response.Body.Payment {
@@ -357,7 +359,8 @@ final class RawDataManagerTests: XCTestCase {
               orderId: "order_id",
               requiredAction: nil,
               status: .success,
-              paymentFailureReason: nil)
+              paymentFailureReason: nil,
+              checkoutOutcome: nil)
     }
 }
 

@@ -90,7 +90,8 @@ class Mocks {
         orderId: nil,
         requiredAction: nil,
         status: .success,
-        paymentFailureReason: nil)
+        paymentFailureReason: nil,
+        checkoutOutcome: nil)
 
     static func createMockAPIConfiguration(
         clientSession: ClientSession.APIResponse?,

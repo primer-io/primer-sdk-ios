@@ -21,7 +21,6 @@ private enum CreateResumePaymentCallType: String {
 }
 
 internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
-
     let apiClient: PrimerAPIClientCreateResumePaymentProtocol
 
     let paymentMethodType: String
@@ -58,20 +57,65 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         }
     }
 
+    // First check if the checkoutOutcome exists
+    // If it exists and is 'checkoutComplete', return
+    // If it exists and is 'checkoutFailure', throw an error
+    // Then fall back to the original checks:
+    // Throws an error if the paymentResponse.id is nil
+    // Throws an error if the paymentResponse.status is 'failed'
+    // Throws an error if the paymentResponse.status is 'pending' and callType is .resume and showSuccessCheckoutOnPendingPayment is false
+    // Throws an error if the paymentResponse.checkoutOutcome exists and is 'checkoutFailure'
+    // Throws an error if the paymentResponse.checkoutOutcome is nil and requiredAction is nil
     private func validateResponse(paymentResponse: Response.Body.Payment, callType: CreateResumePaymentCallType) throws {
-
-        if paymentResponse.id == nil || paymentResponse.status == .failed ||
-            (callType == .resume && paymentResponse.status == .pending && paymentResponse.showSuccessCheckoutOnPendingPayment == false) {
-            let err = PrimerError.paymentFailed(
-                paymentMethodType: self.paymentMethodType,
-                paymentId: paymentResponse.id ?? "unknown",
-                orderId: paymentResponse.orderId ?? nil,
-                status: paymentResponse.status.rawValue,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
+        
+        // Check if the checkoutOutcome exists and
+        // Throw an error if the checkoutOutcome is 'checkoutFailure'
+        // Return if the checkoutOutcome is 'checkoutComplete'
+        if let checkoutOutcome = paymentResponse.checkoutOutcome {
+            switch checkoutOutcome {
+            case .checkoutComplete:
+                return
+            case .checkoutFailure:
+                throw createPaymentFailedError(paymentResponse: paymentResponse)
+            }
         }
+        
+        // Check if the paymentResponse.id is nil
+        if paymentResponse.id == nil {
+            throw createPaymentFailedError(paymentResponse: paymentResponse)
+        }
+
+        // Check if the paymentResponse.status is 'failed'
+        if paymentResponse.status == .failed {
+            throw createPaymentFailedError(paymentResponse: paymentResponse)
+        }
+        
+        // Check if the paymentResponse.status is 'pending' and callType is .resume and showSuccessCheckoutOnPendingPayment is false
+        if paymentResponse.status == .pending && callType == .resume && paymentResponse.showSuccessCheckoutOnPendingPayment == false {
+            throw createPaymentFailedError(paymentResponse: paymentResponse)
+        }
+
+
+
+        // If the checkoutOutcome is nil and requiredAction is nil, throw an error
+        if paymentResponse.requiredAction == nil {
+            throw createPaymentFailedError(
+                paymentResponse: paymentResponse,
+                description: "No checkoutOutcome or requiredAction provided in the payment response."
+            )
+        }
+    }
+
+    // Helper method to create a payment failed error
+    private func createPaymentFailedError(paymentResponse: Response.Body.Payment, description: String? = nil) -> PrimerError {
+        return PrimerError.paymentFailed(
+            paymentMethodType: paymentMethodType,
+            paymentId: paymentResponse.id ?? "unknown",
+            orderId: paymentResponse.orderId ?? nil,
+            status: paymentResponse.status.rawValue,
+            userInfo: .errorUserInfoDictionary(),
+            diagnosticsId: UUID().uuidString
+        )
     }
 
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) -> Promise<Response.Body.Payment> {
@@ -92,7 +136,8 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                         paymentMethodType: self.paymentMethodType,
                         description: err.localizedDescription,
                         userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
+                        diagnosticsId: UUID().uuidString
+                    )
 
                     seal.reject(error)
                 case .success(let paymentResponse):

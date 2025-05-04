@@ -159,7 +159,8 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
                                                name: .checkout,
                                                description: "description"),
                          status: .success,
-                         paymentFailureReason: nil)
+                         paymentFailureReason: nil,
+                         checkoutOutcome: nil)
         }
 
         let expectDidShowPaymentMethod = self.expectation(description: "Payment method was shown in web view")
@@ -184,7 +185,8 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
                          orderId: "order_id",
                          requiredAction: nil,
                          status: .success,
-                         paymentFailureReason: nil)
+                         paymentFailureReason: nil,
+                         checkoutOutcome: nil)
         }
 
         let expectCheckoutDidCompletewithData = self.expectation(description: "")

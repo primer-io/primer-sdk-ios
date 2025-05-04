@@ -368,7 +368,8 @@ final class ACHUserDetailsViewControllerTests: XCTestCase {
                                            name: .checkout,
                                            description: "description"),
                      status: .success,
-                     paymentFailureReason: nil)
+                     paymentFailureReason: nil,
+                     checkoutOutcome: nil)
     }
 
     var tokenizationResponseBody: Response.Body.Tokenization {

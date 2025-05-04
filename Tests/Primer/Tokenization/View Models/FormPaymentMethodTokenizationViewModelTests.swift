@@ -208,7 +208,8 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
                      orderId: "order_id",
                      requiredAction: nil,
                      status: .success,
-                     paymentFailureReason: nil)
+                     paymentFailureReason: nil,
+                     checkoutOutcome: nil)
     }
 
 }

@@ -305,7 +305,8 @@ private extension Response.Body.Payment {
                        orderId: nil,
                        requiredAction: nil,
                        status: .success,
-                       paymentFailureReason: nil))
+                       paymentFailureReason: nil,
+                       checkoutOutcome: .nil))
     }
 
     static var failedStatusResponse: APIResult<Response.Body.Payment> {
@@ -320,7 +321,8 @@ private extension Response.Body.Payment {
                        orderId: nil,
                        requiredAction: nil,
                        status: .failed,
-                       paymentFailureReason: nil))
+                       paymentFailureReason: nil,
+                       checkoutOutcome: nil))
     }
 
     static var pendingStatusResponse: APIResult<Response.Body.Payment> {
@@ -335,7 +337,8 @@ private extension Response.Body.Payment {
                        orderId: nil,
                        requiredAction: nil,
                        status: .pending,
-                       paymentFailureReason: nil))
+                       paymentFailureReason: nil,
+                       checkoutOutcome: nil))
     }
 
     static var pendingStatusResponseWithShowCheckoutSuccessOnPending: APIResult<Response.Body.Payment> {
@@ -351,7 +354,8 @@ private extension Response.Body.Payment {
                        requiredAction: nil,
                        status: .pending,
                        paymentFailureReason: nil,
-                       showSuccessCheckoutOnPendingPayment: true))
+                       showSuccessCheckoutOnPendingPayment: true,
+                       checkoutOutcome: nil))
     }
 
     static var errorResponse: APIResult<Response.Body.Payment> {
