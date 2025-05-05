@@ -140,28 +140,26 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
         switch nextDataStep {
         case .collectCardAndPhoneData:
             guard let mobileNumber else {
-                makeAndHandleInvalidValueError(forKey: "mobileNumber")
-                return
+                return makeAndHandleInvalidValueError(forKey: "mobileNumber")
             }
 
             guard let countryCode else {
-                makeAndHandleInvalidValueError(forKey: "countryCode")
-                return
+                return makeAndHandleInvalidValueError(forKey: "countryCode")
             }
 
             guard let cardNumber else {
-                makeAndHandleInvalidValueError(forKey: "cardNumber")
-                return
+                return makeAndHandleInvalidValueError(forKey: "cardNumber")
             }
 
             #if canImport(PrimerNolPaySDK)
 
             guard let nolPay else {
-                makeAndHandleNolPayInitializationError()
-                return
+                return makeAndHandleNolPayInitializationError()
             }
 
-            nolPay.sendUnlinkOTP(to: mobileNumber, with: countryCode, and: cardNumber) { [weak self] result in
+            nolPay.sendUnlinkOTP(to: mobileNumber,
+                                 with: countryCode,
+                                 and: cardNumber) { [weak self] result in
                 guard let self else { return }
                 switch result {
                 case .success((_, let token)):
@@ -180,25 +178,21 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
             #endif
         case .collectOtpData:
             guard let otpCode else {
-                makeAndHandleInvalidValueError(forKey: "otpCode")
-                return
+                return makeAndHandleInvalidValueError(forKey: "otpCode")
             }
 
             guard let unlinkToken else {
-                makeAndHandleInvalidValueError(forKey: "unlinkToken")
-                return
+                return makeAndHandleInvalidValueError(forKey: "unlinkToken")
             }
 
             guard let cardNumber else {
-                makeAndHandleInvalidValueError(forKey: "cardNumber")
-                return
+                return makeAndHandleInvalidValueError(forKey: "cardNumber")
             }
 
             #if canImport(PrimerNolPaySDK)
 
             guard let nolPay else {
-                makeAndHandleNolPayInitializationError()
-                return
+                return makeAndHandleNolPayInitializationError()
             }
 
             nolPay.unlinkCard(with: cardNumber, otp: otpCode, and: unlinkToken) { [weak self] result in
@@ -243,8 +237,7 @@ public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
                 .options as? MerchantOptions,
               let nolPayAppId = nolPaymentMethodOption.appId
         else {
-            makeAndHandleInvalidValueError(forKey: "nolPayAppId")
-            return
+            return makeAndHandleInvalidValueError(forKey: "nolPayAppId")
         }
 
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {

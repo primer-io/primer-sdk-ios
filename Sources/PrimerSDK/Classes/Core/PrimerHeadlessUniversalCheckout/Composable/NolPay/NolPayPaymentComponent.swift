@@ -39,10 +39,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
 
     // Computed property to fetch the tokenizationViewModel dynamically
     private var resolvedTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? {
-        if let tokenizationViewModel {
-            return tokenizationViewModel
-        }
-        return PrimerAPIConfiguration.paymentMethodConfigViewModels
+        tokenizationViewModel ?? PrimerAPIConfiguration.paymentMethodConfigViewModels
             .filter { $0.config.type == PrimerPaymentMethodType.nolPay.rawValue }
             .first as? NolPayTokenizationViewModel
     }
@@ -140,24 +137,20 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
         switch nextDataStep {
         case .collectCardAndPhoneData:
             guard let cardNumber else {
-                makeAndHandleInvalidValueError(forKey: "cardNumber")
-                return
+                return makeAndHandleInvalidValueError(forKey: "cardNumber")
             }
 
             guard let mobileNumber else {
-                makeAndHandleInvalidValueError(forKey: "mobileNumber")
-                return
+                return makeAndHandleInvalidValueError(forKey: "mobileNumber")
             }
 
             guard let countryCode else {
-                makeAndHandleInvalidValueError(forKey: "countryCode")
-                return
+                return makeAndHandleInvalidValueError(forKey: "countryCode")
             }
 
             #if canImport(PrimerNolPaySDK)
             guard let nolPay else {
-                makeAndHandleNolPayInitializationError()
-                return
+                return makeAndHandleNolPayInitializationError()
             }
             #endif
 
@@ -219,8 +212,7 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
                 .options as? MerchantOptions,
               let nolPayAppId = nolPaymentMethodOption.appId
         else {
-            makeAndHandleInvalidValueError(forKey: "nolPayAppId")
-            return
+            return makeAndHandleInvalidValueError(forKey: "nolPayAppId")
         }
 
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {

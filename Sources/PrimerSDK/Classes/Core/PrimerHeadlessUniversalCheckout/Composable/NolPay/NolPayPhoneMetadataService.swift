@@ -16,12 +16,12 @@ protocol NolPayPhoneMetadataServiceProtocol {
     func getPhoneMetadata(mobileNumber: String, completion: @escaping PhoneMetadataCompletion)
 }
 
-class NolPayPhoneMetadataService: NolPayPhoneMetadataServiceProtocol {
+final class NolPayPhoneMetadataService: NolPayPhoneMetadataServiceProtocol {
     let apiClient: PrimerAPIClientProtocol
-    let debouncer = Debouncer(delay: 0.275)
+    private let debouncer = Debouncer(delay: 0.275)
 
     init(apiClient: PrimerAPIClientProtocol? = nil) {
-        if let apiClient = apiClient {
+        if let apiClient {
             self.apiClient = apiClient
         } else {
             let urlSessionConfiguration = URLSessionConfiguration.default
