@@ -5,6 +5,7 @@
 //  Created by Boris on 18.9.23..
 //
 
+// swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 
 import UIKit
@@ -269,4 +270,5 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     }
 }
 
+// swiftlint:enable cyclomatic_complexity
 // swiftlint:enable function_body_length

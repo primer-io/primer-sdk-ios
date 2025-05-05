@@ -5,6 +5,7 @@
 //  Created by Boris on 15.9.23..
 //
 
+// swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 
 import UIKit
@@ -209,4 +210,5 @@ public class NolPayLinkedCardsComponent {
     }
 }
 
+// swiftlint:enable cyclomatic_complexity
 // swiftlint:enable function_body_length
