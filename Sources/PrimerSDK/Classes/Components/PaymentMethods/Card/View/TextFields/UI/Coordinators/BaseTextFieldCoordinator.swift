@@ -77,12 +77,15 @@ public class BaseTextFieldCoordinator: NSObject, UITextFieldDelegate, LogReporte
         // Update validation state in parent component
         onValidationChange(result.isValid)
 
-        // Only update error message if there is one (don't clear existing errors during typing)
-        if result.errorMessage != nil {
-            onErrorMessageChange(result.errorMessage)
-        }
+        // Always update error message - this will clear it when validation passes
+        onErrorMessageChange(result.errorMessage)
 
         return false
+    }
+
+    public func textFieldDidBeginEditing(_ textField: UITextField) {
+        // Clear error message when user starts editing
+        onErrorMessageChange(nil)
     }
 
     public func textFieldDidEndEditing(_ textField: UITextField) {
