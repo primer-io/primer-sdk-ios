@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class CardNumberFieldValidator: FieldValidator {
+public class CardNumberFieldValidator: FieldValidator, LogReporter {
     private let validationService: ValidationService
 
     public init(validationService: ValidationService) {
@@ -42,7 +42,10 @@ public class CardNumberFieldValidator: FieldValidator {
             return .invalid(code: "invalid-card-number", message: "Card number is required")
         }
 
-        // Full validation on blur
-        return validationService.validateCardNumber(input.filter { $0.isNumber })
+        // Full validation with service
+        let result = validationService.validateCardNumber(input.filter { $0.isNumber })
+        logger.debug(message: "DEBUG: Card Number validation result: \(result.isValid), \(result.errorMessage ?? "nil")")
+        return result
+
     }
 }

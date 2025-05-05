@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class CVVFieldValidator: FieldValidator {
+public class CVVFieldValidator: FieldValidator, LogReporter {
     private let validationService: ValidationService
     private let cardNetwork: CardNetwork
 
@@ -44,7 +44,9 @@ public class CVVFieldValidator: FieldValidator {
             return .invalid(code: "invalid-cvv", message: "CVV is required")
         }
 
-        // Full validation on blur
-        return validationService.validateCVV(input.filter { $0.isNumber }, cardNetwork: cardNetwork)
+        // Full validation with service
+        let result = validationService.validateCVV(input.filter { $0.isNumber }, cardNetwork: cardNetwork)
+        logger.debug(message: "DEBUG: CVV validation result: \(result.isValid), \(result.errorMessage ?? "nil")")
+        return result
     }
 }

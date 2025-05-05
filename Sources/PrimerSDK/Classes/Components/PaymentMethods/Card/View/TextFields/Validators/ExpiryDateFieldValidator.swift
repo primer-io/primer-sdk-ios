@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class ExpiryDateFieldValidator: FieldValidator {
+public class ExpiryDateFieldValidator: FieldValidator, LogReporter {
     private let validationService: ValidationService
 
     public init(validationService: ValidationService) {
@@ -60,6 +60,8 @@ public class ExpiryDateFieldValidator: FieldValidator {
         }
 
         // Full validation on blur
-        return validationService.validateExpiry(month: parts[0], year: parts[1])
+        let result = validationService.validateExpiry(month: parts[0], year: parts[1])
+        logger.debug(message: "ExpiryDate validation result: \(result.isValid), \(result.errorMessage ?? "nil")")
+        return result
     }
 }

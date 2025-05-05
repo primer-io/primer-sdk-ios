@@ -22,6 +22,12 @@ struct CardPaymentView: View, LogReporter {
     @State private var isSubmitting = false
     @State private var currentCardNetwork: CardNetwork = .unknown
 
+    // Error states
+    @State private var cardNumberError: String?
+    @State private var expiryError: String?
+    @State private var cvvError: String?
+    @State private var nameError: String?
+
     @Environment(\.designTokens) private var tokens
 
     var body: some View {
@@ -42,9 +48,14 @@ struct CardPaymentView: View, LogReporter {
                     isCardNumberValid = valid
                     updateFormValidity()
                 },
-                onErrorChange: { _ in }
+                onErrorChange: { errorMsg in
+                    cardNumberError = errorMsg
+                }
             )
-            .primerTextFieldStyle()
+            .primerTextFieldStyle(isError: cardNumberError != nil)
+            .overlay(alignment: .bottomLeading) {
+                errorOverlay(message: cardNumberError)
+            }
 
             // MARK: Expiry + CVV
             HStack(spacing: 16) {
@@ -62,9 +73,14 @@ struct CardPaymentView: View, LogReporter {
                         isExpiryValid = valid
                         updateFormValidity()
                     },
-                    onErrorChange: { _ in }
+                    onErrorChange: { errorMsg in
+                        expiryError = errorMsg  // FIXED: Was cardNumberError
+                    }
                 )
-                .primerTextFieldStyle()
+                .primerTextFieldStyle(isError: expiryError != nil)  // Add isError parameter
+                .overlay(alignment: .bottomLeading) {
+                    errorOverlay(message: expiryError)
+                }
 
                 CVVInputField(
                     placeholder: currentCardNetwork == .amex ? "1234" : "123",
@@ -77,9 +93,14 @@ struct CardPaymentView: View, LogReporter {
                         isCvvValid = valid
                         updateFormValidity()
                     },
-                    onErrorChange: { _ in }
+                    onErrorChange: { errorMsg in
+                        cvvError = errorMsg  // FIXED: Was cardNumberError
+                    }
                 )
-                .primerTextFieldStyle()
+                .primerTextFieldStyle(isError: cvvError != nil)  // Add isError parameter
+                .overlay(alignment: .bottomLeading) {
+                    errorOverlay(message: cvvError)
+                }
             }
 
             // MARK: Cardholder Name
@@ -93,9 +114,14 @@ struct CardPaymentView: View, LogReporter {
                     isNameValid = valid
                     updateFormValidity()
                 },
-                onErrorChange: { _ in }
+                onErrorChange: { errorMsg in
+                    nameError = errorMsg  // FIXED: Was cardNumberError
+                }
             )
-            .primerTextFieldStyle()
+            .primerTextFieldStyle(isError: nameError != nil)  // Add isError parameter
+            .overlay(alignment: .bottomLeading) {
+                errorOverlay(message: nameError)
+            }
 
             // MARK: Pay Button
             Button {
@@ -125,6 +151,21 @@ struct CardPaymentView: View, LogReporter {
         .padding(16)
     }
 
+    @ViewBuilder
+    private func errorOverlay(message: String?) -> some View {
+        if let errorMessage = message {
+            Text(errorMessage)
+                .font(.caption)
+                .foregroundColor(.red)
+                .padding(.top, 2)
+                .padding(.horizontal, 4)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.white.opacity(0.7))  // Add a semi-transparent background
+        } else {
+            Color.clear.frame(height: 0)  // Empty placeholder when no error
+        }
+    }
+    
     private func updateFormValidity() {
         isValid = isCardNumberValid
             && isExpiryValid

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class CardholderNameFieldValidator: FieldValidator {
+public class CardholderNameFieldValidator: FieldValidator, LogReporter {
     private let validationService: ValidationService
 
     public init(validationService: ValidationService) {
@@ -33,7 +33,9 @@ public class CardholderNameFieldValidator: FieldValidator {
             return .invalid(code: "invalid-cardholder-name", message: "Cardholder name is required")
         }
 
-        // Full validation on blur
-        return validationService.validateCardholderName(input)
+        // Full validation with service
+        let result = validationService.validateCardholderName(input)
+        logger.debug(message: "DEBUG: Cardholder validation result: \(result.isValid), \(result.errorMessage ?? "nil")")
+        return result
     }
 }

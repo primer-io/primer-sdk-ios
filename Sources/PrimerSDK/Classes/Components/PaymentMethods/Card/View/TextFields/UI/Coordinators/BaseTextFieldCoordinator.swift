@@ -8,7 +8,7 @@
 import UIKit
 
 /// Base coordinator that composes formatting, cursor, and validation
-public class BaseTextFieldCoordinator: NSObject, UITextFieldDelegate {
+public class BaseTextFieldCoordinator: NSObject, UITextFieldDelegate, LogReporter {
     let formatter: FieldFormatter
     let cursorManager: CursorPositionManaging
     let validator: FieldValidator
@@ -43,25 +43,44 @@ public class BaseTextFieldCoordinator: NSObject, UITextFieldDelegate {
         guard let swiftRange = Range(range, in: current) else { return false }
         let updatedText = current.replacingCharacters(in: swiftRange, with: string)
 
-        // Then filter and format
-        let newRaw = updatedText.filter { $0.isNumber || $0.isLetter }
-        let formatted = formatter.format(newRaw)
+        // More flexible filtering - preserve formatting characters like / for dates
+        // This allows expiry dates to maintain their format (MM/YY)
+        let newRaw = if formatter is ExpiryDateFormatter {
+            updatedText.filter { $0.isNumber || $0 == "/" }
+        } else if formatter is CVVFormatter {
+            updatedText.filter { $0.isNumber }
+        } else if formatter is CardholderNameFormatter {
+            updatedText.filter { $0.isLetter || $0.isWhitespace || $0 == "'" || $0 == "-" }
+        } else {
+            updatedText.filter { $0.isNumber || $0.isLetter }
+        }
 
+        // Format the text according to field type
+        let formatted = formatter.format(newRaw)
         textField.text = formatted
         onTextChange(formatted)
 
         // Calculate cursor position
         let cursorPosition = range.location + string.count
         let cursorPos = cursorManager.position(for: newRaw, formatted: formatted, original: cursorPosition)
-
         if let pos = textField.position(from: textField.beginningOfDocument, offset: min(cursorPos, formatted.count)) {
             textField.selectedTextRange = textField.textRange(from: pos, to: pos)
         }
 
+        // Store the raw value for later validation on blur
         lastRaw = newRaw
+
+        // Perform validation and update state/UI
         let result = validator.validateWhileTyping(newRaw)
+        logger.debug(message: "DEBUG: While typing validation: '\(newRaw)' - valid: \(result.isValid), error: \(result.errorMessage ?? "none")")
+
+        // Update validation state in parent component
         onValidationChange(result.isValid)
-        onErrorMessageChange(result.errorMessage)
+
+        // Only update error message if there is one (don't clear existing errors during typing)
+        if result.errorMessage != nil {
+            onErrorMessageChange(result.errorMessage)
+        }
 
         return false
     }
