@@ -169,6 +169,7 @@ extension Response.Body {
         public enum CheckoutOutcome: String, Codable {
             case checkoutComplete = "CHECKOUT_COMPLETE"
             case checkoutFailure = "CHECKOUT_FAILURE"
+            case determineFromPaymentStatus = "DETERMINE_FROM_PAYMENT_STATUS"
         }
     }
 

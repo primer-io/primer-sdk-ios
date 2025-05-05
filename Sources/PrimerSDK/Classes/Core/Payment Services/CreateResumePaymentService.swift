@@ -77,6 +77,8 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                 return
             case .checkoutFailure:
                 throw createPaymentFailedError(paymentResponse: paymentResponse)
+            case .determineFromPaymentStatus:
+                break // Continue with old logic
             }
         }
         

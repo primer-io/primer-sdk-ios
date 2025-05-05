@@ -306,7 +306,7 @@ private extension Response.Body.Payment {
                        requiredAction: nil,
                        status: .success,
                        paymentFailureReason: nil,
-                       checkoutOutcome: .nil))
+                       checkoutOutcome: nil))
     }
 
     static var failedStatusResponse: APIResult<Response.Body.Payment> {
