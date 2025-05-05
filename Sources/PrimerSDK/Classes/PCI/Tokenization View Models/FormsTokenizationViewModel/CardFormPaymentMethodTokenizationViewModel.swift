@@ -675,22 +675,11 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 return
             }
 
-            // Check merchant-provided UI options:
-            if PrimerSettings
-                .current
-                .uiOptions
-                .cardFormUIOptions?
-                .payButtonAddNewCard == true {
+            let title = PrimerSettings.current.uiOptions.cardFormUIOptions?.payButtonAddNewCard == true
+                ? Strings.VaultPaymentMethodViewContent.addCard
+                : "\(Strings.PaymentButton.pay) \(amount.toCurrencyString(currency: currency))"
 
-                // Use the same localized “Add new card” text as Vault Manager
-                let title = Strings.VaultPaymentMethodViewContent.addCard
-                self.uiModule.submitButton?.setTitle(title, for: .normal)
-            } else {
-                // Default behavior: “Pay $x.xx”
-                var title = Strings.PaymentButton.pay
-                title += " \(amount.toCurrencyString(currency: currency))"
-                self.uiModule.submitButton?.setTitle(title, for: .normal)
-            }
+            self.uiModule.submitButton?.setTitle(title, for: .normal)
         }
     }
 

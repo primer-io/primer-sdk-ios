@@ -983,18 +983,12 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
              PrimerPaymentMethodType.adyenMBWay.rawValue:
             switch PrimerInternal.shared.intent {
             case .checkout:
-                // If flagged, show “Add new card”
-                if shouldShowAddNewCard {
-                    // Uses the same localized string as Vault Manager’s “Add new card”
-                    buttonTitle = Strings.VaultPaymentMethodViewContent.addCard
-                } else {
-                    // Default: “Pay $x.xx”
-                    let universalCheckoutVM: UniversalCheckoutViewModelProtocol = UniversalCheckoutViewModel()
-                    buttonTitle = Strings.PaymentButton.pay
-                    if let amountStr = universalCheckoutVM.amountStr {
-                        buttonTitle += " \(amountStr)"
-                    }
-                }
+                let universalCheckoutVM: UniversalCheckoutViewModelProtocol = UniversalCheckoutViewModel()
+                let amountSuffix = universalCheckoutVM.amountStr.map { " \($0)" } ?? ""
+
+                buttonTitle = shouldShowAddNewCard
+                    ? Strings.VaultPaymentMethodViewContent.addCard
+                    : Strings.PaymentButton.pay + amountSuffix
 
             case .vault:
                 buttonTitle = Strings.PrimerCardFormView.addCardButtonTitle
