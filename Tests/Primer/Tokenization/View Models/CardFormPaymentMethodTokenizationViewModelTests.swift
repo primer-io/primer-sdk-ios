@@ -200,6 +200,55 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
         XCTAssertNil(error2.checkoutData)
     }
 
+    func testConfigurePayButton_defaultShowsPayAmount() throws {
+        // Arrange: set up AppState with amount & currency
+        SDKSessionHelper.setUp { mockAppState in
+            mockAppState.amount = 2500               // $25.00
+            mockAppState.currency = Currency(code: "USD", decimalDigits: 2)
+        }
+        PrimerInternal.shared.intent = .checkout
+
+        // Register default settings (no cardFormUIOptions)
+        DependencyContainer.register(PrimerSettings() as PrimerSettingsProtocol)
+
+        // Act: call configurePayButton
+        sut.configurePayButton(amount: 2500)
+
+        // Assert: should use "Pay $25.00"
+        let expectedCurrency = Currency(code: "USD", decimalDigits: 2)
+        let expectedTitle = "\(Strings.PaymentButton.pay) \(2500.toCurrencyString(currency: expectedCurrency))"
+        XCTAssertEqual(
+            sut.uiModule.submitButton?.title(for: .normal),
+            expectedTitle,
+            "Default behavior should show formatted pay amount"
+        )
+    }
+
+    func testConfigurePayButton_showsAddNewCard_whenFlagTrue() throws {
+        // Arrange: set up AppState
+        SDKSessionHelper.setUp { mockAppState in
+            mockAppState.amount = 500                // €5.00
+            mockAppState.currency = Currency(code: "EUR", decimalDigits: 2)
+        }
+        PrimerInternal.shared.intent = .checkout
+
+        // Register settings with payButtonAddNewCard = true
+        let uiOptions = PrimerUIOptions(
+            cardFormUIOptions: PrimerCardFormUIOptions(payButtonAddNewCard: true)
+        )
+        DependencyContainer.register(PrimerSettings(uiOptions: uiOptions) as PrimerSettingsProtocol)
+
+        // Act
+        sut.configurePayButton(amount: 500)
+
+        // Assert: should use the localized "Add new card" text
+        XCTAssertEqual(
+            sut.uiModule.submitButton?.title(for: .normal),
+            Strings.VaultPaymentMethodViewContent.addCard,
+            "When payButtonAddNewCard=true, the button should read 'Add new card'"
+        )
+    }
+
     // MARK: Helpers
 
     private var checkoutModule: PrimerAPIConfiguration.CheckoutModule {
