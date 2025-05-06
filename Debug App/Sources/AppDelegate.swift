@@ -8,9 +8,22 @@
 
 import PrimerSDK
 import UIKit
+import Primer3DS
+import PrimerKlarnaSDK
+import PrimerNolPaySDK
+import PrimerStripeSDK
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    
+    override init() {
+        super.init()
+        _ = PrimerSDK.DefaultLogger()
+        _ = Primer3DS.version()
+        _ = PrimerKlarnaSDK.PrimerKlarnaProvider(clientToken: "", paymentCategory: "")
+        _ = PrimerNolPay.version
+        _ = PrimerStripeSDK.PrimerStripeStatus.canceled
+    }
 
     var window: UIWindow?
 
