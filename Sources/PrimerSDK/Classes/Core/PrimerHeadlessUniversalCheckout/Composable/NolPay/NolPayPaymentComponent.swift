@@ -39,9 +39,9 @@ public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
 
     // Computed property to fetch the tokenizationViewModel dynamically
     private var resolvedTokenizationViewModel: PaymentMethodTokenizationViewModelProtocol? {
-        tokenizationViewModel ?? PrimerAPIConfiguration.paymentMethodConfigViewModels
-            .filter { $0.config.type == PrimerPaymentMethodType.nolPay.rawValue }
-            .first as? NolPayTokenizationViewModel
+        tokenizationViewModel ??
+            PrimerAPIConfiguration.paymentMethodConfigViewModels
+            .first(where: { $0.config.type == PrimerPaymentMethodType.nolPay.rawValue }) as? NolPayTokenizationViewModel
     }
 
     var mobileNumber: String?

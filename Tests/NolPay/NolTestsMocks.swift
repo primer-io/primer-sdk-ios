@@ -11,20 +11,7 @@ import PrimerNolPaySDK
 @testable import PrimerSDK
 import XCTest
 
-enum NolPayMocks {
-    static let NolPayPaymentMethod = PrimerPaymentMethod(
-        id: "NOL_PAY_ID",
-        implementationType: .nativeSdk,
-        type: PrimerPaymentMethodType.nolPay.rawValue,
-        name: "NOL_PAY_NAME",
-        processorConfigId: nil,
-        surcharge: nil,
-        options: nil,
-        displayMetadata: nil
-    )
-}
-
-class MockPrimerNolPay: PrimerNolPayProtocol {
+final class MockPrimerNolPay: PrimerNolPayProtocol {
     // Mock responses for the mock methods
     var mockCards: [PrimerNolPayCard] = [PrimerNolPayCard(cardNumber: "1234567890123456", expiredTime: "12/34")]
 
@@ -32,11 +19,11 @@ class MockPrimerNolPay: PrimerNolPayProtocol {
 
     var scanNFCCardResult: Result<String, PrimerNolPayError>?
     func scanNFCCard(completion: @escaping (Result<String, PrimerNolPayError>) -> Void) {
-        guard let result = scanNFCCardResult else {
+        guard let scanNFCCardResult else {
             completion(.failure(PrimerNolPayError(description: "Unknown error")))
             return
         }
-        completion(result)
+        completion(scanNFCCardResult)
     }
 
     var makeLinkingTokenResult: Result<String, PrimerNolPayError>?
