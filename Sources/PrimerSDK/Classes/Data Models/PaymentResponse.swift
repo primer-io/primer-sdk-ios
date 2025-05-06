@@ -14,9 +14,3 @@ public enum RequiredActionName: String, Codable {
     case processor3DS = "PROCESSOR_3DS"
     case paymentMethodVoucher = "PAYMENT_METHOD_VOUCHER"
 }
-
-internal protocol RequiredActionProtocol {
-    var name: RequiredActionName { get }
-    var description: String { get }
-    var clientToken: String? { get }
-}

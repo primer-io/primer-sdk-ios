@@ -8,27 +8,17 @@
 import Foundation
 
 extension Response.Body {
-    class Bin {}
+    struct Bin {}
 }
 
 extension Response.Body.Bin {
-    class Networks: Decodable {
+    struct Networks: Decodable {
         let networks: [Network]
-
-        init(networks: [Network]) {
-            self.networks = networks
-        }
     }
 }
 
 extension Response.Body.Bin.Networks {
-    class Network: Decodable {
-        let displayName: String
+    struct Network: Decodable {
         let value: String
-
-        init(displayName: String, value: String) {
-            self.displayName = displayName
-            self.value = value
-        }
     }
 }
