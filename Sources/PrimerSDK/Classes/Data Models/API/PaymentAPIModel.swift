@@ -38,43 +38,6 @@ public struct PaymentAPIModelAddress: Codable {
         self.state = state
     }
 
-    var dictionaryValue: [String: Any]? {
-        var dic: [String: Any] = [:]
-
-        if let firstName = firstName {
-            dic["firstName"] = firstName
-        }
-
-        if let lastName = lastName {
-            dic["lastName"] = lastName
-        }
-
-        if let addressLine1 = addressLine1 {
-            dic["addressLine1"] = addressLine1
-        }
-
-        if let addressLine2 = addressLine2 {
-            dic["addressLine2"] = addressLine2
-        }
-
-        if let city = city {
-            dic["city"] = city
-        }
-
-        if let postalCode = postalCode {
-            dic["postalCode"] = postalCode
-        }
-
-        if let state = state {
-            dic["state"] = state
-        }
-
-        if let countryCode = countryCode {
-            dic["countryCode"] = countryCode
-        }
-
-        return dic.keys.count == 0 ? nil : dic
-    }
 }
 
 extension Request.Body {
@@ -424,3 +387,4 @@ extension PrimerCheckoutDataPayment {
     }
 }
 // swiftlint:enable file_length
+

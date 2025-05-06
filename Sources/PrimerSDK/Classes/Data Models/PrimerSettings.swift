@@ -262,15 +262,7 @@ public enum DismissalMechanism: Codable {
     case gestures, closeButton
 }
 
-internal protocol PrimerUIOptionsProtocol {
-    var isInitScreenEnabled: Bool { get } // Default: true
-    var isSuccessScreenEnabled: Bool { get } // Default: true
-    var isErrorScreenEnabled: Bool { get } // Default: true
-    var dismissalMechanism: [DismissalMechanism] { get } // Default: .gestures
-    var theme: PrimerTheme { get }
-}
-
-public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
+public class PrimerUIOptions: Codable {
 
     public internal(set) var isInitScreenEnabled: Bool
     public internal(set) var isSuccessScreenEnabled: Bool
@@ -338,11 +330,7 @@ public struct PrimerCardFormUIOptions: Codable {
 
 // MARK: - DEBUG OPTIONS
 
-internal protocol PrimerDebugOptionsProtocol {
-    var is3DSSanityCheckEnabled: Bool { get }
-}
-
-public class PrimerDebugOptions: PrimerDebugOptionsProtocol, Codable {
+public struct PrimerDebugOptions: Codable {
     let is3DSSanityCheckEnabled: Bool
 
     public init(is3DSSanityCheckEnabled: Bool? = nil) {
@@ -352,11 +340,7 @@ public class PrimerDebugOptions: PrimerDebugOptionsProtocol, Codable {
 
 // MARK: - 3DS OPTIONS
 
-internal protocol PrimerThreeDsOptionsProtocol {
-    var threeDsAppRequestorUrl: String? { get }
-}
-
-public class PrimerThreeDsOptions: PrimerThreeDsOptionsProtocol, Codable {
+public struct PrimerThreeDsOptions: Codable {
     let threeDsAppRequestorUrl: String?
 
     public init(threeDsAppRequestorUrl: String? = nil) {

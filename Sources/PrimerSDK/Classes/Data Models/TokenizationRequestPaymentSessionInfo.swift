@@ -60,13 +60,6 @@ struct WebRedirectSessionInfo: OffSessionPaymentSessionInfo {
     var redirectionUrl: String? = urlScheme()
 }
 
-struct IPay88SessionInfo: OffSessionPaymentSessionInfo {
-    var refNo: String
-    var locale: String
-    var platform: String = "IOS"
-    var redirectionUrl: String? = urlScheme()
-}
-
 struct NolPaySessionInfo: OffSessionPaymentSessionInfo {
     let platform: String
     let locale: String = PrimerSettings.current.localeData.localeCode
