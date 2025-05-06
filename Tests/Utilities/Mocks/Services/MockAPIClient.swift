@@ -10,7 +10,6 @@
 import XCTest
 
 class MockPrimerAPIClient: PrimerAPIClientProtocol {
-
     var mockedNetworkDelay: TimeInterval = 0.5
     var validateClientTokenResult: (SuccessResponse?, Error?)?
     var fetchConfigurationResult: (Response.Body.Configuration?, Error?)?
@@ -37,8 +36,8 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     var testFinalizePollingResult: (Void?, Error?)?
     var listCardNetworksResult: (Response.Body.Bin.Networks?, Error?)?
     private var currentPollingIteration: Int = 0
-    var testFetchNolSdkSecretResult: (Response.Body.NolPay.NolPaySecretDataResponse?, Error?)?
-    var phoneMetadataResult = Response.Body.PhoneMetadata.PhoneMetadataDataResponse(isValid: true, countryCode: "+111", nationalNumber: "12341234")
+    var fetchNolSdkSecretResult: (() -> Result<Response.Body.NolPay.NolPaySecretDataResponse, Error>)?
+    var getPhoneMetadataResult: Result<Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>?
     var sdkCompleteUrlResult: (Response.Body.Complete?, Error?)?
     var responseHeaders: [String: String]?
 
@@ -53,7 +52,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -72,7 +71,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err), nil)
             } else if let successResult = result.0 {
@@ -92,7 +91,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -124,7 +123,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else {
@@ -146,7 +145,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -167,7 +166,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -188,7 +187,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -210,7 +209,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -231,7 +230,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -252,7 +251,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -274,7 +273,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -296,7 +295,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -306,7 +305,11 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
 
     // 3DS
-    func begin3DSAuth(clientToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData, threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest, completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void
+    func begin3DSAuth(
+        clientToken: DecodedJWTToken,
+        paymentMethodTokenData: PrimerPaymentMethodTokenData,
+        threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest,
+        completion: @escaping (_ result: Result<ThreeDS.BeginAuthResponse, Error>) -> Void
     ) {
         guard let result = begin3DSAuthResult,
               result.0 != nil || result.1 != nil
@@ -315,7 +318,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -324,7 +327,12 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func continue3DSAuth(clientToken: PrimerSDK.DecodedJWTToken, threeDSTokenId: String, continueInfo: PrimerSDK.ThreeDS.ContinueInfo, completion: @escaping (Result<PrimerSDK.ThreeDS.PostAuthResponse, Error>) -> Void) {
+    func continue3DSAuth(
+        clientToken: PrimerSDK.DecodedJWTToken,
+        threeDSTokenId: String,
+        continueInfo: PrimerSDK.ThreeDS.ContinueInfo,
+        completion: @escaping (Result<PrimerSDK.ThreeDS.PostAuthResponse, Error>) -> Void
+    ) {
         guard let result = continue3DSAuthResult,
               result.0 != nil || result.1 != nil
         else {
@@ -332,7 +340,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -344,7 +352,8 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func listAdyenBanks(
         clientToken: DecodedJWTToken,
         request: Request.Body.Adyen.BanksList,
-        completion: @escaping APICompletion<PrimerSDK.BanksListSessionResponse>) {
+        completion: @escaping APICompletion<PrimerSDK.BanksListSessionResponse>
+    ) {
         guard let result = listAdyenBanksResult,
               result.0 != nil || result.1 != nil
         else {
@@ -352,7 +361,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -373,7 +382,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -394,7 +403,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             let pollingResult = pollingResults[self.currentPollingIteration]
             self.currentPollingIteration += 1
 
@@ -430,7 +439,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err), nil)
             } else if let successResult = result.0 {
@@ -473,7 +482,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -495,7 +504,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -504,7 +513,12 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func resumePayment(clientToken: DecodedJWTToken, paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume, completion: @escaping (Result<Response.Body.Payment, Error>) -> Void) {
+    func resumePayment(
+        clientToken: DecodedJWTToken,
+        paymentId: String,
+        paymentResumeRequest: Request.Body.Payment.Resume,
+        completion: @escaping (Result<Response.Body.Payment, Error>) -> Void
+    ) {
         guard let result = resumePaymentResult,
               result.0 != nil || result.1 != nil
         else {
@@ -512,7 +526,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -529,7 +543,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else {
@@ -538,13 +552,14 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func listCardNetworks(clientToken: DecodedJWTToken, bin: String, completion: @escaping (Result<Response.Body.Bin.Networks, Error>) -> Void) -> PrimerCancellable? {
+    func listCardNetworks(clientToken: DecodedJWTToken, bin: String,
+                          completion: @escaping (Result<Response.Body.Bin.Networks, Error>) -> Void) -> PrimerCancellable? {
         guard let result = listCardNetworksResult, result.0 != nil || result.1 != nil else {
             XCTFail("Set 'listCardNetworksResult' on your MockPrimerAPIClient")
             return nil
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let res = result.0 {
@@ -555,37 +570,47 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         return nil
     }
 
-    func fetchNolSdkSecret(clientToken: PrimerSDK.DecodedJWTToken, paymentRequestBody: PrimerSDK.Request.Body.NolPay.NolPaySecretDataRequest, completion: @escaping (Result<PrimerSDK.Response.Body.NolPay.NolPaySecretDataResponse, Error>) -> Void) {
-
-        guard let result = testFetchNolSdkSecretResult,
-              result.0 != nil || result.1 != nil
-        else {
-            XCTAssert(false, "Set 'testFetchNolSdkSecretResult' on your MockPrimerAPIClient")
+    func fetchNolSdkSecret(
+        clientToken: PrimerSDK.DecodedJWTToken,
+        paymentRequestBody: PrimerSDK.Request.Body.NolPay.NolPaySecretDataRequest,
+        completion: @escaping (Result<PrimerSDK.Response.Body.NolPay.NolPaySecretDataResponse, Error>) -> Void
+    ) {
+        guard let result = fetchNolSdkSecretResult?() else {
+            XCTAssert(false, "Set 'fetchNolSdkSecretResult' on your MockPrimerAPIClient")
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
-            if let err = result.1 {
-                completion(.failure(err))
-            } else if let successResult = result.0 {
-                completion(.success(successResult))
-            }
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
+            completion(result)
         }
     }
 
     func genericAPICall(clientToken: PrimerSDK.DecodedJWTToken, url: URL, completion: @escaping (Result<Bool, Error>) -> Void) {
-        Timer.scheduledTimer(withTimeInterval: self.mockedNetworkDelay, repeats: false) { _ in
+        Timer.scheduledTimer(withTimeInterval: mockedNetworkDelay, repeats: false) { _ in
             DispatchQueue.main.async {
                 completion(.success(true))
             }
         }
     }
 
-    func getPhoneMetadata(clientToken: PrimerSDK.DecodedJWTToken, paymentRequestBody: PrimerSDK.Request.Body.PhoneMetadata.PhoneMetadataDataRequest, completion: @escaping (Result<PrimerSDK.Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>) -> Void) {
-        completion(.success(phoneMetadataResult))
+    func getPhoneMetadata(
+        clientToken: PrimerSDK.DecodedJWTToken,
+        paymentRequestBody: PrimerSDK.Request.Body.PhoneMetadata.PhoneMetadataDataRequest,
+        completion: @escaping (Result<PrimerSDK.Response.Body.PhoneMetadata.PhoneMetadataDataResponse, Error>) -> Void
+    ) {
+        guard let result = getPhoneMetadataResult else {
+            XCTAssert(false, "Set 'getPhoneMetadataResult' on your MockPrimerAPIClient")
+            return
+        }
+        completion(result)
     }
 
-    func completePayment(clientToken: PrimerSDK.DecodedJWTToken, url: URL, paymentRequest: PrimerSDK.Request.Body.Payment.Complete, completion: @escaping PrimerSDK.APICompletion<PrimerSDK.Response.Body.Complete>) {
+    func completePayment(
+        clientToken: PrimerSDK.DecodedJWTToken,
+        url: URL,
+        paymentRequest: PrimerSDK.Request.Body.Payment.Complete,
+        completion: @escaping PrimerSDK.APICompletion<PrimerSDK.Response.Body.Complete>
+    ) {
         guard let result = sdkCompleteUrlResult,
               result.0 != nil || result.1 != nil
         else {
@@ -593,7 +618,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             return
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + mockedNetworkDelay) {
             if let err = result.1 {
                 completion(.failure(err))
             } else if let successResult = result.0 {
@@ -603,36 +628,34 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
 
     func mockSuccessfulResponses() {
-        self.validateClientTokenResult                  = (MockPrimerAPIClient.Samples.mockValidateClientToken, nil)
-        self.fetchConfigurationResult                   = (MockPrimerAPIClient.Samples.mockPrimerAPIConfiguration, nil)
-        self.fetchVaultedPaymentMethodsResult           = (MockPrimerAPIClient.Samples.mockVaultedPaymentMethods, nil)
-        self.createPayPalOrderSessionResult             = (MockPrimerAPIClient.Samples.mockPayPalCreateOrder, nil)
-        self.createPayPalBillingAgreementSessionResult  = (MockPrimerAPIClient.Samples.mockCreatePayPalBillingAgreementSession, nil)
-        self.confirmPayPalBillingAgreementResult        = (MockPrimerAPIClient.Samples.mockConfirmPayPalBillingAgreement, nil)
-        self.createKlarnaPaymentSessionResult           = (MockPrimerAPIClient.Samples.mockCreateKlarnaPaymentSession, nil)
-        self.createKlarnaCustomerTokenResult            = (MockPrimerAPIClient.Samples.mockCreateKlarnaCustomerToken, nil)
-        self.finalizeKlarnaPaymentSessionResult         = (MockPrimerAPIClient.Samples.mockFinalizeKlarnaPaymentSession, nil)
-        self.pollingResults                             = MockPrimerAPIClient.Samples.mockPollingResults
-        self.tokenizePaymentMethodResult                = (MockPrimerAPIClient.Samples.mockTokenizePaymentMethod, nil)
-        self.exchangePaymentMethodTokenResult           = (MockPrimerAPIClient.Samples.mockExchangePaymentMethodToken, nil)
-        self.begin3DSAuthResult                         = (MockPrimerAPIClient.Samples.mockBegin3DSAuth, nil)
-        self.continue3DSAuthResult                      = (MockPrimerAPIClient.Samples.mockContinue3DSAuth, nil)
-        self.listAdyenBanksResult                       = (MockPrimerAPIClient.Samples.mockAdyenBanks, nil)
-        self.listRetailOutletsResult                    = (MockPrimerAPIClient.Samples.mockListRetailOutlets, nil)
-        self.paymentResult                              = (MockPrimerAPIClient.Samples.mockPayment, nil)
-        self.resumePaymentResult                        = (MockPrimerAPIClient.Samples.mockResumePayment, nil)
-        self.sendAnalyticsEventsResult                  = (MockPrimerAPIClient.Samples.mockSendAnalyticsEvents, nil)
-        self.fetchPayPalExternalPayerInfoResult         = (MockPrimerAPIClient.Samples.mockFetchPayPalExternalPayerInfo, nil)
-        self.testFetchNolSdkSecretResult                = (MockPrimerAPIClient.Samples.mockFetchNolSdkSecret, nil)
-        self.sdkCompleteUrlResult                       = (MockPrimerAPIClient.Samples.mockSdkCompleteUrl, nil)
+        validateClientTokenResult = (MockPrimerAPIClient.Samples.mockValidateClientToken, nil)
+        fetchConfigurationResult = (MockPrimerAPIClient.Samples.mockPrimerAPIConfiguration, nil)
+        fetchVaultedPaymentMethodsResult = (MockPrimerAPIClient.Samples.mockVaultedPaymentMethods, nil)
+        createPayPalOrderSessionResult = (MockPrimerAPIClient.Samples.mockPayPalCreateOrder, nil)
+        createPayPalBillingAgreementSessionResult = (MockPrimerAPIClient.Samples.mockCreatePayPalBillingAgreementSession, nil)
+        confirmPayPalBillingAgreementResult = (MockPrimerAPIClient.Samples.mockConfirmPayPalBillingAgreement, nil)
+        createKlarnaPaymentSessionResult = (MockPrimerAPIClient.Samples.mockCreateKlarnaPaymentSession, nil)
+        createKlarnaCustomerTokenResult = (MockPrimerAPIClient.Samples.mockCreateKlarnaCustomerToken, nil)
+        finalizeKlarnaPaymentSessionResult = (MockPrimerAPIClient.Samples.mockFinalizeKlarnaPaymentSession, nil)
+        pollingResults = MockPrimerAPIClient.Samples.mockPollingResults
+        tokenizePaymentMethodResult = (MockPrimerAPIClient.Samples.mockTokenizePaymentMethod, nil)
+        exchangePaymentMethodTokenResult = (MockPrimerAPIClient.Samples.mockExchangePaymentMethodToken, nil)
+        begin3DSAuthResult = (MockPrimerAPIClient.Samples.mockBegin3DSAuth, nil)
+        continue3DSAuthResult = (MockPrimerAPIClient.Samples.mockContinue3DSAuth, nil)
+        listAdyenBanksResult = (MockPrimerAPIClient.Samples.mockAdyenBanks, nil)
+        listRetailOutletsResult = (MockPrimerAPIClient.Samples.mockListRetailOutlets, nil)
+        paymentResult = (MockPrimerAPIClient.Samples.mockPayment, nil)
+        resumePaymentResult = (MockPrimerAPIClient.Samples.mockResumePayment, nil)
+        sendAnalyticsEventsResult = (MockPrimerAPIClient.Samples.mockSendAnalyticsEvents, nil)
+        fetchPayPalExternalPayerInfoResult = (MockPrimerAPIClient.Samples.mockFetchPayPalExternalPayerInfo, nil)
+        fetchNolSdkSecretResult = { .success(MockPrimerAPIClient.Samples.mockFetchNolSdkSecret) }
+        sdkCompleteUrlResult = (MockPrimerAPIClient.Samples.mockSdkCompleteUrl, nil)
     }
 }
 
 extension MockPrimerAPIClient {
-
     class Samples {
-
-        static let mockValidateClientToken: SuccessResponse = SuccessResponse()
+        static let mockValidateClientToken: SuccessResponse = .init()
         static let mockPrimerAPIConfiguration = Response.Body.Configuration(
             coreUrl: "https://primer.io/core",
             pciUrl: "https://primer.io/pci",
@@ -663,10 +686,13 @@ extension MockPrimerAPIClient {
                             description: "mock-description-1",
                             taxAmount: nil,
                             taxCode: nil,
-                            productType: nil)
-                    ]),
+                            productType: nil
+                        )
+                    ]
+                ),
                 customer: nil,
-                testId: nil),
+                testId: nil
+            ),
             paymentMethods: [
                 PrimerPaymentMethod(
                     id: "mock-id-1",
@@ -676,7 +702,8 @@ extension MockPrimerAPIClient {
                     processorConfigId: "mock-processor-config-id-1",
                     surcharge: nil,
                     options: nil,
-                    displayMetadata: nil),
+                    displayMetadata: nil
+                ),
                 PrimerPaymentMethod(
                     id: "mock-id-2",
                     implementationType: .webRedirect,
@@ -685,26 +712,32 @@ extension MockPrimerAPIClient {
                     processorConfigId: "mock-processor-config-id-2",
                     surcharge: nil,
                     options: nil,
-                    displayMetadata: nil)
+                    displayMetadata: nil
+                )
             ],
             primerAccountId: "mock-primer-account-id",
             keys: nil,
-            checkoutModules: nil)
+            checkoutModules: nil
+        )
         static let mockVaultedPaymentMethods = Response.Body.VaultedPaymentMethods(
-            data: [])
-        static let mockPayPalCreateOrder: Response.Body.PayPal.CreateOrder = Response.Body.PayPal.CreateOrder(
+            data: []
+        )
+        static let mockPayPalCreateOrder: Response.Body.PayPal.CreateOrder = .init(
             orderId: "mock-id",
-            approvalUrl: "https://primer.io/approval")
+            approvalUrl: "https://primer.io/approval"
+        )
         static let mockCreatePayPalBillingAgreementSession = Response.Body.PayPal.CreateBillingAgreement(
             tokenId: "mock_token-id",
-            approvalUrl: "https://primer.io/approval")
+            approvalUrl: "https://primer.io/approval"
+        )
         static let mockConfirmPayPalBillingAgreement = Response.Body.PayPal.ConfirmBillingAgreement(
             billingAgreementId: "mock-paypal-billing-agreement-id",
             externalPayerInfo: Response.Body.Tokenization.PayPal.ExternalPayerInfo(
                 externalPayerId: "mock-external-payer-id",
                 email: "john@email.com",
                 firstName: "John",
-                lastName: "Smith"),
+                lastName: "Smith"
+            ),
             shippingAddress: Response.Body.Tokenization.PayPal.ShippingAddress(
                 firstName: "John",
                 lastName: "Smith",
@@ -713,7 +746,9 @@ extension MockPrimerAPIClient {
                 city: "London",
                 state: "London Greater Area",
                 countryCode: "GB",
-                postalCode: "PC12345"))
+                postalCode: "PC12345"
+            )
+        )
         static let mockCreateKlarnaPaymentSession = Response.Body.Klarna.PaymentSession(
             clientToken: "mock-client-token",
             sessionId: "mock-session-id",
@@ -722,10 +757,12 @@ extension MockPrimerAPIClient {
                     identifier: "mock-session-category-id",
                     name: "mock-session-category-name",
                     descriptiveAssetUrl: "https://klarna.com/assets-descriptive",
-                    standardAssetUrl: "https://klarna.com/assets-standard")
+                    standardAssetUrl: "https://klarna.com/assets-standard"
+                )
             ],
             hppSessionId: "mock-hpp-session-id",
-            hppRedirectUrl: "https://klarna.com/redirect")
+            hppRedirectUrl: "https://klarna.com/redirect"
+        )
         static let mockCreateKlarnaCustomerToken = Response.Body.Klarna.CustomerToken(
             customerTokenId: "mock-customer-token-id",
             sessionData: Response.Body.Klarna.SessionData(
@@ -742,7 +779,8 @@ extension MockPrimerAPIClient {
                         quantity: 1,
                         unitPrice: 100,
                         totalAmount: 100,
-                        totalDiscountAmount: 0)
+                        totalDiscountAmount: 0
+                    )
                 ],
                 billingAddress: Response.Body.Klarna.BillingAddress(
                     addressLine1: "Mock address line 1",
@@ -756,13 +794,17 @@ extension MockPrimerAPIClient {
                     phoneNumber: "+447812345678",
                     postalCode: "PC123456",
                     state: "Greater London",
-                    title: "Mock title"),
+                    title: "Mock title"
+                ),
                 shippingAddress: nil,
                 tokenDetails: Response.Body.Klarna.TokenDetails(
                     brand: "Visa",
                     maskedNumber: "**** **** **** 1234",
                     type: "Visa",
-                    expiryDate: "03/2030")))
+                    expiryDate: "03/2030"
+                )
+            )
+        )
         static let mockFinalizeKlarnaPaymentSession = Response.Body.Klarna.CustomerToken(
             customerTokenId: "mock-customer-token-id",
             sessionData: Response.Body.Klarna.SessionData(
@@ -779,7 +821,8 @@ extension MockPrimerAPIClient {
                         quantity: 1,
                         unitPrice: 100,
                         totalAmount: 100,
-                        totalDiscountAmount: 0)
+                        totalDiscountAmount: 0
+                    )
                 ],
                 billingAddress: Response.Body.Klarna.BillingAddress(
                     addressLine1: "Mock address line 1",
@@ -793,13 +836,17 @@ extension MockPrimerAPIClient {
                     phoneNumber: "+447812345678",
                     postalCode: "PC123456",
                     state: "Greater London",
-                    title: "Mock title"),
+                    title: "Mock title"
+                ),
                 shippingAddress: nil,
                 tokenDetails: Response.Body.Klarna.TokenDetails(
                     brand: "Visa",
                     maskedNumber: "**** **** **** 1234",
                     type: "Visa",
-                    expiryDate: "03/2030")))
+                    expiryDate: "03/2030"
+                )
+            )
+        )
         static let mockPollingResults: [(PollingResponse?, Error?)] = [
             (PollingResponse(status: .pending, id: "0", source: "src"), nil),
             (PollingResponse(status: .pending, id: "0", source: "src"), nil),
@@ -816,7 +863,8 @@ extension MockPrimerAPIClient {
             threeDSecureAuthentication: nil,
             token: "mock_payment_method_token",
             tokenType: .singleUse,
-            vaultData: nil)
+            vaultData: nil
+        )
         static let mockExchangePaymentMethodToken = MockPrimerAPIClient.Samples.mockTokenizePaymentMethod
         static let mockBegin3DSAuth = ThreeDS.BeginAuthResponse(
             authentication: ThreeDS.Authentication(
@@ -831,7 +879,8 @@ extension MockPrimerAPIClient {
                 dsTransactionId: nil,
                 eci: nil,
                 protocolVersion: "2.1.0",
-                xid: nil),
+                xid: nil
+            ),
             token: PrimerPaymentMethodTokenData(
                 analyticsId: "mock_analytics_id",
                 id: "mock_payment_method_token_data_id",
@@ -843,28 +892,35 @@ extension MockPrimerAPIClient {
                 threeDSecureAuthentication: nil,
                 token: "mock_payment_method_token",
                 tokenType: .singleUse,
-                vaultData: nil),
-            resumeToken: "mock-resume-token")
+                vaultData: nil
+            ),
+            resumeToken: "mock-resume-token"
+        )
         static let mockContinue3DSAuth = ThreeDS.PostAuthResponse(
             token: MockPrimerAPIClient.Samples.mockTokenizePaymentMethod,
             resumeToken: "mock-resume-token",
-            authentication: nil)
+            authentication: nil
+        )
         static let mockAdyenBanks = BanksListSessionResponse(
             result: [
                 Response.Body.Adyen.Bank(
                     id: "mock-bank-id",
                     name: "mock-bank-name",
                     iconUrlStr: "https://primer.io/bank-logo",
-                    disabled: false)
-            ])
+                    disabled: false
+                )
+            ]
+        )
         static let mockListRetailOutlets = RetailOutletsList(
             result: [
                 RetailOutletsRetail(
                     id: "mock-retail-id",
                     name: "mock-retail-name",
                     iconUrl: URL(string: "https://primer.io/mock-retail-icon")!,
-                    disabled: false)
-            ])
+                    disabled: false
+                )
+            ]
+        )
         static let mockPayment = Response.Body.Payment(
             id: "mock_id",
             paymentId: "mock_payment_id",
@@ -877,10 +933,12 @@ extension MockPrimerAPIClient {
             orderId: nil,
             requiredAction: nil,
             status: .success,
-            paymentFailureReason: nil)
+            paymentFailureReason: nil
+        )
         static let mockSendAnalyticsEvents = Analytics.Service.Response(
             id: "mock-id",
-            result: "success")
+            result: "success"
+        )
         static let mockFetchPayPalExternalPayerInfo = Response.Body.PayPal.PayerInfo(
             orderId: "mock-order-id",
             externalPayerInfo: Response.Body.Tokenization.PayPal.ExternalPayerInfo(
@@ -888,7 +946,8 @@ extension MockPrimerAPIClient {
                 email: "john@email.com",
                 firstName: "John",
                 lastName: "Smith"
-            ))
+            )
+        )
         static let mockResumePayment = Response.Body.Payment(
             id: "mock_id",
             paymentId: "mock_payment_id",
@@ -901,10 +960,10 @@ extension MockPrimerAPIClient {
             orderId: nil,
             requiredAction: nil,
             status: .success,
-            paymentFailureReason: nil)
+            paymentFailureReason: nil
+        )
 
         static let mockFetchNolSdkSecret = Response.Body.NolPay.NolPaySecretDataResponse(sdkSecret: "")
         static let mockSdkCompleteUrl = Response.Body.Complete()
-
     }
 }
