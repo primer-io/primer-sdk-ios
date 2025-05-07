@@ -25,3 +25,10 @@ final class UserDefaultsExtensionTests: XCTestCase {
         XCTAssertEqual(UserDefaults.standard.string(forKey: "test"), "test")
     }
 }
+
+private extension UserDefaults {
+    func clearPrimerFramework() {
+          UserDefaults.primerFramework.removePersistentDomain(forName: Bundle.primerFrameworkIdentifier)
+          UserDefaults.primerFramework.synchronize()
+      }
+}

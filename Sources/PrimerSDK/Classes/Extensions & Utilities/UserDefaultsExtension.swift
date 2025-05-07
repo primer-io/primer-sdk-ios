@@ -16,10 +16,4 @@ internal extension UserDefaults {
             return UserDefaults.standard
         }
     }
-
-    func clearPrimerFramework() {
-        UserDefaults.primerFramework.removePersistentDomain(forName: Bundle.primerFrameworkIdentifier)
-        UserDefaults.primerFramework.synchronize()
-    }
-
 }

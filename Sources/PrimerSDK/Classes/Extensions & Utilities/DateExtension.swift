@@ -9,27 +9,6 @@ import Foundation
 
 internal extension Date {
 
-    var oneYearLater: Date {
-        let dateComponents = Calendar.current.dateComponents([
-            .second,
-            .minute,
-            .hour,
-            .day,
-            .month,
-            .year
-        ], from: self)
-
-        var oneYearLaterDateComponents = DateComponents()
-        oneYearLaterDateComponents.second = dateComponents.second!
-        oneYearLaterDateComponents.minute = dateComponents.minute!
-        oneYearLaterDateComponents.hour = dateComponents.hour!
-        oneYearLaterDateComponents.day = dateComponents.day!
-        oneYearLaterDateComponents.month = dateComponents.month!
-        oneYearLaterDateComponents.year = dateComponents.year! + 1
-
-        return Calendar.current.date(from: oneYearLaterDateComponents)!
-    }
-
     var startOfDay: Date {
         return Calendar.current.startOfDay(for: self)
     }
@@ -72,9 +51,5 @@ internal extension Date {
 
     var millisecondsSince1970: Int {
         Int((self.timeIntervalSince1970 * 1000.0).rounded())
-    }
-
-    init(milliseconds: Int) {
-        self = Date(timeIntervalSince1970: TimeInterval(milliseconds) / 1000)
     }
 }
