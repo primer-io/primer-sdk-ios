@@ -47,6 +47,7 @@ jobs:
           - { name: 'nol-pay', file: 'Package.NolPay.swift' }
           - { name: 'klarna', file: Package.Klarna.swift }
           - { name: '3DS', file: Package.3DS.swift }
+          - { name: 'stripe', file: Package.Stripe.swift }
     steps:
       - name: Cancel previous jobs
         uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # v0.12.1
