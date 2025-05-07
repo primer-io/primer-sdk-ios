@@ -27,8 +27,13 @@ public struct CardNumberFormatter: FieldFormatter {
         // Get maximum allowed length for this card network
         let maxLength = cardNetwork.validation?.lengths.max() ?? 19
 
-        // Truncate to max length
+        // Truncate to max length - this is critical!
         let truncatedDigits = String(digits.prefix(maxLength))
+
+        // If no digits, return empty string
+        if truncatedDigits.isEmpty {
+            return ""
+        }
 
         // Use the network's gap pattern if known, or fallback.
         let gaps = cardNetwork.validation?.gaps ?? [4, 8, 12]

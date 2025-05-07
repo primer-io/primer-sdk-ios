@@ -25,7 +25,7 @@ public struct CVVInputField: UIViewRepresentable {
         self.placeholder = placeholder
         self.cardNetwork = cardNetwork
         self.coordinator = BaseTextFieldCoordinator(
-            formatter: CVVFormatter(),
+            formatter: CVVFormatter(cardNetwork: cardNetwork),
             cursorManager: DefaultCursorManager(),
             validator: CVVFieldValidator(validationService: validatorService, cardNetwork: cardNetwork),
             onValidationChange: { isValid in onValidationChange?(isValid) },
@@ -35,14 +35,17 @@ public struct CVVInputField: UIViewRepresentable {
     }
 
     public func makeUIView(context: Context) -> UITextField {
-        let tf = UITextField()
-        tf.delegate = coordinator
-        tf.keyboardType = .numberPad
-        tf.placeholder = placeholder
-        return tf
+        let textField = UITextField()
+        textField.delegate = coordinator
+        textField.keyboardType = .numberPad
+        textField.placeholder = placeholder
+        return textField
     }
 
-    public func updateUIView(_ uiView: UITextField, context: Context) {}
+    public func updateUIView(_ uiView: UITextField, context: Context) {
+        // When the external `cardNetwork` state changes:
+        coordinator.update(cardNetwork: cardNetwork)
+    }
 
     public func makeCoordinator() -> BaseTextFieldCoordinator { coordinator }
 }

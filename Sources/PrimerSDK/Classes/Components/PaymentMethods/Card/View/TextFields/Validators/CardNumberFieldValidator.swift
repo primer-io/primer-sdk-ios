@@ -21,17 +21,32 @@ public class CardNumberFieldValidator: FieldValidator, LogReporter {
 
         let sanitized = input.filter { $0.isNumber }
 
-        // During typing, only mark as invalid if we have enough digits for a potentially complete card
-        if sanitized.count >= 13 {
-            let network = CardNetwork(cardNumber: sanitized)
-            let lengths = network.validation?.lengths ?? [16]
+        // Get card network for validation rules
+        let network = CardNetwork(cardNumber: sanitized)
 
-            if lengths.contains(sanitized.count) {
-                // Only do full validation if we have a potentially complete number
-                return validationService.validateCardNumber(sanitized)
-            }
-        } else if sanitized.count > 19 {
-            return .invalid(code: "invalid-card-number-length", message: "Card number is too long")
+        // Get valid lengths for this card type
+        let validLengths = network.validation?.lengths ?? [16]
+
+        // Check if input length exceeds maximum allowed length for the card type
+        if let maxLength = validLengths.max(), sanitized.count > maxLength {
+            return .invalid(
+                code: "invalid-card-number-length",
+                message: "Card number is too long"
+            )
+        }
+
+        // During typing, only do full validation if we have a complete card number
+        if validLengths.contains(sanitized.count) {
+            return validationService.validateCardNumber(sanitized)
+        }
+
+        // If number is incomplete, just check basic criteria
+        // Check if over 13 digits but unknown network
+        if sanitized.count >= 13 && network == .unknown {
+            return .invalid(
+                code: "unsupported-card-type",
+                message: "Card type not supported"
+            )
         }
 
         return .valid
@@ -46,6 +61,5 @@ public class CardNumberFieldValidator: FieldValidator, LogReporter {
         let result = validationService.validateCardNumber(input.filter { $0.isNumber })
         logger.debug(message: "DEBUG: Card Number validation result: \(result.isValid), \(result.errorMessage ?? "nil")")
         return result
-
     }
 }
