@@ -18,7 +18,7 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
     private var stateContinuation: AsyncStream<CardPaymentUiState?>.Continuation?
 
     // Validation services
-    private let validationService: ValidationService
+    let validationService: ValidationService
     private let formValidator: FormValidator
 
     // Field validators using the protocol-based approach
@@ -338,7 +338,6 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
     @available(iOS 15.0, *)
     func PrimerCardNumberField(modifier: Any, label: String?) -> any View {
         return CardNumberInputField(
-            label: label,
             placeholder: "1234 5678 9012 3456",
             validationService: validationService,
             onCardNetworkChange: { [weak self] network in

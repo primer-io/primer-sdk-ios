@@ -1,7 +1,5 @@
 //
 //  BaseTextFieldCoordinator.swift
-//
-//
 //  Created by Boris on 29. 4. 2025..
 //
 
@@ -9,7 +7,9 @@ import UIKit
 
 /// Base coordinator that composes formatting, cursor, and validation
 public class BaseTextFieldCoordinator: NSObject, UITextFieldDelegate, LogReporter {
-    let formatter: FieldFormatter
+    /// Now mutable so you can replace CardNumberFormatter when the BIN changes
+    public var formatter: FieldFormatter
+
     let cursorManager: CursorPositionManaging
     let validator: FieldValidator
     let onValidationChange: (Bool) -> Void
@@ -32,63 +32,72 @@ public class BaseTextFieldCoordinator: NSObject, UITextFieldDelegate, LogReporte
         self.onValidationChange = onValidationChange
         self.onErrorMessageChange = onErrorMessageChange
         self.onTextChange = onTextChange
+        super.init()
     }
 
-    public func textField(_ textField: UITextField,
-                          shouldChangeCharactersIn range: NSRange,
-                          replacementString string: String) -> Bool {
-        guard let current = (textField.text ?? "") as String? else { return true }
+    /// Call this whenever you detect a new CardNetwork
+    public func update(cardNetwork: CardNetwork) {
+        // Only swap for card‐number fields
+        if formatter is CardNumberFormatter {
+            formatter = CardNumberFormatter(cardNetwork: cardNetwork)
+        }
+    }
 
-        // Convert to Swift range and apply edit to original text first
+    // MARK: UITextFieldDelegate
+
+    public func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
+        let current = textField.text ?? ""
         guard let swiftRange = Range(range, in: current) else { return false }
-        let updatedText = current.replacingCharacters(in: swiftRange, with: string)
+        let updated = current.replacingCharacters(in: swiftRange, with: string)
 
-        // More flexible filtering - preserve formatting characters like / for dates
-        // This allows expiry dates to maintain their format (MM/YY)
-        let newRaw = if formatter is ExpiryDateFormatter {
-            updatedText.filter { $0.isNumber || $0 == "/" }
+        // Filter raw digits/letters according to the field type
+        let raw: String
+        if formatter is ExpiryDateFormatter {
+            raw = updated.filter { $0.isNumber || $0 == "/" }
         } else if formatter is CVVFormatter {
-            updatedText.filter { $0.isNumber }
+            raw = updated.filter { $0.isNumber }
         } else if formatter is CardholderNameFormatter {
-            updatedText.filter { $0.isLetter || $0.isWhitespace || $0 == "'" || $0 == "-" }
+            // TODO: Add all possible special characters that could be found in a person's name?
+            raw = updated.filter { $0.isLetter || $0.isWhitespace || $0 == "'" || $0 == "-" }
         } else {
-            updatedText.filter { $0.isNumber || $0.isLetter }
+            raw = updated.filter { $0.isNumber || $0.isLetter }
         }
 
-        // Format the text according to field type
-        let formatted = formatter.format(newRaw)
+        // Format and push back in
+        let formatted = formatter.format(raw)
         textField.text = formatted
         onTextChange(formatted)
 
-        // Calculate cursor position
-        let cursorPosition = range.location + string.count
-        let cursorPos = cursorManager.position(for: newRaw, formatted: formatted, original: cursorPosition)
-        if let pos = textField.position(from: textField.beginningOfDocument, offset: min(cursorPos, formatted.count)) {
+        // Compute and set new cursor position
+        let originalOffset = range.location + string.count
+        let newOffset = cursorManager.position(for: raw, formatted: formatted, original: originalOffset)
+        if let pos = textField.position(from: textField.beginningOfDocument, offset: min(newOffset, formatted.count)) {
             textField.selectedTextRange = textField.textRange(from: pos, to: pos)
         }
 
-        // Store the raw value for later validation on blur
-        lastRaw = newRaw
+        // Remember raw for blur validation
+        lastRaw = raw
 
-        // Perform validation and update state/UI
-        let result = validator.validateWhileTyping(newRaw)
-        logger.debug(message: "DEBUG: While typing validation: '\(newRaw)' - valid: \(result.isValid), error: \(result.errorMessage ?? "none")")
-
-        // Update validation state in parent component
+        // Live validation
+        let result = validator.validateWhileTyping(raw)
+        logger.debug(message: "While typing: '\(raw)' valid=\(result.isValid) err=\(result.errorMessage ?? "nil")")
         onValidationChange(result.isValid)
-
-        // Always update error message - this will clear it when validation passes
         onErrorMessageChange(result.errorMessage)
 
         return false
     }
 
     public func textFieldDidBeginEditing(_ textField: UITextField) {
-        // Clear error message when user starts editing
+        // Clear any old error
         onErrorMessageChange(nil)
     }
 
     public func textFieldDidEndEditing(_ textField: UITextField) {
+        // Final validation on blur
         let result = validator.validateOnCommit(lastRaw)
         onValidationChange(result.isValid)
         onErrorMessageChange(result.errorMessage)

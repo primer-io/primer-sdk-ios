@@ -9,7 +9,8 @@ import Foundation
 
 public struct CVVFormatter: FieldFormatter {
     public init() {}
+
     public func format(_ input: String) -> String {
-        return input.filter { $0.isNumber }
+        input.filter { $0.isNumber }
     }
 }

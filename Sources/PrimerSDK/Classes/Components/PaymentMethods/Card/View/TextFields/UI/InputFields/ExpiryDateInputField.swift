@@ -32,11 +32,11 @@ public struct ExpiryDateInputField: UIViewRepresentable {
     }
 
     public func makeUIView(context: Context) -> UITextField {
-        let tf = UITextField()
-        tf.delegate = coordinator
-        tf.keyboardType = .numberPad
-        tf.placeholder = placeholder
-        return tf
+        let textField = UITextField()
+        textField.delegate = coordinator
+        textField.keyboardType = .numberPad
+        textField.placeholder = placeholder
+        return textField
     }
 
     public func updateUIView(_ uiView: UITextField, context: Context) {}

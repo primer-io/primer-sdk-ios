@@ -33,94 +33,121 @@ struct CardPaymentView: View, LogReporter {
     var body: some View {
         VStack(spacing: 16) {
             // MARK: Card Number
-            CardNumberInputField(
-                placeholder: "Card Number",
-                onFormattedChange: { formatted in
-                    let raw = formatted.filter { $0.isNumber }
-                    cardNumberValue = raw
-                    scope.updateCardNumber(raw)
-                    // network detection now in closure
-                    let network = CardNetwork(cardNumber: raw)
-                    currentCardNetwork = network
-                    scope.updateCardNetwork(network)
-                },
-                onValidationChange: { valid in
-                    isCardNumberValid = valid
-                    updateFormValidity()
-                },
-                onErrorChange: { errorMsg in
-                    cardNumberError = errorMsg
+            VStack(alignment: .leading, spacing: 4) {
+                // Label for card number field
+                Text("Card Number")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+
+                CardNumberInputField(
+                    placeholder: "1234 5678 9012 3456",
+                    onFormattedChange: { formatted in
+                        let raw = formatted.filter { $0.isNumber }
+                        cardNumberValue = raw
+                        scope.updateCardNumber(raw)
+                        let network = CardNetwork(cardNumber: raw)
+                        currentCardNetwork = network
+                        // TODO: Maybe remove this below? Network is being also updated on scope.updateCardNumber(raw)
+                        scope.updateCardNetwork(network)
+                    },
+                    onValidationChange: { valid in
+                        isCardNumberValid = valid
+                        updateFormValidity()
+                    },
+                    onErrorChange: { errorMsg in
+                        cardNumberError = errorMsg
+                    }
+                )
+                .primerTextFieldStyle(isError: cardNumberError != nil)
+                .overlay(alignment: .bottomLeading) {
+                    errorOverlay(message: cardNumberError)
                 }
-            )
-            .primerTextFieldStyle(isError: cardNumberError != nil)
-            .overlay(alignment: .bottomLeading) {
-                errorOverlay(message: cardNumberError)
             }
 
             // MARK: Expiry + CVV
             HStack(spacing: 16) {
-                ExpiryDateInputField(
-                    placeholder: "MM/YY",
-                    onFormattedChange: { formatted in
-                        expiryDateValue = formatted
-                        let parts = formatted.split(separator: "/")
-                        if parts.count == 2 {
-                            scope.updateExpiryMonth(String(parts[0]))
-                            scope.updateExpiryYear(String(parts[1]))
+                // Expiry Date
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Expiry Date (MM/YY)")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+
+                    ExpiryDateInputField(
+                        placeholder: "MM/YY",
+                        onFormattedChange: { formatted in
+                            expiryDateValue = formatted
+                            let parts = formatted.split(separator: "/")
+                            if parts.count == 2 {
+                                scope.updateExpiryMonth(String(parts[0]))
+                                scope.updateExpiryYear(String(parts[1]))
+                            }
+                        },
+                        onValidationChange: { valid in
+                            isExpiryValid = valid
+                            updateFormValidity()
+                        },
+                        onErrorChange: { errorMsg in
+                            expiryError = errorMsg
                         }
-                    },
-                    onValidationChange: { valid in
-                        isExpiryValid = valid
-                        updateFormValidity()
-                    },
-                    onErrorChange: { errorMsg in
-                        expiryError = errorMsg  // FIXED: Was cardNumberError
+                    )
+                    .primerTextFieldStyle(isError: expiryError != nil)
+                    .overlay(alignment: .bottomLeading) {
+                        errorOverlay(message: expiryError)
                     }
-                )
-                .primerTextFieldStyle(isError: expiryError != nil)  // Add isError parameter
-                .overlay(alignment: .bottomLeading) {
-                    errorOverlay(message: expiryError)
                 }
 
-                CVVInputField(
-                    placeholder: currentCardNetwork == .amex ? "1234" : "123",
-                    cardNetwork: currentCardNetwork,
-                    onFormattedChange: { formatted in
-                        cvvValue = formatted
-                        scope.updateCvv(formatted)
-                    },
-                    onValidationChange: { valid in
-                        isCvvValid = valid
-                        updateFormValidity()
-                    },
-                    onErrorChange: { errorMsg in
-                        cvvError = errorMsg  // FIXED: Was cardNumberError
+                // CVV
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Security Code (CVV)")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+
+                    CVVInputField(
+                        placeholder: currentCardNetwork == .amex ? "1234" : "123",
+                        cardNetwork: currentCardNetwork,
+                        onFormattedChange: { formatted in
+                            cvvValue = formatted
+                            scope.updateCvv(formatted)
+                        },
+                        onValidationChange: { valid in
+                            isCvvValid = valid
+                            updateFormValidity()
+                        },
+                        onErrorChange: { errorMsg in
+                            cvvError = errorMsg
+                        }
+                    )
+                    .primerTextFieldStyle(isError: cvvError != nil)
+                    .overlay(alignment: .bottomLeading) {
+                        errorOverlay(message: cvvError)
                     }
-                )
-                .primerTextFieldStyle(isError: cvvError != nil)  // Add isError parameter
-                .overlay(alignment: .bottomLeading) {
-                    errorOverlay(message: cvvError)
                 }
             }
 
             // MARK: Cardholder Name
-            CardholderNameInputField(
-                placeholder: "Cardholder Name",
-                onFormattedChange: { formatted in
-                    nameValue = formatted
-                    scope.updateCardholderName(formatted)
-                },
-                onValidationChange: { valid in
-                    isNameValid = valid
-                    updateFormValidity()
-                },
-                onErrorChange: { errorMsg in
-                    nameError = errorMsg  // FIXED: Was cardNumberError
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Cardholder Name")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+
+                CardholderNameInputField(
+                    placeholder: "Full Name",
+                    onFormattedChange: { formatted in
+                        nameValue = formatted
+                        scope.updateCardholderName(formatted)
+                    },
+                    onValidationChange: { valid in
+                        isNameValid = valid
+                        updateFormValidity()
+                    },
+                    onErrorChange: { errorMsg in
+                        nameError = errorMsg
+                    }
+                )
+                .primerTextFieldStyle(isError: nameError != nil)
+                .overlay(alignment: .bottomLeading) {
+                    errorOverlay(message: nameError)
                 }
-            )
-            .primerTextFieldStyle(isError: nameError != nil)  // Add isError parameter
-            .overlay(alignment: .bottomLeading) {
-                errorOverlay(message: nameError)
             }
 
             // MARK: Pay Button
@@ -151,6 +178,7 @@ struct CardPaymentView: View, LogReporter {
         .padding(16)
     }
 
+    // Reusable error overlay
     @ViewBuilder
     private func errorOverlay(message: String?) -> some View {
         if let errorMessage = message {
@@ -160,12 +188,13 @@ struct CardPaymentView: View, LogReporter {
                 .padding(.top, 2)
                 .padding(.horizontal, 4)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.white.opacity(0.7))  // Add a semi-transparent background
+                .background(Color.white.opacity(0.7))
         } else {
-            Color.clear.frame(height: 0)  // Empty placeholder when no error
+            Color.clear.frame(height: 0)
         }
     }
-    
+
+    // Validate entire form
     private func updateFormValidity() {
         isValid = isCardNumberValid
             && isExpiryValid
