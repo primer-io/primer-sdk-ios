@@ -215,15 +215,11 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
                                                             countryCode: "shipping_country_code",
                                                             postalCode: "shipping_postal_code")),
                      customerId: "customer_id",
-                     dateStr: nil,
-                     order: nil,
                      orderId: "order_id",
                      requiredAction: .init(clientToken: stripeACHToken,
                                            name: .checkout,
                                            description: "description"),
-                     status: .success,
-                     paymentFailureReason: nil,
-                     checkoutOutcome: nil)
+                     status: .success)
     }
 
     var tokenizationResponseBody: Response.Body.Tokenization {

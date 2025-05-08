@@ -150,17 +150,12 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
                          paymentId: "payment_id",
                          amount: 123,
                          currencyCode: "GBP",
-                         customer: nil,
                          customerId: "customer_id",
-                         dateStr: nil,
-                         order: nil,
                          orderId: "order_id",
                          requiredAction: .init(clientToken: MockAppState.mockClientTokenWithRedirect,
                                                name: .checkout,
                                                description: "description"),
-                         status: .success,
-                         paymentFailureReason: nil,
-                         checkoutOutcome: nil)
+                         status: .success)
         }
 
         let expectDidShowPaymentMethod = self.expectation(description: "Payment method was shown in web view")
@@ -178,15 +173,9 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
                          paymentId: "payment_id",
                          amount: 1234,
                          currencyCode: "GBP",
-                         customer: nil,
                          customerId: "customer_id",
-                         dateStr: nil,
-                         order: nil,
                          orderId: "order_id",
-                         requiredAction: nil,
-                         status: .success,
-                         paymentFailureReason: nil,
-                         checkoutOutcome: nil)
+                         status: .success)
         }
 
         let expectCheckoutDidCompletewithData = self.expectation(description: "")

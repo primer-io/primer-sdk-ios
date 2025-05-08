@@ -73,12 +73,9 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
     private func validateResponse(paymentResponse: Response.Body.Payment, callType: CreateResumePaymentCallType) throws {
         if let checkoutOutcome = paymentResponse.checkoutOutcome {
             switch checkoutOutcome {
-            case .checkoutComplete:
-                return
-            case .checkoutFailure:
-                throw createPaymentFailedError(paymentResponse: paymentResponse)
-            default:
-                break // Continue with old logic
+            case .complete: return
+            case .failure: throw createPaymentFailedError(paymentResponse: paymentResponse)
+            default: break // Continue with old logic
             }
         }
 
@@ -93,7 +90,7 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
 
     // Helper method to create a payment failed error
     private func createPaymentFailedError(paymentResponse: Response.Body.Payment, description: String? = nil) -> PrimerError {
-        return PrimerError.paymentFailed(
+        PrimerError.paymentFailed(
             paymentMethodType: paymentMethodType,
             paymentId: paymentResponse.id ?? "unknown",
             orderId: paymentResponse.orderId ?? nil,
@@ -174,6 +171,6 @@ private extension Response.Body.Payment {
     }
 
     var shouldFailPaymentCreationWhenPending: Bool {
-        status == .pending && showSuccessCheckoutOnPendingPayment == false
+        status == .pending && showSuccessCheckoutOnPendingPayment != true
     }
 }

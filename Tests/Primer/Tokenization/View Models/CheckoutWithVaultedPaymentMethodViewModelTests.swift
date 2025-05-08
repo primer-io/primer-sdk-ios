@@ -163,12 +163,7 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
                                                             countryCode: "shipping_country_code",
                                                             postalCode: "shipping_postal_code")),
                      customerId: "customer_id",
-                     dateStr: nil,
-                     order: nil,
                      orderId: "order_id",
-                     requiredAction: nil,
-                     status: .success,
-                     paymentFailureReason: nil,
-                     checkoutOutcome: nil)
+                     status: .success)
     }
 }

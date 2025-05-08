@@ -165,14 +165,7 @@ final class ACHMocks {
             paymentId: "mock_payment_id",
             amount: 1000,
             currencyCode: "USD",
-            customer: nil,
             customerId: "mock_customer_id",
-            dateStr: nil,
-            order: nil,
-            orderId: nil,
-            requiredAction: nil,
-            status: status,
-            paymentFailureReason: nil,
-            checkoutOutcome: nil)
+            status: status)
     }
 }

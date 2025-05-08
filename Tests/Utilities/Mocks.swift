@@ -83,15 +83,8 @@ class Mocks {
         paymentId: "mock_payment_id",
         amount: 1000,
         currencyCode: "EUR",
-        customer: nil,
         customerId: "mock_customer_id",
-        dateStr: nil,
-        order: nil,
-        orderId: nil,
-        requiredAction: nil,
-        status: .success,
-        paymentFailureReason: nil,
-        checkoutOutcome: nil)
+        status: .success)
 
     static func createMockAPIConfiguration(
         clientSession: ClientSession.APIResponse?,

@@ -9,785 +9,676 @@
 import XCTest
 
 final class CreateResumePaymentServiceTests: XCTestCase {
-    typealias Payment = Response.Body.Payment
+    var sut: CreateResumePaymentService!
+    private var apiClient: MockCreateResumeAPI!
+
+    override func setUp() {
+        super.setUp()
+        apiClient = MockCreateResumeAPI()
+        sut = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD", apiClient: apiClient)
+    }
 
     // ** Complete Payment **//
 
-    func test_complete_token_completeUrl() throws {
-        let response = Response.Body.Complete.successResponse
-        let apiClient = MockCreateResumeAPI(completeResponse: response)
-
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "STRIPE_ACH",
-                                                             apiClient: apiClient)
-
+    func test_completePayment_shouldSuccess() throws {
+        // Given
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.completeResponse = .success(.init())
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
 
+        // When
         guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             XCTFail()
             return
         }
+        _ = sut.completePayment(clientToken: clientToken,
+                                completeUrl: URL(string: "https://example.com")!,
+                                body: StripeAchTokenizationViewModel.defaultCompleteBodyWithTimestamp)
+            .done {
+                expectation.fulfill()
+            }.catch { error in
+                XCTFail("Promise rejected: \(error)")
+            }
 
-        _ = createResumeService.completePayment(clientToken: clientToken,
-                                                completeUrl: URL(string: "https://example.com")!,
-                                                body: StripeAchTokenizationViewModel.defaultCompleteBodyWithTimestamp).done {
-                                                    expectation.fulfill()
-                                                }
+        // Then
+        wait(for: [expectation], timeout: 5.0)
+    }
 
-        waitForExpectations(timeout: 5, handler: nil)
+    func test_completePayment_shouldFail() throws {
+        // Given
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.completeResponse = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        AppState.current.clientToken = MockAppState.mockClientToken
+
+        // When
+        guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+            XCTFail()
+            return
+        }
+        _ = sut.completePayment(clientToken: clientToken,
+                                completeUrl: URL(string: "https://example.com")!,
+                                body: StripeAchTokenizationViewModel.defaultCompleteBodyWithTimestamp)
+            .done { _ in
+                XCTFail("Succeeded when it should have failed")
+            }.catch { _ in
+                expectation.fulfill()
+            }
+
+        // Then
+        wait(for: [expectation], timeout: 5.0)
     }
 
     // ** Create Payment **//
 
     func test_createPayment_shouldFailWhenClientTokenIsNil() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithSuccessStatus)
-        let apiClient = MockCreateResumeAPI(createResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.createResponse = .success(.successStatus)
         AppState.current.clientToken = nil
-        let expectation = self.expectation(description: "Promise fulfilled")
         let createRequest = Request.Body.Payment.Create(token: "123")
 
         // When
-        createResumeService.createPayment(paymentRequest: createRequest).done { _ in
-            XCTFail("Succeeded when it should have failed")
-        }.catch { _ in
-            expectation.fulfill()
-        }
+        sut.createPayment(paymentRequest: createRequest)
+            .done { _ in
+                XCTFail("Succeeded when it should have failed")
+            }.catch { _ in
+                expectation.fulfill()
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
     func test_createPayment_shouldFailWhenResponseIsError() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
-        let apiClient = MockCreateResumeAPI(createResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.createResponse = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let createRequest = Request.Body.Payment.Create(token: "123")
 
         // When
-        createResumeService.createPayment(paymentRequest: createRequest).done { _ in
-            XCTFail("Succeeded when it should have failed")
-        }.catch { _ in
-            expectation.fulfill()
-        }
+        sut.createPayment(paymentRequest: createRequest)
+            .done { _ in
+                XCTFail("Succeeded when it should have failed")
+            }.catch { _ in
+                expectation.fulfill()
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
     func test_createPayment_shouldFailWhenPaymentIdIsNil() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithNoId)
-        let apiClient = MockCreateResumeAPI(createResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.createResponse = .success(.noId)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let createRequest = Request.Body.Payment.Create(token: "123")
 
         // When
-        createResumeService.createPayment(paymentRequest: createRequest).done { _ in
-            XCTFail("Succeeded when it should have failed")
-        }.catch { _ in
-            expectation.fulfill()
-        }
+        sut.createPayment(paymentRequest: createRequest)
+            .done { _ in
+                XCTFail("Succeeded when it should have failed")
+            }.catch { _ in
+                expectation.fulfill()
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_createPayment_shouldSucceedWithSuccessStatus() throws {
+    func test_createPayment_shouldSucceedWhenSuccessStatus() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithSuccessStatus)
-        let apiClient = MockCreateResumeAPI(createResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.createResponse = .success(.successStatus)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let createRequest = Request.Body.Payment.Create(token: "123")
 
         // When
-        createResumeService.createPayment(paymentRequest: createRequest).done { payment in
-            XCTAssert(payment.status == .success)
-            expectation.fulfill()
-        }.catch { error in
-            XCTFail("Promise rejected: \(error)")
-        }
+        sut.createPayment(paymentRequest: createRequest)
+            .done { payment in
+                XCTAssert(payment.status == .success)
+                expectation.fulfill()
+            }.catch { error in
+                XCTFail("Promise rejected: \(error)")
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_createPayment_shouldFailWithFailedStatus() throws {
+    func test_createPayment_shouldFailWhenFailedStatus() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithFailedStatus)
-        let apiClient = MockCreateResumeAPI(createResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.createResponse = .success(.failedStatus)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let createRequest = Request.Body.Payment.Create(token: "123")
 
         // When
-        createResumeService.createPayment(paymentRequest: createRequest).done { _ in
-            XCTFail("Succeeded when it should have failed")
-        }.catch { _ in
-            expectation.fulfill()
-        }
+        sut.createPayment(paymentRequest: createRequest)
+            .done { _ in
+                XCTFail("Succeeded when it should have failed")
+            }.catch { _ in
+                expectation.fulfill()
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
     func test_createPayment_shouldSuccessWithPendingStatus() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithPendingStatus)
-        let apiClient = MockCreateResumeAPI(createResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.createResponse = .success(.pendingStatus)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let createRequest = Request.Body.Payment.Create(token: "123")
 
         // When
-        createResumeService.createPayment(paymentRequest: createRequest).done { payment in
-            XCTAssert(payment.status == .pending)
-            expectation.fulfill()
-        }.catch { error in
-            XCTFail("Promise rejected: \(error)")
-        }
+        sut.createPayment(paymentRequest: createRequest)
+            .done { payment in
+                XCTAssert(payment.status == .pending)
+                expectation.fulfill()
+            }.catch { error in
+                XCTFail("Promise rejected: \(error)")
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_createPayment_shouldSuccessWithPendingStatusAndShowSuccessCheckoutOnPendingPayment() throws {
+    func test_createPayment_shouldSucceedWhenPendingStatusWithShowSuccess() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithPendingStatusAndShowSuccessCheckoutOnPendingPayment)
-        let apiClient = MockCreateResumeAPI(createResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.createResponse = .success(.pendingStatusWithShowSuccess)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let createRequest = Request.Body.Payment.Create(token: "123")
 
         // When
-        createResumeService.createPayment(paymentRequest: createRequest).done { payment in
-            XCTAssert(payment.status == .pending)
-            expectation.fulfill()
-        }.catch { error in
-            XCTFail("Promise rejected: \(error)")
-        }
+        sut.createPayment(paymentRequest: createRequest)
+            .done { payment in
+                XCTAssert(payment.status == .pending)
+                expectation.fulfill()
+            }.catch { error in
+                XCTFail("Promise rejected: \(error)")
+            }
 
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_createPayment_shouldSucceedWithCompleteCheckoutOutcome() throws {
+    func test_createPayment_shouldSucceedWhenCheckoutComplete() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithCompleteCheckoutOutcome)
-        let apiClient = MockCreateResumeAPI(createResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.createResponse = .success(.checkoutComplete)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let createRequest = Request.Body.Payment.Create(token: "123")
 
         // When
-        createResumeService.createPayment(paymentRequest: createRequest).done { payment in
-            XCTAssert(payment.status == .success)
-            expectation.fulfill()
-        }.catch { error in
-            XCTFail("Promise rejected: \(error)")
-        }
+        sut.createPayment(paymentRequest: createRequest)
+            .done { payment in
+                XCTAssert(payment.status == .success)
+                expectation.fulfill()
+            }.catch { error in
+                XCTFail("Promise rejected: \(error)")
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_createPayment_shouldFailWithFailureCheckoutOutcome() throws {
+    func test_createPayment_shouldFailWhenCheckoutFailure() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithFailureCheckoutOutcome)
-        let apiClient = MockCreateResumeAPI(createResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.createResponse = .success(.checkoutFailure)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let createRequest = Request.Body.Payment.Create(token: "123")
 
         // When
-        createResumeService.createPayment(paymentRequest: createRequest).done { _ in
-            XCTFail("Succeeded when it should have failed")
-        }.catch { _ in
-            expectation.fulfill()
-        }
+        sut.createPayment(paymentRequest: createRequest)
+            .done { _ in
+                XCTFail("Succeeded when it should have failed")
+            }.catch { _ in
+                expectation.fulfill()
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_createPayment_shouldSuccessWithDetermineFromPaymentStatusCheckoutOutcomeAndSuccessStatus() throws {
+    func test_createPayment_shouldSuccessWithFallbackWithSuccessStatus() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithDetermineFromPaymentStatusCheckoutOutcomeAndSuccessStatus)
-        let apiClient = MockCreateResumeAPI(createResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.createResponse = .success(.fallbackWithSuccessStatus)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let createRequest = Request.Body.Payment.Create(token: "123")
 
         // When
-        createResumeService.createPayment(paymentRequest: createRequest).done { payment in
-            XCTAssert(payment.status == .success)
-            expectation.fulfill()
-        }.catch { error in
-            XCTFail("Promise rejected: \(error)")
-        }
+        sut.createPayment(paymentRequest: createRequest)
+            .done { payment in
+                XCTAssert(payment.status == .success)
+                expectation.fulfill()
+            }.catch { error in
+                XCTFail("Promise rejected: \(error)")
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_createPayment_shouldFailWithDetermineFromPaymentStatusCheckoutOutcomeAndFailedStatus() throws {
+    func test_createPayment_shouldFailWhenFallbackWithFailedStatus() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithDetermineFromPaymentStatusCheckoutOutcomeAndFailedStatus)
-        let apiClient = MockCreateResumeAPI(createResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.createResponse = .success(.fallbackWithFailedStatus)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let createRequest = Request.Body.Payment.Create(token: "123")
 
         // When
-        createResumeService.createPayment(paymentRequest: createRequest).done { _ in
-            XCTFail("Succeeded when it should have failed")
-        }.catch { _ in
-            expectation.fulfill()
-        }
+        sut.createPayment(paymentRequest: createRequest)
+            .done { _ in
+                XCTFail("Succeeded when it should have failed")
+            }.catch { _ in
+                expectation.fulfill()
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_createPayment_shouldSuccessWithDetermineFromPaymentStatusCheckoutOutcomeAndPendingStatus() throws {
+    func test_createPayment_shouldSuccessWithFallbackWithPendingStatus() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithDetermineFromPaymentStatusCheckoutOutcomeAndPendingStatus)
-        let apiClient = MockCreateResumeAPI(createResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.createResponse = .success(.fallbackWithPendingStatus)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let createRequest = Request.Body.Payment.Create(token: "123")
 
         // When
-        createResumeService.createPayment(paymentRequest: createRequest).done { payment in
-            XCTAssert(payment.status == .pending)
-            expectation.fulfill()
-        }.catch { error in
-            XCTFail("Promise rejected: \(error)")
-        }
+        sut.createPayment(paymentRequest: createRequest)
+            .done { payment in
+                XCTAssert(payment.status == .pending)
+                expectation.fulfill()
+            }.catch { error in
+                XCTFail("Promise rejected: \(error)")
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_createPayment_shouldSuccessWithDetermineFromPaymentStatusCheckoutOutcomeAndPendingStatusAndShowSuccessCheckoutOnPendingPayment() throws {
+    func test_createPayment_shouldSucceedWhenFallbackWithPendingStatusWithShowSuccess() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> =
-            .success(.paymentWithDetermineFromPaymentStatusCheckoutOutcomeAndPendingStatusAndShowSuccessCheckoutOnPendingPayment)
-        let apiClient = MockCreateResumeAPI(createResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.createResponse =
+            .success(.fallbackWithPendingStatusWithShowSuccess)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let createRequest = Request.Body.Payment.Create(token: "123")
 
         // When
-        createResumeService.createPayment(paymentRequest: createRequest).done { payment in
-            XCTAssert(payment.status == .pending)
-            expectation.fulfill()
-        }.catch { error in
-            XCTFail("Promise rejected: \(error)")
-        }
+        sut.createPayment(paymentRequest: createRequest)
+            .done { payment in
+                XCTAssert(payment.status == .pending)
+                expectation.fulfill()
+            }.catch { error in
+                XCTFail("Promise rejected: \(error)")
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
     // ** Resume Payment **//
 
     func test_resumePayment_shouldFailWhenClientTokenIsNil() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithSuccessStatus)
-        let apiClient = MockCreateResumeAPI(resumeResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.resumeResponse = .success(.successStatus)
         AppState.current.clientToken = nil
-        let expectation = self.expectation(description: "Promise fulfilled")
         let resumeRequest = Request.Body.Payment.Resume(token: "")
 
         // When
-        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { _ in
-            XCTFail("Succeeded when it should have failed")
-        }.catch { _ in
-            expectation.fulfill()
-        }
+        sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            .done { _ in
+                XCTFail("Succeeded when it should have failed")
+            }.catch { _ in
+                expectation.fulfill()
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
     func test_resumePayment_shouldFailWhenResponseIsError() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
-        let apiClient = MockCreateResumeAPI(resumeResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.resumeResponse = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let resumeRequest = Request.Body.Payment.Resume(token: "")
 
         // When
-        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { _ in
-            XCTFail("Succeeded when it should have failed")
-        }.catch { _ in
-            expectation.fulfill()
-        }
+        sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            .done { _ in
+                XCTFail("Succeeded when it should have failed")
+            }.catch { _ in
+                expectation.fulfill()
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_resumePayment_shouldFailWhenPaymentIdIsNil() throws {
+    func test_resumePayment_shouldFailWhenNoId() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithNoId)
-        let apiClient = MockCreateResumeAPI(resumeResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.resumeResponse = .success(.noId)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let resumeRequest = Request.Body.Payment.Resume(token: "")
 
         // When
-        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { _ in
-            XCTFail("Succeeded when it should have failed")
-        }.catch { _ in
-            expectation.fulfill()
-        }
+        sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            .done { _ in
+                XCTFail("Succeeded when it should have failed")
+            }.catch { _ in
+                expectation.fulfill()
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_resumePayment_shouldSucceedWithSuccessStatus() throws {
+    func test_resumePayment_shouldSucceedWhenSuccessStatus() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithSuccessStatus)
-        let apiClient = MockCreateResumeAPI(resumeResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.resumeResponse = .success(.successStatus)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let resumeRequest = Request.Body.Payment.Resume(token: "")
 
         // When
-        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { payment in
-            XCTAssert(payment.status == .success)
-            expectation.fulfill()
-        }.catch { error in
-            XCTFail("Promise rejected: \(error)")
-        }
+        sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            .done { payment in
+                XCTAssert(payment.status == .success)
+                expectation.fulfill()
+            }.catch { error in
+                XCTFail("Promise rejected: \(error)")
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_resumePayment_shouldFailWithFailedStatus() throws {
+    func test_resumePayment_shouldFailWhenFailedStatus() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithFailedStatus)
-        let apiClient = MockCreateResumeAPI(resumeResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.resumeResponse = .success(.failedStatus)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let resumeRequest = Request.Body.Payment.Resume(token: "")
 
         // When
-        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { _ in
-            XCTFail("Succeeded when it should have failed")
-        }.catch { _ in
-            expectation.fulfill()
-        }
+        sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            .done { _ in
+                XCTFail("Succeeded when it should have failed")
+            }.catch { _ in
+                expectation.fulfill()
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_resumePayment_shouldFailWithPendingStatus() throws {
+    func test_resumePayment_shouldFailWhenPendingStatus() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithPendingStatus)
-        let apiClient = MockCreateResumeAPI(resumeResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.resumeResponse = .success(.pendingStatus)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let resumeRequest = Request.Body.Payment.Resume(token: "")
 
         // When
-        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { _ in
-            XCTFail("Succeeded when it should have failed")
-        }.catch { _ in
-            expectation.fulfill()
-        }
+        sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            .done { _ in
+                XCTFail("Succeeded when it should have failed")
+            }.catch { _ in
+                expectation.fulfill()
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_resumePayment_shouldSuccessWithPendingStatusAndShowSuccessCheckoutOnPendingPayment() throws {
+    func test_resumePayment_shouldSucceedWhenPendingStatusWithShowSuccess() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithPendingStatusAndShowSuccessCheckoutOnPendingPayment)
-        let apiClient = MockCreateResumeAPI(resumeResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.resumeResponse = .success(.pendingStatusWithShowSuccess)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let resumeRequest = Request.Body.Payment.Resume(token: "")
 
         // When
-        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { payment in
-            XCTAssert(payment.status == .pending)
-            expectation.fulfill()
-        }.catch { error in
-            XCTFail("Promise rejected: \(error)")
-        }
+        sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            .done { payment in
+                XCTAssert(payment.status == .pending)
+                expectation.fulfill()
+            }.catch { error in
+                XCTFail("Promise rejected: \(error)")
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_resumePayment_shouldSucceedWithCompleteCheckoutOutcome() throws {
+    func test_resumePayment_shouldSucceedWhenCheckoutComplete() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithCompleteCheckoutOutcome)
-        let apiClient = MockCreateResumeAPI(resumeResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.resumeResponse = .success(.checkoutComplete)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let resumeRequest = Request.Body.Payment.Resume(token: "")
 
         // When
-        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { payment in
-            XCTAssert(payment.status == .success)
-            expectation.fulfill()
-        }.catch { error in
-            XCTFail("Promise rejected: \(error)")
-        }
+        sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            .done { payment in
+                XCTAssert(payment.status == .success)
+                expectation.fulfill()
+            }.catch { error in
+                XCTFail("Promise rejected: \(error)")
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_resumePayment_shouldFailWithFailureCheckoutOutcome() throws {
+    func test_resumePayment_shouldFailWhenCheckoutFailure() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithFailureCheckoutOutcome)
-        let apiClient = MockCreateResumeAPI(resumeResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.resumeResponse = .success(.checkoutFailure)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let resumeRequest = Request.Body.Payment.Resume(token: "")
 
         // When
-        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { _ in
-            XCTFail("Succeeded when it should have failed")
-        }.catch { _ in
-            expectation.fulfill()
-        }
+        sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            .done { _ in
+                XCTFail("Succeeded when it should have failed")
+            }.catch { _ in
+                expectation.fulfill()
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_resumePayment_shouldSucceedWithDetermineFromPaymentStatusCheckoutOutcomeAndSuccessStatus() throws {
+    func test_resumePayment_shouldSucceedWhenFallbackWithSuccessStatus() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithDetermineFromPaymentStatusCheckoutOutcomeAndSuccessStatus)
-        let apiClient = MockCreateResumeAPI(resumeResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.resumeResponse = .success(.fallbackWithSuccessStatus)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let resumeRequest = Request.Body.Payment.Resume(token: "")
 
         // When
-        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { payment in
-            XCTAssert(payment.status == .success)
-            expectation.fulfill()
-        }.catch { error in
-            XCTFail("Promise rejected: \(error)")
-        }
+        sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            .done { payment in
+                XCTAssert(payment.status == .success)
+                expectation.fulfill()
+            }.catch { error in
+                XCTFail("Promise rejected: \(error)")
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_resumePayment_shouldFailWithDetermineFromPaymentStatusCheckoutOutcomeAndFailedStatus() throws {
+    func test_resumePayment_shouldFailWhenFallbackWithFailedStatus() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithDetermineFromPaymentStatusCheckoutOutcomeAndFailedStatus)
-        let apiClient = MockCreateResumeAPI(resumeResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.resumeResponse = .success(.fallbackWithFailedStatus)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let resumeRequest = Request.Body.Payment.Resume(token: "")
 
         // When
-        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { _ in
-            XCTFail("Succeeded when it should have failed")
-        }.catch { _ in
-            expectation.fulfill()
-        }
+        sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            .done { _ in
+                XCTFail("Succeeded when it should have failed")
+            }.catch { _ in
+                expectation.fulfill()
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_resumePayment_shouldFailWithDetermineFromPaymentStatusCheckoutOutcomeAndPendingStatus() throws {
+    func test_resumePayment_shouldFailWhenFallbackWithPendingStatus() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> = .success(.paymentWithDetermineFromPaymentStatusCheckoutOutcomeAndPendingStatus)
-        let apiClient = MockCreateResumeAPI(resumeResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.resumeResponse = .success(.fallbackWithPendingStatus)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let resumeRequest = Request.Body.Payment.Resume(token: "")
 
         // When
-        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { _ in
-            XCTFail("Succeeded when it should have failed")
-        }.catch { _ in
-            expectation.fulfill()
-        }
+        sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            .done { _ in
+                XCTFail("Succeeded when it should have failed")
+            }.catch { _ in
+                expectation.fulfill()
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 
-    func test_resumePayment_shouldSuccessWithDetermineFromPaymentStatusCheckoutOutcomeAndPendingStatusAndShowSuccessCheckoutOnPendingPayment() throws {
+    func test_resumePayment_shouldSucceedWhenFallbackWithPendingStatusWithShowSuccess() throws {
         // Given
-        let response: Result<Response.Body.Payment, Error> =
-            .success(.paymentWithDetermineFromPaymentStatusCheckoutOutcomeAndPendingStatusAndShowSuccessCheckoutOnPendingPayment)
-        let apiClient = MockCreateResumeAPI(resumeResponse: response)
-        let createResumeService = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD",
-                                                             apiClient: apiClient)
+        let expectation = XCTestExpectation(description: "Promise fulfilled")
+        apiClient.resumeResponse =
+            .success(.fallbackWithPendingStatusWithShowSuccess)
         AppState.current.clientToken = MockAppState.mockClientToken
-        let expectation = self.expectation(description: "Promise fulfilled")
         let resumeRequest = Request.Body.Payment.Resume(token: "")
 
         // When
-        createResumeService.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest).done { payment in
-            XCTAssert(payment.status == .pending)
-            expectation.fulfill()
-        }.catch { error in
-            XCTFail("Promise rejected: \(error)")
-        }
+        sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            .done { payment in
+                XCTAssert(payment.status == .pending)
+                expectation.fulfill()
+            }.catch { error in
+                XCTFail("Promise rejected: \(error)")
+            }
 
         // Then
-        waitForExpectations(timeout: 5, handler: nil)
+        wait(for: [expectation], timeout: 5.0)
     }
 }
 
 private extension Response.Body.Payment {
-    static var paymentWithNoId: Response.Body.Payment {
+    static var noId: Response.Body.Payment {
         .init(id: nil,
               paymentId: "paymentId",
               amount: 1,
               currencyCode: "EUR",
-              customer: nil,
-              customerId: nil,
-              dateStr: nil,
-              order: nil,
-              orderId: nil,
-              requiredAction: nil,
-              status: .success,
-              paymentFailureReason: nil,
-              checkoutOutcome: nil)
+              status: .success)
     }
 
-    static var paymentWithSuccessStatus: Response.Body.Payment {
+    static var successStatus: Response.Body.Payment {
         .init(id: "id",
               paymentId: "paymentId",
               amount: 1,
               currencyCode: "EUR",
-              customer: nil,
-              customerId: nil,
-              dateStr: nil,
-              order: nil,
-              orderId: nil,
-              requiredAction: nil,
-              status: .success,
-              paymentFailureReason: nil,
-              checkoutOutcome: nil)
+              status: .success)
     }
 
-    static var paymentWithFailedStatus: Response.Body.Payment {
+    static var failedStatus: Response.Body.Payment {
         .init(id: "id",
               paymentId: "paymentId",
               amount: 1,
               currencyCode: "EUR",
-              customer: nil,
-              customerId: nil,
-              dateStr: nil,
-              order: nil,
-              orderId: nil,
-              requiredAction: nil,
-              status: .failed,
-              paymentFailureReason: nil,
-              checkoutOutcome: nil)
+              status: .failed)
     }
 
-    static var paymentWithPendingStatus: Response.Body.Payment {
+    static var pendingStatus: Response.Body.Payment {
         .init(id: "id",
               paymentId: "paymentId",
               amount: 1,
               currencyCode: "EUR",
-              customer: nil,
-              customerId: nil,
-              dateStr: nil,
-              order: nil,
-              orderId: nil,
-              requiredAction: nil,
+              status: .pending)
+    }
+
+    static var pendingStatusWithShowSuccess: Response.Body.Payment {
+        .init(id: "id",
+              paymentId: "paymentId",
+              amount: 1,
+              currencyCode: "EUR",
               status: .pending,
-              paymentFailureReason: nil,
-              checkoutOutcome: nil)
+              showSuccessCheckoutOnPendingPayment: true)
     }
 
-    static var paymentWithPendingStatusAndShowSuccessCheckoutOnPendingPayment: Response.Body.Payment {
+    static var checkoutComplete: Response.Body.Payment {
         .init(id: "id",
               paymentId: "paymentId",
               amount: 1,
               currencyCode: "EUR",
-              customer: nil,
-              customerId: nil,
-              dateStr: nil,
-              order: nil,
-              orderId: nil,
-              requiredAction: nil,
-              status: .pending,
-              paymentFailureReason: nil,
-              showSuccessCheckoutOnPendingPayment: true,
-              checkoutOutcome: nil)
-    }
-
-    static var paymentWithCompleteCheckoutOutcome: Response.Body.Payment {
-        .init(id: "id",
-              paymentId: "paymentId",
-              amount: 1,
-              currencyCode: "EUR",
-              customer: nil,
-              customerId: nil,
-              dateStr: nil,
-              order: nil,
-              orderId: nil,
-              requiredAction: nil,
               status: .success,
-              paymentFailureReason: nil,
-              checkoutOutcome: .checkoutComplete)
+              checkoutOutcome: .complete)
     }
 
-    static var paymentWithFailureCheckoutOutcome: Response.Body.Payment {
+    static var checkoutFailure: Response.Body.Payment {
         .init(id: "id",
               paymentId: "paymentId",
               amount: 1,
               currencyCode: "EUR",
-              customer: nil,
-              customerId: nil,
-              dateStr: nil,
-              order: nil,
-              orderId: nil,
-              requiredAction: nil,
               status: .failed,
-              paymentFailureReason: nil,
-              checkoutOutcome: .checkoutFailure)
+              checkoutOutcome: .failure)
     }
 
-    static var paymentWithDetermineFromPaymentStatusCheckoutOutcomeAndSuccessStatus: Response.Body.Payment {
+    static var fallbackWithSuccessStatus: Response.Body.Payment {
         .init(id: "id",
               paymentId: "paymentId",
               amount: 1,
               currencyCode: "EUR",
-              customer: nil,
-              customerId: nil,
-              dateStr: nil,
-              order: nil,
-              orderId: nil,
-              requiredAction: nil,
               status: .success,
-              paymentFailureReason: nil,
               checkoutOutcome: .determineFromPaymentStatus)
     }
 
-    static var paymentWithDetermineFromPaymentStatusCheckoutOutcomeAndFailedStatus: Response.Body.Payment {
+    static var fallbackWithFailedStatus: Response.Body.Payment {
         .init(id: "id",
               paymentId: "paymentId",
               amount: 1,
               currencyCode: "EUR",
-              customer: nil,
-              customerId: nil,
-              dateStr: nil,
-              order: nil,
-              orderId: nil,
-              requiredAction: nil,
               status: .failed,
-              paymentFailureReason: nil,
               checkoutOutcome: .determineFromPaymentStatus)
     }
 
-    static var paymentWithDetermineFromPaymentStatusCheckoutOutcomeAndPendingStatus: Response.Body.Payment {
+    static var fallbackWithPendingStatus: Response.Body.Payment {
         .init(id: "id",
               paymentId: "paymentId",
               amount: 1,
               currencyCode: "EUR",
-              customer: nil,
-              customerId: nil,
-              dateStr: nil,
-              order: nil,
-              orderId: nil,
-              requiredAction: nil,
               status: .pending,
-              paymentFailureReason: nil,
               checkoutOutcome: .determineFromPaymentStatus)
     }
 
-    static var paymentWithDetermineFromPaymentStatusCheckoutOutcomeAndPendingStatusAndShowSuccessCheckoutOnPendingPayment: Response.Body.Payment {
+    static var fallbackWithPendingStatusWithShowSuccess: Response.Body.Payment {
         .init(id: "id",
               paymentId: "paymentId",
               amount: 1,
               currencyCode: "EUR",
-              customer: nil,
-              customerId: nil,
-              dateStr: nil,
-              order: nil,
-              orderId: nil,
-              requiredAction: nil,
               status: .pending,
-              paymentFailureReason: nil,
               showSuccessCheckoutOnPendingPayment: true,
               checkoutOutcome: .determineFromPaymentStatus)
     }
 }
 
-private extension Response.Body.Complete {
-    static var successResponse: APIResult<Response.Body.Complete> {
-        .success(.init())
-    }
-}
-
-private class MockCreateResumeAPI: PrimerAPIClientCreateResumePaymentProtocol {
+private final class MockCreateResumeAPI: PrimerAPIClientCreateResumePaymentProtocol {
     var resumeResponse: APIResult<Response.Body.Payment>?
     var createResponse: APIResult<Response.Body.Payment>?
     var completeResponse: APIResult<Response.Body.Complete>?
