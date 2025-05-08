@@ -172,6 +172,7 @@ final class ACHMocks {
             orderId: nil,
             requiredAction: nil,
             status: status,
-            paymentFailureReason: nil)
+            paymentFailureReason: nil,
+            checkoutOutcome: nil)
     }
 }

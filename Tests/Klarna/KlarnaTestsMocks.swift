@@ -226,7 +226,8 @@ class KlarnaTestsMocks {
                                            name: .checkout,
                                            description: "description"),
                      status: .success,
-                     paymentFailureReason: nil)
+                     paymentFailureReason: nil,
+                     checkoutOutcome: nil)
     }
 }
 
