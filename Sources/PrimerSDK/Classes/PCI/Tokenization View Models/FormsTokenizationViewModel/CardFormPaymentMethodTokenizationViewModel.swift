@@ -669,13 +669,16 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     func configurePayButton(amount: Int) {
         DispatchQueue.main.async {
+            // Only in a checkout intent and when currency is set
             guard PrimerInternal.shared.intent == .checkout,
                   let currency = AppState.current.currency else {
                 return
             }
 
-            var title = Strings.PaymentButton.pay
-            title += " \(amount.toCurrencyString(currency: currency))"
+            let title = PrimerSettings.current.uiOptions.cardFormUIOptions?.payButtonAddNewCard == true
+                ? Strings.VaultPaymentMethodViewContent.addCard
+                : "\(Strings.PaymentButton.pay) \(amount.toCurrencyString(currency: currency))"
+
             self.uiModule.submitButton?.setTitle(title, for: .normal)
         }
     }

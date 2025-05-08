@@ -5,6 +5,7 @@
 //  Created by Boris on 15.9.23..
 //
 
+// swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 
 import UIKit
@@ -13,30 +14,30 @@ import PrimerNolPaySDK
 #endif
 
 public class NolPayLinkedCardsComponent {
-
     #if canImport(PrimerNolPaySDK)
     var nolPay: PrimerNolPayProtocol?
     #endif
     public weak var errorDelegate: PrimerHeadlessErrorableDelegate?
     public weak var validationDelegate: PrimerHeadlessValidatableDelegate?
-    var mobileNumber: String?
-    var countryCode: String?
-    var phoneMetadataService: NolPayPhoneMetadataProviding?
 
-    let apiClient: PrimerAPIClientProtocol
+    private var mobileNumber: String?
+    private var countryCode: String?
+
+    private let apiClient: PrimerAPIClientProtocol
+    private let phoneMetadataService: NolPayPhoneMetadataServiceProtocol
 
     public convenience init() {
-        self.init(apiClient: PrimerAPIClient())
+        self.init(apiClient: PrimerAPIClient(), phoneMetadataService: NolPayPhoneMetadataService())
     }
 
-    init(apiClient: PrimerAPIClientProtocol) {
+    init(apiClient: PrimerAPIClientProtocol, phoneMetadataService: NolPayPhoneMetadataServiceProtocol) {
         self.apiClient = apiClient
+        self.phoneMetadataService = phoneMetadataService
     }
 
     public func getLinkedCardsFor(mobileNumber: String, completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
-
         let dispatchGroup = DispatchGroup()
-        dispatchGroup.enter()  // Enter the dispatch group
+        dispatchGroup.enter() // Enter the dispatch group
 
         // Start the initial setup
         start { [weak self] result in
@@ -60,18 +61,19 @@ public class NolPayLinkedCardsComponent {
         }
     }
 
-    private func start(completion: @escaping (Result<Void, PrimerError>) -> Void) {
+    func start(completion: @escaping (Result<Void, PrimerError>) -> Void) {
         guard let nolPaymentMethodOption = PrimerAPIConfiguration.current?.paymentMethods?
-                .first(where: { $0.internalPaymentMethodType == .nolPay})?
+                .first(where: { $0.internalPaymentMethodType == .nolPay })?
                 .options as? MerchantOptions,
-              let appId = nolPaymentMethodOption.appId
+              let nolPayAppId = nolPaymentMethodOption.appId
         else {
-            let error = PrimerError.invalidValue(key: "Nol AppID",
+            let error = PrimerError.invalidValue(key: "nolPayAppId",
                                                  value: nil,
                                                  userInfo: .errorUserInfoDictionary(),
                                                  diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: error)
-            self.errorDelegate?.didReceiveError(error: error)
+            errorDelegate?.didReceiveError(error: error)
+            completion(.failure(error))
             return
         }
 
@@ -79,24 +81,25 @@ public class NolPayLinkedCardsComponent {
             let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                      diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
+            errorDelegate?.didReceiveError(error: err)
+            completion(.failure(err))
             return
         }
 
         let isSandbox = clientToken.env != "PRODUCTION"
         var isDebug = false
         #if DEBUG
-        isDebug =  PrimerLogging.shared.logger.logLevel == .debug
+        isDebug = PrimerLogging.shared.logger.logLevel == .debug
         #endif
 
         #if canImport(PrimerNolPaySDK)
 
-        guard nolPay == nil
-        else {
+        guard nolPay == nil else {
             completion(.success(()))
             return
         }
 
-        nolPay = PrimerNolPay(appId: appId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
+        nolPay = PrimerNolPay(appId: nolPayAppId, isDebug: isDebug, isSandbox: isSandbox) { sdkId, deviceId in
 
             let requestBody = await Request.Body.NolPay.NolPaySecretDataRequest(nolSdkId: deviceId,
                                                                                 nolAppId: sdkId,
@@ -119,64 +122,62 @@ public class NolPayLinkedCardsComponent {
                 }
             }
         }
-        phoneMetadataService = phoneMetadataService ?? NolPayPhoneMetadataService()
         #endif
-
     }
 
-    private func continueWithLinkedCardsFetch(mobileNumber: String,
-                                              completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
-
+    func continueWithLinkedCardsFetch(mobileNumber: String,
+                                      completion: @escaping (Result<[PrimerNolPaymentCard], PrimerError>) -> Void) {
         let sdkEvent = Analytics.Event.sdk(
             name: NolPayAnalyticsConstants.linkedCardsGetCardsMethod,
-            params: [ "category": "NOL_PAY" ]
+            params: ["category": "NOL_PAY"]
         )
         Analytics.Service.record(events: [sdkEvent])
         #if canImport(PrimerNolPaySDK)
 
-        guard let nolPay = nolPay else {
-            let error = PrimerError.nolError(code: "unknown",
-                                             message: "error.description",
-                                             userInfo: .errorUserInfoDictionary(),
-                                             diagnosticsId: UUID().uuidString)
-            self.errorDelegate?.didReceiveError(error: error)
+        guard let nolPay else {
+            let error = PrimerError.nolSdkInitError(
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            errorDelegate?.didReceiveError(error: error)
             ErrorHandler.handle(error: error)
             completion(.failure(error))
             return
         }
+
         #endif
 
-        phoneMetadataService?.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
+        phoneMetadataService.getPhoneMetadata(mobileNumber: mobileNumber) { [weak self] result in
+            guard let self else { return }
             switch result {
-
-            case let .success((validationStatus, countryCode, mobileNumber)):
+            case .success((let validationStatus, let countryCode, let mobileNumber)):
                 switch validationStatus {
-
                 case .valid:
 
-                    guard let parsedMobileNumber = mobileNumber else {
+                    guard let mobileNumber else {
                         let error = PrimerError.invalidValue(key: "mobileNumber",
                                                              value: nil,
                                                              userInfo: .errorUserInfoDictionary(),
                                                              diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: error)
-                        self?.errorDelegate?.didReceiveError(error: error)
+                        self.errorDelegate?.didReceiveError(error: error)
+                        completion(.failure(error))
                         return
                     }
 
-                    guard let countryCode = countryCode else {
+                    guard let countryCode else {
                         let error = PrimerError.invalidValue(key: "countryCode",
                                                              value: nil,
                                                              userInfo: .errorUserInfoDictionary(),
                                                              diagnosticsId: UUID().uuidString)
                         ErrorHandler.handle(error: error)
-                        self?.errorDelegate?.didReceiveError(error: error)
+                        self.errorDelegate?.didReceiveError(error: error)
+                        completion(.failure(error))
                         return
                     }
                     #if canImport(PrimerNolPaySDK)
-                    nolPay.getAvailableCards(for: parsedMobileNumber, with: countryCode) { result in
+                    nolPay.getAvailableCards(for: mobileNumber, with: countryCode) { result in
                         switch result {
-
                         case .success(let cards):
                             completion(.success(PrimerNolPaymentCard.makeFrom(arrayOf: cards)))
                         case .failure(let error):
@@ -184,7 +185,7 @@ public class NolPayLinkedCardsComponent {
                                                              message: error.description,
                                                              userInfo: .errorUserInfoDictionary(),
                                                              diagnosticsId: UUID().uuidString)
-                            self?.errorDelegate?.didReceiveError(error: error)
+                            self.errorDelegate?.didReceiveError(error: error)
                             ErrorHandler.handle(error: error)
                             completion(.failure(error))
                         }
@@ -192,13 +193,22 @@ public class NolPayLinkedCardsComponent {
                     #endif
 
                 case .invalid(errors: let validationErrors):
-                    self?.validationDelegate?.didUpdate(validationStatus: .invalid(errors: validationErrors), for: nil)
+                    self.validationDelegate?.didUpdate(validationStatus: .invalid(errors: validationErrors), for: nil)
+
+                    let err = PrimerError.underlyingErrors(errors: validationErrors,
+                                                           userInfo: .errorUserInfoDictionary(),
+                                                           diagnosticsId: UUID().uuidString)
+                    completion(.failure(err))
+
                 default: break
                 }
             case .failure(let error):
-                self?.errorDelegate?.didReceiveError(error: error)
+                self.errorDelegate?.didReceiveError(error: error)
+                completion(.failure(error))
             }
         }
     }
 }
+
+// swiftlint:enable cyclomatic_complexity
 // swiftlint:enable function_body_length

@@ -72,6 +72,7 @@ public enum PrimerError: PrimerErrorProtocol {
     case applePayTimedOut(userInfo: [String: String]?, diagnosticsId: String)
     case invalidVaultedPaymentMethodId(vaultedPaymentMethodId: String, userInfo: [String: String]?, diagnosticsId: String)
     case nolError(code: String?, message: String?, userInfo: [String: String]?, diagnosticsId: String)
+    case nolSdkInitError(userInfo: [String: String]?, diagnosticsId: String)
     case klarnaError(message: String?, userInfo: [String: String]?, diagnosticsId: String)
     case klarnaUserNotApproved(userInfo: [String: String]?, diagnosticsId: String)
     case stripeError(key: String, message: String?, userInfo: [String: String]?, diagnosticsId: String)
@@ -132,6 +133,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "invalid-vaulted-payment-method-id"
         case .nolError:
             return "nol-pay-sdk-error"
+        case .nolSdkInitError:
+            return "nol-pay-sdk-init-error"
         case .klarnaError:
             return "klarna-sdk-error"
         case .klarnaUserNotApproved:
@@ -210,6 +213,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return diagnosticsId
         case .nolError(_, _, _, let diagnosticsId):
             return diagnosticsId
+        case .nolSdkInitError(_, let diagnosticsId):
+            return diagnosticsId
         case .klarnaError(_, _, let diagnosticsId):
             return diagnosticsId
         case .klarnaUserNotApproved(_, let diagnosticsId):
@@ -275,6 +280,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "The vaulted payment method with id '\(vaultedPaymentMethodId)' doesn't exist."
         case .nolError(let code, let message, _, _):
             return "Nol SDK encountered an error: \(String(describing: code)), \(String(describing: message))"
+        case .nolSdkInitError:
+            return "Nol SDK initialization error"
         case .klarnaError(let message, _, _):
             return "Klarna wrapper SDK encountered an error: \(String(describing: message))"
         case .klarnaUserNotApproved:
@@ -322,6 +329,7 @@ public enum PrimerError: PrimerErrorProtocol {
              .failedToResumePayment(_, _, let userInfo, _),
              .invalidVaultedPaymentMethodId(_, let userInfo, _),
              .nolError(_, _, let userInfo, _),
+             .nolSdkInitError(let userInfo, _),
              .klarnaError(_, let userInfo, _),
              .klarnaUserNotApproved(let userInfo, _),
              .stripeError(_, _, let userInfo, _),
@@ -413,6 +421,8 @@ public enum PrimerError: PrimerErrorProtocol {
             return "Please provide the id of one of the vaulted payment methods that have been returned by the 'fetchVaultedPaymentMethods' function."
         case .nolError:
             return nil
+        case .nolSdkInitError:
+            return nil
         case .klarnaError:
             return nil
         case .klarnaUserNotApproved:
@@ -456,7 +466,8 @@ public enum PrimerError: PrimerErrorProtocol {
         case .applePayTimedOut,
              .unableToMakePaymentsOnProvidedNetworks:
             return PrimerPaymentMethodType.applePay.rawValue
-        case .nolError:
+        case .nolError,
+             .nolSdkInitError:
             return PrimerPaymentMethodType.nolPay.rawValue
         default: return nil
         }

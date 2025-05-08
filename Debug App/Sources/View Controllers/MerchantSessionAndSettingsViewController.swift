@@ -71,6 +71,8 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var closeButtonDismissalSwitch: UISwitch!
     @IBOutlet weak var disableInitScreenSwitch: UISwitch!
     @IBOutlet weak var enableCVVRecaptureFlowSwitch: UISwitch!
+    @IBOutlet weak var addNewCardSwitch: UISwitch!
+
 
     // MARK: Apple Pay Inputs
     @IBOutlet weak var applePayCaptureBillingAddressSwitch: UISwitch!
@@ -869,6 +871,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 isSuccessScreenEnabled: !disableSuccessScreenSwitch.isOn,
                 isErrorScreenEnabled: !disableErrorScreenSwitch.isOn,
                 dismissalMechanism: selectedDismissalMechanisms,
+                cardFormUIOptions: PrimerCardFormUIOptions(payButtonAddNewCard: addNewCardSwitch.isOn),
                 theme: applyThemingSwitch.isOn ? CheckoutTheme.tropical : nil)
         }
 

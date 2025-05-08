@@ -9,8 +9,6 @@
 
 import PassKit
 
-private let paymentOptionsSettings = PrimerSettings.current.paymentMethodOptions.cardPaymentOptions
-
 final class ApplePayUtils {
 
     static func supportedPKPaymentNetworks(cardNetworks: [CardNetwork] = .allowedCardNetworks) -> [PKPaymentNetwork] {
