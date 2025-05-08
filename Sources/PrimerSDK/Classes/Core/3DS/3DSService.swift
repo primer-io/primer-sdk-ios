@@ -33,9 +33,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
     private var threeDSSDKWindow: UIWindow?
     private var initProtocolVersion: ThreeDS.ProtocolVersion?
-    private var continueErrorInfo: ThreeDS.ContinueInfo?
     private var resumePaymentToken: String?
-    private var demo3DSWindow: UIWindow?
 
     #if canImport(Primer3DS)
     private var primer3DS: Primer3DS!
@@ -562,11 +560,6 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
 }
 
 #if canImport(Primer3DS)
-internal class MockPrimer3DSCompletion: Primer3DSCompletion {
-    var sdkTransactionId: String = "sdk-transaction-id"
-    var transactionStatus: String = "transactionStatus"
-}
-
 private extension ThreeDSService {
     func fetchToken() throws -> DecodedJWTToken {
         guard let token = PrimerAPIConfigurationModule.decodedJWTToken else {

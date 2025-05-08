@@ -1,7 +1,7 @@
 import UIKit
 
 public enum PrimerTextFieldTheme {
-    case outlined, underlined, doublelined
+    case underlined
 }
 
 public struct CornerRadiusTheme {
@@ -101,42 +101,6 @@ public protocol ColorTheme {
     var disabled1: UIColor { get }
     var error1: UIColor { get }
     var success1: UIColor { get } // success message icon and navbar
-}
-
-@available(iOS 13.0, *)
-struct DefaultColorTheme: ColorTheme {
-    var text1: UIColor { return getColor(light: lightTheme.text1, dark: darkTheme.text1) }
-    var text2: UIColor { return getColor(light: lightTheme.text2, dark: darkTheme.text2) }
-    var text3: UIColor { return getColor(light: lightTheme.text3, dark: darkTheme.text3) }
-    var secondaryText1: UIColor { return getColor(light: lightTheme.secondaryText1, dark: darkTheme.secondaryText1) }
-    var main1: UIColor { return getColor(light: lightTheme.main1, dark: darkTheme.main1) }
-    var main2: UIColor { return getColor(light: lightTheme.main2, dark: darkTheme.main2) }
-    var tint1: UIColor { return getColor(light: lightTheme.tint1, dark: darkTheme.tint1) }
-    var neutral1: UIColor { return getColor(light: lightTheme.neutral1, dark: darkTheme.neutral1) }
-    var disabled1: UIColor { return getColor(light: lightTheme.disabled1, dark: darkTheme.disabled1) }
-    var error1: UIColor { return getColor(light: lightTheme.error1, dark: darkTheme.error1) }
-    var success1: UIColor { return getColor(light: lightTheme.success1, dark: darkTheme.success1) }
-
-    let lightTheme: ColorTheme
-    let darkTheme: ColorTheme
-
-    init(
-        lightTheme: ColorTheme,
-        darkTheme: ColorTheme
-    ) {
-        self.lightTheme = lightTheme
-        self.darkTheme = darkTheme
-    }
-
-    func getColor(light: UIColor, dark: UIColor) -> UIColor {
-        return UIColor { (UITraitCollection: UITraitCollection) -> UIColor in
-            if UITraitCollection.userInterfaceStyle == .dark {
-                return dark
-            } else {
-                return light
-            }
-        }
-    }
 }
 
 public struct PrimerDefaultTheme: ColorTheme {
