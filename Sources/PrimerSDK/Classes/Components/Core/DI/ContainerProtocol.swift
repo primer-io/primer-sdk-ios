@@ -8,7 +8,7 @@
 import Foundation
 
 /// Protocol defining the core functionality of a dependency injection container
-protocol ContainerProtocol: AnyObject, Sendable {
+@preconcurrency protocol ContainerProtocol: AnyObject, Sendable {
     /// Register a dependency with an optional name and specific retain policy
     /// - Parameters:
     ///   - type: The type to register
@@ -69,7 +69,7 @@ protocol ContainerProtocol: AnyObject, Sendable {
 }
 
 /// Protocol for registering dependencies in a chainable way
-protocol ContainerRegistrationBuilder {
+@preconcurrency protocol ContainerRegistrationBuilder {
     /// Register a dependency with an optional name and specific retain policy
     /// - Parameters:
     ///   - type: The type to register

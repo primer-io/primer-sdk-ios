@@ -79,7 +79,13 @@ actor Container: LogReporter {
 // MARK: - ContainerProtocol Implementation
 
 extension Container: ContainerProtocol {
-    func register<T>(type: T.Type, name: String? = nil, with policy: ContainerRetainPolicy, builder: @escaping (ContainerProtocol) async throws -> T) {
+    nonisolated func register<T>(type: T.Type, name: String? = nil, with policy: ContainerRetainPolicy, builder: @escaping (ContainerProtocol) async throws -> T) {
+        Task {
+            await _register(type: type, name: name, with: policy, builder: builder)
+        }
+    }
+    
+    private func _register<T>(type: T.Type, name: String? = nil, with policy: ContainerRetainPolicy, builder: @escaping (ContainerProtocol) async throws -> T) {
         // Create a key for the registration
         let key = typeKey(for: type, name: name)
         
@@ -263,7 +269,13 @@ extension Container: ContainerProtocol {
         return result
     }
     
-    func scope(_ scopeId: String) throws -> DependencyScope {
+    nonisolated func scope(_ scopeId: String) throws -> DependencyScope {
+        return Task { 
+            try await _scope(scopeId)
+        }.result.get()
+    }
+    
+    private func _scope(_ scopeId: String) throws -> DependencyScope {
         try checkTermination()
         
         if let scope = scopes[scopeId] {
@@ -276,7 +288,13 @@ extension Container: ContainerProtocol {
         return newScope
     }
     
-    func createScope(_ scopeId: String, parent parentScopeId: String) throws -> DependencyScope {
+    nonisolated func createScope(_ scopeId: String, parent parentScopeId: String) throws -> DependencyScope {
+        return Task {
+            try await _createScope(scopeId, parent: parentScopeId)
+        }.result.get()
+    }
+    
+    private func _createScope(_ scopeId: String, parent parentScopeId: String) throws -> DependencyScope {
         try checkTermination()
         
         guard let parentScope = scopes[parentScopeId] else {
@@ -290,14 +308,18 @@ extension Container: ContainerProtocol {
         return newScope
     }
     
-    func releaseScope(_ scopeId: String) {
+    nonisolated func releaseScope(_ scopeId: String) {
+        Task {
+            await _releaseScope(scopeId)
+        }
+    }
+    
+    private func _releaseScope(_ scopeId: String) {
         // Don't release the application scope
         guard scopeId != DependencyScope.application.id else {
-            logger.warn(message: "Cannot release the application scope")
             return
         }
         
-        logger.info(message: "Releasing scope: \(scopeId)")
         scopes[scopeId] = nil
         scopedInstances[scopeId] = nil
     }
@@ -362,16 +384,28 @@ extension Container: ContainerProtocol {
         return issues
     }
     
-    func registerFactory<F: Factory>(_ factory: F) where F: Sendable {
+    nonisolated func registerFactory<F: Factory>(_ factory: F) where F: Sendable {
+        Task {
+            await _registerFactory(factory)
+        }
+    }
+    
+    private func _registerFactory<F: Factory>(_ factory: F) where F: Sendable {
         logger.debug(message: "Registering factory: \(F.self)")
-        register(type: F.self) { _ in
+        _register(type: F.self) { _ in
             return factory
         }
     }
     
-    func registerAsyncFactory<F: AsyncFactory>(_ factory: F) where F: Sendable {
+    nonisolated func registerAsyncFactory<F: AsyncFactory>(_ factory: F) where F: Sendable {
+        Task {
+            await _registerAsyncFactory(factory)
+        }
+    }
+    
+    private func _registerAsyncFactory<F: AsyncFactory>(_ factory: F) where F: Sendable {
         logger.debug(message: "Registering async factory: \(F.self)")
-        register(type: F.self) { _ in
+        _register(type: F.self) { _ in
             return factory
         }
     }
@@ -381,9 +415,9 @@ extension Container: ContainerProtocol {
 
 extension Container: ContainerRegistrationBuilder {
     @discardableResult
-    func register<T>(type: T.Type, name: String?, with policy: ContainerRetainPolicy, builder: @escaping (ContainerProtocol) async throws -> T) -> Self {
+    nonisolated func register<T>(type: T.Type, name: String?, with policy: ContainerRetainPolicy, builder: @escaping (ContainerProtocol) async throws -> T) -> Self {
         Task {
-            await register(type: type, name: name, with: policy, builder: builder)
+            await _register(type: type, name: name, with: policy, builder: builder)
         }
         return self
     }
