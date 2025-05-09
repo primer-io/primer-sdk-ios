@@ -229,6 +229,14 @@ class MockPayPalService: PayPalServiceProtocol {
         }
     }
 
+    func startOrderSession() async throws -> Response.Body.PayPal.CreateOrder {
+        guard let result = onStartOrderSession?() else {
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        }
+
+        return result
+    }
+
     // MARK: startBillingAgreementSession
 
     var onStartBillingAgreementSession: (() -> String)?
@@ -239,6 +247,14 @@ class MockPayPalService: PayPalServiceProtocol {
         } else {
             completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
+    }
+
+    func startBillingAgreementSession() async throws -> String {
+        guard let result = onStartBillingAgreementSession?() else {
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        }
+
+        return result
     }
 
     // MARK: confirmBillingAgreement
@@ -253,6 +269,14 @@ class MockPayPalService: PayPalServiceProtocol {
         }
     }
 
+    func confirmBillingAgreement() async throws -> Response.Body.PayPal.ConfirmBillingAgreement {
+        guard let result = onConfirmBillingAgreement?() else {
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        }
+
+        return result
+    }
+
     // MARK: fetchPayPalExternalPayerInfo
 
     var onFetchPayPalExternalPayerInfo: ((String) -> Response.Body.PayPal.PayerInfo)?
@@ -263,6 +287,14 @@ class MockPayPalService: PayPalServiceProtocol {
         } else {
             completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
+    }
+
+    func fetchPayPalExternalPayerInfo(orderId: String) async throws -> Response.Body.PayPal.PayerInfo {
+        guard let result = onFetchPayPalExternalPayerInfo?(orderId) else {
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        }
+
+        return result
     }
 }
 

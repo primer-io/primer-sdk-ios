@@ -5,13 +5,16 @@ import Foundation
 
 internal protocol PayPalServiceProtocol {
     func startOrderSession(_ completion: @escaping (Result<Response.Body.PayPal.CreateOrder, Error>) -> Void)
+    func startOrderSession() async throws -> Response.Body.PayPal.CreateOrder
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void)
+    func startBillingAgreementSession() async throws -> String
     func confirmBillingAgreement(_ completion: @escaping (Result<Response.Body.PayPal.ConfirmBillingAgreement, Error>) -> Void)
+    func confirmBillingAgreement() async throws -> Response.Body.PayPal.ConfirmBillingAgreement
     func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void)
+    func fetchPayPalExternalPayerInfo(orderId: String) async throws -> Response.Body.PayPal.PayerInfo
 }
 
 internal class PayPalService: PayPalServiceProtocol {
-
     private var paypalTokenId: String?
 
     let apiClient: PrimerAPIClientPayPalProtocol
@@ -48,7 +51,8 @@ internal class PayPalService: PayPalServiceProtocol {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
             let err = PrimerError.invalidClientToken(
                 userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
+                diagnosticsId: UUID().uuidString
+            )
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -60,7 +64,8 @@ internal class PayPalService: PayPalServiceProtocol {
                 key: "configuration.paypal.id",
                 value: apiConfig?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue),
                 userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
+                diagnosticsId: UUID().uuidString
+            )
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -71,7 +76,8 @@ internal class PayPalService: PayPalServiceProtocol {
                 key: "amount",
                 value: nil,
                 userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
+                diagnosticsId: UUID().uuidString
+            )
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -82,7 +88,8 @@ internal class PayPalService: PayPalServiceProtocol {
                 key: "currency",
                 value: nil,
                 userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
+                diagnosticsId: UUID().uuidString
+            )
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -91,7 +98,7 @@ internal class PayPalService: PayPalServiceProtocol {
         var scheme: String
         do {
             scheme = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
-        } catch let error {
+        } catch {
             completion(.failure(error))
             return
         }
@@ -118,6 +125,19 @@ internal class PayPalService: PayPalServiceProtocol {
         }
     }
 
+    func startOrderSession() async throws -> Response.Body.PayPal.CreateOrder {
+        return try await withCheckedThrowingContinuation { continuation in
+            startOrderSession { result in
+                switch result {
+                case .success(let order):
+                    continuation.resume(returning: order)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void) {
         let state: AppStateProtocol = AppState.current
 
@@ -134,7 +154,8 @@ internal class PayPalService: PayPalServiceProtocol {
                 key: "configuration.paypal.id",
                 value: state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue),
                 userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
+                diagnosticsId: UUID().uuidString
+            )
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -143,7 +164,7 @@ internal class PayPalService: PayPalServiceProtocol {
         var scheme: String
         do {
             scheme = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
-        } catch let error {
+        } catch {
             completion(.failure(error))
             return
         }
@@ -155,7 +176,7 @@ internal class PayPalService: PayPalServiceProtocol {
         )
 
         apiClient.createPayPalBillingAgreementSession(clientToken: decodedJWTToken,
-                                                      payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
+                                                      payPalCreateBillingAgreementRequest: body) { [weak self] result in
             switch result {
             case .failure(let err):
                 let containerErr = PrimerError.failedToCreateSession(error: err,
@@ -166,6 +187,19 @@ internal class PayPalService: PayPalServiceProtocol {
             case .success(let config):
                 self?.paypalTokenId = config.tokenId
                 completion(.success(config.approvalUrl))
+            }
+        }
+    }
+
+    func startBillingAgreementSession() async throws -> String {
+        return try await withCheckedThrowingContinuation { continuation in
+            startBillingAgreementSession { result in
+                switch result {
+                case .success(let url):
+                    continuation.resume(returning: url)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
             }
         }
     }
@@ -186,18 +220,20 @@ internal class PayPalService: PayPalServiceProtocol {
                 key: "configuration.paypal.id",
                 value: state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue),
                 userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
+                diagnosticsId: UUID().uuidString
+            )
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
         }
 
-        guard let tokenId = self.paypalTokenId else {
+        guard let tokenId = paypalTokenId else {
             let err = PrimerError.invalidValue(
                 key: "paypalTokenId",
-                value: self.paypalTokenId,
+                value: paypalTokenId,
                 userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
+                diagnosticsId: UUID().uuidString
+            )
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -220,6 +256,19 @@ internal class PayPalService: PayPalServiceProtocol {
         }
     }
 
+    func confirmBillingAgreement() async throws -> Response.Body.PayPal.ConfirmBillingAgreement {
+        return try await withCheckedThrowingContinuation { continuation in
+            confirmBillingAgreement { result in
+                switch result {
+                case .success(let order):
+                    continuation.resume(returning: order)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
     func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void) {
         let state: AppStateProtocol = AppState.current
 
@@ -236,7 +285,8 @@ internal class PayPalService: PayPalServiceProtocol {
                 key: "configuration.paypal.id",
                 value: state.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue),
                 userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
+                diagnosticsId: UUID().uuidString
+            )
             ErrorHandler.handle(error: err)
             completion(.failure(err))
             return
@@ -244,7 +294,8 @@ internal class PayPalService: PayPalServiceProtocol {
 
         apiClient.fetchPayPalExternalPayerInfo(
             clientToken: decodedJWTToken,
-            payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo(paymentMethodConfigId: configId, orderId: orderId)) { result in
+            payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo(paymentMethodConfigId: configId, orderId: orderId)
+        ) { result in
             switch result {
             case .success(let response):
                 completion(.success(response))
@@ -253,6 +304,20 @@ internal class PayPalService: PayPalServiceProtocol {
             }
         }
     }
+
+    func fetchPayPalExternalPayerInfo(orderId: String) async throws -> Response.Body.PayPal.PayerInfo {
+        return try await withCheckedThrowingContinuation { continuation in
+            fetchPayPalExternalPayerInfo(orderId: orderId) { result in
+                switch result {
+                case .success(let payerInfo):
+                    continuation.resume(returning: payerInfo)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
 }
+
 // swiftlint:enable function_body_length
 // swiftlint:enable type_body_length
