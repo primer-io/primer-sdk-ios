@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal enum InternalError: PrimerErrorProtocol {
+enum InternalError: PrimerErrorProtocol {
 
     case failedToDecode(message: String?, userInfo: [String: String]?, diagnosticsId: String?)
     case invalidUrl(url: String?, userInfo: [String: String]?, diagnosticsId: String?)
@@ -76,27 +76,27 @@ internal enum InternalError: PrimerErrorProtocol {
     var errorDescription: String? {
         switch self {
         case .failedToDecode(let message, _, _):
-            return "[\(errorId)] Failed to decode\(message == nil ? "" : " (\(message!)") (diagnosticsId: \(self.diagnosticsId))"
+            return "[\(errorId)] Failed to decode\(message == nil ? "" : " (\(message!)") (diagnosticsId: \(diagnosticsId))"
         case .invalidUrl(let url, _, _):
-            return "[\(errorId)] Invalid URL \(url ?? "nil") (diagnosticsId: \(self.diagnosticsId))"
+            return "[\(errorId)] Invalid URL \(url ?? "nil") (diagnosticsId: \(diagnosticsId))"
         case .invalidValue(let key, let value, _, _):
-            return "[\(errorId)] Invalid value \(value ?? "nil") for key \(key) (diagnosticsId: \(self.diagnosticsId))"
+            return "[\(errorId)] Invalid value \(value ?? "nil") for key \(key) (diagnosticsId: \(diagnosticsId))"
         case .invalidResponse:
-            return "[\(errorId)] Invalid response received. Expected HTTP response. (diagnosticsId: \(self.diagnosticsId)"
+            return "[\(errorId)] Invalid response received. Expected HTTP response. (diagnosticsId: \(diagnosticsId)"
         case .noData:
             return "[\(errorId)] No data"
         case .serverError(let status, let response, _, _):
-            var resStr: String = "nil"
+            var resStr = "nil"
             if let response = response,
                let resData = try? JSONEncoder().encode(response),
                let str = resData.prettyPrintedJSONString as String? {
                 resStr = str
             }
-            return "[\(errorId)] Server error [\(status)] Response: \(resStr) (diagnosticsId: \(self.diagnosticsId))"
+            return "[\(errorId)] Server error [\(status)] Response: \(resStr) (diagnosticsId: \(diagnosticsId))"
         case .unauthorized(let url, _, _):
-            return "[\(errorId)] Unauthorized response for URL \(url) (diagnosticsId: \(self.diagnosticsId))"
+            return "[\(errorId)] Unauthorized response for URL \(url) (diagnosticsId: \(diagnosticsId))"
         case .underlyingErrors(let errors, _, _):
-            return "[\(errorId)] Multiple errors occured | Errors \(errors.combinedDescription) (diagnosticsId: \(self.diagnosticsId))"
+            return "[\(errorId)] Multiple errors occured | Errors \(errors.combinedDescription) (diagnosticsId: \(diagnosticsId))"
         case .failedToPerform3dsButShouldContinue:
             return "[\(errorId)] Failed to perform 3DS but should continue"
         case .failedToPerform3dsAndShouldBreak(let error):
@@ -118,8 +118,8 @@ internal enum InternalError: PrimerErrorProtocol {
              .serverError(_, _, let userInfo, _),
              .unauthorized(_, let userInfo, _),
              .underlyingErrors(_, let userInfo, _):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-            tmpUserInfo["diagnosticsId"] = self.diagnosticsId
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { _, new in new }
+            tmpUserInfo["diagnosticsId"] = diagnosticsId
         case .failedToPerform3dsButShouldContinue,
              .failedToPerform3dsAndShouldBreak,
              .noNeedToPerform3ds:
@@ -140,7 +140,7 @@ internal enum InternalError: PrimerErrorProtocol {
         case .failedToPerform3dsAndShouldBreak(let error):
             return error.primerError
         default:
-            return PrimerError.unknown(userInfo: self.errorUserInfo as? [String: String], diagnosticsId: self.diagnosticsId)
+            return PrimerError.unknown(userInfo: errorUserInfo as? [String: String], diagnosticsId: diagnosticsId)
         }
     }
 

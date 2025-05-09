@@ -15,7 +15,7 @@ public enum PrimerPaymentMethodManagerCategory: String {
     case stripeAch = "STRIPE_ACH"
 }
 
-internal protocol PrimerPaymentMethodManager {
+protocol PrimerPaymentMethodManager {
 
     var paymentMethodType: String { get }
 

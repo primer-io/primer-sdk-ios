@@ -9,10 +9,10 @@ import UIKit
 
 class PrimerResultComponentView: PrimerView {
 
-    private(set) internal var verticalStackView = UIStackView()
-    private(set) internal var imageView: UIImageView?
-    private(set) internal var message: String?
-    private(set) internal var loadingIndicator: UIActivityIndicatorView?
+    private(set) var verticalStackView = UIStackView()
+    private(set) var imageView: UIImageView?
+    private(set) var message: String?
+    private(set) var loadingIndicator: UIActivityIndicatorView?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -63,7 +63,7 @@ class PrimerResultComponentView: PrimerView {
         self.imageView = imageView
         self.message = message
         self.loadingIndicator = loadingIndicator
-        self.initialize()
+        initialize()
     }
 
 }

@@ -12,7 +12,7 @@
 
 import UIKit
 
-internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
+class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 
     var savedCardView: CardButton!
     private var titleLabel: UILabel!
@@ -244,7 +244,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             }
         }
 
-        (self.parent as? PrimerContainerViewController)?.layoutContainerViewControllerIfNeeded {
+        (parent as? PrimerContainerViewController)?.layoutContainerViewControllerIfNeeded {
             self.verticalStackView.layoutIfNeeded()
         }
 
@@ -271,7 +271,7 @@ internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         let vpivc = VaultedPaymentInstrumentsViewController()
         vpivc.delegate = self
         vpivc.view.translatesAutoresizingMaskIntoConstraints = false
-        vpivc.view.heightAnchor.constraint(equalToConstant: self.parent!.view.bounds.height).isActive = true
+        vpivc.view.heightAnchor.constraint(equalToConstant: parent!.view.bounds.height).isActive = true
         PrimerUIManager.primerRootViewController?.show(viewController: vpivc)
     }
 
@@ -370,11 +370,11 @@ extension PrimerUniversalCheckoutViewController {
             (self?.parent as? PrimerContainerViewController)?.scrollView.isScrollEnabled = isEnabled
             PrimerUIManager.primerRootViewController?.enableUserInteraction(isEnabled)
 
-            for stackView in (self?.verticalStackView.arrangedSubviews ?? []) {
+            for stackView in self?.verticalStackView.arrangedSubviews ?? [] {
                 stackView.alpha = stackView == self?.savedPaymentMethodStackView ? 1.0 : (isEnabled ? 1.0 : 0.5)
             }
 
-            for stackView in (self?.savedPaymentMethodStackView.arrangedSubviews ?? []) {
+            for stackView in self?.savedPaymentMethodStackView.arrangedSubviews ?? [] {
                 if let stackView = stackView as? UIStackView, !stackView.arrangedSubviews.filter({ $0 is PrimerButton }).isEmpty {
                     for ssv in stackView.arrangedSubviews {
                         if ssv is PrimerButton {

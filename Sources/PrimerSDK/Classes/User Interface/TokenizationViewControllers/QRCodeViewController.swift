@@ -7,13 +7,13 @@
 
 import UIKit
 
-internal class QRCodeViewController: PrimerFormViewController {
+class QRCodeViewController: PrimerFormViewController {
 
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
     private var viewModel: QRCodeTokenizationViewModel!
     private var amountLabel: UILabel! = UILabel()
-    internal private(set) var subtitle: String?
+    private(set) var subtitle: String?
 
     deinit {
         viewModel.cancel()
@@ -23,7 +23,7 @@ internal class QRCodeViewController: PrimerFormViewController {
     init(viewModel: QRCodeTokenizationViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = viewModel.uiModule.logo
+        titleImage = viewModel.uiModule.logo
     }
 
     required init?(coder: NSCoder) {
@@ -37,7 +37,7 @@ internal class QRCodeViewController: PrimerFormViewController {
             action: .view,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.viewModel.config.type,
+                paymentMethodType: viewModel.config.type,
                 url: nil),
             extra: nil,
             objectType: .view,

@@ -10,6 +10,6 @@ import UIKit
 extension UIScreen {
 
     static var isDarkModeEnabled: Bool {
-        return Self.main.traitCollection.userInterfaceStyle == .dark
+        return main.traitCollection.userInterfaceStyle == .dark
     }
 }

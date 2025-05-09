@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal extension Error {
+extension Error {
     var isNetworkError: Bool {
         let nsError = self as NSError
         return nsError.domain == NSURLErrorDomain &&

@@ -18,9 +18,9 @@ public struct PrimerLocaleData: Codable {
         self.regionCode = regionCode ?? Locale.current.regionCode
 
         if let regionCode = self.regionCode {
-            self.localeCode = "\(self.languageCode)-\(regionCode)"
+            localeCode = "\(self.languageCode)-\(regionCode)"
         } else {
-            self.localeCode = self.languageCode
+            localeCode = self.languageCode
         }
     }
 }

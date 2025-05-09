@@ -14,10 +14,10 @@ class PrimerCardFormViewController: PrimerFormViewController {
     private let formPaymentMethodTokenizationViewModel: CardFormPaymentMethodTokenizationViewModel
 
     init(navigationBarLogo: UIImage? = nil, viewModel: CardFormPaymentMethodTokenizationViewModel) {
-        self.formPaymentMethodTokenizationViewModel = viewModel
+        formPaymentMethodTokenizationViewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = navigationBarLogo
-        if self.titleImage == nil {
+        titleImage = navigationBarLogo
+        if titleImage == nil {
             title = Strings.PrimerCardFormView.title
         }
     }
@@ -33,7 +33,7 @@ class PrimerCardFormViewController: PrimerFormViewController {
             action: .view,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.formPaymentMethodTokenizationViewModel.config.type,
+                paymentMethodType: formPaymentMethodTokenizationViewModel.config.type,
                 url: nil),
             extra: nil,
             objectType: .view,

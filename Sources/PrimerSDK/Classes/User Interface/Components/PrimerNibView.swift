@@ -9,19 +9,19 @@ import UIKit
 
 public class PrimerNibView: UIView {
 
-    internal var view: UIView!
+    var view: UIView!
 
-    override internal init(frame: CGRect) {
+    override init(frame: CGRect) {
         super.init(frame: frame)
         xibSetup()
     }
 
-    required internal init?(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         xibSetup()
     }
 
-    internal func xibSetup() {
+    func xibSetup() {
         backgroundColor = UIColor.clear
         view = loadNib()
         // use bounds not frame or it'll be offset

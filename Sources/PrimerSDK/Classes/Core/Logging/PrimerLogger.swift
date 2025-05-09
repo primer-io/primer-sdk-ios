@@ -96,7 +96,7 @@ extension PrimerLogger {
                           metadata: PrimerLogMetadata) {
         // Currently we only send logs for debug builds to avoid transmission of PII / PCI data in production
         #if DEBUG
-        guard level.rawValue >= self.logLevel.rawValue else { return }
+        guard level.rawValue >= logLevel.rawValue else { return }
         log(level: level, message: message, userInfo: nil, metadata: metadata)
         #endif
     }
@@ -155,7 +155,7 @@ public class DefaultLogger: PrimerLogger {
         }
 
         let subsystem = Bundle.main.bundleIdentifier ?? "PrimerSDK"
-        let logger = Logger.init(subsystem: subsystem, category: category)
+        let logger = Logger(subsystem: subsystem, category: category)
         categoryLoggers[category] = logger
         return logger
     }

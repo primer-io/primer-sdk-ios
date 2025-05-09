@@ -53,9 +53,9 @@ extension Response.Body {
 extension Response.Body.Tokenization {
 
     public var icon: ImageName {
-        switch self.paymentInstrumentType {
+        switch paymentInstrumentType {
         case .paymentCard:
-            guard let network = self.paymentInstrumentData?.network else { return .genericCard }
+            guard let network = paymentInstrumentData?.network else { return .genericCard }
             switch network {
             case "Visa": return .visa
             case "Mastercard": return .masterCard
@@ -71,50 +71,50 @@ extension Response.Body.Tokenization {
     }
 
     var cardButtonViewModel: CardButtonViewModel? {
-        switch self.paymentInstrumentType {
+        switch paymentInstrumentType {
         case .paymentCard:
-            guard let ntwrk = self.paymentInstrumentData?.binData?.network else { return nil }
-            guard let last4 = self.paymentInstrumentData?.last4Digits else { return nil }
-            guard let expMonth = self.paymentInstrumentData?.expirationMonth else { return nil }
-            guard let expYear = self.paymentInstrumentData?.expirationYear else { return nil }
+            guard let ntwrk = paymentInstrumentData?.binData?.network else { return nil }
+            guard let last4 = paymentInstrumentData?.last4Digits else { return nil }
+            guard let expMonth = paymentInstrumentData?.expirationMonth else { return nil }
+            guard let expYear = paymentInstrumentData?.expirationYear else { return nil }
             return CardButtonViewModel(
                 network: ntwrk,
-                cardholder: self.paymentInstrumentData?.cardholderName ?? "",
+                cardholder: paymentInstrumentData?.cardholderName ?? "",
                 last4: "•••• \(last4)",
                 expiry: Strings.PrimerCardFormView.savedCardTitle + " \(expMonth) / \(expYear.suffix(2))",
-                imageName: self.icon,
-                paymentMethodType: self.paymentInstrumentType)
+                imageName: icon,
+                paymentMethodType: paymentInstrumentType)
         case .payPalBillingAgreement:
-            guard let cardholder = self.paymentInstrumentData?.externalPayerInfo?.email else { return nil }
+            guard let cardholder = paymentInstrumentData?.externalPayerInfo?.email else { return nil }
             return CardButtonViewModel(network: "PayPal",
                                        cardholder: cardholder,
                                        last4: "",
                                        expiry: "",
-                                       imageName: self.icon,
-                                       paymentMethodType: self.paymentInstrumentType)
+                                       imageName: icon,
+                                       paymentMethodType: paymentInstrumentType)
         case .goCardlessMandate:
             return CardButtonViewModel(network: "Bank account",
                                        cardholder: "",
                                        last4: "",
                                        expiry: "",
-                                       imageName: self.icon,
-                                       paymentMethodType: self.paymentInstrumentType)
+                                       imageName: icon,
+                                       paymentMethodType: paymentInstrumentType)
         case .klarnaCustomerToken:
             return CardButtonViewModel(
                 network: paymentInstrumentData?.sessionData?.billingAddress?.email ?? "Klarna Customer Token",
                 cardholder: "",
                 last4: "",
                 expiry: "",
-                imageName: self.icon,
-                paymentMethodType: self.paymentInstrumentType)
+                imageName: icon,
+                paymentMethodType: paymentInstrumentType)
         case .stripeAch:
             return CardButtonViewModel(
-                network: self.paymentInstrumentData?.bankName ?? "Bank account",
-                cardholder: "•••• \(self.paymentInstrumentData?.accountNumberLast4Digits ?? "")",
+                network: paymentInstrumentData?.bankName ?? "Bank account",
+                cardholder: "•••• \(paymentInstrumentData?.accountNumberLast4Digits ?? "")",
                 last4: "",
                 expiry: "",
-                imageName: self.icon,
-                paymentMethodType: self.paymentInstrumentType)
+                imageName: icon,
+                paymentMethodType: paymentInstrumentType)
         default:
             return nil
         }

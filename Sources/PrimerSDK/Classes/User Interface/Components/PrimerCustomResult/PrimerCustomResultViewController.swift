@@ -8,19 +8,19 @@
 import UIKit
 import SwiftUI
 
-internal class PrimerCustomResultViewController: PrimerViewController {
+class PrimerCustomResultViewController: PrimerViewController {
 
-    internal enum PaymentStatus {
+    enum PaymentStatus {
         case success, failed, cancelled
     }
 
-    private(set) internal var paymentStatusView: PrimerResultPaymentStatusView?
-    private(set) internal var paymentMethodType: PrimerPaymentMethodType
-    private(set) internal var paymentStatusViewModel: PrimerResultPaymentStatusViewModel
+    private(set) var paymentStatusView: PrimerResultPaymentStatusView?
+    private(set) var paymentMethodType: PrimerPaymentMethodType
+    private(set) var paymentStatusViewModel: PrimerResultPaymentStatusViewModel
 
     init(paymentMethodType: PrimerPaymentMethodType, error: PrimerError?) {
         self.paymentMethodType = paymentMethodType
-        self.paymentStatusViewModel = PrimerResultPaymentStatusViewModel(paymentMethodType: paymentMethodType, error: error)
+        paymentStatusViewModel = PrimerResultPaymentStatusViewModel(paymentMethodType: paymentMethodType, error: error)
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -46,14 +46,14 @@ internal class PrimerCustomResultViewController: PrimerViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if let parentVC = self.parent as? PrimerContainerViewController {
+        if let parentVC = parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = true
         }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let parentVC = self.parent as? PrimerContainerViewController {
+        if let parentVC = parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = false
         }
     }

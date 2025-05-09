@@ -14,7 +14,7 @@ extension FormPaymentMethodTokenizationViewModel {
     // MARK: Input view
 
     func makeInputViews() -> [Input] {
-        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type),
               inputPaymentMethodTypes.contains(paymentMethodType) else { return [] }
 
         switch paymentMethodType {
@@ -34,7 +34,7 @@ extension FormPaymentMethodTokenizationViewModel {
 
     func makeAccountInfoPaymentView() -> PrimerFormView? {
 
-        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type) else {
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type) else {
             return nil
         }
 
@@ -306,7 +306,7 @@ extension FormPaymentMethodTokenizationViewModel {
         //        copyToClipboardButton.addTarget(self, action: #selector(copyToClipboardTapped), for: .touchUpInside)
         //        entityStackView.addArrangedSubview(copyToClipboardButton)
 
-        self.uiModule.submitButton = nil
+        uiModule.submitButton = nil
 
         let views = [[completeYourPaymentLabel],
                      [expiresAtContainerStackView],
@@ -356,7 +356,7 @@ extension FormPaymentMethodTokenizationViewModel {
 
         UIPasteboard.general.string = PrimerAPIConfigurationModule.decodedJWTToken?.accountNumber
 
-        self.logger.debug(message: "📝📝📝📝 Copied: \(String(describing: UIPasteboard.general.string))")
+        logger.debug(message: "📝📝📝📝 Copied: \(String(describing: UIPasteboard.general.string))")
 
         DispatchQueue.main.async {
             sender.isSelected = true
@@ -377,7 +377,7 @@ extension FormPaymentMethodTokenizationViewModel {
                 self.uiManager.primerRootViewController?.enableUserInteraction(true)
             }
 
-            guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
+            guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type),
                   let message = needingExternalCompletionPaymentMethodDictionary
                     .first(where: { $0.key == paymentMethodType })?
                     .value
@@ -388,16 +388,16 @@ extension FormPaymentMethodTokenizationViewModel {
             let infoView = makePaymentPendingInfoView(message: message)
             let paymentPendingInfoView = PrimerPaymentPendingInfoViewController(formPaymentMethodTokenizationViewModel: self,
                                                                                 infoView: infoView)
-            self.uiManager.primerRootViewController?.show(viewController: paymentPendingInfoView)
+            uiManager.primerRootViewController?.show(viewController: paymentPendingInfoView)
             return Promise()
         }
 
-        if let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
+        if let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type),
            inputPaymentMethodTypes.contains(paymentMethodType) {
             return presentInputViewController()
         }
 
-        if let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
+        if let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type),
            voucherPaymentMethodTypes.contains(paymentMethodType) {
             return presentVoucherInfoConfirmationStepViewController()
         }
@@ -421,14 +421,14 @@ extension FormPaymentMethodTokenizationViewModel {
                                                            formPaymentMethodTokenizationViewModel: self,
                                                            shouldShareVoucherInfoWithText: voucherText)
         infoView = voucherInfoView
-        self.uiManager.primerRootViewController?.show(viewController: pcfvc)
+        uiManager.primerRootViewController?.show(viewController: pcfvc)
     }
 
     func presentAccountInfoViewController() {
         let pcfvc = PrimerAccountInfoPaymentViewController(navigationBarLogo: uiModule.navigationBarLogo,
                                                            formPaymentMethodTokenizationViewModel: self)
         infoView = makeAccountInfoPaymentView()
-        self.uiManager.primerRootViewController?.show(viewController: pcfvc)
+        uiManager.primerRootViewController?.show(viewController: pcfvc)
     }
 
     func presentInputViewController() -> Promise<Void> {

@@ -19,7 +19,7 @@ class ACHUserDetailsViewController: PrimerViewController {
 
     // MARK: - Properties
     var achUserDetailsView: ACHUserDetailsView?
-    var achUserDetailsViewModel: ACHUserDetailsViewModel = ACHUserDetailsViewModel()
+    let achUserDetailsViewModel = ACHUserDetailsViewModel()
     var stripeAchComponent: (any StripeAchUserDetailsComponent)?
     var cancellables: Set<AnyCancellable> = []
     weak var delegate: ACHUserDetailsDelegate?
@@ -33,7 +33,7 @@ class ACHUserDetailsViewController: PrimerViewController {
     }
 
     init(tokenizationViewModel: StripeAchTokenizationViewModel, delegate: ACHUserDetailsDelegate) {
-        self.stripeAchComponent = StripeAchHeadlessComponent(tokenizationViewModel: tokenizationViewModel)
+        stripeAchComponent = StripeAchHeadlessComponent(tokenizationViewModel: tokenizationViewModel)
         self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
     }
@@ -49,7 +49,7 @@ class ACHUserDetailsViewController: PrimerViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if let parentVC = self.parent as? PrimerContainerViewController {
+        if let parentVC = parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = true
         }
     }
@@ -64,7 +64,7 @@ class ACHUserDetailsViewController: PrimerViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let parentVC = self.parent as? PrimerContainerViewController {
+        if let parentVC = parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = false
         }
     }

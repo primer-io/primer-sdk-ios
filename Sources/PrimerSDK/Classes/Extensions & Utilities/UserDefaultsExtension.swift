@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal extension UserDefaults {
+extension UserDefaults {
 
     static var primerFramework: UserDefaults {
         if Primer.shared.integrationOptions?.reactNativeVersion == nil {

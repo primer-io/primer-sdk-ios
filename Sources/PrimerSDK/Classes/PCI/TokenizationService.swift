@@ -2,13 +2,13 @@
 
 import Foundation
 
-internal protocol TokenizationServiceProtocol {
+protocol TokenizationServiceProtocol {
     var paymentMethodTokenData: PrimerPaymentMethodTokenData? { get set }
     func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData>
     func exchangePaymentMethodToken(_ paymentMethodTokenId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?) -> Promise<PrimerPaymentMethodTokenData>
 }
 
-internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
+class TokenizationService: TokenizationServiceProtocol, LogReporter {
     var paymentMethodTokenData: PrimerPaymentMethodTokenData?
 
     let apiClient: PrimerAPIClientProtocol
@@ -53,7 +53,7 @@ internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
                 return
             }
             self.logger.debug(message: "URL: \(url)")
-            self.apiClient.tokenizePaymentMethod(clientToken: decodedJWTToken, tokenizationRequestBody: requestBody) { (result) in
+            self.apiClient.tokenizePaymentMethod(clientToken: decodedJWTToken, tokenizationRequestBody: requestBody) { result in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)

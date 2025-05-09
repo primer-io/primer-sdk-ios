@@ -221,7 +221,7 @@ public enum PrimerValidationError: PrimerErrorProtocol, Encodable {
              .invalidPaymentCategory(let userInfo, _),
              .paymentAlreadyFinalized(let userInfo, _),
              .invalidUserDetails(_, let userInfo, _):
-            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
+            tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { _, new in new }
         }
 
         return tmpUserInfo

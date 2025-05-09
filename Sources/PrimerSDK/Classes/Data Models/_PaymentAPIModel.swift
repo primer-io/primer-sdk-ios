@@ -11,7 +11,7 @@ import Foundation
 
 extension PrimerClientSession {
 
-    internal convenience init(from apiConfiguration: PrimerAPIConfiguration) {
+    convenience init(from apiConfiguration: PrimerAPIConfiguration) {
         let lineItems = apiConfiguration.clientSession?.order?.lineItems?
             .compactMap { PrimerLineItem(itemId: $0.itemId,
                                          itemDescription: $0.description,

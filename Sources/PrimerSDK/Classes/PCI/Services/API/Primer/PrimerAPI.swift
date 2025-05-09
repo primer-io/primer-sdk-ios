@@ -97,7 +97,7 @@ enum PrimerAPI: Endpoint, Equatable {
     case completePayment(clientToken: DecodedJWTToken, url: URL, paymentRequest: Request.Body.Payment.Complete)
 }
 
-internal extension PrimerAPI {
+extension PrimerAPI {
 
     // MARK: - Headers
 

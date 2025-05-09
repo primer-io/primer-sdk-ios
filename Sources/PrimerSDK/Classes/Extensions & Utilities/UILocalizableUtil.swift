@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal struct UILocalizableUtil {
+struct UILocalizableUtil {
 
     static var isRightToLeftLocale =  UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
 }

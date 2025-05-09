@@ -71,27 +71,27 @@ public class ThreeDS {
     }
     #endif
 
-    internal struct Keys: Codable {
+    struct Keys: Codable {
 
         let threeDSecureIoCertificates: [ThreeDS.Certificate]?
         let threeDsProviderCertificates: [ThreeDS.Certificate]?
         let netceteraApiKey: String?
     }
 
-    internal struct Certificate: Codable {
+    struct Certificate: Codable {
 
         let encryptionKey: String
         let cardNetwork: String
         let rootCertificate: String
     }
 
-    internal struct ACSRenderingType: Codable {
+    struct ACSRenderingType: Codable {
 
         let acsInterface: String?
         let acsUiTemplate: String?
     }
 
-    internal enum AuthenticationStatus: String {
+    enum AuthenticationStatus: String {
         // swiftlint:disable:next identifier_name
         case y, a, n, u, e
 
@@ -113,7 +113,7 @@ public class ThreeDS {
         }
     }
 
-    internal struct SDKAuthData: ThreeDSSDKAuthDataProtocol {
+    struct SDKAuthData: ThreeDSSDKAuthDataProtocol {
 
         var sdkAppId: String
         var sdkTransactionId: String
@@ -123,18 +123,18 @@ public class ThreeDS {
         var sdkReferenceNumber: String
     }
 
-    internal struct BeginAuthRequest: Codable {
+    struct BeginAuthRequest: Codable {
 
         let maxProtocolVersion: String
         let device: ThreeDS.SDKAuthData
     }
 
-    internal enum Status: String, Codable {
+    enum Status: String, Codable {
         case success = "SUCCESS"
         case failure = "FAILURE"
     }
 
-    internal enum ProtocolVersion: String, Codable {
+    enum ProtocolVersion: String, Codable {
         // swiftlint:disable identifier_name
         case v_2_1_0 = "2.1.0"
         case v_2_2_0 = "2.2.0"
@@ -162,7 +162,7 @@ public class ThreeDS {
         }
     }
 
-    internal struct Address: Codable {
+    struct Address: Codable {
 
         let title: String?
         let firstName: String?
@@ -179,32 +179,32 @@ public class ThreeDS {
 
         func encode(to encoder: Encoder) throws {
             // Only take into account address fields
-            if self.firstName == nil,
-               self.lastName == nil,
-               self.addressLine1 == nil,
-               self.addressLine2 == nil,
-               self.addressLine3 == nil,
-               self.city == nil,
-               self.state == nil,
-               self.countryCode == nil,
-               self.postalCode == nil {
+            if firstName == nil,
+               lastName == nil,
+               addressLine1 == nil,
+               addressLine2 == nil,
+               addressLine3 == nil,
+               city == nil,
+               state == nil,
+               countryCode == nil,
+               postalCode == nil {
                 var container = encoder.singleValueContainer()
                 try container.encodeNil()
 
             } else {
                 var container = encoder.container(keyedBy: ThreeDS.Address.CodingKeys.self)
-                try container.encodeIfPresent(self.title, forKey: ThreeDS.Address.CodingKeys.title)
-                try container.encodeIfPresent(self.firstName, forKey: ThreeDS.Address.CodingKeys.firstName)
-                try container.encodeIfPresent(self.lastName, forKey: ThreeDS.Address.CodingKeys.lastName)
-                try container.encodeIfPresent(self.email, forKey: ThreeDS.Address.CodingKeys.email)
-                try container.encodeIfPresent(self.phoneNumber, forKey: ThreeDS.Address.CodingKeys.phoneNumber)
-                try container.encodeIfPresent(self.addressLine1, forKey: ThreeDS.Address.CodingKeys.addressLine1)
-                try container.encodeIfPresent(self.addressLine2, forKey: ThreeDS.Address.CodingKeys.addressLine2)
-                try container.encodeIfPresent(self.addressLine3, forKey: ThreeDS.Address.CodingKeys.addressLine3)
-                try container.encodeIfPresent(self.city, forKey: ThreeDS.Address.CodingKeys.city)
-                try container.encodeIfPresent(self.state, forKey: ThreeDS.Address.CodingKeys.state)
-                try container.encodeIfPresent(self.countryCode, forKey: ThreeDS.Address.CodingKeys.countryCode)
-                try container.encodeIfPresent(self.postalCode, forKey: ThreeDS.Address.CodingKeys.postalCode)
+                try container.encodeIfPresent(title, forKey: ThreeDS.Address.CodingKeys.title)
+                try container.encodeIfPresent(firstName, forKey: ThreeDS.Address.CodingKeys.firstName)
+                try container.encodeIfPresent(lastName, forKey: ThreeDS.Address.CodingKeys.lastName)
+                try container.encodeIfPresent(email, forKey: ThreeDS.Address.CodingKeys.email)
+                try container.encodeIfPresent(phoneNumber, forKey: ThreeDS.Address.CodingKeys.phoneNumber)
+                try container.encodeIfPresent(addressLine1, forKey: ThreeDS.Address.CodingKeys.addressLine1)
+                try container.encodeIfPresent(addressLine2, forKey: ThreeDS.Address.CodingKeys.addressLine2)
+                try container.encodeIfPresent(addressLine3, forKey: ThreeDS.Address.CodingKeys.addressLine3)
+                try container.encodeIfPresent(city, forKey: ThreeDS.Address.CodingKeys.city)
+                try container.encodeIfPresent(state, forKey: ThreeDS.Address.CodingKeys.state)
+                try container.encodeIfPresent(countryCode, forKey: ThreeDS.Address.CodingKeys.countryCode)
+                try container.encodeIfPresent(postalCode, forKey: ThreeDS.Address.CodingKeys.postalCode)
             }
         }
     }
@@ -216,10 +216,10 @@ public class ThreeDS {
         case authSuccess = "AUTH_SUCCESS"
         case authFailed = "AUTH_FAILED"
         case challenge = "CHALLENGE"
-        case METHOD = "METHOD"
+        case METHOD
     }
 
-    internal enum SkippedCode: String, Codable {
+    enum SkippedCode: String, Codable {
 
         case gatewayUnavailable = "GATEWAY_UNAVAILABLE"
         case disabledByMerchant = "DISABLED_BY_MERCHANT"
@@ -232,7 +232,7 @@ public class ThreeDS {
 
     }
 
-    internal struct BeginAuthResponse: Decodable {
+    struct BeginAuthResponse: Decodable {
 
         let authentication: ThreeDSAuthenticationProtocol
         let token: PrimerPaymentMethodTokenData
@@ -290,14 +290,14 @@ public class ThreeDS {
         }
     }
 
-    internal struct PostAuthResponse: Codable {
+    struct PostAuthResponse: Codable {
 
         let token: PrimerPaymentMethodTokenData
         let resumeToken: String
         let authentication: Authentication?
     }
 
-    internal struct Authentication: ThreeDSAuthenticationProtocol {
+    struct Authentication: ThreeDSAuthenticationProtocol {
 
         let acsReferenceNumber: String?
         let acsSignedContent: String?
@@ -313,7 +313,7 @@ public class ThreeDS {
         let xid: String?
     }
 
-    internal struct SkippedAPIResponse: ThreeDSAuthenticationProtocol, Codable {
+    struct SkippedAPIResponse: ThreeDSAuthenticationProtocol, Codable {
 
         let acsReferenceNumber: String?
         let acsSignedContent: String?
@@ -332,7 +332,7 @@ public class ThreeDS {
         let statusUrl: String?
     }
 
-    internal struct MethodAPIResponse: ThreeDSAuthenticationProtocol {
+    struct MethodAPIResponse: ThreeDSAuthenticationProtocol {
 
         let acsReferenceNumber: String?
         let acsSignedContent: String?
@@ -349,7 +349,7 @@ public class ThreeDS {
         let statusUrl: String?
     }
 
-    internal struct BrowserV2ChallengeAPIResponse: ThreeDSAuthenticationProtocol {
+    struct BrowserV2ChallengeAPIResponse: ThreeDSAuthenticationProtocol {
 
         let acsReferenceNumber: String?
         let acsSignedContent: String?
@@ -367,7 +367,7 @@ public class ThreeDS {
         let challengeWindowSize: String
     }
 
-    internal struct AppV2ChallengeAPIResponse: ThreeDSAuthenticationProtocol {
+    struct AppV2ChallengeAPIResponse: ThreeDSAuthenticationProtocol {
 
         let acsReferenceNumber: String?
         let acsSignedContent: String?
@@ -384,7 +384,7 @@ public class ThreeDS {
         let statusUrl: String
     }
 
-    internal struct BrowserV1ChallengeAPIResponse: ThreeDSAuthenticationProtocol {
+    struct BrowserV1ChallengeAPIResponse: ThreeDSAuthenticationProtocol {
 
         let acsRefNumber: String?
         let acsSignedContent: String?
@@ -404,7 +404,7 @@ public class ThreeDS {
         let challengeWindowSize: String
     }
 
-    internal struct DeclinedAPIResponse: ThreeDSAuthenticationProtocol {
+    struct DeclinedAPIResponse: ThreeDSAuthenticationProtocol {
 
         let acsRefNumber: String?
         let acsSignedContent: String?
@@ -428,7 +428,7 @@ public class ThreeDS {
         public let challengeIssued: Bool?
     }
 
-    internal enum DeclinedReasonCode: String, Codable {
+    enum DeclinedReasonCode: String, Codable {
 
         case unknown = "UNKNOWN"
         case rejectedByIssuer = "REJECTED_BY_ISSUER"
@@ -484,20 +484,20 @@ public class ThreeDS {
             initProtocolVersion: String?,
             error: Primer3DSErrorContainer?
         ) {
-            self.platform = Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS"
+            platform = Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS"
             self.initProtocolVersion = initProtocolVersion
 
             #if canImport(Primer3DS)
-            self.threeDsWrapperSdkVersion = Primer3DS.version
-            self.threeDsSdkProvider = Primer3DS.threeDsSdkProvider
-            self.threeDsSdkVersion = Primer3DS.threeDsSdkVersion
+            threeDsWrapperSdkVersion = Primer3DS.version
+            threeDsSdkProvider = Primer3DS.threeDsSdkProvider
+            threeDsSdkVersion = Primer3DS.threeDsSdkVersion
             #endif
 
             if let primer3DSErr = error {
-                self.status = .failure
+                status = .failure
                 self.error = ThreeDS.ContinueInfo.Error(error: primer3DSErr)
             } else {
-                self.status = .success
+                status = .success
             }
         }
 
@@ -515,15 +515,15 @@ public class ThreeDS {
             var protocolVersion: String?
 
             init(error: Primer3DSErrorContainer) {
-                self.reasonCode = error.errorId.uppercased().replacingOccurrences(of: "-", with: "_")
-                self.reasonText = error.plainDescription
-                self.recoverySuggestion = error.recoverySuggestion
-                self.threeDsErrorDescription = error.threeDsErrorDescription
-                self.threeDsErrorCode = error.threeDsErrorCode
-                self.threeDsErrorComponent = error.threeDsErrorComponent
-                self.threeDsErrorDetail = error.threeDsErrorDetail
-                self.threeDsSdkTranscationId = error.threeDsSdkTranscationId
-                self.protocolVersion = error.initProtocolVersion
+                reasonCode = error.errorId.uppercased().replacingOccurrences(of: "-", with: "_")
+                reasonText = error.plainDescription
+                recoverySuggestion = error.recoverySuggestion
+                threeDsErrorDescription = error.threeDsErrorDescription
+                threeDsErrorCode = error.threeDsErrorCode
+                threeDsErrorComponent = error.threeDsErrorComponent
+                threeDsErrorDetail = error.threeDsErrorDetail
+                threeDsSdkTranscationId = error.threeDsSdkTranscationId
+                protocolVersion = error.initProtocolVersion
             }
         }
     }

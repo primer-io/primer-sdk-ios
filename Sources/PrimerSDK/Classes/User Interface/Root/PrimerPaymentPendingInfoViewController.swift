@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal class PrimerPaymentPendingInfoViewController: PrimerFormViewController {
+class PrimerPaymentPendingInfoViewController: PrimerFormViewController {
 
     private let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
     private let infoView: PrimerFormView

@@ -11,4 +11,4 @@ import Foundation
 /// Utility Typealias that returns a Void callback
 /// For implementation example check PrimerButton.swift
 ///
-internal typealias PrimerAction = () -> Void
+typealias PrimerAction = () -> Void

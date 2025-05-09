@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal extension DateFormatter {
+extension DateFormatter {
 
     /**
      The provided function sets the `dateFormat` property of DateFormatter.
@@ -17,12 +17,12 @@ internal extension DateFormatter {
      - Returns: The DateFormatter instance.
      */
     func withVoucherExpirationDateFormat() -> DateFormatter {
-        self.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         return self
     }
 }
 
-internal extension DateFormatter {
+extension DateFormatter {
 
     /**
      The provided function sets the `style` of `date` and `time` property of DateFormatter.
@@ -32,8 +32,8 @@ internal extension DateFormatter {
      - Returns: The DateFormatter instance.
      */
     func withExpirationDisplayDateFormat() -> DateFormatter {
-        self.dateStyle = .medium
-        self.timeStyle = .short
+        dateStyle = .medium
+        timeStyle = .short
         return self
     }
 

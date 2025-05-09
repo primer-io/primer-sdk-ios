@@ -24,10 +24,10 @@ class PollingModule: Module {
 
     static var apiClient: PrimerAPIClientProtocol?
 
-    internal let url: URL
-    internal var retryInterval: TimeInterval = 3
-    internal private(set) var cancellationError: PrimerError?
-    internal private(set) var failureError: PrimerError?
+    let url: URL
+    var retryInterval: TimeInterval = 3
+    private(set) var cancellationError: PrimerError?
+    private(set) var failureError: PrimerError?
 
     required init(url: URL) {
         self.url = url
@@ -35,7 +35,7 @@ class PollingModule: Module {
 
     func start() -> Promise<String> {
         return Promise { seal in
-            self.startPolling { (resumeToken, err) in
+            self.startPolling { resumeToken, err in
                 if let err = err {
                     seal.reject(err)
                 } else if let resumeToken = resumeToken {
@@ -48,11 +48,11 @@ class PollingModule: Module {
     }
 
     func cancel(withError err: PrimerError) {
-        self.cancellationError = err
+        cancellationError = err
     }
 
     func fail(withError err: PrimerError) {
-        self.failureError = err
+        failureError = err
     }
 
     private func startPolling(completion: @escaping (_ id: String?, _ err: Error?) -> Void) {
@@ -77,7 +77,7 @@ class PollingModule: Module {
 
         let apiClient: PrimerAPIClientProtocol = PollingModule.apiClient ?? PrimerAPIClient()
 
-        apiClient.poll(clientToken: decodedJWTToken, url: self.url.absoluteString) { result in
+        apiClient.poll(clientToken: decodedJWTToken, url: url.absoluteString) { result in
             switch result {
             case .success(let res):
                 if res.status == .pending {

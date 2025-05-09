@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal class CardButton: PrimerButton {
+class CardButton: PrimerButton {
 
     private var iconView = UIImageView()
     private var networkLabel = UILabel()

@@ -3,14 +3,14 @@
 
 import Foundation
 
-internal protocol PayPalServiceProtocol {
+protocol PayPalServiceProtocol {
     func startOrderSession(_ completion: @escaping (Result<Response.Body.PayPal.CreateOrder, Error>) -> Void)
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void)
     func confirmBillingAgreement(_ completion: @escaping (Result<Response.Body.PayPal.ConfirmBillingAgreement, Error>) -> Void)
     func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void)
 }
 
-internal class PayPalService: PayPalServiceProtocol {
+class PayPalService: PayPalServiceProtocol {
 
     private var paypalTokenId: String?
 
@@ -91,7 +91,7 @@ internal class PayPalService: PayPalServiceProtocol {
         var scheme: String
         do {
             scheme = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
-        } catch let error {
+        } catch {
             completion(.failure(error))
             return
         }
@@ -143,7 +143,7 @@ internal class PayPalService: PayPalServiceProtocol {
         var scheme: String
         do {
             scheme = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
-        } catch let error {
+        } catch {
             completion(.failure(error))
             return
         }
@@ -155,7 +155,7 @@ internal class PayPalService: PayPalServiceProtocol {
         )
 
         apiClient.createPayPalBillingAgreementSession(clientToken: decodedJWTToken,
-                                                      payPalCreateBillingAgreementRequest: body) { [weak self] (result) in
+                                                      payPalCreateBillingAgreementRequest: body) { [weak self] result in
             switch result {
             case .failure(let err):
                 let containerErr = PrimerError.failedToCreateSession(error: err,
@@ -192,10 +192,10 @@ internal class PayPalService: PayPalServiceProtocol {
             return
         }
 
-        guard let tokenId = self.paypalTokenId else {
+        guard let tokenId = paypalTokenId else {
             let err = PrimerError.invalidValue(
                 key: "paypalTokenId",
-                value: self.paypalTokenId,
+                value: paypalTokenId,
                 userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)

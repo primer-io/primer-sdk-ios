@@ -9,7 +9,7 @@ import UIKit
 
 extension PrimerTextFieldView {
 
-    internal func cardFormFieldDidBeginEditingEventWithObjectId(_ objectId: Analytics.Event.Property.ObjectId) -> Analytics.Event {
+    func cardFormFieldDidBeginEditingEventWithObjectId(_ objectId: Analytics.Event.Property.ObjectId) -> Analytics.Event {
         Analytics.Event.ui(
             action: .focus,
             context: Analytics.Event.Property.Context(
@@ -24,7 +24,7 @@ extension PrimerTextFieldView {
         )
     }
 
-    internal func cardFormFieldDidEndEditingEventWithObjectId(_ objectId: Analytics.Event.Property.ObjectId) -> Analytics.Event {
+    func cardFormFieldDidEndEditingEventWithObjectId(_ objectId: Analytics.Event.Property.ObjectId) -> Analytics.Event {
         Analytics.Event.ui(
             action: .blur,
             context: Analytics.Event.Property.Context(

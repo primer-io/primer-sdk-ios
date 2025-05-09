@@ -8,6 +8,6 @@
 import Foundation
 
 class Analytics {
-    static let queue: DispatchQueue = DispatchQueue(label: "primer.analytics", qos: .utility)
+    static let queue = DispatchQueue(label: "primer.analytics", qos: .utility)
     static var apiClient: PrimerAPIClientProtocol?
 }

@@ -16,14 +16,14 @@ public struct AccessibilityIdentifier {
         case searchBar = "search_bar"
     }
     public enum KlarnaComponent: String {
-        case title = "title"
+        case title
         case initializeView = "initialize_klarna_view"
         case paymentViewContainer = "klarna_payment_view_container"
-        case authorize = "authorize"
+        case authorize
     }
     public enum StripeAchUserDetailsComponent: String {
-        case title = "title"
-        case subtitle = "subtitle"
+        case title
+        case subtitle
         case firstNameTextField = "first_name_input"
         case lastNameTextField = "last_name_input"
         case emailAddressTextField = "email_address_input"

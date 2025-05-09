@@ -16,14 +16,14 @@ class BankTableViewCell: UITableViewCell {
     var nameLabel = UILabel()
     var arrowImageView = UIImageView()
 
-    internal private(set) var bank: AdyenBank!
+    private(set) var bank: AdyenBank!
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        self.preservesSuperviewLayoutMargins = false
-        self.contentView.preservesSuperviewLayoutMargins = false
-        self.selectionStyle = .none
+        preservesSuperviewLayoutMargins = false
+        contentView.preservesSuperviewLayoutMargins = false
+        selectionStyle = .none
 
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         backgroundColor = theme.view.backgroundColor
@@ -64,22 +64,22 @@ class BankTableViewCell: UITableViewCell {
     }
 
     func configure(viewModel: AdyenBank) {
-        self.bank = viewModel
+        bank = viewModel
         nameLabel.text = viewModel.name
         logoImageView.image = nil
-        logoImageView.load(url: self.bank.iconUrl)
+        logoImageView.load(url: bank.iconUrl)
     }
 }
 
-fileprivate extension UIImageView {
+private extension UIImageView {
     func load(url: URL?, placeholder: UIImage? = nil) {
         guard let url = url else { return }
         let request = URLRequest(url: url)
         if let data = URLCache.shared.cachedResponse(for: request)?.data, let image = UIImage(data: data) {
             self.image = image
         } else {
-            self.image = placeholder
-            URLSession.shared.dataTask(with: request, completionHandler: { (data, response, _) in
+            image = placeholder
+            URLSession.shared.dataTask(with: request, completionHandler: { data, response, _ in
                 if let data = data,
                    let response = response, ((response as? HTTPURLResponse)?.statusCode ?? 500) < 300,
                    let image = UIImage(data: data) {

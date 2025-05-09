@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal enum PrimerImage {
+enum PrimerImage {
 
     case amexCardIcon,
          appleIcon,

@@ -2,7 +2,7 @@
 
 import UIKit
 
-internal class VaultedPaymentInstrumentCell: UITableViewCell {
+class VaultedPaymentInstrumentCell: UITableViewCell {
 
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private(set) var paymentMethod: PrimerPaymentMethodTokenData!
@@ -153,7 +153,7 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
 
 }
 
-internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
+class VaultedPaymentInstrumentsViewController: PrimerViewController {
 
     private var rightBarButton: UIButton!
     private var isDeleting: Bool = false {
@@ -169,7 +169,7 @@ internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = Strings.VaultPaymentMethodViewContent.savedPaymentMethodsTitle
+        title = Strings.VaultPaymentMethodViewContent.savedPaymentMethodsTitle
 
         let uiEvent = Analytics.Event.ui(
             action: .view,

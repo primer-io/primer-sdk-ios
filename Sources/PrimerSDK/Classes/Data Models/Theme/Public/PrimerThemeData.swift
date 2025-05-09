@@ -40,7 +40,7 @@ public class PrimerThemeData {
             self.paymentMethod = paymentMethod
         }
 
-        internal func theme(for type: ButtonType, with data: PrimerThemeData) -> ButtonTheme {
+        func theme(for type: ButtonType, with data: PrimerThemeData) -> ButtonTheme {
             switch type {
             case .main:
                 let button = main
@@ -136,7 +136,7 @@ public class PrimerThemeData {
             self.safeMargin = safeMargin
         }
 
-        internal func theme(for viewType: ViewType, with data: PrimerThemeData) -> ViewTheme {
+        func theme(for viewType: ViewType, with data: PrimerThemeData) -> ViewTheme {
             switch viewType {
             case .blurredBackground:
                 return ViewTheme(
@@ -178,7 +178,7 @@ public class PrimerThemeData {
             self.error = error
         }
 
-        internal func theme(for type: TextType, with data: PrimerThemeData) -> TextTheme {
+        func theme(for type: TextType, with data: PrimerThemeData) -> TextTheme {
             switch type {
             case .body:
                 return TextTheme(
@@ -220,7 +220,7 @@ public class PrimerThemeData {
 
         public init(defaultColor: UIColor? = nil, fontsize: Int? = nil) {
             self.defaultColor = defaultColor
-            self.fontSize = fontsize
+            fontSize = fontsize
         }
     }
 
@@ -261,7 +261,7 @@ public class PrimerThemeData {
             self.cornerRadius = cornerRadius
         }
 
-        internal func theme(with data: PrimerThemeData) -> InputTheme {
+        func theme(with data: PrimerThemeData) -> InputTheme {
             InputTheme(
                 color: backgroundColor ?? data.colors.light,
                 cornerRadius: cornerRadius ?? PrimerDimensions.Component.cornerRadius,

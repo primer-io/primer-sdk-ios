@@ -12,9 +12,9 @@ import Foundation
     public let iconUrl: String?
     public let isDisabled: Bool
     init(bank: AdyenBank) {
-        self.id = bank.id
-        self.name = bank.name
-        self.iconUrl = bank.iconUrlStr
-        self.isDisabled = bank.disabled
+        id = bank.id
+        name = bank.name
+        iconUrl = bank.iconUrlStr
+        isDisabled = bank.disabled
     }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal protocol PrimerRawDataProtocol {
+protocol PrimerRawDataProtocol {
     var onDataDidChange: (() -> Void)? { get set }
 }
 

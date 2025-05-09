@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController {
+class PrimerVoucherInfoPaymentViewController: PrimerFormViewController {
 
     let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
     let textToShare: String?
@@ -28,7 +28,7 @@ internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController 
         self.formPaymentMethodTokenizationViewModel = formPaymentMethodTokenizationViewModel
         self.textToShare = textToShare
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = navigationBarLogo
+        titleImage = navigationBarLogo
     }
 
     required init?(coder: NSCoder) {
@@ -40,11 +40,11 @@ internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController 
 
         verticalStackView.spacing = 16
 
-        if let infoView = self.formPaymentMethodTokenizationViewModel.infoView {
+        if let infoView = formPaymentMethodTokenizationViewModel.infoView {
             verticalStackView.addArrangedSubview(infoView)
         }
 
-        if let submitButton = self.formPaymentMethodTokenizationViewModel.uiModule.submitButton {
+        if let submitButton = formPaymentMethodTokenizationViewModel.uiModule.submitButton {
             verticalStackView.addArrangedSubview(submitButton)
         }
     }
@@ -65,7 +65,7 @@ extension PrimerVoucherInfoPaymentViewController {
         }
 
         let activityViewController = UIActivityViewController(activityItems: [textToShare], applicationActivities: nil)
-        activityViewController.popoverPresentationController?.sourceView = self.view
-        self.present(activityViewController, animated: true, completion: nil)
+        activityViewController.popoverPresentationController?.sourceView = view
+        present(activityViewController, animated: true, completion: nil)
     }
 }

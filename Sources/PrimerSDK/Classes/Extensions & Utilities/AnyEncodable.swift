@@ -37,7 +37,7 @@ import Foundation
  let encoder = JSONEncoder()
  let json = try! encoder.encode(dictionary)
  */
-internal struct AnyEncodable: Encodable {
+struct AnyEncodable: Encodable {
     public let value: Any
 
     public init<T>(_ value: T?) {

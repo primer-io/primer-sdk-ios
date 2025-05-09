@@ -13,7 +13,7 @@
 import UIKit
 
 @objc
-internal protocol InternalCardComponentsManagerDelegate {
+protocol InternalCardComponentsManagerDelegate {
     /// The cardComponentsManager(_:clientTokenCallback:) can be used to provide the CardComponentsManager
     /// with an access token from the merchants backend.
     /// This delegate function is optional since you can initialize the CardComponentsManager with an access token.
@@ -55,7 +55,7 @@ typealias BillingAddressField = (fieldView: PrimerTextFieldView,
                                  isFieldHidden: Bool)
 
 @objc
-internal class InternalCardComponentsManager: NSObject, InternalCardComponentsManagerProtocol, LogReporter {
+class InternalCardComponentsManager: NSObject, InternalCardComponentsManagerProtocol, LogReporter {
 
     var cardnumberField: PrimerCardNumberFieldView
     var expiryDateField: PrimerExpiryDateFieldView
@@ -69,13 +69,13 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
     var merchantIdentifier: String?
     var amount: Int?
     var currency: Currency?
-    internal var decodedJWTToken: DecodedJWTToken? {
+    var decodedJWTToken: DecodedJWTToken? {
         return PrimerAPIConfigurationModule.decodedJWTToken
     }
-    internal var paymentMethodsConfig: PrimerAPIConfiguration?
-    internal var primerPaymentMethodType: PrimerPaymentMethodType
+    var paymentMethodsConfig: PrimerAPIConfiguration?
+    var primerPaymentMethodType: PrimerPaymentMethodType
     private(set) public var isLoading: Bool = false
-    internal private(set) var paymentMethod: PrimerPaymentMethodTokenData?
+    private(set) var paymentMethod: PrimerPaymentMethodTokenData?
 
     let tokenizationService: TokenizationServiceProtocol
 
@@ -100,15 +100,15 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
-        self.cardholderField = cardholderNameField
+        cardholderField = cardholderNameField
         self.billingAddressFieldViews = billingAddressFieldViews
         if let paymentMethodType = paymentMethodType,
            let primerPaymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType) {
             self.primerPaymentMethodType = primerPaymentMethodType
             self.paymentMethodType = primerPaymentMethodType.rawValue
         } else {
-            self.primerPaymentMethodType = .paymentCard
-            self.paymentMethodType = self.primerPaymentMethodType.rawValue
+            primerPaymentMethodType = .paymentCard
+            self.paymentMethodType = primerPaymentMethodType.rawValue
         }
         self.isRequiringCVVInput = isRequiringCVVInput
 
@@ -118,7 +118,7 @@ internal class InternalCardComponentsManager: NSObject, InternalCardComponentsMa
         super.init()
     }
 
-    internal func setIsLoading(_ isLoading: Bool) {
+    func setIsLoading(_ isLoading: Bool) {
         if self.isLoading == isLoading { return }
         self.isLoading = isLoading
         delegate.cardComponentsManager?(self, isLoading: isLoading)
@@ -271,7 +271,7 @@ and 4 characters for expiry year separated by '/'.
     /// current year = "2022"
     /// first two digits = "20"
     private var cardExpirationYear: String? {
-        guard let expiryYear = self.expiryDateField.expiryYear, expiryYear.count == 2 else { return nil }
+        guard let expiryYear = expiryDateField.expiryYear, expiryYear.count == 2 else { return nil }
         let currentYearAsString = Date().yearComponentAsString
         guard currentYearAsString.count >= 2 else { return nil }
         let index = currentYearAsString.index(currentYearAsString.startIndex, offsetBy: 2)
@@ -282,25 +282,25 @@ and 4 characters for expiry year separated by '/'.
     private var tokenizationPaymentInstrument: TokenizationRequestBodyPaymentInstrument? {
 
         guard let cardExpirationYear = cardExpirationYear,
-              let expiryMonth = self.expiryDateField.expiryMonth else {
+              let expiryMonth = expiryDateField.expiryMonth else {
             return nil
         }
 
         if isRequiringCVVInput {
 
-            let cardPaymentInstrument = CardPaymentInstrument(number: self.cardnumberField.cardnumber,
-                                                              cvv: self.cvvField.cvv,
+            let cardPaymentInstrument = CardPaymentInstrument(number: cardnumberField.cardnumber,
+                                                              cvv: cvvField.cvv,
                                                               expirationMonth: expiryMonth,
                                                               expirationYear: cardExpirationYear,
-                                                              cardholderName: self.cardholderField?.cardholderName)
+                                                              cardholderName: cardholderField?.cardholderName)
             return cardPaymentInstrument
 
-        } else if let configId = AppState.current.apiConfiguration?.getConfigId(for: self.primerPaymentMethodType.rawValue),
-                  let cardholderName = self.cardholderField?.cardholderName {
+        } else if let configId = AppState.current.apiConfiguration?.getConfigId(for: primerPaymentMethodType.rawValue),
+                  let cardholderName = cardholderField?.cardholderName {
 
             let cardOffSessionPaymentInstrument = CardOffSessionPaymentInstrument(paymentMethodConfigId: configId,
-                                                                                  paymentMethodType: self.primerPaymentMethodType.rawValue,
-                                                                                  number: self.cardnumberField.cardnumber,
+                                                                                  paymentMethodType: primerPaymentMethodType.rawValue,
+                                                                                  number: cardnumberField.cardnumber,
                                                                                   expirationMonth: expiryMonth,
                                                                                   expirationYear: cardExpirationYear,
                                                                                   cardholderName: cardholderName)
@@ -335,7 +335,7 @@ and 4 characters for expiry year separated by '/'.
                 let requestBody = Request.Body.Tokenization(paymentInstrument: tokenizationPaymentInstrument)
 
                 firstly {
-                    return self.tokenizationService.tokenize(requestBody: requestBody)
+                    self.tokenizationService.tokenize(requestBody: requestBody)
                 }
                 .done { paymentMethodTokenData in
                     self.delegate.cardComponentsManager(self, onTokenizeSuccess: paymentMethodTokenData)

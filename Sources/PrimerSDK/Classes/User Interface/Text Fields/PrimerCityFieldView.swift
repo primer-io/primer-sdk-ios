@@ -2,7 +2,7 @@ import UIKit
 
 public final class PrimerCityFieldView: PrimerSimpleCardFormTextFieldView {
 
-    internal var city: String? {
+    var city: String? {
         return textField.internalText
     }
 
@@ -18,7 +18,7 @@ public final class PrimerCityFieldView: PrimerSimpleCardFormTextFieldView {
             userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
         isValid = { text in
-            return text.isValidNonDecimalString
+            text.isValidNonDecimalString
         }
     }
 }

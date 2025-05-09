@@ -1,11 +1,11 @@
-internal protocol VaultPaymentMethodViewModelProtocol: AnyObject {
+protocol VaultPaymentMethodViewModelProtocol: AnyObject {
     var paymentMethods: [PrimerPaymentMethodTokenData] { get }
     var selectedPaymentMethodId: String? { get set }
     func reloadVault(with completion: @escaping (Error?) -> Void)
     func deletePaymentMethod(with id: String, and completion: @escaping (Error?) -> Void)
 }
 
-internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
+class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
 
     let vaultService: VaultServiceProtocol
 

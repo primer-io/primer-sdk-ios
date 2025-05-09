@@ -2,7 +2,7 @@ import UIKit
 
 public class PrimerSimpleCardFormTextFieldView: PrimerTextFieldView {
 
-    internal var validationError: PrimerValidationError?
+    var validationError: PrimerValidationError?
 
     override func xibSetup() {
         super.xibSetup()
@@ -27,7 +27,7 @@ public class PrimerSimpleCardFormTextFieldView: PrimerTextFieldView {
 
     public override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let positionOriginal = textField.beginningOfDocument
-        let cursorLocation = textField.position(from: positionOriginal, offset: (range.location + NSString(string: string).length))
+        let cursorLocation = textField.position(from: positionOriginal, offset: range.location + NSString(string: string).length)
 
         guard let primerTextField = textField as? PrimerTextField else { return true }
         let currentText = primerTextField.internalText ?? ""
@@ -39,7 +39,7 @@ public class PrimerSimpleCardFormTextFieldView: PrimerTextFieldView {
 
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
 
-        switch self.isValid?(newText) {
+        switch isValid?(newText) {
         case true:
             validation = .valid
         case false:

@@ -13,7 +13,7 @@ import UIKit
 class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
 
     private var statusUrl: URL!
-    internal var qrCode: String?
+    var qrCode: String?
     private var resumeToken: String!
     private var didCancelPolling: (() -> Void)?
 
@@ -35,7 +35,7 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: nil),
             extra: nil,
             objectType: .button,
@@ -112,7 +112,6 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
                 pollingModule.cancel(withError: err)
-                return
             }
 
             firstly {
@@ -198,8 +197,8 @@ class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel
     }
 
     override func cancel() {
-        self.didCancelPolling?()
-        self.didCancelPolling = nil
+        didCancelPolling?()
+        didCancelPolling = nil
         super.cancel()
     }
 }
@@ -229,8 +228,6 @@ extension QRCodeTokenizationViewModel {
             .catch { error in
                 seal.reject(error)
             }
-
-            return
         }
     }
 

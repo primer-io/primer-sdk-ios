@@ -11,10 +11,10 @@ import UIKit
 class PrimerLoadingViewController: PrimerViewController {
 
     private var height: CGFloat
-    private(set) internal var imageView: UIImageView?
-    private(set) internal var message: String?
-    private(set) internal var activityIndicatorView: UIActivityIndicatorView = UIActivityIndicatorView()
-    private(set) internal var resultView: PrimerResultComponentView!
+    private(set) var imageView: UIImageView?
+    private(set) var message: String?
+    private(set) var activityIndicatorView = UIActivityIndicatorView()
+    private(set) var resultView: PrimerResultComponentView!
 
     init(height: CGFloat, imageView: UIImageView?, message: String?) {
         self.height = height
@@ -53,9 +53,9 @@ class PrimerLoadingViewController: PrimerViewController {
         activityIndicatorView.startAnimating()
 
         resultView = PrimerResultComponentView(frame: .zero,
-                                               imageView: self.imageView,
-                                               message: self.message,
-                                               loadingIndicator: self.activityIndicatorView)
+                                               imageView: imageView,
+                                               message: message,
+                                               loadingIndicator: activityIndicatorView)
         view.addSubview(resultView)
         resultView.translatesAutoresizingMaskIntoConstraints = false
         resultView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true

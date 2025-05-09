@@ -7,13 +7,13 @@
 
 import Foundation
 
-internal protocol UniversalCheckoutViewModelProtocol {
+protocol UniversalCheckoutViewModelProtocol {
     var paymentMethods: [PrimerPaymentMethodTokenData] { get }
     var selectedPaymentMethod: PrimerPaymentMethodTokenData? { get }
     var amountStr: String? { get }
 }
 
-internal class UniversalCheckoutViewModel: UniversalCheckoutViewModelProtocol, LogReporter {
+class UniversalCheckoutViewModel: UniversalCheckoutViewModelProtocol, LogReporter {
 
     var amountStr: String? {
         if (PrimerInternal.shared.intent ?? .vault) == .vault { return nil }

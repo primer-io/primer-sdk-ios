@@ -2,7 +2,7 @@ import UIKit
 
 public final class PrimerStateFieldView: PrimerSimpleCardFormTextFieldView {
 
-    internal var state: String? {
+    var state: String? {
         return textField.internalText
     }
 
@@ -18,7 +18,7 @@ public final class PrimerStateFieldView: PrimerSimpleCardFormTextFieldView {
             userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
         isValid = { text in
-            return text.isValidNonDecimalString
+            text.isValidNonDecimalString
         }
     }
 

@@ -8,10 +8,10 @@
 import UIKit
 
 // swiftlint:disable identifier_name
-internal enum Model: String, Codable {
+enum Model: String, Codable {
 
     // Simulator
-    case simulator     = "simulator",
+    case simulator,
 
          // iPod
          iPod1              = "iPod 1",
@@ -121,14 +121,14 @@ internal enum Model: String, Codable {
          unrecognized       = "?unrecognized?"
 }
 
-internal extension UIDevice {
+extension UIDevice {
 
     static var modelIdentifier: String? {
         var systemInfo = utsname()
         uname(&systemInfo)
         let modelCode = withUnsafePointer(to: &systemInfo.machine) {
             $0.withMemoryRebound(to: CChar.self, capacity: 1) { ptr in
-                String.init(validatingUTF8: ptr)
+                String(validatingUTF8: ptr)
             }
         }
 

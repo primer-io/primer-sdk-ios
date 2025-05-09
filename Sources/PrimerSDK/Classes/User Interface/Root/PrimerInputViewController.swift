@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal class PrimerInputViewController: PrimerFormViewController {
+class PrimerInputViewController: PrimerFormViewController {
 
     let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
 
@@ -16,7 +16,7 @@ internal class PrimerInputViewController: PrimerFormViewController {
          inputsDistribution: NSLayoutConstraint.Axis = .vertical) {
         self.formPaymentMethodTokenizationViewModel = formPaymentMethodTokenizationViewModel
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = navigationBarLogo
+        titleImage = navigationBarLogo
 
     }
 
@@ -33,7 +33,7 @@ internal class PrimerInputViewController: PrimerFormViewController {
             verticalStackView.addArrangedSubview(inputStackView)
         }
 
-        guard let submitButton = self.formPaymentMethodTokenizationViewModel.uiModule.submitButton else { return }
+        guard let submitButton = formPaymentMethodTokenizationViewModel.uiModule.submitButton else { return }
         verticalStackView.addArrangedSubview(submitButton)
     }
 

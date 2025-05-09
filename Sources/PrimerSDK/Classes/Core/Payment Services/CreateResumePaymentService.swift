@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal protocol CreateResumePaymentServiceProtocol {
+protocol CreateResumePaymentServiceProtocol {
     func createPayment(paymentRequest: Request.Body.Payment.Create) -> Promise<Response.Body.Payment>
     func completePayment(clientToken: DecodedJWTToken,
                          completeUrl: URL,
@@ -20,7 +20,7 @@ private enum CreateResumePaymentCallType: String {
     case resume
 }
 
-internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
+class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
     let apiClient: PrimerAPIClientCreateResumePaymentProtocol
 
     let paymentMethodType: String

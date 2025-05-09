@@ -73,7 +73,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: nil),
             extra: nil,
             objectType: .button,
@@ -163,7 +163,7 @@ class KlarnaTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 #if canImport(PrimerKlarnaSDK)
                 do {
                     _ = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
-                } catch let error {
+                } catch {
                     seal.reject(error)
                     return
                 }

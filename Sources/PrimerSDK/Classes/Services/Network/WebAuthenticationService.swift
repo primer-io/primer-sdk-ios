@@ -22,7 +22,7 @@ class DefaultWebAuthenticationService: NSObject, WebAuthenticationService {
         let webAuthSession =  ASWebAuthenticationSession(
             url: url,
             callbackURLScheme: scheme,
-            completionHandler: { (url, error) in
+            completionHandler: { url, error in
                 if let url = url {
                     completion(.success(url))
                 } else if error != nil {
@@ -30,7 +30,7 @@ class DefaultWebAuthenticationService: NSObject, WebAuthenticationService {
                                                               userInfo: .errorUserInfoDictionary(),
                                                               diagnosticsId: UUID().uuidString)))
                 } else {
-                    let additionalInfo: [String: String] = [ "message": "Failed to create web authentication session" ]
+                    let additionalInfo = [ "message": "Failed to create web authentication session" ]
                     completion(.failure(PrimerError.unknown(userInfo: .errorUserInfoDictionary(additionalInfo: additionalInfo),
                                                             diagnosticsId: UUID().uuidString)))
                 }
@@ -52,9 +52,9 @@ extension DefaultWebAuthenticationService: ASWebAuthenticationPresentationContex
 
 }
 
-fileprivate extension UIApplication {
+private extension UIApplication {
     var windows: [UIWindow] {
-        let windowScene = self.connectedScenes.compactMap { $0 as? UIWindowScene }.first
+        let windowScene = connectedScenes.compactMap { $0 as? UIWindowScene }.first
         guard let windows = windowScene?.windows else {
             return []
         }

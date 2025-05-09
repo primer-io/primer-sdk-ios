@@ -15,7 +15,7 @@ enum Throwable<T: Decodable>: Decodable {
         do {
             let decoded = try T(from: decoder)
             self = .success(decoded)
-        } catch let error {
+        } catch {
             self = .failure(error)
         }
     }

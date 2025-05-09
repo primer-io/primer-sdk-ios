@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal class AlertController: UIAlertController {
+class AlertController: UIAlertController {
 
     private lazy var alertWindow: UIWindow = {
         var window: UIWindow!
@@ -26,7 +26,7 @@ internal class AlertController: UIAlertController {
         return window
     }()
 
-    internal func show(animated flag: Bool = true, completion: (() -> Void)? = nil) {
+    func show(animated flag: Bool = true, completion: (() -> Void)? = nil) {
         if let rootViewController = alertWindow.rootViewController {
             alertWindow.makeKeyAndVisible()
             rootViewController.present(self, animated: flag, completion: completion)
@@ -35,7 +35,7 @@ internal class AlertController: UIAlertController {
 
 }
 
-internal class ClearViewController: UIViewController {
+class ClearViewController: UIViewController {
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
         let statusBarManager = view.window?.windowScene?.statusBarManager

@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal extension Notification.Name {
+extension Notification.Name {
 
     static let receivedUrlSchemeRedirect        = Notification.Name(rawValue: "PrimerURLSchemeRedirect")
     static let receivedUrlSchemeCancellation    = Notification.Name(rawValue: "PrimerURLSchemeCancellation")

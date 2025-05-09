@@ -41,7 +41,7 @@ final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
     private var paymentMethodType: String?
 
-    internal func perform3DS(
+    func perform3DS(
         paymentMethodTokenData: PrimerPaymentMethodTokenData,
         sdkDismissed: (() -> Void)?,
         completion: @escaping (_ result: Result<String, Error>) -> Void
@@ -628,7 +628,7 @@ private extension ThreeDSService {
                                 paymentMethodType: paymentMethodType,
                                 userInfo: .errorUserInfoDictionary(),
                                 diagnosticsId: UUID().uuidString,
-                                initProtocolVersion: self.initProtocolVersion?.rawValue,
+                                initProtocolVersion: initProtocolVersion?.rawValue,
                                 errorInfo: Primer3DSErrorInfo(primer3DSError)
                             )
                         )

@@ -13,11 +13,11 @@ protocol PaymentMethodsGroupViewDelegate: AnyObject {
 
 class PaymentMethodsGroupView: PrimerView {
 
-    internal private(set) var title: String?
-    internal private(set) var paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol]!
-    private var verticalStackView: UIStackView = UIStackView()
-    internal var delegate: PaymentMethodsGroupViewDelegate?
-    internal var titleLabel: UILabel?
+    private(set) var title: String?
+    private(set) var paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol]!
+    private var verticalStackView = UIStackView()
+    var delegate: PaymentMethodsGroupViewDelegate?
+    var titleLabel: UILabel?
 
     override init(frame: CGRect) {
         super.init(frame: frame)

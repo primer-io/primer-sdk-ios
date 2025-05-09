@@ -13,7 +13,7 @@ struct PrimerServerErrorResponse: Codable {
 
 struct PrimerServerError: Codable {
     var errorId: String
-    var `description`: String
+    var description: String
     var diagnosticsId: String
     var validationErrors: [String]?
 }
