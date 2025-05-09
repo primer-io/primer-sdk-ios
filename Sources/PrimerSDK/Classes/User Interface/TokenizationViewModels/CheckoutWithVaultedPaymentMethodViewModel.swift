@@ -321,7 +321,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
                 firstly {
                     self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     seal.fulfill(self.paymentCheckoutData)
                 }
@@ -345,7 +345,6 @@ Make sure you call the decision handler otherwise the SDK will hang.
             }
         }
     }
-
 
     // Resume payment with Resume payment ID
 
@@ -455,7 +454,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
                 firstly {
                     self.handleCreatePaymentEvent(token)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     self.resumePaymentId = paymentResponse.id
 
@@ -503,7 +502,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
             }
         }
     }
-    
+
     private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         return Promise { seal in
 

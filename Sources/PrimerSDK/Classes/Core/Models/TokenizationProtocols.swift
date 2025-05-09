@@ -39,7 +39,7 @@ internal protocol PaymentMethodTokenizationModelProtocol: NSObject {
     func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
                                           paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?>
     func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
-                                            paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String?
+                                          paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String?
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?>
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData?
     func handleSuccessfulFlow()

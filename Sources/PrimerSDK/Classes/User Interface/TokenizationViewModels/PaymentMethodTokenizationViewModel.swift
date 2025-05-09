@@ -96,7 +96,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     func performPreTokenizationSteps() async throws {
         fatalError("\(#function) must be overriden")
     }
-    
+
     func performTokenizationStep() -> Promise<Void> {
         fatalError("\(#function) must be overriden")
     }
@@ -195,7 +195,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
 
     func presentPaymentMethodUserInterface() async throws {
         fatalError("\(#function) must be overriden")
-    } 
+    }
 
     func awaitUserInput() -> Promise<Void> {
         fatalError("\(#function) must be overriden")

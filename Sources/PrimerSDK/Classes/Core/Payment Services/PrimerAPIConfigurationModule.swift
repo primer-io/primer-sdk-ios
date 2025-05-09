@@ -158,8 +158,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
 
             let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
             apiClient.requestPrimerConfigurationWithActions(clientToken: decodedJWTToken,
-                                                            request: actionsRequest)
-            { result, responseHeaders in
+                                                            request: actionsRequest) { result, responseHeaders in
                 switch result {
                 case .success(let configuration):
                     _ = ImageFileProcessor().process(configuration: configuration).ensure {
@@ -310,8 +309,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
 
         var tmpSecondSegment: String?
         if let data = try? JSONEncoder().encode(currentDecodedToken),
-           let dataStr = String(data: data.base64EncodedData(), encoding: .utf8)
-        {
+           let dataStr = String(data: data.base64EncodedData(), encoding: .utf8) {
             tmpSecondSegment = dataStr
         }
 

@@ -323,7 +323,7 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
         }
-        
+
         func validateRawData(withCardNetworksMetadata cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> Promise<Void>? {
             guard let rawData = self.rawData else {
                 logger.warn(message: "Unable to validate with card networks metadata as `rawData` was nil")
@@ -533,7 +533,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     firstly {
                         self.handleCreatePaymentEvent(token)
                     }
-                    .done { paymentResponse -> Void in
+                    .done { paymentResponse in
                         self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                         self.resumePaymentId = paymentResponse.id
 
@@ -840,7 +840,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     firstly {
                         self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                     }
-                    .done { paymentResponse -> Void in
+                    .done { paymentResponse in
                         let paymentData = PrimerCheckoutDataPayment(from: paymentResponse)
                         self.paymentCheckoutData = PrimerCheckoutData(payment: paymentData)
                         seal.fulfill(self.paymentCheckoutData)

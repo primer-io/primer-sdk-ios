@@ -10,8 +10,7 @@ import Foundation
 extension PrimerAPIClient {
     func tokenizePaymentMethod(clientToken: DecodedJWTToken,
                                tokenizationRequestBody: Request.Body.Tokenization,
-                               completion: @escaping (_ result: Result<PrimerPaymentMethodTokenData, Error>) -> Void)
-    {
+                               completion: @escaping (_ result: Result<PrimerPaymentMethodTokenData, Error>) -> Void) {
         let endpoint = PrimerAPI.tokenizePaymentMethod(clientToken: clientToken,
                                                        tokenizationRequestBody: tokenizationRequestBody)
         networkService.request(endpoint) { (result: Result<PrimerPaymentMethodTokenData, Error>) in
@@ -25,8 +24,7 @@ extension PrimerAPIClient {
     }
 
     func tokenizePaymentMethod(clientToken: DecodedJWTToken,
-                               tokenizationRequestBody: Request.Body.Tokenization) async throws -> PrimerPaymentMethodTokenData
-    {
+                               tokenizationRequestBody: Request.Body.Tokenization) async throws -> PrimerPaymentMethodTokenData {
         return try await withCheckedThrowingContinuation { continuation in
             self.tokenizePaymentMethod(clientToken: clientToken, tokenizationRequestBody: tokenizationRequestBody) { result in
                 switch result {

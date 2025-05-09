@@ -194,7 +194,7 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
 
     func createPayPalBillingAgreementSession(clientToken: DecodedJWTToken,
                                              payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement) async throws -> Response
-        .Body.PayPal.CreateBillingAgreement {
+    .Body.PayPal.CreateBillingAgreement {
         return try await withCheckedThrowingContinuation { continuation in
             self.createPayPalBillingAgreementSession(
                 clientToken: clientToken,
@@ -220,7 +220,7 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
 
     func confirmPayPalBillingAgreement(clientToken: DecodedJWTToken,
                                        payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement) async throws -> Response
-        .Body.PayPal.ConfirmBillingAgreement {
+    .Body.PayPal.ConfirmBillingAgreement {
         return try await withCheckedThrowingContinuation { continuation in
             self
                 .confirmPayPalBillingAgreement(clientToken: clientToken,
@@ -273,7 +273,7 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
 
     func createKlarnaCustomerToken(clientToken: DecodedJWTToken,
                                    klarnaCreateCustomerTokenAPIRequest: Request.Body.Klarna.CreateCustomerToken) async throws -> Response.Body.Klarna
-        .CustomerToken {
+    .CustomerToken {
         return try await withCheckedThrowingContinuation { continuation in
             self
                 .createKlarnaCustomerToken(clientToken: clientToken,
@@ -298,7 +298,7 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
 
     func finalizeKlarnaPaymentSession(clientToken: DecodedJWTToken,
                                       klarnaFinalizePaymentSessionRequest: Request.Body.Klarna.FinalizePaymentSession) async throws -> Response.Body
-        .Klarna.CustomerToken {
+    .Klarna.CustomerToken {
         return try await withCheckedThrowingContinuation { continuation in
             self
                 .finalizeKlarnaPaymentSession(clientToken: clientToken,
@@ -440,7 +440,7 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
 
     func fetchPayPalExternalPayerInfo(clientToken: DecodedJWTToken,
                                       payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo) async throws -> Response.Body.PayPal
-        .PayerInfo {
+    .PayerInfo {
         return try await withCheckedThrowingContinuation { continuation in
             self
                 .fetchPayPalExternalPayerInfo(clientToken: clientToken,
@@ -624,7 +624,7 @@ class PrimerAPIClient: PrimerAPIClientProtocol {
 
     func getPhoneMetadata(clientToken: DecodedJWTToken,
                           paymentRequestBody: Request.Body.PhoneMetadata.PhoneMetadataDataRequest) async throws -> Response.Body.PhoneMetadata
-        .PhoneMetadataDataResponse {
+    .PhoneMetadataDataResponse {
         return try await withCheckedThrowingContinuation { continuation in
             self.getPhoneMetadata(clientToken: clientToken, paymentRequestBody: paymentRequestBody) { result in
                 switch result {

@@ -114,7 +114,7 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     override func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()

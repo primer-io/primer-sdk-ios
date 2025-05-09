@@ -240,7 +240,7 @@ extension PaymentMethodTokenizationViewModel {
             }
         }
     }
-    
+
     func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> PrimerCheckoutData? {
         return try await withCheckedThrowingContinuation { continuation in
             self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
@@ -355,7 +355,7 @@ extension PaymentMethodTokenizationViewModel {
                 firstly {
                     self.handleCreatePaymentEvent(token)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     self.resumePaymentId = paymentResponse.id
 
@@ -442,7 +442,7 @@ extension PaymentMethodTokenizationViewModel {
                 firstly {
                     self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     seal.fulfill(self.paymentCheckoutData)
                 }

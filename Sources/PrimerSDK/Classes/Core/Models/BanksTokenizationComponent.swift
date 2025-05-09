@@ -389,7 +389,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 firstly {
                     self.handleCreatePaymentEvent(token)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     self.resumePaymentId = paymentResponse.id
 
@@ -427,7 +427,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> DecodedJWTToken? {
         return try await withCheckedThrowingContinuation { continuation in
             startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
-                .done { decodedJWTToken in       
+                .done { decodedJWTToken in
                     continuation.resume(returning: decodedJWTToken)
                 }
                 .catch { error in
@@ -658,7 +658,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 firstly {
                     self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     seal.fulfill(self.paymentCheckoutData)
                 }
@@ -708,8 +708,8 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             }
         }
     }
-    
-     func tokenize() async throws -> PrimerPaymentMethodTokenData {
+
+    func tokenize() async throws -> PrimerPaymentMethodTokenData {
         return try await withCheckedThrowingContinuation { continuation in
             tokenize()
                 .done { paymentMethodTokenData in
@@ -790,7 +790,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                     continuation.resume(throwing: error)
                 }
         }
-    } 
+    }
 
     func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
@@ -894,7 +894,7 @@ extension BanksTokenizationComponent: BankSelectorTokenizationProviding {
                 return self.handlePaymentMethodTokenData()
             }
     }
-    
+
     func tokenize(bankId: String) async throws {
         try await withCheckedThrowingContinuation { continuation in
             tokenize(bankId: bankId)
@@ -1098,7 +1098,7 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
                 }
                 .catch { err in
                     continuation.resume(throwing: err)
-                }   
+                }
         }
     }
 
@@ -1152,7 +1152,7 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
                 }
         }
     }
-    
+
     private func awaitBankSelection() -> Promise<Void> {
         return Promise { seal in
             self.bankSelectionCompletion = { bank in
