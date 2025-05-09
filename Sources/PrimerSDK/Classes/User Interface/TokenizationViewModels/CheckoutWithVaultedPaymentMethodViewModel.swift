@@ -321,7 +321,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
                 firstly {
                     self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     seal.fulfill(self.paymentCheckoutData)
                 }
@@ -332,12 +332,40 @@ Make sure you call the decision handler otherwise the SDK will hang.
         }
     }
 
+    private func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
+        return try await withCheckedThrowingContinuation { continuation in
+            firstly {
+                self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
+            }
+            .done { checkoutData in
+                continuation.resume(returning: checkoutData)
+            }
+            .catch { err in
+                continuation.resume(throwing: err)
+            }
+        }
+    }
+
     // Resume payment with Resume payment ID
 
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment> {
         let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
         return self.createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
                                                                           paymentResumeRequest: resumeRequest)
+    }
+
+    private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) async throws -> Response.Body.Payment {
+        return try await withCheckedThrowingContinuation { continuation in
+            firstly {
+                self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
+            }
+            .done { paymentResponse in
+                continuation.resume(returning: paymentResponse)
+            }
+            .catch { err in
+                continuation.resume(throwing: err)
+            }
+        }
     }
 
     func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?> {
@@ -426,7 +454,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
                 firstly {
                     self.handleCreatePaymentEvent(token)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     self.resumePaymentId = paymentResponse.id
 
@@ -457,6 +485,20 @@ Make sure you call the decision handler otherwise the SDK will hang.
                 .catch { err in
                     seal.reject(err)
                 }
+            }
+        }
+    }
+
+    func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> DecodedJWTToken? {
+        return try await withCheckedThrowingContinuation { continuation in
+            firstly {
+                self.startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
+            }
+            .done { decodedJWTToken in
+                continuation.resume(returning: decodedJWTToken)
+            }
+            .catch { err in
+                continuation.resume(throwing: err)
             }
         }
     }
@@ -518,9 +560,37 @@ Make sure you call the decision handler otherwise the SDK will hang.
         }
     }
 
+    private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
+        return try await withCheckedThrowingContinuation { continuation in
+            firstly {
+                self.handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
+            }
+            .done { resumeToken in
+                continuation.resume(returning: resumeToken)
+            }
+            .catch { err in
+                continuation.resume(throwing: err)
+            }
+        }
+    }
+
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
         let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
         return createResumePaymentService.createPayment(paymentRequest: paymentRequest)
+    }
+
+    private func handleCreatePaymentEvent(_ paymentMethodData: String) async throws -> Response.Body.Payment {
+        return try await withCheckedThrowingContinuation { continuation in
+            firstly {
+                self.handleCreatePaymentEvent(paymentMethodData)
+            }
+            .done { paymentResponse in
+                continuation.resume(returning: paymentResponse)
+            }
+            .catch { err in
+                continuation.resume(throwing: err)
+            }
+        }
     }
 
     func handleSuccessfulFlow() {

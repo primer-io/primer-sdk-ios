@@ -3,7 +3,6 @@ import Foundation
 internal typealias JWTToken = String
 
 internal protocol PrimerAPIConfigurationModuleProtocol {
-
     static var apiClient: PrimerAPIClientProtocol? { get set }
     static var clientToken: JWTToken? { get }
     static var decodedJWTToken: DecodedJWTToken? { get }
@@ -17,13 +16,23 @@ internal protocol PrimerAPIConfigurationModuleProtocol {
         requestClientTokenValidation: Bool,
         requestVaultedPaymentMethods: Bool
     ) -> Promise<Void>
+    func setupSession(
+        forClientToken clientToken: String,
+        requestDisplayMetadata: Bool,
+        requestClientTokenValidation: Bool,
+        requestVaultedPaymentMethods: Bool
+
+    ) async throws
+
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void>
+    func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) async throws
+
     func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void>
+    func storeRequiredActionClientToken(_ newClientToken: String) async throws
 }
 
 // swiftlint:disable type_body_length
 internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, LogReporter {
-
     static var apiClient: PrimerAPIClientProtocol?
 
     private static let queue = DispatchQueue(label: "com.primer.configurationQueue")
@@ -63,7 +72,8 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
     static var decodedJWTToken: DecodedJWTToken? {
         guard let decodedJWTToken = AppState.current.clientToken?.decodedJWTToken,
               let expDate = decodedJWTToken.expDate,
-              expDate > Date() else {
+              expDate > Date()
+        else {
             return nil
         }
 
@@ -71,7 +81,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
     }
 
     static var cacheKey: String? {
-        guard let cacheKey = Self.clientToken else {
+        guard let cacheKey = clientToken else {
             return nil
         }
         return cacheKey
@@ -111,10 +121,34 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         }
     }
 
+    func setupSession(
+        forClientToken clientToken: String,
+        requestDisplayMetadata: Bool = true,
+        requestClientTokenValidation: Bool = true,
+        requestVaultedPaymentMethods: Bool = false
+    ) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            firstly {
+                self.setupSession(
+                    forClientToken: clientToken,
+                    requestDisplayMetadata: requestDisplayMetadata,
+                    requestClientTokenValidation: requestClientTokenValidation,
+                    requestVaultedPaymentMethods: requestVaultedPaymentMethods)
+            }
+            .done {
+                continuation.resume(returning: ())
+            }
+            .catch { error in
+                continuation.resume(throwing: error)
+            }
+        }
+    }
+
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
-                  let cacheKey = Self.cacheKey else {
+                  let cacheKey = Self.cacheKey
+            else {
                 let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                          diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
@@ -141,6 +175,20 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         }
     }
 
+    func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            firstly {
+                self.updateSession(withActions: actionsRequest)
+            }
+            .done {
+                continuation.resume(returning: ())
+            }
+            .catch { error in
+                continuation.resume(throwing: error)
+            }
+        }
+    }
+
     func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void> {
         return Promise { seal in
             firstly {
@@ -154,6 +202,20 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 PrimerAPIConfigurationModule.clientToken = nil
                 PrimerAPIConfigurationModule.apiConfiguration = nil
                 seal.reject(err)
+            }
+        }
+    }
+
+    func storeRequiredActionClientToken(_ newClientToken: String) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            firstly {
+                self.storeRequiredActionClientToken(newClientToken)
+            }
+            .done {
+                continuation.resume(returning: ())
+            }
+            .catch { error in
+                continuation.resume(throwing: error)
             }
         }
     }
@@ -189,10 +251,25 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         }
     }
 
+    private func validateClientToken(_ clientToken: String, requestRemoteClientTokenValidation: Bool) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            firstly {
+                self.validateClientToken(clientToken, requestRemoteClientTokenValidation: requestRemoteClientTokenValidation)
+            }
+            .done {
+                continuation.resume(returning: ())
+            }
+            .catch { error in
+                continuation.resume(throwing: error)
+            }
+        }
+    }
+
     private func validateClientTokenInternally(_ tokenToValidate: JWTToken) throws -> JWTToken {
         guard var currentDecodedToken = tokenToValidate.decodedJWTToken,
               let expDate = currentDecodedToken.expDate,
-              expDate > Date() else {
+              expDate > Date()
+        else {
             let error = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                        diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: error)
@@ -228,7 +305,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
             currentDecodedToken.pciUrl = previousDecodedToken?.pciUrl
         }
 
-        var segments: [String] = tokenToValidate.split(separator: ".").compactMap({ String($0) })
+        var segments: [String] = tokenToValidate.split(separator: ".").compactMap { String($0) }
 
         var tmpSecondSegment: String?
         if let data = try? JSONEncoder().encode(currentDecodedToken),
@@ -266,7 +343,8 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         let start = Date().millisecondsSince1970
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken,
-                  let cacheKey = Self.cacheKey else {
+                  let cacheKey = Self.cacheKey
+            else {
                 let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                          diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
@@ -279,8 +357,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                     let event = Analytics.Event.message(
                         message: "Configuration cache hit with key: \(cacheKey)",
                         messageType: .info,
-                        severity: .info
-                    )
+                        severity: .info)
                     Analytics.Service.record(event: event)
                     logger.debug(message: "Cached config used")
                     self.recordLoadedEvent(start, source: .cache)
@@ -303,7 +380,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                         requestDisplayMetadata: requestDisplayMetadata)
 
                     let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
-                    apiClient.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters) { (result, responseHeaders) in
+                    apiClient.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters) { result, responseHeaders in
                         switch result {
                         case .failure(let err):
                             innerSeal.reject(err)
@@ -352,7 +429,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         if requestVaultedPaymentMethods {
             let vaultService: VaultServiceProtocol = VaultService(apiClient: PrimerAPIClient())
             let vaultedPaymentMethodsPromise = vaultService.fetchVaultedPaymentMethods()
-            let fetchConfigurationPromise = self.fetchConfiguration(requestDisplayMetadata: true)
+            let fetchConfigurationPromise = fetchConfiguration(requestDisplayMetadata: true)
 
             return Promise { seal in
                 firstly {
@@ -366,9 +443,8 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 }
             }
         } else {
-            return self.fetchConfiguration(requestDisplayMetadata: requestDisplayMetadata)
+            return fetchConfiguration(requestDisplayMetadata: requestDisplayMetadata)
         }
-
     }
 
     private func reportAllowedCardNetworks() {
@@ -376,8 +452,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         let event = Analytics.Event.message(
             message: "Merchant supported networks: \(networksDescription)",
             messageType: .other,
-            severity: .info
-        )
+            severity: .info)
         Analytics.Service.record(event: event)
     }
 
@@ -385,4 +460,5 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         PrimerSettings.current.clientSessionCachingEnabled
     }
 }
+
 // swiftlint:enable type_body_length

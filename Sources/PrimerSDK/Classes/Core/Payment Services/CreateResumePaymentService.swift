@@ -9,10 +9,15 @@ import Foundation
 
 internal protocol CreateResumePaymentServiceProtocol {
     func createPayment(paymentRequest: Request.Body.Payment.Create) -> Promise<Response.Body.Payment>
+    func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment
     func completePayment(clientToken: DecodedJWTToken,
                          completeUrl: URL,
                          body: Request.Body.Payment.Complete) -> Promise<Void>
+    func completePayment(clientToken: DecodedJWTToken,
+                         completeUrl: URL,
+                         body: Request.Body.Payment.Complete) async throws
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) -> Promise<Response.Body.Payment>
+    func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response.Body.Payment
 }
 
 private enum CreateResumePaymentCallType: String {
@@ -53,6 +58,16 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                         seal.reject(error)
                     }
                 }
+            }
+        }
+    }
+
+    func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.createPayment(paymentRequest: paymentRequest).done { paymentResponse in
+                continuation.resume(returning: paymentResponse)
+            }.catch { error in
+                continuation.resume(throwing: error)
             }
         }
     }
@@ -134,6 +149,16 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         }
     }
 
+    func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response.Body.Payment {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.resumePaymentWithPaymentId(paymentId, paymentResumeRequest: paymentResumeRequest).done { paymentResponse in
+                continuation.resume(returning: paymentResponse)
+            }.catch { error in
+                continuation.resume(throwing: error)
+            }
+        }
+    }
+
     /**
      * Completes a payment using the provided JWT token and URL.
      *
@@ -160,6 +185,18 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                 case .failure(let error):
                     seal.reject(error)
                 }
+            }
+        }
+    }
+
+    func completePayment(clientToken: DecodedJWTToken,
+                         completeUrl: URL,
+                         body: Request.Body.Payment.Complete) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.completePayment(clientToken: clientToken, completeUrl: completeUrl, body: body).done {
+                continuation.resume()
+            }.catch { error in
+                continuation.resume(throwing: error)
             }
         }
     }

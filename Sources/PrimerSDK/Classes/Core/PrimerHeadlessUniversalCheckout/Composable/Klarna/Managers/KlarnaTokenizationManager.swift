@@ -18,7 +18,10 @@ protocol KlarnaTokenizationManagerProtocol {
      object on successful tokenization or rejects with an `Error` if the tokenization process fails.
      */
     func tokenizeHeadless(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerCheckoutData>
+    func tokenizeHeadless(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) async throws -> PrimerCheckoutData
+
     func tokenizeDropIn(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerPaymentMethodTokenData>
+    func tokenizeDropIn(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) async throws -> PrimerPaymentMethodTokenData
 }
 
 class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
@@ -62,6 +65,17 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
         }
     }
 
+    func tokenizeHeadless(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) async throws -> PrimerCheckoutData {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.tokenizeHeadless(customerToken: customerToken, offSessionAuthorizationId: offSessionAuthorizationId)
+                .done { checkoutData in
+                    continuation.resume(returning: checkoutData)
+                }.catch { error in
+                    continuation.resume(throwing: error)
+                }
+        }
+    }
+
     // MARK: - Tokenize DropIn
 
     func tokenizeDropIn(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerPaymentMethodTokenData> {
@@ -78,6 +92,17 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
             .catch { error in
                 seal.reject(error)
             }
+        }
+    }
+
+    func tokenizeDropIn(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) async throws -> PrimerPaymentMethodTokenData {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.tokenizeDropIn(customerToken: customerToken, offSessionAuthorizationId: offSessionAuthorizationId)
+                .done { paymentMethodTokenData in
+                    continuation.resume(returning: paymentMethodTokenData)
+                }.catch { error in
+                    continuation.resume(throwing: error)
+                }
         }
     }
 }
@@ -120,10 +145,32 @@ extension KlarnaTokenizationManager {
         }
     }
 
+    func startPaymentFlow(with paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> PrimerCheckoutData {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.startPaymentFlow(with: paymentMethodTokenData)
+                .done { checkoutData in
+                    continuation.resume(returning: checkoutData)
+                }.catch { error in
+                    continuation.resume(throwing: error)
+                }
+        }
+    }
+
     // Create payment with Payment method token
     private func createPaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
         let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
         return createResumePaymentService.createPayment(paymentRequest: paymentRequest)
+    }
+
+    private func createPaymentEvent(_ paymentMethodData: String) async throws -> Response.Body.Payment {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.createPaymentEvent(paymentMethodData)
+                .done { paymentResponse in
+                    continuation.resume(returning: paymentResponse)
+                }.catch { error in
+                    continuation.resume(throwing: error)
+                }
+        }
     }
 
     private func getRequestBody(customerToken: Response.Body.Klarna.CustomerToken?,
@@ -162,6 +209,18 @@ extension KlarnaTokenizationManager {
             // Constructs a request body with the payment instrument and initiates a tokenization request through the `tokenizationService`.
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             seal.fulfill(requestBody)
+        }
+    }
+
+    private func getRequestBody(customerToken: Response.Body.Klarna.CustomerToken?,
+                                offSessionAuthorizationId: String?) async throws -> Request.Body.Tokenization {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.getRequestBody(customerToken: customerToken, offSessionAuthorizationId: offSessionAuthorizationId)
+                .done { requestBody in
+                    continuation.resume(returning: requestBody)
+                }.catch { error in
+                    continuation.resume(throwing: error)
+                }
         }
     }
 }

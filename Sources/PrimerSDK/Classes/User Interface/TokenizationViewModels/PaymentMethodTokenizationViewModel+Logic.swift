@@ -241,6 +241,18 @@ extension PaymentMethodTokenizationViewModel {
         }
     }
 
+    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> PrimerCheckoutData? {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
+                .done { checkoutData in
+                    continuation.resume(returning: checkoutData)
+                }
+                .catch { error in
+                    continuation.resume(throwing: error)
+                }
+        }
+    }
+
     // This function will do one of the two following:
     //     - Wait a response from the merchant, via the delegate function. The response can be:
     //         - A new client token
@@ -343,7 +355,7 @@ extension PaymentMethodTokenizationViewModel {
                 firstly {
                     self.handleCreatePaymentEvent(token)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     self.resumePaymentId = paymentResponse.id
 
@@ -430,7 +442,7 @@ extension PaymentMethodTokenizationViewModel {
                 firstly {
                     self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     seal.fulfill(self.paymentCheckoutData)
                 }
@@ -438,6 +450,18 @@ extension PaymentMethodTokenizationViewModel {
                     seal.reject(err)
                 }
             }
+        }
+    }
+
+    func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
+                .done { checkoutData in
+                    continuation.resume(returning: checkoutData)
+                }
+                .catch { error in
+                    continuation.resume(throwing: error)
+                }
         }
     }
 

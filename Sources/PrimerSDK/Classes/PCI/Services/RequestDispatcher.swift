@@ -10,9 +10,10 @@ import Foundation
 typealias DispatcherCompletion = (Result<DispatcherResponse, Error>) -> Void
 
 protocol RequestDispatcher {
-    func dispatch(request: URLRequest) async throws -> DispatcherResponse
     func dispatch(request: URLRequest, completion: @escaping DispatcherCompletion) -> PrimerCancellable?
+    func dispatch(request: URLRequest) async throws -> DispatcherResponse
     func dispatchWithRetry(request: URLRequest, retryConfig: RetryConfig, completion: @escaping DispatcherCompletion) -> PrimerCancellable?
+    func dispatchWithRetry(request: URLRequest, retryConfig: RetryConfig) async throws -> DispatcherResponse
 }
 
 struct DispatcherResponseModel: DispatcherResponse {
@@ -42,19 +43,10 @@ protocol URLSessionProtocol {
 extension URLSession: URLSessionProtocol {}
 
 class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
-
     let urlSession: URLSessionProtocol
 
     init(urlSession: URLSessionProtocol = URLSession.shared) {
         self.urlSession = urlSession
-    }
-
-    func dispatch(request: URLRequest) async throws -> DispatcherResponse {
-        return try await withCheckedThrowingContinuation { continuation in
-            dispatch(request: request) { response in
-                continuation.resume(with: response)
-            }
-        }
     }
 
     @discardableResult
@@ -83,11 +75,27 @@ class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
         return task
     }
 
+    func dispatch(request: URLRequest) async throws -> DispatcherResponse {
+        return try await withCheckedThrowingContinuation { continuation in
+            dispatch(request: request) { response in
+                continuation.resume(with: response)
+            }
+        }
+    }
+
     @discardableResult
     func dispatchWithRetry(request: URLRequest, retryConfig: RetryConfig, completion: @escaping DispatcherCompletion) -> PrimerCancellable? {
         let retryHandler = RetryHandler(request: request, retryConfig: retryConfig, completion: completion, urlSession: urlSession)
         retryHandler.attempt()
         return retryHandler.currentTask
+    }
+
+    func dispatchWithRetry(request: URLRequest, retryConfig: RetryConfig) async throws -> DispatcherResponse {
+        return try await withCheckedThrowingContinuation { continuation in
+            dispatchWithRetry(request: request, retryConfig: retryConfig) { response in
+                continuation.resume(with: response)
+            }
+        }
     }
 }
 

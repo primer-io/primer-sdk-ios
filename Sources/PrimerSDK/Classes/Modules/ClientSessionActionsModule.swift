@@ -8,7 +8,6 @@
 import Foundation
 
 protocol ClientSessionActionsProtocol {
-
     func selectPaymentMethodIfNeeded(_ paymentMethodType: String, cardNetwork: String?) -> Promise<Void>
     func unselectPaymentMethodIfNeeded() -> Promise<Void>
     func dispatch(actions: [ClientSession.Action]) -> Promise<Void>

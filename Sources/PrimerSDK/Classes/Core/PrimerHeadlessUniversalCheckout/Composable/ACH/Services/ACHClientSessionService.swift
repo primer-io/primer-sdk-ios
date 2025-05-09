@@ -16,16 +16,20 @@ import Foundation
  */
 protocol ACHUserDetailsProviding {
     func getClientSessionUserDetails() -> Promise<ACHUserDetails>
+    func getClientSessionUserDetails() async throws -> ACHUserDetails
+
     func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) -> Promise<Void>
+    func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) async throws
 }
 
 class ACHClientSessionService: ACHUserDetailsProviding {
-
     // MARK: - Properties
+
     let apiClient: PrimerAPIClientProtocol
     let settings: PrimerSettingsProtocol
 
     // MARK: - Init
+
     init(apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient(),
          settings: PrimerSettingsProtocol = DependencyContainer.resolve()) {
         self.apiClient = apiClient
@@ -48,7 +52,17 @@ extension ACHClientSessionService {
                                              emailAddress: customerDetails?.emailAddress ?? "")
             seal.fulfill(userDetails)
         }
+    }
 
+    func getClientSessionUserDetails() async throws -> ACHUserDetails {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.getClientSessionUserDetails()
+                .done { userDetails in
+                    continuation.resume(returning: userDetails)
+                }.catch { error in
+                    continuation.resume(throwing: error)
+                }
+        }
     }
 }
 
@@ -74,7 +88,17 @@ extension ACHClientSessionService {
             .catch { error in
                 seal.reject(error)
             }
+        }
+    }
 
+    func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.patchClientSession(with: actionsRequest)
+                .done {
+                    continuation.resume()
+                }.catch { error in
+                    continuation.resume(throwing: error)
+                }
         }
     }
 

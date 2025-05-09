@@ -15,6 +15,7 @@ import Foundation
  */
 protocol ACHTokenizationDelegate: AnyObject {
     func tokenize() -> Promise<PrimerPaymentMethodTokenData>
+    func tokenize() async throws -> PrimerPaymentMethodTokenData
 }
 
 /**
@@ -58,6 +59,17 @@ class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelegate {
             .catch { error in
                 seal.reject(error)
             }
+        }
+    }
+
+    func tokenize() async throws -> PrimerPaymentMethodTokenData {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.tokenize()
+                .done { paymentMethodTokenData in
+                    continuation.resume(returning: paymentMethodTokenData)
+                }.catch { error in
+                    continuation.resume(throwing: error)
+                }
         }
     }
 
@@ -131,6 +143,17 @@ extension ACHTokenizationService {
 
             let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
             seal.fulfill(requestBody)
+        }
+    }
+
+    private func getRequestBody() async throws -> Request.Body.Tokenization {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.getRequestBody()
+                .done { requestBody in
+                    continuation.resume(returning: requestBody)
+                }.catch { error in
+                    continuation.resume(throwing: error)
+                }
         }
     }
 }
