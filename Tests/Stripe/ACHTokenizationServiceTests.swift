@@ -6,11 +6,10 @@
 //
 
 import Foundation
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class ACHTokenizationServiceTests: XCTestCase {
-
     var achTokenizationService: ACHTokenizationService!
     var mockApiClient: MockPrimerAPIClient!
 
@@ -39,6 +38,18 @@ final class ACHTokenizationServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
 
+    func test_tokenizeHeadless_success_async() async {
+        prepareConfigurations()
+        mockApiClient.tokenizePaymentMethodResult = (ACHMocks.primerPaymentMethodTokenData, nil)
+
+        do {
+            let tokenData = try await achTokenizationService.tokenize()
+            XCTAssertNotNil(tokenData, "Result should not be nil")
+        } catch {
+            XCTFail("Result should not fail")
+        }
+    }
+
     func test_tokenizeHeadless_failure() {
         prepareConfigurations()
         let error = getInvalidTokenError()
@@ -58,6 +69,19 @@ final class ACHTokenizationServiceTests: XCTestCase {
         }
 
         wait(for: [expectation], timeout: 10.0)
+    }
+
+    func test_tokenizeHeadless_failure_async() async {
+        prepareConfigurations()
+        let error = getInvalidTokenError()
+        mockApiClient.tokenizePaymentMethodResult = (nil, error)
+
+        do {
+            _ = try await achTokenizationService.tokenize()
+            XCTFail("Result should fail")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
     }
 
     func test_tokenization_validation_success() {
@@ -153,7 +177,6 @@ final class ACHTokenizationServiceTests: XCTestCase {
             }
         }
     }
-
 }
 
 extension ACHTokenizationServiceTests {
@@ -211,10 +234,15 @@ extension ACHTokenizationServiceTests {
 
         let mockPrimerApiConfiguration = Mocks.createMockAPIConfiguration(
             clientSession: clientSession,
-            paymentMethods: [ACHMocks.stripeACHPaymentMethod])
+            paymentMethods: [ACHMocks.stripeACHPaymentMethod]
+        )
 
         mockPrimerApiConfiguration.paymentMethods?[0].baseLogoImage = PrimerTheme.BaseImage(colored: UIImage(), light: nil, dark: nil)
-        setupPrimerConfiguration(paymentMethod: ACHMocks.stripeACHPaymentMethod, apiConfiguration: mockPrimerApiConfiguration, hasDecodedToken: hasDecodedToken)
+        setupPrimerConfiguration(
+            paymentMethod: ACHMocks.stripeACHPaymentMethod,
+            apiConfiguration: mockPrimerApiConfiguration,
+            hasDecodedToken: hasDecodedToken
+        )
     }
 
     private func restartPrimerConfiguration() {
@@ -228,7 +256,7 @@ extension ACHTokenizationServiceTests {
 
     private func getInvalidTokenError() -> PrimerError {
         let error = PrimerError.invalidClientToken(
-            userInfo: self.getErrorUserInfo(),
+            userInfo: getErrorUserInfo(),
             diagnosticsId: UUID().uuidString
         )
         ErrorHandler.handle(error: error)
