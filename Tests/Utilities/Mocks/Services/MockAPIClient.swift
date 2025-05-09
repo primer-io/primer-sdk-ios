@@ -926,14 +926,8 @@ extension MockPrimerAPIClient {
             paymentId: "mock_payment_id",
             amount: 1000,
             currencyCode: "EUR",
-            customer: nil,
             customerId: "mock_customer_id",
-            dateStr: nil,
-            order: nil,
-            orderId: nil,
-            requiredAction: nil,
-            status: .success,
-            paymentFailureReason: nil
+            status: .success
         )
         static let mockSendAnalyticsEvents = Analytics.Service.Response(
             id: "mock-id",
@@ -953,14 +947,8 @@ extension MockPrimerAPIClient {
             paymentId: "mock_payment_id",
             amount: 1000,
             currencyCode: "EUR",
-            customer: nil,
             customerId: "mock_customer_id",
-            dateStr: nil,
-            order: nil,
-            orderId: nil,
-            requiredAction: nil,
-            status: .success,
-            paymentFailureReason: nil
+            status: .success
         )
 
         static let mockFetchNolSdkSecret = Response.Body.NolPay.NolPaySecretDataResponse(sdkSecret: "")

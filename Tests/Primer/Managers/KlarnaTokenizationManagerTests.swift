@@ -23,8 +23,8 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         createResumePaymentService = MockCreateResumePaymentService()
         tokenizationService = MockTokenizationService()
         sut = KlarnaTokenizationManager(
-            createResumePaymentService: createResumePaymentService,
-            tokenizationService: tokenizationService
+            tokenizationService: tokenizationService,
+            createResumePaymentService: createResumePaymentService
         )
     }
 
