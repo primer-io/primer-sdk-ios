@@ -24,28 +24,6 @@ internal class PayPalService: PayPalServiceProtocol {
     }
 
     // swiftlint:disable:next large_tuple
-    private func prepareUrlAndTokenAndId(path: String) -> (DecodedJWTToken, URL, String)? {
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-            return nil
-        }
-
-        guard let configId = PrimerAPIConfigurationModule.apiConfiguration?.getConfigId(for: PrimerPaymentMethodType.payPal.rawValue)
-        else {
-            return nil
-        }
-
-        guard let coreURL = decodedJWTToken.coreUrl
-        else {
-            return nil
-        }
-
-        guard let url = URL(string: "\(coreURL)\(path)")
-        else {
-            return nil
-        }
-
-        return (decodedJWTToken, url, configId)
-    }
 
     func startOrderSession(_ completion: @escaping (Result<Response.Body.PayPal.CreateOrder, Error>) -> Void) {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
