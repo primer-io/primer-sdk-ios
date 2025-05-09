@@ -15,6 +15,10 @@ enum ContainerError: LocalizedError {
     case circularDependency(Any, name: String?)
     /// A factory returned an invalid type
     case invalidFactoryReturn(expected: Any, actual: Any)
+    /// The container has been terminated and is no longer available
+    case containerTerminated
+    /// The requested scope was not found
+    case scopeNotFound(String)
 
     var errorDescription: String? {
         switch self {
@@ -28,6 +32,12 @@ enum ContainerError: LocalizedError {
 
         case let .invalidFactoryReturn(expected, actual):
             return "Factory returned invalid type: expected \(expected), got \(actual)"
+
+        case .containerTerminated:
+            return "The container has been terminated and is no longer available"
+
+        case let .scopeNotFound(scopeId):
+            return "Scope not found: \(scopeId)"
         }
     }
 }

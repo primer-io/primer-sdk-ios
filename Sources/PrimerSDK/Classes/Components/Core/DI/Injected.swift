@@ -75,7 +75,7 @@ struct Injected<T> {
                 }
 
                 // Get the container
-                guard let container = DIContainer.current else {
+                guard let container = DIContainer.currentSync else {
                     return handleError("No DI container available")
                 }
 

@@ -183,3 +183,12 @@ extension Container: ContainerProtocol {
         register { _ in factory }
     }
 }
+
+// swiftlint: disable identifier_name
+extension Container: ContainerRegistrationBuilder {
+    /// Implementation of the _register method required by ContainerRegistrationBuilder
+    func _register<T>(type: T.Type, name: String?, with policy: ContainerRetainPolicy, builder: @escaping (ContainerProtocol) throws -> T) {
+        register(name: name, with: policy, builder: builder)
+    }
+}
+// swiftlint: enable identifier_name

@@ -17,8 +17,8 @@ protocol DIInjectable {
 extension DIInjectable {
     /// Create an instance using the current container
     /// - Returns: A new instance with dependencies from the current container
-    static func create() -> Self {
-        guard let container = DIContainer.current else {
+    static func create() async -> Self {
+        guard let container = await DIContainer.current else {
             fatalError("No DI container available - make sure DIContainer.setupMainContainer() is called during app initialization")
         }
         return Self(resolver: container)
