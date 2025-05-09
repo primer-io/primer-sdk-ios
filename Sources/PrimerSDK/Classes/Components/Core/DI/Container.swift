@@ -7,179 +7,395 @@
 
 import Foundation
 
-/// Main implementation of the dependency injection container
-class Container {
+/// Main implementation of the dependency injection container as an actor for thread safety
+actor Container: LogReporter {
     /// Internal factory structure
     private struct FactoryRegistration {
         let policy: ContainerRetainPolicy
-        let build: (ContainerProtocol) throws -> Any
+        let build: (ContainerProtocol) async throws -> Any
     }
-
+    
     // MARK: - Properties
-
-    /// Thread safety lock
-    private let lock = NSRecursiveLock()
-
+    
     /// Map of registered factory methods
-    private var factories: [String: FactoryRegistration] = [:]
-
+    private var factories: [TypeKey: FactoryRegistration] = [:]
+    
     /// Map of strongly-held instances
-    private var instances: [String: Any] = [:]
-
-    /// Map of weakly-held instances
-    private var weakInstances = NSMapTable<NSString, AnyObject>(
-        keyOptions: [.copyIn],
-        valueOptions: [.weakMemory]
-    )
-
+    private var instances: [TypeKey: Any] = [:]
+    
+    /// Map of scoped instances
+    private var scopedInstances: [String: [TypeKey: Any]] = [:]
+    
     /// Set used to detect circular dependencies
-    private var resolutionStack: Set<String> = []
-
+    private var resolutionStack: Set<TypeKey> = []
+    
+    /// Resolution path for better error reporting
+    private var resolutionPath: [String] = []
+    
+    /// Available scopes
+    private var scopes: [String: DependencyScope] = [
+        DependencyScope.application.id: DependencyScope.application
+    ]
+    
+    /// Flag to indicate if the container has been terminated
+    private var isTerminated = false
+    
     // MARK: - Initialization
-
-    init() {}
-
-    // MARK: - Private Methods
-
-    /// Generate a unique key for a type and optional name
-    private func generateKey<T>(for type: T.Type, name: String?) -> String {
-        let typeKey = String(reflecting: type)
-        guard let name = name, !name.isEmpty else { return typeKey }
-        return "\(typeKey)_\(name)"
+    
+    init() {
+        logger.info(message: "Container initialized")
+    }
+    
+    deinit {
+        logger.debug(message: "Container deinitializing")
+    }
+    
+    // MARK: - Helper Methods
+    
+    /// Create a type key for a specific type and optional name
+    private func typeKey<T>(for type: T.Type, name: String?) -> TypeKey {
+        return TypeKey(type, name: name)
+    }
+    
+    /// Check if the container has been terminated
+    private func checkTermination() throws {
+        if isTerminated {
+            logger.error(message: "Container has been terminated")
+            throw ContainerError.containerTerminated
+        }
+    }
+    
+    /// Terminate the container and release all resources
+    func terminate() {
+        logger.info(message: "Container terminating")
+        isTerminated = true
+        factories.removeAll()
+        instances.removeAll()
+        scopedInstances.removeAll()
+        scopes.removeAll()
     }
 }
 
 // MARK: - ContainerProtocol Implementation
 
 extension Container: ContainerProtocol {
-    func register<T>(name: String? = nil, with policy: ContainerRetainPolicy, builder: @escaping (ContainerProtocol) throws -> T) {
-        lock.lock(); defer { lock.unlock() }
-
-        let key = generateKey(for: T.self, name: name)
-
-        // Clean up any existing instances
+    func register<T>(type: T.Type, name: String? = nil, with policy: ContainerRetainPolicy, builder: @escaping (ContainerProtocol) async throws -> T) {
+        // Create a key for the registration
+        let key = typeKey(for: type, name: name)
+        
+        logger.debug(message: "Registering dependency: \(type) with name: \(name ?? "nil") and policy: \(policy)")
+        
+        // Clean up any existing instances for this key
         instances[key] = nil
-        weakInstances.removeObject(forKey: key as NSString)
-
+        
+        // Clean up any scoped instances if this is a scoped registration
+        if case .scoped(let scopeId) = policy {
+            scopedInstances[scopeId]?[key] = nil
+        }
+        
         // Register the new factory
         factories[key] = FactoryRegistration(policy: policy, build: builder)
     }
-
-    func resolve<T>(name: String? = nil) throws -> T! {
-        lock.lock(); defer { lock.unlock() }
-
-        let key = generateKey(for: T.self, name: name)
-
+    
+    func resolve<T>(type: T.Type, name: String? = nil) async throws -> T {
+        try checkTermination()
+        
+        let key = typeKey(for: type, name: name)
+        
         // Check if the factory exists
         guard let factory = factories[key] else {
-            throw ContainerError.missingFactoryMethod(T.self, name: name)
+            logger.error(message: "Missing factory method for type: \(type) with name: \(name ?? "nil")")
+            throw ContainerError.missingFactoryMethod(type, name: name)
         }
-
+        
         // Detect circular dependencies
         if resolutionStack.contains(key) {
-            throw ContainerError.circularDependency(T.self, name: name)
+            logger.error(message: "Circular dependency detected while resolving: \(type) with name: \(name ?? "nil")")
+            throw ContainerError.circularDependency(type, name: name, resolutionPath: resolutionPath)
         }
-
+        
+        logger.debug(message: "Resolving dependency: \(type) with name: \(name ?? "nil")")
+        
         // Handle different retention policies
         switch factory.policy {
         case .default:
             // Always create a new instance
             resolutionStack.insert(key)
-            let instance = try factory.build(self)
-            resolutionStack.remove(key)
-
+            resolutionPath.append(key.description)
+            
+            defer {
+                resolutionStack.remove(key)
+                resolutionPath.removeLast()
+            }
+            
+            let instance = try await factory.build(self)
+            
             guard let typedInstance = instance as? T else {
+                logger.error(message: "Factory returned invalid type: expected \(T.self), got \(type(of: instance))")
                 throw ContainerError.invalidFactoryReturn(expected: T.self, actual: type(of: instance))
             }
-
+            
             return typedInstance
-
+            
         case .strong:
             // Use existing instance or create a new one and store it strongly
             if let instance = instances[key] as? T {
+                logger.debug(message: "Returning existing strong instance for: \(type) with name: \(name ?? "nil")")
                 return instance
             }
-
+            
             resolutionStack.insert(key)
-            let instance = try factory.build(self)
-            resolutionStack.remove(key)
-
+            resolutionPath.append(key.description)
+            
+            defer {
+                resolutionStack.remove(key)
+                resolutionPath.removeLast()
+            }
+            
+            let instance = try await factory.build(self)
+            
             guard let typedInstance = instance as? T else {
+                logger.error(message: "Factory returned invalid type: expected \(T.self), got \(type(of: instance))")
                 throw ContainerError.invalidFactoryReturn(expected: T.self, actual: type(of: instance))
             }
-
+            
+            logger.debug(message: "Storing new strong instance for: \(type) with name: \(name ?? "nil")")
             instances[key] = typedInstance
             return typedInstance
-
+            
         case .weak:
             // Use existing instance or create a new one and store it weakly
-            let keyNS = key as NSString
-            if let instance = weakInstances.object(forKey: keyNS) as? T {
-                return instance
+            // Note: We'll use a WeakBox wrapper to store weak references
+            if let instance = instances[key] as? WeakBox, let value = instance.value as? T {
+                logger.debug(message: "Returning existing weak instance for: \(type) with name: \(name ?? "nil")")
+                return value
             }
-
+            
             resolutionStack.insert(key)
-            let instance = try factory.build(self)
-            resolutionStack.remove(key)
-
+            resolutionPath.append(key.description)
+            
+            defer {
+                resolutionStack.remove(key)
+                resolutionPath.removeLast()
+            }
+            
+            let instance = try await factory.build(self)
+            
             guard let typedInstance = instance as? T else {
+                logger.error(message: "Factory returned invalid type: expected \(T.self), got \(type(of: instance))")
                 throw ContainerError.invalidFactoryReturn(expected: T.self, actual: type(of: instance))
             }
-
-            if type(of: typedInstance) is AnyClass {
-                let anyObject = typedInstance as AnyObject
-                weakInstances.setObject(anyObject, forKey: keyNS)
+            
+            // Only store reference types weakly
+            if let objectInstance = typedInstance as AnyObject {
+                logger.debug(message: "Storing new weak instance for: \(type) with name: \(name ?? "nil")")
+                instances[key] = WeakBox(objectInstance)
             }
+            
+            return typedInstance
+            
+        case .scoped(let scopeId):
+            // Check if the scope exists
+            guard scopes[scopeId] != nil else {
+                logger.error(message: "Scope not found: \(scopeId) for type: \(type) with name: \(name ?? "nil")")
+                throw ContainerError.scopeNotFound(scopeId)
+            }
+            
+            // Initialize the scope's instance storage if needed
+            if scopedInstances[scopeId] == nil {
+                scopedInstances[scopeId] = [:]
+            }
+            
+            // Use existing instance from the scope or create a new one
+            if let instance = scopedInstances[scopeId]?[key] as? T {
+                logger.debug(message: "Returning existing scoped instance for: \(type) with name: \(name ?? "nil") in scope: \(scopeId)")
+                return instance
+            }
+            
+            resolutionStack.insert(key)
+            resolutionPath.append(key.description)
+            
+            defer {
+                resolutionStack.remove(key)
+                resolutionPath.removeLast()
+            }
+            
+            let instance = try await factory.build(self)
+            
+            guard let typedInstance = instance as? T else {
+                logger.error(message: "Factory returned invalid type: expected \(T.self), got \(type(of: instance))")
+                throw ContainerError.invalidFactoryReturn(expected: T.self, actual: type(of: instance))
+            }
+            
+            logger.debug(message: "Storing new scoped instance for: \(type) with name: \(name ?? "nil") in scope: \(scopeId)")
+            scopedInstances[scopeId]?[key] = typedInstance
             return typedInstance
         }
     }
-
-    func resolveWithType<T>(_ type: T.Type, name: String? = nil) throws -> T! {
-        return try resolve(name: name) as T
-    }
-
-    func resolveAll<T>(conforming protocol: T.Type) -> [T] {
-        lock.lock(); defer { lock.unlock() }
-
+    
+    func resolveAll<T>(conforming protocol: T.Type) async throws -> [T] {
+        try checkTermination()
+        
+        logger.debug(message: "Resolving all dependencies conforming to: \(T.self)")
+        
         var result: [T] = []
-
-        // Collect strong instances
-        for (_, value) in instances {
-            if let instance = value as? T {
-                result.append(instance)
+        
+        // Function to add instances to result if they conform to the protocol
+        func addMatchingInstances(_ instances: [Any]) {
+            for instance in instances {
+                if let matchingInstance = instance as? T {
+                    result.append(matchingInstance)
+                } else if let weakBox = instance as? WeakBox, let value = weakBox.value as? T {
+                    result.append(value)
+                }
             }
         }
-
-        // Collect weak instances
-        for (_, value) in weakInstances.dictionaryRepresentation() {
-            if let instance = value as? T {
-                result.append(instance)
-            }
+        
+        // Collect global instances
+        addMatchingInstances(Array(instances.values))
+        
+        // Collect scoped instances
+        for (_, scopeInstances) in scopedInstances {
+            addMatchingInstances(Array(scopeInstances.values))
         }
-
+        
+        logger.debug(message: "Found \(result.count) dependencies conforming to: \(T.self)")
         return result
     }
-
-    func reset<T>(ignoreDependencies: [T.Type]) {
-        lock.lock(); defer { lock.unlock() }
-
+    
+    func scope(_ scopeId: String) throws -> DependencyScope {
+        try checkTermination()
+        
+        if let scope = scopes[scopeId] {
+            return scope
+        }
+        
+        logger.info(message: "Creating new scope: \(scopeId)")
+        let newScope = DependencyScope(id: scopeId, parent: DependencyScope.application)
+        scopes[scopeId] = newScope
+        return newScope
+    }
+    
+    func createScope(_ scopeId: String, parent parentScopeId: String) throws -> DependencyScope {
+        try checkTermination()
+        
+        guard let parentScope = scopes[parentScopeId] else {
+            logger.error(message: "Parent scope not found: \(parentScopeId)")
+            throw ContainerError.scopeNotFound(parentScopeId)
+        }
+        
+        logger.info(message: "Creating new scope: \(scopeId) with parent: \(parentScopeId)")
+        let newScope = DependencyScope(id: scopeId, parent: parentScope)
+        scopes[scopeId] = newScope
+        return newScope
+    }
+    
+    func releaseScope(_ scopeId: String) {
+        // Don't release the application scope
+        guard scopeId != DependencyScope.application.id else {
+            logger.warn(message: "Cannot release the application scope")
+            return
+        }
+        
+        logger.info(message: "Releasing scope: \(scopeId)")
+        scopes[scopeId] = nil
+        scopedInstances[scopeId] = nil
+    }
+    
+    func reset<T>(ignoreDependencies: [T.Type] = []) async {
+        try? checkTermination()
+        
+        logger.info(message: "Resetting container except for specified dependencies")
+        
         // Create keys to ignore
-        let keysToIgnore = ignoreDependencies.map { String(reflecting: $0.self) }
-
+        let keysToIgnore = ignoreDependencies.map { typeKey(for: $0, name: nil) }
+        
         // Reset strong instances
         for key in instances.keys where !keysToIgnore.contains(key) {
             instances[key] = nil
         }
-
-        // Reset weak instances
-        let weakKeysToRemove = weakInstances.keyEnumerator().allObjects
-            .compactMap { $0 as? NSString }
-            .filter { !keysToIgnore.contains($0 as String) }
-
-        weakKeysToRemove.forEach { weakInstances.removeObject(forKey: $0) }
+        
+        // Reset scoped instances (except application scope)
+        for scopeId in scopedInstances.keys where scopeId != DependencyScope.application.id {
+            scopedInstances[scopeId] = nil
+        }
     }
+    
+    func dependencyGraph() async -> String {
+        var graph = "Dependency Graph:\n"
+        
+        graph += "\nRegistered Types:\n"
+        for (key, registration) in factories {
+            graph += "- \(key.description): \(registration.policy)\n"
+        }
+        
+        graph += "\nInstantiated Singletons:\n"
+        for key in instances.keys {
+            graph += "- \(key.description)\n"
+        }
+        
+        graph += "\nScoped Instances:\n"
+        for (scopeId, instances) in scopedInstances {
+            graph += "- Scope: \(scopeId)\n"
+            for key in instances.keys {
+                graph += "  - \(key.description)\n"
+            }
+        }
+        
+        return graph
+    }
+    
+    func validateDependencies() async -> [String] {
+        var issues: [String] = []
+        
+        for (key, registration) in factories {
+            switch registration.policy {
+            case .scoped(let scopeId):
+                if scopes[scopeId] == nil {
+                    issues.append("Dependency \(key.description) is registered in non-existent scope: \(scopeId)")
+                }
+            default:
+                break
+            }
+        }
+        
+        return issues
+    }
+    
+    func registerFactory<F: Factory>(_ factory: F) where F: Sendable {
+        logger.debug(message: "Registering factory: \(F.self)")
+        register(type: F.self) { _ in
+            return factory
+        }
+    }
+    
+    func registerAsyncFactory<F: AsyncFactory>(_ factory: F) where F: Sendable {
+        logger.debug(message: "Registering async factory: \(F.self)")
+        register(type: F.self) { _ in
+            return factory
+        }
+    }
+}
 
-    func registerFactory<F: Factory>(_ factory: F) {
-        register { _ in factory }
+// MARK: - ContainerRegistrationBuilder Implementation
+
+extension Container: ContainerRegistrationBuilder {
+    @discardableResult
+    func register<T>(type: T.Type, name: String?, with policy: ContainerRetainPolicy, builder: @escaping (ContainerProtocol) async throws -> T) -> Self {
+        Task {
+            await register(type: type, name: name, with: policy, builder: builder)
+        }
+        return self
+    }
+}
+
+// MARK: - WeakBox for weak references
+
+/// Wrapper class for holding weak references
+private class WeakBox: Sendable {
+    weak var value: AnyObject?
+    
+    init(_ value: AnyObject) {
+        self.value = value
     }
 }
