@@ -8,7 +8,7 @@
 import UIKit
 import WebKit
 
-internal class PrimerWebViewController: PrimerViewController {
+final class PrimerWebViewController: PrimerViewController {
 
     private let webView: WKWebView! = WKWebView()
     internal private(set) var url: URL

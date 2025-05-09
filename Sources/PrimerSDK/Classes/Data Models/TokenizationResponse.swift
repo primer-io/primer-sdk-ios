@@ -9,7 +9,7 @@ import Foundation
 
 extension Response.Body {
 
-    public class Tokenization: NSObject, Codable {
+    public final class Tokenization: NSObject, Codable {
 
         public var analyticsId: String?
         public var id: String?

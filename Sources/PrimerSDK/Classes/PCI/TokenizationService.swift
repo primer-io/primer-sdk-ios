@@ -8,7 +8,7 @@ internal protocol TokenizationServiceProtocol {
     func exchangePaymentMethodToken(_ paymentMethodTokenId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?) -> Promise<PrimerPaymentMethodTokenData>
 }
 
-internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
+final class TokenizationService: TokenizationServiceProtocol, LogReporter {
     var paymentMethodTokenData: PrimerPaymentMethodTokenData?
 
     let apiClient: PrimerAPIClientProtocol

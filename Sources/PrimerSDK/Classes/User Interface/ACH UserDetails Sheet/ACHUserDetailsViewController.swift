@@ -15,7 +15,7 @@ protocol ACHUserDetailsDelegate: AnyObject {
     func didReceivedError(error: PrimerError)
 }
 
-class ACHUserDetailsViewController: PrimerViewController {
+final class ACHUserDetailsViewController: PrimerViewController {
 
     // MARK: - Properties
     var achUserDetailsView: ACHUserDetailsView?

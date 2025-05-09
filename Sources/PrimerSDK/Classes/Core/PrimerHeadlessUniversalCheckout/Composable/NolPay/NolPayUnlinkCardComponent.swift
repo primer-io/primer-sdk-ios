@@ -25,7 +25,7 @@ public enum NolPayUnlinkCollectableData: PrimerCollectableData {
     case otpData(otpCode: String)
 }
 
-public class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
+public final class NolPayUnlinkCardComponent: PrimerHeadlessCollectDataComponent {
     public typealias COLLECTABLE = NolPayUnlinkCollectableData
     public typealias STEPPABLE = NolPayUnlinkDataStep
 

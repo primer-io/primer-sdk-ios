@@ -25,7 +25,7 @@ extension Endpoint {
     }
 }
 
-class SuccessResponseFactory: NetworkResponseFactory {
+final class SuccessResponseFactory: NetworkResponseFactory {
     func model<T>(for response: Data, forMetadata metadata: any ResponseMetadata) throws -> T where T: Decodable {
         if let response = SuccessResponse() as? T {
             return response
@@ -36,7 +36,7 @@ class SuccessResponseFactory: NetworkResponseFactory {
     }
 }
 
-class JSONNetworkResponseFactory: NetworkResponseFactory, LogReporter {
+final class JSONNetworkResponseFactory: NetworkResponseFactory, LogReporter {
 
     let decoder = JSONDecoder()
 

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PrimerDemo3DSViewController: UIViewController {
+final class PrimerDemo3DSViewController: UIViewController {
 
     private let stackView = UIStackView()
     var onSendCredentialsButtonTapped: (() -> Void)?
@@ -71,7 +71,7 @@ class PrimerDemo3DSViewController: UIViewController {
     }
 }
 
-class PrimerThirdPartySDKViewController: UIViewController {
+final class PrimerThirdPartySDKViewController: UIViewController {
 
     var paymentMethodType: String
     private let stackView = UIStackView()

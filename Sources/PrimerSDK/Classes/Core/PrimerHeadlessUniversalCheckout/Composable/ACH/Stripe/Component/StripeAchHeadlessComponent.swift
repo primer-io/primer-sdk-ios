@@ -7,7 +7,7 @@
 
 import UIKit
 
-class StripeAchHeadlessComponent {
+final class StripeAchHeadlessComponent {
     // MARK: - Tokenization
     var tokenizationViewModel: StripeAchTokenizationViewModel
     var clientSessionService: ACHClientSessionService

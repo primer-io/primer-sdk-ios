@@ -1,6 +1,6 @@
 import UIKit
 
-internal class PrimerViewController: UIViewController {
+class PrimerViewController: UIViewController {
 
     var titleImage: UIImage?
     var titleImageTintColor: UIColor?

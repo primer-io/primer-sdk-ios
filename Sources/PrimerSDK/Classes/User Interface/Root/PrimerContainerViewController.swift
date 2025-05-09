@@ -9,7 +9,7 @@ import UIKit
 
 /// PrimerContainerViewController gets a view controller as input. The input view controller must use autolayout.
 /// It then sets this view controller as its child, wraps it within a scrollview and sets the constraints needed.
-class PrimerContainerViewController: PrimerViewController {
+final class PrimerContainerViewController: PrimerViewController {
 
     internal var scrollView = UIScrollView()
     internal var childView = PrimerView()

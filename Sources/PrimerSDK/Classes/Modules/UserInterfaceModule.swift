@@ -24,7 +24,7 @@ protocol UserInterfaceModuleProtocol {
 
 import UIKit
 
-class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
+final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
 
     // MARK: - PROPERTIES
 

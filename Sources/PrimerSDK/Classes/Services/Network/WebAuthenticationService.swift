@@ -14,7 +14,7 @@ protocol WebAuthenticationService {
     func connect(paymentMethodType: String, url: URL, scheme: String, _ completion: @escaping (Result<URL, Error>) -> Void)
 }
 
-class DefaultWebAuthenticationService: NSObject, WebAuthenticationService {
+final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService {
 
     var session: ASWebAuthenticationSession?
 

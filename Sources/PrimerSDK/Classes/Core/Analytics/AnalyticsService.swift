@@ -20,7 +20,7 @@ extension AnalyticsServiceProtocol {
 
 extension Analytics {
 
-    internal class Service: AnalyticsServiceProtocol, LogReporter {
+    final class Service: AnalyticsServiceProtocol, LogReporter {
 
         static let defaultSdkLogsUrl = URL(string: "https://analytics.production.data.primer.io/sdk-logs")!
 

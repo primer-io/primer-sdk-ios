@@ -23,7 +23,7 @@ public enum NolPayLinkCardStep: PrimerHeadlessStep {
     case collectPhoneData(cardNumber: String), collectOtpData(phoneNumber: String), collectTagData, cardLinked
 }
 
-public class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
+public final class NolPayLinkCardComponent: PrimerHeadlessCollectDataComponent {
     public typealias COLLECTABLE = NolPayLinkCollectableData
     public typealias STEPPABLE = NolPayLinkCardStep
 

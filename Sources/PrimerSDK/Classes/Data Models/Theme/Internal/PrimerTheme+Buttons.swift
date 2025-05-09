@@ -4,7 +4,7 @@ internal enum ButtonType {
     case main, paymentMethod
 }
 
-internal class ButtonTheme {
+final class ButtonTheme {
     let colorStates: StatefulColor
     let cornerRadius: CGFloat
     let border: BorderTheme

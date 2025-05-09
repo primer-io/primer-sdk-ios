@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal class PrimerResultViewController: PrimerViewController {
+final class PrimerResultViewController: PrimerViewController {
 
     internal enum ScreenType {
         case success, failure

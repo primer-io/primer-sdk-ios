@@ -9,7 +9,7 @@ import Foundation
 
 private let silentLogger = DefaultLogger(logLevel: .none)
 
-public class PrimerLogging {
+public final class PrimerLogging {
     public static let shared = PrimerLogging()
 
     private init() {}

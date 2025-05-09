@@ -1,16 +1,9 @@
-//
-//  DotPayTokenizationViewModel.swift
-//  PrimerSDK
-//
-//  Created by Admin on 8/11/21.
-//
-
 // swiftlint:disable function_body_length
 
 import SafariServices
 import UIKit
 
-class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
+final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
 
     internal private(set) var banks: [AdyenBank] = []
     internal private(set) var dataSource: [AdyenBank] = [] {

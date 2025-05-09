@@ -9,7 +9,7 @@ import Foundation
 
 extension PrimerHeadlessUniversalCheckout {
 
-    public class NativeUIManager: PrimerPaymentMethodManager {
+    public final class NativeUIManager: PrimerPaymentMethodManager {
 
         public let paymentMethodType: String
 

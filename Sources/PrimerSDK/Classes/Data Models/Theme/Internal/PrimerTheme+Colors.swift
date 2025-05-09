@@ -31,7 +31,7 @@ internal struct StatefulColor {
     }
 }
 
-internal class ColorSwatch {
+final class ColorSwatch {
     let primary: UIColor
     let error: UIColor
 

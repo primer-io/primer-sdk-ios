@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal class PrimerSearchTextField: UITextField, UITextFieldDelegate {
+final class PrimerSearchTextField: UITextField, UITextFieldDelegate {
 
     struct Padding {
         static let horizontal: CGFloat = 6

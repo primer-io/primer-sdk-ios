@@ -10,7 +10,7 @@ import SwiftUI
 import PrimerKlarnaSDK
 #endif
 
-class PrimerKlarnaCategoriesViewModel: ObservableObject {
+final class PrimerKlarnaCategoriesViewModel: ObservableObject {
     @Published var paymentCategories: [KlarnaPaymentCategory] = []
     @Published var showBackButton: Bool = false
     @Published var isAuthorizing: Bool = false

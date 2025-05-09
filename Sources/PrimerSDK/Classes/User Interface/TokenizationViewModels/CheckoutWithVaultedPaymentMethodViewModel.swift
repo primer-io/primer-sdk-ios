@@ -13,7 +13,7 @@
 
 import Foundation
 
-class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
+final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
 
     let tokenizationService: TokenizationServiceProtocol
 

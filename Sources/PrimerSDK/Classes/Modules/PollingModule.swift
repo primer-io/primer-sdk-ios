@@ -20,7 +20,7 @@ protocol Module {
     func cancel(withError err: PrimerError)
 }
 
-class PollingModule: Module {
+final class PollingModule: Module {
 
     static var apiClient: PrimerAPIClientProtocol?
 

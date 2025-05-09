@@ -8,7 +8,7 @@
 import UIKit
 import SwiftUI
 
-class SharedUIViewWrapper: ObservableObject {
+final class SharedUIViewWrapper: ObservableObject {
     @Published var uiView: UIView?
 }
 

@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal class PrimerImageView: UIImageView {}
+final class PrimerImageView: UIImageView {}
 
 extension PrimerImageView {
 

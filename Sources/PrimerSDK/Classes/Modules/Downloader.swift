@@ -13,7 +13,7 @@ import Foundation
 internal typealias FileName = String
 internal typealias FileExtension = String
 
-internal class File: LogReporter {
+class File: LogReporter {
 
     var fileName: FileName
     var fileExtension: FileExtension?
@@ -71,7 +71,7 @@ internal protocol DownloaderModule {
     func download(files: [File]) -> Promise<[File]>
 }
 
-internal class Downloader: NSObject, DownloaderModule {
+final class Downloader: NSObject, DownloaderModule {
 
     private var documentDirectoryUrl: URL? {
         return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first

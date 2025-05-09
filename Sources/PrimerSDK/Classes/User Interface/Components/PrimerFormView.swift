@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PrimerFormView: PrimerView {
+final class PrimerFormView: PrimerView {
 
     // MARK: - Properties
 

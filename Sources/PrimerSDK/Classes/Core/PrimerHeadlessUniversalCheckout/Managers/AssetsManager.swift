@@ -9,7 +9,7 @@ import UIKit
 
 extension PrimerHeadlessUniversalCheckout {
 
-    public class AssetsManager {
+    public final class AssetsManager {
 
         @available(*, deprecated, message: "Use getSupportCardNetworkAssets() or getCardNetworkAssets(for:) instead")
         public static func getCardNetworkImage(for cardNetwork: CardNetwork) throws -> UIImage? {
@@ -130,7 +130,7 @@ extension PrimerHeadlessUniversalCheckout {
     }
 }
 
-public class PrimerCardNetworkAsset {
+public final class PrimerCardNetworkAsset {
     public let cardNetwork: CardNetwork
     public let cardImage: UIImage?
 
@@ -144,7 +144,7 @@ public class PrimerCardNetworkAsset {
     }
 }
 
-public class PrimerPaymentMethodAsset {
+public final class PrimerPaymentMethodAsset {
 
     public let paymentMethodType: String
     public let paymentMethodName: String
@@ -174,7 +174,7 @@ public protocol PrimerAsset {
     var dark: UIImage? { get }
 }
 
-class PrimerInternalAsset: PrimerAsset {
+final class PrimerInternalAsset: PrimerAsset {
 
     public private(set) var colored: UIImage?
     public private(set) var light: UIImage?
@@ -192,7 +192,7 @@ class PrimerInternalAsset: PrimerAsset {
 }
 
 @available(*, deprecated, message: "Use PrimerAsset instead")
-public class PrimerPaymentMethodLogo: PrimerAsset {
+public final class PrimerPaymentMethodLogo: PrimerAsset {
 
     public private(set) var colored: UIImage?
     public private(set) var light: UIImage?
@@ -209,7 +209,7 @@ public class PrimerPaymentMethodLogo: PrimerAsset {
     }
 }
 
-public class PrimerPaymentMethodBackgroundColor {
+public final class PrimerPaymentMethodBackgroundColor {
 
     public private(set) var colored: UIColor?
     public private(set) var light: UIColor?

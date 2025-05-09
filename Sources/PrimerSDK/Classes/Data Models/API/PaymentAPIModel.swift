@@ -41,7 +41,7 @@ public struct PaymentAPIModelAddress: Codable {
 }
 
 extension Request.Body {
-    class Payment {}
+    final class Payment {}
 }
 
 extension Request.Body.Payment {
@@ -150,7 +150,7 @@ internal struct PrimerPaymentMethodData {
 
 // MARK: Checkout Data
 
-@objc public class PrimerCheckoutData: NSObject, Codable {
+@objc public final class PrimerCheckoutData: NSObject, Codable {
 
     public let payment: PrimerCheckoutDataPayment?
     public var additionalInfo: PrimerCheckoutAdditionalInfo?
@@ -161,7 +161,7 @@ internal struct PrimerPaymentMethodData {
     }
 }
 
-@objc public class PrimerCheckoutDataPayment: NSObject, Codable {
+@objc public final class PrimerCheckoutDataPayment: NSObject, Codable {
     public let id: String?
     public let orderId: String?
     public let paymentFailureReason: PrimerPaymentErrorCode?
@@ -184,7 +184,7 @@ extension PrimerCheckoutDataPayment {
 
 // MARK: Checkout Data Payment
 
-@objc public class PrimerCheckoutPaymentMethodData: NSObject, Codable {
+@objc public final class PrimerCheckoutPaymentMethodData: NSObject, Codable {
     public let paymentMethodType: PrimerCheckoutPaymentMethodType
 
     public init(type: PrimerCheckoutPaymentMethodType) {
@@ -192,7 +192,7 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-@objc public class PrimerCheckoutPaymentMethodType: NSObject, Codable {
+@objc public final class PrimerCheckoutPaymentMethodType: NSObject, Codable {
     public let type: String
 
     public init(type: String) {
@@ -232,7 +232,7 @@ extension PrimerCheckoutDataPayment {
 
 // MARK: Client Session
 
-@objc public class PrimerClientSession: NSObject, Codable {
+@objc public final class PrimerClientSession: NSObject, Codable {
 
     public let customerId: String?
     public let orderId: String?
@@ -261,7 +261,7 @@ extension PrimerCheckoutDataPayment {
 
 // MARK: Client Session Order
 
-@objc public class PrimerOrder: NSObject, Codable {
+@objc public final class PrimerOrder: NSObject, Codable {
 
     public let countryCode: String?
     public let shipping: PrimerShipping?
@@ -286,7 +286,7 @@ extension PrimerCheckoutDataPayment {
 
 // MARK: Client Session Shipping
 
-@objc public class PrimerShipping: NSObject, Codable {
+@objc public final class PrimerShipping: NSObject, Codable {
     public let amount: Int?
     public let methodId: String?
     public let methodName: String?
@@ -305,7 +305,7 @@ extension PrimerCheckoutDataPayment {
 
 // MARK: Client Session Customer
 
-@objc public class PrimerCustomer: NSObject, Codable {
+@objc public final class PrimerCustomer: NSObject, Codable {
 
     public let emailAddress: String?
     public let mobileNumber: String?
@@ -332,7 +332,7 @@ extension PrimerCheckoutDataPayment {
 
 // MARK: Client Session Customer Line Item
 
-@objc public class PrimerLineItem: NSObject, Codable {
+@objc public final class PrimerLineItem: NSObject, Codable {
 
     public let itemId: String?
     public let itemDescription: String?
@@ -363,7 +363,7 @@ extension PrimerCheckoutDataPayment {
 
 // MARK: Client Session Customer Address
 
-@objc public class PrimerAddress: NSObject, Codable {
+@objc public final class PrimerAddress: NSObject, Codable {
 
     public let firstName: String?
     public let lastName: String?
