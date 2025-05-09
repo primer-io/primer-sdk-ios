@@ -8,7 +8,7 @@
 import UIKit
 
 /// PrimerLoadingViewController is a loading view controller, with variable height.
-class PrimerLoadingViewController: PrimerViewController {
+final class PrimerLoadingViewController: PrimerViewController {
 
     private var height: CGFloat
     private(set) internal var imageView: UIImageView?
@@ -20,11 +20,7 @@ class PrimerLoadingViewController: PrimerViewController {
         self.height = height
         self.imageView = imageView
         self.message = message
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError()
+        super.init()
     }
 
     override func viewDidLoad() {

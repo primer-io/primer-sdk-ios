@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal class PrimerResultViewController: PrimerViewController {
+final class PrimerResultViewController: PrimerViewController {
 
     internal enum ScreenType {
         case success, failure
@@ -20,10 +20,8 @@ internal class PrimerResultViewController: PrimerViewController {
     init(screenType: PrimerResultViewController.ScreenType, message: String?) {
         self.message = message
         self.screenType = screenType
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
-
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override func viewDidLoad() {
         super.viewDidLoad()
