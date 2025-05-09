@@ -29,11 +29,3 @@ class PrimerPostalCodeField: PrimerCardFormFieldProtocol {
         return postalCodeFieldView
     }
 }
-
-extension PrimerPostalCodeField {
-
-    private static var localSamplePostalCode: String {
-        let countryCode = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode
-        return PostalCode.sample(for: countryCode)
-    }
-}

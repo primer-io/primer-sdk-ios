@@ -28,10 +28,6 @@ internal class ClientSession {
             ClientSession.Action(type: .selectPaymentMethod, params: parameters)
         }
 
-        static func unselectPaymentMethodAction() -> ClientSession.Action {
-            ClientSession.Action(type: .unselectPaymentMethod, params: nil)
-        }
-
         static func setBillingAddressActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
             ClientSession.Action(type: .setBillingAddress,
                                  params: makeBillingAddressDictionaryRequestFromParameters(parameters))
@@ -102,14 +98,6 @@ internal class ClientSession {
                 try container.encode(paramsCodable, forKey: .params)
             }
         }
-
-        internal func toDictionary() -> [String: Any]? {
-            do {
-                return try self.asDictionary()
-            } catch {
-                return nil
-            }
-        }
     }
 
     // MARK: ClientSession.Address
@@ -123,12 +111,6 @@ internal class ClientSession {
         let postalCode: String?
         let state: String?
         let countryCode: CountryCode?
-
-        internal func toString() -> String {
-            return [firstName, lastName, addressLine1, addressLine2, city, postalCode, state, countryCode?.rawValue]
-                .compactMap({ $0 })
-                .joined(separator: ", ")
-        }
     }
 
     // MARK: ClientSession.Customer

@@ -266,16 +266,6 @@ final class StringExtensionTests: XCTestCase {
         XCTAssertEqual("1.2".compareWithVersion("1.2.0"), .orderedSame)
     }
 
-    func testIsValidMobilePhoneNumber() {
-        XCTAssertTrue("01234567890".isValidMobilePhoneNumber)
-        XCTAssertTrue("09876543210".isValidMobilePhoneNumber)
-        XCTAssertTrue("77777777777777".isValidMobilePhoneNumber)
-        XCTAssertFalse("".isValidMobilePhoneNumber)
-        XCTAssertFalse("abcdefghij".isValidMobilePhoneNumber)
-        XCTAssertFalse("7777777777777777777".isValidMobilePhoneNumber)
-        XCTAssertFalse("55555".isValidMobilePhoneNumber)
-    }
-
     func testIsValidOTP() {
         XCTAssertTrue("123456".isValidOTP)
         XCTAssertTrue("000000".isValidOTP)

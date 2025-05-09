@@ -11,7 +11,6 @@ import Foundation
 import PassKit
 
 typealias PrimerAPIConfiguration = Response.Body.Configuration
-typealias PrimerAPIConfigurationResponse = (config: Response.Body.Configuration, ttl: TimeInterval)
 
 // swiftlint:disable file_length
 extension Request.URLParameters {
@@ -94,14 +93,14 @@ extension Response.Body {
 
         var hasSurchargeEnabled: Bool {
             let pmSurcharge = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options?
-                .first(where: { $0["surcharge"] as? Int != nil })
+                .first(where: { $0["surcharge"] is Int })
 
             let options = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options
             let cardSurcharge = options?
                 .first(where: {
                     (($0["networks"] as? [[String: Any]])?
                         .first(where: {
-                            $0["surcharge"] as? Int != nil
+                            $0["surcharge"] is Int
                         })) != nil
                 })
             return pmSurcharge != nil || cardSurcharge != nil
@@ -247,12 +246,6 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
         let primerAccountId: String?
         let keys: ThreeDS.Keys?
         var checkoutModules: [Response.Body.Configuration.CheckoutModule]?
-
-        var isSetByClientSession: Bool {
-            return clientSession != nil
-        }
-
-        internal let sdkSupportedPaymentMethodTypes: [PrimerPaymentMethodType] = PrimerPaymentMethodType.allCases
 
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)

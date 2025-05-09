@@ -1,7 +1,7 @@
 import UIKit
 
-internal enum InputType {
-    case outlined, underlined, doublelined
+enum InputType {
+    case underlined
 }
 
 internal class InputTheme {

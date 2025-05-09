@@ -37,10 +37,3 @@ extension NSObject {
         return className
     }
 }
-
-extension NSObject {
-
-    class func objectCast<T: NSObject>(_ obj: NSObject) -> T? {
-        return obj as? T
-    }
-}

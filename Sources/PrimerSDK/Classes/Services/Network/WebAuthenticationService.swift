@@ -12,6 +12,7 @@ import SafariServices
 protocol WebAuthenticationService {
     var session: ASWebAuthenticationSession? { get }
     func connect(paymentMethodType: String, url: URL, scheme: String, _ completion: @escaping (Result<URL, Error>) -> Void)
+    func connect(paymentMethodType: String, url: URL, scheme: String) async throws -> URL
 }
 
 class DefaultWebAuthenticationService: NSObject, WebAuthenticationService {
@@ -40,6 +41,19 @@ class DefaultWebAuthenticationService: NSObject, WebAuthenticationService {
 
         webAuthSession.presentationContextProvider = self
         webAuthSession.start()
+    }
+
+    func connect(paymentMethodType: String, url: URL, scheme: String) async throws -> URL {
+        return try await withCheckedThrowingContinuation { continuation in
+            connect(paymentMethodType: paymentMethodType, url: url, scheme: scheme) { result in
+                switch result {
+                case .success(let url):
+                    continuation.resume(returning: url)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
     }
 }
 
