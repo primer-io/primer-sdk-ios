@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal class PrimerSearchTextField: UITextField, UITextFieldDelegate {
+class PrimerSearchTextField: UITextField, UITextFieldDelegate {
 
     struct Padding {
         static let horizontal: CGFloat = 6
@@ -79,7 +79,7 @@ internal class PrimerSearchTextField: UITextField, UITextFieldDelegate {
     }
 
     override func editingRect(forBounds bounds: CGRect) -> CGRect {
-        return self.textRect(forBounds: bounds)
+        return textRect(forBounds: bounds)
     }
 
     override func rightViewRect(forBounds bounds: CGRect) -> CGRect {
@@ -109,7 +109,7 @@ internal class PrimerSearchTextField: UITextField, UITextFieldDelegate {
 
     @objc
     func clear() {
-        self.text = nil
+        text = nil
         rightImageView.image = searchImage
         _ = _delegate?.textFieldShouldClear?(self)
     }

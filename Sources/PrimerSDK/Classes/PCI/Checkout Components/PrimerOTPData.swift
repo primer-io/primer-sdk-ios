@@ -11,7 +11,7 @@ public class PrimerOTPData: PrimerRawData {
 
     public var otp: String {
         didSet {
-            self.onDataDidChange?()
+            onDataDidChange?()
         }
     }
 

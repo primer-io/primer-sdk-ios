@@ -6,7 +6,7 @@
 //
 
 import Foundation
-internal protocol PaymentMethodTokenizationModelProtocol: NSObject {
+protocol PaymentMethodTokenizationModelProtocol: NSObject {
     var checkoutEventsNotifierModule: CheckoutEventsNotifierModule { get }
 
     // Events
@@ -36,7 +36,7 @@ internal protocol PaymentMethodTokenizationModelProtocol: NSObject {
     func cancel()
 }
 
-internal protocol PaymentMethodTokenizationViewProtocol: NSObject {
+protocol PaymentMethodTokenizationViewProtocol: NSObject {
     var willPresentPaymentMethodUI: (() -> Void)? { get set }
     var didPresentPaymentMethodUI: (() -> Void)? { get set }
     var willDismissPaymentMethodUI: (() -> Void)? { get set }

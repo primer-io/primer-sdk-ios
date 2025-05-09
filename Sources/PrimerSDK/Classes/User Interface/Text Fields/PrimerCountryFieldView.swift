@@ -2,13 +2,13 @@ import UIKit
 
 public final class PrimerCountryFieldView: PrimerSimpleCardFormTextFieldView {
 
-    internal var country: String? {
+    var country: String? {
         return textField.internalText
     }
 
-    internal var countryCode: CountryCode?
+    var countryCode: CountryCode?
 
-    internal var onOpenCountriesListPressed: PrimerAction?
+    var onOpenCountriesListPressed: PrimerAction?
 
     override func xibSetup() {
         super.xibSetup()
@@ -22,7 +22,7 @@ public final class PrimerCountryFieldView: PrimerSimpleCardFormTextFieldView {
             userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
         isValid = { text in
-            return !text.isEmpty
+            !text.isEmpty
         }
         setupTextFieldView()
     }

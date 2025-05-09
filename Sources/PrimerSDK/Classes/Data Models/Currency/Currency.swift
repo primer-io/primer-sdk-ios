@@ -10,13 +10,13 @@ public struct Currency: Codable {
         case decimalDigits = "m"
     }
 
-    internal var symbol: String? {
+    var symbol: String? {
         let localeIdentifier = Locale.identifier(fromComponents: [NSLocale.Key.currencyCode.rawValue: code])
         let locale = Locale(identifier: localeIdentifier)
         return locale.currencySymbol
     }
 
-    internal var isZeroDecimal: Bool {
+    var isZeroDecimal: Bool {
         decimalDigits == 0
     }
 }

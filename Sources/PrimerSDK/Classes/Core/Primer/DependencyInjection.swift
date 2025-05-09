@@ -12,7 +12,7 @@ struct Dependency<T> {
     var wrappedValue: T
 
     init() {
-        self.wrappedValue = DependencyContainer.resolve()
+        wrappedValue = DependencyContainer.resolve()
     }
 }
 
@@ -20,9 +20,9 @@ struct Dependency<T> {
 private let _DependencyContainer = DependencyContainer()
 // swiftlint:enable identifier_name
 
-final internal class DependencyContainer {
+final class DependencyContainer {
 
-    private static let queue: DispatchQueue = DispatchQueue(label: "primer.dependencycontainer")
+    private static let queue = DispatchQueue(label: "primer.dependencycontainer")
 
     private var dependencies = [String: AnyObject]()
 

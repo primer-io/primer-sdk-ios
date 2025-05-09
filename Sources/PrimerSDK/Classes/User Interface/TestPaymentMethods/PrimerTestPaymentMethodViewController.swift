@@ -20,7 +20,7 @@ class PrimerTestPaymentMethodViewController: PrimerFormViewController {
     init(viewModel: PrimerTestPaymentMethodTokenizationViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        self.titleImage = viewModel.uiModule.invertedLogo
+        titleImage = viewModel.uiModule.invertedLogo
     }
 
     required init?(coder: NSCoder) {
@@ -34,7 +34,7 @@ class PrimerTestPaymentMethodViewController: PrimerFormViewController {
             action: .view,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.viewModel.config.type,
+                paymentMethodType: viewModel.config.type,
                 url: nil),
             extra: nil,
             objectType: .view,

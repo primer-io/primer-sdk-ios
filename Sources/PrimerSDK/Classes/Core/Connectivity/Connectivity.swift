@@ -8,7 +8,7 @@
 import Foundation
 import SystemConfiguration
 
-internal class Connectivity {
+class Connectivity {
 
     enum NetworkType: String, Codable {
         case wifi = "WIFI"
@@ -16,7 +16,7 @@ internal class Connectivity {
         case none = "NONE"
     }
 
-    internal static var networkType: Connectivity.NetworkType {
+    static var networkType: Connectivity.NetworkType {
         var zeroAddress = sockaddr_in()
         zeroAddress.sin_len = UInt8(MemoryLayout.size(ofValue: zeroAddress))
         zeroAddress.sin_family = sa_family_t(AF_INET)

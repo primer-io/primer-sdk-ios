@@ -82,7 +82,7 @@ extension PrimerHeadlessUniversalCheckout {
 
             var paymentMethodAssets: [PrimerPaymentMethodAsset] = []
 
-            for paymentMethod in (PrimerAPIConfiguration.paymentMethodConfigs ?? []) {
+            for paymentMethod in PrimerAPIConfiguration.paymentMethodConfigs ?? [] {
                 if !hucAvailablePaymentMethods.contains(paymentMethod.type) { continue }
 
                 guard let baseLogoImage = paymentMethod.baseLogoImage,
@@ -221,15 +221,15 @@ public class PrimerPaymentMethodBackgroundColor {
         }
 
         if let coloredStr = coloredStr {
-            self.colored = PrimerColor(hex: coloredStr)
+            colored = PrimerColor(hex: coloredStr)
         }
 
         if let lightStr = lightStr {
-            self.light = PrimerColor(hex: lightStr)
+            light = PrimerColor(hex: lightStr)
         }
 
         if let darkStr = darkStr {
-            self.dark = PrimerColor(hex: darkStr)
+            dark = PrimerColor(hex: darkStr)
         }
     }
 

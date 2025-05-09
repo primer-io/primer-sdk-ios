@@ -9,5 +9,5 @@ import Foundation
 
 typealias DummySuccess = SuccessResponse
 
-internal struct SuccessResponse: Codable, Equatable {
+struct SuccessResponse: Codable, Equatable {
 }

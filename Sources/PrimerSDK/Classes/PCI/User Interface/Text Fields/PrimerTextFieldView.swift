@@ -10,13 +10,13 @@ import UIKit
 
 public class PrimerTextFieldView: PrimerNibView, UITextFieldDelegate {
 
-    @IBOutlet internal weak var textField: PrimerTextField!
-    internal var isValid: ((_ text: String) -> Bool?)?
+    @IBOutlet weak var textField: PrimerTextField!
+    var isValid: ((_ text: String) -> Bool?)?
     internal(set) public var isTextValid: Bool = false
-    internal var editingAnalyticsObjectId: Analytics.Event.Property.ObjectId?
+    var editingAnalyticsObjectId: Analytics.Event.Property.ObjectId?
     internal(set) public var isEditingAnalyticsEnabled: Bool = false
     public var delegate: PrimerTextFieldViewDelegate?
-    internal var validation: PrimerTextField.Validation = .notAvailable {
+    var validation: PrimerTextField.Validation = .notAvailable {
         didSet {
             if isValid == nil {
                 isTextValid = true

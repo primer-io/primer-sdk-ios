@@ -16,7 +16,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
     static let maximumBinLength = 8
 
     private var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? {
-        return self.rawDataManager.delegate
+        return rawDataManager.delegate
     }
 
     private let apiClient: PrimerAPIClientBINDataProtocol
@@ -32,7 +32,7 @@ class DefaultCardValidationService: CardValidationService, LogReporter {
     init(rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
          allowedCardNetworks: [CardNetwork] = [CardNetwork].allowedCardNetworks,
          apiClient: PrimerAPIClientBINDataProtocol = PrimerAPIClient(),
-         debouncer: Debouncer = .init(delay: 0.35)) {
+         debouncer: Debouncer = Debouncer(delay: 0.35)) {
         self.rawDataManager = rawDataManager
         self.allowedCardNetworks = allowedCardNetworks
         self.apiClient = apiClient
@@ -136,10 +136,10 @@ would have been preferred (max BIN length exceeded).
     }
 
     private func handle(cardMetadata: PrimerCardNumberEntryMetadata, forCardState cardState: PrimerCardNumberEntryState) {
-        self.metadataCache[cardState.cardNumber] = cardMetadata
+        metadataCache[cardState.cardNumber] = cardMetadata
 
         let trackableNetworks = cardMetadata.selectableCardNetworks ?? cardMetadata.detectedCardNetworks
-        self.sendEvent(forNetworks: trackableNetworks.items,
+        sendEvent(forNetworks: trackableNetworks.items,
                        source: cardMetadata.source)
 
         delegate?.primerRawDataManager?(rawDataManager,
@@ -162,7 +162,7 @@ would have been preferred (max BIN length exceeded).
         let detectedNetworks = selectableNetworks + networks.filter { !allowedCardNetworks.contains($0) }
             .map { PrimerCardNetwork(network: $0) }
 
-        return .init(
+        return PrimerCardNumberEntryMetadata(
             source: source,
             selectableCardNetworks: selectableNetworks,
             detectedCardNetworks: detectedNetworks

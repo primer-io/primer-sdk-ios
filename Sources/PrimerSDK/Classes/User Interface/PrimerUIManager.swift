@@ -20,9 +20,9 @@ protocol PrimerUIManaging {
                                    withMessage message: String?)
 }
 
-internal class PrimerUIManager: PrimerUIManaging {
+class PrimerUIManager: PrimerUIManaging {
 
-    static let shared: PrimerUIManager = .init()
+    static let shared = PrimerUIManager()
 
     static var primerWindow: UIWindow? {
         shared.primerWindow

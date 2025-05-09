@@ -13,7 +13,7 @@ import UIKit
 public final class PrimerCardNumberFieldView: PrimerTextFieldView {
 
     private(set) public var cardNetwork: CardNetwork = .unknown
-    internal var cardnumber: String {
+    var cardnumber: String {
         return (textField.internalText ?? "").replacingOccurrences(of: " ", with: "").withoutWhiteSpace
     }
 
@@ -26,7 +26,7 @@ public final class PrimerCardNumberFieldView: PrimerTextFieldView {
         isEditingAnalyticsEnabled = true
         editingAnalyticsObjectId = .cardNumber
         isValid = { text in
-            return text.isValidCardNumber
+            text.isValidCardNumber
         }
     }
 

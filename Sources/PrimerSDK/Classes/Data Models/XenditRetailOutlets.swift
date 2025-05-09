@@ -8,7 +8,7 @@
 import Foundation
 
 // swiftlint:disable:next type_name
-internal struct RetailOutletTokenizationSessionRequestParameters: OffSessionPaymentSessionInfo {
+struct RetailOutletTokenizationSessionRequestParameters: OffSessionPaymentSessionInfo {
     let locale: String = PrimerSettings.current.localeData.localeCode
     let platform: String = "IOS"
     let retailOutlet: String

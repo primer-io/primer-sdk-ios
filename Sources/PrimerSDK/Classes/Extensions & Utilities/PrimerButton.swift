@@ -11,11 +11,11 @@ import UIKit
 /// Reserve the name for all primer buttons. If you need to extend UIButton, extend and use this one instead, so we
 /// don't expose unnecessary functionality.
 ///
-@IBDesignable internal class PrimerButton: UIButton, Identifiable {
+@IBDesignable class PrimerButton: UIButton, Identifiable {
 
     // MARK: @IBInspectable Properties
 
-    @IBInspectable internal var cornerRadius: CGFloat = 0 {
+    @IBInspectable var cornerRadius: CGFloat = 0 {
         didSet {
             let maxRadius = min(frame.width, frame.height) / 2
             layer.cornerRadius = cornerRadius > maxRadius ? maxRadius : cornerRadius
@@ -23,25 +23,25 @@ import UIKit
         }
     }
 
-    @IBInspectable internal var borderWidth: CGFloat = 0 {
+    @IBInspectable var borderWidth: CGFloat = 0 {
         didSet {
             layer.borderWidth = borderWidth
         }
     }
 
-    @IBInspectable internal var borderColor: UIColor? {
+    @IBInspectable var borderColor: UIColor? {
         didSet {
             layer.borderColor = borderColor?.cgColor
         }
     }
 
-    @IBInspectable internal var backgroundNormalStateColor: UIColor? {
+    @IBInspectable var backgroundNormalStateColor: UIColor? {
         didSet {
             backgroundColor = backgroundNormalStateColor
         }
     }
 
-    @IBInspectable internal var backgroundHighlightedStateColor: UIColor?
+    @IBInspectable var backgroundHighlightedStateColor: UIColor?
 
     // MARK: Properties
 
@@ -49,7 +49,7 @@ import UIKit
 
     private var theme: ButtonTheme?
 
-    internal var imageLogo: UIImage? {
+    var imageLogo: UIImage? {
         didSet {
             if let image = imageLogo {
                 setImage(image, for: .normal)
@@ -57,7 +57,7 @@ import UIKit
         }
     }
 
-    internal var title: String? {
+    var title: String? {
         didSet {
             setTitle(title, for: .normal)
         }
@@ -76,7 +76,7 @@ import UIKit
 
     // MARK: - Button States for Activity Indicator
 
-    internal struct ActivityIndicatorButtonState {
+    struct ActivityIndicatorButtonState {
         var state: UIControl.State
         var title: String?
         var image: UIImage?
@@ -114,7 +114,7 @@ import UIKit
                      title: String? = nil,
                      imageLogo: UIImage? = nil) {
         self.init()
-        self.setupView(theme: theme, title: title, imageLogo: imageLogo)
+        setupView(theme: theme, title: title, imageLogo: imageLogo)
     }
 
     public override func layoutSubviews() {
@@ -168,7 +168,7 @@ extension PrimerButton {
             setTitle("", for: state)
             setImage(UIImage(), for: state)
         }
-        self.activityIndicatorButtonStates = buttonStates
+        activityIndicatorButtonStates = buttonStates
         DispatchQueue.main.async {
             self.isEnabled = false
         }

@@ -118,9 +118,9 @@ extension Response.Body.Klarna {
 
         // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
-            case type = "type"
-            case name = "name"
-            case quantity = "quantity"
+            case type
+            case name
+            case quantity
             case unitPrice = "unit_price"
             case totalAmount = "total_amount"
             case totalDiscountAmount = "total_discount_amount"
@@ -134,9 +134,9 @@ extension Response.Body.Klarna {
 
         // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
-            case brand = "brand"
+            case brand
             case maskedNumber = "masked_number"
-            case type = "type"
+            case type
             case expiryDate = "expiry_date"
         }
     }

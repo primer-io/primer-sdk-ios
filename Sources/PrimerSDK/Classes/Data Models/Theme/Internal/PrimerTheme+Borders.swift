@@ -1,6 +1,6 @@
 import UIKit
 
-internal class BorderTheme {
+class BorderTheme {
     let colorStates: StatefulColor
     let width: CGFloat
 

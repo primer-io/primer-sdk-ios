@@ -12,7 +12,7 @@ extension NSObject {
     // MARK: - Class Names
 
     @objc static var className: String {
-        Self.classNameFromString(NSStringFromClass(self))
+        classNameFromString(NSStringFromClass(self))
     }
 
     @objc var className: String {

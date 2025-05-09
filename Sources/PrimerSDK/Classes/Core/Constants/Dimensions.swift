@@ -4,7 +4,7 @@ public struct PrimerDimensions {
 
     public static let cornerRadius: CGFloat = 8.0
     public static let safeArea: CGFloat = 10.0
-    public static let zero: CGFloat = CGFloat.zero
+    public static let zero: CGFloat = .zero
 
     public struct NavigationBar {
         public static let `default`: CGFloat = 44.0

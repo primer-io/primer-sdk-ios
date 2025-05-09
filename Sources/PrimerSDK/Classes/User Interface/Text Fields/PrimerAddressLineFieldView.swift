@@ -8,7 +8,7 @@ public class PrimerAddressLineFieldView: PrimerSimpleCardFormTextFieldView {
         isEditingAnalyticsEnabled = true
         textField.delegate = self
         isValid = { text in
-            return !text.isEmpty
+            !text.isEmpty
         }
         validationError = .invalidAddress(
             message: "Address is not valid.",
@@ -19,7 +19,7 @@ public class PrimerAddressLineFieldView: PrimerSimpleCardFormTextFieldView {
 
 public final class PrimerAddressLine1FieldView: PrimerAddressLineFieldView {
 
-    internal var addressLine1: String? {
+    var addressLine1: String? {
         return textField.internalText
     }
 
@@ -32,7 +32,7 @@ public final class PrimerAddressLine1FieldView: PrimerAddressLineFieldView {
 
 public final class PrimerAddressLine2FieldView: PrimerSimpleCardFormTextFieldView {
 
-    internal var addressLine2: String? {
+    var addressLine2: String? {
         return textField.internalText
     }
 

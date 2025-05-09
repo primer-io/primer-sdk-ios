@@ -84,17 +84,17 @@ extension PaymentMethodTokenizationViewModel {
     }
 
     func processVaultPaymentMethodTokenData() {
-        PrimerDelegateProxy.primerDidTokenizePaymentMethod(self.paymentMethodTokenData!) { _ in }
-        self.handleSuccessfulFlow()
+        PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData!) { _ in }
+        handleSuccessfulFlow()
     }
 
     func processCheckoutPaymentMethodTokenData() {
-        self.didStartPayment?()
-        self.didStartPayment = nil
+        didStartPayment?()
+        didStartPayment = nil
 
         if config.internalPaymentMethodType != .klarna {
             PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(
-                imageView: self.uiModule.makeIconImageView(withDimension: 24.0),
+                imageView: uiModule.makeIconImageView(withDimension: 24.0),
                 message: nil)
         }
 
@@ -343,7 +343,7 @@ extension PaymentMethodTokenizationViewModel {
                 firstly {
                     self.handleCreatePaymentEvent(token)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     self.resumePaymentId = paymentResponse.id
 
@@ -430,7 +430,7 @@ extension PaymentMethodTokenizationViewModel {
                 firstly {
                     self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     seal.fulfill(self.paymentCheckoutData)
                 }
@@ -453,7 +453,7 @@ extension PaymentMethodTokenizationViewModel {
 
     func handleFailureFlow(errorMessage: String?) {
         if config.internalPaymentMethodType != .stripeAch {
-            let categories = self.config.paymentMethodManagerCategories
+            let categories = config.paymentMethodManagerCategories
             PrimerUIManager.dismissOrShowResultScreen(
                 type: .failure,
                 paymentMethodManagerCategories: categories ?? [],
@@ -462,7 +462,7 @@ extension PaymentMethodTokenizationViewModel {
         }
     }
 
-    internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
+    func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
         return Promise { seal in
             if PrimerInternal.shared.intent == .vault {
                 seal.fulfill()
@@ -527,13 +527,13 @@ Make sure you call the decision handler otherwise the SDK will hang.
     }
 
     func nullifyEventCallbacks() {
-        self.didStartPayment = nil
-        self.didFinishPayment = nil
+        didStartPayment = nil
+        didFinishPayment = nil
     }
 
     func setCheckoutDataFromError(_ error: PrimerError) {
         if let checkoutData = error.checkoutData {
-            self.paymentCheckoutData = checkoutData
+            paymentCheckoutData = checkoutData
         }
     }
 }

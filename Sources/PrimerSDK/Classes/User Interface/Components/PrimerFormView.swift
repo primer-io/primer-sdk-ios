@@ -11,10 +11,10 @@ class PrimerFormView: PrimerView {
 
     // MARK: - Properties
 
-    private(set) internal var verticalStackView = UIStackView()
-    private(set) internal var formViews: [[UIView?]]?
-    private(set) internal var verticalStackSpacing: CGFloat = PrimerDimensions.StackViewSpacing.default
-    private(set) internal var horizontalStackSpacing: CGFloat = PrimerDimensions.StackViewSpacing.default
+    private(set) var verticalStackView = UIStackView()
+    private(set) var formViews: [[UIView?]]?
+    private(set) var verticalStackSpacing: CGFloat = PrimerDimensions.StackViewSpacing.default
+    private(set) var horizontalStackSpacing: CGFloat = PrimerDimensions.StackViewSpacing.default
 
     // MARK: - Init
 
@@ -39,7 +39,7 @@ extension PrimerFormView {
         self.formViews = formViews
         self.verticalStackSpacing = verticalStackSpacing
         self.horizontalStackSpacing = horizontalStackSpacing
-        self.initialize()
+        initialize()
     }
 
 }

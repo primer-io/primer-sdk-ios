@@ -3,7 +3,7 @@ import PassKit
 
 // MARK: - PRIMER SETTINGS
 
-internal protocol PrimerSettingsProtocol {
+protocol PrimerSettingsProtocol {
     var paymentHandling: PrimerPaymentHandling { get }
     var localeData: PrimerLocaleData { get }
     var paymentMethodOptions: PrimerPaymentMethodOptions { get }
@@ -56,7 +56,7 @@ public enum PrimerPaymentHandling: String, Codable {
 
 // MARK: - PAYMENT METHOD OPTIONS
 
-internal protocol PrimerPaymentMethodOptionsProtocol {
+protocol PrimerPaymentMethodOptionsProtocol {
     var applePayOptions: PrimerApplePayOptions? { get }
     var klarnaOptions: PrimerKlarnaOptions? { get }
     var threeDsOptions: PrimerThreeDsOptions? { get }
@@ -74,7 +74,7 @@ public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Cod
 
     // Was producing warning: Immutable property will not be decoded because it is declared with an initial value which cannot be overwritten
     // Was it intentional?
-    var cardPaymentOptions: PrimerCardPaymentOptions = PrimerCardPaymentOptions()
+    var cardPaymentOptions = PrimerCardPaymentOptions()
     var threeDsOptions: PrimerThreeDsOptions?
     var stripeOptions: PrimerStripeOptions?
 
@@ -168,8 +168,8 @@ public class PrimerApplePayOptions: Codable {
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
         self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
         self.checkProvidedNetworks = checkProvidedNetworks
-        self.shippingOptions = nil
-        self.billingOptions = nil
+        shippingOptions = nil
+        billingOptions = nil
     }
 
     public init(merchantIdentifier: String,
@@ -252,7 +252,7 @@ public class PrimerCardPaymentOptions: Codable {
     }
 
     public init() {
-        self.is3DSOnVaultingEnabled = true
+        is3DSOnVaultingEnabled = true
     }
 }
 
@@ -298,12 +298,12 @@ public class PrimerUIOptions: Codable {
 
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.isInitScreenEnabled = try container.decode(Bool.self, forKey: .isInitScreenEnabled)
-        self.isSuccessScreenEnabled = try container.decode(Bool.self, forKey: .isSuccessScreenEnabled)
-        self.isErrorScreenEnabled = try container.decode(Bool.self, forKey: .isErrorScreenEnabled)
-        self.dismissalMechanism = try container.decode([DismissalMechanism].self, forKey: .dismissalMechanism)
-        self.cardFormUIOptions = try container.decodeIfPresent(PrimerCardFormUIOptions.self, forKey: .cardFormUIOptions)
-        self.theme = PrimerTheme()
+        isInitScreenEnabled = try container.decode(Bool.self, forKey: .isInitScreenEnabled)
+        isSuccessScreenEnabled = try container.decode(Bool.self, forKey: .isSuccessScreenEnabled)
+        isErrorScreenEnabled = try container.decode(Bool.self, forKey: .isErrorScreenEnabled)
+        dismissalMechanism = try container.decode([DismissalMechanism].self, forKey: .dismissalMechanism)
+        cardFormUIOptions = try container.decodeIfPresent(PrimerCardFormUIOptions.self, forKey: .cardFormUIOptions)
+        theme = PrimerTheme()
     }
 
     public func encode(to encoder: Encoder) throws {

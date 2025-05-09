@@ -10,7 +10,7 @@ import UIKit
 class PrimerNavigationBar: PrimerView {
 
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
-    internal var hidesBackButton: Bool = false {
+    var hidesBackButton: Bool = false {
         didSet {
             backButton.isHidden = hidesBackButton
         }

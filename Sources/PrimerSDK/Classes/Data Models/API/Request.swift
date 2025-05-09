@@ -9,5 +9,5 @@ import Foundation
 
 public class Request {
     public class Body {}
-    internal class URLParameters {}
+    class URLParameters {}
 }

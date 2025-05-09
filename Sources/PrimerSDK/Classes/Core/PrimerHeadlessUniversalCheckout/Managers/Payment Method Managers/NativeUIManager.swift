@@ -32,17 +32,17 @@ extension PrimerHeadlessUniversalCheckout {
 
             switch paymentMethodType {
             case PrimerPaymentMethodType.applePay.rawValue:
-                self.validationComponent = ApplePayValidationComponent()
+                validationComponent = ApplePayValidationComponent()
             case PrimerPaymentMethodType.payPal.rawValue:
-                self.validationComponent = PayPalValidationComponent()
+                validationComponent = PayPalValidationComponent()
             default:
-                self.validationComponent = GenericValidationComponent(paymentMethodType: paymentMethodType)
+                validationComponent = GenericValidationComponent(paymentMethodType: paymentMethodType)
             }
 
-            self.presentationComponent = NativeUIPresentationComponent(paymentMethodType: paymentMethodType)
+            presentationComponent = NativeUIPresentationComponent(paymentMethodType: paymentMethodType)
 
             self.paymentMethodType = paymentMethodType
-            self.paymentMethod = try self.validatePaymentMethod(withType: paymentMethodType)
+            paymentMethod = try validatePaymentMethod(withType: paymentMethodType)
 
             let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
             settings.uiOptions.isInitScreenEnabled = false
@@ -72,17 +72,17 @@ extension PrimerHeadlessUniversalCheckout {
             Analytics.Service.record(events: [sdkEvent])
 
             do {
-                try self.validatePaymentMethod(withType: self.paymentMethodType, andIntent: intent)
+                try validatePaymentMethod(withType: paymentMethodType, andIntent: intent)
             } catch {
                 throw error
             }
 
-            self.presentationComponent.present(intent: intent,
+            presentationComponent.present(intent: intent,
                                                clientToken: PrimerAPIConfigurationModule.clientToken!)
         }
 
         private func cancel() {
-            self.paymentMethod?.tokenizationViewModel?.cancel()
+            paymentMethod?.tokenizationViewModel?.cancel()
         }
     }
 

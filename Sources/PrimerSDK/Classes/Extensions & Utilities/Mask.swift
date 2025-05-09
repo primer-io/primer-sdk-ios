@@ -1,6 +1,6 @@
 import Foundation
 
-internal class Mask {
+class Mask {
 
     enum CharType {
         case digit, any
@@ -51,7 +51,7 @@ internal class Mask {
     static func stringToChars(_ string: String) -> [Character] { return Array(string) }
 
     static func apply(on input: String, with pattern: [CharType]) -> String {
-        Self.process(input: input, pattern: pattern).masked
+        process(input: input, pattern: pattern).masked
     }
 
     static func process(input: String, pattern: [CharType]) -> (masked: String, unmasked: String) {

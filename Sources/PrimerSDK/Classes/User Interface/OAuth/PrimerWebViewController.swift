@@ -8,10 +8,10 @@
 import UIKit
 import WebKit
 
-internal class PrimerWebViewController: PrimerViewController {
+class PrimerWebViewController: PrimerViewController {
 
     private let webView: WKWebView! = WKWebView()
-    internal private(set) var url: URL
+    private(set) var url: URL
     var navigationDelegate: WKNavigationDelegate? {
         didSet {
             webView?.navigationDelegate = navigationDelegate

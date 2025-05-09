@@ -20,7 +20,7 @@ extension PrimerTextFieldView {
 
 extension PrimerTextFieldView {
 
-    internal func sendTextFieldDidBeginEditingAnalyticsEventIfNeeded(_ event: Analytics.Event) {
+    func sendTextFieldDidBeginEditingAnalyticsEventIfNeeded(_ event: Analytics.Event) {
 
         guard isEditingAnalyticsEnabled else {
             return
@@ -29,7 +29,7 @@ extension PrimerTextFieldView {
         Analytics.Service.record(event: event)
     }
 
-    internal func sendTextFieldDidEndEditingAnalyticsEventIfNeeded(_ event: Analytics.Event) {
+    func sendTextFieldDidEndEditingAnalyticsEventIfNeeded(_ event: Analytics.Event) {
 
         guard isEditingAnalyticsEnabled else {
             return

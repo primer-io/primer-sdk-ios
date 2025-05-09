@@ -9,7 +9,7 @@ import UIKit
 
 class PrimerCountryField: PrimerCardFormFieldProtocol {
 
-    internal static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
     static func countryContainerViewFieldView(_ primerTextFieldView: PrimerTextFieldView, openCountriesListPressed: @escaping PrimerAction) -> PrimerCustomFieldView {
         let countryFieldContainerView = PrimerCustomFieldView()

@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal extension Bundle {
+extension Bundle {
 
     static var primerFramework: Bundle {
         return Bundle(for: Primer.self)

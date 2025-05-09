@@ -82,7 +82,7 @@ final class DefaultBanksComponent: BanksComponent {
         trackStart()
         stepDelegate?.didReceiveStep(step: BanksStep.loading)
         tokenizationProvidingModel.retrieveListOfBanks()
-            .done { banks -> Void in
+            .done { banks in
                 self.banks = banks.map { IssuingBank(bank: $0) }
                 let step = BanksStep.banksRetrieved(banks: self.banks)
                 self.nextDataStep = step
@@ -97,7 +97,7 @@ final class DefaultBanksComponent: BanksComponent {
         switch nextDataStep {
         case .loading: break
         case .banksRetrieved:
-            guard let bankId = self.bankId else { return }
+            guard let bankId = bankId else { return }
             let redirectComponent = onFinished()
             redirectComponent.start()
             tokenizationProvidingModel.tokenize(bankId: bankId)
@@ -124,7 +124,7 @@ private extension DefaultBanksComponent {
         var params: [String: String] = ["paymentMethodType": paymentMethodType.rawValue,
                                         "category": PrimerPaymentMethodManagerCategory.componentWithRedirect.rawValue]
         if let additionalParams {
-            params.merge(additionalParams) { (_, new) in new }
+            params.merge(additionalParams) { _, new in new }
         }
 
         let sdkEvent = Analytics.Event.sdk(name: event.rawValue, params: params)

@@ -21,7 +21,7 @@ class PrimerKlarnaCategoriesViewController: UIViewController {
     let activityIndicator = UIActivityIndicatorView()
 
     // MARK: - Properties
-    let klarnaCategoriesVM: PrimerKlarnaCategoriesViewModel = PrimerKlarnaCategoriesViewModel()
+    let klarnaCategoriesVM = PrimerKlarnaCategoriesViewModel()
     var klarnaCategoriesView: PrimerKlarnaCategoriesView?
     let sharedWrapper = SharedUIViewWrapper()
     var renderedKlarnaView = UIView()
@@ -34,7 +34,7 @@ class PrimerKlarnaCategoriesViewController: UIViewController {
     }
 
     init(tokenizationComponent: KlarnaTokenizationComponentProtocol, delegate: PrimerKlarnaCategoriesDelegate) {
-        self.klarnaComponent = PrimerHeadlessKlarnaComponent(tokenizationComponent: tokenizationComponent)
+        klarnaComponent = PrimerHeadlessKlarnaComponent(tokenizationComponent: tokenizationComponent)
         self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
     }
@@ -89,14 +89,14 @@ class PrimerKlarnaCategoriesViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if let parentVC = self.parent as? PrimerContainerViewController {
+        if let parentVC = parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = true
         }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let parentVC = self.parent as? PrimerContainerViewController {
+        if let parentVC = parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = false
         }
     }

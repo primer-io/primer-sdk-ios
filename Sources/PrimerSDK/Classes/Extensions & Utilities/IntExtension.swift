@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal extension Int {
+extension Int {
     func toCurrencyString(currency: Currency, locale: Locale = Locale.current) -> String {
         let currencySymbol = currency.symbol ?? currency.code
 

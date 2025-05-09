@@ -1,11 +1,11 @@
 import Foundation
 
-internal protocol VaultServiceProtocol {
+protocol VaultServiceProtocol {
     func fetchVaultedPaymentMethods() -> Promise<Void>
     func deleteVaultedPaymentMethod(with id: String) -> Promise<Void>
 }
 
-internal class VaultService: VaultServiceProtocol {
+class VaultService: VaultServiceProtocol {
 
     let apiClient: PrimerAPIClientVaultProtocol
 
@@ -62,7 +62,7 @@ internal class VaultService: VaultServiceProtocol {
                 return
             }
 
-            apiClient.deleteVaultedPaymentMethod(clientToken: clientToken, id: id) { (result) in
+            apiClient.deleteVaultedPaymentMethod(clientToken: clientToken, id: id) { result in
                 switch result {
                 case .failure(let err):
                     let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: .errorUserInfoDictionary(),

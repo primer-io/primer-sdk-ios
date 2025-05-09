@@ -11,7 +11,7 @@ public class PrimerPhoneNumberData: PrimerRawData {
 
     public var phoneNumber: String {
         didSet {
-            self.onDataDidChange?()
+            onDataDidChange?()
         }
     }
 

@@ -62,7 +62,7 @@ extension PrimerNavigationController: UINavigationControllerDelegate {
     }
 }
 
-internal final class DissolveAnimator: NSObject, UIViewControllerAnimatedTransitioning {
+final class DissolveAnimator: NSObject, UIViewControllerAnimatedTransitioning {
 
     let animationDuration = 0.25
 

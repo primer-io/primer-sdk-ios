@@ -19,13 +19,9 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     private var orderId: String?
     private var confirmBillingAgreementResponse: Response.Body.PayPal.ConfirmBillingAgreement?
 
-    lazy var webAuthenticationService: WebAuthenticationService = {
-        DefaultWebAuthenticationService()
-    }()
+    lazy var webAuthenticationService: WebAuthenticationService = DefaultWebAuthenticationService()
 
-    lazy var payPalService: PayPalServiceProtocol = {
-        PayPalService()
-    }()
+    lazy var payPalService: PayPalServiceProtocol = PayPalService()
 
     override func validate() throws {
         guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
@@ -64,7 +60,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func start() {
-        self.didPresentExternalView = { [weak self] in
+        didPresentExternalView = { [weak self] in
             if let strongSelf = self {
                 PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: strongSelf.config.type)
             }
@@ -83,7 +79,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: nil),
             extra: nil,
             objectType: .button,
@@ -93,7 +89,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
         )
         Analytics.Service.record(event: event)
 
-        let imageView = self.uiModule.makeIconImageView(withDimension: 24.0)
+        let imageView = uiModule.makeIconImageView(withDimension: 24.0)
         PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView,
                                                                             message: nil)
 
@@ -242,7 +238,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             var scheme: String
             do {
                 scheme = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
-            } catch let error {
+            } catch {
                 seal.reject(error)
                 return
             }
@@ -370,7 +366,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
             completion(.success(paymentInstrument))
 
         case .vault:
-            guard let confirmedBillingAgreement = self.confirmBillingAgreementResponse else {
+            guard let confirmedBillingAgreement = confirmBillingAgreementResponse else {
                 let err = PrimerError.invalidValue(key: "confirmedBillingAgreement",
                                                    value: orderId,
                                                    userInfo: .errorUserInfoDictionary(),
@@ -394,7 +390,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     private func generateBillingAgreementConfirmation() -> Promise<Response.Body.PayPal.ConfirmBillingAgreement> {
         return Promise { seal in
-            self.generateBillingAgreementConfirmation { [unowned self] (billingAgreementRes, err) in
+            self.generateBillingAgreementConfirmation { [unowned self] billingAgreementRes, err in
                 if let err = err {
                     seal.reject(err)
                 } else if let billingAgreementRes = billingAgreementRes {
@@ -423,7 +419,7 @@ class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
-        let requestBody = Request.Body.Tokenization(paymentInstrument: self.payPalInstrument)
+        let requestBody = Request.Body.Tokenization(paymentInstrument: payPalInstrument)
         return tokenizationService.tokenize(requestBody: requestBody)
     }
 }

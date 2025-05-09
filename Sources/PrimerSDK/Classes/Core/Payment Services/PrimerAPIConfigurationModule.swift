@@ -1,8 +1,8 @@
 import Foundation
 
-internal typealias JWTToken = String
+typealias JWTToken = String
 
-internal protocol PrimerAPIConfigurationModuleProtocol {
+protocol PrimerAPIConfigurationModuleProtocol {
 
     static var apiClient: PrimerAPIClientProtocol? { get set }
     static var clientToken: JWTToken? { get }
@@ -22,7 +22,7 @@ internal protocol PrimerAPIConfigurationModuleProtocol {
 }
 
 // swiftlint:disable type_body_length
-internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, LogReporter {
+class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, LogReporter {
 
     static var apiClient: PrimerAPIClientProtocol?
 
@@ -71,7 +71,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
     }
 
     static var cacheKey: String? {
-        guard let cacheKey = Self.clientToken else {
+        guard let cacheKey = clientToken else {
             return nil
         }
         return cacheKey
@@ -303,7 +303,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                         requestDisplayMetadata: requestDisplayMetadata)
 
                     let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
-                    apiClient.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters) { (result, responseHeaders) in
+                    apiClient.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters) { result, responseHeaders in
                         switch result {
                         case .failure(let err):
                             innerSeal.reject(err)
@@ -352,7 +352,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
         if requestVaultedPaymentMethods {
             let vaultService: VaultServiceProtocol = VaultService(apiClient: PrimerAPIClient())
             let vaultedPaymentMethodsPromise = vaultService.fetchVaultedPaymentMethods()
-            let fetchConfigurationPromise = self.fetchConfiguration(requestDisplayMetadata: true)
+            let fetchConfigurationPromise = fetchConfiguration(requestDisplayMetadata: true)
 
             return Promise { seal in
                 firstly {
@@ -366,7 +366,7 @@ internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtoco
                 }
             }
         } else {
-            return self.fetchConfiguration(requestDisplayMetadata: requestDisplayMetadata)
+            return fetchConfiguration(requestDisplayMetadata: requestDisplayMetadata)
         }
 
     }

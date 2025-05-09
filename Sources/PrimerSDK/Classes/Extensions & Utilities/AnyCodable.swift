@@ -20,7 +20,7 @@ import Foundation
  - SeeAlso: `AnyEncodable`
  - SeeAlso: `AnyDecodable`
  */
-internal struct AnyCodable: Codable {
+struct AnyCodable: Codable {
     public let value: Any
 
     public init<T>(_ value: T?) {

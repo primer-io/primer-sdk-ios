@@ -1,10 +1,10 @@
 import UIKit
 
-internal enum ColorState {
+enum ColorState {
     case enabled, disabled, selected
 }
 
-internal struct StatefulColor {
+struct StatefulColor {
     private let enabled: UIColor
     private let disabled: UIColor
     private let selected: UIColor
@@ -31,11 +31,11 @@ internal struct StatefulColor {
     }
 }
 
-internal class ColorSwatch {
+class ColorSwatch {
     let primary: UIColor
     let error: UIColor
 
-    internal init(primary: UIColor, error: UIColor) {
+    init(primary: UIColor, error: UIColor) {
         self.primary = primary
         self.error = error
     }

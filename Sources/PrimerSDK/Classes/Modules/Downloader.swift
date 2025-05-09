@@ -10,18 +10,18 @@
 
 import Foundation
 
-internal typealias FileName = String
-internal typealias FileExtension = String
+typealias FileName = String
+typealias FileExtension = String
 
-internal class File: LogReporter {
+class File: LogReporter {
 
     var fileName: FileName
     var fileExtension: FileExtension?
     var localUrl: URL? {
         guard let documentDirectoryUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return nil }
 
-        var tmpFilename: String = self.fileName
-        if let fileExtension = self.fileExtension {
+        var tmpFilename: String = fileName
+        if let fileExtension = fileExtension {
             tmpFilename += "." + fileExtension
         }
 
@@ -67,11 +67,11 @@ internal class File: LogReporter {
     }
 }
 
-internal protocol DownloaderModule {
+protocol DownloaderModule {
     func download(files: [File]) -> Promise<[File]>
 }
 
-internal class Downloader: NSObject, DownloaderModule {
+class Downloader: NSObject, DownloaderModule {
 
     private var documentDirectoryUrl: URL? {
         return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
@@ -202,7 +202,7 @@ internal class Downloader: NSObject, DownloaderModule {
                 }
             }
 
-            let task = session.downloadTask(with: request) { (tempLocalUrl, response, error) in
+            let task = session.downloadTask(with: request) { tempLocalUrl, response, error in
                 if let error = error {
                     let primerErr = PrimerError.underlyingErrors(errors: [error],
                                                                  userInfo: .errorUserInfoDictionary(),

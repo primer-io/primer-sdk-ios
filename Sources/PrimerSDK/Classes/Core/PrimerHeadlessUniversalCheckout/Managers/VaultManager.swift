@@ -26,9 +26,7 @@ extension PrimerHeadlessUniversalCheckout {
         private var webViewController: SFSafariViewController?
         private var webViewCompletion: ((_ authorizationToken: String?, _ error: PrimerError?) -> Void)?
 
-        lazy var createResumePaymentService: CreateResumePaymentServiceProtocol = {
-            CreateResumePaymentService(paymentMethodType: paymentMethodType)
-        }()
+        lazy var createResumePaymentService: CreateResumePaymentServiceProtocol = CreateResumePaymentService(paymentMethodType: paymentMethodType)
 
         var tokenizationService: TokenizationServiceProtocol = TokenizationService()
 
@@ -48,13 +46,13 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         public func configure() throws {
-            try self.validate()
+            try validate()
         }
 
-        internal func validateAdditionalDataSynchronously(vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData) -> [Error]? {
+        func validateAdditionalDataSynchronously(vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData) -> [Error]? {
             var errors: [Error] = []
 
-            guard let vaultedPaymentMethod = self.vaultedPaymentMethods?
+            guard let vaultedPaymentMethod = vaultedPaymentMethods?
                     .first(where: { $0.id == vaultedPaymentMethodId })
             else {
                 let err = PrimerError.invalidVaultedPaymentMethodId(
@@ -133,7 +131,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         public func deleteVaultedPaymentMethod(id: String, completion: @escaping (_ error: Error?) -> Void) {
-            guard let vaultedPaymentMethods = self.vaultedPaymentMethods,
+            guard let vaultedPaymentMethods = vaultedPaymentMethods,
                   vaultedPaymentMethods.contains(where: { $0.id == id }) else {
                 let err = PrimerError.invalidVaultedPaymentMethodId(
                     vaultedPaymentMethodId: id,
@@ -163,7 +161,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         public func startPaymentFlow(vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData? = nil) {
-            guard let vaultedPaymentMethod = self.vaultedPaymentMethods?
+            guard let vaultedPaymentMethod = vaultedPaymentMethods?
                     .first(where: { $0.id == vaultedPaymentMethodId })
             else {
                 let err = PrimerError.invalidVaultedPaymentMethodId(
@@ -181,7 +179,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
 
             if let vaultedPaymentMethodAdditionalData = vaultedPaymentMethodAdditionalData {
-                if let errors = self.validateAdditionalDataSynchronously(vaultedPaymentMethodId: vaultedPaymentMethodId,
+                if let errors = validateAdditionalDataSynchronously(vaultedPaymentMethodId: vaultedPaymentMethodId,
                                                                          vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData) {
                     DispatchQueue.main.async {
                         var primerError: (any PrimerErrorProtocol)?
@@ -468,7 +466,7 @@ extension PrimerHeadlessUniversalCheckout {
                     firstly {
                         self.handleCreatePaymentEvent(token)
                     }
-                    .done { paymentResponse -> Void in
+                    .done { paymentResponse in
                         self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                         self.resumePaymentId = paymentResponse.id
 
@@ -566,7 +564,7 @@ extension PrimerHeadlessUniversalCheckout {
                             self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
                         }
                         .then { () -> Promise<String> in
-                            self.webViewCompletion = { (_, err) in
+                            self.webViewCompletion = { _, err in
                                 if let err = err {
                                     pollingModule?.cancel(withError: err)
                                     pollingModule = nil
@@ -628,7 +626,7 @@ extension PrimerHeadlessUniversalCheckout {
                                 self.presentWebRedirectViewControllerWithRedirectUrl(redirectUrl)
                             }
                             .then { () -> Promise<String> in
-                                self.webViewCompletion = { (_, err) in
+                                self.webViewCompletion = { _, err in
                                     if let err = err {
                                         pollingModule?.cancel(withError: err)
                                         pollingModule = nil
@@ -734,7 +732,7 @@ extension PrimerHeadlessUniversalCheckout {
                     firstly {
                         self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                     }
-                    .done { paymentResponse -> Void in
+                    .done { paymentResponse in
                         let paymentData = PrimerCheckoutDataPayment(from: paymentResponse)
                         self.paymentCheckoutData = PrimerCheckoutData(payment: paymentData)
                         seal.fulfill(self.paymentCheckoutData)
@@ -762,7 +760,7 @@ extension PrimerHeadlessUniversalCheckout {
                 self.webViewController = SFSafariViewController(url: redirectUrl)
                 self.webViewController!.delegate = self
 
-                self.webViewCompletion = { (_, err) in
+                self.webViewCompletion = { _, err in
                     if let err = err {
                         seal.reject(err)
                     }
@@ -816,14 +814,14 @@ extension PrimerHeadlessUniversalCheckout.VaultManager: SFSafariViewControllerDe
     public func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         if let webViewCompletion = webViewCompletion {
             // Cancelled
-            let err = PrimerError.cancelled(paymentMethodType: self.paymentMethodType,
+            let err = PrimerError.cancelled(paymentMethodType: paymentMethodType,
                                             userInfo: .errorUserInfoDictionary(),
                                             diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             webViewCompletion(nil, err)
         }
 
-        self.webViewCompletion = nil
+        webViewCompletion = nil
     }
 
     public func safariViewController(_ controller: SFSafariViewController, initialLoadDidRedirectTo URL: URL) {
@@ -862,10 +860,10 @@ extension PrimerHeadlessUniversalCheckout {
 extension PrimerPaymentMethodTokenData {
 
     var vaultedPaymentMethod: PrimerHeadlessUniversalCheckout.VaultedPaymentMethod? {
-        guard let id = self.id,
-              let paymentMethodType = self.paymentMethodType,
-              let paymentInstrumentData = self.paymentInstrumentData,
-              let analyticsId = self.analyticsId
+        guard let id = id,
+              let paymentMethodType = paymentMethodType,
+              let paymentInstrumentData = paymentInstrumentData,
+              let analyticsId = analyticsId
         else {
             return nil
         }
@@ -873,7 +871,7 @@ extension PrimerPaymentMethodTokenData {
         return PrimerHeadlessUniversalCheckout.VaultedPaymentMethod(
             id: id,
             paymentMethodType: paymentMethodType,
-            paymentInstrumentType: self.paymentInstrumentType,
+            paymentInstrumentType: paymentInstrumentType,
             paymentInstrumentData: paymentInstrumentData,
             analyticsId: analyticsId
         )

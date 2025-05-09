@@ -63,13 +63,13 @@ extension PrimerHeadlessCollectDataComponent {
                                              userInfo: .errorUserInfoDictionary(),
                                              diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: error)
-        self.errorDelegate?.didReceiveError(error: error)
+        errorDelegate?.didReceiveError(error: error)
     }
 
     public func handleReceivedError(error: PrimerError) {
         ErrorHandler.handle(error: error)
         PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { _ in }
-        self.errorDelegate?.didReceiveError(error: error)
+        errorDelegate?.didReceiveError(error: error)
     }
 
     public func makeAndHandleNolPayInitializationError() {
@@ -78,7 +78,7 @@ extension PrimerHeadlessCollectDataComponent {
             diagnosticsId: UUID().uuidString
         )
         ErrorHandler.handle(error: error)
-        self.errorDelegate?.didReceiveError(error: error)
+        errorDelegate?.didReceiveError(error: error)
     }
 
 }

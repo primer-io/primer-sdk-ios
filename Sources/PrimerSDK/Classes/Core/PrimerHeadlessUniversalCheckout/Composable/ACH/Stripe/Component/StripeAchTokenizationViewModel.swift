@@ -16,7 +16,7 @@ import PrimerStripeSDK
 class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     // MARK: Variables
     private var achTokenizationService: ACHTokenizationService
-    private var clientSessionService: ACHClientSessionService = ACHClientSessionService()
+    private var clientSessionService = ACHClientSessionService()
     private var publishableKey: String = ""
     private var clientSecret: String = ""
     private var returnedStripeAchPaymentId: String = ""
@@ -333,7 +333,7 @@ class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
 // MARK: Drop-In
 extension StripeAchTokenizationViewModel: ACHUserDetailsDelegate {
     func restartSession() {
-        self.start()
+        start()
     }
 
     func didSubmit() {
@@ -521,7 +521,7 @@ extension StripeAchTokenizationViewModel {
             do {
                 let urlScheme = try PrimerSettings.current.paymentMethodOptions.validUrlForUrlScheme()
                 seal.fulfill(urlScheme.absoluteString)
-            } catch let error {
+            } catch {
                 seal.reject(error)
             }
         }

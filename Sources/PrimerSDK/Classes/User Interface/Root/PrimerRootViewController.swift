@@ -12,7 +12,7 @@
 
 import UIKit
 
-internal class PrimerRootViewController: PrimerViewController {
+class PrimerRootViewController: PrimerViewController {
 
     // MARK: - PROPERTIES
 
@@ -20,7 +20,7 @@ internal class PrimerRootViewController: PrimerViewController {
 
     // Child views
     let backgroundView = PrimerView()
-    let childView: PrimerView = PrimerView()
+    let childView = PrimerView()
     let navController = PrimerNavigationController()
 
     // Constraints
@@ -30,9 +30,7 @@ internal class PrimerRootViewController: PrimerViewController {
     private var bottomPadding: CGFloat = 0.0
     private let presentationDuration: TimeInterval = 0.3
     private var originalChildViewHeight: CGFloat?
-    private lazy var availableScreenHeight: CGFloat = {
-        return UIScreen.main.bounds.size.height - (topPadding + bottomPadding)
-    }()
+    private lazy var availableScreenHeight: CGFloat = UIScreen.main.bounds.size.height - (topPadding + bottomPadding)
 
     // User Interaction
     private(set) var tapGesture: UITapGestureRecognizer?
@@ -46,7 +44,7 @@ internal class PrimerRootViewController: PrimerViewController {
 
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        self.registerForNotifications()
+        registerForNotifications()
     }
 
     required init?(coder: NSCoder) {
@@ -58,11 +56,11 @@ internal class PrimerRootViewController: PrimerViewController {
     private func registerForNotifications() {
 
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.keyboardNotification(notification:)),
+                                               selector: #selector(keyboardNotification(notification:)),
                                                name: UIResponder.keyboardWillShowNotification,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.keyboardNotification(notification:)),
+                                               selector: #selector(keyboardNotification(notification:)),
                                                name: UIResponder.keyboardWillHideNotification,
                                                object: nil)
     }
@@ -76,7 +74,7 @@ internal class PrimerRootViewController: PrimerViewController {
         let duration: TimeInterval = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
         let animationCurveRawNSN = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber
         let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIView.AnimationOptions.curveEaseInOut.rawValue
-        let animationCurve: UIView.AnimationOptions = UIView.AnimationOptions(rawValue: animationCurveRaw)
+        let animationCurve = UIView.AnimationOptions(rawValue: animationCurveRaw)
 
         let childViewHeight = childView.frame.size.height
 
@@ -120,10 +118,10 @@ internal class PrimerRootViewController: PrimerViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.setupChildViews()
-        self.setupGestureRecognizers()
-        self.blurBackgroundIfNeeded()
-        self.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+        setupChildViews()
+        setupGestureRecognizers()
+        blurBackgroundIfNeeded()
+        showLoadingScreenIfNeeded(imageView: nil, message: nil)
     }
 
     // MARK: Helpers
@@ -169,19 +167,19 @@ internal class PrimerRootViewController: PrimerViewController {
 
     private func setupGestureRecognizers() {
         guard PrimerSettings.current.uiOptions.dismissalMechanism.contains(.gestures) else { return }
-        self.tapGesture = UITapGestureRecognizer(
+        tapGesture = UITapGestureRecognizer(
             target: self,
             action: #selector(dismissGestureRecognizerAction))
-        self.tapGesture!.delegate = self
-        backgroundView.addGestureRecognizer(self.tapGesture!)
+        tapGesture!.delegate = self
+        backgroundView.addGestureRecognizer(tapGesture!)
 
-        self.swipeGesture = UISwipeGestureRecognizer(
+        swipeGesture = UISwipeGestureRecognizer(
             target: self,
             action: #selector(dismissGestureRecognizerAction)
         )
-        self.swipeGesture!.delegate = self
-        self.swipeGesture!.direction = .down
-        childView.addGestureRecognizer(self.swipeGesture!)
+        swipeGesture!.delegate = self
+        swipeGesture!.direction = .down
+        childView.addGestureRecognizer(swipeGesture!)
     }
 
     @objc
@@ -199,7 +197,7 @@ internal class PrimerRootViewController: PrimerViewController {
 
     private func calculateNavigationControllerHeight(for viewController: UIViewController) -> CGFloat {
         if viewController.view.bounds.size.height + navController.navigationBar.bounds.height > availableScreenHeight {
-            return self.availableScreenHeight
+            return availableScreenHeight
         } else {
             return viewController.view.bounds.size.height + navController.navigationBar.bounds.height
         }
@@ -207,18 +205,18 @@ internal class PrimerRootViewController: PrimerViewController {
 
     // MARK: - API
 
-    internal func enableUserInteraction(_ isUserInteractionEnabled: Bool) {
-        self.swipeGesture?.isEnabled = isUserInteractionEnabled
-        self.tapGesture?.isEnabled = isUserInteractionEnabled
-        self.view.isUserInteractionEnabled = isUserInteractionEnabled
+    func enableUserInteraction(_ isUserInteractionEnabled: Bool) {
+        swipeGesture?.isEnabled = isUserInteractionEnabled
+        tapGesture?.isEnabled = isUserInteractionEnabled
+        view.isUserInteractionEnabled = isUserInteractionEnabled
     }
 
-    internal func enableDismissGestures(_ dismissGestures: Bool) {
-        self.swipeGesture?.isEnabled = dismissGestures
-        self.tapGesture?.isEnabled = dismissGestures
+    func enableDismissGestures(_ dismissGestures: Bool) {
+        swipeGesture?.isEnabled = dismissGestures
+        tapGesture?.isEnabled = dismissGestures
     }
 
-    internal func layoutIfNeeded() {
+    func layoutIfNeeded() {
         for viewController in navController.viewControllers {
             viewController.view.layoutIfNeeded()
         }
@@ -228,28 +226,28 @@ internal class PrimerRootViewController: PrimerViewController {
     }
 
     // This method checks if a viewController is currently presented in the navigation stack
-    internal func isCurrentViewController(ofType type: PrimerViewController.Type) -> Bool {
+    func isCurrentViewController(ofType type: PrimerViewController.Type) -> Bool {
         if let topViewContoller = navController.viewControllers.last as? PrimerContainerViewController {
             return topViewContoller.childViewController.isKind(of: type)
         }
         return false
     }
 
-    internal func show(viewController: UIViewController, animated: Bool = false) {
+    func show(viewController: UIViewController, animated: Bool = false) {
         viewController.view.translatesAutoresizingMaskIntoConstraints = false
-        viewController.view.widthAnchor.constraint(equalToConstant: self.childView.frame.width).isActive = true
+        viewController.view.widthAnchor.constraint(equalToConstant: childView.frame.width).isActive = true
         viewController.view.layoutIfNeeded()
 
         let navigationControllerHeight: CGFloat = min(
-            viewController.view.bounds.size.height + self.navController.navigationBar.bounds.height,
-            self.availableScreenHeight
+            viewController.view.bounds.size.height + navController.navigationBar.bounds.height,
+            availableScreenHeight
         )
 
         // We can now set the childView's height and bottom constraint
-        let isPresented: Bool = self.navController.viewControllers.isEmpty
+        let isPresented: Bool = navController.viewControllers.isEmpty
 
         let cvc = PrimerContainerViewController(childViewController: viewController)
-        cvc.view.backgroundColor = self.theme.view.backgroundColor
+        cvc.view.backgroundColor = theme.view.backgroundColor
 
         // Hide back button on some cases
 
@@ -257,7 +255,7 @@ internal class PrimerRootViewController: PrimerViewController {
             cvc.mockedNavigationBar.hidesBackButton = true
         } else if viewController is PrimerVoucherInfoPaymentViewController {
             cvc.mockedNavigationBar.hidesBackButton = true
-        } else if let lastViewController = self.navController.viewControllers.last as? PrimerContainerViewController,
+        } else if let lastViewController = navController.viewControllers.last as? PrimerContainerViewController,
                   lastViewController.children.first is PrimerLoadingViewController {
             cvc.mockedNavigationBar.hidesBackButton = true
         } else if viewController is PrimerLoadingViewController {
@@ -267,25 +265,25 @@ internal class PrimerRootViewController: PrimerViewController {
         }
 
         if isPresented {
-            self.navController.setViewControllers([cvc], animated: animated)
+            navController.setViewControllers([cvc], animated: animated)
 
             let container = PrimerViewController()
-            container.addChild(self.navController)
-            container.view.addSubview(self.navController.view)
+            container.addChild(navController)
+            container.view.addSubview(navController.view)
 
-            self.navController.didMove(toParent: container)
+            navController.didMove(toParent: container)
 
-            self.addChild(container)
-            self.childView.addSubview(container.view)
+            addChild(container)
+            childView.addSubview(container.view)
 
             container.view.translatesAutoresizingMaskIntoConstraints = false
-            container.view.topAnchor.constraint(equalTo: self.childView.topAnchor).isActive = true
-            container.view.leadingAnchor.constraint(equalTo: self.childView.leadingAnchor).isActive = true
-            container.view.trailingAnchor.constraint(equalTo: self.childView.trailingAnchor).isActive = true
-            container.view.bottomAnchor.constraint(equalTo: self.childView.bottomAnchor, constant: 0).isActive = true
+            container.view.topAnchor.constraint(equalTo: childView.topAnchor).isActive = true
+            container.view.leadingAnchor.constraint(equalTo: childView.leadingAnchor).isActive = true
+            container.view.trailingAnchor.constraint(equalTo: childView.trailingAnchor).isActive = true
+            container.view.bottomAnchor.constraint(equalTo: childView.bottomAnchor, constant: 0).isActive = true
             container.didMove(toParent: self)
         } else {
-            self.navController.pushViewController(viewController: cvc, animated: animated) {
+            navController.pushViewController(viewController: cvc, animated: animated) {
                 var viewControllers = self.navController.viewControllers
                 for (index, viewController) in viewControllers.enumerated().reversed() {
                     // If the loading screen is the last one in the stack, do not remove it yet.
@@ -315,21 +313,21 @@ internal class PrimerRootViewController: PrimerViewController {
             }
         }
 
-        if self.navController.viewControllers.count <= 1 {
+        if navController.viewControllers.count <= 1 {
             cvc.mockedNavigationBar.hidesBackButton = true
         }
 
-        self.childViewHeightConstraint.constant = navigationControllerHeight + self.bottomPadding
+        childViewHeightConstraint.constant = navigationControllerHeight + bottomPadding
 
         if isPresented {
             // Hide the childView before animating it on screen
-            self.childViewBottomConstraint.constant = self.childViewHeightConstraint.constant
-            self.view.layoutIfNeeded()
+            childViewBottomConstraint.constant = childViewHeightConstraint.constant
+            view.layoutIfNeeded()
         }
 
-        self.childViewBottomConstraint.constant = 0
+        childViewBottomConstraint.constant = 0
 
-        UIView.animate(withDuration: self.presentationDuration, delay: 0, options: .curveEaseInOut) {
+        UIView.animate(withDuration: presentationDuration, delay: 0, options: .curveEaseInOut) {
             self.view.layoutIfNeeded()
         } completion: { _ in
             if let title = viewController.title {
@@ -343,7 +341,7 @@ internal class PrimerRootViewController: PrimerViewController {
         }
     }
 
-    internal func showLoadingScreenIfNeeded(imageView: UIImageView?, message: String?) {
+    func showLoadingScreenIfNeeded(imageView: UIImageView?, message: String?) {
         if let lastViewController = (navController.viewControllers.last as? PrimerContainerViewController)?.childViewController {
             if lastViewController is PrimerLoadingViewController ||
                 lastViewController is PrimerResultViewController {
@@ -367,7 +365,7 @@ internal class PrimerRootViewController: PrimerViewController {
         }
     }
 
-    internal func popViewController(animated: Bool = false, completion: (() -> Void)? = nil) {
+    func popViewController(animated: Bool = false, completion: (() -> Void)? = nil) {
         let index = navController.viewControllers.count-2
         guard navController.viewControllers.count > 1,
               let viewController = (navController.viewControllers[index] as? PrimerContainerViewController)?.childViewController
@@ -375,8 +373,8 @@ internal class PrimerRootViewController: PrimerViewController {
             return
         }
 
-        if self.navController.viewControllers.count == 2 {
-            (self.navController.viewControllers.last as? PrimerContainerViewController)?.mockedNavigationBar.hidesBackButton = true
+        if navController.viewControllers.count == 2 {
+            (navController.viewControllers.last as? PrimerContainerViewController)?.mockedNavigationBar.hidesBackButton = true
         }
 
         let minX = viewController.view.bounds.size.height + navController.navigationBar.bounds.height
@@ -393,7 +391,7 @@ internal class PrimerRootViewController: PrimerViewController {
         }
     }
 
-    internal func popToMainScreen(completion: (() -> Void)?) {
+    func popToMainScreen(completion: (() -> Void)?) {
         var vcToPop: PrimerContainerViewController?
         if PrimerInternal.shared.intent == .vault {
             for viewController in navController.viewControllers {
@@ -418,7 +416,7 @@ internal class PrimerRootViewController: PrimerViewController {
         }
 
         let navigationControllerHeight = calculateNavigationControllerHeight(for: mainScreenViewController.childViewController)
-        self.childViewHeightConstraint.constant = navigationControllerHeight + bottomPadding
+        childViewHeightConstraint.constant = navigationControllerHeight + bottomPadding
 
         UIView.animate(
             withDuration: 0.3,
@@ -429,16 +427,16 @@ internal class PrimerRootViewController: PrimerViewController {
 
             })
 
-        self.navController.popToViewController(mainScreenViewController, animated: true, completion: completion)
+        navController.popToViewController(mainScreenViewController, animated: true, completion: completion)
     }
 
     // This method is used to pop to the origin screen of the payment method that has been selected
-    internal func popToPaymentMethodViewController(type: PrimerViewController.Type, completion: (() -> Void)? = nil) {
+    func popToPaymentMethodViewController(type: PrimerViewController.Type, completion: (() -> Void)? = nil) {
         for viewController in navController.viewControllers {
             if let cvc = viewController as? PrimerContainerViewController,
                cvc.childViewController.isKind(of: type) {
                 let navigationControllerHeight = calculateNavigationControllerHeight(for: cvc.childViewController)
-                self.childViewHeightConstraint.constant = navigationControllerHeight + bottomPadding
+                childViewHeightConstraint.constant = navigationControllerHeight + bottomPadding
 
                 UIView.animate(
                     withDuration: 0.3,
@@ -449,14 +447,14 @@ internal class PrimerRootViewController: PrimerViewController {
                         completion?()
                     })
 
-                self.navController.popToViewController(cvc, animated: true)
+                navController.popToViewController(cvc, animated: true)
                 return
             }
         }
         completion?()
     }
 
-    internal func dismissPrimerRootViewController(animated flag: Bool, completion: (() -> Void)? = nil) {
+    func dismissPrimerRootViewController(animated flag: Bool, completion: (() -> Void)? = nil) {
         DispatchQueue.main.async {
             self.view.endEditing(true)
             self.childViewBottomConstraint.constant = self.childView.bounds.height
@@ -479,14 +477,14 @@ internal class PrimerRootViewController: PrimerViewController {
         }
     }
 
-    internal func resetConstraint(for viewController: UIViewController) {
-        let minX = viewController.view.bounds.size.height + self.navController.navigationBar.bounds.height
-        let navigationControllerHeight: CGFloat = min(minX, self.availableScreenHeight)
-        self.childViewHeightConstraint.isActive = false
-        self.childViewHeightConstraint?.constant = navigationControllerHeight + self.bottomPadding
-        self.childViewHeightConstraint.isActive = true
+    func resetConstraint(for viewController: UIViewController) {
+        let minX = viewController.view.bounds.size.height + navController.navigationBar.bounds.height
+        let navigationControllerHeight: CGFloat = min(minX, availableScreenHeight)
+        childViewHeightConstraint.isActive = false
+        childViewHeightConstraint?.constant = navigationControllerHeight + bottomPadding
+        childViewHeightConstraint.isActive = true
 
-        UIView.animate(withDuration: self.presentationDuration, delay: 0, options: .curveEaseInOut) {
+        UIView.animate(withDuration: presentationDuration, delay: 0, options: .curveEaseInOut) {
             self.view.layoutIfNeeded()
         } completion: { _ in
 

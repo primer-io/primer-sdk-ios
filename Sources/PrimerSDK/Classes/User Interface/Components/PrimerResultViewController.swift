@@ -7,15 +7,15 @@
 
 import UIKit
 
-internal class PrimerResultViewController: PrimerViewController {
+class PrimerResultViewController: PrimerViewController {
 
-    internal enum ScreenType {
+    enum ScreenType {
         case success, failure
     }
 
-    private(set) internal var message: String?
-    private(set) internal var screenType: ScreenType
-    private(set) internal var resultView: PrimerResultComponentView!
+    private(set) var message: String?
+    private(set) var screenType: ScreenType
+    private(set) var resultView: PrimerResultComponentView!
 
     init(screenType: PrimerResultViewController.ScreenType, message: String?) {
         self.message = message

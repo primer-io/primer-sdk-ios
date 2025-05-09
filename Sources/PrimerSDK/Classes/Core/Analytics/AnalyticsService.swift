@@ -13,25 +13,23 @@ protocol AnalyticsServiceProtocol {
 
 extension AnalyticsServiceProtocol {
     @discardableResult
-    internal func record(event: Analytics.Event) -> Promise<Void> {
-        self.record(events: [event])
+    func record(event: Analytics.Event) -> Promise<Void> {
+        record(events: [event])
     }
 }
 
 extension Analytics {
 
-    internal class Service: AnalyticsServiceProtocol, LogReporter {
+    class Service: AnalyticsServiceProtocol, LogReporter {
 
         static let defaultSdkLogsUrl = URL(string: "https://analytics.production.data.primer.io/sdk-logs")!
 
         static let maximumBatchSize: UInt = 100
 
-        static var shared = {
-            Service(sdkLogsUrl: Service.defaultSdkLogsUrl,
+        static var shared = Service(sdkLogsUrl: Service.defaultSdkLogsUrl,
                     batchSize: Service.maximumBatchSize,
                     storage: Analytics.storage,
                     apiClient: Analytics.apiClient ?? PrimerAPIClient())
-        }()
 
         let sdkLogsUrl: URL
 
@@ -56,7 +54,7 @@ extension Analytics {
         }
 
         @discardableResult
-        internal func record(events: [Analytics.Event]) -> Promise<Void> {
+        func record(events: [Analytics.Event]) -> Promise<Void> {
             return Promise { seal in
                 Analytics.queue.async(flags: .barrier) { [weak self] in
                     guard let self = self else { return }
@@ -100,7 +98,7 @@ extension Analytics {
         }
 
         @discardableResult
-        internal func flush() -> Promise<Void> {
+        func flush() -> Promise<Void> {
             Promise { seal in
                 let events = storage.loadEvents()
                 sync(events: events, isFlush: true)
@@ -116,13 +114,13 @@ extension Analytics {
         private func sync(events: [Analytics.Event], isFlush: Bool = false) -> Promise<Void> {
             let syncType = isFlush ? "flush" : "sync"
             guard events.count > 0 else {
-                self.logger.warn(message: "📚 Analytics: Attempted to \(syncType) but had no events")
+                logger.warn(message: "📚 Analytics: Attempted to \(syncType) but had no events")
                 return Promise<Void> { $0.fulfill() }
             }
 
             if !isFlush {
                 guard !isSyncing else {
-                    self.logger.debug(message: "📚 Analytics: Attempted to sync while already syncing. Skipping ...")
+                    logger.debug(message: "📚 Analytics: Attempted to sync while already syncing. Skipping ...")
                     return Promise<Void> { $0.fulfill() }
                 }
                 isSyncing = true
@@ -177,7 +175,7 @@ extension Analytics {
             var promises: [Promise<Void>] = []
 
             for sdkLogEventsBatch in sdkLogEventsBatches {
-                let promise = self.sendEvents(sdkLogEventsBatch, to: self.sdkLogsUrl)
+                let promise = sendEvents(sdkLogEventsBatch, to: sdkLogsUrl)
                 promises.append(promise)
             }
 
@@ -237,7 +235,7 @@ extension Analytics {
                 return
             }
 
-            if url.absoluteString != self.sdkLogsUrl.absoluteString,
+            if url.absoluteString != sdkLogsUrl.absoluteString,
                PrimerAPIConfigurationModule.clientToken?.decodedJWTToken == nil {
                 // Sync another time
                 completion(nil)
@@ -248,7 +246,7 @@ extension Analytics {
 
             logger.debug(message: "📚 Analytics: Sending \(events.count) events to \(url.absoluteString)")
 
-            self.apiClient.sendAnalyticsEvents(
+            apiClient.sendAnalyticsEvents(
                 clientToken: decodedJWTToken,
                 url: url,
                 body: events
@@ -280,13 +278,13 @@ extension Analytics {
         }
 
         private func handleFailedEvents(forUrl url: URL) {
-            self.eventSendFailureCount += 1
+            eventSendFailureCount += 1
             if eventSendFailureCount >= 3 {
                 logger.error(message: "Failed to send events three or more times. Deleting analytics file ...")
                 storage.deleteAnalyticsFile()
                 eventSendFailureCount = 0
             } else {
-                self.storage.delete(eventsWithUrl: url)
+                storage.delete(eventsWithUrl: url)
             }
         }
 

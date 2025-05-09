@@ -26,9 +26,9 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
     }
     private(set) public var clientToken: String?
 
-    internal let sdkSessionId = UUID().uuidString
-    internal private(set) var checkoutSessionId: String?
-    internal private(set) var timingEventId: String?
+    let sdkSessionId = UUID().uuidString
+    private(set) var checkoutSessionId: String?
+    private(set) var timingEventId: String?
 
     private var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
     private let unsupportedPaymentMethodTypes: [String] = [
@@ -196,7 +196,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         }
     }
 
-    internal func validateSession() -> Promise<Void> {
+    func validateSession() -> Promise<Void> {
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
                 let info = ["reason": "Client token is nil"]
@@ -239,7 +239,7 @@ public class PrimerHeadlessUniversalCheckout: LogReporter {
         }
     }
 
-    internal func listAvailablePaymentMethodsTypes() -> [String]? {
+    func listAvailablePaymentMethodsTypes() -> [String]? {
         var paymentMethods = PrimerAPIConfiguration.paymentMethodConfigs
 
         #if !canImport(PrimerKlarnaSDK)
@@ -282,7 +282,7 @@ Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in you
         return paymentMethods?.compactMap({ $0.type }).filter({ !unsupportedPaymentMethodTypes.contains($0) })
     }
 
-    private static let queue: DispatchQueue = DispatchQueue(label: "primer.headlessUniversalCheckout", qos: .default)
+    private static let queue = DispatchQueue(label: "primer.headlessUniversalCheckout", qos: .default)
 }
 // swiftlint:enable function_body_length
 // swiftlint:enable type_body_length

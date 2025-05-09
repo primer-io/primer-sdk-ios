@@ -12,7 +12,7 @@ import UIKit
 
 class PrimerFormViewController: PrimerViewController {
 
-    internal var verticalStackView: UIStackView = UIStackView()
+    let verticalStackView = UIStackView()
 
     override func viewDidLoad() {
         super.viewDidLoad()

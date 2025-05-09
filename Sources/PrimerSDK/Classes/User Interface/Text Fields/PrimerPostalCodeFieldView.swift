@@ -2,7 +2,7 @@ import UIKit
 
 public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
 
-    internal var postalCode: String? {
+    var postalCode: String? {
         return textField.internalText
     }
 
@@ -15,7 +15,7 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
         isEditingAnalyticsEnabled = true
         isValid = { text in
             // todo: look into more sophisticated postal code validation, ascii check for now
-            return text.isValidPostalCode
+            text.isValidPostalCode
         }
     }
 
@@ -36,7 +36,7 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
         let positionOriginal = textField.beginningOfDocument
         let cursorLocation = textField.position(
             from: positionOriginal,
-            offset: (range.location + NSString(string: string).length)
+            offset: range.location + NSString(string: string).length
         )
 
         guard let primerTextField = textField as? PrimerTextField else { return true }
@@ -49,7 +49,7 @@ public final class PrimerPostalCodeFieldView: PrimerTextFieldView {
 
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
 
-        switch self.isValid?(newText) {
+        switch isValid?(newText) {
         case true:
             validation = .valid
         case false:

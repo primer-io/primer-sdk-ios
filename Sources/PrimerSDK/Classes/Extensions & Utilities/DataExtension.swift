@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal extension Data {
+extension Data {
     // NSString gives us a nice sanitized debugDescription
     var prettyPrintedJSONString: String? {
         guard let object = try? JSONSerialization.jsonObject(with: self, options: []),

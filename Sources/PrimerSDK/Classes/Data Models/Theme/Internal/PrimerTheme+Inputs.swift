@@ -4,7 +4,7 @@ enum InputType {
     case underlined
 }
 
-internal class InputTheme {
+class InputTheme {
     let color: UIColor
     let cornerRadius: CGFloat
     let border: BorderTheme
@@ -13,7 +13,7 @@ internal class InputTheme {
     let errortext: TextTheme
     let inputType: InputType
 
-    internal init(
+    init(
         color: UIColor,
         cornerRadius: CGFloat,
         border: BorderTheme,

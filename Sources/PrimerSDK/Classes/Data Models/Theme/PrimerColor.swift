@@ -7,16 +7,16 @@
 
 import UIKit
 
-internal class PrimerColor: UIColor {
+class PrimerColor: UIColor {
 
     static func dynamic(lightMode: PrimerColor, darkMode: PrimerColor) -> PrimerColor {
-        return PrimerColor { (traitCollection) -> UIColor in
+        return PrimerColor { traitCollection -> UIColor in
             return traitCollection.userInterfaceStyle == .light ? lightMode : darkMode
         }
     }
 }
 
-internal extension PrimerColor {
+extension PrimerColor {
 
     convenience init(red: Int, green: Int, blue: Int, alpha: UInt8 = 255) {
         assert(red >= 0 && red <= 255, "Invalid red component")

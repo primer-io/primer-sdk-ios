@@ -16,7 +16,7 @@ class ImageFileProcessor {
     func process(configuration apiConfiguration: PrimerAPIConfiguration) -> Promise<Void> {
         var imageFiles: [ImageFile] = []
 
-        for paymentMethod in (apiConfiguration.paymentMethods ?? []) {
+        for paymentMethod in apiConfiguration.paymentMethods ?? [] {
 
             var coloredImageFile: ImageFile
             if let coloredVal = paymentMethod.displayMetadata?.button.iconUrl?.coloredUrlStr {

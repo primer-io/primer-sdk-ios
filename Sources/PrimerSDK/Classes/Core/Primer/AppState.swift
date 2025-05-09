@@ -5,7 +5,7 @@
 //  Created by Carl Eriksson on 16/01/2021.
 //
 
-internal protocol AppStateProtocol: AnyObject {
+protocol AppStateProtocol: AnyObject {
 
     static var current: AppStateProtocol { get }
     var amount: Int? { get }
@@ -17,7 +17,7 @@ internal protocol AppStateProtocol: AnyObject {
     var selectedPaymentMethod: PrimerPaymentMethodTokenData? { get }
 }
 
-internal class AppState: AppStateProtocol {
+class AppState: AppStateProtocol {
 
     static var current: AppStateProtocol {
         let appState: AppStateProtocol = DependencyContainer.resolve()

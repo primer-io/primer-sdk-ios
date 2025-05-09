@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal extension Date {
+extension Date {
 
     var startOfDay: Date {
         return Calendar.current.startOfDay(for: self)
@@ -50,6 +50,6 @@ internal extension Date {
     // swiftlint:enable identifier_name
 
     var millisecondsSince1970: Int {
-        Int((self.timeIntervalSince1970 * 1000.0).rounded())
+        Int((timeIntervalSince1970 * 1000.0).rounded())
     }
 }

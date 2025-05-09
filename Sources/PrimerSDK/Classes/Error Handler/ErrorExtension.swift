@@ -10,9 +10,9 @@ import Foundation
 extension Array where Element == Error {
 
     var combinedDescription: String {
-        var message: String = ""
+        var message = ""
 
-        self.forEach { err in
+        forEach { err in
             if let primerError = err as? (any PrimerErrorProtocol) {
                 message += "\(primerError.localizedDescription) | "
             } else {

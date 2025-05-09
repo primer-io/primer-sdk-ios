@@ -66,7 +66,7 @@ class ConfigurationCache: ConfigurationCaching {
         PrimerSettings.current.clientSessionCachingEnabled
     }
 
-    private static let queue: DispatchQueue = DispatchQueue(label: "primer.configurationCache", qos: .default)
+    private static let queue = DispatchQueue(label: "primer.configurationCache", qos: .default)
 }
 
 class ConfigurationCachedData {
@@ -78,8 +78,8 @@ class ConfigurationCachedData {
     init(config: PrimerAPIConfiguration, headers: [String: String]? = nil) {
         // Extract ttl from headers
         self.config = config
-        self.timestamp = Date().timeIntervalSince1970
-        self.ttl = Self.extractTtlFromHeaders(headers)
+        timestamp = Date().timeIntervalSince1970
+        ttl = Self.extractTtlFromHeaders(headers)
     }
 
     static let FallbackCacheExpiration: TimeInterval = 0
@@ -87,9 +87,9 @@ class ConfigurationCachedData {
 
     private static func extractTtlFromHeaders(_ headers: [String: String]?) -> TimeInterval {
         guard let headers,
-              let ttlHeaderValue = headers[Self.CacheHeaderKey],
+              let ttlHeaderValue = headers[CacheHeaderKey],
               let ttlInt = Int(ttlHeaderValue) else {
-            return Self.FallbackCacheExpiration
+            return FallbackCacheExpiration
         }
         return TimeInterval(ttlInt)
     }

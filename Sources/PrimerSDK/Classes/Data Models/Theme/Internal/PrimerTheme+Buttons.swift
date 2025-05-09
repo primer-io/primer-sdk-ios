@@ -1,17 +1,17 @@
 import UIKit
 
-internal enum ButtonType {
+enum ButtonType {
     case main, paymentMethod
 }
 
-internal class ButtonTheme {
+class ButtonTheme {
     let colorStates: StatefulColor
     let cornerRadius: CGFloat
     let border: BorderTheme
     let text: TextTheme
     let iconColor: UIColor
 
-    internal init(
+    init(
         colorStates: StatefulColor,
         cornerRadius: CGFloat,
         border: BorderTheme,

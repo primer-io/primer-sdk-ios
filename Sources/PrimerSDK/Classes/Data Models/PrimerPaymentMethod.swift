@@ -31,18 +31,16 @@ class PrimerPaymentMethod: Codable, LogReporter {
     var displayMetadata: PrimerPaymentMethod.DisplayMetadata?
     var baseLogoImage: PrimerTheme.BaseImage?
 
-    lazy var internalPaymentMethodType: PrimerPaymentMethodType? = {
-        return PrimerPaymentMethodType(rawValue: self.type)
-    }()
+    lazy var internalPaymentMethodType: PrimerPaymentMethodType? = PrimerPaymentMethodType(rawValue: self.type)
 
     var logo: UIImage? {
         guard let baseLogoImage = baseLogoImage else { return nil }
         let isDarkModeEnabled = UIScreen.isDarkModeEnabled
-        return (
+        return
             (isDarkModeEnabled ? baseLogoImage.dark : baseLogoImage.colored) ??
                 (isDarkModeEnabled ? baseLogoImage.colored : baseLogoImage.light) ??
                 (isDarkModeEnabled ? baseLogoImage.light : baseLogoImage.dark)
-        )
+
     }
 
     var invertedLogo: UIImage? {
@@ -142,7 +140,7 @@ class PrimerPaymentMethod: Codable, LogReporter {
     }()
 
     var isCheckoutEnabled: Bool {
-        guard self.baseLogoImage != nil else {
+        guard baseLogoImage != nil else {
             return false
         }
 
@@ -160,15 +158,15 @@ class PrimerPaymentMethod: Codable, LogReporter {
     }
 
     var isVaultingEnabled: Bool {
-        guard self.baseLogoImage != nil else {
+        guard baseLogoImage != nil else {
             return false
         }
 
-        if self.implementationType == .webRedirect || self.implementationType == .iPay88Sdk {
+        if implementationType == .webRedirect || implementationType == .iPay88Sdk {
             return false
         }
 
-        switch self.type {
+        switch type {
         case PrimerPaymentMethodType.applePay.rawValue,
              PrimerPaymentMethodType.goCardless.rawValue,
              PrimerPaymentMethodType.googlePay.rawValue,

@@ -12,8 +12,8 @@ import UIKit
 
 class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
 
-    internal private(set) var banks: [AdyenBank] = []
-    internal private(set) var dataSource: [AdyenBank] = [] {
+    private(set) var banks: [AdyenBank] = []
+    private(set) var dataSource: [AdyenBank] = [] {
         didSet {
             tableView.reloadData()
         }
@@ -41,7 +41,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
          createResumePaymentService: CreateResumePaymentServiceProtocol,
          apiClient: PrimerAPIClientBanksProtocol
     ) {
-        self.paymentMethodType = config.internalPaymentMethodType!
+        paymentMethodType = config.internalPaymentMethodType!
         self.apiClient = apiClient
         super.init(config: config,
                    uiManager: uiManager,
@@ -58,7 +58,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         }
     }
 
-    internal lazy var tableView: UITableView = {
+    lazy var tableView: UITableView = {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
         let tableView = UITableView()
@@ -74,7 +74,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
         return tableView
     }()
 
-    internal lazy var searchBankTextField: PrimerSearchTextField? = {
+    lazy var searchBankTextField: PrimerSearchTextField? = {
         let textField = PrimerSearchTextField(frame: .zero)
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.heightAnchor.constraint(equalToConstant: 35).isActive = true
@@ -91,8 +91,8 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
     private var selectedBank: AdyenBank?
 
     override func cancel() {
-        self.webViewController = nil
-        self.webViewCompletion = nil
+        webViewController = nil
+        webViewCompletion = nil
         super.cancel()
     }
 
@@ -107,7 +107,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: nil),
             extra: nil,
             objectType: .button,
@@ -227,7 +227,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
                 return
             }
 
-            var paymentMethodRequestValue: String = ""
+            var paymentMethodRequestValue = ""
             switch self.config.type {
             case PrimerPaymentMethodType.adyenDotPay.rawValue:
                 paymentMethodRequestValue = "dotpay"
@@ -278,7 +278,7 @@ class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationVie
 
         let requestBody = Request.Body.Tokenization(
             paymentInstrument: OffSessionPaymentInstrument(
-                paymentMethodConfigId: self.config.id!,
+                paymentMethodConfigId: config.id!,
                 paymentMethodType: config.type,
                 sessionInfo: BankSelectorSessionInfo(issuer: bank.id)))
 
@@ -314,8 +314,8 @@ extension BankSelectorTokenizationViewModel: UITableViewDataSource, UITableViewD
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let bank = self.dataSource[indexPath.row]
-        self.bankSelectionCompletion?(bank)
+        let bank = dataSource[indexPath.row]
+        bankSelectionCompletion?(bank)
     }
 }
 
@@ -380,7 +380,7 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
         }
     }
     func tokenize(bankId: String) -> Promise<Void> {
-        self.selectedBank = banks.first(where: { $0.id == bankId })
+        selectedBank = banks.first(where: { $0.id == bankId })
         return performTokenizationStep()
             .then { () -> Promise<Void> in
                 return self.performPostTokenizationSteps()

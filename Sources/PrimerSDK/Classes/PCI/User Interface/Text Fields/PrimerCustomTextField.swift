@@ -45,7 +45,7 @@ class PrimerCustomFieldView: UIView {
         }
     }
 
-    private var verticalStackView: UIStackView = UIStackView()
+    private var verticalStackView = UIStackView()
     private let errorLabel = UILabel()
     private let topPlaceholderLabel = UILabel()
     private let rightImageView1Container = UIView()

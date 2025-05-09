@@ -9,7 +9,7 @@ import UIKit
 
 class PrimerAddressField: PrimerCardFormFieldProtocol {
 
-    internal static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 }
 
 class PrimerAddressLine1Field: PrimerAddressField {

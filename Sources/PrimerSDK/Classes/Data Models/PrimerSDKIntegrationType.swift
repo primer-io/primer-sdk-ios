@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal enum PrimerSDKIntegrationType: String, Codable {
+enum PrimerSDKIntegrationType: String, Codable {
     case dropIn     = "DROP_IN"
     case headless   = "HEADLESS"
 }

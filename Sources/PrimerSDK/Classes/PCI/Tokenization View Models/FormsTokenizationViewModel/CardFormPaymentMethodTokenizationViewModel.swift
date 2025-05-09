@@ -43,7 +43,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var paymentMethodsRequiringCVVInput: [PrimerPaymentMethodType] = [.paymentCard]
     private var isRequiringCVVInput: Bool {
-        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type) else { return false }
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type) else { return false }
         return paymentMethodsRequiringCVVInput.contains(paymentMethodType)
     }
     var dataSource = CountryCode.allCases {
@@ -53,7 +53,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
     var countries = CountryCode.allCases
 
-    internal lazy var tableView: UITableView = {
+    lazy var tableView: UITableView = {
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
         let tableView = UITableView()
@@ -68,7 +68,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return tableView
     }()
 
-    internal lazy var searchableTextField: PrimerSearchTextField = {
+    lazy var searchableTextField: PrimerSearchTextField = {
         let textField = PrimerSearchTextField(frame: .zero)
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.heightAnchor.constraint(equalToConstant: 35).isActive = true
@@ -95,19 +95,13 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return options?.postalCode == true
     }
 
-    internal lazy var countrySelectorViewController: CountrySelectorViewController = {
-        CountrySelectorViewController(viewModel: self)
-    }()
+    lazy var countrySelectorViewController = CountrySelectorViewController(viewModel: self)
 
     // MARK: - Card number field
 
-    lazy var cardNumberField: PrimerCardNumberFieldView = {
-        PrimerCardNumberField.cardNumberFieldViewWithDelegate(self)
-    }()
+    lazy var cardNumberField: PrimerCardNumberFieldView = PrimerCardNumberField.cardNumberFieldViewWithDelegate(self)
 
-    private lazy var cardNumberContainerView: PrimerCustomFieldView = {
-        PrimerCardNumberField.cardNumberContainerViewWithFieldView(cardNumberField)
-    }()
+    private lazy var cardNumberContainerView: PrimerCustomFieldView = PrimerCardNumberField.cardNumberContainerViewWithFieldView(cardNumberField)
 
     // MARK: - Cardholder name field
 
@@ -123,23 +117,15 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: - Expiry date field
 
-    lazy var expiryDateField: PrimerExpiryDateFieldView = {
-        return PrimerEpiryDateField.expiryDateFieldViewWithDelegate(self)
-    }()
+    lazy var expiryDateField: PrimerExpiryDateFieldView = PrimerEpiryDateField.expiryDateFieldViewWithDelegate(self)
 
-    private lazy var expiryDateContainerView: PrimerCustomFieldView = {
-        return PrimerEpiryDateField.expiryDateContainerViewWithFieldView(expiryDateField)
-    }()
+    private lazy var expiryDateContainerView: PrimerCustomFieldView = PrimerEpiryDateField.expiryDateContainerViewWithFieldView(expiryDateField)
 
     // MARK: - CVV field
 
-    lazy var cvvField: PrimerCVVFieldView = {
-        PrimerCVVField.cvvFieldViewWithDelegate(self)
-    }()
+    lazy var cvvField: PrimerCVVFieldView = PrimerCVVField.cvvFieldViewWithDelegate(self)
 
-    private lazy var cvvContainerView: PrimerCustomFieldView = {
-        PrimerCVVField.cvvContainerViewFieldView(cvvField)
-    }()
+    private lazy var cvvContainerView: PrimerCustomFieldView = PrimerCVVField.cvvContainerViewFieldView(cvvField)
 
     // MARK: - Billing address
 
@@ -149,13 +135,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: First name
 
-    lazy var firstNameFieldView: PrimerFirstNameFieldView = {
-        PrimerFirstNameField.firstNameFieldViewWithDelegate(self)
-    }()
+    lazy var firstNameFieldView: PrimerFirstNameFieldView = PrimerFirstNameField.firstNameFieldViewWithDelegate(self)
 
-    private lazy var firstNameContainerView: PrimerCustomFieldView = {
-        PrimerFirstNameField.firstNameFieldContainerViewFieldView(firstNameFieldView)
-    }()
+    private lazy var firstNameContainerView: PrimerCustomFieldView = PrimerFirstNameField.firstNameFieldContainerViewFieldView(firstNameFieldView)
 
     private var firstNameField: BillingAddressField {
         (firstNameFieldView, firstNameContainerView, billingAddressCheckoutModuleOptions?.firstName == false)
@@ -163,13 +145,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: Last name
 
-    lazy var lastNameFieldView: PrimerLastNameFieldView = {
-        PrimerLastNameField.lastNameFieldViewWithDelegate(self)
-    }()
+    lazy var lastNameFieldView: PrimerLastNameFieldView = PrimerLastNameField.lastNameFieldViewWithDelegate(self)
 
-    private lazy var lastNameContainerView: PrimerCustomFieldView = {
-        PrimerLastNameField.lastNameFieldContainerViewFieldView(lastNameFieldView)
-    }()
+    private lazy var lastNameContainerView: PrimerCustomFieldView = PrimerLastNameField.lastNameFieldContainerViewFieldView(lastNameFieldView)
 
     private var lastNameField: BillingAddressField {
         (lastNameFieldView, lastNameContainerView, billingAddressCheckoutModuleOptions?.lastName == false)
@@ -177,13 +155,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: Address Line 1
 
-    lazy var addressLine1FieldView: PrimerAddressLine1FieldView = {
-        PrimerAddressLine1Field.addressLine1FieldViewWithDelegate(self)
-    }()
+    lazy var addressLine1FieldView: PrimerAddressLine1FieldView = PrimerAddressLine1Field.addressLine1FieldViewWithDelegate(self)
 
-    private lazy var addressLine1ContainerView: PrimerCustomFieldView = {
-        PrimerAddressLine1Field.addressLine1ContainerViewFieldView(addressLine1FieldView)
-    }()
+    private lazy var addressLine1ContainerView: PrimerCustomFieldView = PrimerAddressLine1Field.addressLine1ContainerViewFieldView(addressLine1FieldView)
 
     private var addressLine1Field: BillingAddressField {
         (addressLine1FieldView, addressLine1ContainerView, billingAddressCheckoutModuleOptions?.addressLine1 == false)
@@ -191,13 +165,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: Address Line 2
 
-    lazy var addressLine2FieldView: PrimerAddressLine2FieldView = {
-        PrimerAddressLine2Field.addressLine2FieldViewWithDelegate(self)
-    }()
+    lazy var addressLine2FieldView: PrimerAddressLine2FieldView = PrimerAddressLine2Field.addressLine2FieldViewWithDelegate(self)
 
-    private lazy var addressLine2ContainerView: PrimerCustomFieldView = {
-        PrimerAddressLine2Field.addressLine2ContainerViewFieldView(addressLine2FieldView)
-    }()
+    private lazy var addressLine2ContainerView: PrimerCustomFieldView = PrimerAddressLine2Field.addressLine2ContainerViewFieldView(addressLine2FieldView)
 
     private var addressLine2Field: BillingAddressField {
         (addressLine2FieldView, addressLine2ContainerView, billingAddressCheckoutModuleOptions?.addressLine2 == false)
@@ -205,13 +175,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: Postal code
 
-    lazy var postalCodeFieldView: PrimerPostalCodeFieldView = {
-        PrimerPostalCodeField.postalCodeViewWithDelegate(self)
-    }()
+    lazy var postalCodeFieldView: PrimerPostalCodeFieldView = PrimerPostalCodeField.postalCodeViewWithDelegate(self)
 
-    private lazy var postalCodeContainerView: PrimerCustomFieldView = {
-        PrimerPostalCodeField.postalCodeContainerViewFieldView(postalCodeFieldView)
-    }()
+    private lazy var postalCodeContainerView: PrimerCustomFieldView = PrimerPostalCodeField.postalCodeContainerViewFieldView(postalCodeFieldView)
 
     private var postalCodeField: BillingAddressField {
         (postalCodeFieldView, postalCodeContainerView, billingAddressCheckoutModuleOptions?.postalCode == false)
@@ -219,13 +185,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: City
 
-    lazy var cityFieldView: PrimerCityFieldView = {
-        PrimerCityField.cityFieldViewWithDelegate(self)
-    }()
+    lazy var cityFieldView: PrimerCityFieldView = PrimerCityField.cityFieldViewWithDelegate(self)
 
-    private lazy var cityContainerView: PrimerCustomFieldView = {
-        PrimerCityField.cityFieldContainerViewFieldView(cityFieldView)
-    }()
+    private lazy var cityContainerView: PrimerCustomFieldView = PrimerCityField.cityFieldContainerViewFieldView(cityFieldView)
 
     private var cityField: BillingAddressField {
         (cityFieldView, cityContainerView, billingAddressCheckoutModuleOptions?.city == false)
@@ -233,13 +195,9 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: State
 
-    lazy var stateFieldView: PrimerStateFieldView = {
-        PrimerStateField.stateFieldViewWithDelegate(self)
-    }()
+    lazy var stateFieldView: PrimerStateFieldView = PrimerStateField.stateFieldViewWithDelegate(self)
 
-    private lazy var stateContainerView: PrimerCustomFieldView = {
-        PrimerStateField.stateFieldContainerViewFieldView(stateFieldView)
-    }()
+    private lazy var stateContainerView: PrimerCustomFieldView = PrimerStateField.stateFieldContainerViewFieldView(stateFieldView)
 
     private var stateField: BillingAddressField {
         (stateFieldView, stateContainerView, billingAddressCheckoutModuleOptions?.state == false)
@@ -247,27 +205,23 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     // MARK: Country
 
-    lazy var countryFieldView: PrimerCountryFieldView = {
-        PrimerCountryField.countryFieldViewWithDelegate(self)
-    }()
+    lazy var countryFieldView: PrimerCountryFieldView = PrimerCountryField.countryFieldViewWithDelegate(self)
 
-    private lazy var countryFieldContainerView: PrimerCustomFieldView = {
-        PrimerCountryField.countryContainerViewFieldView(countryFieldView, openCountriesListPressed: {
+    private lazy var countryFieldContainerView: PrimerCustomFieldView = PrimerCountryField.countryContainerViewFieldView(countryFieldView, openCountriesListPressed: {
             DispatchQueue.main.async {
                 self.uiManager.primerRootViewController?.show(viewController: self.countrySelectorViewController)
             }
         })
-    }()
 
     // MARK: All billing address fields
 
-    internal var billingAddressCheckoutModuleOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions? {
+    var billingAddressCheckoutModuleOptions: PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions? {
         return PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
             .filter({ $0.type == "BILLING_ADDRESS" })
             .first?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
     }
 
-    internal var billingAddressFields: [[BillingAddressField]] {
+    var billingAddressFields: [[BillingAddressField]] {
         guard isShowingBillingAddressFieldsRequired else { return [] }
         return [
             [countryField],
@@ -279,17 +233,17 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         ]
     }
 
-    internal var allVisibleBillingAddressFieldViews: [PrimerTextFieldView] {
+    var allVisibleBillingAddressFieldViews: [PrimerTextFieldView] {
         billingAddressFields.flatMap { $0.filter { $0.isFieldHidden == false } }.map { $0.fieldView }
     }
 
     // swiftlint:disable:next identifier_name
-    internal var allVisibleBillingAddressFieldContainerViews: [[PrimerCustomFieldView]] {
+    var allVisibleBillingAddressFieldContainerViews: [[PrimerCustomFieldView]] {
         let allVisibleBillingAddressFields = billingAddressFields.map { $0.filter { $0.isFieldHidden == false } }
         return allVisibleBillingAddressFields.map { $0.map { $0.containerFieldView } }
     }
 
-    internal var formView: PrimerFormView {
+    var formView: PrimerFormView {
         var formViews: [[UIView?]] = [
             [cardNumberContainerView],
             [expiryDateContainerView],
@@ -303,22 +257,22 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
 
     override func start() {
-        self.checkoutEventsNotifierModule.didStartTokenization = {
+        checkoutEventsNotifierModule.didStartTokenization = {
             self.uiModule.submitButton?.startAnimating()
             self.uiManager.primerRootViewController?.enableUserInteraction(false)
         }
 
-        self.checkoutEventsNotifierModule.didFinishTokenization = {
+        checkoutEventsNotifierModule.didFinishTokenization = {
             self.uiModule.submitButton?.stopAnimating()
             self.uiManager.primerRootViewController?.enableUserInteraction(true)
         }
 
-        self.didStartPayment = {
+        didStartPayment = {
             self.uiModule.submitButton?.startAnimating()
             self.uiManager.primerRootViewController?.enableUserInteraction(false)
         }
 
-        self.didFinishPayment = { _ in
+        didFinishPayment = { _ in
             self.uiModule.submitButton?.stopAnimating()
             self.uiManager.primerRootViewController?.enableUserInteraction(true)
 
@@ -425,7 +379,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: nil),
             extra: nil,
             objectType: .button,
@@ -437,7 +391,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
         return Promise { seal in
             firstly {
-                return self.validateReturningPromise()
+                self.validateReturningPromise()
             }
             .then { () -> Promise<Void> in
                 return self.presentPaymentMethodUserInterface()
@@ -520,7 +474,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
 
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
-            self.cardComponentsManagerTokenizationCompletion = { (paymentMethodTokenData, err) in
+            self.cardComponentsManagerTokenizationCompletion = { paymentMethodTokenData, err in
                 if let err = err {
                     seal.reject(err)
                 } else if let paymentMethodTokenData = paymentMethodTokenData {
@@ -641,7 +595,7 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
             self.webViewController = SFSafariViewController(url: redirectUrl)
             self.webViewController!.delegate = self
 
-            self.webViewCompletion = { (_, err) in
+            self.webViewCompletion = { _, err in
                 if let err = err {
                     seal.reject(err)
                 }
@@ -684,12 +638,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }
 
     override func submitButtonTapped() {
-        self.uiModule.submitButton?.startAnimating()
+        uiModule.submitButton?.startAnimating()
         let viewEvent = Analytics.Event.ui(
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: nil),
             extra: nil,
             objectType: .button,
@@ -699,12 +653,12 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         )
         Analytics.Service.record(event: viewEvent)
 
-        self.userInputCompletion?()
+        userInputCompletion?()
     }
 
     override func cancel() {
-        self.didCancel?()
-        self.didCancel = nil
+        didCancel?()
+        didCancel = nil
         super.cancel()
     }
 }
@@ -760,8 +714,8 @@ extension CardFormPaymentMethodTokenizationViewModel {
 extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsManagerDelegate {
 
     func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData) {
-        self.cardComponentsManagerTokenizationCompletion?(paymentMethodToken, nil)
-        self.cardComponentsManagerTokenizationCompletion = nil
+        cardComponentsManagerTokenizationCompletion?(paymentMethodToken, nil)
+        cardComponentsManagerTokenizationCompletion = nil
     }
 
     func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void) {
@@ -780,17 +734,17 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
                                                userInfo: .errorUserInfoDictionary(),
                                                diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: err)
-        self.cardComponentsManagerTokenizationCompletion?(nil, err)
-        self.cardComponentsManagerTokenizationCompletion = nil
+        cardComponentsManagerTokenizationCompletion?(nil, err)
+        cardComponentsManagerTokenizationCompletion = nil
     }
 
     func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, isLoading: Bool) {
         if isLoading {
-            self.uiModule.submitButton?.startAnimating()
+            uiModule.submitButton?.startAnimating()
         } else {
-            self.uiModule.submitButton?.stopAnimating()
+            uiModule.submitButton?.stopAnimating()
         }
-        self.uiManager.primerRootViewController?.enableUserInteraction(!isLoading)
+        uiManager.primerRootViewController?.enableUserInteraction(!isLoading)
     }
 
     // swiftlint:disable cyclomatic_complexity
@@ -890,11 +844,11 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
         if cardholderNameField != nil { validations.append(cardholderNameField!.isTextValid) }
 
         if validations.allSatisfy({ $0 == true }) {
-            self.uiModule.submitButton?.isEnabled = true
-            self.uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .enabled)
+            uiModule.submitButton?.isEnabled = true
+            uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .enabled)
         } else {
-            self.uiModule.submitButton?.isEnabled = false
-            self.uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .disabled)
+            uiModule.submitButton?.isEnabled = false
+            uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .disabled)
         }
     }
 }
@@ -949,8 +903,8 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
 extension CardFormPaymentMethodTokenizationViewModel {
 
     private func updateButtonUI() {
-        if let amount = AppState.current.amount, self.uiModule.isSubmitButtonAnimating == false {
-            self.configurePayButton(amount: amount)
+        if let amount = AppState.current.amount, uiModule.isSubmitButtonAnimating == false {
+            configurePayButton(amount: amount)
         }
     }
 }
@@ -989,12 +943,12 @@ extension CardFormPaymentMethodTokenizationViewModel: UITableViewDataSource, UIT
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let country = self.dataSource[indexPath.row]
+        let country = dataSource[indexPath.row]
         countryFieldView.textField.text = "\(country.flag) \(country.country)"
         countryFieldView.countryCode = country
         countryFieldView.validation = .valid
         countryFieldView.textFieldDidEndEditing(countryFieldView.textField)
-        self.uiManager.primerRootViewController?.popViewController()
+        uiManager.primerRootViewController?.popViewController()
     }
 }
 
@@ -1042,8 +996,7 @@ extension CardFormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
 
 private extension String {
     func lowercasedAndFolded() -> String {
-        self
-            .lowercased()
+        lowercased()
             .folding(
                 options: .diacriticInsensitive,
                 locale: nil)

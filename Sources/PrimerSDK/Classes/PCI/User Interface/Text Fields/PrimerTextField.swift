@@ -7,9 +7,9 @@
 
 import UIKit
 
-internal class PrimerTextField: UITextField {
+class PrimerTextField: UITextField {
 
-    internal enum Validation: Equatable {
+    enum Validation: Equatable {
         case valid, invalid(_ error: Error?), notAvailable
 
         static func == (lhs: Validation, rhs: Validation) -> Bool {
@@ -37,7 +37,7 @@ internal class PrimerTextField: UITextField {
         }
     }
 
-    internal var internalText: String?
+    var internalText: String?
 
     override var text: String? {
         get {
@@ -49,7 +49,7 @@ internal class PrimerTextField: UITextField {
         }
     }
 
-    internal var isEmpty: Bool {
+    var isEmpty: Bool {
         return (internalText ?? "").isEmpty
     }
 

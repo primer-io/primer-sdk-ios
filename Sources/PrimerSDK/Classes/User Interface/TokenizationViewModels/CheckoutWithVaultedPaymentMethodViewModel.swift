@@ -42,7 +42,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
          additionalData: PrimerVaultedCardAdditionalData?,
          tokenizationService: TokenizationServiceProtocol = TokenizationService(),
          createResumePaymentService: CreateResumePaymentServiceProtocol) {
-        self.config = configuration
+        config = configuration
         self.selectedPaymentMethodTokenData = selectedPaymentMethodTokenData
         self.additionalData = additionalData
 
@@ -190,7 +190,7 @@ class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
         }
     }
 
-    internal func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
+    func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
         return Promise { seal in
             if PrimerInternal.shared.intent == .vault {
                 seal.fulfill()
@@ -321,7 +321,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
                 firstly {
                     self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     seal.fulfill(self.paymentCheckoutData)
                 }
@@ -336,7 +336,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment> {
         let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
-        return self.createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
+        return createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
                                                                           paymentResumeRequest: resumeRequest)
     }
 
@@ -426,7 +426,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
                 firstly {
                     self.handleCreatePaymentEvent(token)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     self.resumePaymentId = paymentResponse.id
 
@@ -528,21 +528,21 @@ Make sure you call the decision handler otherwise the SDK will hang.
            paymentMethodType == .stripeAch {
             PrimerUIManager.showResultScreen(for: paymentMethodType, error: nil)
         } else {
-            let categories = self.config.paymentMethodManagerCategories
+            let categories = config.paymentMethodManagerCategories
             PrimerUIManager.dismissOrShowResultScreen(type: .success,
                                                       paymentMethodManagerCategories: categories ?? [])
         }
     }
 
     func handleFailureFlow(errorMessage: String?) {
-        let categories = self.config.paymentMethodManagerCategories
+        let categories = config.paymentMethodManagerCategories
         PrimerUIManager.dismissOrShowResultScreen(type: .failure,
                                                   paymentMethodManagerCategories: categories ?? [],
                                                   withMessage: errorMessage)
     }
 
     private var paymentMethodType: String {
-        self.paymentMethodTokenData?.paymentInstrumentData?.paymentMethodType ?? "UNKNOWN"
+        paymentMethodTokenData?.paymentInstrumentData?.paymentMethodType ?? "UNKNOWN"
     }
 }
 // swiftlint:enable type_name
