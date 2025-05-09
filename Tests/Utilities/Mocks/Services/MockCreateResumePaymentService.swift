@@ -1,5 +1,5 @@
 //
-//  CreateResumePaymentService.swift
+//  MockCreateResumePaymentService.swift
 //  PrimerSDK_Tests
 //
 //  Created by Jack Newcombe on 22/05/2024.

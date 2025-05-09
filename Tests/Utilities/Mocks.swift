@@ -134,14 +134,8 @@ class Mocks {
         paymentId: "mock_payment_id",
         amount: 1000,
         currencyCode: "EUR",
-        customer: nil,
         customerId: "mock_customer_id",
-        dateStr: nil,
-        order: nil,
-        orderId: nil,
-        requiredAction: nil,
-        status: .success,
-        paymentFailureReason: nil
+        status: .success
     )
 
     static var tokenizationRequestBody = Request.Body.Tokenization(paymentInstrument: MockTokenizationRequestBodyPaymentInstrument())
@@ -382,7 +376,7 @@ let mockPaymentMethodConfig = PrimerAPIConfiguration(
             surcharge: nil,
             options: nil,
             displayMetadata: nil
-        ),
+        )
     ],
     primerAccountId: nil,
     keys: nil,
@@ -438,7 +432,7 @@ class MockAppState: AppStateProtocol {
                     surcharge: nil,
                     options: nil,
                     displayMetadata: nil
-                ),
+                )
             ],
             primerAccountId: nil,
             keys: nil,

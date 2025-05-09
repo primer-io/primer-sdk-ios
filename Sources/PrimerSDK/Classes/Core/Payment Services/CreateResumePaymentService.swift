@@ -72,20 +72,47 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         }
     }
 
+    /**
+     * Validates the response from the payment API.
+     *
+     * This private method checks the `checkoutOutcome` of the payment response and throws an error if the
+     * payment creation should fail based on the provided call type. It handles both the new checkoutOutcome logic
+     * and the old logic based on the payment status.
+     *
+     * - Parameters:
+     *   - paymentResponse: A `Response.Body.Payment` object representing the payment response.
+     *   - callType: A `CreateResumePaymentCallType` indicating whether this is a create or resume call.
+     *
+     * - Throws: A `PrimerError` if the payment creation should fail.
+     */
     private func validateResponse(paymentResponse: Response.Body.Payment, callType: CreateResumePaymentCallType) throws {
-        if paymentResponse.id == nil || paymentResponse.status == .failed ||
-            (callType == .resume && paymentResponse.status == .pending && paymentResponse.showSuccessCheckoutOnPendingPayment == false) {
-            let err = PrimerError.paymentFailed(
-                paymentMethodType: paymentMethodType,
-                paymentId: paymentResponse.id ?? "unknown",
-                orderId: paymentResponse.orderId ?? nil,
-                status: paymentResponse.status.rawValue,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            ErrorHandler.handle(error: err)
-            throw err
+        if let checkoutOutcome = paymentResponse.checkoutOutcome {
+            switch checkoutOutcome {
+            case .complete: return
+            case .failure: throw createPaymentFailedError(paymentResponse: paymentResponse)
+            default: break // Continue with old logic
+            }
         }
+
+        /* Old logic */
+        let shouldFail = (callType == .resume && paymentResponse.shouldFailPaymentCreationWhenPending) || paymentResponse
+            .shouldFailPaymentCreationImmediately
+
+        if shouldFail {
+            throw createPaymentFailedError(paymentResponse: paymentResponse)
+        }
+    }
+
+    // Helper method to create a payment failed error
+    private func createPaymentFailedError(paymentResponse: Response.Body.Payment, description: String? = nil) -> PrimerError {
+        PrimerError.paymentFailed(
+            paymentMethodType: paymentMethodType,
+            paymentId: paymentResponse.id ?? "unknown",
+            orderId: paymentResponse.orderId ?? nil,
+            status: paymentResponse.status.rawValue,
+            userInfo: .errorUserInfoDictionary(),
+            diagnosticsId: UUID().uuidString
+        )
     }
 
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) -> Promise<Response.Body.Payment> {
@@ -172,5 +199,15 @@ internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                 continuation.resume(throwing: error)
             }
         }
+    }
+}
+
+private extension Response.Body.Payment {
+    var shouldFailPaymentCreationImmediately: Bool {
+        id == nil || status == .failed
+    }
+
+    var shouldFailPaymentCreationWhenPending: Bool {
+        status == .pending && showSuccessCheckoutOnPendingPayment != true
     }
 }

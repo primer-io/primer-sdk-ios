@@ -77,23 +77,23 @@ extension Request.Body.Payment {
 extension Response.Body {
 
     public struct Payment: Codable {
-
-        public let id: String?
-        public let paymentId: String?
-        public let amount: Int?
-        public let currencyCode: String?
-        public let customer: Request.Body.ClientSession.Customer?
-        public let customerId: String?
-        public let dateStr: String?
+        public var id: String?
+        public var paymentId: String?
+        public var amount: Int?
+        public var currencyCode: String?
+        public var customer: Request.Body.ClientSession.Customer?
+        public var customerId: String?
+        public var dateStr: String?
         public var date: Date? {
             return dateStr?.toDate()
         }
-        public let order: Request.Body.ClientSession.Order?
-        public let orderId: String?
-        public let requiredAction: Response.Body.Payment.RequiredAction?
+        public var order: Request.Body.ClientSession.Order?
+        public var orderId: String?
+        public var requiredAction: Response.Body.Payment.RequiredAction?
         public let status: Status
-        public let paymentFailureReason: PrimerPaymentErrorCode.RawValue?
-        public var showSuccessCheckoutOnPendingPayment: Bool? = false
+        public var paymentFailureReason: PrimerPaymentErrorCode.RawValue?
+        public var showSuccessCheckoutOnPendingPayment: Bool?
+        public var checkoutOutcome: CheckoutOutcome?
 
         // swiftlint:disable:next nesting
         public enum CodingKeys: String, CodingKey {
@@ -108,7 +108,8 @@ extension Response.Body {
                  requiredAction,
                  status,
                  paymentFailureReason,
-                 showSuccessCheckoutOnPendingPayment
+                 showSuccessCheckoutOnPendingPayment,
+                 checkoutOutcome
             case dateStr = "date"
         }
 
@@ -124,6 +125,13 @@ extension Response.Body {
             case failed = "FAILED"
             case pending = "PENDING"
             case success = "SUCCESS"
+        }
+
+        // swiftlint:disable:next nesting
+        public enum CheckoutOutcome: String, Codable {
+            case complete = "CHECKOUT_COMPLETE"
+            case failure = "CHECKOUT_FAILURE"
+            case determineFromPaymentStatus = "DETERMINE_FROM_PAYMENT_STATUS"
         }
     }
 

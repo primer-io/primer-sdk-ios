@@ -513,7 +513,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     }
 
     func continue3DSAuth(clientToken _: DecodedJWTToken, threeDSTokenId _: String, continueInfo _: ThreeDS.ContinueInfo) async throws -> ThreeDS
-        .PostAuthResponse {
+    .PostAuthResponse {
         guard let result = continue3DSAuthResult else {
             XCTAssert(false, "Set 'continue3DSAuthResult' on your MockPrimerAPIClient")
             throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
@@ -948,7 +948,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         clientToken _: DecodedJWTToken,
         paymentRequestBody _: Request.Body.PhoneMetadata.PhoneMetadataDataRequest
     ) async throws -> Response.Body.PhoneMetadata
-        .PhoneMetadataDataResponse {
+    .PhoneMetadataDataResponse {
         guard let result = getPhoneMetadataResult else {
             XCTAssert(false, "Set 'getPhoneMetadataResult' on your MockPrimerAPIClient")
             throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
@@ -1305,14 +1305,8 @@ extension MockPrimerAPIClient {
             paymentId: "mock_payment_id",
             amount: 1000,
             currencyCode: "EUR",
-            customer: nil,
             customerId: "mock_customer_id",
-            dateStr: nil,
-            order: nil,
-            orderId: nil,
-            requiredAction: nil,
-            status: .success,
-            paymentFailureReason: nil
+            status: .success
         )
         static let mockSendAnalyticsEvents = Analytics.Service.Response(
             id: "mock-id",
@@ -1332,14 +1326,8 @@ extension MockPrimerAPIClient {
             paymentId: "mock_payment_id",
             amount: 1000,
             currencyCode: "EUR",
-            customer: nil,
             customerId: "mock_customer_id",
-            dateStr: nil,
-            order: nil,
-            orderId: nil,
-            requiredAction: nil,
-            status: .success,
-            paymentFailureReason: nil
+            status: .success
         )
 
         static let mockFetchNolSdkSecret = Response.Body.NolPay.NolPaySecretDataResponse(sdkSecret: "")

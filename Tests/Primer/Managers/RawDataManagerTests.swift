@@ -183,7 +183,7 @@ final class RawDataManagerTests: XCTestCase {
     }
 
     func testFullPaymentFlowWithRequiredActionResume_async() throws {
-    let apiClient = MockPrimerAPIClient()
+        let apiClient = MockPrimerAPIClient()
         PrimerAPIConfigurationModule.apiClient = apiClient
         PollingModule.apiClient = apiClient
         apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
@@ -322,7 +322,7 @@ final class RawDataManagerTests: XCTestCase {
         rawDataManagerDelegate.onDataIsValid = { _, isValid, errors in
             XCTAssertFalse(isValid)
             XCTAssertTrue(errors!.first!.localizedDescription.starts(
-                with: "[invalid-value] Invalid value 'nil' for key 'rawData' ")
+                            with: "[invalid-value] Invalid value 'nil' for key 'rawData' ")
             )
             expectDidValidate.fulfill()
         }
@@ -359,7 +359,7 @@ final class RawDataManagerTests: XCTestCase {
         rawDataManagerDelegate.onDataIsValid = { _, isValid, errors in
             XCTAssertFalse(isValid)
             XCTAssertTrue(errors!.first!.localizedDescription.starts(
-                with: "[invalid-value] Invalid value 'nil' for key 'rawData' ")
+                            with: "[invalid-value] Invalid value 'nil' for key 'rawData' ")
             )
             expectDidValidate.fulfill()
         }
@@ -545,12 +545,8 @@ final class RawDataManagerTests: XCTestCase {
                                                             countryCode: "shipping_country_code",
                                                             postalCode: "shipping_postal_code")),
                      customerId: "customer_id",
-                     dateStr: nil,
-                     order: nil,
                      orderId: "order_id",
-                     requiredAction: nil,
-                     status: .success,
-                     paymentFailureReason: nil)
+                     status: .success)
     }
 
     var paymentResponseBodyWithRedirectAction: Response.Body.Payment {
@@ -579,14 +575,11 @@ final class RawDataManagerTests: XCTestCase {
                                                             countryCode: "shipping_country_code",
                                                             postalCode: "shipping_postal_code")),
                      customerId: "customer_id",
-                     dateStr: nil,
-                     order: nil,
                      orderId: "order_id",
                      requiredAction: .init(clientToken: MockAppState.mockClientTokenWithRedirect,
                                            name: .checkout,
                                            description: "description"),
-                     status: .success,
-                     paymentFailureReason: nil)
+                     status: .success)
     }
 
     var paymentResponseAfterResume: Response.Body.Payment {
@@ -594,14 +587,9 @@ final class RawDataManagerTests: XCTestCase {
               paymentId: "payment_id",
               amount: 1234,
               currencyCode: "GBP",
-              customer: nil,
               customerId: "customer_id",
-              dateStr: nil,
-              order: nil,
               orderId: "order_id",
-              requiredAction: nil,
-              status: .success,
-              paymentFailureReason: nil)
+              status: .success)
     }
 }
 
