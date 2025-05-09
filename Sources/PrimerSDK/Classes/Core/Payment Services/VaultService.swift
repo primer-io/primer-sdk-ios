@@ -2,11 +2,12 @@ import Foundation
 
 internal protocol VaultServiceProtocol {
     func fetchVaultedPaymentMethods() -> Promise<Void>
+    func fetchVaultedPaymentMethods() async throws
     func deleteVaultedPaymentMethod(with id: String) -> Promise<Void>
+    func deleteVaultedPaymentMethod(with id: String) async throws
 }
 
 internal class VaultService: VaultServiceProtocol {
-
     let apiClient: PrimerAPIClientVaultProtocol
 
     init(apiClient: PrimerAPIClientVaultProtocol) {
@@ -39,6 +40,18 @@ internal class VaultService: VaultServiceProtocol {
         }
     }
 
+    func fetchVaultedPaymentMethods() async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.fetchVaultedPaymentMethods()
+                .done {
+                    continuation.resume()
+                }
+                .catch { err in
+                    continuation.resume(throwing: err)
+                }
+        }
+    }
+
     func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) -> Promise<Response.Body.VaultedPaymentMethods> {
         return Promise { seal in
             apiClient.fetchVaultedPaymentMethods(clientToken: clientToken, completion: { result in
@@ -52,6 +65,18 @@ internal class VaultService: VaultServiceProtocol {
         }
     }
 
+    func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) async throws -> Response.Body.VaultedPaymentMethods {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.fetchVaultedPaymentMethods(clientToken: clientToken)
+                .done { response in
+                    continuation.resume(returning: response)
+                }
+                .catch { err in
+                    continuation.resume(throwing: err)
+                }
+        }
+    }
+
     func deleteVaultedPaymentMethod(with id: String) -> Promise<Void> {
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
@@ -62,7 +87,7 @@ internal class VaultService: VaultServiceProtocol {
                 return
             }
 
-            apiClient.deleteVaultedPaymentMethod(clientToken: clientToken, id: id) { (result) in
+            apiClient.deleteVaultedPaymentMethod(clientToken: clientToken, id: id) { result in
                 switch result {
                 case .failure(let err):
                     let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: .errorUserInfoDictionary(),
@@ -74,6 +99,18 @@ internal class VaultService: VaultServiceProtocol {
                     seal.fulfill()
                 }
             }
+        }
+    }
+
+    func deleteVaultedPaymentMethod(with id: String) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.deleteVaultedPaymentMethod(with: id)
+                .done {
+                    continuation.resume()
+                }
+                .catch { err in
+                    continuation.resume(throwing: err)
+                }
         }
     }
 }
