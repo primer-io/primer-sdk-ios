@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal class AlertController: UIAlertController {
+final class AlertController: UIAlertController {
 
     private lazy var alertWindow: UIWindow = {
         var window: UIWindow!
@@ -35,7 +35,7 @@ internal class AlertController: UIAlertController {
 
 }
 
-internal class ClearViewController: UIViewController {
+final class ClearViewController: UIViewController {
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
         let statusBarManager = view.window?.windowScene?.statusBarManager

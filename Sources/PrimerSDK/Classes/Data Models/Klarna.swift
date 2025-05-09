@@ -8,11 +8,11 @@
 import Foundation
 
 extension Request.Body {
-    public class Klarna {}
+    public final class Klarna {}
 }
 
 extension Response.Body {
-    public class Klarna {}
+    public final class Klarna {}
 }
 
 public enum KlarnaSessionType: String, Codable {

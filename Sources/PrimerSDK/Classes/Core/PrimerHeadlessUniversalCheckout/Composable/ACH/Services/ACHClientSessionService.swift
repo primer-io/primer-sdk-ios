@@ -19,7 +19,7 @@ protocol ACHUserDetailsProviding {
     func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) -> Promise<Void>
 }
 
-class ACHClientSessionService: ACHUserDetailsProviding {
+final class ACHClientSessionService: ACHUserDetailsProviding {
 
     // MARK: - Properties
     let apiClient: PrimerAPIClientProtocol

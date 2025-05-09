@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal class PrimerColor: UIColor {
+final class PrimerColor: UIColor {
 
     static func dynamic(lightMode: PrimerColor, darkMode: PrimerColor) -> PrimerColor {
         return PrimerColor { (traitCollection) -> UIColor in

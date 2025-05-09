@@ -39,7 +39,7 @@ public protocol PrimerDelegate {
     @objc optional func primerDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)
 }
 
-internal class PrimerDelegateProxy: LogReporter {
+final class PrimerDelegateProxy: LogReporter {
 
     static func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecisionProtocol) -> Void) {
         DispatchQueue.main.async {

@@ -14,7 +14,7 @@ internal struct RetailOutletTokenizationSessionRequestParameters: OffSessionPaym
     let retailOutlet: String
 }
 
-@objc public class RetailOutletsList: PrimerInitializationData {
+@objc public final class RetailOutletsList: PrimerInitializationData {
 
     public let result: [RetailOutletsRetail]
 

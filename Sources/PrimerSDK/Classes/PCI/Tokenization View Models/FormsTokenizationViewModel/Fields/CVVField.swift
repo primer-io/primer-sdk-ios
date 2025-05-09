@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PrimerCVVField: PrimerCardFormFieldProtocol {
+final class PrimerCVVField: PrimerCardFormFieldProtocol {
 
     private static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 

@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal class QRCodeViewController: PrimerFormViewController {
+final class QRCodeViewController: PrimerFormViewController {
 
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 

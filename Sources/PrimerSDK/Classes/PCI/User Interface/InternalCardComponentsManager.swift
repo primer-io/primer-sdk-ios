@@ -55,7 +55,7 @@ typealias BillingAddressField = (fieldView: PrimerTextFieldView,
                                  isFieldHidden: Bool)
 
 @objc
-internal class InternalCardComponentsManager: NSObject, InternalCardComponentsManagerProtocol, LogReporter {
+final class InternalCardComponentsManager: NSObject, InternalCardComponentsManagerProtocol, LogReporter {
 
     var cardnumberField: PrimerCardNumberFieldView
     var expiryDateField: PrimerExpiryDateFieldView

@@ -8,7 +8,7 @@
 import Foundation
 // Request
 extension Request.Body {
-    class PhoneMetadata {}
+    final class PhoneMetadata {}
 }
 
 extension Request.Body.PhoneMetadata {
@@ -21,7 +21,7 @@ extension Request.Body.PhoneMetadata {
 
 // Response
 extension Response.Body {
-    class PhoneMetadata {}
+    final class PhoneMetadata {}
 }
 
 extension Response.Body.PhoneMetadata {

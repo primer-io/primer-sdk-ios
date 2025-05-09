@@ -9,7 +9,7 @@ import Foundation
 
 // Request
 extension Request.Body {
-    class NolPay {}
+    final class NolPay {}
 }
 
 extension Request.Body.NolPay {
@@ -25,7 +25,7 @@ extension Request.Body.NolPay {
 
 // Response
 extension Response.Body {
-    class NolPay {}
+    final class NolPay {}
 }
 
 extension Response.Body.NolPay {

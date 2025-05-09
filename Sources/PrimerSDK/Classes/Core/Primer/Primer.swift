@@ -23,7 +23,7 @@ private let _Primer: Primer = {
 }()
 // swiftlint:enable identifier_name
 
-public class Primer {
+public final class Primer {
 
     // MARK: - PROPERTIES
 

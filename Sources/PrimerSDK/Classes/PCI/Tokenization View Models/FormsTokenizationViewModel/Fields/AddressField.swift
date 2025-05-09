@@ -12,7 +12,7 @@ class PrimerAddressField: PrimerCardFormFieldProtocol {
     internal static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 }
 
-class PrimerAddressLine1Field: PrimerAddressField {
+final class PrimerAddressLine1Field: PrimerAddressField {
 
     static func addressLine1ContainerViewFieldView(_ primerTextFieldView: PrimerTextFieldView) -> PrimerCustomFieldView {
         let addressLine1FieldContainerView = PrimerCustomFieldView()
@@ -33,7 +33,7 @@ class PrimerAddressLine1Field: PrimerAddressField {
     }
 }
 
-class PrimerAddressLine2Field: PrimerAddressField {
+final class PrimerAddressLine2Field: PrimerAddressField {
 
     static func addressLine2ContainerViewFieldView(_ primerTextFieldView: PrimerTextFieldView) -> PrimerCustomFieldView {
         let addressLine2FieldContainerView = PrimerCustomFieldView()

@@ -35,7 +35,7 @@ protocol ACHUserDetailsHandling {
  * Initialization:
  *  - `init(firstName:lastName:emailAddress:)`: Initializes a new user details instance with specified first name, last name, and email address.
  */
-public class ACHUserDetails: Codable {
+public final class ACHUserDetails: Codable {
     public var firstName: String
     public var lastName: String
     public var emailAddress: String

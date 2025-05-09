@@ -11,7 +11,7 @@ import UIKit
 /// Reserve the name for all primer buttons. If you need to extend UIButton, extend and use this one instead, so we
 /// don't expose unnecessary functionality.
 ///
-@IBDesignable internal class PrimerButton: UIButton, Identifiable {
+@IBDesignable class PrimerButton: UIButton, Identifiable {
 
     // MARK: @IBInspectable Properties
 

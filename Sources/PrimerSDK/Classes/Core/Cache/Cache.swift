@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Cache<Key: Hashable, Value> {
+final class Cache<Key: Hashable, Value> {
     private let cache = NSCache<WrappedKey, Entry>()
 
     func insert(_ value: Value, forKey key: Key) {

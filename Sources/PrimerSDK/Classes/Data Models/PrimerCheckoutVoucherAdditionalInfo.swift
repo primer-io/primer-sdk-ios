@@ -9,7 +9,7 @@ import Foundation
 
 @objc public class PrimerCheckoutVoucherAdditionalInfo: PrimerCheckoutAdditionalInfo {}
 
-@objc public class XenditCheckoutVoucherAdditionalInfo: PrimerCheckoutVoucherAdditionalInfo {
+@objc public final class XenditCheckoutVoucherAdditionalInfo: PrimerCheckoutVoucherAdditionalInfo {
 
     public let expiresAt: String
     public let couponCode: String

@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal class PrimerAccountInfoPaymentViewController: PrimerFormViewController {
+final class PrimerAccountInfoPaymentViewController: PrimerFormViewController {
 
     let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
 

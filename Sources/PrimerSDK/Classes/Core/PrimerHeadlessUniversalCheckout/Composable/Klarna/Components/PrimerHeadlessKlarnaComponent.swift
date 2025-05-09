@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import PrimerKlarnaSDK
 
-class PrimerHeadlessKlarnaComponent {
+final class PrimerHeadlessKlarnaComponent {
     // MARK: - Tokenization
     var tokenizationComponent: KlarnaTokenizationComponentProtocol
     /// Global settings for the payment process, injected as a dependency.
