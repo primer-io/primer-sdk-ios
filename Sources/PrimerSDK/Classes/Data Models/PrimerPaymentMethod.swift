@@ -15,7 +15,7 @@ extension PrimerTheme {
 }
 
 // swiftlint:disable type_body_length
-class PrimerPaymentMethod: Codable, LogReporter {
+final class PrimerPaymentMethod: Codable, LogReporter {
 
     static func getPaymentMethod(withType type: String) -> PrimerPaymentMethod? {
         return PrimerAPIConfigurationModule.apiConfiguration?.paymentMethods?.filter({ $0.type == type }).first

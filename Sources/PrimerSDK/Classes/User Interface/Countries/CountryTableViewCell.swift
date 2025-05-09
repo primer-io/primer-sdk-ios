@@ -1,6 +1,6 @@
 import UIKit
 
-class CountryTableViewCell: UITableViewCell {
+final class CountryTableViewCell: UITableViewCell {
 
     var stackView = UIStackView()
     var flag = UILabel()

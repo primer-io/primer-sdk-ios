@@ -24,7 +24,7 @@ protocol ACHValidationDelegate: AnyObject {
     func validate() throws
 }
 
-class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelegate {
+final class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelegate {
     // MARK: - Properties
     private let tokenizationService: TokenizationServiceProtocol
     private let paymentMethod: PrimerPaymentMethod

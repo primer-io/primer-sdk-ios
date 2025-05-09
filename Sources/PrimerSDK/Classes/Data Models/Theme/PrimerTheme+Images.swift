@@ -9,7 +9,7 @@ import UIKit
 
 extension PrimerTheme {
 
-    class BaseImage {
+    final class BaseImage {
 
         var colored: UIImage?
         var light: UIImage?
@@ -26,7 +26,7 @@ extension PrimerTheme {
         }
     }
 
-    public class BaseColoredURLs: Codable {
+    public final class BaseColoredURLs: Codable {
 
         var coloredUrlStr: String?
         var darkUrlStr: String?
@@ -72,7 +72,7 @@ extension PrimerTheme {
         }
     }
 
-    public class BaseColors: Codable {
+    public final class BaseColors: Codable {
 
         var coloredHex: String?
         var darkHex: String?
@@ -118,7 +118,7 @@ extension PrimerTheme {
         }
     }
 
-    public class BaseBorderWidth: Codable {
+    public final class BaseBorderWidth: Codable {
 
         var colored: CGFloat?
         var dark: CGFloat?

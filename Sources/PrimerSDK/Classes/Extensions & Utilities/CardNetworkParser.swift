@@ -7,7 +7,7 @@
 
 import Foundation
 
-class CardNetworkParser {
+final class CardNetworkParser {
 
     let mapping: [ClosedRange<Int>: CardNetwork]
 

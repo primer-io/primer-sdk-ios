@@ -10,7 +10,7 @@ import Foundation
 import PrimerNolPaySDK
 #endif
 
-public class PrimerNolPaymentCard {
+public final class PrimerNolPaymentCard {
     public var cardNumber: String
     public var expiredTime: String
 

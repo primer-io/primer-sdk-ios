@@ -102,7 +102,7 @@ extension PrimerLogger {
     }
 }
 
-public class DefaultLogger: PrimerLogger {
+public final class DefaultLogger: PrimerLogger {
 
     public var logLevel: LogLevel
 

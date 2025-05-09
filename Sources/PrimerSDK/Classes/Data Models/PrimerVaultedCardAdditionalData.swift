@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class PrimerVaultedCardAdditionalData: PrimerVaultedPaymentMethodAdditionalData {
+public final class PrimerVaultedCardAdditionalData: PrimerVaultedPaymentMethodAdditionalData {
 
     let cvv: String
 

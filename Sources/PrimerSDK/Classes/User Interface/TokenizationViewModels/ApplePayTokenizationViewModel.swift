@@ -22,7 +22,7 @@ internal extension PKPaymentMethodType {
 }
 
 @available(iOS 11.0, *)
-class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
+final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     struct ShippingMethodsInfo {
         let shippingMethods: [PKShippingMethod]?

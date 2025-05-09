@@ -22,7 +22,7 @@ public enum NolPayPaymentStep: PrimerHeadlessStep {
     case paymentRequested
 }
 
-public class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
+public final class NolPayPaymentComponent: PrimerHeadlessCollectDataComponent {
     public typealias CollectableDataType = NolPayPaymentCollectableData
     public typealias CardStepType = NolPayPaymentStep
 

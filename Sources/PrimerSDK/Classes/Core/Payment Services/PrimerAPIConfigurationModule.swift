@@ -22,7 +22,7 @@ internal protocol PrimerAPIConfigurationModuleProtocol {
 }
 
 // swiftlint:disable type_body_length
-internal class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, LogReporter {
+final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, LogReporter {
 
     static var apiClient: PrimerAPIClientProtocol?
 

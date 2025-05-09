@@ -2,7 +2,7 @@
 
 import UIKit
 
-internal class VaultedPaymentInstrumentCell: UITableViewCell {
+final class VaultedPaymentInstrumentCell: UITableViewCell {
 
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private(set) var paymentMethod: PrimerPaymentMethodTokenData!
@@ -109,8 +109,9 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
         verticalRightStackView.distribution = .fillEqually
         verticalRightStackView.spacing = 0
 
-        if paymentMethod.cardButtonViewModel?.paymentMethodType == .paymentCard || paymentMethod.cardButtonViewModel?.paymentMethodType == .cardOffSession {
+        let paymentMethodType = paymentMethod.cardButtonViewModel?.paymentMethodType
 
+        if [.paymentCard, .cardOffSession].contains(paymentMethodType) {
             if let network = paymentMethod.cardButtonViewModel?.network {
                 let cardNetworkImage = CardNetwork(cardNetworkStr: network).icon
                 cardNetworkImageView.image = cardNetworkImage
@@ -153,7 +154,7 @@ internal class VaultedPaymentInstrumentCell: UITableViewCell {
 
 }
 
-internal class VaultedPaymentInstrumentsViewController: PrimerViewController {
+final class VaultedPaymentInstrumentsViewController: PrimerViewController {
 
     private var rightBarButton: UIButton!
     private var isDeleting: Bool = false {

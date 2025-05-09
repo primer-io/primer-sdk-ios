@@ -10,7 +10,7 @@
 import SafariServices
 import UIKit
 
-class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
+final class QRCodeTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
 
     private var statusUrl: URL!
     internal var qrCode: String?

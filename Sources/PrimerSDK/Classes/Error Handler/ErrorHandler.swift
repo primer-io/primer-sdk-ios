@@ -7,7 +7,7 @@
 
 import Foundation
 
-internal class ErrorHandler: LogReporter {
+final class ErrorHandler: LogReporter {
 
     // Call this function to log any error to Analytics
     static func handle(error: Error) {

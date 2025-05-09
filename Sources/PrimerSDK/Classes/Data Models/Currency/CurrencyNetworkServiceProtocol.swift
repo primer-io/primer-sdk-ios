@@ -13,7 +13,7 @@ public protocol CurrencyNetworkServiceProtocol {
     func fetchData(with request: URLRequest, completion: @escaping (Data?, URLResponse?, Error?) -> Void)
 }
 
-public class CurrencyNetworkService: CurrencyNetworkServiceProtocol {
+public final class CurrencyNetworkService: CurrencyNetworkServiceProtocol {
     public func fetchData(with request: URLRequest, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
@@ -24,7 +24,7 @@ public class CurrencyNetworkService: CurrencyNetworkServiceProtocol {
     }
 }
 
-class MockCurrencyNetworkService: CurrencyNetworkServiceProtocol {
+final class MockCurrencyNetworkService: CurrencyNetworkServiceProtocol {
     var mockResponse: (Data?, URLResponse?, Error?)?
 
     func fetchData(with request: URLRequest, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {

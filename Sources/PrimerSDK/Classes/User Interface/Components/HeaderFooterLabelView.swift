@@ -1,6 +1,6 @@
 import UIKit
 
-class HeaderFooterLabelView: UITableViewHeaderFooterView {
+final class HeaderFooterLabelView: UITableViewHeaderFooterView {
 
     private let label = UILabel(frame: .zero)
     private let labelNumberOfLines = 0

@@ -8,7 +8,7 @@
 import UIKit
 import SwiftUI
 
-internal class PrimerCustomResultViewController: PrimerViewController {
+final class PrimerCustomResultViewController: PrimerViewController {
 
     internal enum PaymentStatus {
         case success, failed, cancelled

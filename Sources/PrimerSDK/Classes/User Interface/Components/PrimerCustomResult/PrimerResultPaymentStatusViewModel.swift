@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class PrimerResultPaymentStatusViewModel: ObservableObject {
+final class PrimerResultPaymentStatusViewModel: ObservableObject {
 
     private var paymentMethodType: PrimerPaymentMethodType
     private var error: PrimerError?

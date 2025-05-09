@@ -7,6 +7,6 @@
 
 import Foundation
 
-public class Response {
-    public class Body {}
+public final class Response {
+    public final class Body {}
 }

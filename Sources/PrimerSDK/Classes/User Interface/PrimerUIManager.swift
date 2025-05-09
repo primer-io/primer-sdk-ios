@@ -20,7 +20,7 @@ protocol PrimerUIManaging {
                                    withMessage message: String?)
 }
 
-internal class PrimerUIManager: PrimerUIManaging {
+final class PrimerUIManager: PrimerUIManaging {
 
     static let shared: PrimerUIManager = .init()
 

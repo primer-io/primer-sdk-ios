@@ -53,7 +53,7 @@ protocol PrimerRawDataTokenizationBuilderProtocol {
 
 extension PrimerHeadlessUniversalCheckout {
 
-    public class RawDataManager: NSObject, LogReporter {
+    public final class RawDataManager: NSObject, LogReporter {
 
         public var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
         public private(set) var paymentMethodType: String
@@ -323,7 +323,7 @@ extension PrimerHeadlessUniversalCheckout {
                 }
             }
         }
-        
+
         func validateRawData(withCardNetworksMetadata cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> Promise<Void>? {
             guard let rawData = self.rawData else {
                 logger.warn(message: "Unable to validate with card networks metadata as `rawData` was nil")

@@ -15,7 +15,7 @@ protocol PrimerKlarnaCategoriesDelegate: AnyObject {
     func primerKlarnaPaymentSessionFailed(error: Error)
 }
 
-class PrimerKlarnaCategoriesViewController: UIViewController {
+final class PrimerKlarnaCategoriesViewController: UIViewController {
 
     // MARK: - Subviews
     let activityIndicator = UIActivityIndicatorView()

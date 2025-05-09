@@ -13,7 +13,7 @@ import UIKit
 import PrimerStripeSDK
 #endif
 
-class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
+final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     // MARK: Variables
     private var achTokenizationService: ACHTokenizationService
     private var clientSessionService: ACHClientSessionService = ACHClientSessionService()

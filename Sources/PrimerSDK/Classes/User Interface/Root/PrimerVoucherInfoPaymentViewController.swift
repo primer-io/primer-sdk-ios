@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal class PrimerVoucherInfoPaymentViewController: PrimerFormViewController {
+final class PrimerVoucherInfoPaymentViewController: PrimerFormViewController {
 
     let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
     let textToShare: String?

@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal class PrimerVaultManagerViewController: PrimerFormViewController {
+final class PrimerVaultManagerViewController: PrimerFormViewController {
 
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private let paymentMethodConfigViewModels = PrimerAPIConfiguration.paymentMethodConfigViewModels
