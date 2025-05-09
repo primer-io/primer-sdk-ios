@@ -15,7 +15,7 @@ protocol ACHUserDetailsDelegate: AnyObject {
     func didReceivedError(error: PrimerError)
 }
 
-class ACHUserDetailsViewController: PrimerViewController {
+final class ACHUserDetailsViewController: PrimerViewController {
 
     // MARK: - Properties
     var achUserDetailsView: ACHUserDetailsView?
@@ -28,14 +28,10 @@ class ACHUserDetailsViewController: PrimerViewController {
     var didUpdateCompletion: (() -> Void)?
     var didReceiveStepCompletion: ((_ step: PrimerSDK.ACHUserDetailsStep) -> Void)?
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     init(tokenizationViewModel: StripeAchTokenizationViewModel, delegate: ACHUserDetailsDelegate) {
         self.stripeAchComponent = StripeAchHeadlessComponent(tokenizationViewModel: tokenizationViewModel)
         self.delegate = delegate
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
 
     override func viewDidLoad() {

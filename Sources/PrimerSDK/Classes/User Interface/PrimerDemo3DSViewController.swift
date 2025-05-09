@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PrimerDemo3DSViewController: UIViewController {
+final class PrimerDemo3DSViewController: PrimerViewController {
 
     private let stackView = UIStackView()
     var onSendCredentialsButtonTapped: (() -> Void)?
@@ -15,12 +15,8 @@ class PrimerDemo3DSViewController: UIViewController {
     var demo3DSLabel = UILabel()
     var scenarioLabel = UILabel()
 
-    init() {
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    override init() {
+        super.init()
     }
 
     override func viewDidLoad() {
