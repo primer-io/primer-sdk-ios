@@ -7,40 +7,35 @@
 
 import Foundation
 
-/// A type-safe key for identifying dependencies in the container
-struct TypeKey: Hashable {
-    /// The type identifier of the dependency
-    private let typeId: ObjectIdentifier
-    
-    /// Optional name to distinguish between multiple implementations of the same type
+/// Type-safe key structure for dependency identification
+struct TypeKey: Hashable, CustomStringConvertible, Sendable {
+    private let type: ObjectIdentifier
     private let name: String?
     
-    /// Create a type key for a specific type and optional name
-    /// - Parameters:
-    ///   - type: The type to create a key for
-    ///   - name: Optional name to distinguish between multiple implementations
-    init<T>(_ type: T.Type, name: String? = nil) {
-        self.typeId = ObjectIdentifier(type)
+    /// Initialize with type and optional name
+    init(_ type: Any.Type, name: String? = nil) {
+        self.type = ObjectIdentifier(type)
         self.name = name
     }
     
-    /// Equatable implementation
-    static func == (lhs: TypeKey, rhs: TypeKey) -> Bool {
-        lhs.typeId == rhs.typeId && lhs.name == rhs.name
-    }
-    
-    /// Hashable implementation
+    /// Hash value implementation
     func hash(into hasher: inout Hasher) {
-        hasher.combine(typeId)
+        hasher.combine(type)
         hasher.combine(name)
     }
     
-    /// String representation of the type key
+    /// Equality implementation
+    static func == (lhs: TypeKey, rhs: TypeKey) -> Bool {
+        return lhs.type == rhs.type && lhs.name == rhs.name
+    }
+    
+    /// Human-readable description
     var description: String {
-        let typeName = String(describing: typeId)
-        if let name = name, !name.isEmpty {
-            return "\(typeName)_\(name)"
+        let typeName = String(describing: type)
+        if let name = name {
+            return "\(typeName)(name: \(name))"
+        } else {
+            return typeName
         }
-        return typeName
     }
 }

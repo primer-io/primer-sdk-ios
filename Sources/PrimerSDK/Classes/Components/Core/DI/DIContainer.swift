@@ -126,38 +126,46 @@ final class DIContainer: LogReporter {
     
     /// Register the application's dependencies in the provided container
     private static func registerDependencies(in container: any ContainerProtocol) async {
-        guard let container = container as? ContainerRegistrationBuilder else {
-            shared.logger.error(message: "Container does not conform to ContainerRegistrationBuilder")
+        // Cast to a concrete type to access extension methods
+        guard let registrationBuilder = container as? Container else {
+            shared.logger.error(message: "Container does not conform to ContainerRegistrationBuilder as concrete type")
             return
         }
         
         shared.logger.info(message: "Registering application dependencies")
         
         // Register the container itself
-        container.singleton(type: ContainerProtocol.self) { container in
+        await registrationBuilder._register(type: ContainerProtocol.self, name: nil, with: .strong) { container in
             return container
         }
         
         // Register logger
-        container.singleton(type: PrimerLogger.self) { _ in
+        await registrationBuilder._register(type: PrimerLogger.self, name: nil, with: .strong) { _ in
             return PrimerLogging.shared.logger
         }
         
-        // Register modules
-        await container.module("Repositories") { container in
-            // Register repositories
-            shared.logger.debug(message: "Registering repositories")
-        }
-        
-        await container.module("UseCases") { container in
-            // Register use cases
-            shared.logger.debug(message: "Registering use cases")
-        }
-        
-        await container.module("Services") { container in
-            // Register services
-            shared.logger.debug(message: "Registering services")
-        }
+        // Register modules as separate functions for better organization
+        await registerRepositories(registrationBuilder)
+        await registerUseCases(registrationBuilder)
+        await registerServices(registrationBuilder)
+    }
+    
+    /// Register repository dependencies
+    private static func registerRepositories(_ container: Container) async {
+        shared.logger.debug(message: "Registering repositories")
+        // Register repositories here
+    }
+    
+    /// Register use case dependencies
+    private static func registerUseCases(_ container: Container) async {
+        shared.logger.debug(message: "Registering use cases")
+        // Register use cases here
+    }
+    
+    /// Register service dependencies
+    private static func registerServices(_ container: Container) async {
+        shared.logger.debug(message: "Registering services")
+        // Register services here
     }
     
     /// Create a container with mock dependencies for testing
@@ -170,28 +178,36 @@ final class DIContainer: LogReporter {
     
     /// Register mock dependencies for testing
     private static func registerMockDependencies(in container: any ContainerProtocol) async {
-        guard let container = container as? ContainerRegistrationBuilder else {
-            shared.logger.error(message: "Container does not conform to ContainerRegistrationBuilder")
+        // Cast to a concrete type to access extension methods
+        guard let registrationBuilder = container as? Container else {
+            shared.logger.error(message: "Container does not conform to ContainerRegistrationBuilder as concrete type")
             return
         }
         
         shared.logger.info(message: "Registering mock dependencies")
         
-        // Register mocks for testing
-        await container.module("MockRepositories") { container in
-            // Register mock repositories
-            shared.logger.debug(message: "Registering mock repositories")
-        }
-        
-        await container.module("MockUseCases") { container in
-            // Register mock use cases
-            shared.logger.debug(message: "Registering mock use cases")
-        }
-        
-        await container.module("MockServices") { container in
-            // Register mock services
-            shared.logger.debug(message: "Registering mock services")
-        }
+        // Register mocks using separate functions for better organization
+        await registerMockRepositories(registrationBuilder)
+        await registerMockUseCases(registrationBuilder)
+        await registerMockServices(registrationBuilder)
+    }
+    
+    /// Register mock repositories
+    private static func registerMockRepositories(_ container: Container) async {
+        shared.logger.debug(message: "Registering mock repositories")
+        // Register mock repositories here
+    }
+    
+    /// Register mock use cases
+    private static func registerMockUseCases(_ container: Container) async {
+        shared.logger.debug(message: "Registering mock use cases")
+        // Register mock use cases here
+    }
+    
+    /// Register mock services
+    private static func registerMockServices(_ container: Container) async {
+        shared.logger.debug(message: "Registering mock services")
+        // Register mock services here
     }
 }
 
@@ -203,14 +219,23 @@ extension DIContainer {
             let container = Task {
                 await current
             }
-            return try? container.result.get()
+            do {
+                return try container.result.get()
+            } catch {
+                return nil
+            }
         }
         set {
             Task {
                 if let newValue = newValue {
                     await setContainer(newValue)
                 } else {
-                    await setContainer(nil)
+                    // If nil, keep the existing container
+                    if await current == nil {
+                        // Only create a new container if one doesn't exist
+                        let newContainer = createContainer()
+                        await setContainer(newContainer)
+                    }
                 }
             }
         }
