@@ -37,7 +37,7 @@ internal class CancellablePromise<T>: CancellableThenable, CancellableCatchMixin
 
     init(promise: Promise<T>, context: CancelContext? = nil, cancelItemList: CancelItemList? = nil) {
         self.promise = promise
-        self.cancelContext = context ?? CancelContext()
+        cancelContext = context ?? CancelContext()
         self.cancelItemList = cancelItemList ?? CancelItemList()
     }
 
@@ -48,7 +48,7 @@ internal class CancellablePromise<T>: CancellableThenable, CancellableCatchMixin
             reject = seal.reject
             seal.reject(error)
         })
-        self.appendCancellable(cancellable, reject: reject)
+        appendCancellable(cancellable, reject: reject)
     }
 
     /// Initialize a new cancellable promise bound to the provided `Thenable`.
@@ -82,7 +82,7 @@ internal class CancellablePromise<T>: CancellableThenable, CancellableCatchMixin
         }
 
         self.init(promise: promise, context: cancelContext)
-        self.appendCancellable(cancellable, reject: reject)
+        appendCancellable(cancellable, reject: reject)
     }
 
     /// Initialize a new cancellable promise that can be resolved with the provided `Resolver`.
@@ -92,13 +92,13 @@ internal class CancellablePromise<T>: CancellableThenable, CancellableCatchMixin
             reject = seal.reject
             try body(seal)
         })
-        self.appendCancellable(cancellable, reject: reject)
+        appendCancellable(cancellable, reject: reject)
     }
 
     /// Initialize a new cancellable promise using the given Promise and its Resolver.
     internal convenience init(cancellable: Cancellable? = nil, promise: Promise<T>, resolver: Resolver<T>) {
         self.init(promise: promise)
-        self.appendCancellable(cancellable, reject: resolver.reject)
+        appendCancellable(cancellable, reject: resolver.reject)
     }
 
     /// - Returns: a tuple of a new cancellable pending promise and its `Resolver`.
@@ -137,7 +137,7 @@ extension CancellablePromise where T == Void {
     /// Initializes a new cancellable promise fulfilled with `Void` and with the given ` Cancellable`
     internal convenience init(cancellable: Cancellable) {
         self.init()
-        self.appendCancellable(cancellable, reject: nil)
+        appendCancellable(cancellable, reject: nil)
     }
 }
 // swiftlint:enable identifier_name

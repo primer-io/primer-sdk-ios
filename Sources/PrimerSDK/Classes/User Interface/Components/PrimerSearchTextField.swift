@@ -80,7 +80,7 @@ final class PrimerSearchTextField: UITextField, UITextFieldDelegate {
     }
 
     override func editingRect(forBounds bounds: CGRect) -> CGRect {
-        return self.textRect(forBounds: bounds)
+        return textRect(forBounds: bounds)
     }
 
     override func rightViewRect(forBounds bounds: CGRect) -> CGRect {
@@ -110,7 +110,7 @@ final class PrimerSearchTextField: UITextField, UITextFieldDelegate {
 
     @objc
     func clear() {
-        self.text = nil
+        text = nil
         rightImageView.image = searchImage
         _ = _delegate?.textFieldShouldClear?(self)
     }

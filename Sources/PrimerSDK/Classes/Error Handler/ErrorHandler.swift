@@ -17,7 +17,7 @@ final class ErrorHandler: LogReporter {
     static var shared = ErrorHandler()
 
     func handle(error: Error) {
-        self.logger.error(message: error.localizedDescription)
+        logger.error(message: error.localizedDescription)
 
         var event: Analytics.Event!
 

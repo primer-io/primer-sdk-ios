@@ -132,7 +132,7 @@ final class RequestDispatcherTests: XCTestCase {
 
         XCTAssertEqual(response.metadata.responseUrl, "https://a_url")
         XCTAssertEqual(response.metadata.statusCode, 200)
-        XCTAssertEqual(response.data, self.session.data)
+        XCTAssertEqual(response.data, session.data)
     }
 
     func testHTTPFailureResponse_async() async throws {
@@ -148,7 +148,7 @@ final class RequestDispatcherTests: XCTestCase {
 
         XCTAssertEqual(response.metadata.responseUrl, "https://a_url")
         XCTAssertEqual(response.metadata.statusCode, 500)
-        XCTAssertEqual(response.data, self.session.data)
+        XCTAssertEqual(response.data, session.data)
     }
 
     func testFailedDispatchResponse_async() async throws {

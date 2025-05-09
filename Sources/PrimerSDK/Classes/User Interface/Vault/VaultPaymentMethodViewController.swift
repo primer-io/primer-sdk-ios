@@ -170,7 +170,7 @@ final class VaultedPaymentInstrumentsViewController: PrimerViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = Strings.VaultPaymentMethodViewContent.savedPaymentMethodsTitle
+        title = Strings.VaultPaymentMethodViewContent.savedPaymentMethodsTitle
 
         let uiEvent = Analytics.Event.ui(
             action: .view,

@@ -28,20 +28,20 @@ final class CardValidationServiceTests: XCTestCase {
     override func setUpWithError() throws {
         SDKSessionHelper.setUp()
 
-        self.delegate = MockRawDataManagerDelegate()
-        self.rawDataManager = try RawDataManager(paymentMethodType: Mocks.PaymentMethods.paymentCardPaymentMethod.type)
-        self.apiClient = MockBINDataAPIClient()
-        self.debouncer = Debouncer(delay: 0.275)
-        self.rawDataManager.delegate = delegate
-        self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
+        delegate = MockRawDataManagerDelegate()
+        rawDataManager = try RawDataManager(paymentMethodType: Mocks.PaymentMethods.paymentCardPaymentMethod.type)
+        apiClient = MockBINDataAPIClient()
+        debouncer = Debouncer(delay: 0.275)
+        rawDataManager.delegate = delegate
+        binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
                                                            apiClient: apiClient)
     }
 
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
-        self.binDataService = nil
-        self.rawDataManager = nil
-        self.delegate = nil
+        binDataService = nil
+        rawDataManager = nil
+        delegate = nil
 
         SDKSessionHelper.tearDown()
     }
@@ -85,12 +85,12 @@ final class CardValidationServiceTests: XCTestCase {
 
         let cardNumber = "552266117788"
 
-        apiClient.results[String(cardNumber.prefix(self.maxBinLength))] = .init(networks: [
+        apiClient.results[String(cardNumber.prefix(maxBinLength))] = .init(networks: [
             .init(value: "VISA"),
             .init(value: "MASTERCARD")
         ])
 
-        self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
+        binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
                                                            allowedCardNetworks: [.visa, .masterCard],
                                                            apiClient: apiClient)
 
@@ -127,22 +127,22 @@ final class CardValidationServiceTests: XCTestCase {
         let cardNumber = "552266117788"
         let altCardNumber = "552366117788"
 
-        apiClient.results[String(cardNumber.prefix(self.maxBinLength))] = .init(networks: [
+        apiClient.results[String(cardNumber.prefix(maxBinLength))] = .init(networks: [
             .init(value: "VISA"),
             .init(value: "CARTES_BANCAIRES")
         ])
 
-        apiClient.results[String(altCardNumber.prefix(self.maxBinLength))] = .init(networks: [
+        apiClient.results[String(altCardNumber.prefix(maxBinLength))] = .init(networks: [
             .init(value: "MASTERCARD"),
             .init(value: "CARTES_BANCAIRES")
         ])
 
-        self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
+        binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
                                                            allowedCardNetworks: [.visa, .masterCard, .cartesBancaires],
                                                            apiClient: apiClient)
 
-        let expectation2 = self.expectation(description: "onMetadataForCardValidationState is called with networks for '\(cardNumber)'")
-        let expectation3 = self.expectation(description: "onMetadataForCardValidationState is called with networks for '\(altCardNumber)'")
+        let expectation2 = expectation(description: "onMetadataForCardValidationState is called with networks for '\(cardNumber)'")
+        let expectation3 = expectation(description: "onMetadataForCardValidationState is called with networks for '\(altCardNumber)'")
         delegate.onMetadataForCardValidationState = { (_: RawDataManager,
                                                        networks: PrimerCardNumberEntryMetadata,
                                                        cardState: PrimerCardNumberEntryState) in
@@ -183,13 +183,13 @@ networks: \(networks.detectedCardNetworks.items.count)
 
         let cardNumber = "552266117788"
 
-        apiClient.results[String(cardNumber.prefix(self.maxBinLength))] = .init(networks: [
+        apiClient.results[String(cardNumber.prefix(maxBinLength))] = .init(networks: [
             .init(value: "VISA"),
             .init(value: "MASTERCARD"),
             .init(value: "CARTES_BANCAIRES")
         ])
 
-        self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
+        binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
                                                            allowedCardNetworks: [.visa, .cartesBancaires],
                                                            apiClient: apiClient)
 
@@ -231,11 +231,11 @@ networks: \(networks.detectedCardNetworks.items.count)
 
         let cardNumber = "552266117788"
 
-        apiClient.results[String(cardNumber.prefix(self.maxBinLength))] = .init(networks: [
+        apiClient.results[String(cardNumber.prefix(maxBinLength))] = .init(networks: [
             .init(value: "CARTES_BANCAIRES")
         ])
 
-        self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
+        binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
                                                            allowedCardNetworks: [.visa, .masterCard],
                                                            apiClient: apiClient)
 

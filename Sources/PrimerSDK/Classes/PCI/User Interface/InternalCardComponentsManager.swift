@@ -102,15 +102,15 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
-        self.cardholderField = cardholderNameField
+        cardholderField = cardholderNameField
         self.billingAddressFieldViews = billingAddressFieldViews
         if let paymentMethodType = paymentMethodType,
            let primerPaymentMethodType = PrimerPaymentMethodType(rawValue: paymentMethodType) {
             self.primerPaymentMethodType = primerPaymentMethodType
             self.paymentMethodType = primerPaymentMethodType.rawValue
         } else {
-            self.primerPaymentMethodType = .paymentCard
-            self.paymentMethodType = self.primerPaymentMethodType.rawValue
+            primerPaymentMethodType = .paymentCard
+            self.paymentMethodType = primerPaymentMethodType.rawValue
         }
         self.isRequiringCVVInput = isRequiringCVVInput
 
@@ -273,7 +273,7 @@ and 4 characters for expiry year separated by '/'.
     /// current year = "2022"
     /// first two digits = "20"
     private var cardExpirationYear: String? {
-        guard let expiryYear = self.expiryDateField.expiryYear, expiryYear.count == 2 else { return nil }
+        guard let expiryYear = expiryDateField.expiryYear, expiryYear.count == 2 else { return nil }
         let currentYearAsString = Date().yearComponentAsString
         guard currentYearAsString.count >= 2 else { return nil }
         let index = currentYearAsString.index(currentYearAsString.startIndex, offsetBy: 2)
@@ -284,7 +284,7 @@ and 4 characters for expiry year separated by '/'.
     private var tokenizationPaymentInstrument: TokenizationRequestBodyPaymentInstrument? {
 
         guard let cardExpirationYear = cardExpirationYear,
-              let expiryMonth = self.expiryDateField.expiryMonth else {
+              let expiryMonth = expiryDateField.expiryMonth else {
             return nil
         }
 

@@ -22,7 +22,7 @@ extension PrimerKlarnaError: PrimerErrorProtocol {
         case .userNotApproved(let userInfo),
              .klarnaSdkError(_, let userInfo):
             tmpUserInfo = tmpUserInfo.merging(userInfo ?? [:]) { (_, new) in new }
-            tmpUserInfo["diagnosticsId"] = self.diagnosticsId
+            tmpUserInfo["diagnosticsId"] = diagnosticsId
         default: break
         }
 

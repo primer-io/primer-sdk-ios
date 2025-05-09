@@ -30,7 +30,7 @@ final class ConfigurationCacheTests: XCTestCase {
 
     func test_clearCache() throws {
         let settings = PrimerSettings(clientSessionCachingEnabled: true)
-        let exp = self.expectation(description: "Wait for headless start")
+        let exp = expectation(description: "Wait for headless start")
         PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { _, _ in
             exp.fulfill()
         }
@@ -64,7 +64,7 @@ final class ConfigurationCacheTests: XCTestCase {
 
     func test_respectsPrimerSettingsFlag() {
         let settings = PrimerSettings(clientSessionCachingEnabled: false)
-        let exp = self.expectation(description: "Wait for headless start")
+        let exp = expectation(description: "Wait for headless start")
         PrimerHeadlessUniversalCheckout.current.start(withClientToken: "", settings: settings) { _, _ in
             exp.fulfill()
         }

@@ -17,7 +17,7 @@ final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
     init(paymentMethodType: PrimerPaymentMethodType, tokenizationModelDelegate: WebRedirectTokenizationDelegate) {
         self.paymentMethodType = paymentMethodType
         self.tokenizationModelDelegate = tokenizationModelDelegate
-        self.stepDelegate = self
+        stepDelegate = self
         self.tokenizationModelDelegate.didPresentPaymentMethodUI = {
             self.step = .loaded
             self.stepDelegate?.didReceiveStep(step: self.step)
@@ -35,7 +35,7 @@ final class WebRedirectComponent: PrimerHeadlessRedirectComponent {
 
     func start() {
         step = .loading
-        self.stepDelegate?.didReceiveStep(step: self.step)
+        stepDelegate?.didReceiveStep(step: step)
     }
 }
 

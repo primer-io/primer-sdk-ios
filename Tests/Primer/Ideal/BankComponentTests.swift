@@ -78,7 +78,7 @@ final class BankComponentTests: XCTestCase {
             bankComponent.submit()
             banksRetrievedExpectation.fulfill()
         }
-        waitForExpectations(timeout: self.expectationTimeout)
+        waitForExpectations(timeout: expectationTimeout)
         XCTAssertNotNil(webRedirectComponent)
     }
 
@@ -96,7 +96,7 @@ final class BankComponentTests: XCTestCase {
             XCTAssertEqual(self.mockSteppableDelegate.steps, [.loading, .banksRetrieved(banks: mockModel.mockBanks.map { IssuingBank(bank: $0) })])
             expectation.fulfill()
         }
-        waitForExpectations(timeout: self.expectationTimeout)
+        waitForExpectations(timeout: expectationTimeout)
     }
 
     func testFilterBanks() {
@@ -129,7 +129,7 @@ final class BankComponentTests: XCTestCase {
 
         bankComponent.start()
 
-        waitForExpectations(timeout: self.expectationTimeout)
+        waitForExpectations(timeout: expectationTimeout)
     }
 
     func testValidationNoBanksAtSelection() {
@@ -172,7 +172,7 @@ final class BankComponentTests: XCTestCase {
             expectation.fulfill()
 
         }
-        waitForExpectations(timeout: self.expectationTimeout)
+        waitForExpectations(timeout: expectationTimeout)
     }
 
     func testValidationForInvalidBankId() {
@@ -190,7 +190,7 @@ final class BankComponentTests: XCTestCase {
             XCTAssertEqual(self.validationErrors, ["Please provide a valid bank id"])
             expectation.fulfill()
         }
-        waitForExpectations(timeout: self.expectationTimeout)
+        waitForExpectations(timeout: expectationTimeout)
 
     }
 }
@@ -212,7 +212,7 @@ class MockSteppableDelegate: PrimerHeadlessSteppableDelegate {
         switch step {
         case .loading: break
         case .banksRetrieved(banks: let banks):
-            self.onReceiveBanks?(banks)
+            onReceiveBanks?(banks)
             self.banks = banks
         }
     }

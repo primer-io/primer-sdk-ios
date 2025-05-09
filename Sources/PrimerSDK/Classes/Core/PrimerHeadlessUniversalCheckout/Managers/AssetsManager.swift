@@ -220,15 +220,15 @@ public final class PrimerPaymentMethodBackgroundColor {
         }
 
         if let coloredStr = coloredStr {
-            self.colored = PrimerColor(hex: coloredStr)
+            colored = PrimerColor(hex: coloredStr)
         }
 
         if let lightStr = lightStr {
-            self.light = PrimerColor(hex: lightStr)
+            light = PrimerColor(hex: lightStr)
         }
 
         if let darkStr = darkStr {
-            self.dark = PrimerColor(hex: darkStr)
+            dark = PrimerColor(hex: darkStr)
         }
     }
 

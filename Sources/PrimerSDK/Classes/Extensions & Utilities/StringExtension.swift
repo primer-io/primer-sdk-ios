@@ -10,17 +10,17 @@ import Foundation
 internal extension String {
 
     var withoutWhiteSpace: String {
-        return self.replacingOccurrences(of: " ", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+        return replacingOccurrences(of: " ", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     var isNumeric: Bool {
-        guard !self.isEmpty else { return false }
+        guard !isEmpty else { return false }
         let nums: Set<Character> = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
         return Set(self).isSubset(of: nums)
     }
 
     var isValidCardNumber: Bool {
-        let clearedCardNumber = self.withoutNonNumericCharacters
+        let clearedCardNumber = withoutNonNumericCharacters
 
         let cardNetwork = CardNetwork(cardNumber: clearedCardNumber)
         if let cardNumberValidation = cardNetwork.validation {
@@ -55,7 +55,7 @@ internal extension String {
 
     var isValidExpiryDate: Bool {
         // swiftlint:disable identifier_name
-        let _self = self.replacingOccurrences(of: "/", with: "")
+        let _self = replacingOccurrences(of: "/", with: "")
         // swiftlint:enable identifier_name
         if _self.count != 4 {
             return false
@@ -89,7 +89,7 @@ internal extension String {
     }
 
     func isValidCVV(cardNetwork: CardNetwork?) -> Bool {
-        if !self.isNumeric {
+        if !isNumeric {
             return false
         }
 
@@ -119,12 +119,12 @@ internal extension String {
     var isValidPostalCode: Bool {
         if count < 1 { return false }
         let set = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLKMNOPQRSTUVWXYZ '`~.-1234567890")
-        return !(self.rangeOfCharacter(from: set.inverted) != nil)
+        return !(rangeOfCharacter(from: set.inverted) != nil)
     }
 
     var isValidLuhn: Bool {
         var sum = 0
-        let digitStrings = self.withoutWhiteSpace.reversed().map { String($0) }
+        let digitStrings = withoutWhiteSpace.reversed().map { String($0) }
 
         for tuple in digitStrings.enumerated() {
             if let digit = Int(tuple.element) {
@@ -146,7 +146,7 @@ internal extension String {
     }
 
     var decodedJWTToken: DecodedJWTToken? {
-        let components = self.split(separator: ".")
+        let components = split(separator: ".")
         if components.count < 2 { return nil }
         let segment = String(components[1]).base64IOSFormat
         guard !segment.isEmpty, let data = Data(base64Encoded: segment,
@@ -156,7 +156,7 @@ internal extension String {
     }
 
     private var base64IOSFormat: Self {
-        let str = self.replacingOccurrences(of: "-", with: "+")
+        let str = replacingOccurrences(of: "-", with: "+")
             .replacingOccurrences(of: "_", with: "/")
         let offset = str.count % 4
         guard offset != 0 else { return str }
@@ -165,7 +165,7 @@ internal extension String {
     }
 
     var base64RFC4648Format: Self {
-        return self.replacingOccurrences(of: "+", with: "-")
+        return replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "_")
             .replacingOccurrences(of: "=", with: "")
     }
@@ -206,7 +206,7 @@ internal extension String {
     }
 
     func validateExpiryDateString() throws {
-        if self.isEmpty {
+        if isEmpty {
             let err = PrimerValidationError.invalidExpiryDate(
                 message: "Expiry date cannot be blank.",
                 userInfo: .errorUserInfoDictionary(),
@@ -239,13 +239,13 @@ internal extension String {
     func compareWithVersion(_ otherVersion: String) -> ComparisonResult {
         let versionDelimiter = "."
 
-        var versionComponents = self.components(separatedBy: versionDelimiter)
+        var versionComponents = components(separatedBy: versionDelimiter)
         var otherVersionComponents = otherVersion.components(separatedBy: versionDelimiter)
 
         let zeroDiff = versionComponents.count - otherVersionComponents.count
 
         if zeroDiff == 0 {
-            return self.compare(otherVersion, options: .numeric)
+            return compare(otherVersion, options: .numeric)
         } else {
             let zeros = Array(repeating: "0", count: abs(zeroDiff))
             if zeroDiff > 0 {
@@ -261,7 +261,7 @@ internal extension String {
     var isValidOTP: Bool {
         let pattern = "^\\d{6}$"
         let regex = try? NSRegularExpression(pattern: pattern, options: [])
-        let matches = regex?.matches(in: self, options: [], range: NSRange(location: 0, length: self.count))
+        let matches = regex?.matches(in: self, options: [], range: NSRange(location: 0, length: count))
         return matches?.count ?? 0 > 0
     }
 }

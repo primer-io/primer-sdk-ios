@@ -12,7 +12,7 @@ struct Dependency<T> {
     var wrappedValue: T
 
     init() {
-        self.wrappedValue = DependencyContainer.resolve()
+        wrappedValue = DependencyContainer.resolve()
     }
 }
 

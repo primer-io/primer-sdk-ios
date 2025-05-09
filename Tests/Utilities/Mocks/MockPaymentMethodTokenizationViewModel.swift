@@ -48,7 +48,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
         self.config = config
         self.uiManager = uiManager
         self.tokenizationService = tokenizationService
-        self.checkoutEventsNotifierModule = CheckoutEventsNotifierModule()
+        checkoutEventsNotifierModule = CheckoutEventsNotifierModule()
     }
 
     convenience init(
@@ -192,7 +192,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     }
 
     func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
-        return self.handleResumeStepsBasedOnSDKSettings(resumeToken: "mock_resume_token")
+        return handleResumeStepsBasedOnSDKSettings(resumeToken: "mock_resume_token")
     }
 
     func presentPaymentMethodUserInterface() -> Promise<Void> {
@@ -277,7 +277,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     }
 
     private func nullifyEventCallbacks() {
-        self.didStartPayment = nil
-        self.didFinishPayment = nil
+        didStartPayment = nil
+        didFinishPayment = nil
     }
 }

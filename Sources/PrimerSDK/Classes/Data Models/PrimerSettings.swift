@@ -168,8 +168,8 @@ public final class PrimerApplePayOptions: Codable {
         self.isCaptureBillingAddressEnabled = isCaptureBillingAddressEnabled
         self.showApplePayForUnsupportedDevice = showApplePayForUnsupportedDevice
         self.checkProvidedNetworks = checkProvidedNetworks
-        self.shippingOptions = nil
-        self.billingOptions = nil
+        shippingOptions = nil
+        billingOptions = nil
     }
 
     public init(merchantIdentifier: String,
@@ -252,7 +252,7 @@ public final class PrimerCardPaymentOptions: Codable {
     }
 
     public init() {
-        self.is3DSOnVaultingEnabled = true
+        is3DSOnVaultingEnabled = true
     }
 }
 
@@ -298,12 +298,12 @@ public final class PrimerUIOptions: Codable {
 
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.isInitScreenEnabled = try container.decode(Bool.self, forKey: .isInitScreenEnabled)
-        self.isSuccessScreenEnabled = try container.decode(Bool.self, forKey: .isSuccessScreenEnabled)
-        self.isErrorScreenEnabled = try container.decode(Bool.self, forKey: .isErrorScreenEnabled)
-        self.dismissalMechanism = try container.decode([DismissalMechanism].self, forKey: .dismissalMechanism)
-        self.cardFormUIOptions = try container.decodeIfPresent(PrimerCardFormUIOptions.self, forKey: .cardFormUIOptions)
-        self.theme = PrimerTheme()
+        isInitScreenEnabled = try container.decode(Bool.self, forKey: .isInitScreenEnabled)
+        isSuccessScreenEnabled = try container.decode(Bool.self, forKey: .isSuccessScreenEnabled)
+        isErrorScreenEnabled = try container.decode(Bool.self, forKey: .isErrorScreenEnabled)
+        dismissalMechanism = try container.decode([DismissalMechanism].self, forKey: .dismissalMechanism)
+        cardFormUIOptions = try container.decodeIfPresent(PrimerCardFormUIOptions.self, forKey: .cardFormUIOptions)
+        theme = PrimerTheme()
     }
 
     public func encode(to encoder: Encoder) throws {

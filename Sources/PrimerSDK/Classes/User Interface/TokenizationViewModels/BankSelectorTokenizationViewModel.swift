@@ -34,7 +34,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
          createResumePaymentService: CreateResumePaymentServiceProtocol,
          apiClient: PrimerAPIClientBanksProtocol
     ) {
-        self.paymentMethodType = config.internalPaymentMethodType!
+        paymentMethodType = config.internalPaymentMethodType!
         self.apiClient = apiClient
         super.init(config: config,
                    uiManager: uiManager,
@@ -84,8 +84,8 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
     private var selectedBank: AdyenBank?
 
     override func cancel() {
-        self.webViewController = nil
-        self.webViewCompletion = nil
+        webViewController = nil
+        webViewCompletion = nil
         super.cancel()
     }
 
@@ -100,7 +100,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: nil),
             extra: nil,
             objectType: .button,
@@ -271,7 +271,7 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
 
         let requestBody = Request.Body.Tokenization(
             paymentInstrument: OffSessionPaymentInstrument(
-                paymentMethodConfigId: self.config.id!,
+                paymentMethodConfigId: config.id!,
                 paymentMethodType: config.type,
                 sessionInfo: BankSelectorSessionInfo(issuer: bank.id)))
 
@@ -307,8 +307,8 @@ extension BankSelectorTokenizationViewModel: UITableViewDataSource, UITableViewD
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let bank = self.dataSource[indexPath.row]
-        self.bankSelectionCompletion?(bank)
+        let bank = dataSource[indexPath.row]
+        bankSelectionCompletion?(bank)
     }
 }
 
@@ -373,7 +373,7 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
         }
     }
     func tokenize(bankId: String) -> Promise<Void> {
-        self.selectedBank = banks.first(where: { $0.id == bankId })
+        selectedBank = banks.first(where: { $0.id == bankId })
         return performTokenizationStep()
             .then { () -> Promise<Void> in
                 return self.performPostTokenizationSteps()

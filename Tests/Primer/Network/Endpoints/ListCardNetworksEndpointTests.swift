@@ -32,9 +32,9 @@ final class ListCardNetworksEndpointTests: XCTestCase {
         let bin = "1234 5678 1234"
         let network = Response.Body.Bin.Networks.Network(value: "Test")
 
-        let expectSuccessfulResponse = self.expectation(description: "Expect request to complete successfully")
+        let expectSuccessfulResponse = expectation(description: "Expect request to complete successfully")
 
-        let expectValidEndpointReceived = self.expectation(description: "Expect endpoint to be valid")
+        let expectValidEndpointReceived = expectation(description: "Expect endpoint to be valid")
 
         networkService.onReceiveEndpoint = { endpoint in
             XCTAssertEqual(endpoint.path, "/v1/bin-data/\(bin)/networks")
@@ -62,9 +62,9 @@ final class ListCardNetworksEndpointTests: XCTestCase {
 
         let bin = "1234 5678 1234"
 
-        let expectSuccessfulResponse = self.expectation(description: "Expect request to complete successfully")
+        let expectSuccessfulResponse = expectation(description: "Expect request to complete successfully")
 
-        let expectValidEndpointReceived = self.expectation(description: "Expect endpoint to be valid")
+        let expectValidEndpointReceived = expectation(description: "Expect endpoint to be valid")
 
         networkService.onReceiveEndpoint = { endpoint in
             XCTAssertEqual(endpoint.path, "/v1/bin-data/\(bin)/networks")

@@ -333,7 +333,7 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
 // MARK: Drop-In
 extension StripeAchTokenizationViewModel: ACHUserDetailsDelegate {
     func restartSession() {
-        self.start()
+        start()
     }
 
     func didSubmit() {

@@ -23,7 +23,7 @@ final class QRCodeViewController: PrimerFormViewController {
     init(viewModel: QRCodeTokenizationViewModel) {
         self.viewModel = viewModel
         super.init()
-        self.titleImage = viewModel.uiModule.logo
+        titleImage = viewModel.uiModule.logo
     }
 
     override func viewDidLoad() {
@@ -33,7 +33,7 @@ final class QRCodeViewController: PrimerFormViewController {
             action: .view,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.viewModel.config.type,
+                paymentMethodType: viewModel.config.type,
                 url: nil),
             extra: nil,
             objectType: .view,
