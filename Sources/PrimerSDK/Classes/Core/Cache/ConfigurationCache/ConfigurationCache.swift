@@ -78,8 +78,8 @@ final class ConfigurationCachedData {
     init(config: PrimerAPIConfiguration, headers: [String: String]? = nil) {
         // Extract ttl from headers
         self.config = config
-        self.timestamp = Date().timeIntervalSince1970
-        self.ttl = Self.extractTtlFromHeaders(headers)
+        timestamp = Date().timeIntervalSince1970
+        ttl = Self.extractTtlFromHeaders(headers)
     }
 
     static let FallbackCacheExpiration: TimeInterval = 0

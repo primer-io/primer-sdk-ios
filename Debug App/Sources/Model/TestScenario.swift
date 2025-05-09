@@ -100,7 +100,7 @@ class Test {
             case .failure(let failure):
                 self.failure = failure
             default:
-                self.failure = nil
+                failure = nil
             }
 
             self.network = network
@@ -110,16 +110,16 @@ class Test {
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: Test.Params.CodingKeys.self)
-            try container.encode(self.scenario, forKey: .scenario)
-            if case .failure(let failure) = self.result {
+            try container.encode(scenario, forKey: .scenario)
+            if case .failure(let failure) = result {
                 try container.encode("FAILURE", forKey: .result)
                 try container.encode(failure, forKey: .failure)
             } else {
                 try container.encode("SUCCESS", forKey: .result)
             }
-            try container.encodeIfPresent(self.network, forKey: .network)
-            try container.encodeIfPresent(self.polling, forKey: .polling)
-            try container.encodeIfPresent(self.threeDS, forKey: .threeDS)
+            try container.encodeIfPresent(network, forKey: .network)
+            try container.encodeIfPresent(polling, forKey: .polling)
+            try container.encodeIfPresent(threeDS, forKey: .threeDS)
         }
 
         struct Failure: Codable {

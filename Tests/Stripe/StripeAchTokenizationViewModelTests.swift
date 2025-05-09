@@ -58,14 +58,14 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        let expectWillCreatePaymentData = expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, self.stripeACHPaymentMethodType)
             decision(.abortPaymentCreation())
             expectWillCreatePaymentData.fulfill()
         }
 
-        let expectWillAbort = self.expectation(description: "onDidAbort is called")
+        let expectWillAbort = expectation(description: "onDidAbort is called")
         delegate.onDidFail = { error in
             switch error {
             case PrimerError.merchantError:
@@ -93,33 +93,33 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
 
         PrimerAPIConfigurationModule.apiClient = apiClient
 
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        let expectWillCreatePaymentData = expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, self.stripeACHPaymentMethodType)
             decision(.continuePaymentCreation())
             expectWillCreatePaymentData.fulfill()
         }
 
-        let expectDidStartTokenization = self.expectation(description: "didStartTokenization is called")
+        let expectDidStartTokenization = expectation(description: "didStartTokenization is called")
         delegate.onDidStartTokenization = { paymentType in
             XCTAssertEqual(paymentType, self.stripeACHPaymentMethodType)
             expectDidStartTokenization.fulfill()
         }
 
-        let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
+        let expectDidTokenize = expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
             return Promise.fulfilled(self.tokenizationResponseBody)
         }
 
-        let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
+        let expectDidCreatePayment = expectation(description: "didCreatePayment called")
         createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
         }
 
-        let expectDidReceiveStripeCollectorAdditionalInfo = self.expectation(description: "didReceiveStripeCollectorAdditionalInfo is called")
-        let expectDidReceiveMandateAdditionalInfo = self.expectation(description: "didReceiveMandateAdditionalInfo is called")
+        let expectDidReceiveStripeCollectorAdditionalInfo = expectation(description: "didReceiveStripeCollectorAdditionalInfo is called")
+        let expectDidReceiveMandateAdditionalInfo = expectation(description: "didReceiveMandateAdditionalInfo is called")
         delegate.onDidReceiveAdditionalInfo = { additionalInfo in
             if additionalInfo is ACHBankAccountCollectorAdditionalInfo {
                 expectDidReceiveStripeCollectorAdditionalInfo.fulfill()
@@ -134,7 +134,7 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
             }
         }
 
-        let expectCheckoutDidCompleteWithData = self.expectation(description: "didCompleteCheckout is called")
+        let expectCheckoutDidCompleteWithData = expectation(description: "didCompleteCheckout is called")
         delegate.onDidCompleteCheckoutWithData = { data in
             XCTAssertEqual(data.payment?.id, "id")
             XCTAssertEqual(data.payment?.orderId, "order_id")

@@ -28,30 +28,30 @@ final class PrimerDemo3DSViewController: UIViewController {
 
         view.backgroundColor = .white
 
-        self.stackView.spacing = 20
-        self.stackView.alignment = .center
-        self.stackView.axis = .vertical
-        self.stackView.distribution = .fill
-        self.view.addSubview(self.stackView)
+        stackView.spacing = 20
+        stackView.alignment = .center
+        stackView.axis = .vertical
+        stackView.distribution = .fill
+        view.addSubview(stackView)
 
-        self.stackView.translatesAutoresizingMaskIntoConstraints = false
-        self.stackView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor).isActive = true
-        self.stackView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
-        self.stackView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor).isActive = true
-        self.stackView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
+        stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        stackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
+        stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
 
         let titleLabel = UILabel()
         titleLabel.accessibilityIdentifier = "Demo 3DS Title Label"
         titleLabel.text = "Demo 3DS Title Label"
         titleLabel.font = UIFont.systemFont(ofSize: 30, weight: .heavy)
-        self.stackView.addArrangedSubview(titleLabel)
+        stackView.addArrangedSubview(titleLabel)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
 
         let subtitleLabel = UILabel()
         subtitleLabel.accessibilityIdentifier = "Demo 3DS  Subtitle Label"
         subtitleLabel.text = "Awaiting 3DS Result"
         subtitleLabel.font = UIFont.systemFont(ofSize: 20, weight: .regular)
-        self.stackView.addArrangedSubview(subtitleLabel)
+        stackView.addArrangedSubview(subtitleLabel)
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
 
         let sendCredentialsButton = UIButton()
@@ -59,14 +59,14 @@ final class PrimerDemo3DSViewController: UIViewController {
         sendCredentialsButton.setTitle("Send Credentials", for: .normal)
         sendCredentialsButton.setTitleColor(.black, for: .normal)
         sendCredentialsButton.addTarget(self, action: #selector(sendCredentialsButtonTapped), for: .touchUpInside)
-        self.stackView.addArrangedSubview(sendCredentialsButton)
+        stackView.addArrangedSubview(sendCredentialsButton)
         sendCredentialsButton.translatesAutoresizingMaskIntoConstraints = false
         sendCredentialsButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
     }
 
     @IBAction func sendCredentialsButtonTapped(_ sender: UIButton) {
         #if DEBUG
-        self.onSendCredentialsButtonTapped?()
+        onSendCredentialsButtonTapped?()
         #endif
     }
 }
@@ -91,30 +91,30 @@ final class PrimerThirdPartySDKViewController: UIViewController {
 
         view.backgroundColor = .white
 
-        self.stackView.spacing = 20
-        self.stackView.alignment = .center
-        self.stackView.axis = .vertical
-        self.stackView.distribution = .fill
-        self.view.addSubview(self.stackView)
+        stackView.spacing = 20
+        stackView.alignment = .center
+        stackView.axis = .vertical
+        stackView.distribution = .fill
+        view.addSubview(stackView)
 
-        self.stackView.translatesAutoresizingMaskIntoConstraints = false
-        self.stackView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor).isActive = true
-        self.stackView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
-        self.stackView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor).isActive = true
-        self.stackView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
+        stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        stackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
+        stackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
 
         let titleLabel = UILabel()
         titleLabel.accessibilityIdentifier = "3rd Party SDK Title Label"
         titleLabel.text = "Testing \(paymentMethodType)"
         titleLabel.font = UIFont.systemFont(ofSize: 30, weight: .heavy)
-        self.stackView.addArrangedSubview(titleLabel)
+        stackView.addArrangedSubview(titleLabel)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
 
         let subtitleLabel = UILabel()
         subtitleLabel.accessibilityIdentifier = "3rd Party SDK Subtitle Label"
         subtitleLabel.text = "Simulating 3rd party SDK"
         subtitleLabel.font = UIFont.systemFont(ofSize: 20, weight: .regular)
-        self.stackView.addArrangedSubview(subtitleLabel)
+        stackView.addArrangedSubview(subtitleLabel)
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
 
         let sendCredentialsButton = UIButton()
@@ -122,14 +122,14 @@ final class PrimerThirdPartySDKViewController: UIViewController {
         sendCredentialsButton.setTitle("Send Credentials", for: .normal)
         sendCredentialsButton.setTitleColor(.black, for: .normal)
         sendCredentialsButton.addTarget(self, action: #selector(sendCredentialsButtonTapped), for: .touchUpInside)
-        self.stackView.addArrangedSubview(sendCredentialsButton)
+        stackView.addArrangedSubview(sendCredentialsButton)
         sendCredentialsButton.translatesAutoresizingMaskIntoConstraints = false
         sendCredentialsButton.heightAnchor.constraint(equalToConstant: 45).isActive = true
     }
 
     @IBAction func sendCredentialsButtonTapped(_ sender: UIButton) {
         #if DEBUG
-        self.onSendCredentialsButtonTapped?()
+        onSendCredentialsButtonTapped?()
         #endif
     }
 }

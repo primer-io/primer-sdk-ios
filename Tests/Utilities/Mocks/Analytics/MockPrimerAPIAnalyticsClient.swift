@@ -27,6 +27,6 @@ class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
         } else {
             completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
-        self.onSendAnalyticsEvent?(body)
+        onSendAnalyticsEvent?(body)
     }
 }

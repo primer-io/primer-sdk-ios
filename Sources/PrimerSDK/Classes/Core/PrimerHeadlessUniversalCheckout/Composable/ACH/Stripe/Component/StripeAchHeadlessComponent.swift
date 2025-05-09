@@ -24,7 +24,7 @@ final class StripeAchHeadlessComponent {
     // MARK: - Init
     init(tokenizationViewModel: StripeAchTokenizationViewModel) {
         self.tokenizationViewModel = tokenizationViewModel
-        self.clientSessionService = ACHClientSessionService()
+        clientSessionService = ACHClientSessionService()
     }
 
     func setDelegate() {}

@@ -65,7 +65,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         self.tokenizationService = tokenizationService
         self.createResumePaymentService = createResumePaymentService
         self.apiClient = apiClient
-        self.paymentMethodType = config.internalPaymentMethodType!
+        paymentMethodType = config.internalPaymentMethodType!
     }
 
     func validate() throws {
@@ -113,12 +113,12 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
     func processPaymentMethodTokenData() {
         if PrimerInternal.shared.intent == .vault {
-            PrimerDelegateProxy.primerDidTokenizePaymentMethod(self.paymentMethodTokenData!) { _ in }
-            self.handleSuccessfulFlow()
+            PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData!) { _ in }
+            handleSuccessfulFlow()
 
         } else {
-            self.didStartPayment?()
-            self.didStartPayment = nil
+            didStartPayment?()
+            didStartPayment = nil
 
             //            PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: self.uiModule.makeIconImageView(withDimension: 24.0), message: nil)
 
@@ -600,12 +600,12 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     func handleSuccessfulFlow() {}
 
     func nullifyEventCallbacks() {
-        self.didStartPayment = nil
-        self.didFinishPayment = nil
+        didStartPayment = nil
+        didFinishPayment = nil
     }
 
     func handleFailureFlow(errorMessage: String?) {
-        let categories = self.config.paymentMethodManagerCategories
+        let categories = config.paymentMethodManagerCategories
         uiManager.dismissOrShowResultScreen(type: .failure,
                                             paymentMethodManagerCategories: categories ?? [],
                                             withMessage: errorMessage)
@@ -636,7 +636,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
 
         let requestBody = Request.Body.Tokenization(
             paymentInstrument: OffSessionPaymentInstrument(
-                paymentMethodConfigId: self.config.id!,
+                paymentMethodConfigId: config.id!,
                 paymentMethodType: config.type,
                 sessionInfo: BankSelectorSessionInfo(issuer: bank.id)))
 
@@ -741,7 +741,7 @@ extension BanksTokenizationComponent: BankSelectorTokenizationProviding {
     }
 
     func tokenize(bankId: String) -> Promise<Void> {
-        self.selectedBank = banks.first(where: { $0.id == bankId })
+        selectedBank = banks.first(where: { $0.id == bankId })
         return performTokenizationStep()
             .then { () -> Promise<Void> in
                 return self.performPostTokenizationSteps()
@@ -758,7 +758,7 @@ extension BanksTokenizationComponent: BankSelectorTokenizationProviding {
     }
 
     func cleanup() {
-        self.nullifyEventCallbacks()
+        nullifyEventCallbacks()
 
     }
 
@@ -790,16 +790,16 @@ extension BanksTokenizationComponent: SFSafariViewControllerDelegate {
         )
         Analytics.Service.record(events: [messageEvent])
 
-        self.cancel()
+        cancel()
     }
 
     func safariViewController(_ controller: SFSafariViewController, didCompleteInitialLoad didLoadSuccessfully: Bool) {
         if didLoadSuccessfully {
-            self.didPresentPaymentMethodUI?()
+            didPresentPaymentMethodUI?()
         }
 
-        if let redirectUrlRequestId = self.redirectUrlRequestId,
-           let redirectUrlComponents = self.redirectUrlComponents {
+        if let redirectUrlRequestId = redirectUrlRequestId,
+           let redirectUrlComponents = redirectUrlComponents {
             let networkEvent = Analytics.Event.networkCall(
                 callType: .requestEnd,
                 id: redirectUrlRequestId,
@@ -825,7 +825,7 @@ extension BanksTokenizationComponent: SFSafariViewControllerDelegate {
         }
 
         if URL.absoluteString.hasSuffix("primer.io/static/loading.html") || URL.absoluteString.hasSuffix("primer.io/static/loading-spinner.html") {
-            self.webViewController?.dismiss(animated: true)
+            webViewController?.dismiss(animated: true)
             uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         }
     }
@@ -834,7 +834,7 @@ extension BanksTokenizationComponent: SFSafariViewControllerDelegate {
 extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
 
     func start() {
-        self.didFinishPayment = { [weak self] _ in
+        didFinishPayment = { [weak self] _ in
             guard let self = self else { return }
             self.cleanup()
         }
@@ -858,15 +858,15 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
 
     func setupNotificationObservers() {
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.receivedNotification(_:)),
+                                               selector: #selector(receivedNotification(_:)),
                                                name: Notification.Name.receivedUrlSchemeRedirect,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.receivedNotification(_:)),
+                                               selector: #selector(receivedNotification(_:)),
                                                name: Notification.Name.receivedUrlSchemeCancellation,
                                                object: nil)
 
-        self.didFinishPayment = { _ in
+        didFinishPayment = { _ in
             self.willDismissPaymentMethodUI?()
             self.webViewController?.dismiss(animated: true, completion: {
                 self.didDismissPaymentMethodUI?()
@@ -885,7 +885,7 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: nil),
             extra: nil,
             objectType: .button,
@@ -978,9 +978,9 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
             })
         }
 
-        self.bankSelectionCompletion = nil
-        self.webViewController = nil
-        self.webViewCompletion = nil
+        bankSelectionCompletion = nil
+        webViewController = nil
+        webViewCompletion = nil
     }
 
     func startTokenizationFlow() -> Promise<PrimerPaymentMethodTokenData> {

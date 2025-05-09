@@ -220,7 +220,7 @@ public final class PrimerThemeData {
 
         public init(defaultColor: UIColor? = nil, fontsize: Int? = nil) {
             self.defaultColor = defaultColor
-            self.fontSize = fontsize
+            fontSize = fontsize
         }
     }
 

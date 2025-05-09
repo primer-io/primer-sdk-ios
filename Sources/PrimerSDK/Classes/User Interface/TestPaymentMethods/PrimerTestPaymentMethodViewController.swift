@@ -20,7 +20,7 @@ final class PrimerTestPaymentMethodViewController: PrimerFormViewController {
     init(viewModel: PrimerTestPaymentMethodTokenizationViewModel) {
         self.viewModel = viewModel
         super.init()
-        self.titleImage = viewModel.uiModule.invertedLogo
+        titleImage = viewModel.uiModule.invertedLogo
     }
 
     override func viewDidLoad() {
@@ -30,7 +30,7 @@ final class PrimerTestPaymentMethodViewController: PrimerFormViewController {
             action: .view,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.viewModel.config.type,
+                paymentMethodType: viewModel.config.type,
                 url: nil),
             extra: nil,
             objectType: .view,

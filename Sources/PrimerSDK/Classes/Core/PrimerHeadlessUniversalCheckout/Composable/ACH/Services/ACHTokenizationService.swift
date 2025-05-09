@@ -34,7 +34,7 @@ final class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelega
     init(paymentMethod: PrimerPaymentMethod, tokenizationService: TokenizationServiceProtocol = TokenizationService()) {
         self.paymentMethod = paymentMethod
         self.tokenizationService = tokenizationService
-        self.clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
+        clientSession = PrimerAPIConfigurationModule.apiConfiguration?.clientSession
     }
 
     // MARK: - Tokenize

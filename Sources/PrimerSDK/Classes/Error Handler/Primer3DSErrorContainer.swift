@@ -77,7 +77,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
     }
 
     public var errorDescription: String? {
-        return "[\(errorId)] \(plainDescription) (diagnosticsId: \(self.diagnosticsId))"
+        return "[\(errorId)] \(plainDescription) (diagnosticsId: \(diagnosticsId))"
     }
 
     public var recoverySuggestion: String? {
@@ -165,7 +165,7 @@ public enum Primer3DSErrorContainer: PrimerErrorProtocol {
     }
 
     internal var continueInfo: ThreeDS.ContinueInfo {
-        return ThreeDS.ContinueInfo.init(initProtocolVersion: self.initProtocolVersion, error: self)
+        return ThreeDS.ContinueInfo.init(initProtocolVersion: initProtocolVersion, error: self)
     }
 
     internal var threeDsErrorDescription: String? {

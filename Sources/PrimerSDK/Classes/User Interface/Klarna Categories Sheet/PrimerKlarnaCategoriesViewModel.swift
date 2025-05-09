@@ -18,6 +18,6 @@ final class PrimerKlarnaCategoriesViewModel: ObservableObject {
 
     func updatePaymentCategories(_ paymentCategories: [KlarnaPaymentCategory]) {
         self.paymentCategories = paymentCategories
-        self.showBackButton = true
+        showBackButton = true
     }
 }

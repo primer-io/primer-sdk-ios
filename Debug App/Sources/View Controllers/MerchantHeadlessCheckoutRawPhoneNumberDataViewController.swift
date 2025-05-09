@@ -38,16 +38,16 @@ class MerchantHeadlessCheckoutRawPhoneNumberDataViewController: UIViewController
         PrimerHeadlessUniversalCheckout.current.delegate = self
 
         do {
-            self.rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: self.paymentMethodType)
-            self.rawDataManager.delegate = self
+            rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: paymentMethodType)
+            rawDataManager.delegate = self
         } catch {
             print(error)
         }
     }
 
     @IBAction func submitButtonTapped(_ sender: UIButton) {
-        self.rawDataManager.rawData = PrimerPhoneNumberData(phoneNumber: self.phoneNumberTextField.text!)
-        self.rawDataManager.submit()
+        rawDataManager.rawData = PrimerPhoneNumberData(phoneNumber: phoneNumberTextField.text!)
+        rawDataManager.submit()
     }
 
     // MARK: - HELPERS
@@ -79,12 +79,12 @@ extension MerchantHeadlessCheckoutRawPhoneNumberDataViewController {
 
     func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
         print("\n\nMERCHANT APP\n\(#function)\ndata: \(data)")
-        self.logs.append(#function)
+        logs.append(#function)
 
-        self.hideLoadingOverlay()
+        hideLoadingOverlay()
 
-        let rvc = MerchantResultViewController.instantiate(checkoutData: self.checkoutData, error: self.primerError, logs: self.logs)
-        self.navigationController?.pushViewController(rvc, animated: true)
+        let rvc = MerchantResultViewController.instantiate(checkoutData: checkoutData, error: primerError, logs: logs)
+        navigationController?.pushViewController(rvc, animated: true)
     }
 }
 
@@ -94,7 +94,7 @@ extension MerchantHeadlessCheckoutRawPhoneNumberDataViewController {
 
     func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
         print("\n\nMERCHANT APP\n\(#function)\npaymentMethodTokenData: \(paymentMethodTokenData)")
-        self.logs.append(#function)
+        logs.append(#function)
 
         Networking.createPayment(with: paymentMethodTokenData) { (res, err) in
             if let err = err {
@@ -121,9 +121,9 @@ extension MerchantHeadlessCheckoutRawPhoneNumberDataViewController {
 
     func primerHeadlessUniversalCheckoutDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void) {
         print("\n\nMERCHANT APP\n\(#function)\nresumeToken: \(resumeToken)")
-        self.logs.append(#function)
+        logs.append(#function)
 
-        Networking.resumePayment(self.paymentId!, withToken: resumeToken) { (_, err) in
+        Networking.resumePayment(paymentId!, withToken: resumeToken) { (_, err) in
             DispatchQueue.main.async {
                 self.hideLoadingOverlay()
             }
@@ -147,28 +147,28 @@ extension MerchantHeadlessCheckoutRawPhoneNumberDataViewController {
 
     func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethodTypes: [String]) {
         print("\n\nMERCHANT APP\n\(#function)")
-        self.logs.append(#function)
+        logs.append(#function)
     }
 
     func primerHeadlessUniversalCheckoutPreparationDidStart(for paymentMethodType: String) {
         print("\n\nMERCHANT APP\n\(#function)")
-        self.logs.append(#function)
-        self.showLoadingOverlay()
+        logs.append(#function)
+        showLoadingOverlay()
     }
 
     func primerHeadlessUniversalCheckoutTokenizationDidStart(for paymentMethodType: String) {
         print("\n\nMERCHANT APP\n\(#function)\npaymentMethodType: \(paymentMethodType)")
-        self.logs.append(#function)
+        logs.append(#function)
     }
 
     func primerHeadlessUniversalCheckoutPaymentMethodDidShow(for paymentMethodType: String) {
         print("\n\nMERCHANT APP\n\(#function)\npaymentMethodType: \(paymentMethodType)")
-        self.logs.append(#function)
+        logs.append(#function)
     }
 
     func primerHeadlessUniversalCheckoutDidReceiveAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
         print("\n\nMERCHANT APP\n\(#function)\nadditionalInfo: \(String(describing: additionalInfo))")
-        self.logs.append(#function)
+        logs.append(#function)
         DispatchQueue.main.async {
             self.hideLoadingOverlay()
         }
@@ -176,31 +176,31 @@ extension MerchantHeadlessCheckoutRawPhoneNumberDataViewController {
 
     func primerHeadlessUniversalCheckoutDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?) {
         print("\n\nMERCHANT APP\n\(#function)\nadditionalInfo: \(String(describing: additionalInfo))")
-        self.logs.append(#function)
-        self.hideLoadingOverlay()
+        logs.append(#function)
+        hideLoadingOverlay()
     }
 
     func primerHeadlessUniversalCheckoutDidFail(withError err: Error) {
         print("\n\nMERCHANT APP\n\(#function)\nerror: \(err)")
-        self.logs.append(#function)
+        logs.append(#function)
 
-        self.primerError = err
-        self.hideLoadingOverlay()
+        primerError = err
+        hideLoadingOverlay()
     }
 
     func primerHeadlessUniversalCheckoutClientSessionWillUpdate() {
         print("\n\nMERCHANT APP\n\(#function)")
-        self.logs.append(#function)
+        logs.append(#function)
     }
 
     func primerHeadlessUniversalCheckoutClientSessionDidUpdate(_ clientSession: PrimerClientSession) {
         print("\n\nMERCHANT APP\n\(#function)\nclientSession: \(clientSession)")
-        self.logs.append(#function)
+        logs.append(#function)
     }
 
     func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
         print("\n\nMERCHANT APP\n\(#function)\ndata: \(data)")
-        self.logs.append(#function)
+        logs.append(#function)
         decisionHandler(.continuePaymentCreation())
     }
 }
@@ -209,11 +209,11 @@ extension MerchantHeadlessCheckoutRawPhoneNumberDataViewController: PrimerHeadle
 
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, dataIsValid isValid: Bool, errors: [Error]?) {
         print("\n\nMERCHANT APP\n\(#function)\ndataIsValid: \(isValid)")
-        self.logs.append(#function)
+        logs.append(#function)
     }
 
     func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager, metadataDidChange metadata: [String: Any]?) {
         print("\n\nMERCHANT APP\n\(#function)\nmetadataDidChange: \(String(describing: metadata))")
-        self.logs.append(#function)
+        logs.append(#function)
     }
 }

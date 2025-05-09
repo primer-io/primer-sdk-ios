@@ -11,17 +11,17 @@ public final class PrimerBancontactCardData: PrimerRawData {
 
     public var cardNumber: String {
         didSet {
-            self.onDataDidChange?()
+            onDataDidChange?()
         }
     }
     public var expiryDate: String {
         didSet {
-            self.onDataDidChange?()
+            onDataDidChange?()
         }
     }
     public var cardholderName: String {
         didSet {
-            self.onDataDidChange?()
+            onDataDidChange?()
         }
     }
 

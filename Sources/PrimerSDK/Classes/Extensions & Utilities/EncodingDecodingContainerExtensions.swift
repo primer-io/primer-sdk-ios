@@ -90,7 +90,7 @@ extension KeyedEncodingContainer {
 extension KeyedDecodingContainer {
 
     func decode(_ type: Dictionary<String, Any>.Type, forKey key: K) throws -> [String: Any] {
-        let container = try self.nestedContainer(keyedBy: JSONCodingKeys.self, forKey: key)
+        let container = try nestedContainer(keyedBy: JSONCodingKeys.self, forKey: key)
         return try container.decode()
     }
 
@@ -105,7 +105,7 @@ extension KeyedDecodingContainer {
     }
 
     func decode(forKey key: K) throws -> [Any] {
-        var container = try self.nestedUnkeyedContainer(forKey: key)
+        var container = try nestedUnkeyedContainer(forKey: key)
         return try container.decode()
     }
 

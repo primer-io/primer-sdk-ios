@@ -265,7 +265,7 @@ struct ExtraMerchantData: Codable {
 extension String {
 
     var jwtTokenPayload: JWTToken? {
-        let components = self.split(separator: ".")
+        let components = split(separator: ".")
         if components.count < 2 { return nil }
         let segment = String(components[1]).fixedBase64Format
         guard !segment.isEmpty, let data = Data(base64Encoded: segment, options: .ignoreUnknownCharacters) else { return nil }
@@ -273,7 +273,7 @@ extension String {
     }
 
     var fixedBase64Format: Self {
-        let str = self.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
+        let str = replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
         let offset = str.count % 4
         guard offset != 0 else { return str }
         return str.padding(toLength: str.count + 4 - offset, withPad: "=", startingAt: 0)

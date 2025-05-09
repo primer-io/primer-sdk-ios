@@ -13,15 +13,15 @@ final class PrimerRawOTPDataTokenizationBuilder: PrimerRawDataTokenizationBuilde
 
     var rawData: PrimerRawData? {
         didSet {
-            if let rawOTPInput = self.rawData as? PrimerOTPData {
+            if let rawOTPInput = rawData as? PrimerOTPData {
                 rawOTPInput.onDataDidChange = { [weak self] in
                     guard let self = self else { return }
                     _ = self.validateRawData(rawOTPInput)
                 }
             }
 
-            if let rawData = self.rawData {
-                _ = self.validateRawData(rawData)
+            if let rawData = rawData {
+                _ = validateRawData(rawData)
             }
         }
     }
@@ -129,7 +129,7 @@ final class PrimerRawOTPDataTokenizationBuilder: PrimerRawDataTokenizationBuilde
     }
 
     private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {
-        self.isDataValid = isValid
+        isDataValid = isValid
 
         DispatchQueue.main.async { [weak self] in
             guard let self = self, let rawDataManager = self.rawDataManager else { return }

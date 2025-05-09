@@ -20,8 +20,8 @@ class File: LogReporter {
     var localUrl: URL? {
         guard let documentDirectoryUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return nil }
 
-        var tmpFilename: String = self.fileName
-        if let fileExtension = self.fileExtension {
+        var tmpFilename: String = fileName
+        if let fileExtension = fileExtension {
             tmpFilename += "." + fileExtension
         }
 

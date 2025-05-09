@@ -352,7 +352,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         if requestVaultedPaymentMethods {
             let vaultService: VaultServiceProtocol = VaultService(apiClient: PrimerAPIClient())
             let vaultedPaymentMethodsPromise = vaultService.fetchVaultedPaymentMethods()
-            let fetchConfigurationPromise = self.fetchConfiguration(requestDisplayMetadata: true)
+            let fetchConfigurationPromise = fetchConfiguration(requestDisplayMetadata: true)
 
             return Promise { seal in
                 firstly {
@@ -366,7 +366,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
                 }
             }
         } else {
-            return self.fetchConfiguration(requestDisplayMetadata: requestDisplayMetadata)
+            return fetchConfiguration(requestDisplayMetadata: requestDisplayMetadata)
         }
 
     }

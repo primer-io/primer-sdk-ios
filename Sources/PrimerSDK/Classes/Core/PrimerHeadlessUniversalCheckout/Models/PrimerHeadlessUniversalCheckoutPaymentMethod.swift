@@ -80,7 +80,7 @@ extension PrimerHeadlessUniversalCheckout {
         init(type: String,
              supportedPrimerSessionIntents: [PrimerSessionIntent] = [],
              paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory] = [.nativeUI]) {
-            self.paymentMethodType = type
+            paymentMethodType = type
             self.supportedPrimerSessionIntents = supportedPrimerSessionIntents
             self.paymentMethodManagerCategories = paymentMethodManagerCategories
         }

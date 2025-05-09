@@ -63,7 +63,7 @@ final class PrimerResultComponentView: PrimerView {
         self.imageView = imageView
         self.message = message
         self.loadingIndicator = loadingIndicator
-        self.initialize()
+        initialize()
     }
 
 }

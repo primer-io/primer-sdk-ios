@@ -175,9 +175,9 @@ class MockCardComponentsManager: InternalCardComponentsManagerProtocol {
         self.cardnumberField = cardnumberField
         self.expiryDateField = expiryDateField
         self.cvvField = cvvField
-        self.cardholderField = cardholderNameField
+        cardholderField = cardholderNameField
         self.postalCodeField = postalCodeField
-        self.delegate = MockCardComponentsManagerDelegate()
+        delegate = MockCardComponentsManagerDelegate()
     }
 
     convenience init(

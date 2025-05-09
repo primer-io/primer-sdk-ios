@@ -27,7 +27,7 @@ class TapGestureRecognizer: UITapGestureRecognizer {
     private let container: Container
 
     required init(_ callback: @escaping () -> Void) {
-        self.container = Container(callback)
+        container = Container(callback)
         super.init(target: container, action: #selector(Container.didTap(_:)))
     }
 }

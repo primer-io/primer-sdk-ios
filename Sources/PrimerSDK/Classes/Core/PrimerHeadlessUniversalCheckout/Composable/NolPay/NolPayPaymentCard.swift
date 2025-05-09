@@ -17,8 +17,8 @@ public final class PrimerNolPaymentCard {
     // Initializer that accepts a PrimerNolPayCard
     #if canImport(PrimerNolPaySDK)
     public init(from nolPayCard: PrimerNolPayCard) {
-        self.cardNumber = nolPayCard.cardNumber
-        self.expiredTime = nolPayCard.expiredTime
+        cardNumber = nolPayCard.cardNumber
+        expiredTime = nolPayCard.expiredTime
     }
     #endif
     // If you wish to also have an initializer that directly accepts card number and expiration time:

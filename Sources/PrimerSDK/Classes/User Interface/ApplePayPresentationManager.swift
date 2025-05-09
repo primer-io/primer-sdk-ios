@@ -126,14 +126,14 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
         let errorMessage = "Cannot run ApplePay on this device"
 
         if PrimerSettings.current.paymentMethodOptions.applePayOptions?.checkProvidedNetworks == true {
-            self.logger.error(message: "APPLE PAY")
-            self.logger.error(message: errorMessage)
+            logger.error(message: "APPLE PAY")
+            logger.error(message: errorMessage)
             let err = PrimerError.unableToMakePaymentsOnProvidedNetworks(userInfo: .errorUserInfoDictionary(),
                                                                          diagnosticsId: UUID().uuidString)
             return err
         } else {
-            self.logger.error(message: "APPLE PAY")
-            self.logger.error(message: errorMessage)
+            logger.error(message: "APPLE PAY")
+            logger.error(message: errorMessage)
             let info = ["message": errorMessage]
             let err = PrimerError.unableToPresentPaymentMethod(paymentMethodType: "APPLE_PAY",
                                                                userInfo: .errorUserInfoDictionary(additionalInfo: info),

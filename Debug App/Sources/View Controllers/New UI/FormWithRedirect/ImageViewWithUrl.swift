@@ -23,7 +23,7 @@ struct ImageViewWithUrl<Placeholder: View, ConfiguredImage: View>: View {
         self.url = url
         self.placeholder = placeholder
         self.image = image
-        self.imageLoader = ImageLoaderService(url: url)
+        imageLoader = ImageLoaderService(url: url)
     }
 
     @ViewBuilder private var imageContent: some View {
@@ -57,7 +57,7 @@ class ImageLoaderService: ObservableObject {
             self.image = image
         } else {
             if let placeholder {
-                self.image = placeholder
+                image = placeholder
             }
             URLSession.shared.dataTask(with: request, completionHandler: { (data, response, _) in
                 if let data = data, let response = response, ((response as? HTTPURLResponse)?.statusCode ?? 500) < 300, let image = UIImage(data: data) {

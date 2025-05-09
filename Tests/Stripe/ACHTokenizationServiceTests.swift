@@ -228,7 +228,7 @@ extension ACHTokenizationServiceTests {
 
     private func getInvalidTokenError() -> PrimerError {
         let error = PrimerError.invalidClientToken(
-            userInfo: self.getErrorUserInfo(),
+            userInfo: getErrorUserInfo(),
             diagnosticsId: UUID().uuidString
         )
         ErrorHandler.handle(error: error)

@@ -61,14 +61,14 @@ final class ImageFile: File {
     }
 
     var cachedImage: UIImage? {
-        guard let data = self.data, let image = UIImage(data: data, scale: 2.0) else { return nil }
+        guard let data = data, let image = UIImage(data: data, scale: 2.0) else { return nil }
         return image
     }
 
     var bundledImage: UIImage? {
-        let paymentMethodType = ImageFile.getPaymentMethodType(fromFileName: self.fileName) ?? self.fileName
+        let paymentMethodType = ImageFile.getPaymentMethodType(fromFileName: fileName) ?? fileName
 
-        if self.fileName.contains("dark") == true {
+        if fileName.contains("dark") == true {
             if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType,
                                                                                  themeMode: .dark,
                                                                                  assetType: .logo),
@@ -77,7 +77,7 @@ final class ImageFile: File {
             } else if let image = UIImage(primerResource: fileName) {
                 return image
             }
-        } else if self.fileName.contains("light") == true {
+        } else if fileName.contains("light") == true {
             if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType,
                                                                                  themeMode: .light,
                                                                                  assetType: .logo),
@@ -86,7 +86,7 @@ final class ImageFile: File {
             } else if let image = UIImage(primerResource: fileName) {
                 return image
             }
-        } else if self.fileName.contains("colored") == true {
+        } else if fileName.contains("colored") == true {
             if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType,
                                                                                  themeMode: .colored,
                                                                                  assetType: .logo),

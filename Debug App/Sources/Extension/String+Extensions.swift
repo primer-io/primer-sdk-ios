@@ -20,16 +20,16 @@ extension String {
         // the slice within which to search
         let slice = (range == nil) ? self[...] : self[range!]
 
-        var previousEnd = self.startIndex
+        var previousEnd = startIndex
         var ranges = [Range<String.Index>]()
 
         while let r = slice.range(
             of: aString, options: options,
-            range: previousEnd ..< self.endIndex,
+            range: previousEnd ..< endIndex,
             locale: locale
         ) {
-            if previousEnd != self.endIndex { // don't increment past the end
-                previousEnd = self.index(after: r.lowerBound)
+            if previousEnd != endIndex { // don't increment past the end
+                previousEnd = index(after: r.lowerBound)
             }
             ranges.append(r)
         }
@@ -52,7 +52,7 @@ extension String {
     }
 
     private func indexToInt(_ index: String.Index) -> Int {
-        return self.distance(from: self.startIndex, to: index)
+        return distance(from: startIndex, to: index)
     }
 }
 

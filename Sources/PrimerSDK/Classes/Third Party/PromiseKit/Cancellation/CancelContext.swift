@@ -27,7 +27,7 @@ internal class CancelContext: Hashable {
      - Parameter error: Specifies the cancellation error to use for the cancel operation, defaults to `PMKError.cancelled`
      */
     internal func cancel(with error: Error = PMKError.cancelled) {
-        self.cancel(with: error, visited: Set<CancelContext>())
+        cancel(with: error, visited: Set<CancelContext>())
     }
 
     func cancel(with error: Error = PMKError.cancelled, visited: Set<CancelContext>) {
@@ -201,7 +201,7 @@ internal class CancelItemList {
     fileprivate var items: [CancelItem]
 
     init() {
-        self.items = []
+        items = []
     }
 
     fileprivate func append(_ item: CancelItem) {
@@ -233,7 +233,7 @@ private class CancelItem: Hashable {
     }
 
     init(context: CancelContext) {
-        self.cancellable = nil
+        cancellable = nil
         self.context = context
     }
 

@@ -23,12 +23,12 @@ internal protocol CancellableThenable: AnyObject {
 internal extension CancellableThenable {
     /// Append the `task` and `reject` function for a cancellable task to the cancel context
     func appendCancellable(_ cancellable: Cancellable?, reject: ((Error) -> Void)?) {
-        self.cancelContext.append(cancellable: cancellable, reject: reject, thenable: self)
+        cancelContext.append(cancellable: cancellable, reject: reject, thenable: self)
     }
 
     /// Append the cancel context associated with `from` to our cancel context.  Typically `from` is a branch of our chain.
     func appendCancelContext<Z: CancellableThenable>(from: Z) {
-        self.cancelContext.append(context: from.cancelContext, thenable: self)
+        cancelContext.append(context: from.cancelContext, thenable: self)
     }
 
     /**
@@ -37,28 +37,28 @@ internal extension CancellableThenable {
      - Parameter error: Specifies the cancellation error to use for the cancel operation, defaults to `PMKError.cancelled`
      */
     func cancel(with error: Error = PMKError.cancelled) {
-        self.cancelContext.cancel(with: error)
+        cancelContext.cancel(with: error)
     }
 
     /**
      True if all members of the promise chain have been successfully cancelled, false otherwise.
      */
     var isCancelled: Bool {
-        return self.cancelContext.isCancelled
+        return cancelContext.isCancelled
     }
 
     /**
      True if `cancel` has been called on the CancelContext associated with this promise, false otherwise.  `cancelAttempted` will be true if `cancel` is called on any promise in the chain.
      */
     var cancelAttempted: Bool {
-        return self.cancelContext.cancelAttempted
+        return cancelContext.cancelAttempted
     }
 
     /**
      The cancellation error generated when the promise is cancelled, or `nil` if not cancelled.
      */
     var cancelledError: Error? {
-        return self.cancelContext.cancelledError
+        return cancelContext.cancelledError
     }
 
     /**
@@ -96,8 +96,8 @@ internal extension CancellableThenable {
             }
         }
 
-        let promise = self.thenable.then(on: on, cancelBody)
-        return CancellablePromise(promise: promise, context: self.cancelContext, cancelItemList: cancelItemList)
+        let promise = thenable.then(on: on, cancelBody)
+        return CancellablePromise(promise: promise, context: cancelContext, cancelItemList: cancelItemList)
     }
 
     /**
@@ -130,8 +130,8 @@ internal extension CancellableThenable {
             }
         }
 
-        let promise = self.thenable.then(on: on, cancelBody)
-        return CancellablePromise(promise, cancelContext: self.cancelContext)
+        let promise = thenable.then(on: on, cancelBody)
+        return CancellablePromise(promise, cancelContext: cancelContext)
     }
 
     /**
@@ -164,8 +164,8 @@ internal extension CancellableThenable {
             }
         }
 
-        let promise = self.thenable.map(on: on, cancelTransform)
-        return CancellablePromise(promise: promise, context: self.cancelContext)
+        let promise = thenable.map(on: on, cancelTransform)
+        return CancellablePromise(promise: promise, context: cancelContext)
     }
 
     /**
@@ -197,8 +197,8 @@ internal extension CancellableThenable {
             }
         }
 
-        let promise = self.thenable.compactMap(on: on, cancelTransform)
-        return CancellablePromise(promise: promise, context: self.cancelContext)
+        let promise = thenable.compactMap(on: on, cancelTransform)
+        return CancellablePromise(promise: promise, context: cancelContext)
     }
 
     /**
@@ -230,8 +230,8 @@ internal extension CancellableThenable {
             }
         }
 
-        let promise = self.thenable.done(on: on, cancelBody)
-        return CancellablePromise(promise: promise, context: self.cancelContext)
+        let promise = thenable.done(on: on, cancelBody)
+        return CancellablePromise(promise: promise, context: cancelContext)
     }
 
     /**
@@ -278,8 +278,8 @@ internal extension CancellableThenable {
      */
     func tap(on: Dispatcher = conf.D.map, _ body: @escaping(Result<U.T, Error>) -> Void) -> CancellablePromise<U.T> {
         let rp = CancellablePromise<U.T>.pending()
-        rp.promise.cancelContext = self.cancelContext
-        self.thenable.pipe { result in
+        rp.promise.cancelContext = cancelContext
+        thenable.pipe { result in
             on.dispatch {
                 if let error = self.cancelContext.removeItems(self.cancelItemList, clearList: true) {
                     rp.resolver.reject(error)

@@ -154,26 +154,26 @@ struct DecodedJWTToken: Codable {
     init(from decoder: Decoder) throws {
 
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.accessToken = try? container.decode(String.self, forKey: .accessToken)
-        self.analyticsUrl = try? container.decode(String.self, forKey: .analyticsUrl)
-        self.analyticsUrlV2 = try? container.decode(String.self, forKey: .analyticsUrlV2)
-        self.configurationUrl = try? container.decode(String.self, forKey: .configurationUrl)
-        self.paymentFlow = try? container.decode(String.self, forKey: .paymentFlow)
-        self.threeDSecureInitUrl = try? container.decode(String.self, forKey: .threeDSecureInitUrl)
-        self.threeDSecureToken = try? container.decode(String.self, forKey: .threeDSecureToken)
-        self.useThreeDsWeakValidation = try? container.decode(Bool.self, forKey: .useThreeDsWeakValidation)
-        self.supportedThreeDsProtocolVersions = try container.decodeIfPresent([String].self,
+        accessToken = try? container.decode(String.self, forKey: .accessToken)
+        analyticsUrl = try? container.decode(String.self, forKey: .analyticsUrl)
+        analyticsUrlV2 = try? container.decode(String.self, forKey: .analyticsUrlV2)
+        configurationUrl = try? container.decode(String.self, forKey: .configurationUrl)
+        paymentFlow = try? container.decode(String.self, forKey: .paymentFlow)
+        threeDSecureInitUrl = try? container.decode(String.self, forKey: .threeDSecureInitUrl)
+        threeDSecureToken = try? container.decode(String.self, forKey: .threeDSecureToken)
+        useThreeDsWeakValidation = try? container.decode(Bool.self, forKey: .useThreeDsWeakValidation)
+        supportedThreeDsProtocolVersions = try container.decodeIfPresent([String].self,
                                                                               forKey: .supportedThreeDsProtocolVersions)
-        self.coreUrl = try? container.decode(String.self, forKey: .coreUrl)
-        self.pciUrl = try? container.decode(String.self, forKey: .pciUrl)
-        self.env = try? container.decode(String.self, forKey: .env)
-        self.intent = try? container.decode(String.self, forKey: .intent)
-        self.statusUrl = try? container.decode(String.self, forKey: .statusUrl)
-        self.redirectUrl = try? container.decode(String.self, forKey: .redirectUrl)
-        self.accountNumber = try? container.decode(String.self, forKey: .accountNumber)
-        self.nolPayTransactionNo = try? container.decode(String.self, forKey: .nolPayTransactionNo)
-        self.stripeClientSecret = try? container.decode(String.self, forKey: .stripeClientSecret)
-        self.sdkCompleteUrl = try? container.decode(String.self, forKey: .sdkCompleteUrl)
+        coreUrl = try? container.decode(String.self, forKey: .coreUrl)
+        pciUrl = try? container.decode(String.self, forKey: .pciUrl)
+        env = try? container.decode(String.self, forKey: .env)
+        intent = try? container.decode(String.self, forKey: .intent)
+        statusUrl = try? container.decode(String.self, forKey: .statusUrl)
+        redirectUrl = try? container.decode(String.self, forKey: .redirectUrl)
+        accountNumber = try? container.decode(String.self, forKey: .accountNumber)
+        nolPayTransactionNo = try? container.decode(String.self, forKey: .nolPayTransactionNo)
+        stripeClientSecret = try? container.decode(String.self, forKey: .stripeClientSecret)
+        sdkCompleteUrl = try? container.decode(String.self, forKey: .sdkCompleteUrl)
         // For some APMs we receive another value out of the client token `expiration`
         // They may have different values.
         // We understand this should be changed in the future
@@ -181,10 +181,10 @@ struct DecodedJWTToken: Codable {
         // we let `expiration` take the value of our parameter `expDate`
         // we use thorughout the codebase
         if let expDateInt = try? container.decode(Int.self, forKey: .exp) {
-            self.expDate = Date(timeIntervalSince1970: TimeInterval(expDateInt))
+            expDate = Date(timeIntervalSince1970: TimeInterval(expDateInt))
         }
         if let expirationDateInt = try? container.decode(Int.self, forKey: .expiration) {
-            self.expDate = Date(timeIntervalSince1970: TimeInterval(expirationDateInt))
+            expDate = Date(timeIntervalSince1970: TimeInterval(expirationDateInt))
         }
 
         // For some APMs we receive one more value out of the client token `qrCode`
@@ -201,26 +201,26 @@ struct DecodedJWTToken: Codable {
         }
 
         // iPay88
-        self.backendCallbackUrl = try container.decodeIfPresent(String.self, forKey: .backendCallbackUrl)
-        self.primerTransactionId = try container.decodeIfPresent(String.self, forKey: .primerTransactionId)
-        self.iPay88PaymentMethodId = try container.decodeIfPresent(String.self, forKey: .iPay88PaymentMethodId)
-        self.iPay88ActionType = try container.decodeIfPresent(String.self, forKey: .iPay88ActionType)
-        self.supportedCurrencyCode = try container.decodeIfPresent(String.self, forKey: .supportedCurrencyCode)
-        self.supportedCountry = try container.decodeIfPresent(String.self, forKey: .supportedCountry)
+        backendCallbackUrl = try container.decodeIfPresent(String.self, forKey: .backendCallbackUrl)
+        primerTransactionId = try container.decodeIfPresent(String.self, forKey: .primerTransactionId)
+        iPay88PaymentMethodId = try container.decodeIfPresent(String.self, forKey: .iPay88PaymentMethodId)
+        iPay88ActionType = try container.decodeIfPresent(String.self, forKey: .iPay88ActionType)
+        supportedCurrencyCode = try container.decodeIfPresent(String.self, forKey: .supportedCurrencyCode)
+        supportedCountry = try container.decodeIfPresent(String.self, forKey: .supportedCountry)
 
         // Voucher info
         if let dateString = try? container.decode(String.self, forKey: .expiresAt) {
             let dateFormatter = DateFormatter().withVoucherExpirationDateFormat()
-            self.expiresAt = dateFormatter.date(from: dateString)
+            expiresAt = dateFormatter.date(from: dateString)
         }
         // Voucher info date returned in ISO8601
         if let dateString = try? container.decode(String.self, forKey: .expiresAt) {
             let dateFormatter = ISO8601DateFormatter()
             dateFormatter.formatOptions = .withFullDate
-            self.expiresAt = dateFormatter.date(from: dateString)
+            expiresAt = dateFormatter.date(from: dateString)
         }
-        self.reference = try? container.decode(String.self, forKey: .reference)
-        self.entity = try? container.decode(String.self, forKey: .entity)
+        reference = try? container.decode(String.self, forKey: .reference)
+        entity = try? container.decode(String.self, forKey: .entity)
     }
 
     func encode(to encoder: Encoder) throws {

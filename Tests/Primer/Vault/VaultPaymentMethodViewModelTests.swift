@@ -36,7 +36,7 @@ final class VaultPaymentMethodViewModelTests: XCTestCase {
 
         XCTAssertEqual(AppState.current.paymentMethods.count, 0)
 
-        let expectReloadVault = self.expectation(description: "Vault is reloaded")
+        let expectReloadVault = expectation(description: "Vault is reloaded")
         sut.reloadVault { error in
             XCTAssertNotNil(error)
             XCTAssertTrue(error!.localizedDescription.hasPrefix("[invalid-client-token] Client token is not valid"))
@@ -52,7 +52,7 @@ final class VaultPaymentMethodViewModelTests: XCTestCase {
 
         XCTAssertEqual(AppState.current.paymentMethods.count, 0)
 
-        let expectReloadVault = self.expectation(description: "Vault is reloaded")
+        let expectReloadVault = expectation(description: "Vault is reloaded")
         try SDKSessionHelper.test {
             sut.reloadVault { error in
                 XCTAssertNil(error)

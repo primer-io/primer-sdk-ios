@@ -22,7 +22,7 @@ final class JSONLoader {
 extension JSONDecoder {
 
     func withSnakeCaseParsing() -> JSONDecoder {
-        self.keyDecodingStrategy = .convertFromSnakeCase
+        keyDecodingStrategy = .convertFromSnakeCase
         return self
     }
 }

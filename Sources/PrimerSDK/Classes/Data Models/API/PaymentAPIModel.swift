@@ -50,7 +50,7 @@ extension Request.Body.Payment {
         let paymentMethodToken: String
 
         public init(token: String) {
-            self.paymentMethodToken = token
+            paymentMethodToken = token
         }
     }
 
@@ -58,7 +58,7 @@ extension Request.Body.Payment {
         let resumeToken: String
 
         public init(token: String) {
-            self.resumeToken = token
+            resumeToken = token
         }
     }
 
@@ -188,7 +188,7 @@ extension PrimerCheckoutDataPayment {
     public let paymentMethodType: PrimerCheckoutPaymentMethodType
 
     public init(type: PrimerCheckoutPaymentMethodType) {
-        self.paymentMethodType = type
+        paymentMethodType = type
     }
 }
 

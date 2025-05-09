@@ -11,7 +11,7 @@ import XCTest
 final class ClassNameExtensionTests: XCTestCase {
 
     func testClassName() {
-        XCTAssertEqual(self.className, "ClassNameExtensionTests")
+        XCTAssertEqual(className, "ClassNameExtensionTests")
         XCTAssertEqual(ClassNameExtensionTests.className, "ClassNameExtensionTests")
     }
 

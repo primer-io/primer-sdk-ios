@@ -16,8 +16,8 @@ public final class CurrencyLoader: LogReporter {
     private var networkService: CurrencyNetworkServiceProtocol
 
     public init() {
-        self.storage = DefaultCurrencyStorage()
-        self.networkService = CurrencyNetworkService()
+        storage = DefaultCurrencyStorage()
+        networkService = CurrencyNetworkService()
     }
 
     init(storage: CurrencyStorageProtocol, networkService: CurrencyNetworkServiceProtocol) {

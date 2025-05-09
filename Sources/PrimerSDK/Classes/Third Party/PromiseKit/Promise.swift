@@ -69,7 +69,7 @@ internal final class Promise<T>: Thenable, CatchMixin {
         box = EmptyBox()
         let resolver = Resolver(box)
         self.cancellable = cancellable
-        self.rejectIfCancelled = resolver.reject
+        rejectIfCancelled = resolver.reject
         do {
             try body(resolver)
         } catch {

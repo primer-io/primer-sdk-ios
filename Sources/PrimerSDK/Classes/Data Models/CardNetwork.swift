@@ -234,7 +234,7 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     }
 
     public var displayName: String {
-        if let displayName = self.validation?.niceType {
+        if let displayName = validation?.niceType {
             return displayName
         }
 

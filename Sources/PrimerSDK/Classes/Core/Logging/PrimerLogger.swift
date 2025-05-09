@@ -96,7 +96,7 @@ extension PrimerLogger {
                           metadata: PrimerLogMetadata) {
         // Currently we only send logs for debug builds to avoid transmission of PII / PCI data in production
         #if DEBUG
-        guard level.rawValue >= self.logLevel.rawValue else { return }
+        guard level.rawValue >= logLevel.rawValue else { return }
         log(level: level, message: message, userInfo: nil, metadata: metadata)
         #endif
     }

@@ -39,7 +39,7 @@ public class PrimerSimpleCardFormTextFieldView: PrimerTextFieldView {
 
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string) as String
 
-        switch self.isValid?(newText) {
+        switch isValid?(newText) {
         case true:
             validation = .valid
         case false:

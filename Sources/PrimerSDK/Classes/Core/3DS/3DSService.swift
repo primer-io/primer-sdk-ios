@@ -628,7 +628,7 @@ private extension ThreeDSService {
                                 paymentMethodType: paymentMethodType,
                                 userInfo: .errorUserInfoDictionary(),
                                 diagnosticsId: UUID().uuidString,
-                                initProtocolVersion: self.initProtocolVersion?.rawValue,
+                                initProtocolVersion: initProtocolVersion?.rawValue,
                                 errorInfo: Primer3DSErrorInfo(primer3DSError)
                             )
                         )

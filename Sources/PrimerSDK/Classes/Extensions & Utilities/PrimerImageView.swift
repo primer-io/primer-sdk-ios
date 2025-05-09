@@ -13,7 +13,7 @@ extension PrimerImageView {
 
     convenience init(from url: URL, contentMode mode: ContentMode = .scaleAspectFit) {
         self.init()
-        self.contentMode = mode
+        contentMode = mode
         URLSession.shared.dataTask(with: url) { data, response, error in
             guard
                 let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,

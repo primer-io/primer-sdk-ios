@@ -62,7 +62,7 @@ public final class PrimerGenericFieldView: PrimerTextFieldView {
             userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString
         ))
-        validation = (self.isValid?(primerTextField.internalText?.withoutWhiteSpace ?? "") ?? false) ? valid : invalid
+        validation = (isValid?(primerTextField.internalText?.withoutWhiteSpace ?? "") ?? false) ? valid : invalid
 
         switch validation {
         case .valid:

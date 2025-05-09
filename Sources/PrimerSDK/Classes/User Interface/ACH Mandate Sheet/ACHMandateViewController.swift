@@ -19,7 +19,7 @@ final class ACHMandateViewController: PrimerViewController {
     init(delegate: ACHMandateDelegate, mandateData: PrimerStripeOptions.MandateData) {
         self.mandateData = mandateData
         self.delegate = delegate
-        self.mandateViewModel = ACHMandateViewModel(mandateData: mandateData)
+        mandateViewModel = ACHMandateViewModel(mandateData: mandateData)
         super.init()
     }
 
@@ -33,7 +33,7 @@ final class ACHMandateViewController: PrimerViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if let parentVC = self.parent as? PrimerContainerViewController {
+        if let parentVC = parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = true
         }
 
@@ -44,7 +44,7 @@ final class ACHMandateViewController: PrimerViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let parentVC = self.parent as? PrimerContainerViewController {
+        if let parentVC = parent as? PrimerContainerViewController {
             parentVC.mockedNavigationBar.hidesBackButton = false
         }
 

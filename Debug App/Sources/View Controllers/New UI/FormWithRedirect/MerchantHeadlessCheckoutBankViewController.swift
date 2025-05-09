@@ -88,20 +88,20 @@ extension MerchantHeadlessCheckoutBankViewController: PrimerHeadlessErrorableDel
                 message += (error.errorDescription ?? error.localizedDescription) + "\n"
             }
             hideLoadingOverlay()
-            self.showAlert(title: "Validation Error", message: "\(message)")
+            showAlert(title: "Validation Error", message: "\(message)")
         case .error(error: let error):
-            self.showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
+            showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
             hideLoadingOverlay()
         }
     }
 
     func didReceiveError(error: PrimerError) {
-        self.showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
+        showAlert(title: "Error", message: error.errorDescription ?? error.localizedDescription)
     }
 
     func didReceiveStep(step: PrimerHeadlessStep) {
         guard let step = step as? BanksStep else {
-            self.showAlert(title: "Error", message: "Received wrong step of \(step)")
+            showAlert(title: "Error", message: "Received wrong step of \(step)")
             return
         }
         switch step {

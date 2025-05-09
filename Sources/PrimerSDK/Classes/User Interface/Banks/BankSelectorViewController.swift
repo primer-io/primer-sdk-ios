@@ -22,7 +22,7 @@ final class BankSelectorViewController: PrimerFormViewController {
     init(viewModel: BankSelectorTokenizationViewModel) {
         self.viewModel = viewModel
         super.init()
-        self.titleImage = viewModel.uiModule.invertedLogo
+        titleImage = viewModel.uiModule.invertedLogo
     }
 
     override func viewDidLoad() {
@@ -32,7 +32,7 @@ final class BankSelectorViewController: PrimerFormViewController {
             action: .view,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.viewModel.config.type,
+                paymentMethodType: viewModel.config.type,
                 url: nil),
             extra: nil,
             objectType: .view,
@@ -81,11 +81,11 @@ final class BankSelectorViewController: PrimerFormViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if self.viewModel.tableView.superview == nil {
-            let lastView = self.verticalStackView.arrangedSubviews.last!
-            self.verticalStackView.removeArrangedSubview(lastView)
-            self.verticalStackView.addArrangedSubview(self.viewModel.tableView)
-            self.viewModel.tableView.translatesAutoresizingMaskIntoConstraints = false
+        if viewModel.tableView.superview == nil {
+            let lastView = verticalStackView.arrangedSubviews.last!
+            verticalStackView.removeArrangedSubview(lastView)
+            verticalStackView.addArrangedSubview(viewModel.tableView)
+            viewModel.tableView.translatesAutoresizingMaskIntoConstraints = false
         }
     }
 
