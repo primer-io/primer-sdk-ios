@@ -2065,6 +2065,9 @@
    <Group
       location = "group:Tests"
       name = "Tests">
+      <FileRef
+         location = "group:DITests.swift">
+      </FileRef>
       <Group
          location = "group:Klarna"
          name = "Klarna">
