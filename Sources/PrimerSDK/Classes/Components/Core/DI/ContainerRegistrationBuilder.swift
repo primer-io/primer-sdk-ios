@@ -31,12 +31,12 @@ protocol ContainerRegistrationBuilder: ContainerProtocol {
 extension ContainerRegistrationBuilder {
     /// Register a dependency by type with default retention policy
     func register<T>(type: T.Type, name: String? = nil, builder: @escaping (ContainerProtocol) throws -> T) {
-        _register(type: type, name: name, with: .default, builder: builder)
+        _register(type: type, name: name, with: .transient, builder: builder)
     }
 
     /// Register a singleton (strongly held) dependency by type
     func singleton<T>(type: T.Type, name: String? = nil, builder: @escaping (ContainerProtocol) throws -> T) {
-        _register(type: type, name: name, with: .strong, builder: builder)
+        _register(type: type, name: name, with: .singleton, builder: builder)
     }
 
     /// Register a weakly held dependency by type

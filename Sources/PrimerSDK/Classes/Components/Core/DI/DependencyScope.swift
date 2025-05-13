@@ -2,20 +2,13 @@
 //  DependencyScope.swift
 //
 //
-//  Created by Boris on 9. 5. 2025..
-//
-
-//
-//  DependencyScope.swift
-//  PrimerSDK
-//
-//  Created by Boris on 7. 5. 2025.
+//  Created by Boris on 9. 5. 2025.
 //
 
 import Foundation
 
 /// Protocol defining a scoped dependency container lifecycle
-protocol DependencyScope: AnyObject, LogReporter {
+public protocol DependencyScope: AnyObject {
     /// Unique identifier for the scope
     var scopeId: String { get }
 
@@ -26,18 +19,18 @@ protocol DependencyScope: AnyObject, LogReporter {
     func cleanupScope() async
 }
 
-extension DependencyScope {
+public extension DependencyScope {
     /// Register the scope with the global container
     func register() async {
-        logger.info(message: "Registering scope: \(scopeId)")
-        let container = DIContainer.createContainer()
+        print("Registering scope: \(scopeId)")
+        let container = Container()
         await setupContainer()
         await DIContainer.setScopedContainer(container, for: scopeId)
     }
 
     /// Unregister the scope from the global container
     func unregister() async {
-        logger.info(message: "Unregistering scope: \(scopeId)")
+        print("Unregistering scope: \(scopeId)")
         await DIContainer.removeScopedContainer(for: scopeId)
         await cleanupScope()
     }
@@ -47,8 +40,8 @@ extension DependencyScope {
     /// - Throws: ContainerError if the scope's container isn't available
     func getContainer() async throws -> ContainerProtocol {
         guard let container = await DIContainer.scopedContainer(for: scopeId) else {
-            logger.error(message: "Missing container for scope: \(scopeId)")
-            throw ContainerError.missingFactoryMethod(ContainerProtocol.self, name: "scope:\(scopeId)")
+            print("Missing container for scope: \(scopeId)")
+            throw ContainerError.scopeNotFound(scopeId)
         }
         return container
     }

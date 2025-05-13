@@ -2,72 +2,77 @@
 //  ContainerProtocol.swift
 //
 //
-//  Created by Boris on 7. 5. 2025..
+//  Created by Boris on 7. 5. 2025.
 //
 
 import Foundation
 
 /// Protocol defining the core functionality of a dependency injection container
-protocol ContainerProtocol {
-    /// Register a dependency with an optional name and specific retain policy
+public protocol ContainerProtocol: Sendable {
+    // MARK: - Registration API
+
+    /// Register a dependency with the container using the new fluent API
+    /// - Parameter type: The type to register
+    /// - Returns: A registration builder for configuring the registration
+    func register<T>(_ type: T.Type) -> any RegistrationBuilder<T>
+
+    /// Unregister a dependency from the container
     /// - Parameters:
-    ///   - name: Optional identifier to distinguish between multiple implementations of the same type
-    ///   - policy: How the container should retain the instance
-    ///   - builder: Factory closure that creates the dependency
-    func register<T>(name: String?, with policy: ContainerRetainPolicy, builder: @escaping (ContainerProtocol) throws -> T)
+    ///   - type: The type to unregister
+    ///   - name: Optional identifier to distinguish between multiple implementations
+    /// - Returns: The container instance for method chaining
+    func unregister<T>(_ type: T.Type, name: String?) -> Self
+
+    // MARK: - Resolution API
 
     /// Resolve a dependency with an optional name
-    /// - Parameter name: Optional identifier to distinguish between multiple implementations
-    /// - Returns: The resolved dependency
-    /// - Throws: ContainerError if resolution fails
-    func resolve<T>(name: String?) throws -> T!
-
-    /// Resolve a dependency with explicit type
     /// - Parameters:
     ///   - type: The type to resolve
     ///   - name: Optional identifier to distinguish between multiple implementations
     /// - Returns: The resolved dependency
     /// - Throws: ContainerError if resolution fails
-    func resolveWithType<T>(_ type: T.Type, name: String?) throws -> T!
+    func resolve<T>(_ type: T.Type, name: String?) async throws -> T
 
     /// Resolve all dependencies conforming to a specific protocol
-    /// - Parameters:
-    ///   - protocol: The protocol to match
+    /// - Parameter type: The protocol type to match
     /// - Returns: Array of all matching dependencies
-    func resolveAll<T>(conforming protocol: T.Type) -> [T]
+    func resolveAll<T>(_ type: T.Type) async -> [T]
+
+    // MARK: - Container Lifecycle
 
     /// Reset all dependencies except those specified
     /// - Parameter ignoreDependencies: Types to preserve during reset
-    func reset<T>(ignoreDependencies: [T.Type])
-
-    /// Register a factory for creating instances with parameters
-    /// - Parameter factory: The factory to register
-    func registerFactory<F: Factory>(_ factory: F)
+    func reset<T>(ignoreDependencies: [T.Type]) async
 }
 
-extension ContainerProtocol {
-    /// Convenience method to register a dependency with default retention policy
-    func register<T>(name: String? = nil, builder: @escaping (ContainerProtocol) throws -> T) {
-        register(name: name, with: .default, builder: builder)
-    }
+/// Fluent builder for configuring dependency registrations
+public protocol RegistrationBuilder<T> {
+    associatedtype T
 
-    /// Convenience method to register a dependency with default name
-    func register<T>(with policy: ContainerRetainPolicy, builder: @escaping (ContainerProtocol) throws -> T) {
-        register(name: nil, with: policy, builder: builder)
-    }
+    /// Add a name to the registration
+    /// - Parameter name: The name to identify this registration
+    /// - Returns: The builder for method chaining
+    func named(_ name: String) -> Self
 
-    /// Convenience method to resolve a dependency with default name
-    func resolve<T>() throws -> T! {
-        try resolve(name: nil)
-    }
+    /// Register the dependency as a singleton (strongly retained)
+    /// - Returns: The builder for method chaining
+    func asSingleton() -> Self
 
-    /// Convenience method to resolve a dependency with explicit type and default name
-    func resolveWithType<T>(_ type: T.Type) throws -> T! {
-        try resolveWithType(type, name: nil)
-    }
+    /// Register the dependency with weak retention
+    /// - Returns: The builder for method chaining
+    func asWeak() -> Self
 
-    /// Register a module of related dependencies
-    func module(_ name: String, setup: (ContainerProtocol) -> Void) {
-        setup(self)
-    }
+    /// Register the dependency with transient (new instance each time) retention
+    /// - Returns: The builder for method chaining
+    func asTransient() -> Self
+
+    /// Set the factory closure for creating the instance
+    /// - Parameter factory: The factory closure
+    /// - Returns: The container for method chaining
+    func with(_ factory: @escaping (any ContainerProtocol) async throws -> T) -> any ContainerProtocol
+
+    /// Set a synchronous factory closure for creating the instance
+    /// - Parameter factory: The synchronous factory closure
+    /// - Returns: The container for method chaining
+    func with(_ factory: @escaping (any ContainerProtocol) throws -> T) -> any ContainerProtocol
 }
