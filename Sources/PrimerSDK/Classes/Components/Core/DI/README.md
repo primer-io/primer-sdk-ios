@@ -1,161 +1,67 @@
-//
-//  defining.swift
-//  
-//
-//  Created by Boris on 7. 5. 2025..
-//
+# PrimerSDK DI Container Fix
 
+## Issues Resolved
 
-# Swift DI Framework
+This fix addresses the following issues in the Dependency Injection container implementation:
 
-This is a comprehensive Dependency Injection framework for Swift applications, designed to provide clean, flexible, and testable dependency management.
+1. **Protocol Conformance Issue:** Extension methods like `singleton` and `module` weren't visible when using `any ContainerRegistrationBuilder`. This is because protocol extensions aren't visible through existential types (when using `any`).
 
-## Key Features
+2. **Async Context Issue:** Async property access was happening in functions that don't support concurrency.
 
-- **Thread-safe** dependency resolution
-- **Multiple retention policies** (default, strong, weak)
-- **Named dependencies** for multiple implementations of the same protocolfork
-- **Factory support** for creating instances with runtime parameters
-- **Circular dependency detection**
-- **Improved error handling** with multiple strategies
-- **Modular registration** with a clean DSL
-- **Hybrid approach** supporting both property wrapper and constructor injection
-- **Testing support** with container swapping
+3. **Nil Safety Issue:** Incompatible nil usage with ContainerProtocol.
 
-## Files Overview
+## Changes Made
 
-- **ContainerProtocol.swift** - Core protocol defining DI container functionality
-- **ContainerRetainPolicy.swift** - Enum defining retention policies
-- **ContainerError.swift** - Error types for the DI system
-- **Container.swift** - Main container implementation
-- **DIContainer.swift** - Global container management
-- **Injected.swift** - Property wrapper for dependency injection
-- **Factory.swift** - Protocol for parameterized instance creation
-- **DIInjectable.swift** - Protocol for constructor-based injection
-- **ExampleUsage.swift** - Comprehensive examples
+### 1. Fixed DIContainer.swift:
 
-## Usage Examples
+- **Protocol Conformance Issue:**
+  - Instead of trying to use extension methods through the existential type, we now cast to the concrete `Container` type and directly use its internal registration methods.
+  - Replaced the module pattern with direct method calls to separate registration functions for better organization.
 
-### 1. Application Setup
+- **Async Context Issue:**
+  - Added proper error handling in the `currentSync` getter to safely handle async-to-sync conversion.
 
-Set up your container at application launch:
+- **Nil Safety Issue:**
+  - Modified the `setContainer` setter to handle the nil case correctly, preserving the existing container if available or creating a new one if needed.
+
+### 2. Created missing TypeKey.swift:
+  - Implemented the missing `TypeKey` structure that is referenced in the code but was not included in the provided files.
+
+## Key Implementation Details
+
+1. **Modular Registration:**
+   - Replaced the `module` pattern with direct method calls to separate registration functions for better organization and clarity.
+
+2. **Concrete Type Usage:**
+   - Switched from using protocol existential types with extensions to concrete type references.
+
+3. **Proper Error Handling:**
+   - Added proper try/catch blocks around async-to-sync conversions.
+
+4. **Nil Safety:**
+   - Improved handling of nil values to prevent crashes.
+
+## Usage
+
+To use this improved implementation:
+
+1. Copy the fixed files to your project
+2. Initialize your container in your app delegate:
 
 ```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     // Set up the main container
-    DIContainer.setupMainContainer()
+    Task {
+        await DIContainer.setupMainContainer()
+    }
     return true
 }
 ```
 
-### 2. Dependency Registration
+## SOLID Principles Applied
 
-Register your dependencies in modules:
-
-```swift
-container.module("Services") { container in
-    // Register AuthService as a singleton
-    container.register(AuthServiceProtocol.self, with: .strong) { _ in
-        AuthService()
-    }
-    
-    // Register with a name (for multiple implementations)
-    container.register(NetworkMonitorProtocol.self, name: "cellular") { _ in
-        CellularNetworkMonitor()
-    }
-}
-```
-
-### 3. Property Wrapper Injection
-
-Use the `@Injected` property wrapper for simple cases:
-
-```swift
-class AuthService: AuthServiceProtocol {
-    @Injected private var networkMonitor: NetworkMonitorProtocol
-    
-    // For named dependencies:
-    @Injected(name: "cellular") private var cellularMonitor: NetworkMonitorProtocol
-    
-    // With error handling:
-    @Injected(errorStrategy: .useDefault(MockNetworkMonitor())) private var safeMonitor: NetworkMonitorProtocol
-}
-```
-
-### 4. Constructor Injection
-
-Use constructor injection for better testability:
-
-```swift
-class ProfileViewModel: DIViewModel {
-    private let userRepository: UserRepositoryProtocol
-    private let authService: AuthServiceProtocol
-    
-    required init(resolver: ContainerProtocol) {
-        self.userRepository = try! resolver.resolve()
-        self.authService = try! resolver.resolve()
-        super.init(resolver: resolver)
-    }
-    
-    // For testing
-    init(userRepository: UserRepositoryProtocol, authService: AuthServiceProtocol) {
-        self.userRepository = userRepository
-        self.authService = authService
-        super.init(resolver: DIContainer.current!)
-    }
-}
-
-// Usage
-let viewModel = ProfileViewModel.create() // Uses DIContainer.current
-```
-
-### 5. Factory Pattern
-
-Create instances with parameters:
-
-```swift
-protocol UserFactoryProtocol: Factory where Product == User, Params == (name: String, email: String) {}
-
-class UserFactory: UserFactoryProtocol {
-    func create(with params: (name: String, email: String)) -> User {
-        return User(id: UUID().uuidString, name: params.name, email: params.email)
-    }
-}
-
-// Usage
-let userFactory: UserFactoryProtocol = try container.resolve()
-let user = userFactory.create(with: (name: "John", email: "john@example.com"))
-
-// Or directly:
-let user: User = try container.create(with: (name: "John", email: "john@example.com"))
-```
-
-### 6. Testing with Container Swapping
-
-Easily swap containers for testing:
-
-```swift
-func testWithTemporaryContainer() {
-    // Create a test container
-    let testContainer = Container()
-    
-    // Register test dependencies
-    testContainer.register(UserRepositoryProtocol.self) { _ in MockUserRepository() }
-    
-    // Use the withContainer method
-    DIContainer.withContainer(testContainer) {
-        let viewModel = ProfileViewModel.create()
-        // Test with container-created viewModel
-    }
-}
-```
-
-## Best Practices
-
-1. Prefer constructor injection for better testability and explicit dependencies
-2. Use the property wrapper for simple cases or when modifying existing code
-3. Use strong retention only for true singletons
-4. Group related registrations in modules
-5. Create dedicated factory types for complex object creation
-6. Use named dependencies sparingly and with clear naming
-7. When testing, prefer direct dependency mocking over container swapping
+- **Single Responsibility:** Each class and method has a clear, single purpose
+- **Open/Closed:** The container is extensible without modification (new dependency types can be added)
+- **Liskov Substitution:** ContainerProtocol implementations are substitutable
+- **Interface Segregation:** Protocols are focused and minimal
+- **Dependency Inversion:** The system depends on abstractions (protocols) not concrete implementations

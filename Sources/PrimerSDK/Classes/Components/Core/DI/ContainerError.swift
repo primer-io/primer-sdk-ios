@@ -2,32 +2,60 @@
 //  ContainerError.swift
 //
 //
-//  Created by Boris on 7. 5. 2025..
+//  Created by Boris on 7. 5. 2025.
 //
 
 import Foundation
 
 /// Errors that can occur during dependency resolution
-enum ContainerError: LocalizedError {
+public enum ContainerError: Error, Sendable {
     /// The requested dependency was not registered
-    case missingFactoryMethod(Any, name: String?)
+    case dependencyNotRegistered(TypeKey)
+
     /// A circular dependency was detected
-    case circularDependency(Any, name: String?)
+    case circularDependency(TypeKey, path: [TypeKey])
+
     /// A factory returned an invalid type
-    case invalidFactoryReturn(expected: Any, actual: Any)
+    case invalidTypeReturned(expected: TypeKey, actual: Any.Type)
 
-    var errorDescription: String? {
+    /// The container has been terminated and is no longer available
+    case containerUnavailable
+
+    /// The requested scope was not found
+    case scopeNotFound(String)
+
+    /// The dependency could not be cast to the requested type
+    case typeCastFailed(TypeKey, Any.Type)
+
+    /// Factory failed with an error
+    case factoryFailed(TypeKey, underlyingError: Error)
+}
+
+// MARK: - LocalizedError Implementation
+extension ContainerError: LocalizedError {
+    public var errorDescription: String? {
         switch self {
-        case let .missingFactoryMethod(instanceType, name):
-            let nameInfo = name != nil ? " (named: \(name!))" : ""
-            return "Missing factory method for type: \(instanceType)\(nameInfo)"
+        case let .dependencyNotRegistered(key):
+            return "Dependency not registered: \(key)"
 
-        case let .circularDependency(instanceType, name):
-            let nameInfo = name != nil ? " (named: \(name!))" : ""
-            return "Circular dependency detected while resolving: \(instanceType)\(nameInfo)"
+        case let .circularDependency(key, path):
+            let pathString = path.map { "\($0)" }.joined(separator: " → ")
+            return "Circular dependency detected while resolving \(key). Resolution path: \(pathString)"
 
-        case let .invalidFactoryReturn(expected, actual):
+        case let .invalidTypeReturned(expected, actual):
             return "Factory returned invalid type: expected \(expected), got \(actual)"
+
+        case .containerUnavailable:
+            return "The container has been terminated and is no longer available"
+
+        case let .scopeNotFound(scopeId):
+            return "Scope not found: \(scopeId)"
+
+        case let .typeCastFailed(key, type):
+            return "Could not cast resolved dependency \(key) to type \(type)"
+
+        case let .factoryFailed(key, error):
+            return "Factory for \(key) failed with error: \(error.localizedDescription)"
         }
     }
 }

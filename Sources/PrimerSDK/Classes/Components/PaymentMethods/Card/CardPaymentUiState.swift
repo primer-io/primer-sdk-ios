@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 /**
  * UI state representation for card payment form.

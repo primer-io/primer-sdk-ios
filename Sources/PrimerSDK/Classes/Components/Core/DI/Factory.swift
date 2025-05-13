@@ -2,19 +2,19 @@
 //  Factory.swift
 //
 //
-//  Created by Boris on 7. 5. 2025..
+//  Created by Boris on 7. 5. 2025.
 //
 
 import Foundation
 
 /// Protocol for creating parameterized instances
-protocol Factory {
+public protocol Factory: Sendable {
     /// The type of object the factory produces
     associatedtype Product
-    
+
     /// The type of parameters needed to create the product
     associatedtype Params
-    
+
     /// Create a product instance with the given parameters
     /// - Parameter params: Parameters needed to create the instance
     /// - Returns: The created product instance
@@ -22,10 +22,10 @@ protocol Factory {
 }
 
 /// Protocol for factories with no parameters
-protocol SimpleFactory {
+public protocol SimpleFactory: Sendable {
     /// The type of object the factory produces
     associatedtype Product
-    
+
     /// Create a product instance
     /// - Returns: The created product instance
     func create() -> Product
@@ -33,29 +33,21 @@ protocol SimpleFactory {
 
 /// Extension to make any factory with Void parameters conform to SimpleFactory
 extension Factory where Params == Void {
-    func create() -> Product {
+    public func create() -> Product {
         return create(with: ())
     }
 }
 
 /// Extension to the container to support resolving factories
-extension ContainerProtocol {
+public extension ContainerProtocol {
     /// Resolve a factory from the container
     /// - Parameter name: Optional name to distinguish between multiple factories
     /// - Returns: The resolved factory
     /// - Throws: ContainerError if resolution fails
-    func resolveFactory<F>(name: String? = nil) throws -> F where F: Factory {
-        return try resolve(name: name)
+    func resolveFactory<F>(name: String? = nil) async throws -> F where F: Factory {
+        return try await resolve(F.self, name: name)
     }
-    
-    /// Resolve a simple factory from the container
-    /// - Parameter name: Optional name to distinguish between multiple factories
-    /// - Returns: The resolved factory
-    /// - Throws: ContainerError if resolution fails
-    func resolveSimpleFactory<F>(name: String? = nil) throws -> F where F: SimpleFactory {
-        return try resolve(name: name)
-    }
-    
+
     /// Create a product directly using a factory
     /// - Parameters:
     ///   - factoryType: The type of factory to use
@@ -63,9 +55,9 @@ extension ContainerProtocol {
     ///   - name: Optional name to distinguish between multiple factories
     /// - Returns: The created product
     /// - Throws: ContainerError if resolution fails
-    func create<F, P, T>(factoryType: F.Type, with params: P, name: String? = nil) throws -> T
-        where F: Factory, F.Product == T, F.Params == P {
-        let factory: F = try resolve(name: name)
+    func create<F, P, T>(factoryType: F.Type, with params: P, name: String? = nil) async throws -> T
+    where F: Factory, F.Product == T, F.Params == P {
+        let factory: F = try await resolve(F.self, name: name)
         return factory.create(with: params)
     }
 
@@ -75,9 +67,9 @@ extension ContainerProtocol {
     ///   - name: Optional name to distinguish between multiple factories
     /// - Returns: The created product
     /// - Throws: ContainerError if resolution fails
-    func create<F, T>(factoryType: F.Type, name: String? = nil) throws -> T
-        where F: SimpleFactory, F.Product == T {
-        let factory: F = try resolve(name: name)
+    func create<F, T>(factoryType: F.Type, name: String? = nil) async throws -> T
+    where F: SimpleFactory, F.Product == T {
+        let factory: F = try await resolve(F.self, name: name)
         return factory.create()
     }
 }

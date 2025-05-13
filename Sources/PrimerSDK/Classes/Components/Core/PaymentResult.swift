@@ -5,6 +5,8 @@
 //  Created by Boris on 6.2.25..
 //
 
+import Foundation
+
 /// Payment result model
 public struct PaymentResult {
     let transactionId: String
