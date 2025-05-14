@@ -657,16 +657,6 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         }
     }
 
-    func configurePayButton(cardNetwork: CardNetwork?) {
-        var amount: Int = AppState.current.amount ?? 0
-
-        if let surcharge = cardNetwork?.surcharge {
-            amount += surcharge
-        }
-
-        configurePayButton(amount: amount)
-    }
-
     func configurePayButton(amount: Int) {
         DispatchQueue.main.async {
             // Only in a checkout intent and when currency is set
