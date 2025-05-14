@@ -15,21 +15,21 @@ protocol ACHAnalyticsEventsRecordable {
 
 enum ACHAnalyticsEvents: ACHAnalyticsEventsRecordable {
     case stripe
-    
+
     var startMethod: String {
         switch self {
         case .stripe:
             return "StripeAchUserDetailsComponent.start()"
         }
     }
-    
+
     var submitMethod: String {
         switch self {
         case .stripe:
             return "StripeAchUserDetailsComponent.submit()"
         }
     }
-    
+
     var updateCollectedData: String {
         switch self {
         case .stripe:

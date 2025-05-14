@@ -1,6 +1,6 @@
 //
 //  PayPalTokenizationViewModelTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 28/05/2024.
 //
@@ -141,13 +141,13 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
         }
 
         let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        tokenizationService.onTokenize = { body in
+        tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
             return Promise.fulfilled(self.tokenizationResponseBody)
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
-        createResumePaymentService.onCreatePayment = { body in
+        createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
         }
@@ -166,7 +166,7 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
             expectCheckoutDidCompletewithData
         ], timeout: 20.0, enforceOrder: true)
     }
-    
+
     // MARK: Helpers
 
     var tokenizationResponseBody: Response.Body.Tokenization {
@@ -209,12 +209,8 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
                                                             countryCode: "shipping_country_code",
                                                             postalCode: "shipping_postal_code")),
                      customerId: "customer_id",
-                     dateStr: nil,
-                     order: nil,
                      orderId: "order_id",
-                     requiredAction: nil,
-                     status: .success,
-                     paymentFailureReason: nil)
+                     status: .success)
     }
 }
 
@@ -243,7 +239,7 @@ class MockPayPalService: PayPalServiceProtocol {
             completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
     }
-    
+
     // MARK: confirmBillingAgreement
 
     var onConfirmBillingAgreement: (() -> Response.Body.PayPal.ConfirmBillingAgreement)?

@@ -86,8 +86,8 @@ final class CardValidationServiceTests: XCTestCase {
         let cardNumber = "552266117788"
 
         apiClient.results[String(cardNumber.prefix(self.maxBinLength))] = .init(networks: [
-            .init(displayName: "Visa", value: "VISA"),
-            .init(displayName: "Mastercard", value: "MASTERCARD")
+            .init(value: "VISA"),
+            .init(value: "MASTERCARD")
         ])
 
         self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
@@ -128,13 +128,13 @@ final class CardValidationServiceTests: XCTestCase {
         let altCardNumber = "552366117788"
 
         apiClient.results[String(cardNumber.prefix(self.maxBinLength))] = .init(networks: [
-            .init(displayName: "Visa", value: "VISA"),
-            .init(displayName: "Cartes Bancaires", value: "CARTES_BANCAIRES")
+            .init(value: "VISA"),
+            .init(value: "CARTES_BANCAIRES")
         ])
 
         apiClient.results[String(altCardNumber.prefix(self.maxBinLength))] = .init(networks: [
-            .init(displayName: "Mastercard", value: "MASTERCARD"),
-            .init(displayName: "Cartes Bancaires", value: "CARTES_BANCAIRES")
+            .init(value: "MASTERCARD"),
+            .init(value: "CARTES_BANCAIRES")
         ])
 
         self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
@@ -184,9 +184,9 @@ networks: \(networks.detectedCardNetworks.items.count)
         let cardNumber = "552266117788"
 
         apiClient.results[String(cardNumber.prefix(self.maxBinLength))] = .init(networks: [
-            .init(displayName: "Visa", value: "VISA"),
-            .init(displayName: "Mastercard", value: "MASTERCARD"),
-            .init(displayName: "Cartes Bancaires", value: "CARTES_BANCAIRES")
+            .init(value: "VISA"),
+            .init(value: "MASTERCARD"),
+            .init(value: "CARTES_BANCAIRES")
         ])
 
         self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,
@@ -232,7 +232,7 @@ networks: \(networks.detectedCardNetworks.items.count)
         let cardNumber = "552266117788"
 
         apiClient.results[String(cardNumber.prefix(self.maxBinLength))] = .init(networks: [
-            .init(displayName: "Cartes Bancaires", value: "CARTES_BANCAIRES")
+            .init(value: "CARTES_BANCAIRES")
         ])
 
         self.binDataService = DefaultCardValidationService(rawDataManager: rawDataManager,

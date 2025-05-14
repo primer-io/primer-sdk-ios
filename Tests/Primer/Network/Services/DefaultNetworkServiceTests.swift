@@ -21,7 +21,7 @@ class MockRequestDispatcher: RequestDispatcher {
         }
         return responseModel
     }
-    
+
     func dispatch(request: URLRequest, completion: @escaping PrimerSDK.DispatcherCompletion) -> (any PrimerSDK.PrimerCancellable)? {
         if let error = error {
             completion(.failure(error))
@@ -91,7 +91,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
                 XCTAssertNil(model.keys)
                 XCTAssertTrue(model.checkoutModules!.isEmpty)
                 expectation.fulfill()
-            case .failure(_):
+            case .failure:
                 XCTFail(); return
             }
         }
@@ -112,7 +112,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken, requestParameters: nil)
         let cancellable = defaultNetworkService.request(endpoint) { (result: APIResult<PrimerAPIConfiguration>) in
             switch result {
-            case .success(_):
+            case .success:
                 XCTFail(); return
             case .failure(let error):
                 switch error as! PrimerSDK.InternalError {
@@ -141,9 +141,9 @@ final class DefaultNetworkServiceTests: XCTestCase {
         let endpoint = PrimerAPI.redirect(clientToken: Mocks.decodedJWTToken, url: URL(string: metadata.responseUrl!)!)
         let cancellable = defaultNetworkService.request(endpoint) { (result: APIResult<SuccessResponse>) in
             switch result {
-            case .success(_):
+            case .success:
                 expectation.fulfill()
-            case .failure(_):
+            case .failure:
                 XCTFail(); return
             }
         }
@@ -163,9 +163,9 @@ final class DefaultNetworkServiceTests: XCTestCase {
         let endpoint = PrimerAPI.redirect(clientToken: Mocks.decodedJWTToken, url: URL(string: metadata.responseUrl!)!)
         let cancellable = defaultNetworkService.request(endpoint) { (result: APIResult<SuccessResponse>) in
             switch result {
-            case .success(_):
+            case .success:
                 expectation.fulfill()
-            case .failure(_):
+            case .failure:
                 XCTFail(); return
             }
         }
@@ -183,7 +183,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken, requestParameters: nil)
         let cancellable = defaultNetworkService.request(endpoint) { (result: APIResult<PrimerAPIConfiguration>) in
             switch result {
-            case .success(_):
+            case .success:
                 XCTFail("Expected failure due to network error")
             case .failure(let error):
                 XCTAssertEqual((error as NSError).domain, NSURLErrorDomain)
@@ -220,7 +220,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
                 XCTAssertEqual(model.coreUrl, "https://core_url")
                 XCTAssertEqual(headers?["X-Test-Key"], "X-Test-Value")
                 expectation.fulfill()
-            case .failure(_):
+            case .failure:
                 XCTFail(); return
             }
         }

@@ -1,6 +1,6 @@
 //
 //  WebRedirectPaymentMethodTokenizationViewModelTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 22/05/2024.
 //
@@ -128,7 +128,7 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
         }
 
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        tokenizationService.onTokenize = { body in
+        tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
             return Promise.fulfilled(.init(analyticsId: "analytics_id",
                                            id: "id",
@@ -144,26 +144,22 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
-        createResumePaymentService.onCreatePayment = { body in
+        createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return .init(id: "id",
                          paymentId: "payment_id",
                          amount: 123,
                          currencyCode: "GBP",
-                         customer: nil,
                          customerId: "customer_id",
-                         dateStr: nil,
-                         order: nil,
                          orderId: "order_id",
                          requiredAction: .init(clientToken: MockAppState.mockClientTokenWithRedirect,
                                                name: .checkout,
                                                description: "description"),
-                         status: .success,
-                         paymentFailureReason: nil)
+                         status: .success)
         }
 
         let expectDidShowPaymentMethod = self.expectation(description: "Payment method was shown in web view")
-        uiDelegate.onUIDidShowPaymentMethod = { type in
+        uiDelegate.onUIDidShowPaymentMethod = { _ in
             XCTAssertNotNil(self.sut.webViewController?.delegate)
             expectDidShowPaymentMethod.fulfill()
         }
@@ -177,14 +173,9 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
                          paymentId: "payment_id",
                          amount: 1234,
                          currencyCode: "GBP",
-                         customer: nil,
-                         customerId: "customer_id", 
-                         dateStr: nil,
-                         order: nil,
+                         customerId: "customer_id",
                          orderId: "order_id",
-                         requiredAction: nil, 
-                         status: .success,
-                         paymentFailureReason: nil)
+                         status: .success)
         }
 
         let expectCheckoutDidCompletewithData = self.expectation(description: "")

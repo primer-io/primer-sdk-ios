@@ -65,7 +65,6 @@ final class MerchantResultViewController: UIViewController {
             responseTextView.text = "[\"No checkout data or error received\"]"
         }
 
-        
         responseStatus.font = .systemFont(ofSize: 17, weight: .medium)
         responseStatus.textColor = self.error == nil ? .green : .red
         responseStatus.text = self.error == nil ? "Success" : "Failure"

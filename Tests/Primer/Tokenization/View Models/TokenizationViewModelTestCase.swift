@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 23/05/2024.
 //
@@ -63,12 +63,7 @@ extension TokenizationViewModelTestCase {
                                                             countryCode: "shipping_country_code",
                                                             postalCode: "shipping_postal_code")),
                      customerId: "customer_id",
-                     dateStr: nil,
-                     order: nil,
                      orderId: "order_id",
-                     requiredAction: nil,
-                     status: .success,
-                     paymentFailureReason: nil)
+                     status: .success)
     }
 }
-

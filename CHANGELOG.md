@@ -1,3 +1,59 @@
+## 2.37.0 (2025-05-12)
+
+### Feat
+
+- **Payment**: added new payment result property (checkoutOutcome) (#1161)
+- Support Add New Card in card form flow (#1154)
+
+### Fix
+
+- **NolPay**: added null check for PrimerNolPayProtocol (#1155)
+
+### Refactor
+
+- Remove unused code from Data Models (#1158)
+- Modularise Primer3DS initialisation (#1160)
+- Remove Unused Code from Extensions (#1157)
+
+## 2.36.1 (2025-04-24)
+
+### Fix
+
+- Klarna Popup Dismissal Triggering authorizationFailed (#1147)
+- Fix RawDataManager Callback Triggering  (#1145)
+
+## 2.36.0 (2025-03-24)
+
+### Feat
+
+- Update default api version to 2.4 (#1135)
+
+### Fix
+
+- Currency formatting incorrect in CTA (#1133)
+- **currency-formatting**: Ensure French locale places symbol on the right & add more unit tests
+
+## 2.35.3 (2025-03-18)
+
+### Fix
+
+- Decode errors properly for 2xx response codes (#1131)
+
+## 2.35.2 (2025-02-25)
+
+### Fix
+
+- Do not track image failures in analytics (#1122)
+- Record retry event only if we have one or more retries (#1123)
+- Fix Additional Fees text in Drop-in (#1118)
+
+## 2.35.1 (2025-02-11)
+
+### Fix
+
+- Update /payment and /resume timeouts to 60s (#1112)
+- Card Form for RTL languages (#1110)
+
 ## 2.35.0 (2025-02-04)
 
 ### Feat

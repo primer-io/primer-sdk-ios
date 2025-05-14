@@ -96,7 +96,7 @@
                      location = "group:PrimerOTPData.swift">
                   </FileRef>
                   <FileRef
-                     location = "group:PrimerRawCardDataRedirectTokenizationBuilder.swift">
+                     location = "group:PrimerBancontactRawCardDataRedirectTokenizationBuilder.swift">
                   </FileRef>
                   <FileRef
                      location = "group:PrimerCardRedirectData.swift">
@@ -219,9 +219,6 @@
                      location = "group:FormType.swift">
                   </FileRef>
                </Group>
-               <FileRef
-                  location = "group:SuccessMessage.swift">
-               </FileRef>
                <FileRef
                   location = "group:_PaymentAPIModel.swift">
                </FileRef>
@@ -362,9 +359,6 @@
                </FileRef>
                <FileRef
                   location = "group:PrimerIntegrationOptions.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:CheckoutModule.swift">
                </FileRef>
                <FileRef
                   location = "group:TokenizationRequestPaymentSessionInfo.swift">
@@ -2065,9 +2059,6 @@
    <Group
       location = "group:Tests"
       name = "Tests">
-      <FileRef
-         location = "group:DITests.swift">
-      </FileRef>
       <Group
          location = "group:Klarna"
          name = "Klarna">
@@ -2084,7 +2075,7 @@
             location = "group:KlarnaTestsMocks.swift">
          </FileRef>
          <FileRef
-            location = "group:KlarnaComponentTests.swift">
+            location = "group:PrimerHeadlessKlarnaComponentTests.swift">
          </FileRef>
          <FileRef
             location = "group:KlarnaHeadlessManagerTests.swift">
@@ -2323,14 +2314,42 @@
          <FileRef
             location = "group:DependencyContainerTests.swift">
          </FileRef>
+         <FileRef
+            location = "group:DependencyInjectionTests.swift">
+         </FileRef>
          <Group
             location = "group:Utils"
             name = "Utils">
+            <Group
+               location = "group:CurrencyFormatting"
+               name = "CurrencyFormatting">
+               <FileRef
+                  location = "group:CAD_CurrencyFormattingTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:CNY_CurrencyFormattingTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:EUR_CurrencyFormattingTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:GBP_CurrencyFormattingTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:JPY_CurrencyFormattingTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:KRW_CurrencyFormattingTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:SEK_CurrencyFormattingTests.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:USD_CurrencyFormattingTests.swift">
+               </FileRef>
+            </Group>
             <FileRef
                location = "group:CheckoutSessionTests.swift">
-            </FileRef>
-            <FileRef
-               location = "group:IntExtensionTests.swift">
             </FileRef>
             <FileRef
                location = "group:MaskTests.swift">
@@ -2534,6 +2553,13 @@
          <Group
             location = "group:Mocks"
             name = "Mocks">
+            <Group
+               location = "group:Components"
+               name = "Components">
+               <FileRef
+                  location = "group:MockKlarnaTokenizationComponent.swift">
+               </FileRef>
+            </Group>
             <Group
                location = "group:ViewModels"
                name = "ViewModels">

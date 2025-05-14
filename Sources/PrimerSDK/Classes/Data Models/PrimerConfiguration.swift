@@ -11,7 +11,6 @@ import Foundation
 import PassKit
 
 typealias PrimerAPIConfiguration = Response.Body.Configuration
-typealias PrimerAPIConfigurationResponse = (config: Response.Body.Configuration, ttl: TimeInterval)
 
 // swiftlint:disable file_length
 extension Request.URLParameters {
@@ -248,12 +247,6 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
         let keys: ThreeDS.Keys?
         var checkoutModules: [Response.Body.Configuration.CheckoutModule]?
 
-        var isSetByClientSession: Bool {
-            return clientSession != nil
-        }
-
-        internal let sdkSupportedPaymentMethodTypes: [PrimerPaymentMethodType] = PrimerPaymentMethodType.allCases
-
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
@@ -268,6 +261,8 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
             let moduleThrowables = try container.decode([Throwable<CheckoutModule>].self, forKey: .checkoutModules)
             self.checkoutModules = moduleThrowables.compactMap({ $0.value })
 
+            var hasCardSurcharge = false
+            var paymentMethodSurcharges: [String: Int] = [:]
             if let options = clientSession?.paymentMethod?.options, !options.isEmpty {
                 for paymentMethodOption in options {
                     if let type = paymentMethodOption["type"] as? String {
@@ -276,17 +271,29 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
                            !networks.isEmpty {
                             for network in networks {
                                 guard network["type"] is String,
-                                      network["surcharge"] is Int
+                                      network["surcharge"] is Int,
+                                    let surchargeValue = network["surcharge"] as? Int
                                 else { continue }
-
+                                hasCardSurcharge = surchargeValue > 0
+                            }
+                        } else {
+                            if let surcharge = paymentMethodOption["surcharge"] as? Int {
+                                paymentMethodSurcharges[type] = surcharge
                             }
                         }
                     }
                 }
 
                 if let paymentMethod = self.paymentMethods?.filter({ $0.type == PrimerPaymentMethodType.paymentCard.rawValue }).first {
-                    paymentMethod.hasUnknownSurcharge = true
+                    paymentMethod.hasUnknownSurcharge = hasCardSurcharge
                     paymentMethod.surcharge = nil
+                }
+
+                // Process other payment method surcharges
+                for (paymentMethodType, surchargeValue) in paymentMethodSurcharges {
+                    if let paymentMethod = self.paymentMethods?.first(where: { $0.type == paymentMethodType }) {
+                        paymentMethod.surcharge = surchargeValue
+                    }
                 }
             }
         }

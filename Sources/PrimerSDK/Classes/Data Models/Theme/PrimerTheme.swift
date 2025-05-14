@@ -70,8 +70,6 @@ public class PrimerTheme: PrimerThemeProtocol {
 
     internal lazy var input = data.input.theme(with: data)
 
-    internal var types = (amount: 1, label: 2, foo: "hello")
-
     public init(with data: PrimerThemeData = PrimerThemeData()) {
         self.data = data
     }

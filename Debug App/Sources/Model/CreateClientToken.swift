@@ -109,63 +109,12 @@ struct ClientSessionRequestBody: Encodable {
         struct PaymentMethodOption: Codable {
             var surcharge: SurchargeOption?
             var instalmentDuration: String?
-            var extraMerchantData: [String: Any]?
+            var extraMerchantData: ExtraMerchantData?
             var captureVaultedCardCvv: Bool?
             var merchantName: String?
 
             enum CodingKeys: CodingKey {
                 case surcharge, instalmentDuration, extraMerchantData, captureVaultedCardCvv, merchantName
-            }
-
-            init(surcharge: SurchargeOption?,
-                 instalmentDuration: String?,
-                 extraMerchantData: [String: Any]?,
-                 captureVaultedCardCvv: Bool?,
-                 merchantName: String?) {
-                self.surcharge = surcharge
-                self.instalmentDuration = instalmentDuration
-                self.extraMerchantData = extraMerchantData
-                self.captureVaultedCardCvv = captureVaultedCardCvv
-                self.merchantName = merchantName
-            }
-
-            func encode(to encoder: Encoder) throws {
-                var container = encoder.container(keyedBy: CodingKeys.self)
-
-                if let surcharge = surcharge {
-                    try container.encode(surcharge, forKey: .surcharge)
-                }
-
-                if let instalmentDuration = instalmentDuration {
-                    try container.encode(instalmentDuration, forKey: .instalmentDuration)
-                }
-
-                if let extraMerchantData = extraMerchantData {
-                    let jsonData = try JSONSerialization.data(withJSONObject: extraMerchantData, options: [])
-                    let jsonString = String(data: jsonData, encoding: .utf8)
-                    try container.encode(jsonString, forKey: .extraMerchantData)
-                }
-                
-                if let merchantName = merchantName {
-                    try container.encode(merchantName, forKey: .merchantName)
-                }
-            }
-
-            init(from decoder: Decoder) throws {
-                let container = try decoder.container(keyedBy: CodingKeys.self)
-                surcharge = try container.decodeIfPresent(SurchargeOption.self, forKey: .surcharge)
-                instalmentDuration = try container.decodeIfPresent(String.self, forKey: .instalmentDuration)
-
-                let jsonString = try container.decodeIfPresent(String.self, forKey: .extraMerchantData)
-                if let jsonData = jsonString?.data(using: .utf8) {
-                    extraMerchantData = try JSONSerialization.jsonObject(with: jsonData) as? [String: Any]
-                } else {
-                    extraMerchantData = nil
-                }
-                
-                merchantName = try container.decodeIfPresent(String.self, forKey: .merchantName)
-
-                captureVaultedCardCvv = try container.decodeIfPresent(Bool.self, forKey: .captureVaultedCardCvv) ?? false
             }
         }
 
@@ -175,6 +124,44 @@ struct ClientSessionRequestBody: Encodable {
     }
 
 }
+
+struct ExtraMerchantData: Codable {
+    let subscription: [Subscription]
+    let customerAccountInfo: [CustomerAccountInfo]
+
+    enum CodingKeys: String, CodingKey {
+        case subscription
+        case customerAccountInfo = "customer_account_info"
+    }
+
+    struct Subscription: Codable {
+        let subscriptionName: String
+        let startTime: String
+        let endTime: String
+        let autoRenewalOfSubscription: Bool
+
+        enum CodingKeys: String, CodingKey {
+            case subscriptionName = "subscription_name"
+            case autoRenewalOfSubscription = "auto_renewal_of_subscription"
+            case endTime = "end_time"
+            case startTime = "start_time"
+        }
+    }
+
+    struct CustomerAccountInfo: Codable {
+        let uniqueAccountIdentifier: String
+        let accountRegistrationDate: String
+        let accountLastModified: String
+
+        enum CodingKeys: String, CodingKey {
+            case accountRegistrationDate = "account_registration_date"
+            case uniqueAccountIdentifier = "unique_account_identifier"
+            case accountLastModified = "account_last_modified"
+        }
+    }
+}
+
+
 
 extension String {
 

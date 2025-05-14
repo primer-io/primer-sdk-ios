@@ -5,6 +5,7 @@
 //  Copyright © 2022 Primer API ltd. All rights reserved.
 //
 
+// swiftlint:disable file_length
 import Foundation
 
 public struct PaymentAPIModelAddress: Codable {
@@ -37,43 +38,6 @@ public struct PaymentAPIModelAddress: Codable {
         self.state = state
     }
 
-    var dictionaryValue: [String: Any]? {
-        var dic: [String: Any] = [:]
-
-        if let firstName = firstName {
-            dic["firstName"] = firstName
-        }
-
-        if let lastName = lastName {
-            dic["lastName"] = lastName
-        }
-
-        if let addressLine1 = addressLine1 {
-            dic["addressLine1"] = addressLine1
-        }
-
-        if let addressLine2 = addressLine2 {
-            dic["addressLine2"] = addressLine2
-        }
-
-        if let city = city {
-            dic["city"] = city
-        }
-
-        if let postalCode = postalCode {
-            dic["postalCode"] = postalCode
-        }
-
-        if let state = state {
-            dic["state"] = state
-        }
-
-        if let countryCode = countryCode {
-            dic["countryCode"] = countryCode
-        }
-
-        return dic.keys.count == 0 ? nil : dic
-    }
 }
 
 extension Request.Body {
@@ -97,7 +61,7 @@ extension Request.Body.Payment {
             self.resumeToken = token
         }
     }
-    
+
     public struct Complete: Encodable {
         let mandateSignatureTimestamp: String
         let paymentMethodId: String?
@@ -113,27 +77,39 @@ extension Request.Body.Payment {
 extension Response.Body {
 
     public struct Payment: Codable {
-
-        public let id: String?
-        public let paymentId: String?
-        public let amount: Int?
-        public let currencyCode: String?
-        public let customer: Request.Body.ClientSession.Customer?
-        public let customerId: String?
-        public let dateStr: String?
+        public var id: String?
+        public var paymentId: String?
+        public var amount: Int?
+        public var currencyCode: String?
+        public var customer: Request.Body.ClientSession.Customer?
+        public var customerId: String?
+        public var dateStr: String?
         public var date: Date? {
             return dateStr?.toDate()
         }
-        public let order: Request.Body.ClientSession.Order?
-        public let orderId: String?
-        public let requiredAction: Response.Body.Payment.RequiredAction?
+        public var order: Request.Body.ClientSession.Order?
+        public var orderId: String?
+        public var requiredAction: Response.Body.Payment.RequiredAction?
         public let status: Status
-        public let paymentFailureReason: PrimerPaymentErrorCode.RawValue?
-        public var showSuccessCheckoutOnPendingPayment: Bool? = false
+        public var paymentFailureReason: PrimerPaymentErrorCode.RawValue?
+        public var showSuccessCheckoutOnPendingPayment: Bool?
+        public var checkoutOutcome: CheckoutOutcome?
 
         // swiftlint:disable:next nesting
         public enum CodingKeys: String, CodingKey {
-            case id, paymentId, amount, currencyCode, customer, customerId, order, orderId, requiredAction, status, paymentFailureReason, showSuccessCheckoutOnPendingPayment
+            case id,
+                 paymentId,
+                 amount,
+                 currencyCode,
+                 customer,
+                 customerId,
+                 order,
+                 orderId,
+                 requiredAction,
+                 status,
+                 paymentFailureReason,
+                 showSuccessCheckoutOnPendingPayment,
+                 checkoutOutcome
             case dateStr = "date"
         }
 
@@ -150,8 +126,15 @@ extension Response.Body {
             case pending = "PENDING"
             case success = "SUCCESS"
         }
+
+        // swiftlint:disable:next nesting
+        public enum CheckoutOutcome: String, Codable {
+            case complete = "CHECKOUT_COMPLETE"
+            case failure = "CHECKOUT_FAILURE"
+            case determineFromPaymentStatus = "DETERMINE_FROM_PAYMENT_STATUS"
+        }
     }
-    
+
     public struct Complete: Codable {}
 }
 
@@ -411,3 +394,4 @@ extension PrimerCheckoutDataPayment {
         self.state = state
     }
 }
+// swiftlint:enable file_length

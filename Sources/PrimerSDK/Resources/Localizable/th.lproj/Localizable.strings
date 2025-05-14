@@ -22,6 +22,8 @@
 /* Form Text Field Placeholder (Address line 2) */
 "addressLine2Placeholder" = "ที่อยู่บรรทัดที่ 2";
 
+"card_expiry_date" = "เดือน/ปี";
+
 /* An error message displayed when the city field is not correct */
 "cardholderErrorInvalid" = "ชื่อผู้ถือบัตรไม่ถูกต้อง";
 
@@ -130,9 +132,6 @@
 
 /* The title of the primer 'pay in installments' button */
 "primer-button-title-pay-in-installments" = "ผ่อนชำระ";
-
-/* 12/24 - Card Form (Expiry text field placeholder text) */
-"primer-card-form-12-24" = "12/24";
 
 /* Add card - Card Form (Vault title text) */
 "primer-card-form-add-card" = "เพิ่มบัตร";

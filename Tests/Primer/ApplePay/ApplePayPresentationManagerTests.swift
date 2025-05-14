@@ -57,7 +57,7 @@ final class ApplePayPresentationManagerTests: XCTestCase {
     }
 
     func testShippingContactFields() throws {
-        let additionalFields: [PrimerApplePayOptions.RequiredContactField] = [.name, .emailAddress, .phoneNumber, .postalAddress,]
+        let additionalFields: [PrimerApplePayOptions.RequiredContactField] = [.name, .emailAddress, .phoneNumber, .postalAddress ]
 
         var applePayOptions = PrimerApplePayOptions(merchantIdentifier: "merchant_id",
                                                     merchantName: "merchant_name",
@@ -80,7 +80,7 @@ final class ApplePayPresentationManagerTests: XCTestCase {
     }
 
     func testBillingContactFields() throws {
-        let additionalFields: [PrimerApplePayOptions.RequiredContactField] = [.name, .emailAddress, .phoneNumber, .postalAddress,]
+        let additionalFields: [PrimerApplePayOptions.RequiredContactField] = [.name, .emailAddress, .phoneNumber, .postalAddress ]
 
         var applePayOptions = PrimerApplePayOptions(
             merchantIdentifier: "merchant_id",
@@ -143,9 +143,9 @@ final class ApplePayPresentationManagerTests: XCTestCase {
 
     func registerApplePayOptions() {
         let settings = PrimerSettings(paymentMethodOptions:
-                .init(applePayOptions:
-                        .init(merchantIdentifier: "merchant_id", merchantName: "merchant_name", checkProvidedNetworks: true)
-                )
+                                        .init(applePayOptions:
+                                                .init(merchantIdentifier: "merchant_id", merchantName: "merchant_name", checkProvidedNetworks: true)
+                                        )
         )
         DependencyContainer.register(settings as PrimerSettingsProtocol)
     }
@@ -244,7 +244,7 @@ final class ApplePayPresentationManagerTests: XCTestCase {
             shippingOptions: nil,
             billingOptions: nil
         )
-        
+
         let contactFields = sut.mapContactFieldsFromOptions(applePayOptions: applePayOptions)
         let billingFields = contactFields.mappedBillingContactFields
         let shippingFields = contactFields.mappedShippingContactFields

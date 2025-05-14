@@ -27,9 +27,4 @@ extension PrimerImageView {
         }.resume()
     }
 
-    convenience init?(from link: String, contentMode mode: ContentMode = .scaleAspectFit) {
-        guard let url = URL(string: link) else { return nil }
-        self.init(from: url, contentMode: mode)
-    }
-
 }

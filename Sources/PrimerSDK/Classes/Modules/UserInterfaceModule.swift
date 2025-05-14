@@ -971,16 +971,24 @@ class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
     lazy var submitButton: PrimerButton? = {
         var buttonTitle: String = ""
 
+        // Determine once whether merchant wants “Add new card” for checkout
+        let shouldShowAddNewCard = PrimerSettings
+            .current
+            .uiOptions
+            .cardFormUIOptions?
+            .payButtonAddNewCard == true
+
         switch self.paymentMethodTokenizationViewModel.config.type {
         case PrimerPaymentMethodType.paymentCard.rawValue,
              PrimerPaymentMethodType.adyenMBWay.rawValue:
             switch PrimerInternal.shared.intent {
             case .checkout:
-                let universalCheckoutViewModel: UniversalCheckoutViewModelProtocol = UniversalCheckoutViewModel()
-                buttonTitle = Strings.PaymentButton.pay
-                if let amountStr = universalCheckoutViewModel.amountStr {
-                    buttonTitle += " \(amountStr)"
-                }
+                let universalCheckoutVM: UniversalCheckoutViewModelProtocol = UniversalCheckoutViewModel()
+                let amountSuffix = universalCheckoutVM.amountStr.map { " \($0)" } ?? ""
+
+                buttonTitle = shouldShowAddNewCard
+                    ? Strings.VaultPaymentMethodViewContent.addCard
+                    : Strings.PaymentButton.pay + amountSuffix
 
             case .vault:
                 buttonTitle = Strings.PrimerCardFormView.addCardButtonTitle

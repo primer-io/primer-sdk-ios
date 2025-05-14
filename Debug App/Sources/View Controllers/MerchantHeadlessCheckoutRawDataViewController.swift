@@ -311,7 +311,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
             print("[MerchantHeadlessCheckoutRawDataViewController] ERROR: Failed to cast metadata and state to card entry models")
             return
         }
-        
+
         let printableNetworks = metadata.detectedCardNetworks.items.map { $0.network.rawValue }.joined(separator: ", ")
         print("[MerchantHeadlessCheckoutRawDataViewController] didReceiveCardMetadata: \(printableNetworks) forCardValidationState: \(cardState.cardNumber)")
 
@@ -338,6 +338,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
 
                 let tapGestureRecognizer = TapGestureRecognizer {
                     self.selectedCardIndex = index
+                    self.rawCardData.cardNetwork = metadata.detectedCardNetworks.items[self.selectedCardIndex].network
                     self.updateCardImages()
                 }
                 imageView.addGestureRecognizer(tapGestureRecognizer)
@@ -351,7 +352,7 @@ extension MerchantHeadlessCheckoutRawDataViewController: PrimerHeadlessUniversal
 
             self.updateCardImages()
 
-            self.rawCardData.cardNetwork = metadata.detectedCardNetworks.preferred?.network
+            self.rawCardData.cardNetwork = metadata.detectedCardNetworks.items[self.selectedCardIndex].network
         }
     }
 

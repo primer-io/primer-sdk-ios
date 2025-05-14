@@ -30,7 +30,7 @@ final class ListCardNetworksEndpointTests: XCTestCase {
     func testValidRequestWithSuccessResponse() throws {
 
         let bin = "1234 5678 1234"
-        let network = Response.Body.Bin.Networks.Network(displayName: "Test", value: "Test")
+        let network = Response.Body.Bin.Networks.Network(value: "Test")
 
         let expectSuccessfulResponse = self.expectation(description: "Expect request to complete successfully")
 
@@ -38,7 +38,7 @@ final class ListCardNetworksEndpointTests: XCTestCase {
 
         networkService.onReceiveEndpoint = { endpoint in
             XCTAssertEqual(endpoint.path, "/v1/bin-data/\(bin)/networks")
-            XCTAssertEqual(endpoint.headers?["X-Api-Version"], "2.3")
+            XCTAssertEqual(endpoint.headers?["X-Api-Version"], "2.4")
             XCTAssertEqual(endpoint.headers?["Primer-Client-Token"], mockClientToken.accessToken)
             expectValidEndpointReceived.fulfill()
         }
@@ -68,7 +68,7 @@ final class ListCardNetworksEndpointTests: XCTestCase {
 
         networkService.onReceiveEndpoint = { endpoint in
             XCTAssertEqual(endpoint.path, "/v1/bin-data/\(bin)/networks")
-            XCTAssertEqual(endpoint.headers?["X-Api-Version"], "2.3")
+            XCTAssertEqual(endpoint.headers?["X-Api-Version"], "2.4")
             XCTAssertEqual(endpoint.headers?["Primer-Client-Token"], mockClientToken.accessToken)
             expectValidEndpointReceived.fulfill()
         }
@@ -92,7 +92,6 @@ final class ListCardNetworksEndpointTests: XCTestCase {
 
 extension Response.Body.Bin.Networks.Network: Equatable {
     public static func == (lhs: PrimerSDK.Response.Body.Bin.Networks.Network, rhs: PrimerSDK.Response.Body.Bin.Networks.Network) -> Bool {
-        return lhs.displayName == rhs.displayName &&
             lhs.value == rhs.value
     }
 }

@@ -48,11 +48,23 @@ class JSONNetworkResponseFactory: NetworkResponseFactory, LogReporter {
             do {
                 return try decoder.decode(T.self, from: response)
             } catch {
-                throw InternalError.failedToDecode(
-                    message: "Failed to decode response of type '\(T.self)' from URL: \(metadata.responseUrl ?? "Unknown")",
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString
-                )
+                // Attempt to decode a server error response even if the status code is 2xx.
+                // Some APIs return error messages in the response body while still using a success status code.
+                // To handle this, we try decoding the response as `PrimerServerErrorResponse` first.
+                if let serverError = try? decoder.decode(PrimerServerErrorResponse.self, from: response) {
+                    throw InternalError.serverError(
+                        status: metadata.statusCode,
+                        response: serverError.error,
+                        userInfo: .errorUserInfoDictionary(),
+                        diagnosticsId: serverError.error.diagnosticsId
+                    )
+                } else {
+                    throw InternalError.failedToDecode(
+                        message: "Failed to decode response of type '\(T.self)' from URL: \(metadata.responseUrl ?? "Unknown")",
+                        userInfo: .errorUserInfoDictionary(),
+                        diagnosticsId: UUID().uuidString
+                    )
+                }
             }
         case 401:
             throw InternalError.unauthorized(url: metadata.responseUrl ?? "Unknown",

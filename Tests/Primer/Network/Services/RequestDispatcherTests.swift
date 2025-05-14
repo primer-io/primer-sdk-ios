@@ -27,7 +27,6 @@ class MockURLSession: URLSessionProtocol {
         return StubURLSessionDataTask()
     }
 
-
 }
 
 final class RequestDispatcherTests: XCTestCase {
@@ -64,7 +63,7 @@ final class RequestDispatcherTests: XCTestCase {
                 XCTAssertEqual(response.metadata.statusCode, 200)
                 XCTAssertEqual(response.data, self.session.data)
                 expectation.fulfill()
-            case .failure(_):
+            case .failure:
                 XCTFail()
             }
         }
@@ -90,7 +89,7 @@ final class RequestDispatcherTests: XCTestCase {
                 XCTAssertEqual(response.metadata.statusCode, 500)
                 XCTAssertEqual(response.data, self.session.data)
                 expectation.fulfill()
-            case .failure(_):
+            case .failure:
                 XCTFail()
             }
         }
@@ -109,7 +108,7 @@ final class RequestDispatcherTests: XCTestCase {
         let request = URLRequest(url: url)
         dispatcher.dispatch(request: request) { result in
             switch result {
-            case .success(_):
+            case .success:
                 XCTFail()
             case .failure(let error):
                 XCTAssertTrue(error.localizedDescription.hasPrefix("[invalid-response] Invalid response received. Expected HTTP response."))
@@ -179,9 +178,9 @@ final class RequestDispatcherTests: XCTestCase {
 
         _ = dispatcher.dispatchWithRetry(request: request, retryConfig: retryConfig) { result in
             switch result {
-            case .success(_):
+            case .success:
                 XCTFail()
-            case .failure(_):
+            case .failure:
                 XCTAssertEqual(self.session.error as? URLError, URLError(.notConnectedToInternet))
                 expectation.fulfill()
             }
@@ -204,9 +203,9 @@ final class RequestDispatcherTests: XCTestCase {
 
         _ = dispatcher.dispatchWithRetry(request: request, retryConfig: retryConfig) { result in
             switch result {
-            case .success(_):
+            case .success:
                 XCTFail()
-            case .failure(_):
+            case .failure:
                 XCTAssertEqual((self.session.response as? HTTPURLResponse)?.statusCode, 500)
                 expectation.fulfill()
             }
@@ -233,7 +232,7 @@ final class RequestDispatcherTests: XCTestCase {
                 XCTAssertEqual(response.metadata.statusCode, 200)
                 XCTAssertEqual(response.data, self.session.data)
                 expectation.fulfill()
-            case .failure(_):
+            case .failure:
                 XCTFail()
             }
         }

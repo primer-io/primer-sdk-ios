@@ -1,6 +1,6 @@
 //
 //  CardFormPaymentMethodTokenizationViewModelTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 23/05/2024.
 //
@@ -69,7 +69,7 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
         }
 
         let expectWillShowPaymentMethod = self.expectation(description: "Did show payment method")
-        uiDelegate.onUIDidShowPaymentMethod = { type in
+        uiDelegate.onUIDidShowPaymentMethod = { _ in
             self.sut.userInputCompletion?()
             expectWillShowPaymentMethod.fulfill()
         }
@@ -120,19 +120,19 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
         }
 
         let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        tokenizationService.onTokenize = { body in
+        tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
             return Promise.fulfilled(self.tokenizationResponseBody)
         }
 
         let expectWillShowPaymentMethod = self.expectation(description: "Did show payment method")
-        uiDelegate.onUIDidShowPaymentMethod = { type in
+        uiDelegate.onUIDidShowPaymentMethod = { _ in
             self.sut.userInputCompletion?()
             expectWillShowPaymentMethod.fulfill()
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
-        createResumePaymentService.onCreatePayment = { body in
+        createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
 
@@ -170,7 +170,6 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
             setupAppState(amount: 1234, currencyCode: "GBP")
             XCTAssertNoThrow(try sut.validate())
 
-
         }
     }
 
@@ -184,7 +183,6 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
                                                                                  surcharge: nil,
                                                                                  options: nil,
                                                                                  displayMetadata: nil))
-
 
         let error = PrimerError.paymentFailed(paymentMethodType: "PMT",
                                               paymentId: "123",
@@ -200,6 +198,55 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
 
         let error2 = PrimerError.cancelled(paymentMethodType: "PMT", userInfo: nil, diagnosticsId: "id")
         XCTAssertNil(error2.checkoutData)
+    }
+
+    func testConfigurePayButton_defaultShowsPayAmount() throws {
+        // Arrange: set up AppState with amount & currency
+        SDKSessionHelper.setUp { mockAppState in
+            mockAppState.amount = 2500               // $25.00
+            mockAppState.currency = Currency(code: "USD", decimalDigits: 2)
+        }
+        PrimerInternal.shared.intent = .checkout
+
+        // Register default settings (no cardFormUIOptions)
+        DependencyContainer.register(PrimerSettings() as PrimerSettingsProtocol)
+
+        // Act: call configurePayButton
+        sut.configurePayButton(amount: 2500)
+
+        // Assert: should use "Pay $25.00"
+        let expectedCurrency = Currency(code: "USD", decimalDigits: 2)
+        let expectedTitle = "\(Strings.PaymentButton.pay) \(2500.toCurrencyString(currency: expectedCurrency))"
+        XCTAssertEqual(
+            sut.uiModule.submitButton?.title(for: .normal),
+            expectedTitle,
+            "Default behavior should show formatted pay amount"
+        )
+    }
+
+    func testConfigurePayButton_showsAddNewCard_whenFlagTrue() throws {
+        // Arrange: set up AppState
+        SDKSessionHelper.setUp { mockAppState in
+            mockAppState.amount = 500                // €5.00
+            mockAppState.currency = Currency(code: "EUR", decimalDigits: 2)
+        }
+        PrimerInternal.shared.intent = .checkout
+
+        // Register settings with payButtonAddNewCard = true
+        let uiOptions = PrimerUIOptions(
+            cardFormUIOptions: PrimerCardFormUIOptions(payButtonAddNewCard: true)
+        )
+        DependencyContainer.register(PrimerSettings(uiOptions: uiOptions) as PrimerSettingsProtocol)
+
+        // Act
+        sut.configurePayButton(amount: 500)
+
+        // Assert: should use the localized "Add new card" text
+        XCTAssertEqual(
+            sut.uiModule.submitButton?.title(for: .normal),
+            Strings.VaultPaymentMethodViewContent.addCard,
+            "When payButtonAddNewCard=true, the button should read 'Add new card'"
+        )
     }
 
     // MARK: Helpers

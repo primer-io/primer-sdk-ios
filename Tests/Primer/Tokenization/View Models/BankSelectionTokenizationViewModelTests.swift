@@ -1,6 +1,6 @@
 //
 //  BankSelectionTokenizationViewModelTests.swift
-//  
+//
 //
 //  Created by Jack Newcombe on 28/05/2024.
 //
@@ -55,7 +55,7 @@ final class BankSelectionTokenizationViewModelTests: XCTestCase {
             self.uiManager.primerRootViewController = mockViewController
             return Promise.fulfilled(())
         }
-        
+
         _ = uiManager.prepareRootViewController()
 
         let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
@@ -133,13 +133,13 @@ final class BankSelectionTokenizationViewModelTests: XCTestCase {
         }
 
         let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        tokenizationService.onTokenize = { body in
+        tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
             return Promise.fulfilled(self.tokenizationResponseBody)
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
-        createResumePaymentService.onCreatePayment = { body in
+        createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
         }
@@ -210,11 +210,7 @@ final class BankSelectionTokenizationViewModelTests: XCTestCase {
                                                             countryCode: "shipping_country_code",
                                                             postalCode: "shipping_postal_code")),
                      customerId: "customer_id",
-                     dateStr: nil,
-                     order: nil,
                      orderId: "order_id",
-                     requiredAction: nil,
-                     status: .success,
-                     paymentFailureReason: nil)
+                     status: .success)
     }
 }
