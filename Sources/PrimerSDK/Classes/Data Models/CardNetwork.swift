@@ -283,37 +283,9 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
         }
     }
 
-    var surcharge: Int? {
-        guard let options = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.paymentMethod?.options,
-              !options.isEmpty else { return nil }
-
-        for paymentMethodOption in options {
-            guard let type = paymentMethodOption["type"] as? String,
-                  type == PrimerPaymentMethodType.paymentCard.rawValue
-            else { continue }
-
-            guard let networks = paymentMethodOption["networks"] as? [[String: Any]]
-            else { continue }
-
-            guard let tmpNetwork = networks
-                    .filter({ $0["type"] as? String == self.rawValue.uppercased() })
-                    .first
-            else { continue }
-            guard let surcharge = tmpNetwork["surcharge"] as? Int else { continue }
-            return surcharge
-        }
-
-        return nil
-    }
-
     var assetName: String {
         rawValue.lowercased().filter { $0.isLetter }
     }
-
-    static var coBadgedNetworks: [CardNetwork] {
-        return [.cartesBancaires]
-    }
-
     public init(cardNumber: String) {
         self = CardNetworkParser.shared.cardNetwork(from: cardNumber) ?? .unknown
     }
