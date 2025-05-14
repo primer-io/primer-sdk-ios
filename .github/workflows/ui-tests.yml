@@ -128,6 +128,13 @@ jobs:
           retention-days: 1
           path: /var/tmp/browserstack_id.txt
           if-no-files-found: error
+      - name: Save LambdaTest ID
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 #v4.6.2
+        id: save_lambdatest_id_step
+        with:
+          name: lambdatest_id
+          retention-days: 1
+          path: /var/tmp/lambdatest_id.txt
       - name: Save App Artifact
         id: save_app_artifact_step
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
