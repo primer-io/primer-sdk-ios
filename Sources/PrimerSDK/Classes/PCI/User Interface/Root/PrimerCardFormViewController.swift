@@ -8,22 +8,18 @@
 import UIKit
 
 /// Subclass of the PrimerFormViewController that uses the checkout components and the card components manager
-class PrimerCardFormViewController: PrimerFormViewController {
+final class PrimerCardFormViewController: PrimerFormViewController {
 
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
     private let formPaymentMethodTokenizationViewModel: CardFormPaymentMethodTokenizationViewModel
 
     init(navigationBarLogo: UIImage? = nil, viewModel: CardFormPaymentMethodTokenizationViewModel) {
         self.formPaymentMethodTokenizationViewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
+        super.init()
         self.titleImage = navigationBarLogo
         if self.titleImage == nil {
             title = Strings.PrimerCardFormView.title
         }
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError()
     }
 
     override func viewDidLoad() {

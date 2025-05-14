@@ -8,7 +8,7 @@
 import UIKit
 import SwiftUI
 
-internal class PrimerCustomResultViewController: PrimerViewController {
+final class PrimerCustomResultViewController: PrimerViewController {
 
     internal enum PaymentStatus {
         case success, failed, cancelled
@@ -21,10 +21,8 @@ internal class PrimerCustomResultViewController: PrimerViewController {
     init(paymentMethodType: PrimerPaymentMethodType, error: PrimerError?) {
         self.paymentMethodType = paymentMethodType
         self.paymentStatusViewModel = PrimerResultPaymentStatusViewModel(paymentMethodType: paymentMethodType, error: error)
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
-
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override func viewDidLoad() {
         super.viewDidLoad()
