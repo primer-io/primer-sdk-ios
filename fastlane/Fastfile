@@ -278,7 +278,7 @@ platform :ios do
       lt_access_key: ENV["LAMBDATEST_ACCESS_KEY"],
       file_path: options[:file_path],
       custom_id: source_branch_trimmed,
-      visibility: "org"
+      visibility: "team"
     )
 
     save_lambdatest_id(lambdatest_id: ENV['APP_URL'])
