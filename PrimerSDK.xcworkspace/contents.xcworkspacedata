@@ -2317,9 +2317,6 @@
          <FileRef
             location = "group:DependencyInjectionTests.swift">
          </FileRef>
-         <FileRef
-            location = "group:DependencyInjectionTestsChatGPT.swift">
-         </FileRef>
          <Group
             location = "group:Utils"
             name = "Utils">
