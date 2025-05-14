@@ -7,10 +7,15 @@
 
 import Foundation
 
+final class WeakBox<T: AnyObject> {
+    weak var instance: T?
+    init(_ inst: T) { self.instance = inst }
+}
+
 /// Main implementation of the dependency injection container
 public actor Container: ContainerProtocol, Sendable {
     /// Internal factory structure
-    private struct FactoryRegistration {
+    struct FactoryRegistration {
         let policy: ContainerRetainPolicy
         let buildAsync: (ContainerProtocol) async throws -> Any
 
@@ -59,22 +64,22 @@ public actor Container: ContainerProtocol, Sendable {
             return self
         }
 
-        public func with(_ factory: @escaping (ContainerProtocol) async throws -> T) -> ContainerProtocol {
-            Task {
-                await container.registerInternal(type: type, name: name, with: policy) { resolver in
-                    try await factory(resolver)
-                }
+        public func with(
+            _ factory: @escaping (any ContainerProtocol) async throws -> T
+        ) async throws -> Self {
+            await container.registerInternal(type: type, name: name, with: policy) { resolver in
+                try await factory(resolver)
             }
-            return container
+            return self
         }
 
-        public func with(_ factory: @escaping (ContainerProtocol) throws -> T) -> ContainerProtocol {
-            Task {
-                await container.registerInternal(type: type, name: name, with: policy) { resolver in
-                    try factory(resolver)
-                }
+        public func with(
+            _ factory: @escaping (any ContainerProtocol) throws -> T
+        ) async throws -> Self {
+            await container.registerInternal(type: type, name: name, with: policy) { resolver in
+                try factory(resolver)
             }
-            return container
+            return self
         }
     }
 
@@ -84,13 +89,15 @@ public actor Container: ContainerProtocol, Sendable {
     private var factories: [TypeKey: FactoryRegistration] = [:]
 
     /// Map of strongly-held instances using TypeKey
-    private var instances: [TypeKey: Any] = [:]
+    var instances: [TypeKey: Any] = [:]
 
     /// Map of weakly-held instances
-    private var weakInstances = NSMapTable<NSString, AnyObject>(
-        keyOptions: [.copyIn],
-        valueOptions: [.weakMemory]
-    )
+    var weakBoxes: [TypeKey: WeakBox<AnyObject>] = [:]
+
+    // Map each policy to its RetentionStrategy ↓
+    private func strategy(for policy: ContainerRetainPolicy) -> RetentionStrategy {
+        policy.makeStrategy()
+    }
 
     /// Set used to detect circular dependencies
     private var resolutionStack: [TypeKey] = []
@@ -102,6 +109,16 @@ public actor Container: ContainerProtocol, Sendable {
 
     public init(logger: @escaping (String) -> Void = { _ in }) {
         self.logger = logger
+    }
+
+    /// Actor-isolated setter for strong instances
+    func setInstance(_ instance: Any, forKey key: TypeKey) {
+        instances[key] = instance
+    }
+
+    /// Actor-isolated setter for weak boxes
+    func setWeakBox(_ box: WeakBox<AnyObject>, forKey key: TypeKey) {
+        weakBoxes[key] = box
     }
 
     // MARK: - Registration
@@ -117,7 +134,7 @@ public actor Container: ContainerProtocol, Sendable {
 
         // Clean up any existing instances
         instances.removeValue(forKey: key)
-        weakInstances.removeObject(forKey: key.description as NSString)
+        weakBoxes.removeValue(forKey: key)
 
         // Register the new factory
         factories[key] = FactoryRegistration(policy: policy) { container in
@@ -128,6 +145,7 @@ public actor Container: ContainerProtocol, Sendable {
     }
 
     /// Unregister a dependency from the container
+    @discardableResult
     public nonisolated func unregister<T>(_ type: T.Type, name: String? = nil) -> Self {
         Task {
             await unregisterInternal(type, name: name)
@@ -142,7 +160,7 @@ public actor Container: ContainerProtocol, Sendable {
         // Remove factory and instances
         factories.removeValue(forKey: key)
         instances.removeValue(forKey: key)
-        weakInstances.removeObject(forKey: key.description as NSString)
+        weakBoxes.removeValue(forKey: key)
 
         logger("Unregistered dependency: \(key)")
     }
@@ -153,144 +171,83 @@ public actor Container: ContainerProtocol, Sendable {
     public func resolve<T>(_ type: T.Type, name: String? = nil) async throws -> T {
         let key = TypeKey(type, name: name)
 
-        // Check if the factory exists
-        guard let factory = factories[key] else {
+        guard let registration = factories[key] else {
             throw ContainerError.dependencyNotRegistered(key)
         }
 
-        // Detect circular dependencies
+        // Detect circular graph
         if resolutionStack.contains(key) {
             throw ContainerError.circularDependency(key, path: resolutionStack + [key])
         }
+        resolutionStack.append(key)
+        defer { resolutionStack.removeLast() }
 
-        // Handle different retention policies
-        switch factory.policy {
-        case .transient:
-            // Always create a new instance
-            resolutionStack.append(key)
-            defer { resolutionStack.removeLast() }
+        // Delegate to the correct strategy
+        let any = try await strategy(for: registration.policy)
+            .instance(for: key, registration: registration, in: self)
 
-            do {
-                let instance = try await factory.buildAsync(self)
-
-                guard let typedInstance = instance as? T else {
-                    throw ContainerError.typeCastFailed(key, Swift.type(of: instance))
-                }
-
-                return typedInstance
-            } catch let error as ContainerError {
-                throw error
-            } catch {
-                throw ContainerError.factoryFailed(key, underlyingError: error)
-            }
-
-        case .singleton:
-            // Use existing instance or create a new one and store it strongly
-            if let instance = instances[key] {
-                guard let typedInstance = instance as? T else {
-                    throw ContainerError.typeCastFailed(key, Swift.type(of: instance))
-                }
-                return typedInstance
-            }
-
-            resolutionStack.append(key)
-            defer { resolutionStack.removeLast() }
-
-            do {
-                let instance = try await factory.buildAsync(self)
-
-                guard let typedInstance = instance as? T else {
-                    throw ContainerError.typeCastFailed(key, Swift.type(of: instance))
-                }
-
-                instances[key] = typedInstance
-                return typedInstance
-            } catch let error as ContainerError {
-                throw error
-            } catch {
-                throw ContainerError.factoryFailed(key, underlyingError: error)
-            }
-
-        case .weak:
-            // Use existing instance or create a new one and store it weakly
-            let keyString = key.description as NSString
-            if let instance = weakInstances.object(forKey: keyString) {
-                guard let typedInstance = instance as? T else {
-                    throw ContainerError.typeCastFailed(key, Swift.type(of: instance))
-                }
-                return typedInstance
-            }
-
-            resolutionStack.append(key)
-            defer { resolutionStack.removeLast() }
-
-            do {
-                let instance = try await factory.buildAsync(self)
-
-                guard let typedInstance = instance as? T else {
-                    throw ContainerError.typeCastFailed(key, Swift.type(of: instance))
-                }
-
-                // Only store in weak references if T is a reference type
-                // This prevents the warning and handles value types correctly
-                if Swift.type(of: typedInstance) is AnyClass {
-                    if let anyObject = typedInstance as? AnyObject {
-                        weakInstances.setObject(anyObject, forKey: keyString)
-                    }
-                }
-
-                return typedInstance
-            } catch let error as ContainerError {
-                throw error
-            } catch {
-                throw ContainerError.factoryFailed(key, underlyingError: error)
-            }
+        guard let typed = any as? T else {
+            throw ContainerError.typeCastFailed(key, Swift.type(of: any))
         }
+        return typed
     }
+
+    // MARK: - Private Helpers
+
+    /// Track and detect circular resolution
+    private func pushResolution(_ key: TypeKey) throws {
+        if resolutionStack.contains(key) {
+            throw ContainerError.circularDependency(key, path: resolutionStack + [key])
+        }
+        resolutionStack.append(key)
+    }
+
+    /// Pop last resolution key
+    private func popResolution() {
+        resolutionStack.removeLast()
+    }
+
+    /// Cast to expected type or throw
+    private func cast<T>(_ instance: Any, to key: TypeKey) throws -> T {
+        guard let typed = instance as? T else {
+            throw ContainerError.typeCastFailed(key, Swift.type(of: instance))
+        }
+        return typed
+    }
+
+    // MARK: – Resolve all
 
     /// Resolve all dependencies conforming to a specific protocol
     public func resolveAll<T>(_ type: T.Type) async -> [T] {
         var result: [T] = []
 
-        // Collect instances that match the type
-        for (key, value) in instances {
-            if let instance = value as? T {
-                result.append(instance)
+        // 1) Strong instances
+        for value in instances.values {
+            if let cast = value as? T {
+                result.append(cast)
             }
         }
 
-        // Collect weak instances
-        let weakKeys = Array(weakInstances.keyEnumerator().allObjects)
-        for keyObj in weakKeys {
-            guard let key = keyObj as? NSString,
-                  let instance = weakInstances.object(forKey: key),
-                  let typedInstance = instance as? T else {
-                continue
+        // 2) Weak instances
+        for box in weakBoxes.values {
+            if let inst = box.instance as? T {
+                result.append(inst)
             }
-
-            result.append(typedInstance)
         }
 
-        // Collect and create instances for factories that match but aren't instantiated
-        for (key, factory) in factories {
-            // Skip transient factories and already collected instances
-            if factory.policy == .transient {
+        // 3) Non-transient factories not yet built
+        for (key, registration) in factories where registration.policy != .transient {
+            // skip if already in strong or weak storage
+            guard !instances.keys.contains(key),
+                  !weakBoxes.keys.contains(key) else {
                 continue
             }
 
-            let instance = try? await factory.buildAsync(self)
-            if let typedInstance = instance as? T {
-                // Only add if not already included (only check for reference types)
-                if T.self is AnyClass.Type {
-                    if !result.contains(where: {
-                        ($0 as AnyObject) === (typedInstance as AnyObject)
-                    }) {
-                        result.append(typedInstance)
-                    }
-                } else {
-                    // For value types, we can't do identity comparison, so just add
-                    result.append(typedInstance)
-                }
+            // build it and cast if possible
+            if let any = try? await strategy(for: registration.policy)
+                .instance(for: key, registration: registration, in: self),
+               let cast = any as? T {
+                result.append(cast)
             }
         }
 
@@ -301,41 +258,33 @@ public actor Container: ContainerProtocol, Sendable {
 
     /// Reset all dependencies except those specified
     public func reset<T>(ignoreDependencies: [T.Type] = []) async {
+        // Build a set of keys to skip during reset
         let keysToIgnore = Set(ignoreDependencies.map { TypeKey($0) })
 
-        // Reset strong instances
-        for key in instances.keys {
-            if !keysToIgnore.contains(key) {
-                instances.removeValue(forKey: key)
-            }
+        // Reset strong instances except the ones to ignore
+        for key in instances.keys where !keysToIgnore.contains(key) {
+            instances.removeValue(forKey: key)
         }
 
-        // Reset weak instances
-        let allWeakKeys = Array(weakInstances.keyEnumerator().allObjects)
-        let weakKeysToRemove = allWeakKeys
-            .compactMap { $0 as? NSString }
-            .filter { keyString in
-                let key = TypeKey.forType(NSObject.self, name: keyString as String)
-                return !keysToIgnore.contains(key)
-            }
+        // Weak instances
+        for key in weakBoxes.keys where !keysToIgnore.contains(key) {
+            weakBoxes.removeValue(forKey: key)
+        }
 
-        weakKeysToRemove.forEach { weakInstances.removeObject(forKey: $0) }
-
-        // Reset factories
-        for key in factories.keys {
-            if !keysToIgnore.contains(key) {
-                factories.removeValue(forKey: key)
-            }
+        // Reset factories except the ones to ignore
+        for key in factories.keys where !keysToIgnore.contains(key) {
+            factories.removeValue(forKey: key)
         }
 
         logger("Container reset (ignored \(keysToIgnore.count) dependencies)")
     }
-
     // MARK: - Factory Registration
 
     /// Register a factory for creating instances with parameters
-    public nonisolated func registerFactory<F: Factory>(_ factory: F) -> Self {
-        _ = register(F.self).asSingleton().with { _ in factory }
+    public nonisolated func registerFactory<F: Factory>(_ factory: F) async throws -> Self {
+        _ = try await register(F.self)
+            .asSingleton()
+            .with { _ in factory }
         return self
     }
 }

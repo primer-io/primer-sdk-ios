@@ -16,33 +16,11 @@ public struct TypeKey: Hashable, CustomStringConvertible, Sendable, Codable {
     /// Optional name to distinguish between multiple registrations of the same type
     private let name: String?
 
-    // NSCache requires a class type as key, so we use NSString
-    private static let cache = NSCache<NSString, NSObject>()
-
     /// Initialize with type and optional name
     public init(_ type: Any.Type, name: String? = nil) {
         self.typeId = ObjectIdentifier(type)
         self.typeName = String(reflecting: type)
         self.name = name
-    }
-
-    /// Get or create a TypeKey from the cache
-    /// - Parameters:
-    ///   - type: The type to create a key for
-    ///   - name: Optional name to differentiate multiple instances
-    /// - Returns: A cached or new TypeKey instance
-    public static func forType<T>(_ type: T.Type, name: String? = nil) -> TypeKey {
-        let cacheKey = "\(ObjectIdentifier(type).hashValue)_\(name ?? "")" as NSString
-
-        // Use NSObject wrapper for TypeKey to store in cache
-        if let cachedObject = cache.object(forKey: cacheKey) as? TypeKeyWrapper {
-            return cachedObject.typeKey
-        }
-
-        let newKey = TypeKey(type, name: name)
-        let wrapper = TypeKeyWrapper(typeKey: newKey)
-        cache.setObject(wrapper, forKey: cacheKey)
-        return newKey
     }
 
     /// Convenience method to check if this key represents a specific type
@@ -100,15 +78,5 @@ public struct TypeKey: Hashable, CustomStringConvertible, Sendable, Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(typeName, forKey: .typeName)
         try container.encodeIfPresent(name, forKey: .name)
-    }
-}
-
-/// Class wrapper for TypeKey to store in NSCache
-private class TypeKeyWrapper: NSObject {
-    let typeKey: TypeKey
-
-    init(typeKey: TypeKey) {
-        self.typeKey = typeKey
-        super.init()
     }
 }

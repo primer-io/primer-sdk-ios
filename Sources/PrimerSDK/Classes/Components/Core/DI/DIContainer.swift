@@ -100,24 +100,32 @@ public final class DIContainer: LogReporter {
     /// - Returns: The result of the action
     /// - Throws: Any error thrown by the action
     @discardableResult
-    public static func withContainer<T>(_ container: any ContainerProtocol, perform action: () async throws -> T) async rethrows -> T {
+    public static func withContainer<T>(
+        _ container: any ContainerProtocol,
+        perform action: () async throws -> T
+    ) async rethrows -> T {
         logger.debug(message: "Switching to temporary container")
         let previous = await shared.storage.getContainer()
         let previousSync = shared.cachedContainer
 
+        // Swap in immediately
         await shared.storage.setContainer(container)
         shared.cachedContainer = container
 
-        defer {
-            Task {
-                logger.debug(message: "Restoring previous container")
-                await shared.storage.setContainer(previous)
-                shared.cachedContainer = previousSync
-            }
+        do {
+            let result = try await action()
+            logger.debug(message: "Restoring previous container")
+            await shared.storage.setContainer(previous)
+            shared.cachedContainer = previousSync
+            return result
+        } catch {
+            logger.debug(message: "Restoring previous container after error")
+            await shared.storage.setContainer(previous)
+            shared.cachedContainer = previousSync
+            throw error
         }
-
-        return try await action()
     }
+
 
     /// Add a scoped container
     public static func setScopedContainer(_ container: any ContainerProtocol, for scopeId: String) async {
@@ -142,38 +150,15 @@ public final class DIContainer: LogReporter {
 
         // Register the container itself
         Task {
-            _ = container.register(ContainerProtocol.self).asSingleton().with { container in
+            _ = try await container.register(ContainerProtocol.self).asSingleton().with { container in
                 return container
             }
 
             // Register logger
-            _ = container.register(PrimerLogger.self).asSingleton().with { _ in
+            _ = try await container.register(PrimerLogger.self).asSingleton().with { _ in
                 return PrimerLogging.shared.logger
             }
         }
-
-        // Register modules as separate functions for better organization
-        await registerRepositories(container)
-        await registerUseCases(container)
-        await registerServices(container)
-    }
-
-    /// Register repository dependencies
-    private static func registerRepositories(_ container: Container) async {
-        logger.debug(message: "Registering repositories")
-        // Register repositories here
-    }
-
-    /// Register use case dependencies
-    private static func registerUseCases(_ container: Container) async {
-        logger.debug(message: "Registering use cases")
-        // Register use cases here
-    }
-
-    /// Register service dependencies
-    private static func registerServices(_ container: Container) async {
-        logger.debug(message: "Registering services")
-        // Register services here
     }
 
     /// Create a container with mock dependencies for testing

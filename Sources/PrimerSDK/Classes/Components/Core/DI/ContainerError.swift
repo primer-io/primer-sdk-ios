@@ -15,9 +15,6 @@ public enum ContainerError: Error, Sendable {
     /// A circular dependency was detected
     case circularDependency(TypeKey, path: [TypeKey])
 
-    /// A factory returned an invalid type
-    case invalidTypeReturned(expected: TypeKey, actual: Any.Type)
-
     /// The container has been terminated and is no longer available
     case containerUnavailable
 
@@ -29,6 +26,10 @@ public enum ContainerError: Error, Sendable {
 
     /// Factory failed with an error
     case factoryFailed(TypeKey, underlyingError: Error)
+
+    /// Tried to register or resolve a `.weak` dependency for a non‐class type
+    case weakUnsupported(TypeKey)
+
 }
 
 // MARK: - LocalizedError Implementation
@@ -42,9 +43,6 @@ extension ContainerError: LocalizedError {
             let pathString = path.map { "\($0)" }.joined(separator: " → ")
             return "Circular dependency detected while resolving \(key). Resolution path: \(pathString)"
 
-        case let .invalidTypeReturned(expected, actual):
-            return "Factory returned invalid type: expected \(expected), got \(actual)"
-
         case .containerUnavailable:
             return "The container has been terminated and is no longer available"
 
@@ -56,6 +54,8 @@ extension ContainerError: LocalizedError {
 
         case let .factoryFailed(key, error):
             return "Factory for \(key) failed with error: \(error.localizedDescription)"
+        case let .weakUnsupported(key):
+            return "Cannot weakly cache dependency \(key) because it is not a class type"
         }
     }
 }

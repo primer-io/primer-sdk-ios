@@ -22,7 +22,6 @@ public protocol DependencyScope: AnyObject {
 public extension DependencyScope {
     /// Register the scope with the global container
     func register() async {
-        print("Registering scope: \(scopeId)")
         let container = Container()
         await setupContainer()
         await DIContainer.setScopedContainer(container, for: scopeId)
@@ -30,7 +29,6 @@ public extension DependencyScope {
 
     /// Unregister the scope from the global container
     func unregister() async {
-        print("Unregistering scope: \(scopeId)")
         await DIContainer.removeScopedContainer(for: scopeId)
         await cleanupScope()
     }
@@ -40,7 +38,6 @@ public extension DependencyScope {
     /// - Throws: ContainerError if the scope's container isn't available
     func getContainer() async throws -> ContainerProtocol {
         guard let container = await DIContainer.scopedContainer(for: scopeId) else {
-            print("Missing container for scope: \(scopeId)")
             throw ContainerError.scopeNotFound(scopeId)
         }
         return container

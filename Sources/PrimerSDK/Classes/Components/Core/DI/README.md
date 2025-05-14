@@ -112,24 +112,6 @@ class PaymentUseCase {
 }
 ```
 
-#### Using DIInjectable Protocol
-
-```swift
-class PaymentProcessor: DIInjectable {
-    private let service: PaymentService
-    private let validator: PaymentValidator
-    
-    required init(resolver: ContainerProtocol) throws {
-        // Async resolution in sync context
-        self.service = try await resolver.resolve(PaymentService.self)
-        self.validator = try await resolver.resolve(PaymentValidator.self)
-    }
-}
-
-// Usage
-let processor = try await PaymentProcessor.create()
-```
-
 ## Advanced Usage
 
 ### Factory Pattern
@@ -144,7 +126,7 @@ protocol PaymentMethodFactory: Factory {
 }
 
 class PaymentMethodFactoryImpl: PaymentMethodFactory {
-    func create(with config: PaymentMethodConfig) -> PaymentMethod {
+    func create(with config: PaymentMethodConfig) async throws -> PaymentMethod {
         switch config.type {
         case .card:
             return CardPaymentMethod(config: config)
@@ -157,40 +139,37 @@ class PaymentMethodFactoryImpl: PaymentMethodFactory {
 }
 
 // Register the factory
-_ = container.register(PaymentMethodFactory.self)
-    .asSingleton()
-    .with { _ in PaymentMethodFactoryImpl() }
+_ = container.registerFactory(PaymentMethodFactoryImpl())
 
 // Use the factory
 guard let container = await DIContainer.current else { return }
-let paymentMethod = try await container.create(
-    factoryType: PaymentMethodFactory.self,
+let paymentMethod = try await container.createAsync(
+    using: PaymentMethodFactory.self,
     with: PaymentMethodConfig(type: .card, settings: cardSettings)
 )
 ```
 
-### Async Factories
+### Synchronous Factories
 
-For factories that need async initialization:
+For factories that don't need async operations, you can use `SynchronousFactory`:
 
 ```swift
-protocol AsyncPaymentProcessorFactory: AsyncFactory {
-    associatedtype Product = PaymentProcessor
-    associatedtype Params = ProcessorConfig
+protocol UserValidatorFactory: SynchronousFactory {
+    associatedtype Product = UserValidator
+    associatedtype Params = ValidationConfig
 }
 
-class AsyncPaymentProcessorFactoryImpl: AsyncPaymentProcessorFactory {
-    func create(with config: ProcessorConfig) async throws -> PaymentProcessor {
-        // Async initialization
-        let credentials = try await fetchCredentials(for: config.provider)
-        return PaymentProcessor(config: config, credentials: credentials)
+class UserValidatorFactoryImpl: UserValidatorFactory {
+    func createSync(with config: ValidationConfig) throws -> UserValidator {
+        return UserValidator(rules: config.rules, strict: config.strictMode)
     }
 }
 
-// Usage
-let processor = try await container.createAsync(
-    factoryType: AsyncPaymentProcessorFactory.self,
-    with: config
+// Register and use
+_ = container.registerFactory(UserValidatorFactoryImpl())
+let validator = try await container.createAsync(
+    using: UserValidatorFactory.self,
+    with: ValidationConfig(rules: defaultRules, strictMode: true)
 )
 ```
 
@@ -385,14 +364,9 @@ protocol PaymentUseCase {
 }
 
 // Use Case Implementation
-class ProcessPaymentUseCase: PaymentUseCase, DIInjectable {
-    private let repository: PaymentRepository
-    private let validator: PaymentValidator
-    
-    required init(resolver: ContainerProtocol) throws {
-        self.repository = try await resolver.resolve(PaymentRepository.self)
-        self.validator = try await resolver.resolve(PaymentValidator.self)
-    }
+class ProcessPaymentUseCase: PaymentUseCase {
+    @Injected private var repository: PaymentRepository
+    @Injected private var validator: PaymentValidator
     
     func processPayment(_ request: PaymentRequest) async throws -> PaymentResult {
         try validator.validate(request)
@@ -484,6 +458,41 @@ class PaymentSDK: NSObject {
 }
 ```
 
+## Container Features
+
+### Resolving All Dependencies
+
+You can resolve all registered dependencies that conform to a specific protocol:
+
+```swift
+// Register multiple implementations
+_ = container.register(PaymentProcessor.self)
+    .named("stripe")
+    .asSingleton()
+    .with { _ in StripeProcessor() }
+
+_ = container.register(PaymentProcessor.self)
+    .named("paypal")
+    .asSingleton()
+    .with { _ in PayPalProcessor() }
+
+// Resolve all processors
+let allProcessors = await container.resolveAll(PaymentProcessor.self)
+print("Found \(allProcessors.count) payment processors")
+```
+
+### Container Reset
+
+Reset the container while preserving specific dependencies:
+
+```swift
+// Reset everything except core services
+await container.reset(ignoreDependencies: [
+    Logger.self,
+    APIClient.self
+])
+```
+
 ## Troubleshooting
 
 ### Common Issues
@@ -516,4 +525,4 @@ When contributing to the DI container:
 
 ## License
 
-Copyright © 2025 Primer.io. All rights reserved.
+Copyright © 2025 Primer.io. All rights reserved.    
