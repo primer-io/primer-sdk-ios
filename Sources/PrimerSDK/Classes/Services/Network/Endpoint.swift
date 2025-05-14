@@ -10,13 +10,11 @@ import Foundation
 internal protocol Endpoint {
 
     var baseURL: String? { get }
-    var port: Int? { get }
     var path: String { get }
     var method: HTTPMethod { get }
     var headers: [String: String]? { get }
     var queryParameters: [String: String]? { get }
     var body: Data? { get }
-    var shouldParseResponseBody: Bool { get }
     var timeout: TimeInterval? { get }
 }
 
