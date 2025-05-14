@@ -6,7 +6,7 @@ import UIKit
 import AuthenticationServices
 import SafariServices
 
-class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
+final class PayPalTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     var willPresentExternalView: (() -> Void)?
     var didPresentExternalView: (() -> Void)?

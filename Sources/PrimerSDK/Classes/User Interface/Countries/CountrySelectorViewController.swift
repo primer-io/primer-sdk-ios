@@ -1,6 +1,6 @@
 import UIKit
 
-internal class CountrySelectorViewController: PrimerFormViewController {
+final class CountrySelectorViewController: PrimerFormViewController {
 
     let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 

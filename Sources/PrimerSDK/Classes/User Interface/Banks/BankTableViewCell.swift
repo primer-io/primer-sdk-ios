@@ -7,7 +7,7 @@
 
 import UIKit
 
-class BankTableViewCell: UITableViewCell {
+final class BankTableViewCell: UITableViewCell {
 
     static var identifier: String = "BankTableViewCell"
 

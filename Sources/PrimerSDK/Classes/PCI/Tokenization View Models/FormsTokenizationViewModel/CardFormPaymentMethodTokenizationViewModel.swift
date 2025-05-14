@@ -14,7 +14,7 @@ import SafariServices
 import UIKit
 
 // swiftlint:disable:next type_name
-class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel,
+final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel,
                                                   SearchableItemsPaymentMethodTokenizationViewModelProtocol {
 
     // MARK: - Properties

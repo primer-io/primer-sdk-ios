@@ -12,7 +12,7 @@
 
 import UIKit
 
-internal class PrimerRootViewController: PrimerViewController {
+class PrimerRootViewController: PrimerViewController {
 
     // MARK: - PROPERTIES
 

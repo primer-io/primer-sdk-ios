@@ -7,7 +7,7 @@
 
 import Foundation
 
-@objc public class MultibancoCheckoutAdditionalInfo: PrimerCheckoutAdditionalInfo {
+@objc public final class MultibancoCheckoutAdditionalInfo: PrimerCheckoutAdditionalInfo {
 
     public let expiresAt: String?
     public let entity: String?

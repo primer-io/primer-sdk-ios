@@ -15,7 +15,7 @@ typealias PrimerAPIConfiguration = Response.Body.Configuration
 // swiftlint:disable file_length
 extension Request.URLParameters {
 
-    class Configuration: Codable {
+    final class Configuration: Codable {
 
         let skipPaymentMethodTypes: [String]?
         let requestDisplayMetadata: Bool?

@@ -7,7 +7,7 @@
 
 import Foundation
 
-class CheckoutEventsNotifierModule {
+final class CheckoutEventsNotifierModule {
 
     var didStartTokenization: (() -> Void)?
     var didFinishTokenization: (() -> Void)?

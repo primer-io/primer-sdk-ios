@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class PrimerCardData: PrimerRawData {
+public final class PrimerCardData: PrimerRawData {
 
     public var cardNumber: String {
         didSet {

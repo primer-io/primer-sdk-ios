@@ -10,7 +10,7 @@ internal protocol PayPalServiceProtocol {
     func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void)
 }
 
-internal class PayPalService: PayPalServiceProtocol {
+final class PayPalService: PayPalServiceProtocol {
 
     private var paypalTokenId: String?
 

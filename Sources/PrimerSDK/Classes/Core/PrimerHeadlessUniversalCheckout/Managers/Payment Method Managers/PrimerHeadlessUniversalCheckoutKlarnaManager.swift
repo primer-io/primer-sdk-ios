@@ -11,7 +11,7 @@ import PrimerKlarnaSDK
 #endif
 
 extension PrimerHeadlessUniversalCheckout {
-    public class KlarnaManager: NSObject {
+    public final class KlarnaManager: NSObject {
         public func provideKlarnaComponent(with intent: PrimerSessionIntent) throws -> (any KlarnaComponent)? {
             #if canImport(PrimerKlarnaSDK)
             guard let paymentMethod = PrimerAPIConfiguration.paymentMethodConfigs?

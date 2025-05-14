@@ -12,7 +12,7 @@ internal protocol PrimerSettingsProtocol {
     var apiVersion: PrimerApiVersion { get }
 }
 
-public class PrimerSettings: PrimerSettingsProtocol, Codable {
+public final class PrimerSettings: PrimerSettingsProtocol, Codable {
 
     static var current: PrimerSettings {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -66,7 +66,7 @@ internal protocol PrimerPaymentMethodOptionsProtocol {
     func validSchemeForUrlScheme() throws -> String
 }
 
-public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Codable {
+public final class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Codable {
 
     private let urlScheme: String?
     let applePayOptions: PrimerApplePayOptions?
@@ -141,7 +141,7 @@ The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a 
 
 // MARK: Apple Pay
 
-public class PrimerApplePayOptions: Codable {
+public final class PrimerApplePayOptions: Codable {
 
     let merchantIdentifier: String
     @available(*, deprecated, message: "Use Client Session API to provide merchant name value: https://primer.io/docs/payment-methods/apple-pay/direct-integration#prepare-the-client-session")
@@ -214,7 +214,7 @@ public class PrimerApplePayOptions: Codable {
 
 // MARK: Klarna
 
-public class PrimerKlarnaOptions: Codable {
+public final class PrimerKlarnaOptions: Codable {
 
     let recurringPaymentDescription: String
 
@@ -224,7 +224,7 @@ public class PrimerKlarnaOptions: Codable {
 }
 
 // MARK: Stripe ACH
-public class PrimerStripeOptions: Codable {
+public final class PrimerStripeOptions: Codable {
 
     public enum MandateData: Codable {
         case fullMandate(text: String)
@@ -242,7 +242,7 @@ public class PrimerStripeOptions: Codable {
 
 // MARK: Card Payment
 
-public class PrimerCardPaymentOptions: Codable {
+public final class PrimerCardPaymentOptions: Codable {
 
     let is3DSOnVaultingEnabled: Bool
 
@@ -262,7 +262,7 @@ public enum DismissalMechanism: Codable {
     case gestures, closeButton
 }
 
-public class PrimerUIOptions: Codable {
+public final class PrimerUIOptions: Codable {
 
     public internal(set) var isInitScreenEnabled: Bool
     public internal(set) var isSuccessScreenEnabled: Bool

@@ -11,7 +11,7 @@ protocol PaymentMethodsGroupViewDelegate: AnyObject {
     func paymentMethodsGroupView(_ paymentMethodsGroupView: PaymentMethodsGroupView, paymentMethodTapped paymentMethodTokenizationViewModels: PaymentMethodTokenizationViewModelProtocol)
 }
 
-class PaymentMethodsGroupView: PrimerView {
+final class PaymentMethodsGroupView: PrimerView {
 
     internal private(set) var title: String?
     internal private(set) var paymentMethodTokenizationViewModels: [PaymentMethodTokenizationViewModelProtocol]!

@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal class PrimerStackView: UIStackView {}
+final class PrimerStackView: UIStackView {}
 
 extension PrimerStackView {
 

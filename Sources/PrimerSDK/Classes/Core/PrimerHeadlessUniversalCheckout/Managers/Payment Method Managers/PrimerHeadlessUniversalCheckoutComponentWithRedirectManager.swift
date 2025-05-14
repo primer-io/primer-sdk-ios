@@ -13,7 +13,7 @@ private typealias TokenizationViewModelType = (
 
 import Foundation
 extension PrimerHeadlessUniversalCheckout {
-    @objc public class ComponentWithRedirectManager: NSObject {
+    @objc public final class ComponentWithRedirectManager: NSObject {
 
         @objc public func provideComponent(paymentMethodType: String) -> PrimerHeadlessBanksComponentWrapper {
             PrimerHeadlessBanksComponentWrapper(manager: self, paymentMethodType: paymentMethodType)
