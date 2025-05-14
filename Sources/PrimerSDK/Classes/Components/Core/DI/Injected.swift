@@ -71,6 +71,7 @@ public struct InjectedOptional<T> {
         self.name = name
     }
 
+    /// ⚠️ Always fatalError if accessed synchronously
     @available(*, deprecated, message: "Use `await $property.resolve()` instead")
     public var wrappedValue: T? {
         preconditionFailure("InjectedOptional<\(T.self)> can’t be read synchronously. Use `$…resolve()`.")
@@ -83,29 +84,4 @@ public struct InjectedOptional<T> {
     }
 
     public var projectedValue: InjectedOptional<T> { self }
-}
-
-/// Legacy name for clarity in UI/view‐model use; identical to `Injected`
-@propertyWrapper
-public struct InjectedAsync<T> {
-    private let name: String?
-
-    public init(name: String? = nil) {
-        self.name = name
-    }
-
-    @available(*, deprecated, message: "Use `try await $property.resolve()` instead")
-    public var wrappedValue: T {
-        preconditionFailure("InjectedAsync<\(T.self)> can’t be read synchronously. Use `$…resolve()`.")
-    }
-
-    /// Call this in async contexts: `let x = try await $property.resolve()`
-    public func resolve() async throws -> T {
-        guard let container = await DIContainer.current else {
-            throw ContainerError.containerUnavailable
-        }
-        return try await container.resolve(T.self, name: name)
-    }
-
-    public var projectedValue: InjectedAsync<T> { self }
 }

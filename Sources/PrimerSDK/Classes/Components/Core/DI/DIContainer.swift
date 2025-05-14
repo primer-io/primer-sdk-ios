@@ -126,7 +126,6 @@ public final class DIContainer: LogReporter {
         }
     }
 
-
     /// Add a scoped container
     public static func setScopedContainer(_ container: any ContainerProtocol, for scopeId: String) async {
         logger.debug(message: "Setting scoped container for: \(scopeId)")

@@ -13,7 +13,7 @@ final class WeakBox<T: AnyObject> {
 }
 
 /// Main implementation of the dependency injection container
-public actor Container: ContainerProtocol, Sendable {
+public actor Container: ContainerProtocol, Sendable, LogReporter {
     /// Internal factory structure
     struct FactoryRegistration {
         let policy: ContainerRetainPolicy
@@ -67,7 +67,7 @@ public actor Container: ContainerProtocol, Sendable {
         public func with(
             _ factory: @escaping (any ContainerProtocol) async throws -> T
         ) async throws -> Self {
-            await container.registerInternal(type: type, name: name, with: policy) { resolver in
+            try await container.registerInternal(type: type, name: name, with: policy) { resolver in
                 try await factory(resolver)
             }
             return self
@@ -76,7 +76,7 @@ public actor Container: ContainerProtocol, Sendable {
         public func with(
             _ factory: @escaping (any ContainerProtocol) throws -> T
         ) async throws -> Self {
-            await container.registerInternal(type: type, name: name, with: policy) { resolver in
+            try await container.registerInternal(type: type, name: name, with: policy) { resolver in
                 try factory(resolver)
             }
             return self
@@ -94,22 +94,10 @@ public actor Container: ContainerProtocol, Sendable {
     /// Map of weakly-held instances
     var weakBoxes: [TypeKey: WeakBox<AnyObject>] = [:]
 
-    // Map each policy to its RetentionStrategy ↓
-    private func strategy(for policy: ContainerRetainPolicy) -> RetentionStrategy {
-        policy.makeStrategy()
-    }
-
-    /// Set used to detect circular dependencies
-    private var resolutionStack: [TypeKey] = []
-
-    /// Logger for internal operations
-    private var logger: (String) -> Void = { _ in }
-
-    // MARK: - Initialization
-
-    public init(logger: @escaping (String) -> Void = { _ in }) {
-        self.logger = logger
-    }
+    /// Set used to detect circular dependencies - using Set for O(1) lookup
+    private var resolutionStack: Set<TypeKey> = []
+    /// Order tracking for better error messages
+    private var resolutionOrder: [TypeKey] = []
 
     /// Actor-isolated setter for strong instances
     func setInstance(_ instance: Any, forKey key: TypeKey) {
@@ -128,9 +116,19 @@ public actor Container: ContainerProtocol, Sendable {
         return ContainerRegistrationBuilderImpl(container: self, type: type)
     }
 
-    /// Internal registration method
-    private func registerInternal<T>(type: T.Type, name: String?, with policy: ContainerRetainPolicy, factory: @escaping (ContainerProtocol) async throws -> T) {
+    /// Internal registration method with validation
+    private func registerInternal<T>(
+        type: T.Type,
+        name: String?,
+        with policy: ContainerRetainPolicy,
+        factory: @escaping (ContainerProtocol) async throws -> T
+    ) throws {
         let key = TypeKey(type, name: name)
+
+        // Validate weak policy for non-class types
+        if policy == .weak && !(T.self is AnyObject.Type) {
+            throw ContainerError.weakUnsupported(key)
+        }
 
         // Clean up any existing instances
         instances.removeValue(forKey: key)
@@ -141,7 +139,26 @@ public actor Container: ContainerProtocol, Sendable {
             try await factory(container)
         }
 
-        logger("Registered \(policy) dependency: \(key)")
+        logger.debug(message: "Registered \(policy) dependency: \(key)")
+    }
+
+    /// Register only if not already registered
+    public nonisolated func registerIfNeeded<T>(_ type: T.Type, name: String? = nil) async -> ContainerRegistrationBuilderImpl<T>? {
+        let key = TypeKey(type, name: name)
+        let isRegistered = await isRegistered(key)
+
+        guard !isRegistered else {
+            logger.debug(message: "Skipping registration - already exists: \(key)")
+            return nil
+        }
+
+        let builder = ContainerRegistrationBuilderImpl(container: self, type: type)
+        return name != nil ? builder.named(name!) : builder
+    }
+
+    /// Check if a dependency is registered
+    private func isRegistered(_ key: TypeKey) -> Bool {
+        return factories[key] != nil
     }
 
     /// Unregister a dependency from the container
@@ -162,7 +179,7 @@ public actor Container: ContainerProtocol, Sendable {
         instances.removeValue(forKey: key)
         weakBoxes.removeValue(forKey: key)
 
-        logger("Unregistered dependency: \(key)")
+        logger.debug(message: "Unregistered dependency: \(key)")
     }
 
     // MARK: - Resolution
@@ -175,47 +192,66 @@ public actor Container: ContainerProtocol, Sendable {
             throw ContainerError.dependencyNotRegistered(key)
         }
 
-        // Detect circular graph
+        // O(1) circular dependency detection
         if resolutionStack.contains(key) {
-            throw ContainerError.circularDependency(key, path: resolutionStack + [key])
+            throw ContainerError.circularDependency(key, path: resolutionOrder + [key])
         }
-        resolutionStack.append(key)
-        defer { resolutionStack.removeLast() }
 
-        // Delegate to the correct strategy
-        let any = try await strategy(for: registration.policy)
-            .instance(for: key, registration: registration, in: self)
+        // Track resolution
+        resolutionStack.insert(key)
+        resolutionOrder.append(key)
 
-        guard let typed = any as? T else {
-            throw ContainerError.typeCastFailed(key, Swift.type(of: any))
+        defer {
+            resolutionStack.remove(key)
+            resolutionOrder.removeLast()
         }
-        return typed
+
+        do {
+            // Delegate to the correct strategy
+            let instance = try await strategy(for: registration.policy)
+                .instance(for: key, registration: registration, in: self)
+
+            guard let typed = instance as? T else {
+                throw ContainerError.typeCastFailed(key, expected: T.self, actual: Swift.type(of: instance))
+            }
+
+            return typed
+        } catch let containerError as ContainerError {
+            throw containerError
+        } catch {
+            throw ContainerError.factoryFailed(key, underlyingError: error)
+        }
     }
 
-    // MARK: - Private Helpers
+    /// Resolve multiple dependencies in parallel
+    public func resolveBatch<T>(_ requests: [(type: T.Type, name: String?)]) async throws -> [T] {
+        return try await withThrowingTaskGroup(of: (Int, T).self) { group in
+            for (index, request) in requests.enumerated() {
+                group.addTask {
+                    let result = try await self.resolve(request.type, name: request.name)
+                    return (index, result)
+                }
+            }
 
-    /// Track and detect circular resolution
-    private func pushResolution(_ key: TypeKey) throws {
-        if resolutionStack.contains(key) {
-            throw ContainerError.circularDependency(key, path: resolutionStack + [key])
+            var results: [(Int, T)] = []
+            for try await result in group {
+                results.append(result)
+            }
+
+            // Sort by original order
+            results.sort { $0.0 < $1.0 }
+            return results.map { $0.1 }
         }
-        resolutionStack.append(key)
     }
 
-    /// Pop last resolution key
-    private func popResolution() {
-        resolutionStack.removeLast()
+    // MARK: - Strategy Pattern
+
+    /// Map each policy to its RetentionStrategy
+    private func strategy(for policy: ContainerRetainPolicy) -> RetentionStrategy {
+        policy.makeStrategy()
     }
 
-    /// Cast to expected type or throw
-    private func cast<T>(_ instance: Any, to key: TypeKey) throws -> T {
-        guard let typed = instance as? T else {
-            throw ContainerError.typeCastFailed(key, Swift.type(of: instance))
-        }
-        return typed
-    }
-
-    // MARK: – Resolve all
+    // MARK: - Resolve All
 
     /// Resolve all dependencies conforming to a specific protocol
     public func resolveAll<T>(_ type: T.Type) async -> [T] {
@@ -228,7 +264,7 @@ public actor Container: ContainerProtocol, Sendable {
             }
         }
 
-        // 2) Weak instances
+        // 2) Weak instances (filter out nil references)
         for box in weakBoxes.values {
             if let inst = box.instance as? T {
                 result.append(inst)
@@ -237,13 +273,13 @@ public actor Container: ContainerProtocol, Sendable {
 
         // 3) Non-transient factories not yet built
         for (key, registration) in factories where registration.policy != .transient {
-            // skip if already in strong or weak storage
+            // Skip if already in strong or weak storage
             guard !instances.keys.contains(key),
                   !weakBoxes.keys.contains(key) else {
                 continue
             }
 
-            // build it and cast if possible
+            // Build it and cast if possible
             if let any = try? await strategy(for: registration.policy)
                 .instance(for: key, registration: registration, in: self),
                let cast = any as? T {
@@ -276,8 +312,29 @@ public actor Container: ContainerProtocol, Sendable {
             factories.removeValue(forKey: key)
         }
 
-        logger("Container reset (ignored \(keysToIgnore.count) dependencies)")
+        logger.debug(message: "Container reset (ignored \(keysToIgnore.count) dependencies)")
     }
+
+    // MARK: - Memory Management
+
+    /// Cleanup weak references that are nil
+    private func cleanupWeakReferences() {
+        let initialCount = weakBoxes.count
+        weakBoxes = weakBoxes.compactMapValues { box in
+            return box.instance != nil ? box : nil
+        }
+        let cleanedCount = initialCount - weakBoxes.count
+        if cleanedCount > 0 {
+            logger.debug(message: "Cleaned up \(cleanedCount) dead weak references")
+        }
+    }
+
+    /// Periodic cleanup - call this during low-memory warnings
+    public func performMaintenanceCleanup() {
+        cleanupWeakReferences()
+        logger.debug(message: "Performed maintenance cleanup. Active weak boxes: \(weakBoxes.count)")
+    }
+
     // MARK: - Factory Registration
 
     /// Register a factory for creating instances with parameters
@@ -286,5 +343,56 @@ public actor Container: ContainerProtocol, Sendable {
             .asSingleton()
             .with { _ in factory }
         return self
+    }
+
+    // MARK: - Diagnostics
+
+    /// Get diagnostic information about the container state
+    public func getDiagnostics() -> ContainerDiagnostics {
+        cleanupWeakReferences() // Clean before reporting
+
+        return ContainerDiagnostics(
+            totalRegistrations: factories.count,
+            singletonInstances: instances.count,
+            weakReferences: weakBoxes.count,
+            activeWeakReferences: weakBoxes.values.compactMap { $0.instance }.count,
+            registeredTypes: Array(factories.keys)
+        )
+    }
+
+    /// Perform health check on the container
+    public func performHealthCheck() -> ContainerHealthReport {
+        let diagnostics = getDiagnostics()
+        var issues: [HealthIssue] = []
+        var recommendations: [String] = []
+
+        // Check for memory issues
+        if diagnostics.weakReferences > 0 {
+            let efficiency = Double(diagnostics.activeWeakReferences) / Double(diagnostics.weakReferences)
+            if efficiency < 0.7 {
+                issues.append(.memoryLeak("Low weak reference efficiency: \(String(format: "%.1f", efficiency * 100))%"))
+                recommendations.append("Consider calling performMaintenanceCleanup() more frequently")
+            }
+        }
+
+        // Check for orphaned registrations
+        let unusedRegistrations = factories.count - diagnostics.singletonInstances
+        if unusedRegistrations > diagnostics.totalRegistrations / 2 {
+            issues.append(.orphanedRegistrations(unusedRegistrations))
+            recommendations.append("Remove unused registrations to improve performance")
+        }
+
+        // Check circular dependencies (simplified)
+        if resolutionOrder.count > 10 {
+            issues.append(.deepResolutionStack("Resolution stack depth: \(resolutionOrder.count)"))
+            recommendations.append("Consider breaking complex dependency chains")
+        }
+
+        return ContainerHealthReport(
+            status: issues.isEmpty ? .healthy : .hasIssues,
+            issues: issues,
+            recommendations: recommendations,
+            diagnostics: diagnostics
+        )
     }
 }
