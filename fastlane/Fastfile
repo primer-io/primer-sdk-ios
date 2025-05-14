@@ -106,6 +106,11 @@ platform :ios do
       file_path: ENV["IPA_OUTPUT_PATH"]
     )
 
+    # Upload to LambdaTest
+    upload_to_lambdatest_and_save_id(
+      file_path: ENV["IPA_OUTPUT_PATH"]
+    )
+
     # Upload to Firebase
     firebase_app_distribution(
       service_credentials_file: "firebase_credentials.json",
@@ -265,6 +270,20 @@ platform :ios do
 
   end
 
+  desc 'This action uploads the .ipa to LambdaTest and save its ID into a file'
+  private_lane :upload_to_lambdatest_and_save_id do |options|
+
+    upload_to_lambdatest(
+      lt_username: ENV["LAMBDATEST_USERNAME"],
+      lt_access_key: ENV["LAMBDATEST_ACCESS_KEY"],
+      file_path: options[:file_path],
+      custom_id: source_branch_trimmed
+    )
+
+    save_lambdatest_id(lambdatest_id: ENV['APP_URL'])
+
+  end
+
   desc 'This action creates a temporary keychain and installs certificates and provisioning profiles'
   private_lane :setup_signing do |options|
 
@@ -335,6 +354,18 @@ platform :ios do
     File.open(browserstack_id_file, 'w') { |file| file.write(options[:browserstack_id]) }
 
   end
+
+  desc 'Store the LambdaTest ID into a file'
+  private_lane :save_lambdatest_id do |options|
+
+    lambdatest_id_to_save = options[:lambdatest_id]
+    lambdatest_id_file = "/var/tmp/lambdatest_id.txt" 
+
+    UI.message("Saving #{lambdatest_id_to_save} into #{lambdatest_id_file}")
+
+    File.open(lambdatest_id_file, 'w') { |file| file.write(options[:lambdatest_id]) }
+
+  end 
 
   ################## END PRIVATE LANES ######################
 
