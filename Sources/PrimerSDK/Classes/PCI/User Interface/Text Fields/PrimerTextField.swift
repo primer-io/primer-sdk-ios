@@ -7,7 +7,7 @@
 
 import UIKit
 
-internal class PrimerTextField: UITextField {
+final class PrimerTextField: UITextField {
 
     internal enum Validation: Equatable {
         case valid, invalid(_ error: Error?), notAvailable

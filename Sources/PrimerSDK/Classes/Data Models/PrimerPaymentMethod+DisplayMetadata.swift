@@ -9,7 +9,7 @@ import Foundation
 
 extension PrimerPaymentMethod {
 
-    class DisplayMetadata: Codable {
+    final class DisplayMetadata: Codable {
 
         var button: PrimerPaymentMethod.DisplayMetadata.Button
 
@@ -18,7 +18,7 @@ extension PrimerPaymentMethod {
         }
 
         // swiftlint:disable:next nesting
-        class Button: Codable {
+        final class Button: Codable {
 
             var iconUrl: PrimerTheme.BaseColoredURLs?
             var backgroundColor: PrimerTheme.BaseColors?

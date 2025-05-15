@@ -12,7 +12,7 @@
 
 import UIKit
 
-internal class PrimerUniversalCheckoutViewController: PrimerFormViewController {
+final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
 
     var savedCardView: CardButton!
     private var titleLabel: UILabel!

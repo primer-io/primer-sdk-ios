@@ -32,10 +32,10 @@ protocol ThreeDSSDKAuthDataProtocol: Codable {
     var sdkReferenceNumber: String { get }
 }
 
-public class ThreeDS {
+public final class ThreeDS {
 
     #if canImport(Primer3DS)
-    class Cer: Primer3DSCertificate {
+    final class Cer: Primer3DSCertificate {
 
         var cardScheme: String
         var encryptionKey: String
@@ -48,7 +48,7 @@ public class ThreeDS {
         }
     }
 
-    class ServerAuthData: Primer3DSServerAuthData {
+    final class ServerAuthData: Primer3DSServerAuthData {
 
         var acsReferenceNumber: String?
         var acsSignedContent: String?
@@ -470,7 +470,7 @@ public class ThreeDS {
         case requestedProgramNotSupported = "REQUESTED_PROGRAM_NOT_SUPPORTED"
     }
 
-    class ContinueInfo: Encodable {
+    final class ContinueInfo: Encodable {
 
         var platform: String
         var threeDsWrapperSdkVersion: String?
@@ -502,7 +502,7 @@ public class ThreeDS {
         }
 
         // swiftlint:disable:next nesting
-        class Error: Encodable {
+        final class Error: Encodable {
 
             var reasonCode: String
             var reasonText: String

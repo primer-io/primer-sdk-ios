@@ -7,7 +7,7 @@ public enum TokenType: String, Codable {
 
 extension Request.Body {
 
-    class Tokenization: Encodable {
+    final class Tokenization: Encodable {
 
         let paymentInstrument: TokenizationRequestBodyPaymentInstrument
         let tokenType: TokenType?

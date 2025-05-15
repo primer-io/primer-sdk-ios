@@ -5,7 +5,7 @@ internal protocol VaultPaymentMethodViewModelProtocol: AnyObject {
     func deletePaymentMethod(with id: String, and completion: @escaping (Error?) -> Void)
 }
 
-internal class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
+final class VaultPaymentMethodViewModel: VaultPaymentMethodViewModelProtocol {
 
     let vaultService: VaultServiceProtocol
 

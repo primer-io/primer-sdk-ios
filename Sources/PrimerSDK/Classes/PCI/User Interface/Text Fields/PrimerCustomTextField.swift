@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PrimerCustomFieldView: UIView {
+final class PrimerCustomFieldView: UIView {
 
     var fieldView: PrimerTextFieldView!
     override var tintColor: UIColor! {

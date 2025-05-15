@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class ACHMandateViewModel: ObservableObject {
+final class ACHMandateViewModel: ObservableObject {
 
     private var mandateData: PrimerStripeOptions.MandateData
 

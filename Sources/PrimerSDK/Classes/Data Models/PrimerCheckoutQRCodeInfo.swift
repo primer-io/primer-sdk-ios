@@ -13,7 +13,7 @@ import Foundation
 
 // MARK: PromptPay
 
-@objc public class PromptPayCheckoutAdditionalInfo: PrimerCheckoutQRCodeInfo {
+@objc public final class PromptPayCheckoutAdditionalInfo: PrimerCheckoutQRCodeInfo {
 
     public let expiresAt: String
     public let qrCodeUrl: String?
