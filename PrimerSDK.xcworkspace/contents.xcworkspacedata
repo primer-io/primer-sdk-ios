@@ -20,8 +20,8 @@
             location = "group:Classes"
             name = "Classes">
             <FileSystemSynchronizedGroup
-               location = "group:Components"
-               name = "Components">
+               location = "group:ComposableCheckout"
+               name = "ComposableCheckout">
             </FileSystemSynchronizedGroup>
             <Group
                location = "group:PCI"
