@@ -72,13 +72,7 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
     }
 
     func tokenize(requestBody: Request.Body.Tokenization) async throws -> PrimerPaymentMethodTokenData {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.tokenize(requestBody: requestBody).done { paymentMethodTokenData in
-                continuation.resume(returning: paymentMethodTokenData)
-            }.catch { error in
-                continuation.resume(throwing: error)
-            }
-        }
+        return try await tokenize(requestBody: requestBody).async()
     }
 
     func exchangePaymentMethodToken(
@@ -116,16 +110,10 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
         _ paymentMethodTokenId: String,
         vaultedPaymentMethodAdditionalData: (any PrimerVaultedPaymentMethodAdditionalData)?
     ) async throws -> PrimerPaymentMethodTokenData {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.exchangePaymentMethodToken(
-                paymentMethodTokenId,
-                vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData
-            ).done { paymentMethodTokenData in
-                continuation.resume(returning: paymentMethodTokenData)
-            }.catch { error in
-                continuation.resume(throwing: error)
-            }
-        }
+        return try await exchangePaymentMethodToken(
+            paymentMethodTokenId,
+            vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData
+        ).async()
     }
 }
 

@@ -42,15 +42,7 @@ final class VaultService: VaultServiceProtocol {
     }
 
     func fetchVaultedPaymentMethods() async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.fetchVaultedPaymentMethods()
-                .done {
-                    continuation.resume()
-                }
-                .catch { err in
-                    continuation.resume(throwing: err)
-                }
-        }
+        return try await fetchVaultedPaymentMethods().async()
     }
 
     func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) -> Promise<Response.Body.VaultedPaymentMethods> {
@@ -67,15 +59,7 @@ final class VaultService: VaultServiceProtocol {
     }
 
     func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) async throws -> Response.Body.VaultedPaymentMethods {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.fetchVaultedPaymentMethods(clientToken: clientToken)
-                .done { response in
-                    continuation.resume(returning: response)
-                }
-                .catch { err in
-                    continuation.resume(throwing: err)
-                }
-        }
+        return try await fetchVaultedPaymentMethods(clientToken: clientToken).async()
     }
 
     func deleteVaultedPaymentMethod(with id: String) -> Promise<Void> {
@@ -104,14 +88,6 @@ final class VaultService: VaultServiceProtocol {
     }
 
     func deleteVaultedPaymentMethod(with id: String) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.deleteVaultedPaymentMethod(with: id)
-                .done {
-                    continuation.resume()
-                }
-                .catch { err in
-                    continuation.resume(throwing: err)
-                }
-        }
+        return try await deleteVaultedPaymentMethod(with: id).async()
     }
 }

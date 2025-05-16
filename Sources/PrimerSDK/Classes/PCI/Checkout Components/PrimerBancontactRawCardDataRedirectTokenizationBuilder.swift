@@ -111,15 +111,7 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
     }
 
     func makeRequestBodyWithRawData(_ data: PrimerRawData) async throws -> Request.Body.Tokenization {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.makeRequestBodyWithRawData(data)
-                .done { requestBody in
-                    continuation.resume(returning: requestBody)
-                }
-                .catch { err in
-                    continuation.resume(throwing: err)
-                }
-        }
+        return try await makeRequestBodyWithRawData(data).async()
     }
 
     func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
@@ -205,15 +197,7 @@ final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDat
     }
 
     func validateRawData(_ data: PrimerRawData) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.validateRawData(data)
-                .done {
-                    continuation.resume()
-                }
-                .catch { err in
-                    continuation.resume(throwing: err)
-                }
-        }
+        return try await validateRawData(data).async()
     }
 
     private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {

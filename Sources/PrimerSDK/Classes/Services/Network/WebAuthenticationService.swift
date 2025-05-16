@@ -44,15 +44,13 @@ final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService 
     }
 
     func connect(paymentMethodType: String, url: URL, scheme: String) async throws -> URL {
-        return try await withCheckedThrowingContinuation { continuation in
-            connect(paymentMethodType: paymentMethodType, url: url, scheme: scheme) { result in
-                switch result {
-                case .success(let url):
-                    continuation.resume(returning: url)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
+        return try await awaitResult { completion in
+            connect(
+                paymentMethodType: paymentMethodType,
+                url: url,
+                scheme: scheme,
+                completion
+            )
         }
     }
 }

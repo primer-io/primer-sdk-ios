@@ -63,13 +63,7 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
     }
 
     func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.createPayment(paymentRequest: paymentRequest).done { paymentResponse in
-                continuation.resume(returning: paymentResponse)
-            }.catch { error in
-                continuation.resume(throwing: error)
-            }
-        }
+        return try await createPayment(paymentRequest: paymentRequest).async()
     }
 
     /**
@@ -150,13 +144,7 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
     }
 
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response.Body.Payment {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.resumePaymentWithPaymentId(paymentId, paymentResumeRequest: paymentResumeRequest).done { paymentResponse in
-                continuation.resume(returning: paymentResponse)
-            }.catch { error in
-                continuation.resume(throwing: error)
-            }
-        }
+        return try await self.resumePaymentWithPaymentId(paymentId, paymentResumeRequest: paymentResumeRequest).async()
     }
 
     /**
@@ -192,13 +180,7 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
     func completePayment(clientToken: DecodedJWTToken,
                          completeUrl: URL,
                          body: Request.Body.Payment.Complete) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.completePayment(clientToken: clientToken, completeUrl: completeUrl, body: body).done {
-                continuation.resume()
-            }.catch { error in
-                continuation.resume(throwing: error)
-            }
-        }
+        return try await self.completePayment(clientToken: clientToken, completeUrl: completeUrl, body: body).async()
     }
 }
 

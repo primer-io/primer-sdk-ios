@@ -129,14 +129,7 @@ extension KlarnaTokenizationComponent {
     }
 
     func createPaymentSession() async throws -> Response.Body.Klarna.PaymentSession {
-        return try await withCheckedThrowingContinuation { continuation in
-            createPaymentSession()
-                .done { paymentSession in
-                    continuation.resume(returning: paymentSession)
-                }.catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await createPaymentSession().async()
     }
 }
 
@@ -190,15 +183,7 @@ extension KlarnaTokenizationComponent {
     }
 
     func authorizePaymentSession(authorizationToken: String) async throws -> Response.Body.Klarna.CustomerToken {
-        return try await withCheckedThrowingContinuation { continuation in
-            authorizePaymentSession(authorizationToken: authorizationToken)
-                .done { customerToken in
-                    continuation.resume(returning: customerToken)
-                }
-                .catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await authorizePaymentSession(authorizationToken: authorizationToken).async()
     }
 }
 

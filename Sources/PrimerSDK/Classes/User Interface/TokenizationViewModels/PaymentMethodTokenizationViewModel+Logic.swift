@@ -242,15 +242,7 @@ extension PaymentMethodTokenizationViewModel {
     }
 
     func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> PrimerCheckoutData? {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
-                .done { checkoutData in
-                    continuation.resume(returning: checkoutData)
-                }
-                .catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData).async()
     }
 
     // This function will do one of the two following:
@@ -454,15 +446,7 @@ extension PaymentMethodTokenizationViewModel {
     }
 
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
-                .done { checkoutData in
-                    continuation.resume(returning: checkoutData)
-                }
-                .catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken).async()
     }
 
     // This method will show the new design for result screen with a specific state: e.g. Error state or Success state

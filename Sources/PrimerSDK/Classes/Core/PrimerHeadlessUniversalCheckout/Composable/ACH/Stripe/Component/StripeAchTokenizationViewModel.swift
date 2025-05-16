@@ -122,14 +122,7 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func performTokenizationStep() async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.performTokenizationStep()
-                .done {
-                    continuation.resume()
-                }.catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await performTokenizationStep().async()
     }
 
     override func performPostTokenizationSteps() -> Promise<Void> {
@@ -139,14 +132,7 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func performPostTokenizationSteps() async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.performPostTokenizationSteps()
-                .done {
-                    continuation.resume()
-                }.catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await performPostTokenizationSteps().async()
     }
 
     /**
@@ -214,14 +200,10 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
         _ decodedJWTToken: DecodedJWTToken,
         paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) async throws -> String? {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
-                .done { result in
-                    continuation.resume(returning: result)
-                }.catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await handleDecodedClientTokenIfNeeded(
+            decodedJWTToken,
+            paymentMethodTokenData: paymentMethodTokenData
+        ).async()
     }
 
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
@@ -261,14 +243,7 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func presentPaymentMethodUserInterface() async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.presentPaymentMethodUserInterface()
-                .done {
-                    continuation.resume()
-                }.catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await presentPaymentMethodUserInterface().async()
     }
 
     private func showCollector(urlScheme: String) -> Promise<Void> {
@@ -306,14 +281,7 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     private func showCollector() async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.showCollector(urlScheme: "")
-                .done {
-                    continuation.resume()
-                }.catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await showCollector(urlScheme: "").async()
     }
 
     /**
@@ -362,14 +330,7 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func awaitUserInput() async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.awaitUserInput()
-                .done {
-                    continuation.resume()
-                }.catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await awaitUserInput().async()
     }
 
     /**
@@ -390,14 +351,7 @@ final class StripeAchTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     private func awaitStripeBankAccountCollectorResponse() async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.awaitStripeBankAccountCollectorResponse()
-                .done {
-                    continuation.resume()
-                }.catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await awaitStripeBankAccountCollectorResponse().async()
     }
 
     /**
@@ -455,14 +409,7 @@ extension StripeAchTokenizationViewModel: ACHUserDetailsDelegate {
     }
 
     private func showACHUserDetailsViewControllerIfNeeded() async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.showACHUserDetailsViewControllerIfNeeded()
-                .done {
-                    continuation.resume()
-                }.catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await showACHUserDetailsViewControllerIfNeeded().async()
     }
 
     // Checks if the ACHUserDetailsViewController is already presented in the navigation stack
@@ -481,14 +428,7 @@ extension StripeAchTokenizationViewModel: ACHUserDetailsDelegate {
     }
 
     private func showACHUserDetailsViewController() async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.showACHUserDetailsViewController()
-                .done {
-                    continuation.resume()
-                }.catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await showACHUserDetailsViewController().async()
     }
 
     /**
@@ -510,14 +450,7 @@ extension StripeAchTokenizationViewModel: ACHUserDetailsDelegate {
     }
 
     private func awaitSubmitUserOutput() async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.awaitSubmitUserOutput()
-                .done {
-                    continuation.resume()
-                }.catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await awaitSubmitUserOutput().async()
     }
 
     static var defaultCompleteBodyWithTimestamp: Request.Body.Payment.Complete {
@@ -594,14 +527,7 @@ extension StripeAchTokenizationViewModel {
     }
 
     private func sendAdditionalInfoEvent(stripeCollector: UIViewController? = nil) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.sendAdditionalInfoEvent(stripeCollector: stripeCollector)
-                .done {
-                    continuation.resume()
-                }.catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await sendAdditionalInfoEvent(stripeCollector: stripeCollector).async()
     }
 }
 
@@ -622,14 +548,7 @@ extension StripeAchTokenizationViewModel {
     }
 
     private func getClientSessionUserDetails() async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.getClientSessionUserDetails()
-                .done {
-                    continuation.resume()
-                }.catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await getClientSessionUserDetails().async()
     }
 
     private func getPublishableKey() -> Promise<Void> {
@@ -649,14 +568,7 @@ extension StripeAchTokenizationViewModel {
     }
 
     private func getPublishableKey() async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.getPublishableKey()
-                .done {
-                    continuation.resume()
-                }.catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await getPublishableKey().async()
     }
 
     private func getMandateData() -> Promise<PrimerStripeOptions.MandateData> {
@@ -675,14 +587,7 @@ extension StripeAchTokenizationViewModel {
     }
 
     private func getMandateData() async throws -> PrimerStripeOptions.MandateData {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.getMandateData()
-                .done { mandateData in
-                    continuation.resume(returning: mandateData)
-                }.catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await getMandateData().async()
     }
 
     private func getUrlScheme() -> Promise<String> {
@@ -697,14 +602,7 @@ extension StripeAchTokenizationViewModel {
     }
 
     private func getUrlScheme() async throws -> String {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.getUrlScheme()
-                .done { urlScheme in
-                    continuation.resume(returning: urlScheme)
-                }.catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await getUrlScheme().async()
     }
 }
 

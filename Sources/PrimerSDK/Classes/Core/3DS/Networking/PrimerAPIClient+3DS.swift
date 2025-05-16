@@ -28,17 +28,12 @@ extension PrimerAPIClient {
     func begin3DSAuth(clientToken: DecodedJWTToken,
                       paymentMethodTokenData: PrimerPaymentMethodTokenData,
                       threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest) async throws -> ThreeDS.BeginAuthResponse {
-        return try await withCheckedThrowingContinuation { continuation in
+        return try await awaitResult { completion in
             self.begin3DSAuth(clientToken: clientToken,
                               paymentMethodTokenData: paymentMethodTokenData,
-                              threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest) { result in
-                switch result {
-                case let .success(threeDSecureBeginAuthResponse):
-                    continuation.resume(returning: threeDSecureBeginAuthResponse)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+                              threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest,
+                              completion: completion
+            )
         }
     }
 
@@ -63,17 +58,11 @@ extension PrimerAPIClient {
     func continue3DSAuth(clientToken: DecodedJWTToken,
                          threeDSTokenId: String,
                          continueInfo: ThreeDS.ContinueInfo) async throws -> ThreeDS.PostAuthResponse {
-        return try await withCheckedThrowingContinuation { continuation in
+        return try await awaitResult { completion in
             self.continue3DSAuth(clientToken: clientToken,
                                  threeDSTokenId: threeDSTokenId,
-                                 continueInfo: continueInfo) { result in
-                switch result {
-                case let .success(postAuthResponse):
-                    continuation.resume(returning: postAuthResponse)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+                                 continueInfo: continueInfo,
+                                 completion: completion)
         }
     }
 }

@@ -128,23 +128,13 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         requestClientTokenValidation: Bool = true,
         requestVaultedPaymentMethods: Bool = false
     ) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            firstly {
-                self.setupSession(
-                    forClientToken: clientToken,
-                    requestDisplayMetadata: requestDisplayMetadata,
-                    requestClientTokenValidation: requestClientTokenValidation,
-                    requestVaultedPaymentMethods: requestVaultedPaymentMethods)
-            }
-            .done {
-                continuation.resume(returning: ())
-            }
-            .catch { error in
-                continuation.resume(throwing: error)
-            }
-        }
+        return try await setupSession(
+            forClientToken: clientToken,
+            requestDisplayMetadata: requestDisplayMetadata,
+            requestClientTokenValidation: requestClientTokenValidation,
+            requestVaultedPaymentMethods: requestVaultedPaymentMethods).async()
     }
-
+    
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
@@ -177,19 +167,9 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
     }
 
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            firstly {
-                self.updateSession(withActions: actionsRequest)
-            }
-            .done {
-                continuation.resume(returning: ())
-            }
-            .catch { error in
-                continuation.resume(throwing: error)
-            }
-        }
+        return try await updateSession(withActions: actionsRequest).async()
     }
-
+     
     func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void> {
         return Promise { seal in
             firstly {
@@ -208,17 +188,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
     }
 
     func storeRequiredActionClientToken(_ newClientToken: String) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            firstly {
-                self.storeRequiredActionClientToken(newClientToken)
-            }
-            .done {
-                continuation.resume(returning: ())
-            }
-            .catch { error in
-                continuation.resume(throwing: error)
-            }
-        }
+        return try await storeRequiredActionClientToken(newClientToken).async()
     }
 
     // MARK: - HELPERS
@@ -253,17 +223,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
     }
 
     private func validateClientToken(_ clientToken: String, requestRemoteClientTokenValidation: Bool) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            firstly {
-                self.validateClientToken(clientToken, requestRemoteClientTokenValidation: requestRemoteClientTokenValidation)
-            }
-            .done {
-                continuation.resume(returning: ())
-            }
-            .catch { error in
-                continuation.resume(throwing: error)
-            }
-        }
+        return try await validateClientToken(clientToken, requestRemoteClientTokenValidation: requestRemoteClientTokenValidation).async()
     }
 
     private func validateClientTokenInternally(_ tokenToValidate: JWTToken) throws -> JWTToken {

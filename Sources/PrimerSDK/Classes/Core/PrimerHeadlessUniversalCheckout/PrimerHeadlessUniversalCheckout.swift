@@ -145,17 +145,13 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
         delegate: PrimerHeadlessUniversalCheckoutDelegate? = nil,
         uiDelegate: PrimerHeadlessUniversalCheckoutUIDelegate? = nil
     ) async throws -> [PrimerHeadlessUniversalCheckout.PaymentMethod]? {
-        return try await withCheckedThrowingContinuation { continuation in
+        return try await awaitResult { completion in
             start(withClientToken: clientToken,
                   settings: settings,
                   delegate: delegate,
-                  uiDelegate: uiDelegate) { paymentMethods, err in
-                if let err = err {
-                    continuation.resume(throwing: err)
-                } else {
-                    continuation.resume(returning: paymentMethods)
-                }
-            }
+                  uiDelegate: uiDelegate,
+                  completion: completion
+            )
         }
     }
 

@@ -105,15 +105,8 @@ final class PayPalService: PayPalServiceProtocol {
     }
 
     func startOrderSession() async throws -> Response.Body.PayPal.CreateOrder {
-        return try await withCheckedThrowingContinuation { continuation in
-            startOrderSession { result in
-                switch result {
-                case .success(let order):
-                    continuation.resume(returning: order)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
+        return try await awaitResult { completion in
+            startOrderSession(completion)
         }
     }
 
@@ -171,15 +164,8 @@ final class PayPalService: PayPalServiceProtocol {
     }
 
     func startBillingAgreementSession() async throws -> String {
-        return try await withCheckedThrowingContinuation { continuation in
-            startBillingAgreementSession { result in
-                switch result {
-                case .success(let url):
-                    continuation.resume(returning: url)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
+        return try await awaitResult { completion in
+            startBillingAgreementSession(completion)
         }
     }
 
@@ -236,15 +222,8 @@ final class PayPalService: PayPalServiceProtocol {
     }
 
     func confirmBillingAgreement() async throws -> Response.Body.PayPal.ConfirmBillingAgreement {
-        return try await withCheckedThrowingContinuation { continuation in
-            confirmBillingAgreement { result in
-                switch result {
-                case .success(let order):
-                    continuation.resume(returning: order)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
+        return try await awaitResult { completion in
+            confirmBillingAgreement(completion)
         }
     }
 
@@ -285,15 +264,8 @@ final class PayPalService: PayPalServiceProtocol {
     }
 
     func fetchPayPalExternalPayerInfo(orderId: String) async throws -> Response.Body.PayPal.PayerInfo {
-        return try await withCheckedThrowingContinuation { continuation in
-            fetchPayPalExternalPayerInfo(orderId: orderId) { result in
-                switch result {
-                case .success(let payerInfo):
-                    continuation.resume(returning: payerInfo)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
+        return try await awaitResult { completion in
+            fetchPayPalExternalPayerInfo(orderId: orderId, completion: completion)
         }
     }
 }

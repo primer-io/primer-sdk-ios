@@ -139,15 +139,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
     }
 
     func makeRequestBodyWithRawData(_ data: PrimerRawData) async throws -> Request.Body.Tokenization {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.makeRequestBodyWithRawData(data)
-                .done { requestBody in
-                    continuation.resume(returning: requestBody)
-                }
-                .catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await makeRequestBodyWithRawData(data).async()
     }
 
     func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
@@ -155,15 +147,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
     }
 
     func validateRawData(_ data: PrimerRawData) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.validateRawData(data)
-                .done {
-                    continuation.resume()
-                }
-                .catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await validateRawData(data).async()
     }
 
     func validateRawData(_ data: PrimerRawData, cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> Promise<Void> {

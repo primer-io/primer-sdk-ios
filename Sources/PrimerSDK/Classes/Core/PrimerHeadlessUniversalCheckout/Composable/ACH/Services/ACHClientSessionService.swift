@@ -56,14 +56,7 @@ extension ACHClientSessionService {
     }
 
     func getClientSessionUserDetails() async throws -> ACHUserDetails {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.getClientSessionUserDetails()
-                .done { userDetails in
-                    continuation.resume(returning: userDetails)
-                }.catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await getClientSessionUserDetails().async()
     }
 }
 
@@ -93,14 +86,7 @@ extension ACHClientSessionService {
     }
 
     func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.patchClientSession(with: actionsRequest)
-                .done {
-                    continuation.resume()
-                }.catch { error in
-                    continuation.resume(throwing: error)
-                }
-        }
+        return try await patchClientSession(with: actionsRequest).async()
     }
 
     func prepareClientSessionActionsRequestBody(paymentMethodType: String) -> ClientSessionUpdateRequest {
