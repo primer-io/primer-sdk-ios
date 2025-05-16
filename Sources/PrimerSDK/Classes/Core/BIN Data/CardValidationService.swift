@@ -11,7 +11,7 @@ protocol CardValidationService {
     func validateCardNetworks(withCardNumber cardNumber: String)
 }
 
-class DefaultCardValidationService: CardValidationService, LogReporter {
+final class DefaultCardValidationService: CardValidationService, LogReporter {
 
     static let maximumBinLength = 8
 

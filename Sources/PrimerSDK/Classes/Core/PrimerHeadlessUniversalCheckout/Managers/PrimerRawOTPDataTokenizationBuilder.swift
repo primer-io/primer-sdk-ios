@@ -9,7 +9,7 @@
 
 import Foundation
 
-class PrimerRawOTPDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
+final class PrimerRawOTPDataTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var rawData: PrimerRawData? {
         didSet {

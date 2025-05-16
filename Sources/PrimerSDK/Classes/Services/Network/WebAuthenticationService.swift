@@ -15,7 +15,7 @@ protocol WebAuthenticationService {
     func connect(paymentMethodType: String, url: URL, scheme: String) async throws -> URL
 }
 
-class DefaultWebAuthenticationService: NSObject, WebAuthenticationService {
+final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService {
 
     var session: ASWebAuthenticationSession?
 
@@ -66,7 +66,7 @@ extension DefaultWebAuthenticationService: ASWebAuthenticationPresentationContex
 
 }
 
-fileprivate extension UIApplication {
+extension UIApplication {
     var windows: [UIWindow] {
         let windowScene = self.connectedScenes.compactMap { $0 as? UIWindowScene }.first
         guard let windows = windowScene?.windows else {

@@ -11,7 +11,7 @@ import Foundation
 // swiftlint:disable cyclomatic_complexity
 // swiftlint:disable function_body_length
 
-class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
+final class PrimerBancontactRawCardDataRedirectTokenizationBuilder: PrimerRawDataTokenizationBuilderProtocol {
 
     var rawData: PrimerRawData? {
         didSet {

@@ -18,7 +18,7 @@ import UIKit
 import PrimerIPay88MYSDK
 #endif
 
-class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
+final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     #if canImport(PrimerIPay88MYSDK)
     private var backendCallbackUrl: URL!

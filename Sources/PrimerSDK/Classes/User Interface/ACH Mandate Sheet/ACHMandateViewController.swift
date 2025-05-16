@@ -8,7 +8,7 @@
 import UIKit
 import SwiftUI
 
-class ACHMandateViewController: PrimerViewController {
+final class ACHMandateViewController: PrimerViewController {
 
     // MARK: - Properties
     private(set) var mandateView: ACHMandateView?

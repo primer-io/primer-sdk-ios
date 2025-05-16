@@ -8,7 +8,7 @@
 import UIKit
 
 /// UINavigationController subclass that intercepts pop, and handles it through the PrimerRootViewController
-class PrimerNavigationController: UINavigationController, UINavigationBarDelegate {
+final class PrimerNavigationController: UINavigationController, UINavigationBarDelegate {
 
     var isInitialized = false
 

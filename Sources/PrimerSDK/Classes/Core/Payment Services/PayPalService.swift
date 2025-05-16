@@ -14,7 +14,8 @@ internal protocol PayPalServiceProtocol {
     func fetchPayPalExternalPayerInfo(orderId: String) async throws -> Response.Body.PayPal.PayerInfo
 }
 
-internal class PayPalService: PayPalServiceProtocol {
+final class PayPalService: PayPalServiceProtocol {
+
     private var paypalTokenId: String?
 
     let apiClient: PrimerAPIClientPayPalProtocol

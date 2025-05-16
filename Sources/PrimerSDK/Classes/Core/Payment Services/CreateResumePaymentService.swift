@@ -25,7 +25,7 @@ private enum CreateResumePaymentCallType: String {
     case resume
 }
 
-internal class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
+final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
     let apiClient: PrimerAPIClientCreateResumePaymentProtocol
 
     let paymentMethodType: String

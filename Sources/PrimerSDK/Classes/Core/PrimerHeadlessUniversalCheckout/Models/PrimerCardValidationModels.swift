@@ -21,7 +21,7 @@ public enum PrimerCardValidationSource: Int {
 }
 
 @objc
-public class PrimerCardNumberEntryState: NSObject, PrimerValidationState {
+public final class PrimerCardNumberEntryState: NSObject, PrimerValidationState {
     public let cardNumber: String
 
     init(cardNumber: String) {
@@ -30,7 +30,7 @@ public class PrimerCardNumberEntryState: NSObject, PrimerValidationState {
 }
 
 @objc
-public class PrimerCardNetwork: NSObject {
+public final class PrimerCardNetwork: NSObject {
     public let displayName: String
     public let network: CardNetwork
 
@@ -54,10 +54,14 @@ public class PrimerCardNetwork: NSObject {
         guard let network = network else { return nil }
         self.init(network: network)
     }
+
+    override public var description: String {
+        return "PrimerCardNetwork(displayName: \(displayName), network: \(network), allowed: \(allowed))"
+    }
 }
 
 @objc
-public class PrimerCardNetworksMetadata: NSObject {
+public final class PrimerCardNetworksMetadata: NSObject {
     public let items: [PrimerCardNetwork]
     public let preferred: PrimerCardNetwork?
 
@@ -68,7 +72,7 @@ public class PrimerCardNetworksMetadata: NSObject {
 }
 
 @objc
-public class PrimerCardNumberEntryMetadata: NSObject, PrimerPaymentMethodMetadata {
+public final class PrimerCardNumberEntryMetadata: NSObject, PrimerPaymentMethodMetadata {
 
     public let source: PrimerCardValidationSource
 

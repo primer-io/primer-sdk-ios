@@ -10,11 +10,11 @@
 
 import Foundation
 
-internal class ClientSession {
+final class ClientSession {
 
     // MARK: - ClientSession.Action
 
-    internal class Action: NSObject, Encodable {
+    final class Action: NSObject, Encodable {
 
         static func makeBillingAddressDictionaryRequestFromParameters(_ parameters: [String: Any]) -> [String: Any] {
             return ["billingAddress": parameters]
@@ -315,7 +315,7 @@ internal class ClientSession {
 
     // MARK: - ClientSession.PaymentMethod
 
-    internal class PaymentMethod: Codable {
+    final class PaymentMethod: Codable {
 
         let vaultOnSuccess: Bool
         let options: [[String: Any]]?
@@ -364,7 +364,7 @@ internal class ClientSession {
         }
     }
 
-    internal class APIResponse: Codable {
+    final class APIResponse: Codable {
 
         let clientSessionId: String?
         let paymentMethod: ClientSession.PaymentMethod?

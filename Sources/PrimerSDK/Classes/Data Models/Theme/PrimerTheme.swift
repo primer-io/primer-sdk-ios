@@ -43,7 +43,7 @@ protocol PrimerThemeProtocol {
  - Version:
  1.2.2
  */
-public class PrimerTheme: PrimerThemeProtocol {
+public final class PrimerTheme: PrimerThemeProtocol {
 
     private let data: PrimerThemeData
 

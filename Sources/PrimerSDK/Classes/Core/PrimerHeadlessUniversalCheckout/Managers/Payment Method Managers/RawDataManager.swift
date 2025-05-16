@@ -55,7 +55,7 @@ protocol PrimerRawDataTokenizationBuilderProtocol {
 
 extension PrimerHeadlessUniversalCheckout {
 
-    public class RawDataManager: NSObject, LogReporter {
+    public final class RawDataManager: NSObject, LogReporter {
 
         public var delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate?
         public private(set) var paymentMethodType: String
@@ -106,8 +106,18 @@ extension PrimerHeadlessUniversalCheckout {
 
         var apiClient: PrimerAPIClientXenditProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
 
-        required public init(paymentMethodType: String, delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? = nil) throws {
-            PrimerInternal.shared.sdkIntegrationType = .headless
+        /// Initializes a new instance of RawDataManager.
+        /// The `isUsedInDropIn` flag enables support for Drop-In integration flow,
+        /// expanding the utility of RawDataManager to both Headless and Drop-In use cases.
+        /// When set to true, it configures the RawDataManager to behave as a Drop-In integration.
+        required public init(paymentMethodType: String,
+                             delegate: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate? = nil,
+                             isUsedInDropIn: Bool = false) throws {
+            if isUsedInDropIn {
+                PrimerInternal.shared.sdkIntegrationType = .dropIn
+            } else {
+                PrimerInternal.shared.sdkIntegrationType = .headless
+            }
 
             let sdkEvent = Analytics.Event.sdk(
                 name: "\(Self.self).\(#function)",

@@ -7,7 +7,7 @@
 
 import Foundation
 
-class PrimerSource {
+final class PrimerSource {
 
     static var defaultSourceType: String = Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS"
 

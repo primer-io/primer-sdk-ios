@@ -10,7 +10,8 @@
 
 import UIKit
 
-public class PrimerHeadlessUniversalCheckout: LogReporter {
+public final class PrimerHeadlessUniversalCheckout: LogReporter {
+
     public static let current = PrimerHeadlessUniversalCheckout()
 
     public weak var delegate: PrimerHeadlessUniversalCheckoutDelegate? {

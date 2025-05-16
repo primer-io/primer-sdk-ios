@@ -13,7 +13,7 @@ protocol ClientSessionActionsProtocol {
     func dispatch(actions: [ClientSession.Action]) -> Promise<Void>
 }
 
-class ClientSessionActionsModule: ClientSessionActionsProtocol {
+final class ClientSessionActionsModule: ClientSessionActionsProtocol {
 
     func selectPaymentMethodIfNeeded(_ paymentMethodType: String, cardNetwork: String?) -> Promise<Void> {
         return Promise { seal in

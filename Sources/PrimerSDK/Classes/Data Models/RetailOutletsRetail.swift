@@ -7,7 +7,7 @@
 
 import Foundation
 
-@objc public class RetailOutletsRetail: NSObject, Codable {
+@objc public final class RetailOutletsRetail: NSObject, Codable {
 
     // MARK: - Public Properties
 

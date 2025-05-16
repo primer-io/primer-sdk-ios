@@ -11,7 +11,7 @@ import UIKit
 /// Reserve the name for all primer buttons. If you need to extend UIButton, extend and use this one instead, so we
 /// don't expose unnecessary functionality.
 ///
-@IBDesignable internal class PrimerButton: UIButton, Identifiable {
+@IBDesignable class PrimerButton: UIButton, Identifiable {
 
     // MARK: @IBInspectable Properties
 
@@ -160,27 +160,28 @@ extension PrimerButton {
 
     func startAnimating() {
         if activityIndicator.isAnimating { return }
-        activityIndicator.startAnimating()
-        var buttonStates: [ActivityIndicatorButtonState] = []
-        for state in [UIControl.State.disabled] {
-            let buttonState = ActivityIndicatorButtonState(state: state, title: title(for: state), image: image(for: state))
-            buttonStates.append(buttonState)
-            setTitle("", for: state)
-            setImage(UIImage(), for: state)
-        }
-        self.activityIndicatorButtonStates = buttonStates
         DispatchQueue.main.async {
+
+            self.activityIndicator.startAnimating()
+            var buttonStates: [ActivityIndicatorButtonState] = []
+            for state in [UIControl.State.disabled] {
+                let buttonState = ActivityIndicatorButtonState(state: state, title: self.title(for: state), image: self.image(for: state))
+                buttonStates.append(buttonState)
+                self.setTitle("", for: state)
+                self.setImage(UIImage(), for: state)
+            }
+            self.activityIndicatorButtonStates = buttonStates
             self.isEnabled = false
         }
     }
 
     func stopAnimating() {
-        activityIndicator.stopAnimating()
-        for buttonState in activityIndicatorButtonStates {
-            setTitle(buttonState.title, for: buttonState.state)
-            setImage(buttonState.image, for: buttonState.state)
-        }
         DispatchQueue.main.async {
+            self.activityIndicator.stopAnimating()
+            for buttonState in self.activityIndicatorButtonStates {
+                self.setTitle(buttonState.title, for: buttonState.state)
+                self.setImage(buttonState.image, for: buttonState.state)
+            }
             self.isEnabled = true
         }
     }

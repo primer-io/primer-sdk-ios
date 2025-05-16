@@ -14,7 +14,7 @@ internal protocol TokenizationServiceProtocol {
     ) async throws -> PrimerPaymentMethodTokenData
 }
 
-internal class TokenizationService: TokenizationServiceProtocol, LogReporter {
+final class TokenizationService: TokenizationServiceProtocol, LogReporter {
     var paymentMethodTokenData: PrimerPaymentMethodTokenData?
 
     let apiClient: PrimerAPIClientProtocol

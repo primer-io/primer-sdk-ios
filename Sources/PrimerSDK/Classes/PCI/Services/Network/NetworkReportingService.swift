@@ -31,7 +31,7 @@ private let disallowedTrackingPaths: [String] = [
     "/checkout/track"
 ]
 
-class DefaultNetworkReportingService: NetworkReportingService {
+final class DefaultNetworkReportingService: NetworkReportingService {
 
     let analyticsService: AnalyticsServiceProtocol?
 

@@ -7,7 +7,8 @@ internal protocol VaultServiceProtocol {
     func deleteVaultedPaymentMethod(with id: String) async throws
 }
 
-internal class VaultService: VaultServiceProtocol {
+final class VaultService: VaultServiceProtocol {
+
     let apiClient: PrimerAPIClientVaultProtocol
 
     init(apiClient: PrimerAPIClientVaultProtocol) {

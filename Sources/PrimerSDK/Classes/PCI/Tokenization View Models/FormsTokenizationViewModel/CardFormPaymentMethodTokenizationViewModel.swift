@@ -14,7 +14,7 @@ import SafariServices
 import UIKit
 
 // swiftlint:disable:next type_name
-class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel,
+final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel,
                                                   SearchableItemsPaymentMethodTokenizationViewModelProtocol {
 
     // MARK: - Properties
@@ -33,6 +33,20 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         )
         return manager
     }()
+
+    // Used for Co-Badged Cards feature
+    private lazy var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager? = {
+        let manager = try? PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: "PAYMENT_CARD",
+                                                                          delegate: self,
+                                                                          isUsedInDropIn: true)
+        return manager
+    }()
+
+    private var rawCardData = PrimerCardData(cardNumber: "",
+                                             expiryDate: "",
+                                             cvv: "",
+                                             cardholderName: "")
+    fileprivate var currentlyAvailableCardNetworks: [PrimerCardNetwork]?
 
     private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
@@ -81,9 +95,19 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         return textField
     }()
 
-    var cardNetwork: CardNetwork? {
+    private var lastRemoteNetworkValues: [CardNetwork]?
+
+    var defaultCardNetwork: CardNetwork? {
         didSet {
-            cvvField.cardNetwork = cardNetwork ?? .unknown
+            cvvField.cardNetwork = defaultCardNetwork ?? .unknown
+        }
+    }
+
+    var alternativelySelectedCardNetwork: CardNetwork? {
+        didSet {
+            if let alternativelySelectedCardNetwork {
+                cvvField.cardNetwork = alternativelySelectedCardNetwork
+            }
         }
     }
 
@@ -106,7 +130,25 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
     }()
 
     private lazy var cardNumberContainerView: PrimerCustomFieldView = {
-        PrimerCardNumberField.cardNumberContainerViewWithFieldView(cardNumberField)
+        let containerView = PrimerCardNumberField.cardNumberContainerViewWithFieldView(cardNumberField)
+        containerView.onCardNetworkSelected = { [weak self] cardNetwork in
+            guard let self = self else { return }
+            self.alternativelySelectedCardNetwork = cardNetwork.network
+            self.rawCardData.cardNetwork = cardNetwork.network
+            self.rawDataManager?.rawData = self.rawCardData
+            self.cardComponentsManager.selectedCardNetwork = cardNetwork.network
+
+            // Select payment method based on the detected card network
+            let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+            firstly {
+                clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: cardNetwork.network.rawValue)
+            }
+            .done {
+                self.configureAmountLabels(cardNetwork: cardNetwork.network)
+            }
+            .catch { _ in }
+        }
+        return containerView
     }()
 
     // MARK: - Cardholder name field
@@ -657,13 +699,16 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
         }
     }
 
-    func configurePayButton(cardNetwork: CardNetwork?) {
-        var amount: Int = AppState.current.amount ?? 0
-
-        if let surcharge = cardNetwork?.surcharge {
-            amount += surcharge
+    func configureAmountLabels(cardNetwork: CardNetwork?) {
+        if let surcharge = alternativelySelectedCardNetwork?.surcharge ?? cardNetwork?.surcharge,
+        PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
+        let currency = AppState.current.currency {
+            configureSurchargeLabel(surchargeAmount: surcharge, currency: currency)
+        } else {
+            hideSurchargeLabel()
         }
 
+        let amount: Int = AppState.current.amount ?? 0
         configurePayButton(amount: amount)
     }
 
@@ -680,6 +725,19 @@ class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewM
                 : "\(Strings.PaymentButton.pay) \(amount.toCurrencyString(currency: currency))"
 
             self.uiModule.submitButton?.setTitle(title, for: .normal)
+        }
+    }
+
+    func configureSurchargeLabel(surchargeAmount: Int, currency: Currency) {
+        DispatchQueue.main.async {
+            let amount = "+ \(surchargeAmount.toCurrencyString(currency: currency))"
+            self.cardNumberContainerView.updateSurcharge(amount: amount)
+        }
+    }
+
+    func hideSurchargeLabel() {
+        DispatchQueue.main.async {
+            self.cardNumberContainerView.updateSurcharge(amount: nil)
         }
     }
 
@@ -713,7 +771,7 @@ extension CardFormPaymentMethodTokenizationViewModel {
 
     private func dispatchActions() -> Promise<Void> {
         return Promise { seal in
-            var network = self.cardNetwork?.rawValue.uppercased()
+            var network = self.alternativelySelectedCardNetwork?.rawValue.uppercased() ?? self.defaultCardNetwork?.rawValue.uppercased()
             if network == nil || network == "UNKNOWN" {
                 network = "OTHER"
             }
@@ -910,47 +968,54 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         enableSubmitButtonIfNeeded()
     }
 
-    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView, didDetectCardNetwork cardNetwork: CardNetwork?) {
-        self.cardNetwork = cardNetwork
+    func primerTextFieldView(_ primerTextFieldView: PrimerTextFieldView,
+                             didDetectCardNetwork cardNetwork: CardNetwork?) {
+        if let text = primerTextFieldView.textField.internalText {
+            rawCardData.cardNumber = text.replacingOccurrences(of: " ", with: "")
+            rawDataManager?.rawData = rawCardData
+        }
+    }
 
-        var network = self.cardNetwork?.rawValue.uppercased()
+    private func handleCardNetworkDetection(_ cardNetwork: CardNetwork?) {
+        guard alternativelySelectedCardNetwork == nil
+        else { return }
+
+        self.rawCardData.cardNetwork = cardNetwork
+        self.rawDataManager?.rawData = self.rawCardData
+
+        var network = cardNetwork?.rawValue.uppercased()
         let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
 
         if let cardNetwork = cardNetwork,
-           cardNetwork != .unknown,
-           cardNumberContainerView.rightImage2 != cardNetwork.icon {
+            cardNetwork != .unknown {
+            // Set the network value to "OTHER" if it's nil or unknown
             if network == nil || network == "UNKNOWN" {
                 network = "OTHER"
             }
 
-            cardNumberContainerView.rightImage2 = cardNetwork.icon
+            // Update the UI with the detected card network icon
+            cardNumberContainerView.rightImage = cardNetwork.icon
 
+            // Select payment method based on the detected card network
             firstly {
                 clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: network)
             }
             .done {
-                self.updateButtonUI()
+                self.configureAmountLabels(cardNetwork: cardNetwork)
             }
             .catch { _ in }
-        } else if cardNumberContainerView.rightImage2 != nil && (cardNetwork?.icon == nil || cardNetwork == .unknown) {
-            cardNumberContainerView.rightImage2 = nil
+
+        } else if cardNumberContainerView.rightImage != nil && (cardNetwork?.icon == nil || cardNetwork == .unknown) {
+            // Unselect payment method and remove the card network icon if unknown or nil
+            cardNumberContainerView.rightImage = nil
 
             firstly {
                 clientSessionActionsModule.unselectPaymentMethodIfNeeded()
             }
             .done {
-                self.updateButtonUI()
+                self.configureAmountLabels(cardNetwork: cardNetwork)
             }
             .catch { _ in }
-        }
-    }
-}
-
-extension CardFormPaymentMethodTokenizationViewModel {
-
-    private func updateButtonUI() {
-        if let amount = AppState.current.amount, self.uiModule.isSubmitButtonAnimating == false {
-            self.configurePayButton(amount: amount)
         }
     }
 }
@@ -1037,6 +1102,80 @@ extension CardFormPaymentMethodTokenizationViewModel: UITextFieldDelegate {
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
         dataSource = countries
         return true
+    }
+}
+
+// MARK: - PrimerHeadlessUniversalCheckoutRawDataManagerDelegate
+extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
+
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              dataIsValid isValid: Bool,
+                              errors: [Swift.Error]?) {
+        let errorsDescription = errors?.map { $0.localizedDescription }.joined(separator: ", ")
+        logger.debug(message: "dataIsValid: \(isValid), errors: \(errorsDescription ?? "none")")
+    }
+
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              metadataDidChange metadata: [String: Any]?) {
+        logger.debug(message: "metadataDidChange: \(metadata ?? [:])")
+    }
+
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              willFetchMetadataForState cardState: PrimerValidationState) {
+        guard let state = cardState as? PrimerCardNumberEntryState else {
+            logger.error(message: "Received non-card metadata. Ignoring ...")
+            return
+        }
+        logger.debug(message: "willFetchCardMetadataForState: \(state.cardNumber)")
+    }
+
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
+                              forState cardState: PrimerValidationState) {
+        guard let metadataModel = metadata as? PrimerCardNumberEntryMetadata,
+              let stateModel = cardState as? PrimerCardNumberEntryState else {
+            logger.error(message: "Received non-card metadata. Ignoring ...")
+            return
+        }
+
+        let metadataDescription = metadataModel.selectableCardNetworks?.items
+            .map { $0.displayName }
+            .joined(separator: ", ") ?? "n/a"
+        logger.debug(message: "didReceiveCardMetadata: (selectable ->) \(metadataDescription), cardState: \(stateModel.cardNumber)")
+
+        var primerNetworks: [PrimerCardNetwork]
+        if metadataModel.source == .remote,
+           let selectable = metadataModel.selectableCardNetworks?.items,
+           !selectable.isEmpty {
+            primerNetworks = selectable
+        } else if let preferred = metadataModel.detectedCardNetworks.preferred {
+            primerNetworks = [preferred]
+        } else if let first = metadataModel.detectedCardNetworks.items.first {
+            primerNetworks = [first]
+        } else {
+            primerNetworks = []
+        }
+
+        let filteredNetworks = primerNetworks.filter { $0.displayName != "Unknown" }
+        let newNetworks = filteredNetworks.map { $0.network }
+        guard newNetworks != lastRemoteNetworkValues else { return }
+        lastRemoteNetworkValues = newNetworks
+
+        currentlyAvailableCardNetworks = filteredNetworks
+        cardNumberContainerView.cardNetworks = filteredNetworks
+
+        if newNetworks.count == 1 {
+            DispatchQueue.main.async {
+                self.cardNumberContainerView.resetCardNetworkSelection()
+                self.alternativelySelectedCardNetwork = nil
+                self.handleCardNetworkDetection(newNetworks[0])
+            }
+        }
+    }
+
+    private func image(from model: PrimerCardNetwork) -> UIImage? {
+        let asset = PrimerHeadlessUniversalCheckout.AssetsManager.getCardNetworkAsset(for: model.network)
+        return asset?.cardImage
     }
 }
 

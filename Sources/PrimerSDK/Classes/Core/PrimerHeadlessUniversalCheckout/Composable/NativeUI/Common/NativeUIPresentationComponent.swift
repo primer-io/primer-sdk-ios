@@ -7,7 +7,7 @@
 
 import Foundation
 
-class NativeUIPresentationComponent: NativeUIPresentable {
+final class NativeUIPresentationComponent: NativeUIPresentable {
     let paymentMethodType: String
 
     init(paymentMethodType: String) {

@@ -33,7 +33,8 @@ extension HTTPURLResponse: ResponseMetadata {
     }
 }
 
-class DefaultNetworkService: NetworkService, LogReporter {
+final class DefaultNetworkService: NetworkService, LogReporter {
+
     let requestFactory: NetworkRequestFactory
     let requestDispatcher: RequestDispatcher
     let reportingService: NetworkReportingService

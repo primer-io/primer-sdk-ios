@@ -42,7 +42,8 @@ protocol URLSessionProtocol {
 
 extension URLSession: URLSessionProtocol {}
 
-class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
+final class DefaultRequestDispatcher: RequestDispatcher, LogReporter {
+
     let urlSession: URLSessionProtocol
 
     init(urlSession: URLSessionProtocol = URLSession.shared) {

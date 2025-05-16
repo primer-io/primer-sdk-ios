@@ -10,7 +10,7 @@ import UIKit
 @objc public class ACHAdditionalInfo: PrimerCheckoutAdditionalInfo {}
 
 // MARK: ACH bank account collector view controller
-@objc public class ACHBankAccountCollectorAdditionalInfo: ACHAdditionalInfo {
+@objc public final class ACHBankAccountCollectorAdditionalInfo: ACHAdditionalInfo {
 
     public var collectorViewController: UIViewController
 
@@ -25,4 +25,4 @@ import UIKit
 }
 
 // MARK: ACH mandate info
-@objc public class ACHMandateAdditionalInfo: ACHAdditionalInfo {}
+@objc public final class ACHMandateAdditionalInfo: ACHAdditionalInfo {}

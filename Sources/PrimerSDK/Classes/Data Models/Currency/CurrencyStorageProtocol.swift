@@ -17,7 +17,7 @@ public protocol CurrencyStorageProtocol {
     func copyBundleFileIfNeeded()
 }
 
-class DefaultCurrencyStorage: CurrencyStorageProtocol {
+final class DefaultCurrencyStorage: CurrencyStorageProtocol {
     var mockCurrencies: [Currency] = []
 
     let fileURL: URL
@@ -53,7 +53,7 @@ class DefaultCurrencyStorage: CurrencyStorageProtocol {
     }
 }
 
-class MockCurrencyStorage: CurrencyStorageProtocol {
+final class MockCurrencyStorage: CurrencyStorageProtocol {
     // Property to hold mock currencies you want to return in your tests
     var mockCurrencies: [Currency] = []
 

@@ -15,7 +15,7 @@ import UIKit
 
 extension PrimerHeadlessUniversalCheckout {
 
-    public class VaultManager: NSObject {
+    public final class VaultManager: NSObject {
 
         var vaultService: VaultServiceProtocol = VaultService(apiClient: PrimerAPIClient())
 
@@ -847,7 +847,7 @@ extension PrimerHeadlessUniversalCheckout.VaultManager: SFSafariViewControllerDe
 
 extension PrimerHeadlessUniversalCheckout {
 
-    public class VaultedPaymentMethod: Codable {
+    public final class VaultedPaymentMethod: Codable {
 
         public let id: String
         public let paymentMethodType: String

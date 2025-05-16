@@ -13,8 +13,9 @@ let defaultNetworkService = DefaultNetworkService(
     reportingService: DefaultNetworkReportingService()
 )
 
-class PrimerAPIClient: PrimerAPIClientProtocol {
-    let networkService: NetworkService
+final class PrimerAPIClient: PrimerAPIClientProtocol {
+
+    internal let networkService: NetworkService
 
     // MARK: - Object lifecycle
 
