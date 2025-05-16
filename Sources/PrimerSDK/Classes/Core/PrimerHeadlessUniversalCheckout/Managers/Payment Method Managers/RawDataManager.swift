@@ -48,7 +48,9 @@ protocol PrimerRawDataTokenizationBuilderProtocol {
     init(paymentMethodType: String)
     func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager)
     func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization>
+    func makeRequestBodyWithRawData(_ data: PrimerRawData) async throws -> Request.Body.Tokenization
     func validateRawData(_ data: PrimerRawData) -> Promise<Void>
+    func validateRawData(_ data: PrimerRawData) async throws
 }
 
 extension PrimerHeadlessUniversalCheckout {
@@ -334,6 +336,10 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
 
+        func validateRawData(_ data: PrimerRawData) async throws {
+            return try await validateRawData(data).async()
+        }
+
         func validateRawData(withCardNetworksMetadata cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> Promise<Void>? {
             guard let rawData = self.rawData else {
                 logger.warn(message: "Unable to validate with card networks metadata as `rawData` was nil")
@@ -341,6 +347,10 @@ extension PrimerHeadlessUniversalCheckout {
             }
             return (rawDataTokenizationBuilder as? PrimerRawCardDataTokenizationBuilder)?
                 .validateRawData(rawData, cardNetworksMetadata: cardNetworksMetadata)
+        }
+
+        func validateRawData(withCardNetworksMetadata cardNetworksMetadata: PrimerCardNumberEntryMetadata?) async throws -> Void? {
+            return try await validateRawData(withCardNetworksMetadata: cardNetworksMetadata)?.async()
         }
 
         private func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
@@ -382,6 +392,10 @@ Make sure you call the decision handler otherwise the SDK will hang."
             }
         }
 
+        private func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) async throws {
+            return try await handlePrimerWillCreatePaymentEvent(paymentMethodData).async()
+        }
+
         private func makeRequestBody() -> Promise<Request.Body.Tokenization> {
 
             return Promise { seal in
@@ -401,6 +415,10 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     seal.reject(err)
                 }
             }
+        }
+
+        private func makeRequestBody() async throws -> Request.Body.Tokenization {
+            return try await makeRequestBody().async()
         }
 
         private func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData)
@@ -440,6 +458,10 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     seal.reject(err)
                 }
             }
+        }
+
+        private func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> PrimerCheckoutData? {
+            return try await startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData).async()
         }
 
         // This function will do one of the two following:
@@ -543,7 +565,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     firstly {
                         self.handleCreatePaymentEvent(token)
                     }
-                    .done { paymentResponse -> Void in
+                    .done { paymentResponse in
                         self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                         self.resumePaymentId = paymentResponse.id
 
@@ -576,6 +598,10 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     }
                 }
             }
+        }
+
+        private func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> DecodedJWTToken? {
+            return try await startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData).async()
         }
 
         private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
@@ -797,6 +823,14 @@ Make sure you call the decision handler otherwise the SDK will hang."
             }
         }
 
+        private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
+                                                      paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
+            return try await handleDecodedClientTokenIfNeeded(
+                decodedJWTToken,
+                paymentMethodTokenData: paymentMethodTokenData
+            ).async()
+        }
+
         private func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?> {
             return Promise { seal in
                 if PrimerSettings.current.paymentHandling == .manual {
@@ -850,7 +884,7 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     firstly {
                         self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                     }
-                    .done { paymentResponse -> Void in
+                    .done { paymentResponse in
                         let paymentData = PrimerCheckoutDataPayment(from: paymentResponse)
                         self.paymentCheckoutData = PrimerCheckoutData(payment: paymentData)
                         seal.fulfill(self.paymentCheckoutData)
@@ -862,15 +896,27 @@ Make sure you call the decision handler otherwise the SDK will hang."
             }
         }
 
+        private func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
+            return try await handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken).async()
+        }
+
         private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
             let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
             return createResumePaymentService.createPayment(paymentRequest: paymentRequest)
+        }
+
+        private func handleCreatePaymentEvent(_ paymentMethodData: String) async throws -> Response.Body.Payment {
+            return try await handleCreatePaymentEvent(paymentMethodData).async()
         }
 
         private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment> {
             let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
             return createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
                                                                          paymentResumeRequest: resumeRequest)
+        }
+
+        private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) async throws -> Response.Body.Payment {
+            return try await handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken).async()
         }
 
         private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) -> Promise<Void> {
@@ -919,6 +965,10 @@ Make sure you call the decision handler otherwise the SDK will hang."
 
                 }
             }
+        }
+
+        private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) async throws {
+            return try await presentWebRedirectViewControllerWithRedirectUrl(redirectUrl).async()
         }
     }
 }

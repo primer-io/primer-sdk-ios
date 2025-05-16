@@ -6,23 +6,32 @@
 //  Copyright © 2024 Primer API Ltd. All rights reserved.
 //
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 class MockRequestDispatcher: RequestDispatcher {
-
     var error: Error?
 
     var responseModel: DispatcherResponse!
 
-    func dispatch(request: URLRequest) async throws -> any PrimerSDK.DispatcherResponse {
+    func dispatch(request _: URLRequest, completion: @escaping PrimerSDK.DispatcherCompletion) -> (any PrimerSDK.PrimerCancellable)? {
+        if let error = error {
+            completion(.failure(error))
+        } else {
+            completion(.success(responseModel))
+        }
+        return nil
+    }
+
+    func dispatch(request _: URLRequest) async throws -> any PrimerSDK.DispatcherResponse {
         if let error = error {
             throw error
         }
         return responseModel
     }
 
-    func dispatch(request: URLRequest, completion: @escaping PrimerSDK.DispatcherCompletion) -> (any PrimerSDK.PrimerCancellable)? {
+    func dispatchWithRetry(request _: URLRequest, retryConfig _: PrimerSDK.RetryConfig,
+                           completion: @escaping PrimerSDK.DispatcherCompletion) -> (any PrimerSDK.PrimerCancellable)? {
         if let error = error {
             completion(.failure(error))
         } else {
@@ -31,18 +40,15 @@ class MockRequestDispatcher: RequestDispatcher {
         return nil
     }
 
-    func dispatchWithRetry(request: URLRequest, retryConfig: PrimerSDK.RetryConfig, completion: @escaping PrimerSDK.DispatcherCompletion) -> (any PrimerSDK.PrimerCancellable)? {
-        if let error = error {
-            completion(.failure(error))
-        } else {
-            completion(.success(responseModel))
+    func dispatchWithRetry(request: URLRequest, retryConfig: PrimerSDK.RetryConfig) async throws -> any PrimerSDK.DispatcherResponse {
+        if let error {
+            throw error
         }
-        return nil
+        return responseModel
     }
 }
 
 final class DefaultNetworkServiceTests: XCTestCase {
-
     var requestDispatcher: MockRequestDispatcher!
 
     var defaultNetworkService: DefaultNetworkService!
@@ -60,7 +66,6 @@ final class DefaultNetworkServiceTests: XCTestCase {
     }
 
     func testBasicRequest_jsonDecodingSuccess_sync() throws {
-
         let expectation = self.expectation(description: "Successful response")
 
         let responseModel = PrimerAPIConfiguration(coreUrl: "https://core_url",
@@ -101,8 +106,40 @@ final class DefaultNetworkServiceTests: XCTestCase {
         waitForExpectations(timeout: 2.0)
     }
 
-    func testBasicRequest_jsonDecodingFailure_sync() throws {
+    func testBasicRequest_jsonDecodingSuccess_async() async throws {
+        let responseModel = PrimerAPIConfiguration(coreUrl: "https://core_url",
+                                                   pciUrl: "https://pci_url",
+                                                   binDataUrl: "https://bin_data_url",
+                                                   assetsUrl: "https://assets_url",
+                                                   clientSession: nil,
+                                                   paymentMethods: [],
+                                                   primerAccountId: "primer_account_id",
+                                                   keys: nil,
+                                                   checkoutModules: [])
 
+        let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
+        let data = try JSONEncoder().encode(responseModel)
+        requestDispatcher.responseModel = DispatcherResponseModel(metadata: metadata, requestDuration: 1000, data: data, error: nil)
+
+        let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken, requestParameters: nil)
+
+        do {
+            let model: PrimerAPIConfiguration = try await defaultNetworkService.request(endpoint)
+            XCTAssertEqual(model.coreUrl, "https://core_url")
+            XCTAssertEqual(model.pciUrl, "https://pci_url")
+            XCTAssertEqual(model.binDataUrl, "https://bin_data_url")
+            XCTAssertEqual(model.assetsUrl, "https://assets_url")
+            XCTAssertEqual(model.primerAccountId, "primer_account_id")
+            XCTAssertNil(model.clientSession)
+            XCTAssertTrue(model.paymentMethods!.isEmpty)
+            XCTAssertNil(model.keys)
+            XCTAssertTrue(model.checkoutModules!.isEmpty)
+        } catch {
+            XCTFail()
+        }
+    }
+
+    func testBasicRequest_jsonDecodingFailure_sync() throws {
         let expectation = self.expectation(description: "Fails with decoding error")
 
         let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
@@ -128,7 +165,26 @@ final class DefaultNetworkServiceTests: XCTestCase {
         XCTAssertNil(cancellable)
 
         waitForExpectations(timeout: 2.0)
+    }
 
+    func testBasicRequest_jsonDecodingFailure_async() async throws {
+        let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
+        let data = try JSONEncoder().encode("invalid")
+        requestDispatcher.responseModel = DispatcherResponseModel(metadata: metadata, requestDuration: 1000, data: data, error: nil)
+
+        let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken, requestParameters: nil)
+
+        do {
+            let _: PrimerAPIConfiguration = try await defaultNetworkService.request(endpoint)
+            XCTFail()
+        } catch {
+            switch error as! PrimerSDK.InternalError {
+            case .failedToDecode(let message, _, _):
+                XCTAssertEqual(message, "Failed to decode response of type \'Configuration\' from URL: https://response_url")
+            default:
+                XCTFail()
+            }
+        }
     }
 
     func testRedirectRequest_successWithEmptyResponse_sync() {
@@ -153,6 +209,20 @@ final class DefaultNetworkServiceTests: XCTestCase {
         waitForExpectations(timeout: 2.0)
     }
 
+    func testRedirectRequest_successWithEmptyResponse_async() async {
+        let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
+        let data = Data()
+        requestDispatcher.responseModel = DispatcherResponseModel(metadata: metadata, requestDuration: 1000, data: data, error: nil)
+
+        let endpoint = PrimerAPI.redirect(clientToken: Mocks.decodedJWTToken, url: URL(string: metadata.responseUrl!)!)
+
+        do {
+            let _: SuccessResponse = try await defaultNetworkService.request(endpoint)
+        } catch {
+            XCTFail()
+        }
+    }
+
     func testRedirectRequest_successWithNonJsonResponse_sync() {
         let expectation = self.expectation(description: "Fails with decoding error")
 
@@ -175,6 +245,20 @@ final class DefaultNetworkServiceTests: XCTestCase {
         waitForExpectations(timeout: 2.0)
     }
 
+    func testRedirectRequest_successWithNonJsonResponse_async() async {
+        let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
+        let data = "<html><head></head><body><a>test</a></body></html>".data(using: .utf8)
+        requestDispatcher.responseModel = DispatcherResponseModel(metadata: metadata, requestDuration: 1000, data: data, error: nil)
+
+        let endpoint = PrimerAPI.redirect(clientToken: Mocks.decodedJWTToken, url: URL(string: metadata.responseUrl!)!)
+
+        do {
+            let _: SuccessResponse = try await defaultNetworkService.request(endpoint)
+        } catch {
+            XCTFail()
+        }
+    }
+
     func testRequest_failsDueToNetworkError_sync() {
         let expectation = self.expectation(description: "Fails with network error")
 
@@ -194,6 +278,20 @@ final class DefaultNetworkServiceTests: XCTestCase {
 
         XCTAssertNil(cancellable)
         waitForExpectations(timeout: 2.0)
+    }
+
+    func testRequest_failsDueToNetworkError_async() async {
+        requestDispatcher.error = NSError(domain: NSURLErrorDomain, code: NSURLErrorNotConnectedToInternet, userInfo: nil)
+
+        let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken, requestParameters: nil)
+
+        do {
+            let _: PrimerAPIConfiguration = try await defaultNetworkService.request(endpoint)
+            XCTFail()
+        } catch {
+            XCTAssertEqual((error as NSError).domain, NSURLErrorDomain)
+            XCTAssertEqual((error as NSError).code, NSURLErrorNotConnectedToInternet)
+        }
     }
 
     func testRequest_withHeaders_success_sync() {
@@ -227,5 +325,31 @@ final class DefaultNetworkServiceTests: XCTestCase {
 
         XCTAssertNil(cancellable)
         waitForExpectations(timeout: 2.0)
+    }
+
+    func testRequest_withHeaders_success_async() async {
+        let responseModel = PrimerAPIConfiguration(coreUrl: "https://core_url",
+                                                   pciUrl: "https://pci_url",
+                                                   binDataUrl: "https://bin_data_url",
+                                                   assetsUrl: "https://assets_url",
+                                                   clientSession: nil,
+                                                   paymentMethods: [],
+                                                   primerAccountId: "primer_account_id",
+                                                   keys: nil,
+                                                   checkoutModules: [])
+
+        let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
+        let data = try! JSONEncoder().encode(responseModel)
+        requestDispatcher.responseModel = DispatcherResponseModel(metadata: metadata, requestDuration: 1000, data: data, error: nil)
+
+        let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken, requestParameters: nil)
+
+        do {
+            let (model, headers): (PrimerAPIConfiguration, [String: String]?) = try await defaultNetworkService.request(endpoint)
+            XCTAssertEqual(model.coreUrl, "https://core_url")
+            XCTAssertEqual(headers?["X-Test-Key"], "X-Test-Value")
+        } catch {
+            XCTFail()
+        }
     }
 }

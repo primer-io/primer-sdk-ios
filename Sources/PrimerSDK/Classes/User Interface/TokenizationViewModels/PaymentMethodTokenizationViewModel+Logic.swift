@@ -241,6 +241,10 @@ extension PaymentMethodTokenizationViewModel {
         }
     }
 
+    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> PrimerCheckoutData? {
+        return try await startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData).async()
+    }
+
     // This function will do one of the two following:
     //     - Wait a response from the merchant, via the delegate function. The response can be:
     //         - A new client token
@@ -343,7 +347,7 @@ extension PaymentMethodTokenizationViewModel {
                 firstly {
                     self.handleCreatePaymentEvent(token)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     self.resumePaymentId = paymentResponse.id
 
@@ -430,7 +434,7 @@ extension PaymentMethodTokenizationViewModel {
                 firstly {
                     self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     seal.fulfill(self.paymentCheckoutData)
                 }
@@ -439,6 +443,10 @@ extension PaymentMethodTokenizationViewModel {
                 }
             }
         }
+    }
+
+    func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
+        return try await handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken).async()
     }
 
     // This method will show the new design for result screen with a specific state: e.g. Error state or Success state

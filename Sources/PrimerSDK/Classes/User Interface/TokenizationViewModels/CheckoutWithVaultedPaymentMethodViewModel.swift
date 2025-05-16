@@ -321,7 +321,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
                 firstly {
                     self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     seal.fulfill(self.paymentCheckoutData)
                 }
@@ -332,12 +332,20 @@ Make sure you call the decision handler otherwise the SDK will hang.
         }
     }
 
+    private func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
+        return try await handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken).async()
+    }
+
     // Resume payment with Resume payment ID
 
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment> {
         let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
         return self.createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
                                                                           paymentResumeRequest: resumeRequest)
+    }
+
+    private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) async throws -> Response.Body.Payment {
+        return try await handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken).async()
     }
 
     func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?> {
@@ -426,7 +434,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
                 firstly {
                     self.handleCreatePaymentEvent(token)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     self.resumePaymentId = paymentResponse.id
 
@@ -459,6 +467,10 @@ Make sure you call the decision handler otherwise the SDK will hang.
                 }
             }
         }
+    }
+
+    func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> DecodedJWTToken? {
+        return try await startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData).async()
     }
 
     private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
@@ -518,9 +530,17 @@ Make sure you call the decision handler otherwise the SDK will hang.
         }
     }
 
+    private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
+        return try await handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData).async()
+    }
+
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
         let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
         return createResumePaymentService.createPayment(paymentRequest: paymentRequest)
+    }
+
+    private func handleCreatePaymentEvent(_ paymentMethodData: String) async throws -> Response.Body.Payment {
+        return try await handleCreatePaymentEvent(paymentMethodData).async()
     }
 
     func handleSuccessfulFlow() {

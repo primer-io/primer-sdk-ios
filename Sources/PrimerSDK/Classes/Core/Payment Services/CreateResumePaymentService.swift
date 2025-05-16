@@ -9,10 +9,15 @@ import Foundation
 
 internal protocol CreateResumePaymentServiceProtocol {
     func createPayment(paymentRequest: Request.Body.Payment.Create) -> Promise<Response.Body.Payment>
+    func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment
     func completePayment(clientToken: DecodedJWTToken,
                          completeUrl: URL,
                          body: Request.Body.Payment.Complete) -> Promise<Void>
+    func completePayment(clientToken: DecodedJWTToken,
+                         completeUrl: URL,
+                         body: Request.Body.Payment.Complete) async throws
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) -> Promise<Response.Body.Payment>
+    func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response.Body.Payment
 }
 
 private enum CreateResumePaymentCallType: String {
@@ -55,6 +60,10 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                 }
             }
         }
+    }
+
+    func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment {
+        return try await createPayment(paymentRequest: paymentRequest).async()
     }
 
     /**
@@ -134,6 +143,10 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         }
     }
 
+    func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response.Body.Payment {
+        return try await self.resumePaymentWithPaymentId(paymentId, paymentResumeRequest: paymentResumeRequest).async()
+    }
+
     /**
      * Completes a payment using the provided JWT token and URL.
      *
@@ -162,6 +175,12 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                 }
             }
         }
+    }
+
+    func completePayment(clientToken: DecodedJWTToken,
+                         completeUrl: URL,
+                         body: Request.Body.Payment.Complete) async throws {
+        return try await self.completePayment(clientToken: clientToken, completeUrl: completeUrl, body: body).async()
     }
 }
 

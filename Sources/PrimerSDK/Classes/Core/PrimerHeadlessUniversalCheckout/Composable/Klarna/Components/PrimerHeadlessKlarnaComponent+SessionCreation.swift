@@ -170,5 +170,9 @@ extension PrimerHeadlessKlarnaComponent: LogReporter {
             }
         }
     }
+
+    func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) async throws {
+        return try await handlePrimerWillCreatePaymentEvent(paymentMethodData).async()
+    }
 }
 #endif

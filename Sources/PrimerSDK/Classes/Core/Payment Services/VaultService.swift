@@ -2,7 +2,9 @@ import Foundation
 
 internal protocol VaultServiceProtocol {
     func fetchVaultedPaymentMethods() -> Promise<Void>
+    func fetchVaultedPaymentMethods() async throws
     func deleteVaultedPaymentMethod(with id: String) -> Promise<Void>
+    func deleteVaultedPaymentMethod(with id: String) async throws
 }
 
 final class VaultService: VaultServiceProtocol {
@@ -39,6 +41,10 @@ final class VaultService: VaultServiceProtocol {
         }
     }
 
+    func fetchVaultedPaymentMethods() async throws {
+        return try await fetchVaultedPaymentMethods().async()
+    }
+
     func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) -> Promise<Response.Body.VaultedPaymentMethods> {
         return Promise { seal in
             apiClient.fetchVaultedPaymentMethods(clientToken: clientToken, completion: { result in
@@ -52,6 +58,10 @@ final class VaultService: VaultServiceProtocol {
         }
     }
 
+    func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) async throws -> Response.Body.VaultedPaymentMethods {
+        return try await fetchVaultedPaymentMethods(clientToken: clientToken).async()
+    }
+
     func deleteVaultedPaymentMethod(with id: String) -> Promise<Void> {
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
@@ -62,7 +72,7 @@ final class VaultService: VaultServiceProtocol {
                 return
             }
 
-            apiClient.deleteVaultedPaymentMethod(clientToken: clientToken, id: id) { (result) in
+            apiClient.deleteVaultedPaymentMethod(clientToken: clientToken, id: id) { result in
                 switch result {
                 case .failure(let err):
                     let containerErr = PrimerError.failedToCreateSession(error: err, userInfo: .errorUserInfoDictionary(),
@@ -75,5 +85,9 @@ final class VaultService: VaultServiceProtocol {
                 }
             }
         }
+    }
+
+    func deleteVaultedPaymentMethod(with id: String) async throws {
+        return try await deleteVaultedPaymentMethod(with: id).async()
     }
 }
