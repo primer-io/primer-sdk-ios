@@ -19,6 +19,10 @@
          <Group
             location = "group:Classes"
             name = "Classes">
+            <FileSystemSynchronizedGroup
+               location = "group:ComposableCheckout"
+               name = "ComposableCheckout">
+            </FileSystemSynchronizedGroup>
             <Group
                location = "group:PCI"
                name = "PCI">
@@ -216,9 +220,6 @@
                   </FileRef>
                </Group>
                <FileRef
-                  location = "group:SuccessMessage.swift">
-               </FileRef>
-               <FileRef
                   location = "group:_PaymentAPIModel.swift">
                </FileRef>
                <FileRef
@@ -358,9 +359,6 @@
                </FileRef>
                <FileRef
                   location = "group:PrimerIntegrationOptions.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:CheckoutModule.swift">
                </FileRef>
                <FileRef
                   location = "group:TokenizationRequestPaymentSessionInfo.swift">
@@ -1829,6 +1827,12 @@
                   location = "group:phone_number_country_codes.json">
                </FileRef>
                <FileRef
+                  location = "group:base.json">
+               </FileRef>
+               <FileRef
+                  location = "group:dark.json">
+               </FileRef>
+               <FileRef
                   location = "group:currencies.json">
                </FileRef>
             </Group>
@@ -2309,6 +2313,9 @@
          </Group>
          <FileRef
             location = "group:DependencyContainerTests.swift">
+         </FileRef>
+         <FileRef
+            location = "group:DependencyInjectionTests.swift">
          </FileRef>
          <Group
             location = "group:Utils"
