@@ -12,6 +12,33 @@ class AnotherServiceImpl: TestService {}
 protocol DummyProtocol {}
 class DummyImpl: DummyProtocol {}
 
+enum DummyError: Error, Equatable {
+    case boom
+}
+
+// MARK: - Dummy DependencyScope
+
+/// Implements DependencyScope for testing scope registration/unregistration
+class DummyScope: DependencyScope {
+    let scopeId: String
+    init(id: String) { self.scopeId = id }
+
+    // no-op
+    func cleanupScope() async {}
+
+    // We override register() to build & register ON our local container
+    func register() async {
+        let container = Container()
+        _ = try? await container.register(TestService.self)
+            .asSingleton()
+            .with { _ in TestServiceImpl() }
+        await DIContainer.setScopedContainer(container, for: scopeId)
+    }
+
+    // We don’t even need setupContainer() any more
+    func setupContainer() async {}
+}
+
 // A simple synchronous factory for testing
 struct NumberFactory: SynchronousFactory {
     typealias Product = Int
@@ -87,16 +114,45 @@ final class DIFrameworkTests: XCTestCase {
     }
 
     // TODO: Failing test, check why
-//    func testWeakPolicyCachesInstance() async throws {
-//        let container = Container()
-//        _ = try await container.register(TestService.self)
-//            .asWeak()
-//            .with { _ in TestServiceImpl() }
-//
-//        let first  = try await container.resolve(TestService.self)
-//        let second = try await container.resolve(TestService.self)
-//        XCTAssertTrue((first as AnyObject) === (second as AnyObject))
-//    }
+    func testWeakPolicyCachesInstance_concreteClass() async throws {
+        let container = Container()
+        // Register the concrete class for weak retention
+        _ = try await container.register(TestServiceImpl.self)
+            .asWeak()
+            .with { _ in TestServiceImpl() }
+
+        // Keep a strong reference in `first`
+        let first  = try await container.resolve(TestServiceImpl.self)
+        let second = try await container.resolve(TestServiceImpl.self)
+
+        // Now the same instance should be returned
+        XCTAssertTrue((first as AnyObject) === (second as AnyObject))
+    }
+
+    func testWeakPolicyDropsInstanceAfterRelease() async throws {
+        let container = Container()
+        _ = try await container.register(TestServiceImpl.self)
+            .asWeak()
+            .with { _ in TestServiceImpl() }
+
+        // 1) Resolve and keep a strong reference
+        var strongInstance: TestServiceImpl? = try await container.resolve(TestServiceImpl.self)
+        weak var maybeWeak = strongInstance
+        XCTAssertNotNil(maybeWeak, "The weak box should still point to the live instance")
+
+        // 2) Drop the only strong reference
+        strongInstance = nil
+        // let ARC run
+        await Task.yield()
+
+        // at this point, the old instance should be gone
+        XCTAssertNil(maybeWeak, "After dropping strongInstance, the weak ref should be nil")
+
+        // 3) A new resolve produces a fresh instance
+        let newInstance = try await container.resolve(TestServiceImpl.self)
+        XCTAssertNotNil(newInstance)
+        XCTAssertFalse(newInstance === maybeWeak, "Should get a brand-new instance after the old one died")
+    }
 
     func testUnregisterRemovesRegistration() async {
         let container = Container()
@@ -256,5 +312,204 @@ final class DIFrameworkTests: XCTestCase {
         let factory = try await container.resolve(StringFactory.self)
         let result  = try await factory.create(with: ())
         XCTAssertEqual(result, "hello")
+    }
+
+    // MARK: - WeakUnsupported for Non-Class Types
+
+    func testWeakUnsupportedForNonClass() async {
+        let container = Container()
+        do {
+            // Attempt to register Int as weak → unsupported
+            _ = try await container.register(Int.self).asWeak()
+                .with { _ in 42 }
+            XCTFail("Expected weakUnsupported error")
+        } catch ContainerError.weakUnsupported(let key) {
+            XCTAssertTrue(key.represents(Int.self))
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
+    // MARK: - Factory Failure Wrapping
+
+    func testFactoryFailedWrapsUnderlyingError() async {
+        let container = Container()
+        // Register a factory that always throws DummyError.boom
+        _ = try? await container.register(TestService.self).asSingleton()
+            .with { _ in throw DummyError.boom }
+
+        do {
+            _ = try await container.resolve(TestService.self)
+            XCTFail("Expected factoryFailed error")
+        } catch ContainerError.factoryFailed(let key, let underlying) {
+            XCTAssertTrue(underlying is DummyError)
+            XCTAssertTrue(key.represents(TestService.self))
+        } catch {
+            XCTFail("Unexpected error type: \(error)")
+        }
+    }
+
+    // MARK: - DependencyScope Lifecycle
+
+    func testDependencyScopeLifecycle() async throws {
+        let scope = DummyScope(id: "scope1")
+
+        // Before register: getContainer() throws scopeNotFound
+        do {
+            _ = try await scope.getContainer()
+            XCTFail("Expected scopeNotFound error")
+        } catch ContainerError.scopeNotFound(let id, _) {
+            XCTAssertEqual(id, "scope1")
+        }
+
+        // Register the scope
+        await scope.register()
+        // Now getContainer() returns a ContainerProtocol
+        let scopedContainer = try await scope.getContainer()
+        let resolved = try await scopedContainer.resolve(TestService.self)
+        XCTAssertTrue(resolved is TestServiceImpl)
+
+        // withContainer should execute action in that scope
+        let result = try await scope.withContainer { cont in
+            let _ = try await cont.resolve(TestService.self)
+            return "ok"
+        }
+        XCTAssertEqual(result, "ok")
+
+        // Unregister and ensure getContainer() again fails
+        await scope.unregister()
+        do {
+            _ = try await scope.getContainer()
+            XCTFail("Expected scopeNotFound after unregister")
+        } catch ContainerError.scopeNotFound(let id, _) {
+            XCTAssertEqual(id, "scope1")
+        }
+    }
+
+    // MARK: - DIContainer.withContainer Context Restoration
+
+    func testDIContainerWithContainerRestoresOriginal() async throws {
+        // Capture original before swap
+        let original = await DIContainer.current
+        let temp = Container()
+
+        // Swap in `temp`, run assertions inside, then swap back
+        let ret = await DIContainer.withContainer(temp) {
+            // ⬇️ Fetch current before asserting
+            let inside = await DIContainer.current
+            XCTAssertTrue(inside! as AnyObject === temp as AnyObject)
+            return "done"
+        }
+        XCTAssertEqual(ret, "done")
+
+        // After the block, make sure the original was restored
+        let outside = await DIContainer.current
+        XCTAssertTrue(outside! as AnyObject === original! as AnyObject)
+    }
+
+    // MARK: - Container Diagnostics & Health Checks
+
+    func testContainerDiagnosticsAndHealth() async throws {
+        let container = Container()
+        // Register one singleton and one weak service
+        _ = try await container.register(TestService.self).asSingleton()
+            .with { _ in TestServiceImpl() }
+        _ = try await container.register(AnotherServiceImpl.self).asWeak()
+            .with { _ in AnotherServiceImpl() }
+
+        // Resolve and keep references alive
+        let strongService = try await container.resolve(TestService.self)
+        let weakService   = try await container.resolve(AnotherServiceImpl.self)
+
+        // (Use them in a no-op so compiler doesn't warn)
+        XCTAssertNotNil(strongService)
+        XCTAssertNotNil(weakService)
+
+        // Now diagnostics will see one weak box with an active instance
+        let diag = await container.getDiagnostics()
+        XCTAssertEqual(diag.totalRegistrations, 2)
+        XCTAssertEqual(diag.singletonInstances, 1)
+        XCTAssertEqual(diag.weakReferences, 1)
+        XCTAssertEqual(diag.activeWeakReferences, 1)
+        XCTAssertTrue(diag.registeredTypes.contains(where: { $0.represents(TestService.self) }))
+
+        // Health should be healthy
+        let report = await container.performHealthCheck()
+        XCTAssertEqual(report.status, .healthy)
+        XCTAssertTrue(report.issues.isEmpty)
+        XCTAssertTrue(report.recommendations.isEmpty)
+
+        // And your existing “orphanedRegistrations” check stays the same…
+    }
+
+    // MARK: - InstrumentedContainer Metrics Recording
+
+    func testInstrumentedContainerRecordsMetrics() async throws {
+        actor TestMetrics: ContainerMetrics {
+            private var resolutions: [(TypeKey, TimeInterval)] = []
+
+            func recordResolution(for key: TypeKey, duration: TimeInterval) async {
+                resolutions.append((key, duration))
+            }
+            func recordRegistration(for key: TypeKey) async {}
+            func recordCacheHit(for key: TypeKey) async {}
+            func recordCacheMiss(for key: TypeKey) async {}
+            func getMetrics() async -> ContainerPerformanceMetrics {
+                .init(
+                    totalResolutions: resolutions.count,
+                    averageResolutionTime: 0,
+                    slowestResolutions: [],
+                    cacheHitRate: 0,
+                    memoryUsageEstimate: 0
+                )
+            }
+            func recordedCount() async -> Int {
+                resolutions.count
+            }
+        }
+
+        let metrics = TestMetrics()
+        let container = InstrumentedContainer(metrics: metrics, logger: { _ in })
+
+        // Register & resolve a service
+        _ = try await container.register(TestService.self).asSingleton()
+            .with { _ in TestServiceImpl() }
+        _ = try await container.resolve(TestService.self)
+
+        // Assert via the public metrics API...
+        let perf = await container.getPerformanceMetrics()
+        XCTAssertEqual(perf?.totalResolutions, 1)
+
+        // ...and via our helper to ensure recordResolution ran exactly once
+        let count = await metrics.recordedCount()
+        XCTAssertEqual(count, 1)
+    }
+
+    // MARK: - Property Wrapper Injection
+
+    func testInjectedOptionalReturnsNilWhenUnregistered() async throws {
+        // No registration
+        await DIContainer.setContainer(Container())
+
+        class OwnerOpt {
+            @InjectedOptional var optionalService: TestService?
+        }
+        let ownerOpt = OwnerOpt()
+        let opt = await ownerOpt.$optionalService.resolve()
+        XCTAssertNil(opt)
+    }
+
+    func testInjectedOptionalResolvesWhenRegistered() async throws {
+        let container = Container()
+        _ = try await container.register(TestService.self).asSingleton()
+            .with { _ in TestServiceImpl() }
+        await DIContainer.setContainer(container)
+
+        class OwnerOpt {
+            @InjectedOptional var optionalService: TestService?
+        }
+        let ownerOpt = OwnerOpt()
+        let opt = await ownerOpt.$optionalService.resolve()
+        XCTAssertTrue(opt is TestServiceImpl)
     }
 }
