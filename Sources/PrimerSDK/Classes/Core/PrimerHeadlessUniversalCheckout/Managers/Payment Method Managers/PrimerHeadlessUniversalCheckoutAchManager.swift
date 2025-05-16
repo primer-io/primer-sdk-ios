@@ -8,7 +8,7 @@
 import UIKit
 
 extension PrimerHeadlessUniversalCheckout {
-    public class AchManager: NSObject {
+    public final class AchManager: NSObject {
         public var mandateDelegate: ACHMandateDelegate?
         // swiftlint:disable generic_type_name
         public func provide<PrimerHeadlessAchComponent>(paymentMethodType: String) throws -> PrimerHeadlessAchComponent?

@@ -65,7 +65,7 @@ struct ACHPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
     var sessionInfo: Request.Body.StripeAch.SessionData
 }
 
-class OffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
+final class OffSessionPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
 
     var paymentMethodConfigId: String
     var paymentMethodType: String

@@ -1,3 +1,27 @@
+## 2.37.0 (2025-05-12)
+
+### Feat
+
+- **Payment**: added new payment result property (checkoutOutcome) (#1161)
+- Support Add New Card in card form flow (#1154)
+
+### Fix
+
+- **NolPay**: added null check for PrimerNolPayProtocol (#1155)
+
+### Refactor
+
+- Remove unused code from Data Models (#1158)
+- Modularise Primer3DS initialisation (#1160)
+- Remove Unused Code from Extensions (#1157)
+
+## 2.36.1 (2025-04-24)
+
+### Fix
+
+- Klarna Popup Dismissal Triggering authorizationFailed (#1147)
+- Fix RawDataManager Callback Triggering  (#1145)
+
 ## 2.36.0 (2025-03-24)
 
 ### Feat

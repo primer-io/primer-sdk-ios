@@ -15,7 +15,7 @@ protocol ApplePayPresenting {
                  delegate: PKPaymentAuthorizationControllerDelegate) -> Promise<Void>
 }
 
-class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
+final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
 
     private var supportedNetworks: [PKPaymentNetwork] {
         ApplePayUtils.supportedPKPaymentNetworks()

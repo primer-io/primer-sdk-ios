@@ -106,7 +106,6 @@ class TokenizationResponseTests: XCTestCase {
 
     func validatePaymentMethodTokenData(forResponse tokenizationResponse: [String: Any], withToken primerPaymentMethodToken: PrimerPaymentMethodTokenData) {
         XCTAssert(primerPaymentMethodToken.analyticsId == tokenizationResponse["analyticsId"] as? String, "analyticsId is \(primerPaymentMethodToken.analyticsId ?? "n/a") when it should be \(tokenizationResponse["analyticsId"] as? String ?? "n/a")")
-        XCTAssert(primerPaymentMethodToken.isAlreadyVaulted == tokenizationResponse["isAlreadyVaulted"] as? Bool, "isAlreadyVaulted is \(primerPaymentMethodToken.isAlreadyVaulted) when it should be \(tokenizationResponse["isAlreadyVaulted"] as? Bool)")
         XCTAssert(primerPaymentMethodToken.isVaulted == tokenizationResponse["isVaulted"] as? Bool, "isVaulted is \(primerPaymentMethodToken.isVaulted) when it should be \(tokenizationResponse["isVaulted"] as? Bool)")
         XCTAssert(primerPaymentMethodToken.paymentInstrumentData != nil, "paymentInstrumentData should not be nil")
 

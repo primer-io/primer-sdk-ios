@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PrimerFirstNameField: PrimerCardFormFieldProtocol {
+final class PrimerFirstNameField: PrimerCardFormFieldProtocol {
 
     private static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 

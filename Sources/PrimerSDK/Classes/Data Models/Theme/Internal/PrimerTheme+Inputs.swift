@@ -1,10 +1,10 @@
 import UIKit
 
-internal enum InputType {
-    case outlined, underlined, doublelined
+enum InputType {
+    case underlined
 }
 
-internal class InputTheme {
+final class InputTheme {
     let color: UIColor
     let cornerRadius: CGFloat
     let border: BorderTheme

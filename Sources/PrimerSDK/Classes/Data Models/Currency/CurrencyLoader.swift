@@ -10,7 +10,7 @@ import Foundation
 
 var inMemoryCurrencies: [Currency]? = []
 
-public class CurrencyLoader: LogReporter {
+public final class CurrencyLoader: LogReporter {
 
     private var storage: CurrencyStorageProtocol
     private var networkService: CurrencyNetworkServiceProtocol

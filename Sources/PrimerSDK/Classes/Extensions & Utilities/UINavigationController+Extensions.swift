@@ -20,18 +20,6 @@ extension UINavigationController {
         }
     }
 
-    func popViewController(animated: Bool, completion: (() -> Void)?) {
-        popViewController(animated: animated)
-
-        if animated, let coordinator = transitionCoordinator {
-            coordinator.animate(alongsideTransition: nil) { _ in
-                completion?()
-            }
-        } else {
-            completion?()
-        }
-    }
-
     func popToViewController(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?) {
         popToViewController(viewController, animated: animated)
 

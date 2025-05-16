@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PrimerPostalCodeField: PrimerCardFormFieldProtocol {
+final class PrimerPostalCodeField: PrimerCardFormFieldProtocol {
 
     private static let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
@@ -27,13 +27,5 @@ class PrimerPostalCodeField: PrimerCardFormFieldProtocol {
         postalCodeFieldView.textColor = theme.input.text.color
         postalCodeFieldView.delegate = delegate
         return postalCodeFieldView
-    }
-}
-
-extension PrimerPostalCodeField {
-
-    private static var localSamplePostalCode: String {
-        let countryCode = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode
-        return PostalCode.sample(for: countryCode)
     }
 }

@@ -22,7 +22,6 @@ protocol KlarnaTokenizationManagerProtocol {
 }
 
 class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
-
     // MARK: - Properties
 
     private let tokenizationService: TokenizationServiceProtocol
@@ -30,13 +29,17 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
     private let createResumePaymentService: CreateResumePaymentServiceProtocol
 
     // MARK: - Init
-    init(tokenizationService: TokenizationServiceProtocol = TokenizationService(),
-         createResumePaymentService: CreateResumePaymentServiceProtocol) {
+
+    init(
+        tokenizationService: TokenizationServiceProtocol,
+        createResumePaymentService: CreateResumePaymentServiceProtocol
+    ) {
         self.tokenizationService = tokenizationService
         self.createResumePaymentService = createResumePaymentService
     }
 
     // MARK: - Tokenize Headless
+
     func tokenizeHeadless(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerCheckoutData> {
         return Promise { seal in
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: PrimerPaymentMethodType.klarna.rawValue)
@@ -60,6 +63,7 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
     }
 
     // MARK: - Tokenize DropIn
+
     func tokenizeDropIn(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             firstly {
@@ -105,7 +109,7 @@ extension KlarnaTokenizationManager {
                 firstly {
                     self.createPaymentEvent(token)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     let paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     seal.fulfill(paymentCheckoutData)
                 }
@@ -122,7 +126,8 @@ extension KlarnaTokenizationManager {
         return createResumePaymentService.createPayment(paymentRequest: paymentRequest)
     }
 
-    private func getRequestBody(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) -> Promise<Request.Body.Tokenization> {
+    private func getRequestBody(customerToken: Response.Body.Klarna.CustomerToken?,
+                                offSessionAuthorizationId: String?) -> Promise<Request.Body.Tokenization> {
         return Promise { seal in
             var customerTokenId: String?
             var paymentInstrument: TokenizationRequestBodyPaymentInstrument

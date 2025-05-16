@@ -12,7 +12,7 @@ internal protocol PrimerSettingsProtocol {
     var apiVersion: PrimerApiVersion { get }
 }
 
-public class PrimerSettings: PrimerSettingsProtocol, Codable {
+public final class PrimerSettings: PrimerSettingsProtocol, Codable {
 
     static var current: PrimerSettings {
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
@@ -66,7 +66,7 @@ internal protocol PrimerPaymentMethodOptionsProtocol {
     func validSchemeForUrlScheme() throws -> String
 }
 
-public class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Codable {
+public final class PrimerPaymentMethodOptions: PrimerPaymentMethodOptionsProtocol, Codable {
 
     private let urlScheme: String?
     let applePayOptions: PrimerApplePayOptions?
@@ -141,7 +141,7 @@ The provided url scheme '\(urlScheme)' is not a valid URL. Please ensure that a 
 
 // MARK: Apple Pay
 
-public class PrimerApplePayOptions: Codable {
+public final class PrimerApplePayOptions: Codable {
 
     let merchantIdentifier: String
     @available(*, deprecated, message: "Use Client Session API to provide merchant name value: https://primer.io/docs/payment-methods/apple-pay/direct-integration#prepare-the-client-session")
@@ -214,7 +214,7 @@ public class PrimerApplePayOptions: Codable {
 
 // MARK: Klarna
 
-public class PrimerKlarnaOptions: Codable {
+public final class PrimerKlarnaOptions: Codable {
 
     let recurringPaymentDescription: String
 
@@ -224,7 +224,7 @@ public class PrimerKlarnaOptions: Codable {
 }
 
 // MARK: Stripe ACH
-public class PrimerStripeOptions: Codable {
+public final class PrimerStripeOptions: Codable {
 
     public enum MandateData: Codable {
         case fullMandate(text: String)
@@ -242,7 +242,7 @@ public class PrimerStripeOptions: Codable {
 
 // MARK: Card Payment
 
-public class PrimerCardPaymentOptions: Codable {
+public final class PrimerCardPaymentOptions: Codable {
 
     let is3DSOnVaultingEnabled: Bool
 
@@ -262,24 +262,22 @@ public enum DismissalMechanism: Codable {
     case gestures, closeButton
 }
 
-internal protocol PrimerUIOptionsProtocol {
-    var isInitScreenEnabled: Bool { get } // Default: true
-    var isSuccessScreenEnabled: Bool { get } // Default: true
-    var isErrorScreenEnabled: Bool { get } // Default: true
-    var dismissalMechanism: [DismissalMechanism] { get } // Default: .gestures
-    var theme: PrimerTheme { get }
-}
-
-public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
+public final class PrimerUIOptions: Codable {
 
     public internal(set) var isInitScreenEnabled: Bool
     public internal(set) var isSuccessScreenEnabled: Bool
     public internal(set) var isErrorScreenEnabled: Bool
     public internal(set) var dismissalMechanism: [DismissalMechanism]
+    public internal(set) var cardFormUIOptions: PrimerCardFormUIOptions?
     public let theme: PrimerTheme
 
     private enum CodingKeys: String, CodingKey {
-        case isInitScreenEnabled, isSuccessScreenEnabled, isErrorScreenEnabled, dismissalMechanism, theme
+        case isInitScreenEnabled,
+             isSuccessScreenEnabled,
+             isErrorScreenEnabled,
+             dismissalMechanism,
+             cardFormUIOptions,
+             theme
     }
 
     public init(
@@ -287,12 +285,14 @@ public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
         isSuccessScreenEnabled: Bool? = nil,
         isErrorScreenEnabled: Bool? = nil,
         dismissalMechanism: [DismissalMechanism]? = [.gestures],
+        cardFormUIOptions: PrimerCardFormUIOptions? = nil,
         theme: PrimerTheme? = nil
     ) {
         self.isInitScreenEnabled = isInitScreenEnabled != nil ? isInitScreenEnabled! : true
         self.isSuccessScreenEnabled = isSuccessScreenEnabled != nil ? isSuccessScreenEnabled! : true
         self.isErrorScreenEnabled = isErrorScreenEnabled != nil ? isErrorScreenEnabled! : true
         self.dismissalMechanism = dismissalMechanism ?? [.gestures]
+        self.cardFormUIOptions = cardFormUIOptions
         self.theme = theme ?? PrimerTheme()
     }
 
@@ -302,6 +302,7 @@ public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
         self.isSuccessScreenEnabled = try container.decode(Bool.self, forKey: .isSuccessScreenEnabled)
         self.isErrorScreenEnabled = try container.decode(Bool.self, forKey: .isErrorScreenEnabled)
         self.dismissalMechanism = try container.decode([DismissalMechanism].self, forKey: .dismissalMechanism)
+        self.cardFormUIOptions = try container.decodeIfPresent(PrimerCardFormUIOptions.self, forKey: .cardFormUIOptions)
         self.theme = PrimerTheme()
     }
 
@@ -311,16 +312,25 @@ public class PrimerUIOptions: PrimerUIOptionsProtocol, Codable {
         try container.encode(isSuccessScreenEnabled, forKey: .isSuccessScreenEnabled)
         try container.encode(isErrorScreenEnabled, forKey: .isErrorScreenEnabled)
         try container.encode(dismissalMechanism, forKey: .dismissalMechanism)
+        try container.encodeIfPresent(cardFormUIOptions, forKey: .cardFormUIOptions)
+    }
+}
+
+/// New structure to control card-form button behavior
+public struct PrimerCardFormUIOptions: Codable {
+    /// When true, Drop-In’s card form pay button shows “Add new card” instead of “Pay $x.xx”
+    public let payButtonAddNewCard: Bool
+
+    /// Initializes `PrimerCardFormUIOptions`
+    /// - Parameter payButtonAddNewCard: Indicates whether to show “Add new card” instead of “Pay $x.xx”
+    public init(payButtonAddNewCard: Bool = false) {
+        self.payButtonAddNewCard = payButtonAddNewCard
     }
 }
 
 // MARK: - DEBUG OPTIONS
 
-internal protocol PrimerDebugOptionsProtocol {
-    var is3DSSanityCheckEnabled: Bool { get }
-}
-
-public class PrimerDebugOptions: PrimerDebugOptionsProtocol, Codable {
+public struct PrimerDebugOptions: Codable {
     let is3DSSanityCheckEnabled: Bool
 
     public init(is3DSSanityCheckEnabled: Bool? = nil) {
@@ -330,11 +340,7 @@ public class PrimerDebugOptions: PrimerDebugOptionsProtocol, Codable {
 
 // MARK: - 3DS OPTIONS
 
-internal protocol PrimerThreeDsOptionsProtocol {
-    var threeDsAppRequestorUrl: String? { get }
-}
-
-public class PrimerThreeDsOptions: PrimerThreeDsOptionsProtocol, Codable {
+public struct PrimerThreeDsOptions: Codable {
     let threeDsAppRequestorUrl: String?
 
     public init(threeDsAppRequestorUrl: String? = nil) {

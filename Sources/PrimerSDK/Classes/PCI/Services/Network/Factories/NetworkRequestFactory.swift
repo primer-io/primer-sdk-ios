@@ -11,7 +11,7 @@ protocol NetworkRequestFactory {
     func request(for endpoint: Endpoint, identifier: String?) throws -> URLRequest
 }
 
-class DefaultNetworkRequestFactory: NetworkRequestFactory, LogReporter {
+final class DefaultNetworkRequestFactory: NetworkRequestFactory, LogReporter {
 
     func request(for endpoint: Endpoint, identifier: String?) throws -> URLRequest {
         var request = try baseRequest(from: endpoint)

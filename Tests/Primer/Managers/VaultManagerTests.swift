@@ -290,12 +290,8 @@ final class VaultManagerTests: XCTestCase {
                                                             countryCode: "shipping_country_code",
                                                             postalCode: "shipping_postal_code")),
                      customerId: "customer_id",
-                     dateStr: nil,
-                     order: nil,
                      orderId: "order_id",
-                     requiredAction: nil,
-                     status: .success,
-                     paymentFailureReason: nil)
+                     status: .success)
     }
 
     var paymentResponseBodyWithRedirectAction: Response.Body.Payment {
@@ -324,14 +320,11 @@ final class VaultManagerTests: XCTestCase {
                                                             countryCode: "shipping_country_code",
                                                             postalCode: "shipping_postal_code")),
                      customerId: "customer_id",
-                     dateStr: nil,
-                     order: nil,
                      orderId: "order_id",
                      requiredAction: .init(clientToken: MockAppState.mockClientTokenWithRedirect,
                                            name: .checkout,
                                            description: "description"),
-                     status: .success,
-                     paymentFailureReason: nil)
+                     status: .success)
     }
 
     var paymentACHResponseBody: Response.Body.Payment {
@@ -360,14 +353,11 @@ final class VaultManagerTests: XCTestCase {
                                                             countryCode: "shipping_country_code",
                                                             postalCode: "shipping_postal_code")),
                      customerId: "customer_id",
-                     dateStr: nil,
-                     order: nil,
                      orderId: "order_id",
                      requiredAction: .init(clientToken: MockAppState.stripeACHToken,
                                            name: .checkout,
                                            description: "description"),
-                     status: .success,
-                     paymentFailureReason: nil)
+                     status: .success)
     }
 
     var paymentResponseAfterResume: Response.Body.Payment {
@@ -375,14 +365,9 @@ final class VaultManagerTests: XCTestCase {
               paymentId: "payment_id",
               amount: 1234,
               currencyCode: "GBP",
-              customer: nil,
               customerId: "customer_id",
-              dateStr: nil,
-              order: nil,
               orderId: "order_id",
-              requiredAction: nil,
-              status: .success,
-              paymentFailureReason: nil)
+              status: .success)
     }
 
     var primerPaymentMethodTokenData = PrimerPaymentMethodTokenData(

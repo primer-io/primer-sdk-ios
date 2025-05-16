@@ -27,15 +27,13 @@ protocol ThreeDSServiceProtocol {
         completion: @escaping (_ result: Result<String, Error>) -> Void)
 }
 
-class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
+final class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
     static var apiClient: PrimerAPIClientProtocol?
 
     private var threeDSSDKWindow: UIWindow?
     private var initProtocolVersion: ThreeDS.ProtocolVersion?
-    private var continueErrorInfo: ThreeDS.ContinueInfo?
     private var resumePaymentToken: String?
-    private var demo3DSWindow: UIWindow?
 
     #if canImport(Primer3DS)
     private var primer3DS: Primer3DS!
@@ -230,114 +228,18 @@ class ThreeDSService: ThreeDSServiceProtocol, LogReporter {
 
     #if canImport(Primer3DS)
     private func initializePrimer3DSSdk() -> Promise<Void> {
-        return Promise { seal in
-            guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
-                let err = PrimerError.invalidClientToken(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
-
-                let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: err)
-                seal.reject(internalErr)
-                return
-            }
-
-            guard let apiConfiguration = AppState.current.apiConfiguration else {
-                let err = PrimerError.missingPrimerConfiguration(userInfo: .errorUserInfoDictionary(),
-                                                                 diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: err)
-                seal.reject(err)
-                return
-            }
-
-            guard let apiKey = apiConfiguration.keys?.netceteraApiKey else {
-                let uuid = UUID().uuidString
-
-                let err = Primer3DSErrorContainer.missing3DSConfiguration(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: uuid,
-                    missingKey: "netceteraApiKey")
-
-                let internalError = InternalError.failedToPerform3dsButShouldContinue(error: err)
-
-                seal.reject(internalError)
-                return
-            }
-
-            var certs: [Primer3DSCertificate] = []
-            // Once `threeDSecureIoCertificates` is removed from the response in the future
-            // we can delete the for loop bellow
-            for certificate in AppState.current.apiConfiguration?.keys?.threeDSecureIoCertificates ?? [] {
-                let cer = ThreeDS.Cer(cardScheme: certificate.cardNetwork,
-                                      rootCertificate: certificate.rootCertificate,
-                                      encryptionKey: certificate.encryptionKey)
-                certs.append(cer)
-            }
-
-            for certificate in AppState.current.apiConfiguration?.keys?.threeDsProviderCertificates ?? [] {
-                let cer = ThreeDS.Cer(cardScheme: certificate.cardNetwork,
-                                      rootCertificate: certificate.rootCertificate,
-                                      encryptionKey: certificate.encryptionKey)
-                certs.append(cer)
-            }
-
-            switch Environment(rawValue: decodedJWTToken.env ?? "") {
-            case .production:
-                primer3DS = Primer3DS(environment: .production)
-            case .staging:
-                primer3DS = Primer3DS(environment: .staging)
-            default:
-                primer3DS = Primer3DS(environment: .sandbox)
-            }
-
-            // ⚠️  Property version doesn't exist on version before 1.1.0, so PrimerSDK won't build
-            //     if Primer3DS is not equal or above 1.1.0
-            if Primer3DS.version.compareWithVersion("1.1.1") == .orderedDescending ||
-                Primer3DS.version.compareWithVersion("1.1.1") == .orderedSame {
-                do {
-                    primer3DS.is3DSSanityCheckEnabled = PrimerSettings.current.debugOptions.is3DSSanityCheckEnabled
-                    try primer3DS.initializeSDK(apiKey: apiKey, certificates: certs)
-                    seal.fulfill(())
-
-                } catch {
-                    let uuid = UUID().uuidString
-
-                    if let primer3DSError = error as? Primer3DSError {
-                        let err = Primer3DSErrorContainer.primer3DSSdkError(
-                            paymentMethodType: paymentMethodType,
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: uuid,
-                            initProtocolVersion: self.initProtocolVersion?.rawValue,
-                            errorInfo: Primer3DSErrorInfo(
-                                errorId: primer3DSError.errorId,
-                                errorDescription: primer3DSError.errorDescription,
-                                recoverySuggestion: primer3DSError.recoverySuggestion,
-                                threeDsErrorCode: primer3DSError.threeDsErrorCode,
-                                threeDsErrorType: primer3DSError.threeDsErrorType,
-                                threeDsErrorComponent: primer3DSError.threeDsErrorComponent,
-                                threeDsSdkTranscationId: primer3DSError.threeDsSdkTranscationId,
-                                threeDsSErrorVersion: primer3DSError.threeDsSErrorVersion,
-                                threeDsErrorDetail: primer3DSError.threeDsErrorDetail))
-
-                        let internalErr = InternalError.failedToPerform3dsButShouldContinue(error: err)
-                        seal.reject(internalErr)
-
-                    } else {
-                        let internalErr = InternalError.failedToPerform3dsAndShouldBreak(error: error)
-                        seal.reject(internalErr)
-                    }
-                }
-
-            } else {
-                let uuid = UUID().uuidString
-
-                let err = Primer3DSErrorContainer.invalid3DSSdkVersion(
-                    userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: uuid,
-                    invalidVersion: Primer3DS.version,
-                    validVersion: "1.1.0")
-
-                let internalErr = InternalError.failedToPerform3dsButShouldContinue(error: err)
-                seal.reject(internalErr)
+        Promise { seal in
+            do {
+                let token = try fetchToken()
+                let config = try fetchConfiguration()
+                let apiKey = try fetchAPIKey(from: config)
+                let certs = buildCertificates(from: config)
+                let env = Environment(rawValue: token.env ?? "") ?? .sandbox
+                primer3DS = Primer3DS(environment: env)
+                try checkVersionAndInit(apiKey: apiKey, certs: certs)
+                seal.fulfill(())
+            } catch {
+                seal.reject(error)
             }
         }
     }
@@ -658,9 +560,111 @@ please set correct threeDsAppRequestorUrl in PrimerThreeDsOptions during SDK ini
 }
 
 #if canImport(Primer3DS)
-internal class MockPrimer3DSCompletion: Primer3DSCompletion {
-    var sdkTransactionId: String = "sdk-transaction-id"
-    var transactionStatus: String = "transactionStatus"
+private extension ThreeDSService {
+    func fetchToken() throws -> DecodedJWTToken {
+        guard let token = PrimerAPIConfigurationModule.decodedJWTToken else {
+            throw InternalError.failedToPerform3dsAndShouldBreak(
+                error: PrimerError.invalidClientToken(
+                    userInfo: .errorUserInfoDictionary(),
+                    diagnosticsId: UUID().uuidString
+                )
+            )
+        }
+        return token
+    }
+
+    func fetchConfiguration() throws -> PrimerAPIConfiguration {
+        guard let configuration = AppState.current.apiConfiguration else {
+            let error = PrimerError.missingPrimerConfiguration(
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            ErrorHandler.handle(error: error)
+            throw error
+        }
+        return configuration
+    }
+
+    func fetchAPIKey(from config: PrimerAPIConfiguration) throws -> String {
+        guard let key = config.keys?.netceteraApiKey else {
+            throw InternalError.failedToPerform3dsButShouldContinue(
+                error: Primer3DSErrorContainer.missing3DSConfiguration(
+                    userInfo: .errorUserInfoDictionary(),
+                    diagnosticsId: UUID().uuidString,
+                    missingKey: "netceteraApiKey"
+                )
+            )
+        }
+        return key
+    }
+
+    func buildCertificates(from config: PrimerAPIConfiguration) -> [Primer3DSCertificate] {
+        // Once `threeDSecureIoCertificates` is removed from the response in the future we can remove the check
+        let ioCerts = config.keys?.threeDSecureIoCertificates ?? []
+        let providerCerts = config.keys?.threeDsProviderCertificates ?? []
+        return (ioCerts + providerCerts).map { certificate in
+            ThreeDS.Cer(
+                cardScheme: certificate.cardNetwork,
+                rootCertificate: certificate.rootCertificate,
+                encryptionKey: certificate.encryptionKey
+            )
+        }
+    }
+
+    func checkVersionAndInit(apiKey: String, certs: [Primer3DSCertificate]) throws {
+        // ⚠️  Property version doesn't exist on version before 1.1.0, so PrimerSDK won't build
+        //     if Primer3DS is not equal or above 1.1.0
+        if Primer3DS.version.compareWithVersion("1.1.1") == .orderedDescending ||
+            Primer3DS.version.compareWithVersion("1.1.1") == .orderedSame {
+            do {
+                primer3DS.is3DSSanityCheckEnabled = PrimerSettings.current.debugOptions.is3DSSanityCheckEnabled
+                try primer3DS.initializeSDK(apiKey: apiKey, certificates: certs)
+
+            } catch {
+                if let primer3DSError = error as? Primer3DSError {
+                    throw(
+                        InternalError.failedToPerform3dsButShouldContinue(
+                            error: Primer3DSErrorContainer.primer3DSSdkError(
+                                paymentMethodType: paymentMethodType,
+                                userInfo: .errorUserInfoDictionary(),
+                                diagnosticsId: UUID().uuidString,
+                                initProtocolVersion: self.initProtocolVersion?.rawValue,
+                                errorInfo: Primer3DSErrorInfo(primer3DSError)
+                            )
+                        )
+                    )
+                } else {
+                    throw(InternalError.failedToPerform3dsAndShouldBreak(error: error))
+                }
+            }
+
+        } else {
+            throw(
+                InternalError.failedToPerform3dsButShouldContinue(
+                    error: Primer3DSErrorContainer.invalid3DSSdkVersion(
+                        userInfo: .errorUserInfoDictionary(),
+                        diagnosticsId: UUID().uuidString,
+                        invalidVersion: Primer3DS.version,
+                        validVersion: "1.1.0"
+                    )
+                )
+            )
+        }
+    }
+}
+
+private extension Primer3DSErrorInfo {
+    init(_ error: Primer3DSError) {
+        errorId = error.errorId
+        errorDescription = error.errorDescription
+        recoverySuggestion = error.recoverySuggestion
+        threeDsErrorCode = error.threeDsErrorCode
+        threeDsErrorType = error.threeDsErrorType
+        threeDsErrorComponent = error.threeDsErrorComponent
+        threeDsSdkTranscationId = error.threeDsSdkTranscationId
+        threeDsSErrorVersion = error.threeDsSErrorVersion
+        threeDsErrorDetail = error.threeDsErrorDetail
+    }
 }
 #endif
 // swiftlint:enable function_body_length

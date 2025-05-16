@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - ERROR DECISION
 
-@objc public class PrimerErrorDecision: NSObject {
+@objc public final class PrimerErrorDecision: NSObject {
 
     public enum DecisionType {
         case fail(errorMessage: String?)
@@ -37,7 +37,7 @@ public protocol PrimerResumeDecisionProtocol: NSObject {
 
 public protocol PrimerResumeDecisionTypeProtocol {}
 
-@objc public class PrimerResumeDecision: NSObject, PrimerResumeDecisionProtocol {
+@objc public final class PrimerResumeDecision: NSObject, PrimerResumeDecisionProtocol {
 
     public enum DecisionType: PrimerResumeDecisionTypeProtocol {
         case succeed
@@ -69,7 +69,7 @@ public extension PrimerResumeDecision {
 
 // MARK: - HUC RESUME DECISION
 // swiftlint:disable:next type_name
-@objc public class PrimerHeadlessUniversalCheckoutResumeDecision: NSObject, PrimerResumeDecisionProtocol {
+@objc public final class PrimerHeadlessUniversalCheckoutResumeDecision: NSObject, PrimerResumeDecisionProtocol {
 
     public enum DecisionType: PrimerResumeDecisionTypeProtocol {
         case continueWithNewClientToken(_ newClientToken: String)
@@ -96,7 +96,7 @@ public extension PrimerHeadlessUniversalCheckoutResumeDecision {
 
 // MARK: - PAYMENT DECISION
 
-@objc public class PrimerPaymentCreationDecision: NSObject {
+@objc public final class PrimerPaymentCreationDecision: NSObject {
 
     public enum DecisionType {
         case abort(errorMessage: String?)

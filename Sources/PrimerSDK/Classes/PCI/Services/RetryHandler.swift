@@ -7,7 +7,7 @@
 
 import Foundation
 
-class RetryHandler: LogReporter {
+final class RetryHandler: LogReporter {
     let request: URLRequest
     let retryConfig: RetryConfig
     let completion: DispatcherCompletion

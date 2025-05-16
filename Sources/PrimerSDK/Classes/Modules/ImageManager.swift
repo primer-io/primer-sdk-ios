@@ -9,7 +9,7 @@
 
 import UIKit
 
-internal class ImageFile: File {
+final class ImageFile: File {
 
     static func getPaymentMethodType(fromFileName fileName: String) -> String? {
         var tmpFileName = fileName.replacingOccurrences(of: "-logo", with: "")
@@ -117,7 +117,7 @@ internal class ImageFile: File {
     }
 }
 
-internal class ImageManager: LogReporter {
+final class ImageManager: LogReporter {
 
     func getImages(for imageFiles: [ImageFile]) -> Promise<[ImageFile]> {
         return Promise { seal in

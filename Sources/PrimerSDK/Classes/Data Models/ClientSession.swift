@@ -10,11 +10,11 @@
 
 import Foundation
 
-internal class ClientSession {
+final class ClientSession {
 
     // MARK: - ClientSession.Action
 
-    internal class Action: NSObject, Encodable {
+    final class Action: NSObject, Encodable {
 
         static func makeBillingAddressDictionaryRequestFromParameters(_ parameters: [String: Any]) -> [String: Any] {
             return ["billingAddress": parameters]
@@ -26,10 +26,6 @@ internal class ClientSession {
 
         static func selectPaymentMethodActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
             ClientSession.Action(type: .selectPaymentMethod, params: parameters)
-        }
-
-        static func unselectPaymentMethodAction() -> ClientSession.Action {
-            ClientSession.Action(type: .unselectPaymentMethod, params: nil)
         }
 
         static func setBillingAddressActionWithParameters(_ parameters: [String: Any]) -> ClientSession.Action {
@@ -102,14 +98,6 @@ internal class ClientSession {
                 try container.encode(paramsCodable, forKey: .params)
             }
         }
-
-        internal func toDictionary() -> [String: Any]? {
-            do {
-                return try self.asDictionary()
-            } catch {
-                return nil
-            }
-        }
     }
 
     // MARK: ClientSession.Address
@@ -123,12 +111,6 @@ internal class ClientSession {
         let postalCode: String?
         let state: String?
         let countryCode: CountryCode?
-
-        internal func toString() -> String {
-            return [firstName, lastName, addressLine1, addressLine2, city, postalCode, state, countryCode?.rawValue]
-                .compactMap({ $0 })
-                .joined(separator: ", ")
-        }
     }
 
     // MARK: ClientSession.Customer
@@ -333,7 +315,7 @@ internal class ClientSession {
 
     // MARK: - ClientSession.PaymentMethod
 
-    internal class PaymentMethod: Codable {
+    final class PaymentMethod: Codable {
 
         let vaultOnSuccess: Bool
         let options: [[String: Any]]?
@@ -382,7 +364,7 @@ internal class ClientSession {
         }
     }
 
-    internal class APIResponse: Codable {
+    final class APIResponse: Codable {
 
         let clientSessionId: String?
         let paymentMethod: ClientSession.PaymentMethod?

@@ -7,21 +7,6 @@
 
 import Foundation
 
-extension Request.Body {
-    class Xendit {}
-}
-
-extension Response.Body {
-    class Xendit {}
-}
-
-extension Request.Body.Xendit {
-
-    struct RetailOutletsList: Encodable {
-        let paymentMethodConfigId: String
-    }
-}
-
 // swiftlint:disable:next type_name
 internal struct RetailOutletTokenizationSessionRequestParameters: OffSessionPaymentSessionInfo {
     let locale: String = PrimerSettings.current.localeData.localeCode
@@ -29,7 +14,7 @@ internal struct RetailOutletTokenizationSessionRequestParameters: OffSessionPaym
     let retailOutlet: String
 }
 
-@objc public class RetailOutletsList: PrimerInitializationData {
+@objc public final class RetailOutletsList: PrimerInitializationData {
 
     public let result: [RetailOutletsRetail]
 

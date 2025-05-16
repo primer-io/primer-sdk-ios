@@ -7,7 +7,7 @@
 
 import UIKit
 
-class FlowDecisionTableViewCell: UITableViewCell {
+final class FlowDecisionTableViewCell: UITableViewCell {
 
     static var identifier: String = "FlowDecisionTableViewCell"
 
