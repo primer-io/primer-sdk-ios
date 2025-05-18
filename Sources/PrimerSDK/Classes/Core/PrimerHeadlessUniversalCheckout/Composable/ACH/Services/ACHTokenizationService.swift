@@ -63,7 +63,7 @@ final class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelega
     }
 
     func tokenize() async throws -> PrimerPaymentMethodTokenData {
-        return try await self.tokenize().async()
+        try await self.tokenize().async()
     }
 
     // MARK: - Validation
@@ -140,6 +140,6 @@ extension ACHTokenizationService {
     }
 
     private func getRequestBody() async throws -> Request.Body.Tokenization {
-        return try await self.getRequestBody().async()
+        try await self.getRequestBody().async()
     }
 }

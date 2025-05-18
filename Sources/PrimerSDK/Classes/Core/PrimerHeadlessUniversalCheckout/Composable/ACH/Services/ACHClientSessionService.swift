@@ -56,7 +56,7 @@ extension ACHClientSessionService {
     }
 
     func getClientSessionUserDetails() async throws -> ACHUserDetails {
-        return try await getClientSessionUserDetails().async()
+        try await getClientSessionUserDetails().async()
     }
 }
 
@@ -86,7 +86,7 @@ extension ACHClientSessionService {
     }
 
     func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) async throws {
-        return try await patchClientSession(with: actionsRequest).async()
+        try await patchClientSession(with: actionsRequest).async()
     }
 
     func prepareClientSessionActionsRequestBody(paymentMethodType: String) -> ClientSessionUpdateRequest {

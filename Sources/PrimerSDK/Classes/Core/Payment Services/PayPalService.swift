@@ -105,7 +105,7 @@ final class PayPalService: PayPalServiceProtocol {
     }
 
     func startOrderSession() async throws -> Response.Body.PayPal.CreateOrder {
-        return try await awaitResult { completion in
+        try await awaitResult { completion in
             startOrderSession(completion)
         }
     }
@@ -164,7 +164,7 @@ final class PayPalService: PayPalServiceProtocol {
     }
 
     func startBillingAgreementSession() async throws -> String {
-        return try await awaitResult { completion in
+        try await awaitResult { completion in
             startBillingAgreementSession(completion)
         }
     }
@@ -222,7 +222,7 @@ final class PayPalService: PayPalServiceProtocol {
     }
 
     func confirmBillingAgreement() async throws -> Response.Body.PayPal.ConfirmBillingAgreement {
-        return try await awaitResult { completion in
+        try await awaitResult { completion in
             confirmBillingAgreement(completion)
         }
     }
@@ -264,8 +264,11 @@ final class PayPalService: PayPalServiceProtocol {
     }
 
     func fetchPayPalExternalPayerInfo(orderId: String) async throws -> Response.Body.PayPal.PayerInfo {
-        return try await awaitResult { completion in
-            fetchPayPalExternalPayerInfo(orderId: orderId, completion: completion)
+        try await awaitResult { completion in
+            fetchPayPalExternalPayerInfo(
+                orderId: orderId,
+                completion: completion
+            )
         }
     }
 }

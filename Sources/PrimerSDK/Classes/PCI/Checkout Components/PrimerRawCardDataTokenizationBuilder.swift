@@ -139,7 +139,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
     }
 
     func makeRequestBodyWithRawData(_ data: PrimerRawData) async throws -> Request.Body.Tokenization {
-        return try await makeRequestBodyWithRawData(data).async()
+        try await makeRequestBodyWithRawData(data).async()
     }
 
     func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
@@ -147,7 +147,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
     }
 
     func validateRawData(_ data: PrimerRawData) async throws {
-        return try await validateRawData(data).async()
+        try await validateRawData(data).async()
     }
 
     func validateRawData(_ data: PrimerRawData, cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> Promise<Void> {
@@ -178,7 +178,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 // Remotely validated card network
                 if let cardNetworksMetadata = cardNetworksMetadata {
                     let didDetectNetwork = !cardNetworksMetadata.detectedCardNetworks.items.isEmpty &&
-                    cardNetworksMetadata.detectedCardNetworks.items.map { $0.network } != [.unknown]
+                        cardNetworksMetadata.detectedCardNetworks.items.map { $0.network } != [.unknown]
 
                     if didDetectNetwork && cardNetworksMetadata.detectedCardNetworks.preferred == nil,
                        let network = cardNetworksMetadata.detectedCardNetworks.items.first?.network {
@@ -243,14 +243,14 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 if self.requiredInputElementTypes.contains(PrimerInputElementType.cardholderName) {
                     if (rawData.cardholderName ?? "").isEmpty {
                         errors.append(PrimerValidationError.invalidCardholderName(
-                            message: "Cardholder name cannot be blank.",
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString))
+                                        message: "Cardholder name cannot be blank.",
+                                        userInfo: .errorUserInfoDictionary(),
+                                        diagnosticsId: UUID().uuidString))
                     } else if !(rawData.cardholderName ?? "").isValidNonDecimalString {
                         errors.append(PrimerValidationError.invalidCardholderName(
-                            message: "Cardholder name is not valid.",
-                            userInfo: .errorUserInfoDictionary(),
-                            diagnosticsId: UUID().uuidString))
+                                        message: "Cardholder name is not valid.",
+                                        userInfo: .errorUserInfoDictionary(),
+                                        diagnosticsId: UUID().uuidString))
                     }
                 }
 

@@ -468,7 +468,7 @@ extension PrimerHeadlessUniversalCheckout {
                     firstly {
                         self.handleCreatePaymentEvent(token)
                     }
-                    .done { paymentResponse -> Void in
+                    .done { paymentResponse in
                         self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                         self.resumePaymentId = paymentResponse.id
 
@@ -734,7 +734,7 @@ extension PrimerHeadlessUniversalCheckout {
                     firstly {
                         self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                     }
-                    .done { paymentResponse -> Void in
+                    .done { paymentResponse in
                         let paymentData = PrimerCheckoutDataPayment(from: paymentResponse)
                         self.paymentCheckoutData = PrimerCheckoutData(payment: paymentData)
                         seal.fulfill(self.paymentCheckoutData)
@@ -747,7 +747,7 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         private func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
-            return try await handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken).async()
+            try await handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken).async()
         }
 
         private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {

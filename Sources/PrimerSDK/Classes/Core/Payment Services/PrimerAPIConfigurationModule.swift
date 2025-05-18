@@ -128,13 +128,14 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         requestClientTokenValidation: Bool = true,
         requestVaultedPaymentMethods: Bool = false
     ) async throws {
-        return try await setupSession(
+        try await setupSession(
             forClientToken: clientToken,
             requestDisplayMetadata: requestDisplayMetadata,
             requestClientTokenValidation: requestClientTokenValidation,
-            requestVaultedPaymentMethods: requestVaultedPaymentMethods).async()
+            requestVaultedPaymentMethods: requestVaultedPaymentMethods
+        ).async()
     }
-    
+
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
@@ -167,9 +168,9 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
     }
 
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) async throws {
-        return try await updateSession(withActions: actionsRequest).async()
+        try await updateSession(withActions: actionsRequest).async()
     }
-     
+
     func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void> {
         return Promise { seal in
             firstly {
@@ -188,7 +189,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
     }
 
     func storeRequiredActionClientToken(_ newClientToken: String) async throws {
-        return try await storeRequiredActionClientToken(newClientToken).async()
+        try await storeRequiredActionClientToken(newClientToken).async()
     }
 
     // MARK: - HELPERS
@@ -222,8 +223,14 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         }
     }
 
-    private func validateClientToken(_ clientToken: String, requestRemoteClientTokenValidation: Bool) async throws {
-        return try await validateClientToken(clientToken, requestRemoteClientTokenValidation: requestRemoteClientTokenValidation).async()
+    private func validateClientToken(
+        _ clientToken: String,
+        requestRemoteClientTokenValidation: Bool
+    ) async throws {
+        try await validateClientToken(
+            clientToken,
+            requestRemoteClientTokenValidation: requestRemoteClientTokenValidation
+        ).async()
     }
 
     private func validateClientTokenInternally(_ tokenToValidate: JWTToken) throws -> JWTToken {

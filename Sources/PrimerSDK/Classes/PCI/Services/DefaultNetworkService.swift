@@ -80,15 +80,11 @@ final class DefaultNetworkService: NetworkService, LogReporter {
     }
 
     func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.request(endpoint) { (result: Result<T, Error>) in
-                switch result {
-                case .success(let response):
-                    continuation.resume(returning: response)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
+        try await awaitResult { completion in
+            self.request(
+                endpoint,
+                completion: completion
+            )
         }
     }
 
@@ -98,15 +94,11 @@ final class DefaultNetworkService: NetworkService, LogReporter {
     }
 
     func request<T: Decodable>(_ endpoint: Endpoint) async throws -> (T, [String: String]?) {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.request(endpoint) { (result: Result<T, Error>, headers: [String: String]?) in
-                switch result {
-                case .success(let response):
-                    continuation.resume(returning: (response, headers))
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
+        try await awaitResult { completion in
+            self.request(
+                endpoint,
+                completion: completion
+            )
         }
     }
 
@@ -134,15 +126,12 @@ final class DefaultNetworkService: NetworkService, LogReporter {
     }
 
     func request<T: Decodable>(_ endpoint: Endpoint, retryConfig: RetryConfig?) async throws -> (T, [String: String]?) {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.request(endpoint, retryConfig: retryConfig) { (result: Result<T, Error>, headers: [String: String]?) in
-                switch result {
-                case .success(let response):
-                    continuation.resume(returning: (response, headers))
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
+        try await awaitResult { completion in
+            self.request(
+                endpoint,
+                retryConfig: retryConfig,
+                completion: completion
+            )
         }
     }
 

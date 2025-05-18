@@ -36,15 +36,12 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
     }
 
     func genericAPICall(clientToken: DecodedJWTToken, url: URL) async throws -> Bool {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.genericAPICall(clientToken: clientToken, url: url) { result in
-                switch result {
-                case .success:
-                    continuation.resume(returning: true)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+        try await awaitResult { completion in
+            genericAPICall(
+                clientToken: clientToken,
+                url: url,
+                completion: completion
+            )
         }
     }
 
@@ -65,15 +62,11 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
     }
 
     func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) async throws -> Response.Body.VaultedPaymentMethods {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.fetchVaultedPaymentMethods(clientToken: clientToken) { result in
-                switch result {
-                case let .success(response):
-                    continuation.resume(returning: response)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+        try await awaitResult { completion in
+            fetchVaultedPaymentMethods(
+                clientToken: clientToken,
+                completion: completion
+            )
         }
     }
 
@@ -94,17 +87,13 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         vaultedPaymentMethodId: String,
         vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?
     ) async throws -> PrimerPaymentMethodTokenData {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.exchangePaymentMethodToken(clientToken: clientToken,
-                                            vaultedPaymentMethodId: vaultedPaymentMethodId,
-                                            vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData) { result in
-                switch result {
-                case let .success(response):
-                    continuation.resume(returning: response)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+        try await awaitResult { completion in
+            self.exchangePaymentMethodToken(
+                clientToken: clientToken,
+                vaultedPaymentMethodId: vaultedPaymentMethodId,
+                vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData,
+                completion: completion
+            )
         }
     }
 
@@ -122,15 +111,12 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
     }
 
     func deleteVaultedPaymentMethod(clientToken: DecodedJWTToken, id: String) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.deleteVaultedPaymentMethod(clientToken: clientToken, id: id) { result in
-                switch result {
-                case .success:
-                    continuation.resume(returning: ())
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+        try await awaitResult { completion in
+            self.deleteVaultedPaymentMethod(
+                clientToken: clientToken,
+                id: id,
+                completion: completion
+            )
         }
     }
 
@@ -150,17 +136,16 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func fetchConfiguration(clientToken: DecodedJWTToken,
-                            requestParameters: Request.URLParameters.Configuration?) async throws -> (PrimerAPIConfiguration, [String: String]?) {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters) { result, headers in
-                switch result {
-                case let .success(response):
-                    continuation.resume(returning: (response, headers))
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+    func fetchConfiguration(
+        clientToken: DecodedJWTToken,
+        requestParameters: Request.URLParameters.Configuration?
+    ) async throws -> (PrimerAPIConfiguration, [String: String]?) {
+        try await awaitResult { completion in
+            self.fetchConfiguration(
+                clientToken: clientToken,
+                requestParameters: requestParameters,
+                completion: completion
+            )
         }
     }
 
@@ -171,17 +156,16 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         execute(endpoint, completion: completion)
     }
 
-    func createPayPalOrderSession(clientToken: DecodedJWTToken,
-                                  payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder) async throws -> Response.Body.PayPal.CreateOrder {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.createPayPalOrderSession(clientToken: clientToken, payPalCreateOrderRequest: payPalCreateOrderRequest) { result in
-                switch result {
-                case let .success(response):
-                    continuation.resume(returning: response)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+    func createPayPalOrderSession(
+        clientToken: DecodedJWTToken,
+        payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder
+    ) async throws -> Response.Body.PayPal.CreateOrder {
+        try await awaitResult { completion in
+            self.createPayPalOrderSession(
+                clientToken: clientToken,
+                payPalCreateOrderRequest: payPalCreateOrderRequest,
+                completion: completion
+            )
         }
     }
 
@@ -193,21 +177,16 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         execute(endpoint, completion: completion)
     }
 
-    func createPayPalBillingAgreementSession(clientToken: DecodedJWTToken,
-                                             payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement) async throws -> Response
-    .Body.PayPal.CreateBillingAgreement {
-        return try await withCheckedThrowingContinuation { continuation in
+    func createPayPalBillingAgreementSession(
+        clientToken: DecodedJWTToken,
+        payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement
+    ) async throws -> Response.Body.PayPal.CreateBillingAgreement {
+        try await awaitResult { completion in
             self.createPayPalBillingAgreementSession(
                 clientToken: clientToken,
-                payPalCreateBillingAgreementRequest: payPalCreateBillingAgreementRequest
-            ) { result in
-                switch result {
-                case let .success(response):
-                    continuation.resume(returning: response)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+                payPalCreateBillingAgreementRequest: payPalCreateBillingAgreementRequest,
+                completion: completion
+            )
         }
     }
 
@@ -219,20 +198,16 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         execute(endpoint, completion: completion)
     }
 
-    func confirmPayPalBillingAgreement(clientToken: DecodedJWTToken,
-                                       payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement) async throws -> Response
-    .Body.PayPal.ConfirmBillingAgreement {
-        return try await withCheckedThrowingContinuation { continuation in
-            self
-                .confirmPayPalBillingAgreement(clientToken: clientToken,
-                                               payPalConfirmBillingAgreementRequest: payPalConfirmBillingAgreementRequest) { result in
-                    switch result {
-                    case let .success(response):
-                        continuation.resume(returning: response)
-                    case let .failure(error):
-                        continuation.resume(throwing: error)
-                    }
-                }
+    func confirmPayPalBillingAgreement(
+        clientToken: DecodedJWTToken,
+        payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement
+    ) async throws -> Response.Body.PayPal.ConfirmBillingAgreement {
+        try await awaitResult { completion in
+            self.confirmPayPalBillingAgreement(
+                clientToken: clientToken,
+                payPalConfirmBillingAgreementRequest: payPalConfirmBillingAgreementRequest,
+                completion: completion
+            )
         }
     }
 
@@ -250,17 +225,12 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         klarnaCreatePaymentSessionAPIRequest: Request.Body.Klarna.CreatePaymentSession
     ) async throws -> Response.Body.Klarna.PaymentSession {
-        return try await withCheckedThrowingContinuation { continuation in
-            self
-                .createKlarnaPaymentSession(clientToken: clientToken,
-                                            klarnaCreatePaymentSessionAPIRequest: klarnaCreatePaymentSessionAPIRequest) { result in
-                    switch result {
-                    case let .success(response):
-                        continuation.resume(returning: response)
-                    case let .failure(error):
-                        continuation.resume(throwing: error)
-                    }
-                }
+        try await awaitResult { completion in
+            self.createKlarnaPaymentSession(
+                clientToken: clientToken,
+                klarnaCreatePaymentSessionAPIRequest: klarnaCreatePaymentSessionAPIRequest,
+                completion: completion
+            )
         }
     }
 
@@ -272,20 +242,16 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         execute(endpoint, completion: completion)
     }
 
-    func createKlarnaCustomerToken(clientToken: DecodedJWTToken,
-                                   klarnaCreateCustomerTokenAPIRequest: Request.Body.Klarna.CreateCustomerToken) async throws -> Response.Body.Klarna
-    .CustomerToken {
-        return try await withCheckedThrowingContinuation { continuation in
-            self
-                .createKlarnaCustomerToken(clientToken: clientToken,
-                                           klarnaCreateCustomerTokenAPIRequest: klarnaCreateCustomerTokenAPIRequest) { result in
-                    switch result {
-                    case let .success(response):
-                        continuation.resume(returning: response)
-                    case let .failure(error):
-                        continuation.resume(throwing: error)
-                    }
-                }
+    func createKlarnaCustomerToken(
+        clientToken: DecodedJWTToken,
+        klarnaCreateCustomerTokenAPIRequest: Request.Body.Klarna.CreateCustomerToken
+    ) async throws -> Response.Body.Klarna.CustomerToken {
+        try await awaitResult { completion in
+            self.createKlarnaCustomerToken(
+                clientToken: clientToken,
+                klarnaCreateCustomerTokenAPIRequest: klarnaCreateCustomerTokenAPIRequest,
+                completion: completion
+            )
         }
     }
 
@@ -297,20 +263,16 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         execute(endpoint, completion: completion)
     }
 
-    func finalizeKlarnaPaymentSession(clientToken: DecodedJWTToken,
-                                      klarnaFinalizePaymentSessionRequest: Request.Body.Klarna.FinalizePaymentSession) async throws -> Response.Body
-    .Klarna.CustomerToken {
-        return try await withCheckedThrowingContinuation { continuation in
-            self
-                .finalizeKlarnaPaymentSession(clientToken: clientToken,
-                                              klarnaFinalizePaymentSessionRequest: klarnaFinalizePaymentSessionRequest) { result in
-                    switch result {
-                    case let .success(response):
-                        continuation.resume(returning: response)
-                    case let .failure(error):
-                        continuation.resume(throwing: error)
-                    }
-                }
+    func finalizeKlarnaPaymentSession(
+        clientToken: DecodedJWTToken,
+        klarnaFinalizePaymentSessionRequest: Request.Body.Klarna.FinalizePaymentSession
+    ) async throws -> Response.Body.Klarna.CustomerToken {
+        try await awaitResult { completion in
+            self.finalizeKlarnaPaymentSession(
+                clientToken: clientToken,
+                klarnaFinalizePaymentSessionRequest: klarnaFinalizePaymentSessionRequest,
+                completion: completion
+            )
         }
     }
 
@@ -327,15 +289,12 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         request: Request.Body.Adyen.BanksList
     ) async throws -> BanksListSessionResponse {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.listAdyenBanks(clientToken: clientToken, request: request) { result in
-                switch result {
-                case let .success(response):
-                    continuation.resume(returning: response)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+        try await awaitResult { completion in
+            self.listAdyenBanks(
+                clientToken: clientToken,
+                request: request,
+                completion: completion
+            )
         }
     }
 
@@ -346,17 +305,16 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         execute(endpoint, completion: completion)
     }
 
-    func listRetailOutlets(clientToken: DecodedJWTToken,
-                           paymentMethodId: String) async throws -> RetailOutletsList {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.listRetailOutlets(clientToken: clientToken, paymentMethodId: paymentMethodId) { result in
-                switch result {
-                case let .success(response):
-                    continuation.resume(returning: response)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+    func listRetailOutlets(
+        clientToken: DecodedJWTToken,
+        paymentMethodId: String
+    ) async throws -> RetailOutletsList {
+        try await awaitResult { completion in
+            self.listRetailOutlets(
+                clientToken: clientToken,
+                paymentMethodId: paymentMethodId,
+                completion: completion
+            )
         }
     }
 
@@ -367,17 +325,16 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         execute(endpoint, completion: completion)
     }
 
-    func poll(clientToken: DecodedJWTToken?,
-              url: String) async throws -> PollingResponse {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.poll(clientToken: clientToken, url: url) { result in
-                switch result {
-                case let .success(response):
-                    continuation.resume(returning: response)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+    func poll(
+        clientToken: DecodedJWTToken?,
+        url: String
+    ) async throws -> PollingResponse {
+        try await awaitResult { completion in
+            self.poll(
+                clientToken: clientToken,
+                url: url,
+                completion: completion
+            )
         }
     }
 
@@ -396,17 +353,16 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func requestPrimerConfigurationWithActions(clientToken: DecodedJWTToken,
-                                               request: ClientSessionUpdateRequest) async throws -> (PrimerAPIConfiguration, [String: String]?) {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.requestPrimerConfigurationWithActions(clientToken: clientToken, request: request) { result, headers in
-                switch result {
-                case let .success(response):
-                    continuation.resume(returning: (response, headers))
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+    func requestPrimerConfigurationWithActions(
+        clientToken: DecodedJWTToken,
+        request: ClientSessionUpdateRequest
+    ) async throws -> (PrimerAPIConfiguration, [String: String]?) {
+        try await awaitResult { completion in
+            self.requestPrimerConfigurationWithActions(
+                clientToken: clientToken,
+                request: request,
+                completion: completion
+            )
         }
     }
 
@@ -417,17 +373,17 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         execute(endpoint, completion: completion)
     }
 
-    func sendAnalyticsEvents(clientToken: DecodedJWTToken?,
-                             url: URL, body: [Analytics.Event]?) async throws -> Analytics.Service.Response {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.sendAnalyticsEvents(clientToken: clientToken, url: url, body: body) { result in
-                switch result {
-                case let .success(response):
-                    continuation.resume(returning: response)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+    func sendAnalyticsEvents(
+        clientToken: DecodedJWTToken?,
+        url: URL, body: [Analytics.Event]?
+    ) async throws -> Analytics.Service.Response {
+        try await awaitResult { completion in
+            self.sendAnalyticsEvents(
+                clientToken: clientToken,
+                url: url,
+                body: body,
+                completion: completion
+            )
         }
     }
 
@@ -439,20 +395,16 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         execute(endpoint, completion: completion)
     }
 
-    func fetchPayPalExternalPayerInfo(clientToken: DecodedJWTToken,
-                                      payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo) async throws -> Response.Body.PayPal
-    .PayerInfo {
-        return try await withCheckedThrowingContinuation { continuation in
-            self
-                .fetchPayPalExternalPayerInfo(clientToken: clientToken,
-                                              payPalExternalPayerInfoRequestBody: payPalExternalPayerInfoRequestBody) { result in
-                    switch result {
-                    case let .success(response):
-                        continuation.resume(returning: response)
-                    case let .failure(error):
-                        continuation.resume(throwing: error)
-                    }
-                }
+    func fetchPayPalExternalPayerInfo(
+        clientToken: DecodedJWTToken,
+        payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo
+    ) async throws -> Response.Body.PayPal.PayerInfo {
+        try await awaitResult { completion in
+            self.fetchPayPalExternalPayerInfo(
+                clientToken: clientToken,
+                payPalExternalPayerInfoRequestBody: payPalExternalPayerInfoRequestBody,
+                completion: completion
+            )
         }
     }
 
@@ -463,15 +415,11 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
     }
 
     func validateClientToken(request: Request.Body.ClientTokenValidation) async throws -> SuccessResponse {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.validateClientToken(request: request) { result in
-                switch result {
-                case let .success(response):
-                    continuation.resume(returning: response)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+        try await awaitResult { completion in
+            self.validateClientToken(
+                request: request,
+                completion: completion
+            )
         }
     }
 
@@ -482,17 +430,16 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         execute(endpoint, completion: completion)
     }
 
-    func createPayment(clientToken: DecodedJWTToken,
-                       paymentRequestBody: Request.Body.Payment.Create) async throws -> Response.Body.Payment {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.createPayment(clientToken: clientToken, paymentRequestBody: paymentRequestBody) { result in
-                switch result {
-                case let .success(response):
-                    continuation.resume(returning: response)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+    func createPayment(
+        clientToken: DecodedJWTToken,
+        paymentRequestBody: Request.Body.Payment.Create
+    ) async throws -> Response.Body.Payment {
+        try await awaitResult { completion in
+            self.createPayment(
+                clientToken: clientToken,
+                paymentRequestBody: paymentRequestBody,
+                completion: completion
+            )
         }
     }
 
@@ -504,18 +451,18 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         execute(endpoint, completion: completion)
     }
 
-    func resumePayment(clientToken: DecodedJWTToken,
-                       paymentId: String,
-                       paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response.Body.Payment {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.resumePayment(clientToken: clientToken, paymentId: paymentId, paymentResumeRequest: paymentResumeRequest) { result in
-                switch result {
-                case let .success(response):
-                    continuation.resume(returning: response)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+    func resumePayment(
+        clientToken: DecodedJWTToken,
+        paymentId: String,
+        paymentResumeRequest: Request.Body.Payment.Resume
+    ) async throws -> Response.Body.Payment {
+        try await awaitResult { completion in
+            self.resumePayment(
+                clientToken: clientToken,
+                paymentId: paymentId,
+                paymentResumeRequest: paymentResumeRequest,
+                completion: completion
+            )
         }
     }
 
@@ -527,18 +474,18 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         execute(endpoint, completion: completion)
     }
 
-    func completePayment(clientToken: DecodedJWTToken,
-                         url: URL,
-                         paymentRequest: Request.Body.Payment.Complete) async throws -> Response.Body.Complete {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.completePayment(clientToken: clientToken, url: url, paymentRequest: paymentRequest) { result in
-                switch result {
-                case let .success(response):
-                    continuation.resume(returning: response)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+    func completePayment(
+        clientToken: DecodedJWTToken,
+        url: URL,
+        paymentRequest: Request.Body.Payment.Complete
+    ) async throws -> Response.Body.Complete {
+        try await awaitResult { completion in
+            self.completePayment(
+                clientToken: clientToken,
+                url: url,
+                paymentRequest: paymentRequest,
+                completion: completion
+            )
         }
     }
 
@@ -554,16 +501,16 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func testFinalizePolling(clientToken: DecodedJWTToken, testId: String) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.testFinalizePolling(clientToken: clientToken, testId: testId) { result in
-                switch result {
-                case .success:
-                    continuation.resume(returning: ())
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+    func testFinalizePolling(
+        clientToken: DecodedJWTToken,
+        testId: String
+    ) async throws {
+        try await awaitResult { completion in
+            self.testFinalizePolling(
+                clientToken: clientToken,
+                testId: testId,
+                completion: completion
+            )
         }
     }
 
@@ -576,17 +523,16 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         return execute(endpoint, completion: completion)
     }
 
-    func listCardNetworks(clientToken: DecodedJWTToken,
-                          bin: String) async throws -> Response.Body.Bin.Networks {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.listCardNetworks(clientToken: clientToken, bin: bin) { result in
-                switch result {
-                case let .success(response):
-                    continuation.resume(returning: response)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+    func listCardNetworks(
+        clientToken: DecodedJWTToken,
+        bin: String
+    ) async throws -> Response.Body.Bin.Networks {
+        try await awaitResult { completion in
+            self.listCardNetworks(
+                clientToken: clientToken,
+                bin: bin,
+                completion: completion
+            )
         }
     }
 
@@ -603,15 +549,12 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         clientToken: DecodedJWTToken,
         paymentRequestBody: Request.Body.NolPay.NolPaySecretDataRequest
     ) async throws -> Response.Body.NolPay.NolPaySecretDataResponse {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.fetchNolSdkSecret(clientToken: clientToken, paymentRequestBody: paymentRequestBody) { result in
-                switch result {
-                case let .success(response):
-                    continuation.resume(returning: response)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+        try await awaitResult { completion in
+            self.fetchNolSdkSecret(
+                clientToken: clientToken,
+                paymentRequestBody: paymentRequestBody,
+                completion: completion
+            )
         }
     }
 
@@ -623,18 +566,16 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
         execute(endpoint, completion: completion)
     }
 
-    func getPhoneMetadata(clientToken: DecodedJWTToken,
-                          paymentRequestBody: Request.Body.PhoneMetadata.PhoneMetadataDataRequest) async throws -> Response.Body.PhoneMetadata
-    .PhoneMetadataDataResponse {
-        return try await withCheckedThrowingContinuation { continuation in
-            self.getPhoneMetadata(clientToken: clientToken, paymentRequestBody: paymentRequestBody) { result in
-                switch result {
-                case let .success(response):
-                    continuation.resume(returning: response)
-                case let .failure(error):
-                    continuation.resume(throwing: error)
-                }
-            }
+    func getPhoneMetadata(
+        clientToken: DecodedJWTToken,
+        paymentRequestBody: Request.Body.PhoneMetadata.PhoneMetadataDataRequest
+    ) async throws -> Response.Body.PhoneMetadata.PhoneMetadataDataResponse {
+        try await awaitResult { completion in
+            self.getPhoneMetadata(
+                clientToken: clientToken,
+                paymentRequestBody: paymentRequestBody,
+                completion: completion
+            )
         }
     }
 }

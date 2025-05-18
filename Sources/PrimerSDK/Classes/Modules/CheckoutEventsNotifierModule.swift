@@ -22,6 +22,10 @@ final class CheckoutEventsNotifierModule {
         }
     }
 
+    func fireDidStartTokenizationEvent() async throws {
+        try await fireDidStartTokenizationEvent().async()
+    }
+
     func fireDidFinishTokenizationEvent() -> Promise<Void> {
         return Promise { seal in
             if self.didFinishTokenization != nil {
@@ -30,5 +34,9 @@ final class CheckoutEventsNotifierModule {
 
             seal.fulfill()
         }
+    }
+
+    func fireDidFinishTokenizationEvent() async throws {
+        try await fireDidFinishTokenizationEvent().async()
     }
 }

@@ -128,7 +128,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     }
 
     func startTokenizationFlow() async throws -> PrimerPaymentMethodTokenData {
-        return try await startTokenizationFlow().async()
+        try await startTokenizationFlow().async()
     }
 
     func performPreTokenizationSteps() -> Promise<Void> {
@@ -153,7 +153,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     }
 
     func performPreTokenizationSteps() async throws {
-        return try await performPreTokenizationSteps().async()
+        try await performPreTokenizationSteps().async()
     }
 
     func performTokenizationStep() -> Promise<Void> {
@@ -180,7 +180,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     }
 
     func performTokenizationStep() async throws {
-        return try await performTokenizationStep().async()
+        try await performTokenizationStep().async()
     }
 
     func performPostTokenizationSteps() -> Promise<Void> {
@@ -188,7 +188,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     }
 
     func performPostTokenizationSteps() async throws {
-        return try await performPostTokenizationSteps().async()
+        try await performPostTokenizationSteps().async()
     }
 
     func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
@@ -208,15 +208,17 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     }
 
     func tokenize() async throws -> PrimerPaymentMethodTokenData {
-        return try await tokenize().async()
+        try await tokenize().async()
     }
 
     func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
         return self.handleResumeStepsBasedOnSDKSettings(resumeToken: "mock_resume_token")
     }
 
-    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> PrimerCheckoutData? {
-        return try await startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData).async()
+    func startPaymentFlow(
+        withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> PrimerCheckoutData? {
+        try await startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData).async()
     }
 
     func presentPaymentMethodUserInterface() -> Promise<Void> {
@@ -224,7 +226,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     }
 
     func presentPaymentMethodUserInterface() async throws {
-        return try await presentPaymentMethodUserInterface().async()
+        try await presentPaymentMethodUserInterface().async()
     }
 
     func awaitUserInput() -> Promise<Void> {
@@ -232,7 +234,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     }
 
     func awaitUserInput() async throws {
-        return try await awaitUserInput().async()
+        try await awaitUserInput().async()
     }
 
     func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
@@ -241,8 +243,14 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
         }
     }
 
-    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
-        return try await handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData).async()
+    func handleDecodedClientTokenIfNeeded(
+        _ decodedJWTToken: DecodedJWTToken,
+        paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> String? {
+        try await handleDecodedClientTokenIfNeeded(
+            decodedJWTToken,
+            paymentMethodTokenData: paymentMethodTokenData
+        ).async()
     }
 
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) -> Promise<PrimerCheckoutData?> {
@@ -262,7 +270,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     }
 
     func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
-        return try await handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken).async()
+        try await handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken).async()
     }
 
     func handleSuccessfulFlow() {
@@ -289,14 +297,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     }
 
     private func validateReturningPromise() async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            do {
-                try self.validate()
-                continuation.resume()
-            } catch {
-                continuation.resume(throwing: error)
-            }
-        }
+        try self.validate()
     }
 
     private func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
@@ -324,7 +325,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     }
 
     private func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) async throws {
-        return try await handlePrimerWillCreatePaymentEvent(paymentMethodData).async()
+        try await handlePrimerWillCreatePaymentEvent(paymentMethodData).async()
     }
 
     private func nullifyEventCallbacks() {

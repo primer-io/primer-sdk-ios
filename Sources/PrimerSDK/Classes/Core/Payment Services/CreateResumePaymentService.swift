@@ -63,7 +63,7 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
     }
 
     func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment {
-        return try await createPayment(paymentRequest: paymentRequest).async()
+        try await createPayment(paymentRequest: paymentRequest).async()
     }
 
     /**
@@ -144,7 +144,7 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
     }
 
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response.Body.Payment {
-        return try await self.resumePaymentWithPaymentId(paymentId, paymentResumeRequest: paymentResumeRequest).async()
+        try await self.resumePaymentWithPaymentId(paymentId, paymentResumeRequest: paymentResumeRequest).async()
     }
 
     /**
@@ -177,10 +177,16 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         }
     }
 
-    func completePayment(clientToken: DecodedJWTToken,
-                         completeUrl: URL,
-                         body: Request.Body.Payment.Complete) async throws {
-        return try await self.completePayment(clientToken: clientToken, completeUrl: completeUrl, body: body).async()
+    func completePayment(
+        clientToken: DecodedJWTToken,
+        completeUrl: URL,
+        body: Request.Body.Payment.Complete
+    ) async throws {
+        try await self.completePayment(
+            clientToken: clientToken,
+            completeUrl: completeUrl,
+            body: body
+        ).async()
     }
 }
 

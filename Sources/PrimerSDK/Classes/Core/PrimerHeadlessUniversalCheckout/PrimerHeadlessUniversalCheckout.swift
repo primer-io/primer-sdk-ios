@@ -145,12 +145,13 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
         delegate: PrimerHeadlessUniversalCheckoutDelegate? = nil,
         uiDelegate: PrimerHeadlessUniversalCheckoutUIDelegate? = nil
     ) async throws -> [PrimerHeadlessUniversalCheckout.PaymentMethod]? {
-        return try await awaitResult { completion in
-            start(withClientToken: clientToken,
-                  settings: settings,
-                  delegate: delegate,
-                  uiDelegate: uiDelegate,
-                  completion: completion
+        try await awaitResult { completion in
+            start(
+                withClientToken: clientToken,
+                settings: settings,
+                delegate: delegate,
+                uiDelegate: uiDelegate,
+                completion: completion
             )
         }
     }
@@ -216,13 +217,7 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
     }
 
     private func continueValidateSession() async throws {
-        try await withCheckedThrowingContinuation { continuation in
-            continueValidateSession().done {
-                continuation.resume()
-            }.catch { err in
-                continuation.resume(throwing: err)
-            }
-        }
+        try await continueValidateSession().async()
     }
 
     func validateSession() -> Promise<Void> {
@@ -269,13 +264,7 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
     }
 
     func validateSession() async throws {
-        try await withCheckedThrowingContinuation { continuation in
-            validateSession().done {
-                continuation.resume()
-            }.catch { err in
-                continuation.resume(throwing: err)
-            }
-        }
+        try await validateSession().async()
     }
 
     func listAvailablePaymentMethodsTypes() -> [String]? {

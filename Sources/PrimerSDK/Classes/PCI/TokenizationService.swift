@@ -7,7 +7,7 @@ internal protocol TokenizationServiceProtocol {
     func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData>
     func tokenize(requestBody: Request.Body.Tokenization) async throws -> PrimerPaymentMethodTokenData
     func exchangePaymentMethodToken(_ paymentMethodTokenId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?)
-        -> Promise<PrimerPaymentMethodTokenData>
+    -> Promise<PrimerPaymentMethodTokenData>
     func exchangePaymentMethodToken(
         _ paymentMethodTokenId: String,
         vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?
@@ -72,7 +72,7 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
     }
 
     func tokenize(requestBody: Request.Body.Tokenization) async throws -> PrimerPaymentMethodTokenData {
-        return try await tokenize(requestBody: requestBody).async()
+        try await tokenize(requestBody: requestBody).async()
     }
 
     func exchangePaymentMethodToken(
@@ -110,7 +110,7 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
         _ paymentMethodTokenId: String,
         vaultedPaymentMethodAdditionalData: (any PrimerVaultedPaymentMethodAdditionalData)?
     ) async throws -> PrimerPaymentMethodTokenData {
-        return try await exchangePaymentMethodToken(
+        try await exchangePaymentMethodToken(
             paymentMethodTokenId,
             vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData
         ).async()

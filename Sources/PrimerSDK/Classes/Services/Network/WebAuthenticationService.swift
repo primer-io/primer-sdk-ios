@@ -43,8 +43,12 @@ final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService 
         webAuthSession.start()
     }
 
-    func connect(paymentMethodType: String, url: URL, scheme: String) async throws -> URL {
-        return try await awaitResult { completion in
+    func connect(
+        paymentMethodType: String,
+        url: URL,
+        scheme: String
+    ) async throws -> URL {
+        try await awaitResult { completion in
             connect(
                 paymentMethodType: paymentMethodType,
                 url: url,

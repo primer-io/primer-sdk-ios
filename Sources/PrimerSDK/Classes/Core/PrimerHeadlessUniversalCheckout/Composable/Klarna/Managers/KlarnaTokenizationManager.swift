@@ -65,8 +65,14 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
         }
     }
 
-    func tokenizeHeadless(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) async throws -> PrimerCheckoutData {
-        return try await tokenizeHeadless(customerToken: customerToken, offSessionAuthorizationId: offSessionAuthorizationId).async()
+    func tokenizeHeadless(
+        customerToken: Response.Body.Klarna.CustomerToken?,
+        offSessionAuthorizationId: String?
+    ) async throws -> PrimerCheckoutData {
+        try await tokenizeHeadless(
+            customerToken: customerToken,
+            offSessionAuthorizationId: offSessionAuthorizationId
+        ).async()
     }
 
     // MARK: - Tokenize DropIn
@@ -88,8 +94,14 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
         }
     }
 
-    func tokenizeDropIn(customerToken: Response.Body.Klarna.CustomerToken?, offSessionAuthorizationId: String?) async throws -> PrimerPaymentMethodTokenData {
-        return try await tokenizeDropIn(customerToken: customerToken, offSessionAuthorizationId: offSessionAuthorizationId).async()
+    func tokenizeDropIn(
+        customerToken: Response.Body.Klarna.CustomerToken?,
+        offSessionAuthorizationId: String?
+    ) async throws -> PrimerPaymentMethodTokenData {
+        try await tokenizeDropIn(
+            customerToken: customerToken,
+            offSessionAuthorizationId: offSessionAuthorizationId
+        ).async()
     }
 }
 
@@ -132,7 +144,7 @@ extension KlarnaTokenizationManager {
     }
 
     func startPaymentFlow(with paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> PrimerCheckoutData {
-        return try await startPaymentFlow(with: paymentMethodTokenData).async()
+        try await startPaymentFlow(with: paymentMethodTokenData).async()
     }
 
     // Create payment with Payment method token
@@ -142,7 +154,7 @@ extension KlarnaTokenizationManager {
     }
 
     private func createPaymentEvent(_ paymentMethodData: String) async throws -> Response.Body.Payment {
-        return try await createPaymentEvent(paymentMethodData).async()
+        try await createPaymentEvent(paymentMethodData).async()
     }
 
     private func getRequestBody(customerToken: Response.Body.Klarna.CustomerToken?,
@@ -184,8 +196,13 @@ extension KlarnaTokenizationManager {
         }
     }
 
-    private func getRequestBody(customerToken: Response.Body.Klarna.CustomerToken?,
-                                offSessionAuthorizationId: String?) async throws -> Request.Body.Tokenization {
-        return try await getRequestBody(customerToken: customerToken, offSessionAuthorizationId: offSessionAuthorizationId).async()
+    private func getRequestBody(
+        customerToken: Response.Body.Klarna.CustomerToken?,
+        offSessionAuthorizationId: String?
+    ) async throws -> Request.Body.Tokenization {
+        try await getRequestBody(
+            customerToken: customerToken,
+            offSessionAuthorizationId: offSessionAuthorizationId
+        ).async()
     }
 }

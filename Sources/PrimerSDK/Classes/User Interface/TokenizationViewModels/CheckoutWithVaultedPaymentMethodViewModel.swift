@@ -333,7 +333,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
     }
 
     private func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
-        return try await handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken).async()
+        try await handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken).async()
     }
 
     // Resume payment with Resume payment ID
@@ -345,7 +345,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
     }
 
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) async throws -> Response.Body.Payment {
-        return try await handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken).async()
+        try await handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken).async()
     }
 
     func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<DecodedJWTToken?> {
@@ -470,7 +470,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
     }
 
     func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> DecodedJWTToken? {
-        return try await startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData).async()
+        try await startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData).async()
     }
 
     private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
@@ -531,7 +531,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
     }
 
     private func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
-        return try await handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData).async()
+        try await handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData).async()
     }
 
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
@@ -540,7 +540,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
     }
 
     private func handleCreatePaymentEvent(_ paymentMethodData: String) async throws -> Response.Body.Payment {
-        return try await handleCreatePaymentEvent(paymentMethodData).async()
+        try await handleCreatePaymentEvent(paymentMethodData).async()
     }
 
     func handleSuccessfulFlow() {

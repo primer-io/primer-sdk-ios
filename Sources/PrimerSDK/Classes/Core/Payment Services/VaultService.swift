@@ -42,7 +42,7 @@ final class VaultService: VaultServiceProtocol {
     }
 
     func fetchVaultedPaymentMethods() async throws {
-        return try await fetchVaultedPaymentMethods().async()
+        try await fetchVaultedPaymentMethods().async()
     }
 
     func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) -> Promise<Response.Body.VaultedPaymentMethods> {
@@ -58,8 +58,10 @@ final class VaultService: VaultServiceProtocol {
         }
     }
 
-    func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) async throws -> Response.Body.VaultedPaymentMethods {
-        return try await fetchVaultedPaymentMethods(clientToken: clientToken).async()
+    func fetchVaultedPaymentMethods(
+        clientToken: DecodedJWTToken
+    ) async throws -> Response.Body.VaultedPaymentMethods {
+        try await fetchVaultedPaymentMethods(clientToken: clientToken).async()
     }
 
     func deleteVaultedPaymentMethod(with id: String) -> Promise<Void> {
@@ -88,6 +90,6 @@ final class VaultService: VaultServiceProtocol {
     }
 
     func deleteVaultedPaymentMethod(with id: String) async throws {
-        return try await deleteVaultedPaymentMethod(with: id).async()
+        try await deleteVaultedPaymentMethod(with: id).async()
     }
 }

@@ -9,6 +9,7 @@ import Foundation
 
 protocol AnalyticsServiceProtocol {
     func record(events: [Analytics.Event]) -> Promise<Void>
+    func record(events: [Analytics.Event]) async throws
 }
 
 extension AnalyticsServiceProtocol {
@@ -97,6 +98,10 @@ extension Analytics {
                     }
                 }
             }
+        }
+
+        func record(events: [Analytics.Event]) async throws {
+            try await record(events: events).async()
         }
 
         @discardableResult

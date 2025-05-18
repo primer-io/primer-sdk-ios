@@ -20,6 +20,10 @@ class MockAnalyticsService: AnalyticsServiceProtocol {
         onRecord?(events)
         return Promise.fulfilled(())
     }
+
+    func record(events: [Analytics.Event]) async throws {
+        try await record(events: events).async()
+    }
 }
 
 final class NetworkingReportingServiceTests: XCTestCase {

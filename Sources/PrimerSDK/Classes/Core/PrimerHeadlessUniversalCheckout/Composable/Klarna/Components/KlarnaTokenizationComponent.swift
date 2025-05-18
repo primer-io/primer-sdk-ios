@@ -129,7 +129,7 @@ extension KlarnaTokenizationComponent {
     }
 
     func createPaymentSession() async throws -> Response.Body.Klarna.PaymentSession {
-        return try await createPaymentSession().async()
+        try await createPaymentSession().async()
     }
 }
 
@@ -183,7 +183,7 @@ extension KlarnaTokenizationComponent {
     }
 
     func authorizePaymentSession(authorizationToken: String) async throws -> Response.Body.Klarna.CustomerToken {
-        return try await authorizePaymentSession(authorizationToken: authorizationToken).async()
+        try await authorizePaymentSession(authorizationToken: authorizationToken).async()
     }
 }
 

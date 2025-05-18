@@ -169,7 +169,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     }
 
     func startTokenizationFlow() async throws -> PrimerPaymentMethodTokenData {
-        return try await startTokenizationFlow().async()
+        try await startTokenizationFlow().async()
     }
 
     func handleSuccessfulFlow() {

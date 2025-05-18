@@ -25,10 +25,12 @@ extension PrimerAPIClient {
         }
     }
 
-    func begin3DSAuth(clientToken: DecodedJWTToken,
-                      paymentMethodTokenData: PrimerPaymentMethodTokenData,
-                      threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest) async throws -> ThreeDS.BeginAuthResponse {
-        return try await awaitResult { completion in
+    func begin3DSAuth(
+        clientToken: DecodedJWTToken,
+        paymentMethodTokenData: PrimerPaymentMethodTokenData,
+        threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest
+    ) async throws -> ThreeDS.BeginAuthResponse {
+        try await awaitResult { completion in
             self.begin3DSAuth(clientToken: clientToken,
                               paymentMethodTokenData: paymentMethodTokenData,
                               threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest,
@@ -55,10 +57,12 @@ extension PrimerAPIClient {
         }
     }
 
-    func continue3DSAuth(clientToken: DecodedJWTToken,
-                         threeDSTokenId: String,
-                         continueInfo: ThreeDS.ContinueInfo) async throws -> ThreeDS.PostAuthResponse {
-        return try await awaitResult { completion in
+    func continue3DSAuth(
+        clientToken: DecodedJWTToken,
+        threeDSTokenId: String,
+        continueInfo: ThreeDS.ContinueInfo
+    ) async throws -> ThreeDS.PostAuthResponse {
+        try await awaitResult { completion in
             self.continue3DSAuth(clientToken: clientToken,
                                  threeDSTokenId: threeDSTokenId,
                                  continueInfo: continueInfo,
