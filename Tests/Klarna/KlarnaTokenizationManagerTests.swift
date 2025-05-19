@@ -7,6 +7,7 @@
 //
 
 #if canImport(PrimerKlarnaSDK)
+import PrimerKlarnaSDK
 @testable import PrimerSDK
 import XCTest
 
@@ -70,7 +71,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
             expectDidTokenize,
             expectDidCreatePayment,
             expectation
-        ], timeout: 30.0, enforceOrder: true)
+        ], timeout: 10.0, enforceOrder: true)
     }
 
     func test_tokenizeHeadless_failure() {
@@ -157,50 +158,119 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         ], timeout: 10.0, enforceOrder: true)
     }
 
-    func test_tokenizeHeadless_maunualHandling_success() {
-        let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
-        PrimerHeadlessUniversalCheckout.current.delegate = delegate
+    func testFullPaymentFlow_headless() throws {
+        PrimerInternal.shared.intent = .checkout
 
-        let finalizePaymentData = KlarnaTestsMocks.getMockFinalizeKlarnaPaymentSession(isValid: true)
-        let expectation = XCTestExpectation(description: "Successful Tokenize Klarna Payment Session")
-
-        let settings = PrimerSettings(paymentHandling: .manual)
-        DependencyContainer.register(settings as PrimerSettingsProtocol)
-
-        let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
-        tokenizationService.onTokenize = { _ in
+        let expectDidTokenize = expectation(description: "Did tokenize")
+        tokenizationService.onTokenize = { body in
+            XCTAssertTrue(body.paymentInstrument is KlarnaAuthorizationPaymentInstrument)
+            let instrument = body.paymentInstrument as! KlarnaAuthorizationPaymentInstrument
+            XCTAssertEqual(instrument.klarnaAuthorizationToken, "osa_id")
             expectDidTokenize.fulfill()
-            return Promise.fulfilled(KlarnaTestsMocks.tokenizationResponseBody)
+            return .fulfilled(Mocks.primerPaymentMethodTokenData)
         }
 
-        let expectOnDidTokenizePaymentMethod = self.expectation(description: "onDidTokenizePaymentMethod is called")
-        delegate.onDidTokenizePaymentMethod = { data, decision in
-            XCTAssertEqual(data.paymentMethodType, "KLARNA")
-            decision(.complete())
-            expectOnDidTokenizePaymentMethod.fulfill()
+        let expectCreatePayment = expectation(description: "Did create payment")
+        createResumePaymentService.onCreatePayment = { body in
+            XCTAssertEqual(body.paymentMethodToken, "mock_payment_method_token")
+            expectCreatePayment.fulfill()
+            return Mocks.payment
         }
 
-        firstly {
-            sut.tokenizeHeadless(customerToken: finalizePaymentData, offSessionAuthorizationId: finalizePaymentData.customerTokenId)
-        }
-        .done { tokenData in
-            XCTAssertNotNil(tokenData, "Result should not be nil")
-            expectation.fulfill()
-        }
-        .catch { _ in
-            XCTFail("Result should be nil")
-            expectation.fulfill()
+        let expectDidCompleteCheckout = expectation(description: "did complete checkout")
+        sut.tokenizeHeadless(customerToken: customerToken, offSessionAuthorizationId: "osa_id")
+            .done { _ in
+                expectDidCompleteCheckout.fulfill()
+            }
+            .catch { error in
+                XCTFail("Checkout did not succeed. Received error: \(error.localizedDescription)")
+            }
+
+        waitForExpectations(timeout: 5.0)
+    }
+
+    func testFullPaymentFlow_dropIn() throws {
+        PrimerInternal.shared.intent = .checkout
+
+        let expectDidTokenize = expectation(description: "Did tokenize")
+        tokenizationService.onTokenize = { body in
+            XCTAssertTrue(body.paymentInstrument is KlarnaAuthorizationPaymentInstrument)
+            let instrument = body.paymentInstrument as! KlarnaAuthorizationPaymentInstrument
+            XCTAssertEqual(instrument.klarnaAuthorizationToken, "osa_id")
+            expectDidTokenize.fulfill()
+            return .fulfilled(Mocks.primerPaymentMethodTokenData)
         }
 
-        wait(for: [
-            expectDidTokenize,
-            expectOnDidTokenizePaymentMethod,
-            expectation
-        ], timeout: 10.0, enforceOrder: true)
+        let expectDidCompleteCheckout = expectation(description: "did complete checkout")
+        sut.tokenizeDropIn(customerToken: customerToken, offSessionAuthorizationId: "osa_id")
+            .done { _ in
+                expectDidCompleteCheckout.fulfill()
+            }
+            .catch { error in
+                XCTFail("Checkout did not succeed. Received error: \(error.localizedDescription)")
+            }
+
+        waitForExpectations(timeout: 5.0)
+    }
+
+    func testFullPaymentFlow_dropIn_vault() throws {
+        PrimerInternal.shared.intent = .vault
+
+        let expectDidTokenize = expectation(description: "Did tokenize")
+        tokenizationService.onTokenize = { body in
+            XCTAssertTrue(body.paymentInstrument is KlarnaCustomerTokenPaymentInstrument)
+            let instrument = body.paymentInstrument as! KlarnaCustomerTokenPaymentInstrument
+            XCTAssertEqual(instrument.klarnaCustomerToken, "customer_token_id")
+            expectDidTokenize.fulfill()
+            return .fulfilled(Mocks.primerPaymentMethodTokenData)
+        }
+
+        let expectDidCompleteCheckout = expectation(description: "did complete checkout")
+        sut.tokenizeDropIn(customerToken: customerToken, offSessionAuthorizationId: "osa_id")
+            .done { _ in
+                expectDidCompleteCheckout.fulfill()
+            }
+            .catch { error in
+                XCTFail("Checkout did not succeed. Received error: \(error.localizedDescription)")
+            }
+
+        waitForExpectations(timeout: 5.0)
     }
 }
 
 extension KlarnaTokenizationManagerTests {
+    private var address: Response.Body.Klarna.BillingAddress {
+        .init(addressLine1: "address_line_1",
+              addressLine2: "address_line_2",
+              addressLine3: "address_line_3",
+              city: "city",
+              countryCode: "gb",
+              email: "john@appleseed.com",
+              firstName: "John",
+              lastName: "Appleseed",
+              phoneNumber: "01515551234",
+              postalCode: "EC4M 7RF",
+              state: "state",
+              title: "Mr")
+    }
+
+    private var customerToken: Response.Body.Klarna.CustomerToken {
+        .init(customerTokenId: "customer_token_id",
+              sessionData: .init(recurringDescription: "recurring_description",
+                                 purchaseCountry: "gb",
+                                 purchaseCurrency: "GBP",
+                                 locale: "gb",
+                                 orderAmount: 1234,
+                                 orderTaxAmount: nil,
+                                 orderLines: [],
+                                 billingAddress: address,
+                                 shippingAddress: address,
+                                 tokenDetails: .init(brand: "brand",
+                                                     maskedNumber: nil,
+                                                     type: "td_type",
+                                                     expiryDate: nil)))
+    }
+
     private func getInvalidTokenError() -> PrimerError {
         let error = PrimerError.invalidClientToken(
             userInfo: getErrorUserInfo(),
