@@ -40,6 +40,16 @@
 				<string>ui-tests</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>primer</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>primer</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>

@@ -15,7 +15,12 @@ class TestHelper {
     // MARK: Deep linking
 
     static func handle(url: URL) {
-        guard url.host == "ui-tests" else {
+        // Handles sdk-demo test links as deepLinks
+        if url.host == "sdk-demo.primer.io" {
+            let _ = SDKDemoUrlHandler.handleUrl(url)
+            return
+        }
+        guard url.host == "ui-tests" || url.host == "sdk-demo.primer.io" else {
             return
         }
 
