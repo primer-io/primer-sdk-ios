@@ -20,7 +20,8 @@ class TestHelper {
             let _ = SDKDemoUrlHandler.handleUrl(url)
             return
         }
-        guard url.host == "ui-tests" || url.host == "sdk-demo.primer.io" else {
+        
+        guard url.host == "ui-tests" else {
             return
         }
 
