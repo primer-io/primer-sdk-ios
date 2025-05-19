@@ -62,6 +62,7 @@ extension UserDefaults: AppLinkPayloadProviding {
 
 struct SDKDemoUrlHandler {
     // Handle incoming livedemostore url
+    @discardableResult
     static func handleUrl(_ url: URL) -> Bool {
         if url.absoluteString.contains("sdk-demo.primer.io"),
         let clientToken = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems?.first(where: { $0.name == "clientToken"}),
