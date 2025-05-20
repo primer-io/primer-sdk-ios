@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   sdk-unit-tests:
-    runs-on: macos-latest-large
+    runs-on: macos-15-large
     timeout-minutes: 20
     name: "SDK - Unit Tests"
     steps:
@@ -36,10 +36,12 @@ jobs:
           match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           sdk-name: sdk
+          gitlab-username: ${{ secrets.GITLAB_USERNAME }}
+          gitlab-password: ${{ secrets.GITLAB_PASSWORD }}
 
   optional-sdk-tests:
     name: Optional SDK Tests
-    runs-on: macos-latest-large
+    runs-on: macos-15-large
     strategy:
       max-parallel: 3
       matrix:
@@ -70,13 +72,14 @@ jobs:
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           sdk-name: ${{ matrix.package-swift.name }}
           package-swift: ${{  matrix.package-swift.file }}
-        
+          gitlab-username: ${{ secrets.GITLAB_USERNAME }}
+          gitlab-password: ${{ secrets.GITLAB_PASSWORD }}
 
   sonarcloud:
     needs:
       - sdk-unit-tests
       - optional-sdk-tests
-    runs-on: macos-latest-large
+    runs-on: macos-15-large
     name: SonarCloud
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
