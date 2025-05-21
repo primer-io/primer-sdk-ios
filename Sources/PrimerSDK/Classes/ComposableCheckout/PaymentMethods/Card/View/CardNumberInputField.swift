@@ -49,7 +49,7 @@ struct CardNumberInputField: View, LogReporter {
     init(
         label: String,
         placeholder: String,
-        validationService: ValidationService = DefaultValidationService(),
+        validationService: ValidationService,
         onCardNetworkChange: ((CardNetwork) -> Void)? = nil,
         onValidationChange: ((Bool) -> Void)? = nil
     ) {

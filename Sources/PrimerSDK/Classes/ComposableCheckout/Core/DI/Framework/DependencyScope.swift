@@ -19,6 +19,7 @@ public protocol DependencyScope: AnyObject {
     func cleanupScope() async
 }
 
+@available(iOS 15.0, *)
 public extension DependencyScope {
     /// Register the scope with the global container
     func register() async {

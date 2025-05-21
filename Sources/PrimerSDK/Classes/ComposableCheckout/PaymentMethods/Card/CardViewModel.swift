@@ -71,9 +71,7 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
 
     // MARK: - Initialization
 
-    init(
-        validationService: ValidationService = DefaultValidationService()
-    ) {
+    init(validationService: ValidationService) {
         self.validationService = validationService
         self.formValidator = CardFormValidator(validationService: validationService)
 

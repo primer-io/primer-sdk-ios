@@ -46,7 +46,7 @@ struct CVVInputField: View, LogReporter {
         label: String,
         placeholder: String,
         cardNetwork: CardNetwork,
-        validationService: ValidationService = DefaultValidationService(),
+        validationService: ValidationService,
         onValidationChange: ((Bool) -> Void)? = nil
     ) {
         self.label = label

@@ -32,30 +32,35 @@ public protocol ValidationService {
 public class DefaultValidationService: ValidationService {
     // MARK: - Properties
 
-    private let cardNumberRule = CardNumberRule()
-    private let cardholderNameRule = CardholderNameRule()
+    private let rulesFactory: RulesFactory
 
     // MARK: - Initialization
 
-    public init() {}
+    public init(rulesFactory: RulesFactory) {
+        self.rulesFactory = rulesFactory
+    }
 
     // MARK: - Public Methods
 
     public func validateCardNumber(_ number: String) -> ValidationResult {
-        return cardNumberRule.validate(number)
+        let rule = rulesFactory.createCardNumberRule()
+        return rule.validate(number)
     }
 
     public func validateExpiry(month: String, year: String) -> ValidationResult {
+        let rule = rulesFactory.createExpiryDateRule()
         let expiryInput = ExpiryDateInput(month: month, year: year)
-        return ExpiryDateRule().validate(expiryInput)
+        return rule.validate(expiryInput)
     }
 
     public func validateCVV(_ cvv: String, cardNetwork: CardNetwork) -> ValidationResult {
-        return CVVRule(cardNetwork: cardNetwork).validate(cvv)
+        let rule = rulesFactory.createCVVRule(cardNetwork: cardNetwork)
+        return rule.validate(cvv)
     }
 
     public func validateCardholderName(_ name: String) -> ValidationResult {
-        return cardholderNameRule.validate(name)
+        let rule = rulesFactory.createCardholderNameRule()
+        return rule.validate(name)
     }
 
     // swiftlint:disable all

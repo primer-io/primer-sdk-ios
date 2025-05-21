@@ -30,33 +30,25 @@ extension CompositionRoot {
         _ = try? await container.register(DesignTokensManager.self)
             .asSingleton()
             .with { _ in DesignTokensManager() }
+
+        _ = try? await container.register(TaskManager.self)
+            .asSingleton()
+            .with { _ in TaskManager() }
+
     }
 
     private static func registerValidation(in container: Container) async {
-        // Validation rules
-        _ = try? await container.register(CardNumberRule.self)
-            .asTransient()
-            .with { _ in CardNumberRule() }
-
-        _ = try? await container.register(CardholderNameRule.self)
-            .asTransient()
-            .with { _ in CardholderNameRule() }
-
-        _ = try? await container.register(CVVRule.self)
-            .asTransient()
-            .with { _ in CVVRule(cardNetwork: .unknown) }
-
-        let registrationBuilder = try? await container.register(ExpiryDateRule.self)
-            .asTransient()
-            .with { _ in
-                ExpiryDateRule()
-            }
+        // Register the rules factory as singleton for reuse
+        _ = try? await container.register(RulesFactory.self)
+            .asSingleton()
+            .with { _ in RulesFactory() }
 
         // Main validation service
         _ = try? await container.register(ValidationService.self)
-            .asTransient()
-            .with { _ in
-                DefaultValidationService()
+            .asSingleton()
+            .with { resolver in
+                let factory = try await resolver.resolve(RulesFactory.self)
+                return DefaultValidationService(rulesFactory: factory)
             }
 
         // Form validator
@@ -69,13 +61,18 @@ extension CompositionRoot {
             }
     }
 
+
     private static func registerViewModels(in container: Container) async {
         // Checkout view model
         _ = try? await container.register(PrimerCheckoutViewModel.self)
-            .asTransient()
-            .with { _ in
+            .asTransient() // Create a new instance each time
+            .with { resolver in
                 await MainActor.run {
-                    PrimerCheckoutViewModel()
+                    // Resolve dependencies
+                    let taskManager = try? await resolver.resolve(TaskManager.self)
+                        ?? TaskManager() // Fallback
+
+                    return PrimerCheckoutViewModel(taskManager: taskManager)
                 }
             }
 
@@ -88,11 +85,34 @@ extension CompositionRoot {
     }
 
     private static func registerPaymentMethods(in container: Container) async {
-        // Individual payment methods
-        _ = try? await container.register(CardPaymentMethod.self)
+        // Register ALL payment method implementations with the same protocol
+
+        // Card payment
+        _ = try? await container.register((any PaymentMethodProtocol).self)
+            .named("card")  // Names help distinguish between implementations
             .asTransient()
             .with { resolver in
-                await CardPaymentMethod(validationService: try await resolver.resolve(ValidationService.self))
+                let validationService = try await resolver.resolve(ValidationService.self)
+                return await CardPaymentMethod(validationService: validationService)
             }
+
+//        // Apple Pay
+//        _ = try? await container.register((any PaymentMethodProtocol).self)
+//            .named("apple_pay")
+//            .asTransient()
+//            .with { resolver in
+//                return await ApplePayPaymentMethod()
+//            }
+//
+//        // PayPal
+//        _ = try? await container.register((any PaymentMethodProtocol).self)
+//            .named("paypal")
+//            .asTransient()
+//            .with { resolver in
+//                return await PayPalPaymentMethod()
+//            }
+
+        // Easily add new payment methods by just registering them here
+        // No need to modify the ViewModel!
     }
 }

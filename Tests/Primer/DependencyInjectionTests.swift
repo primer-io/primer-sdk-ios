@@ -64,18 +64,6 @@ final class DIFrameworkTests: XCTestCase {
         XCTAssertTrue(key1.description.contains("name: foo"))
     }
 
-    // MARK: - InjectionResult
-
-    func testInjectionResultSuccessAndFailure() {
-        let success = InjectionResult.success(42)
-        XCTAssertEqual(try success.get(), 42)
-        XCTAssertEqual(success.value, 42)
-
-        let failure = InjectionResult<Int>.failure(ContainerError.containerUnavailable)
-        XCTAssertThrowsError(try failure.get())
-        XCTAssertNil(failure.value)
-    }
-
     // MARK: - RetentionPolicy → Strategy
 
     func testContainerRetainPolicyMakeStrategy() {
@@ -483,33 +471,5 @@ final class DIFrameworkTests: XCTestCase {
         // ...and via our helper to ensure recordResolution ran exactly once
         let count = await metrics.recordedCount()
         XCTAssertEqual(count, 1)
-    }
-
-    // MARK: - Property Wrapper Injection
-
-    func testInjectedOptionalReturnsNilWhenUnregistered() async throws {
-        // No registration
-        await DIContainer.setContainer(Container())
-
-        class OwnerOpt {
-            @InjectedOptional var optionalService: TestService?
-        }
-        let ownerOpt = OwnerOpt()
-        let opt = await ownerOpt.$optionalService.resolve()
-        XCTAssertNil(opt)
-    }
-
-    func testInjectedOptionalResolvesWhenRegistered() async throws {
-        let container = Container()
-        _ = try await container.register(TestService.self).asSingleton()
-            .with { _ in TestServiceImpl() }
-        await DIContainer.setContainer(container)
-
-        class OwnerOpt {
-            @InjectedOptional var optionalService: TestService?
-        }
-        let ownerOpt = OwnerOpt()
-        let opt = await ownerOpt.$optionalService.resolve()
-        XCTAssertTrue(opt is TestServiceImpl)
     }
 }

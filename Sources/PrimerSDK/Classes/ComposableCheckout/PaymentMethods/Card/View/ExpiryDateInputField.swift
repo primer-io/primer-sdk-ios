@@ -56,7 +56,7 @@ struct ExpiryDateInputField: View, LogReporter {
     init(
         label: String,
         placeholder: String,
-        validationService: ValidationService = DefaultValidationService(),
+        validationService: ValidationService,
         onValidationChange: ((Bool) -> Void)? = nil,
         onMonthChange: ((String) -> Void)? = nil,
         onYearChange: ((String) -> Void)? = nil

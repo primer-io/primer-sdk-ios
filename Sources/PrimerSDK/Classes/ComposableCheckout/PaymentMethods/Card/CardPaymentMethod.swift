@@ -25,7 +25,7 @@ class CardPaymentMethod: PaymentMethodProtocol {
     private let _scope: CardViewModel
 
     @MainActor
-    init(validationService: ValidationService = DefaultValidationService()) {
+    init(validationService: ValidationService) {
         self._scope = CardViewModel(validationService: validationService)
     }
 

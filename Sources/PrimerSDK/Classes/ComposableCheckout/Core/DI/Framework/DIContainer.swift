@@ -8,6 +8,7 @@
 import Foundation
 
 /// Provides global access to the current DI container with context management
+@available(iOS 15.0, *)
 public final class DIContainer: LogReporter {
     /// Singleton instance
     public static let shared = DIContainer()
@@ -151,11 +152,6 @@ public final class DIContainer: LogReporter {
         Task {
             _ = try await container.register(ContainerProtocol.self).asSingleton().with { container in
                 return container
-            }
-
-            // Register logger
-            _ = try await container.register(PrimerLogger.self).asSingleton().with { _ in
-                return PrimerLogging.shared.logger
             }
         }
     }

@@ -12,7 +12,7 @@ import SwiftUI
  */
 @available(iOS 15.0, *)
 @MainActor
-class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope {
+class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope, LogReporter {
     // MARK: - Published Properties
     @Published private(set) var clientToken: String?
     @Published private(set) var isClientTokenProcessed = false
@@ -24,15 +24,15 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope {
     private var currentSelectedMethod: (any PaymentMethodProtocol)?
 
     // Task manager to handle concurrent operations
-    private let taskManager = TaskManager()
+    private let taskManager: TaskManager
 
     // Streams for payment methods and selection
     private var paymentMethodsStream: ContinuableStream<[any PaymentMethodProtocol]>?
     private var selectedMethodStream: ContinuableStream<(any PaymentMethodProtocol)?>?
 
     // MARK: - Initialization
-    init() {
-        // Initialize with empty state
+    init(taskManager: TaskManager = TaskManager()) {
+        self.taskManager = taskManager
     }
 
     // MARK: - Public Methods
@@ -112,7 +112,18 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope {
     private func loadPaymentMethods() async -> [any PaymentMethodProtocol] {
         // In a real implementation, this would load payment methods from the SDK
         // For now, return a card payment method
-        return [CardPaymentMethod()]
+        guard let container = await DIContainer.current else {
+            logger.error(message: "DIContainer not available, returning empty payment methods list")
+            return []
+        }
+
+        // Retrieve all registered payment methods in a single call
+        let paymentMethods = await container.resolveAll((any PaymentMethodProtocol).self)
+
+        // Optionally filter or sort payment methods based on configuration
+        // let enabledMethods = paymentMethods.filter { /* filter condition from config */ }
+
+        return paymentMethods
     }
 
     deinit {

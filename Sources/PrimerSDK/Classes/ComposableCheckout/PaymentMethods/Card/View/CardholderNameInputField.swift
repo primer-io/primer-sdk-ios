@@ -43,7 +43,7 @@ struct CardholderNameInputField: View, LogReporter {
     init(
         label: String,
         placeholder: String,
-        validationService: ValidationService = DefaultValidationService(),
+        validationService: ValidationService,
         onValidationChange: ((Bool) -> Void)? = nil
     ) {
         self.label = label

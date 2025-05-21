@@ -27,6 +27,7 @@ public struct PrimerCheckout: View {
         self.successContent = nil
         self.failureContent = nil
         self.content = nil
+        self.setupContainer()
     }
 
     /// Creates a new PrimerCheckout instance with customization options.
@@ -46,6 +47,13 @@ public struct PrimerCheckout: View {
         self.successContent = successContent
         self.failureContent = failureContent
         self.content = content
+        self.setupContainer()
+    }
+
+    private func setupContainer() {
+        Task {
+            await DIContainer.setupMainContainer()
+        }
     }
 
     public var body: some View {

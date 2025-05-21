@@ -22,17 +22,28 @@ public extension Registrar {
 
 // MARK: – Resolver: resolution APIs (named with prefix DI due to conflict naming with PromisKit)
 public protocol DIResolver: Sendable {
-    /// Throw if missing or failed
+    /// Async resolution - throw if missing or failed
     func resolve<T>(_ type: T.Type, name: String?) async throws -> T
+
+    /// Synchronous resolution - for SwiftUI and other sync contexts
+    func resolveSync<T>(_ type: T.Type, name: String?) throws -> T
+
     /// Get all matching instances
     func resolveAll<T>(_ type: T.Type) async -> [T]
 }
+
 public extension DIResolver {
-    /// Convenience: no-name resolve
+    /// Convenience: no-name async resolve
     func resolve<T>(_ type: T.Type) async throws -> T {
         try await resolve(type, name: nil)
     }
+
+    /// Convenience: no-name sync resolve
+    func resolveSync<T>(_ type: T.Type) throws -> T {
+        try resolveSync(type, name: nil)
+    }
 }
+
 
 // MARK: – LifecycleManager: container lifecycle
 public protocol LifecycleManager: Sendable {
