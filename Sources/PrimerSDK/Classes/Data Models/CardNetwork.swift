@@ -309,11 +309,6 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
     var assetName: String {
         rawValue.lowercased().filter { $0.isLetter }
     }
-
-    static var coBadgedNetworks: [CardNetwork] {
-        return [.cartesBancaires]
-    }
-
     public init(cardNumber: String) {
         self = CardNetworkParser.shared.cardNetwork(from: cardNumber) ?? .unknown
     }
