@@ -27,7 +27,9 @@ final class PrimerKlarnaCategoriesViewController: UIViewController {
     var renderedKlarnaView = UIView()
     var clientToken: String?
     var klarnaComponent: PrimerHeadlessKlarnaComponent
+    var paymentCategories: [KlarnaPaymentCategory] = []
     weak var delegate: PrimerKlarnaCategoriesDelegate?
+    
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -173,6 +175,16 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
             case .paymentSessionCreated(let clientToken, let paymentCategories):
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
+                    self.paymentCategories = paymentCategories
+
+                    // If only one payment category is available, skip the selection and continue with the only option
+                    if let onlyPaymentCategory = paymentCategories.first, paymentCategories.count == 1 {
+                        let klarnaCollectableData = KlarnaCollectableData.paymentCategory(onlyPaymentCategory, clientToken: clientToken)
+                        self.klarnaComponent.updateCollectedData(collectableData: klarnaCollectableData)
+                        showLoader()
+                        return
+                    }
+                    
                     self.hideLoader()
                     self.clientToken = clientToken
                     self.klarnaCategoriesVM.updatePaymentCategories(paymentCategories)
@@ -190,6 +202,12 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
                     passRenderedKlarnaView(view)
                 }
 
+                // If only one payment category is available, automatically authorize the session
+                if self.paymentCategories.count == 1 {
+                    showLoader()
+                    authorizeSession()
+                }
+                
             default:
                 break
             }
