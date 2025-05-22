@@ -27,7 +27,6 @@ final class PrimerKlarnaCategoriesViewController: UIViewController {
     var renderedKlarnaView = UIView()
     var clientToken: String?
     var klarnaComponent: PrimerHeadlessKlarnaComponent
-    var paymentCategories: [KlarnaPaymentCategory] = []
     weak var delegate: PrimerKlarnaCategoriesDelegate?
     
 
@@ -175,7 +174,6 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
             case .paymentSessionCreated(let clientToken, let paymentCategories):
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
-                    self.paymentCategories = paymentCategories
 
                     // If only one payment category is available, skip the selection and continue with the only option
                     if let onlyPaymentCategory = paymentCategories.first, paymentCategories.count == 1 {
@@ -203,7 +201,7 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
                 }
 
                 // If only one payment category is available, automatically authorize the session
-                if self.paymentCategories.count == 1 {
+                if self.klarnaComponent.availableCategories.count == 1 {
                     showLoader()
                     authorizeSession()
                 }
