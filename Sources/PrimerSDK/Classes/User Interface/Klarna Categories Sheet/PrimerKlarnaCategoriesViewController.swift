@@ -28,7 +28,7 @@ final class PrimerKlarnaCategoriesViewController: UIViewController {
     var clientToken: String?
     var klarnaComponent: PrimerHeadlessKlarnaComponent
     weak var delegate: PrimerKlarnaCategoriesDelegate?
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -181,7 +181,7 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
                         showLoader()
                         return
                     }
-                    
+
                     self.hideLoader()
                     self.clientToken = clientToken
                     self.klarnaCategoriesVM.updatePaymentCategories(paymentCategories)
@@ -204,7 +204,7 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
                     showLoader()
                     authorizeSession()
                 }
-                
+
             default:
                 break
             }
