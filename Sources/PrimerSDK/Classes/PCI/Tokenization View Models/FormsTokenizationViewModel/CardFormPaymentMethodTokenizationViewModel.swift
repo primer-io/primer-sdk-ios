@@ -986,7 +986,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
 
         if let cardNetwork = cardNetwork,
-            cardNetwork != .unknown {
+           cardNetwork != .unknown {
             // Set the network value to "OTHER" if it's nil or unknown
             if network == nil || network == "UNKNOWN" {
                 network = "OTHER"
@@ -997,22 +997,11 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
 
             // Update labels immediately
             configureAmountLabels(cardNetwork: cardNetwork)
-
-            // Fire-and-forget the select call (swallows errors)
-            clientSessionActionsModule
-                .selectPaymentMethodIfNeeded(config.type, cardNetwork: network)
-                .cauterize()  // PromiseKit extension that does `.catch { _ in }`
-
-
         } else if cardNumberContainerView.rightImage != nil && (cardNetwork?.icon == nil || cardNetwork == .unknown) {
             // Unselect payment method and remove the card network icon if unknown or nil
             cardNumberContainerView.rightImage = nil
 
             configureAmountLabels(cardNetwork: cardNetwork)
-
-            clientSessionActionsModule
-                .unselectPaymentMethodIfNeeded()
-                .cauterize()
         }
     }
 }
@@ -1180,17 +1169,23 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
 
                 // 4) No networks (user cleared the field): wipe everything
             } else {
+                // Remember if we had any selection
+                let hadSelection = (self.alternativelySelectedCardNetwork != nil)
+                                 || (self.defaultCardNetwork != nil)
+
+                // Clear all state & UI
                 self.alternativelySelectedCardNetwork = nil
                 self.defaultCardNetwork = nil
                 self.cardNumberContainerView.rightImage = nil
-
                 self.configureAmountLabels(cardNetwork: nil)
 
-                // unselect payment method now there's no valid BIN
-                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-                clientSessionActionsModule
-                    .unselectPaymentMethodIfNeeded()
-                    .cauterize()
+                // Only unselect if there was something to unselect
+                if hadSelection {
+                    let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+                    clientSessionActionsModule
+                        .unselectPaymentMethodIfNeeded()
+                        .cauterize()
+                }
             }
         }
     }
