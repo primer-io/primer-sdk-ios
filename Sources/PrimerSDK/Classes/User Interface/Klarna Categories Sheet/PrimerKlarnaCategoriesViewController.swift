@@ -29,7 +29,6 @@ final class PrimerKlarnaCategoriesViewController: UIViewController {
     var klarnaComponent: PrimerHeadlessKlarnaComponent
     weak var delegate: PrimerKlarnaCategoriesDelegate?
     
-
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
