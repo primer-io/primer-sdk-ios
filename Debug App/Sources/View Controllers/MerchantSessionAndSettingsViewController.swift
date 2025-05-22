@@ -679,7 +679,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             networkOptionGroup.VISA = ClientSessionRequestBody.PaymentMethod.NetworkOption(surcharge: surcharge)
             networkOptionGroup.JCB = ClientSessionRequestBody.PaymentMethod.NetworkOption(surcharge: surcharge)
             networkOptionGroup.MASTERCARD = ClientSessionRequestBody.PaymentMethod.NetworkOption(surcharge: surcharge)
-            let paymentCardOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(surcharge: nil,
+            let paymentCardOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(surcharge: surcharge,
                                                                                                 instalmentDuration: nil,
                                                                                                 extraMerchantData: nil,
                                                                                                 captureVaultedCardCvv: nil,
