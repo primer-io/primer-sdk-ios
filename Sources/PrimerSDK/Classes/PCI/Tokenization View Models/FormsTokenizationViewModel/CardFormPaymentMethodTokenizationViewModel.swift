@@ -138,15 +138,14 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
             self.rawDataManager?.rawData = self.rawCardData
             self.cardComponentsManager.selectedCardNetwork = cardNetwork.network
 
+            configureAmountLabels(cardNetwork: cardNetwork.network)
+
             // Select payment method based on the detected card network
             let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-            firstly {
-                clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: cardNetwork.network.rawValue)
-            }
-            .done {
-                self.configureAmountLabels(cardNetwork: cardNetwork.network)
-            }
-            .catch { _ in }
+            clientSessionActionsModule
+                .selectPaymentMethodIfNeeded(self.config.type, cardNetwork: cardNetwork.network.rawValue)
+                .cauterize()
+
         }
         return containerView
     }()
@@ -996,26 +995,24 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             // Update the UI with the detected card network icon
             cardNumberContainerView.rightImage = cardNetwork.icon
 
-            // Select payment method based on the detected card network
-            firstly {
-                clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: network)
-            }
-            .done {
-                self.configureAmountLabels(cardNetwork: cardNetwork)
-            }
-            .catch { _ in }
+            // Update labels immediately
+            configureAmountLabels(cardNetwork: cardNetwork)
+
+            // Fire-and-forget the select call (swallows errors)
+            clientSessionActionsModule
+                .selectPaymentMethodIfNeeded(config.type, cardNetwork: network)
+                .cauterize()  // PromiseKit extension that does `.catch { _ in }`
+
 
         } else if cardNumberContainerView.rightImage != nil && (cardNetwork?.icon == nil || cardNetwork == .unknown) {
             // Unselect payment method and remove the card network icon if unknown or nil
             cardNumberContainerView.rightImage = nil
 
-            firstly {
-                clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-            }
-            .done {
-                self.configureAmountLabels(cardNetwork: cardNetwork)
-            }
-            .catch { _ in }
+            configureAmountLabels(cardNetwork: cardNetwork)
+
+            clientSessionActionsModule
+                .unselectPaymentMethodIfNeeded()
+                .cauterize()
         }
     }
 }
@@ -1187,15 +1184,13 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
                 self.defaultCardNetwork = nil
                 self.cardNumberContainerView.rightImage = nil
 
+                self.configureAmountLabels(cardNetwork: nil)
+
                 // unselect payment method now there's no valid BIN
                 let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-                firstly {
-                    clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-                }
-                .done {
-                    self.configureAmountLabels(cardNetwork: nil)
-                }
-                .catch { _ in }
+                clientSessionActionsModule
+                    .unselectPaymentMethodIfNeeded()
+                    .cauterize()
             }
         }
     }
