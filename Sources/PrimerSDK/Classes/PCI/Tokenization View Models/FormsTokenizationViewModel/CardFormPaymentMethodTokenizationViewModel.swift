@@ -1164,11 +1164,38 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
         currentlyAvailableCardNetworks = filteredNetworks
         cardNumberContainerView.cardNetworks = filteredNetworks
 
-        if newNetworks.count == 1 {
-            DispatchQueue.main.async {
+        // 1) Set default on first non-empty detection
+        if defaultCardNetwork == nil, let first = newNetworks.first {
+            defaultCardNetwork = first
+        }
+
+        DispatchQueue.main.async {
+            // 2) Exactly one network: reset any manual selection and apply it
+            if newNetworks.count == 1 {
                 self.cardNumberContainerView.resetCardNetworkSelection()
                 self.alternativelySelectedCardNetwork = nil
                 self.handleCardNetworkDetection(newNetworks[0])
+
+                // 3) Multiple possible networks: show generic/“unknown” icon
+            } else if newNetworks.count > 1 {
+                self.cardNumberContainerView.resetCardNetworkSelection()
+                self.cardNumberContainerView.rightImage = CardNetwork.unknown.icon
+
+                // 4) No networks (user cleared the field): wipe everything
+            } else {
+                self.alternativelySelectedCardNetwork = nil
+                self.defaultCardNetwork = nil
+                self.cardNumberContainerView.rightImage = nil
+
+                // unselect payment method now there's no valid BIN
+                let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+                firstly {
+                    clientSessionActionsModule.unselectPaymentMethodIfNeeded()
+                }
+                .done {
+                    self.configureAmountLabels(cardNetwork: nil)
+                }
+                .catch { _ in }
             }
         }
     }
