@@ -15,11 +15,7 @@ final class PrimerPaymentPendingInfoViewController: PrimerFormViewController {
     init(formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel, infoView: PrimerFormView) {
         self.formPaymentMethodTokenizationViewModel = formPaymentMethodTokenizationViewModel
         self.infoView = infoView
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init()
     }
 
     override func viewDidLoad() {

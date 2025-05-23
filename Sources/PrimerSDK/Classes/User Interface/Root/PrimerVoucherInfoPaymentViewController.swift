@@ -27,12 +27,8 @@ final class PrimerVoucherInfoPaymentViewController: PrimerFormViewController {
     init(navigationBarLogo: UIImage?, formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel, shouldShareVoucherInfoWithText textToShare: String? = nil) {
         self.formPaymentMethodTokenizationViewModel = formPaymentMethodTokenizationViewModel
         self.textToShare = textToShare
-        super.init(nibName: nil, bundle: nil)
+        super.init()
         self.titleImage = navigationBarLogo
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
     override func viewDidLoad() {

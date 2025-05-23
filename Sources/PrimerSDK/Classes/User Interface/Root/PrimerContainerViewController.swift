@@ -18,7 +18,7 @@ final class PrimerContainerViewController: PrimerViewController {
 
     init(childViewController: UIViewController) {
         self.childViewController = childViewController
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
 
     required init?(coder aDecoder: NSCoder) {

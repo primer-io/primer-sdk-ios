@@ -16,7 +16,7 @@ final class PrimerCardFormViewController: PrimerFormViewController {
     init(navigationBarLogo: UIImage? = nil,
          viewModel: CardFormPaymentMethodTokenizationViewModel) {
         formPaymentMethodTokenizationViewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
+        super.init()
         titleImage = navigationBarLogo
         if titleImage == nil {
             title = Strings.PrimerCardFormView.title

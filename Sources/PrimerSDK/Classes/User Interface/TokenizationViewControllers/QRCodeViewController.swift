@@ -13,7 +13,7 @@ final class QRCodeViewController: PrimerFormViewController {
 
     private var viewModel: QRCodeTokenizationViewModel!
     private var amountLabel: UILabel! = UILabel()
-    internal private(set) var subtitle: String?
+    private(set) var subtitle: String?
 
     deinit {
         viewModel.cancel()
@@ -22,12 +22,8 @@ final class QRCodeViewController: PrimerFormViewController {
 
     init(viewModel: QRCodeTokenizationViewModel) {
         self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
+        super.init()
         self.titleImage = viewModel.uiModule.logo
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
     override func viewDidLoad() {

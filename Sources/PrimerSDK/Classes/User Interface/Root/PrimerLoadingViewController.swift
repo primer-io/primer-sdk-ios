@@ -20,11 +20,7 @@ final class PrimerLoadingViewController: PrimerViewController {
         self.height = height
         self.imageView = imageView
         self.message = message
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError()
+        super.init()
     }
 
     override func viewDidLoad() {
