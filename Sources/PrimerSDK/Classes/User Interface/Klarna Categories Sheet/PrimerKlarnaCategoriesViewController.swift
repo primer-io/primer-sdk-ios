@@ -173,9 +173,22 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
             case .paymentSessionCreated(let clientToken, let paymentCategories):
                 DispatchQueue.main.async { [weak self] in
                     guard let self = self else { return }
-                    self.hideLoader()
+
+                    // If only one payment category is available, skip the selection and continue with the only option
+                    if paymentCategories.count == 1, let onlyPaymentCategory = paymentCategories.first {
+                        klarnaComponent.updateCollectedData(
+                            collectableData: .paymentCategory(
+                                onlyPaymentCategory,
+                                clientToken: clientToken
+                            )
+                        )
+                        showLoader()
+                        return
+                    }
+
+                    hideLoader()
                     self.clientToken = clientToken
-                    self.klarnaCategoriesVM.updatePaymentCategories(paymentCategories)
+                    klarnaCategoriesVM.updatePaymentCategories(paymentCategories)
                 }
 
             case .paymentSessionFinalizationRequired:
@@ -188,6 +201,12 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
                 hideLoader()
                 if let view {
                     passRenderedKlarnaView(view)
+                }
+
+                // If only one payment category is available, automatically authorize the session
+                if klarnaComponent.availableCategories.count == 1 {
+                    showLoader()
+                    authorizeSession()
                 }
 
             default:
