@@ -175,16 +175,20 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
                     guard let self = self else { return }
 
                     // If only one payment category is available, skip the selection and continue with the only option
-                    if let onlyPaymentCategory = paymentCategories.first, paymentCategories.count == 1 {
-                        let klarnaCollectableData = KlarnaCollectableData.paymentCategory(onlyPaymentCategory, clientToken: clientToken)
-                        self.klarnaComponent.updateCollectedData(collectableData: klarnaCollectableData)
+                    if paymentCategories.count == 1, let onlyPaymentCategory = paymentCategories.first {
+                        klarnaComponent.updateCollectedData(
+                            collectableData: .paymentCategory(
+                                onlyPaymentCategory,
+                                clientToken: clientToken
+                            )
+                        )
                         showLoader()
                         return
                     }
 
-                    self.hideLoader()
+                    hideLoader()
                     self.clientToken = clientToken
-                    self.klarnaCategoriesVM.updatePaymentCategories(paymentCategories)
+                    klarnaCategoriesVM.updatePaymentCategories(paymentCategories)
                 }
 
             case .paymentSessionFinalizationRequired:
@@ -200,7 +204,7 @@ extension PrimerKlarnaCategoriesViewController: PrimerHeadlessErrorableDelegate,
                 }
 
                 // If only one payment category is available, automatically authorize the session
-                if self.klarnaComponent.availableCategories.count == 1 {
+                if klarnaComponent.availableCategories.count == 1 {
                     showLoader()
                     authorizeSession()
                 }
