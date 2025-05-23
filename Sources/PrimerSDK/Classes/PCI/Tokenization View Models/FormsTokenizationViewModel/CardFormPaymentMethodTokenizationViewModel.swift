@@ -344,6 +344,25 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     }
 
     override func start() {
+        let surchargeAmount = alternativelySelectedCardNetwork?.surcharge ?? defaultCardNetwork?.surcharge
+        let isMerchantAmountNil
+            = PrimerAPIConfigurationModule.apiConfiguration?
+                  .clientSession?
+                  .order?
+                  .merchantAmount == nil
+        let currencyExists  = AppState.current.currency != nil
+
+        let shouldShowSurcharge
+            = surchargeAmount != nil && isMerchantAmountNil && currencyExists
+
+        // If we would *hide* the surcharge label, then “unselect” the method
+        let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+        if !shouldShowSurcharge {
+            clientSessionActionsModule
+                .unselectPaymentMethodIfNeeded()
+                .cauterize()
+        }
+
         self.checkoutEventsNotifierModule.didStartTokenization = {
             self.uiModule.submitButton?.startAnimating()
             self.uiManager.primerRootViewController?.enableUserInteraction(false)
