@@ -356,11 +356,8 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
             = surchargeAmount != nil && isMerchantAmountNil && currencyExists
 
         // If we would *hide* the surcharge label, then “unselect” the method
-        let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
         if !shouldShowSurcharge {
-            clientSessionActionsModule
-                .unselectPaymentMethodIfNeeded()
-                .cauterize()
+            unselectPaymentMethodSilently()
         }
 
         self.checkoutEventsNotifierModule.didStartTokenization = {
@@ -831,6 +828,12 @@ extension CardFormPaymentMethodTokenizationViewModel {
             }
         }
     }
+
+    private func unselectPaymentMethodSilently() {
+        ClientSessionActionsModule()
+            .unselectPaymentMethodIfNeeded()
+            .cauterize()
+    }
 }
 
 extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsManagerDelegate {
@@ -1200,10 +1203,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
 
                 // Only unselect if there was something to unselect
                 if hadSelection {
-                    let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-                    clientSessionActionsModule
-                        .unselectPaymentMethodIfNeeded()
-                        .cauterize()
+                    self.unselectPaymentMethodSilently()
                 }
             }
         }
