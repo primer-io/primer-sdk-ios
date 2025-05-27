@@ -17,9 +17,9 @@ extension PrimerAPIClient {
                                                     threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest)
         networkService.request(endpoint) { (result: Result<ThreeDS.BeginAuthResponse, Error>) in
             switch result {
-            case let .success(threeDSecureBeginAuthResponse):
+            case .success(let threeDSecureBeginAuthResponse):
                 completion(.success(threeDSecureBeginAuthResponse))
-            case let .failure(err):
+            case .failure(let err):
                 completion(.failure(err))
             }
         }
@@ -48,10 +48,10 @@ extension PrimerAPIClient {
                                                        continueInfo: continueInfo)
         networkService.request(endpoint) { (result: Result<ThreeDS.PostAuthResponse, Error>) in
             switch result {
-            case let .success(postAuthResponse):
+            case .success(let postAuthResponse):
                 completion(.success(postAuthResponse))
 
-            case let .failure(err):
+            case .failure(let err):
                 completion(.failure(err))
             }
         }
