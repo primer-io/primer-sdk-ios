@@ -78,14 +78,8 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             return
         }
 
-        let isFirstTimeRemoteValidation = false // always debounce to simplify state handling
-
-        if isFirstTimeRemoteValidation {
-            useRemoteValidation(withCardState: cardState)
-        } else {
-            debouncer.debounce { [weak self] in
-                self?.useRemoteValidation(withCardState: cardState)
-            }
+        debouncer.debounce { [weak self] in
+            self?.useRemoteValidation(withCardState: cardState)
         }
     }
 
@@ -94,8 +88,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
                                         willFetchMetadataForState: cardState)
 
         if let cached = getCachedMetadata(for: cardState.cardNumber) {
-            handle(cardMetadata: cached, forCardState: cardState)
-            return
+            return handle(cardMetadata: cached, forCardState: cardState)
         }
 
         _ = listCardNetworks(cardState.cardNumber).done { [weak self] result in
@@ -107,7 +100,7 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             }
 
             let networks = result.networks.map { CardNetwork(cardNetworkStr: $0.value) }
-            let metadata = self.createValidationMetadata(networks: networks,
+            let metadata = createValidationMetadata(networks: networks,
                                                          source: .remote)
 
             self.handle(cardMetadata: metadata, forCardState: cardState)
@@ -119,9 +112,10 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     }
 
     private func useLocalValidation(withCardState cardState: PrimerCardNumberEntryState, isFallback: Bool) {
-        let localNetwork = CardNetwork(cardNumber: cardState.cardNumber)
+        // Only build the network if there's actually a card number
+        let networks: [CardNetwork] = cardState.cardNumber.isEmpty ? [] : [CardNetwork(cardNumber: cardState.cardNumber)]
         let metadata = createValidationMetadata(
-            networks: cardState.cardNumber.isEmpty ? [] : [localNetwork],
+            networks: networks,
             source: isFallback ? .localFallback : .local
         )
 
@@ -150,7 +144,6 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     }
 
     private func handle(cardMetadata: PrimerCardNumberEntryMetadata, forCardState cardState: PrimerCardNumberEntryState) {
-        // thread‐safe cache write
         setCachedMetadata(cardMetadata, for: cardState.cardNumber)
 
         let trackable = cardMetadata.selectableCardNetworks ?? cardMetadata.detectedCardNetworks

@@ -350,7 +350,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
                   .clientSession?
                   .order?
                   .merchantAmount == nil
-        let currencyExists  = AppState.current.currency != nil
+        let currencyExists = AppState.current.currency != nil
 
         let shouldShowSurcharge
             = surchargeAmount != nil && isMerchantAmountNil && currencyExists
