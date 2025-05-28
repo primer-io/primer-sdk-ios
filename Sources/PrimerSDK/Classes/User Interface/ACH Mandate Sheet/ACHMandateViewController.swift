@@ -14,17 +14,13 @@ final class ACHMandateViewController: PrimerViewController {
     private(set) var mandateView: ACHMandateView?
     private(set) var mandateData: PrimerStripeOptions.MandateData
     private(set) var mandateViewModel: ACHMandateViewModel
-    weak var delegate: ACHMandateDelegate?
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    private weak var delegate: ACHMandateDelegate?
 
     init(delegate: ACHMandateDelegate, mandateData: PrimerStripeOptions.MandateData) {
         self.mandateData = mandateData
         self.delegate = delegate
         self.mandateViewModel = ACHMandateViewModel(mandateData: mandateData)
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
 
     override func viewDidLoad() {
