@@ -75,6 +75,10 @@ final class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationB
         }
     }
 
+    func makeRequestBodyWithRawData(_ data: PrimerRawData) async throws -> Request.Body.Tokenization {
+        try await makeRequestBodyWithRawData(data).async()
+    }
+
     func validateRawData(_ data: PrimerRawData) -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.global(qos: .userInteractive).async {
@@ -123,6 +127,10 @@ final class PrimerRawRetailerDataTokenizationBuilder: PrimerRawDataTokenizationB
                 }
             }
         }
+    }
+
+    func validateRawData(_ data: PrimerRawData) async throws {
+        try await validateRawData(data).async()
     }
 
     private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {

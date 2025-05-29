@@ -76,6 +76,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             throw err
         }
     }
+
     private func fetchBanks() -> Promise<[AdyenBank]> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
@@ -109,6 +110,10 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 }
             }
         }
+    }
+
+    private func fetchBanks() async throws -> [AdyenBank] {
+        try await fetchBanks().async()
     }
 
     func processPaymentMethodTokenData() {
@@ -264,6 +269,12 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         }
     }
 
+    func startPaymentFlow(
+        withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> PrimerCheckoutData? {
+        try await startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData).async()
+    }
+
     // This function will do one of the two following:
     //     - Wait a response from the merchant, via the delegate function. The response can be:
     //         - A new client token
@@ -366,7 +377,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 firstly {
                     self.handleCreatePaymentEvent(token)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     self.resumePaymentId = paymentResponse.id
 
@@ -401,10 +412,20 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         }
     }
 
+    func startPaymentFlowAndFetchDecodedClientToken(
+        withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> DecodedJWTToken? {
+        try await startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData).async()
+    }
+
     // Create payment with Payment method token
     private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
         let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
         return createResumePaymentService.createPayment(paymentRequest: paymentRequest)
+    }
+
+    private func handleCreatePaymentEvent(_ paymentMethodData: String) async throws -> Response.Body.Payment {
+        try await handleCreatePaymentEvent(paymentMethodData).async()
     }
 
     func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
@@ -446,6 +467,13 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 seal.fulfill(nil)
             }
         }
+    }
+
+    func handleDecodedClientTokenIfNeeded(
+        _ decodedJWTToken: DecodedJWTToken,
+        paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> String? {
+        try await handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData).async()
     }
 
     func presentPaymentMethodUserInterface() -> Promise<Void> {
@@ -512,6 +540,10 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 }
             }
         }
+    }
+
+    func presentPaymentMethodUserInterface() async throws {
+        try await presentPaymentMethodUserInterface().async()
     }
 
     private func handleWebViewControlllerPresentedCompletion() {
@@ -586,7 +618,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 firstly {
                     self.handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
                 }
-                .done { paymentResponse -> Void in
+                .done { paymentResponse in
                     self.paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
                     seal.fulfill(self.paymentCheckoutData)
                 }
@@ -595,6 +627,10 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 }
             }
         }
+    }
+
+    func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
+        try await handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken).async()
     }
 
     func handleSuccessfulFlow() {}
@@ -623,6 +659,10 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                 }
             }
         }
+    }
+
+    func tokenize() async throws -> PrimerPaymentMethodTokenData {
+        try await tokenize().async()
     }
 
     private func tokenize(bank: AdyenBank, completion: @escaping (_ paymentMethodTokenData: PrimerPaymentMethodTokenData?, _ err: Error?) -> Void) {
@@ -684,10 +724,18 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         }
     }
 
+    func performTokenizationStep() async throws {
+        try await performTokenizationStep().async()
+    }
+
     func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
         }
+    }
+
+    func performPostTokenizationSteps() async throws {
+        try await performPostTokenizationSteps().async()
     }
 
     // Resume payment with Resume payment ID
@@ -696,6 +744,13 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
         return createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
                                                                      paymentResumeRequest: resumeRequest)
+    }
+
+    private func handleResumePaymentEvent(
+        _ resumePaymentId: String,
+        resumeToken: String
+    ) async throws -> Response.Body.Payment {
+        try await handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken).async()
     }
 }
 
@@ -729,6 +784,10 @@ extension BanksTokenizationComponent: BankSelectorTokenizationProviding {
         }
     }
 
+    func retrieveListOfBanks() async throws -> [AdyenBank] {
+        try await retrieveListOfBanks().async()
+    }
+
     func filterBanks(query: String) -> [AdyenBank] {
         guard !query.isEmpty else {
             return banks
@@ -751,10 +810,18 @@ extension BanksTokenizationComponent: BankSelectorTokenizationProviding {
             }
     }
 
+    func tokenize(bankId: String) async throws {
+        try await tokenize(bankId: bankId).async()
+    }
+
     func handlePaymentMethodTokenData() -> Promise<Void> {
         return Promise { _ in
             processPaymentMethodTokenData()
         }
+    }
+
+    func handlePaymentMethodTokenData() async throws {
+        try await handlePaymentMethodTokenData().async()
     }
 
     func cleanup() {
@@ -922,6 +989,10 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
         }
     }
 
+    func performPreTokenizationSteps() async throws {
+        try await performPreTokenizationSteps().async()
+    }
+
     func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
         return Promise { seal in
             if PrimerInternal.shared.intent == .vault {
@@ -961,6 +1032,10 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
         }
     }
 
+    func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) async throws {
+        try await self.handlePrimerWillCreatePaymentEvent(paymentMethodData).async()
+    }
+
     private func awaitBankSelection() -> Promise<Void> {
         return Promise { seal in
             self.bankSelectionCompletion = { bank in
@@ -968,6 +1043,10 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
                 seal.fulfill()
             }
         }
+    }
+
+    private func awaitBankSelection() async throws {
+        try await awaitBankSelection().async()
     }
 
     private func closePaymentMethodUI() {
@@ -1030,6 +1109,10 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
         }
     }
 
+    func startTokenizationFlow() async throws -> PrimerPaymentMethodTokenData {
+        try await startTokenizationFlow().async()
+    }
+
     func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             let pollingModule = PollingModule(url: self.statusUrl)
@@ -1063,6 +1146,10 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
                 seal.reject(err)
             }
         }
+    }
+
+    func awaitUserInput() async throws {
+        try await awaitUserInput().async()
     }
 }
 // swiftlint:enable cyclomatic_complexity
