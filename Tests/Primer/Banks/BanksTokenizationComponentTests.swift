@@ -5,16 +5,19 @@
 //  Created by Jack Newcombe on 07/05/2024.
 //
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 class MockBanksAPIClient: PrimerAPIClientBanksProtocol {
-
     var result: BanksListSessionResponse?
 
     var error: Error?
 
-    func listAdyenBanks(clientToken: PrimerSDK.DecodedJWTToken, request: Request.Body.Adyen.BanksList, completion: @escaping PrimerSDK.APICompletion<BanksListSessionResponse>) {
+    func listAdyenBanks(
+        clientToken: PrimerSDK.DecodedJWTToken,
+        request: Request.Body.Adyen.BanksList,
+        completion: @escaping PrimerSDK.APICompletion<BanksListSessionResponse>
+    ) {
         if let error = error {
             completion(.failure(error))
         } else if let result = result {
@@ -24,7 +27,6 @@ class MockBanksAPIClient: PrimerAPIClientBanksProtocol {
 }
 
 final class BanksTokenizationComponentTests: XCTestCase {
-
     var apiClient: MockBanksAPIClient!
 
     var delegate: MockPrimerHeadlessUniversalCheckoutDelegate!
@@ -108,6 +110,19 @@ final class BanksTokenizationComponentTests: XCTestCase {
         waitForExpectations(timeout: 5.0)
     }
 
+    func testFetchBanksSuccess_async() async throws {
+        let banks: BanksListSessionResponse = .init(
+            result: [.init(id: "id", name: "name", iconUrlStr: "icon", disabled: false)]
+        )
+
+        apiClient.result = banks
+
+        try await SDKSessionHelper.test {
+            let result = try await self.sut.retrieveListOfBanks()
+            XCTAssertEqual(result, banks.result)
+        }
+    }
+
     func testFullPaymentFlow() throws {
         apiClient.result = .init(result: [
             .init(id: "bank_id", name: "bank_name", iconUrlStr: "icon_url_str", disabled: false)
@@ -116,7 +131,7 @@ final class BanksTokenizationComponentTests: XCTestCase {
         let appState = MockAppState(clientToken: MockAppState.mockClientToken)
         DependencyContainer.register(appState as AppStateProtocol)
 
-        let expectDidFinishFlow = self.expectation(description: "Should finish")
+        let expectDidFinishFlow = expectation(description: "Should finish")
         let defaultBanksComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal,
                                                           tokenizationProvidingModel: sut) {
             expectDidFinishFlow.fulfill()
@@ -126,8 +141,8 @@ final class BanksTokenizationComponentTests: XCTestCase {
         defaultBanksComponent.stepDelegate = stepDelegate
         defaultBanksComponent.validationDelegate = validationDelegate
 
-        let expectIsLoadingStep = self.expectation(description: "Did start loading")
-        let expectDidGetBanksStep = self.expectation(description: "Did get bank step")
+        let expectIsLoadingStep = expectation(description: "Did start loading")
+        let expectDidGetBanksStep = expectation(description: "Did get bank step")
         stepDelegate.onReceiveStep = { step in
             switch step {
             case .loading:
@@ -142,8 +157,8 @@ final class BanksTokenizationComponentTests: XCTestCase {
 
         wait(for: [expectIsLoadingStep, expectDidGetBanksStep], timeout: 2.0, enforceOrder: true)
 
-        let expectDidStartValidating = self.expectation(description: "Did validate")
-        let expectDidValidate = self.expectation(description: "Did validate")
+        let expectDidStartValidating = expectation(description: "Did validate")
+        let expectDidValidate = expectation(description: "Did validate")
         validationDelegate.onDidUpdate = { status, _ in
             switch status {
             case .validating:
@@ -153,26 +168,25 @@ final class BanksTokenizationComponentTests: XCTestCase {
             default:
                 XCTFail()
             }
-
         }
 
         defaultBanksComponent.updateCollectedData(collectableData: .bankId(bankId: "bank_id"))
 
         wait(for: [expectDidStartValidating, expectDidValidate], timeout: 2.0)
 
-        let expectDidTokenize = self.expectation(description: "Did tokenize")
+        let expectDidTokenize = expectation(description: "Did tokenize")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
             return Promise.value(Mocks.primerPaymentMethodTokenData)
         }
 
-        let expectDidCreatePayment = self.expectation(description: "Did create payment")
+        let expectDidCreatePayment = expectation(description: "Did create payment")
         createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
         }
 
-        let expectDidCompleteCheckout = self.expectation(description: "Did complete checkout")
+        let expectDidCompleteCheckout = expectation(description: "Did complete checkout")
         delegate.onDidCompleteCheckoutWithData = { _ in
             expectDidCompleteCheckout.fulfill()
         }
@@ -188,7 +202,6 @@ final class BanksTokenizationComponentTests: XCTestCase {
     }
 
     func testFullPaymentFlow_manual() throws {
-
         let apiClient = MockPrimerAPIClient()
         PrimerAPIConfigurationModule.apiClient = apiClient
         PollingModule.apiClient = apiClient
@@ -211,7 +224,7 @@ final class BanksTokenizationComponentTests: XCTestCase {
         let settings = PrimerSettings(paymentHandling: .manual)
         DependencyContainer.register(settings as PrimerSettingsProtocol)
 
-        let expectDidFinishFlow = self.expectation(description: "Should finish")
+        let expectDidFinishFlow = expectation(description: "Should finish")
         let defaultBanksComponent = DefaultBanksComponent(paymentMethodType: .adyenIDeal,
                                                           tokenizationProvidingModel: sut) {
             expectDidFinishFlow.fulfill()
@@ -221,8 +234,8 @@ final class BanksTokenizationComponentTests: XCTestCase {
         defaultBanksComponent.stepDelegate = stepDelegate
         defaultBanksComponent.validationDelegate = validationDelegate
 
-        let expectIsLoadingStep = self.expectation(description: "Did start loading")
-        let expectDidGetBanksStep = self.expectation(description: "Did get bank step")
+        let expectIsLoadingStep = expectation(description: "Did start loading")
+        let expectDidGetBanksStep = expectation(description: "Did get bank step")
         stepDelegate.onReceiveStep = { step in
             switch step {
             case .loading:
@@ -237,8 +250,8 @@ final class BanksTokenizationComponentTests: XCTestCase {
 
         wait(for: [expectIsLoadingStep, expectDidGetBanksStep], timeout: 5.0, enforceOrder: true)
 
-        let expectDidStartValidating = self.expectation(description: "Did validate")
-        let expectDidValidate = self.expectation(description: "Did validate")
+        let expectDidStartValidating = expectation(description: "Did validate")
+        let expectDidValidate = expectation(description: "Did validate")
         validationDelegate.onDidUpdate = { status, _ in
             switch status {
             case .validating:
@@ -248,7 +261,6 @@ final class BanksTokenizationComponentTests: XCTestCase {
             default:
                 XCTFail()
             }
-
         }
 
         defaultBanksComponent.updateCollectedData(collectableData: .bankId(bankId: "bank_id"))
@@ -258,20 +270,20 @@ final class BanksTokenizationComponentTests: XCTestCase {
         let mockViewController = MockPrimerRootViewController()
         uiManager.primerRootViewController = mockViewController
 
-        let expectDidTokenize = self.expectation(description: "Did tokenize")
+        let expectDidTokenize = expectation(description: "Did tokenize")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
             return Promise.value(Mocks.primerPaymentMethodTokenData)
         }
 
-        let expectDidTokenizePaymentMethod = self.expectation(description: "Did tokenize delegate method")
+        let expectDidTokenizePaymentMethod = expectation(description: "Did tokenize delegate method")
         delegate.onDidTokenizePaymentMethod = { _, decisionHandler in
             decisionHandler(.continueWithNewClientToken(MockAppState.mockResumeToken))
             expectDidTokenizePaymentMethod.fulfill()
         }
 
-        let expectDidResume = self.expectation(description: "Did resume")
-        let expectDidFinishPayment = self.expectation(description: "Did finish payment")
+        let expectDidResume = expectation(description: "Did resume")
+        let expectDidFinishPayment = expectation(description: "Did finish payment")
         delegate.onDidResumeWith = { _, decisionHandler in
             decisionHandler(.complete())
 
@@ -327,7 +339,6 @@ final class BanksTokenizationComponentTests: XCTestCase {
 }
 
 class MockBanksStepDelegate: PrimerHeadlessSteppableDelegate {
-
     var onReceiveStep: ((BanksStep) -> Void)?
 
     func didReceiveStep(step: PrimerHeadlessStep) {
@@ -336,7 +347,6 @@ class MockBanksStepDelegate: PrimerHeadlessSteppableDelegate {
 }
 
 class MockBanksValidationDelegate: PrimerHeadlessValidatableDelegate {
-
     var onDidUpdate: ((PrimerValidationStatus, PrimerCollectableData?) -> Void)?
 
     func didUpdate(validationStatus: PrimerValidationStatus, for data: PrimerCollectableData?) {
