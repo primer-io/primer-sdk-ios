@@ -24,11 +24,7 @@ final class PrimerWebViewController: PrimerViewController {
 
     init(with url: URL) {
         self.url = url
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init()
     }
 
     override func viewDidLoad() {

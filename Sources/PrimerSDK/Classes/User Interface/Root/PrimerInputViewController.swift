@@ -9,19 +9,17 @@ import UIKit
 
 final class PrimerInputViewController: PrimerFormViewController {
 
-    let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
+    private let formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel
 
-    init(navigationBarLogo: UIImage?,
-         formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel,
-         inputsDistribution: NSLayoutConstraint.Axis = .vertical) {
+    init(
+        navigationBarLogo: UIImage?,
+        formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel,
+        inputsDistribution: NSLayoutConstraint.Axis = .vertical
+    ) {
         self.formPaymentMethodTokenizationViewModel = formPaymentMethodTokenizationViewModel
-        super.init(nibName: nil, bundle: nil)
+        super.init()
         self.titleImage = navigationBarLogo
 
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
     override func viewDidLoad() {
