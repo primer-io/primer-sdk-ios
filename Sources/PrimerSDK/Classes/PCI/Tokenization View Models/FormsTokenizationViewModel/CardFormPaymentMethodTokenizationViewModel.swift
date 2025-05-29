@@ -138,15 +138,14 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
             self.rawDataManager?.rawData = self.rawCardData
             self.cardComponentsManager.selectedCardNetwork = cardNetwork.network
 
+            configureAmountLabels(cardNetwork: cardNetwork.network)
+
             // Select payment method based on the detected card network
             let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
-            firstly {
-                clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: cardNetwork.network.rawValue)
-            }
-            .done {
-                self.configureAmountLabels(cardNetwork: cardNetwork.network)
-            }
-            .catch { _ in }
+            clientSessionActionsModule
+                .selectPaymentMethodIfNeeded(self.config.type, cardNetwork: cardNetwork.network.rawValue)
+                .cauterize()
+
         }
         return containerView
     }()
@@ -345,6 +344,22 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     }
 
     override func start() {
+        let surchargeAmount = alternativelySelectedCardNetwork?.surcharge ?? defaultCardNetwork?.surcharge
+        let isMerchantAmountNil
+            = PrimerAPIConfigurationModule.apiConfiguration?
+                  .clientSession?
+                  .order?
+                  .merchantAmount == nil
+        let currencyExists = AppState.current.currency != nil
+
+        let shouldShowSurcharge
+            = surchargeAmount != nil && isMerchantAmountNil && currencyExists
+
+        // If we would *hide* the surcharge label, then “unselect” the method
+        if !shouldShowSurcharge {
+            unselectPaymentMethodSilently()
+        }
+
         self.checkoutEventsNotifierModule.didStartTokenization = {
             self.uiModule.submitButton?.startAnimating()
             self.uiManager.primerRootViewController?.enableUserInteraction(false)
@@ -813,6 +828,12 @@ extension CardFormPaymentMethodTokenizationViewModel {
             }
         }
     }
+
+    private func unselectPaymentMethodSilently() {
+        ClientSessionActionsModule()
+            .unselectPaymentMethodIfNeeded()
+            .cauterize()
+    }
 }
 
 extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsManagerDelegate {
@@ -987,7 +1008,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
 
         if let cardNetwork = cardNetwork,
-            cardNetwork != .unknown {
+           cardNetwork != .unknown {
             // Set the network value to "OTHER" if it's nil or unknown
             if network == nil || network == "UNKNOWN" {
                 network = "OTHER"
@@ -996,26 +1017,13 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
             // Update the UI with the detected card network icon
             cardNumberContainerView.rightImage = cardNetwork.icon
 
-            // Select payment method based on the detected card network
-            firstly {
-                clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: network)
-            }
-            .done {
-                self.configureAmountLabels(cardNetwork: cardNetwork)
-            }
-            .catch { _ in }
-
+            // Update labels immediately
+            configureAmountLabels(cardNetwork: cardNetwork)
         } else if cardNumberContainerView.rightImage != nil && (cardNetwork?.icon == nil || cardNetwork == .unknown) {
             // Unselect payment method and remove the card network icon if unknown or nil
             cardNumberContainerView.rightImage = nil
 
-            firstly {
-                clientSessionActionsModule.unselectPaymentMethodIfNeeded()
-            }
-            .done {
-                self.configureAmountLabels(cardNetwork: cardNetwork)
-            }
-            .catch { _ in }
+            configureAmountLabels(cardNetwork: cardNetwork)
         }
     }
 }
@@ -1164,11 +1172,39 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
         currentlyAvailableCardNetworks = filteredNetworks
         cardNumberContainerView.cardNetworks = filteredNetworks
 
-        if newNetworks.count == 1 {
-            DispatchQueue.main.async {
+        // 1) Set default on first non-empty detection
+        if defaultCardNetwork == nil, let first = newNetworks.first {
+            defaultCardNetwork = first
+        }
+
+        DispatchQueue.main.async {
+            // 2) Exactly one network: reset any manual selection and apply it
+            if newNetworks.count == 1 {
                 self.cardNumberContainerView.resetCardNetworkSelection()
                 self.alternativelySelectedCardNetwork = nil
                 self.handleCardNetworkDetection(newNetworks[0])
+
+                // 3) Multiple possible networks: show generic/“unknown” icon
+            } else if newNetworks.count > 1 {
+                self.cardNumberContainerView.resetCardNetworkSelection()
+                self.cardNumberContainerView.rightImage = CardNetwork.unknown.icon
+
+                // 4) No networks (user cleared the field): wipe everything
+            } else {
+                // Remember if we had any selection
+                let hadSelection = (self.alternativelySelectedCardNetwork != nil)
+                                 || (self.defaultCardNetwork != nil)
+
+                // Clear all state & UI
+                self.alternativelySelectedCardNetwork = nil
+                self.defaultCardNetwork = nil
+                self.cardNumberContainerView.rightImage = nil
+                self.configureAmountLabels(cardNetwork: nil)
+
+                // Only unselect if there was something to unselect
+                if hadSelection {
+                    self.unselectPaymentMethodSilently()
+                }
             }
         }
     }
