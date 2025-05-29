@@ -1,3 +1,20 @@
+## 2.38.0 (2025-05-29)
+
+### Feat
+
+- **Klarna**: auto continue when single payment option (#1176)
+- Implement Co-badged Cards on Drop-in  (#1050)
+
+### Fix
+
+- compile error fixes (#1171)
+
+### Refactor
+
+- Reduce `init(coder:)` boilerplate (#1163)
+- Remove unused code from Networking (#1170)
+- Finalise classes where appropriate (#1164)
+
 ## 2.37.0 (2025-05-12)
 
 ### Feat
