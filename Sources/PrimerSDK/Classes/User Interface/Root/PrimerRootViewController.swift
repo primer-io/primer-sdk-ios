@@ -111,10 +111,11 @@ class PrimerRootViewController: PrimerViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.setupChildViews()
-        self.setupGestureRecognizers()
-        self.blurBackgroundIfNeeded()
-        self.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+        registerForNotifications()
+        setupChildViews()
+        setupGestureRecognizers()
+        blurBackgroundIfNeeded()
+        showLoadingScreenIfNeeded(imageView: nil, message: nil)
     }
 
     // MARK: Helpers
