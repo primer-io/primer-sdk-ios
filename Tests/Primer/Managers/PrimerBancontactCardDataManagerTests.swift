@@ -37,6 +37,21 @@ class PrimerBancontactCardDataManagerTests: XCTestCase {
         wait(for: [exp], timeout: Self.expectationTimeout)
     }
 
+    func test_valid_raw_bancontact_card_data_async() async throws {
+        let rawCardData = PrimerBancontactCardData(
+            cardNumber: Constants.testCardNumbers[.visa]!.last!,
+            expiryDate: "03/2030",
+            cardholderName: "John Smith")
+
+        let tokenizationBuilder = PrimerBancontactRawCardDataRedirectTokenizationBuilder(paymentMethodType: "ADYEN_BANCONTACT_CARD")
+
+        do {
+            try await tokenizationBuilder.validateRawData(rawCardData)
+        } catch {
+            XCTFail("Expected card data to pass validation, but it failed with error: \(error.localizedDescription)")
+        }
+    }
+
     // We are making the below tests as well to make sure that the standards validation of simple card data passes
 
     func test_valid_raw_card_data() throws {
