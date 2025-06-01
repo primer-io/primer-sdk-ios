@@ -92,6 +92,10 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
         }
     }
 
+    func start() async throws {
+        try await start().async()
+    }
+
     func performPreTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             firstly {
