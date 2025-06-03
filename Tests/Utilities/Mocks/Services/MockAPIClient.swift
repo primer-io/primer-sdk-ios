@@ -947,8 +947,7 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
     func getPhoneMetadata(
         clientToken _: DecodedJWTToken,
         paymentRequestBody _: Request.Body.PhoneMetadata.PhoneMetadataDataRequest
-    ) async throws -> Response.Body.PhoneMetadata
-    .PhoneMetadataDataResponse {
+    ) async throws -> Response.Body.PhoneMetadata.PhoneMetadataDataResponse {
         guard let result = getPhoneMetadataResult else {
             XCTAssert(false, "Set 'getPhoneMetadataResult' on your MockPrimerAPIClient")
             throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
@@ -1332,5 +1331,11 @@ extension MockPrimerAPIClient {
 
         static let mockFetchNolSdkSecret = Response.Body.NolPay.NolPaySecretDataResponse(sdkSecret: "")
         static let mockSdkCompleteUrl = Response.Body.Complete()
+        static let mockBinNetworks: Response.Body.Bin.Networks = Response.Body.Bin.Networks(
+            networks: [
+                .init(value: "MOCK_NETWORK")
+            ]
+        )
+        static let mockPhoneMetadataResponse = Response.Body.PhoneMetadata.PhoneMetadataDataResponse.init(isValid: true, countryCode: "+1", nationalNumber: nil)
     }
 }

@@ -2465,6 +2465,9 @@
             location = "group:Services"
             name = "Services">
             <FileRef
+               location = "group:PrimerAPIClientTests.swift">
+            </FileRef>
+            <FileRef
                location = "group:CardValidationServiceTests.swift">
             </FileRef>
             <FileRef

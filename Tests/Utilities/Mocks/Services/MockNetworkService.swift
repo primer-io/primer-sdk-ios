@@ -14,6 +14,8 @@ class MockNetworkService: NetworkService {
 
     var mockedError: Error?
 
+    var mockedHeaders: [String: String]?
+
     let mockedNetworkDelay: TimeInterval = Double.random(in: 0 ... 2)
 
     var onReceiveEndpoint: ((Endpoint) -> Void)?
@@ -61,7 +63,7 @@ class MockNetworkService: NetworkService {
             if let error = self.mockedError {
                 completion(.failure(error), nil)
             } else if let result = self.mockedResult as? T {
-                completion(.success(result), [:])
+                completion(.success(result), self.mockedHeaders)
             } else {
                 XCTFail("Failed to produce either a valid result or an error for requested endpoint")
             }
@@ -77,7 +79,7 @@ class MockNetworkService: NetworkService {
         if let error = mockedError {
             throw error
         } else if let result = mockedResult as? T {
-            return (result, [:])
+            return (result, self.mockedHeaders)
         } else {
             XCTFail("Failed to produce either a valid result or an error for requested endpoint")
             throw NSError(domain: "MockNetworkService", code: -1, userInfo: nil)
@@ -95,7 +97,7 @@ class MockNetworkService: NetworkService {
             if let error = self.mockedError {
                 completion(.failure(error), nil)
             } else if let result = self.mockedResult as? T {
-                completion(.success(result), nil)
+                completion(.success(result), self.mockedHeaders)
             } else {
                 XCTFail("Failed to produce either a valid result or an error for requested endpoint")
             }
@@ -114,7 +116,7 @@ class MockNetworkService: NetworkService {
         if let error = mockedError {
             throw error
         } else if let result = mockedResult as? T {
-            return (result, [:])
+            return (result, self.mockedHeaders)
         } else {
             XCTFail("Failed to produce either a valid result or an error for requested endpoint")
             throw NSError(domain: "MockNetworkService", code: -1, userInfo: nil)

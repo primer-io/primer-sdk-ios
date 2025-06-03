@@ -367,7 +367,8 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
     }
 
     func sendAnalyticsEvents(clientToken: DecodedJWTToken?,
-                             url: URL, body: [Analytics.Event]?,
+                             url: URL,
+                             body: [Analytics.Event]?,
                              completion: @escaping APICompletion<Analytics.Service.Response>) {
         let endpoint = PrimerAPI.sendAnalyticsEvents(clientToken: clientToken, url: url, body: body)
         execute(endpoint, completion: completion)
@@ -375,7 +376,8 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
 
     func sendAnalyticsEvents(
         clientToken: DecodedJWTToken?,
-        url: URL, body: [Analytics.Event]?
+        url: URL,
+        body: [Analytics.Event]?
     ) async throws -> Analytics.Service.Response {
         try await awaitResult { completion in
             self.sendAnalyticsEvents(
