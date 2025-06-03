@@ -5,6 +5,10 @@
 //  Created by Onur Var on 3.06.2025.
 //
 
+// swiftlint:disable file_length
+// swiftlint:disable line_length
+// swiftlint:disable type_body_length
+
 @testable import PrimerSDK
 import XCTest
 
@@ -1177,9 +1181,7 @@ final class PrimerAPIClientTests: XCTestCase {
             clientToken: Mocks.decodedJWTToken,
             request: .init(
                 paymentMethodConfigId: "MOCK_PAYMENT_METHOD_CONFIG_ID",
-                parameters: .init(
-                    paymentMethod: "adyen",
-                    )
+                parameters: .init(paymentMethod: "adyen")
             )
         ) { result in
             switch result {
@@ -1233,9 +1235,7 @@ final class PrimerAPIClientTests: XCTestCase {
             clientToken: Mocks.decodedJWTToken,
             request: .init(
                 paymentMethodConfigId: "MOCK_PAYMENT_METHOD_CONFIG_ID",
-                parameters: .init(
-                    paymentMethod: "adyen",
-                    )
+                parameters: .init(paymentMethod: "adyen")
             )
         ) { result in
             switch result {
@@ -1879,9 +1879,7 @@ final class PrimerAPIClientTests: XCTestCase {
         // When
         sut.createPayment(
             clientToken: Mocks.decodedJWTToken,
-            paymentRequestBody: .init(
-                token: "TOKEN_ID",
-                )
+            paymentRequestBody: .init(token: "TOKEN_ID")
         ) { result in
             switch result {
             case .success(let payment):
@@ -1907,9 +1905,7 @@ final class PrimerAPIClientTests: XCTestCase {
             // When
             let payment = try await sut.createPayment(
                 clientToken: Mocks.decodedJWTToken,
-                paymentRequestBody: .init(
-                    token: "TOKEN_ID",
-                    )
+                paymentRequestBody: .init(token: "TOKEN_ID")
             )
 
             // Then
@@ -1929,9 +1925,7 @@ final class PrimerAPIClientTests: XCTestCase {
         // When
         sut.createPayment(
             clientToken: Mocks.decodedJWTToken,
-            paymentRequestBody: .init(
-                token: "TOKEN_ID",
-                )
+            paymentRequestBody: .init(token: "TOKEN_ID")
         ) { result in
             switch result {
             case .success(let payment):
@@ -1958,9 +1952,7 @@ final class PrimerAPIClientTests: XCTestCase {
             // When
             _ = try await sut.createPayment(
                 clientToken: Mocks.decodedJWTToken,
-                paymentRequestBody: .init(
-                    token: "TOKEN_ID",
-                    )
+                paymentRequestBody: .init(token: "TOKEN_ID")
             )
             XCTFail("Expected failure, but got success")
         } catch {
@@ -1982,9 +1974,7 @@ final class PrimerAPIClientTests: XCTestCase {
         sut.resumePayment(
             clientToken: Mocks.decodedJWTToken,
             paymentId: "PAYMENT_ID",
-            paymentResumeRequest: .init(
-                token: "TOKEN_ID",
-                )
+            paymentResumeRequest: .init(token: "TOKEN_ID")
         ) { result in
             switch result {
             case .success(let payment):
@@ -2011,9 +2001,7 @@ final class PrimerAPIClientTests: XCTestCase {
             let payment = try await sut.resumePayment(
                 clientToken: Mocks.decodedJWTToken,
                 paymentId: "PAYMENT_ID",
-                paymentResumeRequest: .init(
-                    token: "TOKEN_ID",
-                    )
+                paymentResumeRequest: .init(token: "TOKEN_ID")
             )
 
             // Then
@@ -2034,9 +2022,7 @@ final class PrimerAPIClientTests: XCTestCase {
         sut.resumePayment(
             clientToken: Mocks.decodedJWTToken,
             paymentId: "PAYMENT_ID",
-            paymentResumeRequest: .init(
-                token: "TOKEN_ID",
-                )
+            paymentResumeRequest: .init(token: "TOKEN_ID")
         ) { result in
             switch result {
             case .success(let payment):
@@ -2064,9 +2050,7 @@ final class PrimerAPIClientTests: XCTestCase {
             _ = try await sut.resumePayment(
                 clientToken: Mocks.decodedJWTToken,
                 paymentId: "PAYMENT_ID",
-                paymentResumeRequest: .init(
-                    token: "TOKEN_ID",
-                    )
+                paymentResumeRequest: .init(token: "TOKEN_ID")
             )
             XCTFail("Expected failure, but got success")
         } catch {
@@ -2088,9 +2072,7 @@ final class PrimerAPIClientTests: XCTestCase {
         sut.completePayment(
             clientToken: Mocks.decodedJWTToken,
             url: URL(string: "https://random.url")!,
-            paymentRequest: .init(
-                mandateSignatureTimestamp: "2023-10-01T12:00:00Z",
-                )
+            paymentRequest: .init(mandateSignatureTimestamp: "2023-10-01T12:00:00Z")
         ) { result in
             switch result {
             case .success(let payment):
@@ -2115,9 +2097,7 @@ final class PrimerAPIClientTests: XCTestCase {
             let payment = try await sut.completePayment(
                 clientToken: Mocks.decodedJWTToken,
                 url: URL(string: "https://random.url")!,
-                paymentRequest: .init(
-                    mandateSignatureTimestamp: "2023-10-01T12:00:00Z",
-                    )
+                paymentRequest: .init(mandateSignatureTimestamp: "2023-10-01T12:00:00Z")
             )
 
             // Then
@@ -2136,9 +2116,7 @@ final class PrimerAPIClientTests: XCTestCase {
         sut.completePayment(
             clientToken: Mocks.decodedJWTToken,
             url: URL(string: "https://random.url")!,
-            paymentRequest: .init(
-                mandateSignatureTimestamp: "2023-10-01T12:00:00Z",
-                )
+            paymentRequest: .init(mandateSignatureTimestamp: "2023-10-01T12:00:00Z")
         ) { result in
             switch result {
             case .success(let payment):
@@ -2166,9 +2144,7 @@ final class PrimerAPIClientTests: XCTestCase {
             _ = try await sut.completePayment(
                 clientToken: Mocks.decodedJWTToken,
                 url: URL(string: "https://random.url")!,
-                paymentRequest: .init(
-                    mandateSignatureTimestamp: "2023-10-01T12:00:00Z",
-                    )
+                paymentRequest: .init(mandateSignatureTimestamp: "2023-10-01T12:00:00Z")
             )
             XCTFail("Expected failure, but got success")
         } catch {
@@ -2189,8 +2165,8 @@ final class PrimerAPIClientTests: XCTestCase {
         // When
         sut.testFinalizePolling(
             clientToken: Mocks.decodedJWTToken,
-            testId: "TEST_ID",
-            ) { result in
+            testId: "TEST_ID"
+        ) { result in
             switch result {
             case .success:
                 XCTAssertTrue(true)
@@ -2230,8 +2206,8 @@ final class PrimerAPIClientTests: XCTestCase {
         // When
         sut.testFinalizePolling(
             clientToken: Mocks.decodedJWTToken,
-            testId: "TEST_ID",
-            ) { result in
+            testId: "TEST_ID"
+        ) { result in
             switch result {
             case .success:
                 XCTFail("Expected failure, but got success")
@@ -2565,3 +2541,7 @@ final class PrimerAPIClientTests: XCTestCase {
         }
     }
 }
+
+// swiftlint:enable type_body_length
+// swiftlint:enable line_length
+// swiftlint:enable file_length
