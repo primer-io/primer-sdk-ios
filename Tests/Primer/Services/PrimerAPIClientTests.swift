@@ -1210,9 +1210,7 @@ final class PrimerAPIClientTests: XCTestCase {
                 clientToken: Mocks.decodedJWTToken,
                 request: .init(
                     paymentMethodConfigId: "MOCK_PAYMENT_METHOD_CONFIG_ID",
-                    parameters: .init(
-                        paymentMethod: "adyen",
-                        )
+                    parameters: .init(paymentMethod: "adyen")
                 )
             )
 
@@ -1265,9 +1263,7 @@ final class PrimerAPIClientTests: XCTestCase {
                 clientToken: Mocks.decodedJWTToken,
                 request: .init(
                     paymentMethodConfigId: "MOCK_PAYMENT_METHOD_CONFIG_ID",
-                    parameters: .init(
-                        paymentMethod: "adyen",
-                        )
+                    parameters: .init(paymentMethod: "adyen")
                 )
             )
             XCTFail("Expected failure, but got success")
@@ -1289,7 +1285,7 @@ final class PrimerAPIClientTests: XCTestCase {
         // When
         sut.listRetailOutlets(
             clientToken: Mocks.decodedJWTToken,
-            paymentMethodId: ""
+            paymentMethodId: "MOCK_PAYMENT_METHOD_ID"
         ) { result in
             switch result {
             case .success(let outlets):
@@ -1315,7 +1311,7 @@ final class PrimerAPIClientTests: XCTestCase {
             // When
             let outlets = try await sut.listRetailOutlets(
                 clientToken: Mocks.decodedJWTToken,
-                paymentMethodId: ""
+                paymentMethodId: "MOCK_PAYMENT_METHOD_ID"
             )
 
             // Then
@@ -1335,7 +1331,7 @@ final class PrimerAPIClientTests: XCTestCase {
         // When
         sut.listRetailOutlets(
             clientToken: Mocks.decodedJWTToken,
-            paymentMethodId: ""
+            paymentMethodId: "MOCK_PAYMENT_METHOD_ID"
         ) { result in
             switch result {
             case .success(let outlets):
@@ -1362,7 +1358,7 @@ final class PrimerAPIClientTests: XCTestCase {
             // When
             _ = try await sut.listRetailOutlets(
                 clientToken: Mocks.decodedJWTToken,
-                paymentMethodId: ""
+                paymentMethodId: "MOCK_PAYMENT_METHOD_ID"
             )
             XCTFail("Expected failure, but got success")
         } catch {
@@ -2254,7 +2250,7 @@ final class PrimerAPIClientTests: XCTestCase {
         // When
         _ = sut.listCardNetworks(
             clientToken: Mocks.decodedJWTToken,
-            bin: ""
+            bin: "MOCK_BIN"
         ) { result in
             switch result {
             case .success(let cardNetworks):
@@ -2279,7 +2275,7 @@ final class PrimerAPIClientTests: XCTestCase {
             // When
             let cardNetworks = try await sut.listCardNetworks(
                 clientToken: Mocks.decodedJWTToken,
-                bin: ""
+                bin: "MOCK_BIN"
             )
 
             // Then
@@ -2298,7 +2294,7 @@ final class PrimerAPIClientTests: XCTestCase {
         // When
         _ = sut.listCardNetworks(
             clientToken: Mocks.decodedJWTToken,
-            bin: ""
+            bin: "MOCK_BIN"
         ) { result in
             switch result {
             case .success(let cardNetworks):
@@ -2325,7 +2321,7 @@ final class PrimerAPIClientTests: XCTestCase {
             // When
             _ = try await sut.listCardNetworks(
                 clientToken: Mocks.decodedJWTToken,
-                bin: ""
+                bin: "MOCK_BIN"
             )
             XCTFail("Expected failure, but got success")
         } catch {
