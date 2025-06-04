@@ -70,7 +70,7 @@ extension FormPaymentMethodTokenizationViewModel {
                                     in: Bundle.primerResources,
                                     compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         let calendarImageView = UIImageView(image: calendarImage)
-        calendarImageView.tintColor = .gray600
+        calendarImageView.tintColor = .primerGray600
         calendarImageView.clipsToBounds = true
         calendarImageView.contentMode = .scaleAspectFit
         dueAtContainerStackView.addArrangedSubview(calendarImageView)
@@ -80,7 +80,7 @@ extension FormPaymentMethodTokenizationViewModel {
             let dueDateAttributedString = NSMutableAttributedString()
             let prefix = NSAttributedString(
                 string: Strings.AccountInfoPaymentView.dueAt,
-                attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray600])
+                attributes: [NSAttributedString.Key.foregroundColor: UIColor.primerGray600])
             let formatter = DateFormatter().withExpirationDisplayDateFormat()
             let dueAtDate = NSAttributedString(
                 string: formatter.string(from: expDate),
@@ -100,7 +100,7 @@ extension FormPaymentMethodTokenizationViewModel {
         let accountNumberInfoContainerStackView = PrimerStackView()
         accountNumberInfoContainerStackView.axis = .vertical
         accountNumberInfoContainerStackView.spacing = 12.0
-        accountNumberInfoContainerStackView.addBackground(color: .gray100)
+        accountNumberInfoContainerStackView.addBackground(color: .primerGray100)
         accountNumberInfoContainerStackView.layoutMargins = UIEdgeInsets(top: spacing,
                                                                          left: spacing,
                                                                          bottom: spacing,
@@ -125,7 +125,7 @@ extension FormPaymentMethodTokenizationViewModel {
                                                             bottom: spacing,
                                                             right: spacing)
         accountNumberStackView.layer.cornerRadius = PrimerDimensions.cornerRadius / 2
-        accountNumberStackView.layer.borderColor = UIColor.gray200.cgColor
+        accountNumberStackView.layer.borderColor = UIColor.primerGray200.cgColor
         accountNumberStackView.layer.borderWidth = 2.0
         accountNumberStackView.isLayoutMarginsRelativeArrangement = true
         accountNumberStackView.layer.cornerRadius = 8.0
@@ -185,7 +185,7 @@ extension FormPaymentMethodTokenizationViewModel {
         for stepsText in stepsTexts {
 
             let confirmationStepLabel = UILabel()
-            confirmationStepLabel.textColor = .gray600
+            confirmationStepLabel.textColor = .primerGray600
             confirmationStepLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.label)
             confirmationStepLabel.numberOfLines = 0
             confirmationStepLabel.text = stepsText
@@ -211,7 +211,7 @@ extension FormPaymentMethodTokenizationViewModel {
         completeYourPaymentLabel.textColor = theme.text.title.color
 
         let descriptionLabel = UILabel()
-        descriptionLabel.textColor = .gray600
+        descriptionLabel.textColor = .primerGray600
         descriptionLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.body)
         descriptionLabel.numberOfLines = 0
         descriptionLabel.text = Strings.VoucherInfoPaymentView.descriptionLabel
@@ -226,7 +226,7 @@ extension FormPaymentMethodTokenizationViewModel {
                                     in: Bundle.primerResources,
                                     compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         let calendarImageView = UIImageView(image: calendarImage)
-        calendarImageView.tintColor = .gray600
+        calendarImageView.tintColor = .primerGray600
         calendarImageView.clipsToBounds = true
         calendarImageView.contentMode = .scaleAspectFit
         expiresAtContainerStackView.addArrangedSubview(calendarImageView)
@@ -236,7 +236,7 @@ extension FormPaymentMethodTokenizationViewModel {
             let expiresAtAttributedString = NSMutableAttributedString()
             let prefix = NSAttributedString(
                 string: Strings.VoucherInfoPaymentView.expiresAt,
-                attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray600])
+                attributes: [NSAttributedString.Key.foregroundColor: UIColor.primerGray600])
             let formatter = DateFormatter()
             formatter.dateStyle = .medium
             formatter.timeStyle = .short
@@ -259,7 +259,7 @@ extension FormPaymentMethodTokenizationViewModel {
         voucherInfoContainerStackView.spacing = 12.0
         voucherInfoContainerStackView.layoutMargins = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
         voucherInfoContainerStackView.layer.cornerRadius = PrimerDimensions.cornerRadius / 2
-        voucherInfoContainerStackView.layer.borderColor = UIColor.gray200.cgColor
+        voucherInfoContainerStackView.layer.borderColor = UIColor.primerGray200.cgColor
         voucherInfoContainerStackView.layer.borderWidth = 2.0
         voucherInfoContainerStackView.isLayoutMarginsRelativeArrangement = true
         voucherInfoContainerStackView.layer.cornerRadius = 8.0
@@ -274,7 +274,7 @@ extension FormPaymentMethodTokenizationViewModel {
             let voucherValueLabel = UILabel()
             voucherValueLabel.text = voucherValue.description
             voucherValueLabel.font = UIFont.systemFont(ofSize: PrimerDimensions.Font.label)
-            voucherValueLabel.textColor = .gray600
+            voucherValueLabel.textColor = .primerGray600
             voucherValueStackView.addArrangedSubview(voucherValueLabel)
 
             let voucherValueText = UILabel()
@@ -290,7 +290,7 @@ extension FormPaymentMethodTokenizationViewModel {
             if let lastValue = VoucherValue.currentVoucherValues.last, voucherValue != lastValue {
                 // Separator view
                 let separatorView = PrimerView()
-                separatorView.backgroundColor = .gray200
+                separatorView.backgroundColor = .primerGray200
                 separatorView.translatesAutoresizingMaskIntoConstraints = false
                 separatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
                 voucherInfoContainerStackView.addArrangedSubview(separatorView)
