@@ -5,13 +5,14 @@ A powerful, async-first dependency injection container designed for modern iOS a
 ## Features
 
 - **🚀 Async/Await Support**: Full async support for modern Swift concurrency
-- **🔄 Flexible Lifecycle Management**: Transient, Singleton, and Weak retention policies
+- **🔄 Flexible Lifecycle Management**: Transient, Singleton, and Weak retention policies  
 - **🏭 Factory Pattern**: Support for parameterized object creation with Factory protocol
-- **🎯 Property Wrapper Injection**: `@Injected` for automatic dependency resolution
+- **🎯 Manual Resolution**: Explicit, controlled dependency resolution with async/sync support
 - **🔍 Scoped Containers**: Context-aware dependency management
 - **🧵 Thread-Safe**: Actor-based implementation for concurrent access
 - **🔍 Type-Safe**: Compile-time type checking with generic protocols
 - **🧪 Testing-Friendly**: Built-in mock container support
+- **📊 Advanced Diagnostics**: Health monitoring, performance metrics, and memory management
 - **📝 Integrated Logging**: Built-in integration with PrimerLogger
 
 ## Quick Start
@@ -71,50 +72,56 @@ func registerDependencies() async {
 }
 ```
 
-### 3. Inject Dependencies
+### 3. Resolve Dependencies
 
-#### Using Property Wrapper
+The container uses manual resolution with async/sync support:
 
 ```swift
 class PaymentViewModel: ObservableObject {
-    @Injected private var paymentService: PaymentService
-    @Injected private var repository: PaymentRepository
-    @Injected(name: "console") private var logger: Logger
-    @InjectedOptional private var analytics: AnalyticsService?
-    
-    func processPayment() async {
-        do {
-            let service = try await $paymentService.resolve()
-            let repo = try await $repository.resolve()
-            let log = try await $logger.resolve()
-            
-            log.info(message: "Processing payment...")
-            let result = try await service.process(amount: 100)
-            
-            if let analytics = await $analytics.resolve() {
-                analytics.track("payment_success")
-            }
-        } catch {
-            print("Payment failed: \(error)")
-        }
-    }
-}
-```
-
-#### Manual Resolution  (Recommended)
-
-```swift
-class PaymentUseCase {
-    private let service: PaymentService
-    private let logger: PrimerLogger
+    private let paymentService: PaymentService
+    private let repository: PaymentRepository
+    private let logger: Logger
     
     init() async throws {
         guard let container = await DIContainer.current else {
             throw ContainerError.containerUnavailable
         }
         
-        self.service = try await container.resolve(PaymentService.self)
-        self.logger = try await container.resolve(PrimerLogger.self)
+        // Manual resolution with proper error handling
+        self.paymentService = try await container.resolve(PaymentService.self)
+        self.repository = try await container.resolve(PaymentRepository.self)
+        self.logger = try await container.resolve(Logger.self, name: "console")
+    }
+    
+    func processPayment() async {
+        do {
+            logger.info(message: "Processing payment...")
+            let result = try await paymentService.process(amount: 100)
+            // Handle success
+        } catch {
+            logger.error(message: "Payment failed: \(error)")
+        }
+    }
+}
+```
+
+### 4. Synchronous Resolution for SwiftUI
+
+For SwiftUI contexts that require synchronous access:
+
+```swift
+class PaymentUseCase {
+    private let service: PaymentService
+    private let logger: Logger
+    
+    init() throws {
+        guard let container = DIContainer.currentSync else {
+            throw ContainerError.containerUnavailable
+        }
+        
+        // Synchronous resolution with timeout protection
+        self.service = try container.resolveSync(PaymentService.self)
+        self.logger = try container.resolveSync(Logger.self, name: "console")
     }
 }
 ```
@@ -135,24 +142,37 @@ protocol PaymentMethodFactory: Factory {
 }
 
 class PaymentMethodFactoryImpl: PaymentMethodFactory {
+    private let apiClient: APIClient
+    
+    init(apiClient: APIClient) {
+        self.apiClient = apiClient
+    }
+    
     func create(with config: PaymentMethodConfig) async throws -> PaymentMethod {
         switch config.type {
         case .card:
-            return CardPaymentMethod(config: config)
+            return CardPaymentMethod(config: config, apiClient: apiClient)
         case .applePay:
-            return ApplePayMethod(config: config)
+            return ApplePayMethod(config: config, apiClient: apiClient)
         case .paypal:
-            return PayPalMethod(config: config)
+            return PayPalMethod(config: config, apiClient: apiClient)
         }
     }
 }
 
 // Register the factory
-_ = try await container.registerFactory(PaymentMethodFactoryImpl())
+guard let container = await DIContainer.current else { return }
+
+_ = try await container.registerFactory(
+    PaymentMethodFactoryImpl.self,
+    policy: .singleton
+) { resolver in
+    let apiClient = try await resolver.resolve(APIClient.self)
+    return PaymentMethodFactoryImpl(apiClient: apiClient)
+}
 
 // Use the factory
-guard let container = await DIContainer.current else { return }
-let factory = try await container.resolve(PaymentMethodFactory.self)
+let factory = try await container.resolve(PaymentMethodFactoryImpl.self)
 let paymentMethod = try await factory.create(with: config)
 ```
 
@@ -176,8 +196,8 @@ class UserValidatorFactoryImpl: UserValidatorFactory {
 
 // Register and use
 _ = try await container.registerFactory(UserValidatorFactoryImpl())
-let factory = try await container.resolve(UserValidatorFactory.self)
-let validator = try await factory.create(with: config)
+let factory = try await container.resolve(UserValidatorFactoryImpl.self)
+let validator = try factory.createSync(with: config)
 ```
 
 ### Scoped Containers
@@ -245,7 +265,8 @@ class PaymentServiceTests: XCTestCase {
     
     func testPaymentProcessing() async throws {
         await DIContainer.withContainer(mockContainer) {
-            let viewModel = PaymentViewModel()
+            // Create view model with mock dependencies
+            let viewModel = try await PaymentViewModel()
             await viewModel.processPayment()
             
             let mockService = try await mockContainer.resolve(PaymentService.self) as! MockPaymentService
@@ -293,12 +314,16 @@ The container provides comprehensive error handling:
 ```swift
 do {
     let service = try await container.resolve(PaymentService.self)
-} catch ContainerError.dependencyNotRegistered(let key) {
+} catch ContainerError.dependencyNotRegistered(let key, let suggestions) {
     print("Dependency not found: \(key)")
+    if !suggestions.isEmpty {
+        print("Suggestions: \(suggestions.joined(separator: ", "))")
+    }
 } catch ContainerError.circularDependency(let key, let path) {
-    print("Circular dependency detected: \(path)")
-} catch ContainerError.typeCastFailed(let key, let type) {
-    print("Type cast failed for \(key) to \(type)")
+    let pathString = path.map { "\($0)" }.joined(separator: " → ")
+    print("Circular dependency detected: \(pathString)")
+} catch ContainerError.typeCastFailed(let key, let expected, let actual) {
+    print("Type cast failed for \(key). Expected: \(expected), Actual: \(actual)")
 } catch ContainerError.containerUnavailable {
     print("Container is not available")
 } catch ContainerError.factoryFailed(let key, let error) {
@@ -308,59 +333,26 @@ do {
 }
 ```
 
-## Property Wrapper Options
-
-### Available Property Wrappers
-
-```swift
-class SomeService {
-    // Standard injection - throws error on resolution failure
-    @Injected var requiredService: PaymentService
-    
-    // Async injection (identical to @Injected)
-    @InjectedAsync var asyncService: PaymentService
-    
-    // Optional dependency (never throws)
-    @InjectedOptional var optionalService: AnalyticsService?
-    
-    // Named dependency
-    @Injected(name: "console") var namedLogger: Logger
-}
-```
-
-### Usage Pattern
-
-All property wrappers require async resolution:
-
-```swift
-class ViewModel {
-    @Injected private var service: PaymentService
-    @InjectedOptional private var analytics: AnalyticsService?
-    
-    func performAction() async {
-        do {
-            // Resolve required dependency
-            let svc = try await $service.resolve()
-            let result = try await svc.process()
-            
-            // Resolve optional dependency
-            if let analytics = await $analytics.resolve() {
-                analytics.track("action_performed")
-            }
-        } catch {
-            print("Resolution failed: \(error)")
-        }
-    }
-}
-```
-
 ## Best Practices
 
 ### 1. **Register Early, Resolve Late**
 Register all dependencies during app launch, resolve them when needed.
 
-### 2. **Use Property Wrappers for ViewModels**
-Property wrappers make dependency injection seamless in SwiftUI and UIKit.
+### 2. **Use Manual Resolution for ViewModels**
+Manual resolution provides explicit control over dependency injection:
+
+```swift
+class ViewModel: ObservableObject {
+    private let service: PaymentService
+    
+    init() async throws {
+        guard let container = await DIContainer.current else {
+            throw ContainerError.containerUnavailable
+        }
+        self.service = try await container.resolve(PaymentService.self)
+    }
+}
+```
 
 ### 3. **Prefer Protocol Registration**
 Register protocols instead of concrete types for better testability:
@@ -377,8 +369,8 @@ Isolate feature-specific dependencies in their own scopes.
 ### 5. **Keep Factory Parameters Simple**
 Factory parameters should be simple value types or configuration objects.
 
-### 6. **Handle Optional Dependencies Gracefully**
-Use `@InjectedOptional` for dependencies that might not be available.
+### 6. **Handle Errors Gracefully**
+Always handle potential resolution errors in your application logic.
 
 ## Architecture Integration
 
@@ -392,29 +384,42 @@ protocol PaymentUseCase {
 
 // Use Case Implementation
 class ProcessPaymentUseCase: PaymentUseCase {
-    @Injected private var repository: PaymentRepository
-    @Injected private var validator: PaymentValidator
+    private let repository: PaymentRepository
+    private let validator: PaymentValidator
+    
+    init() async throws {
+        guard let container = await DIContainer.current else {
+            throw ContainerError.containerUnavailable
+        }
+        
+        self.repository = try await container.resolve(PaymentRepository.self)
+        self.validator = try await container.resolve(PaymentValidator.self)
+    }
     
     func processPayment(_ request: PaymentRequest) async throws -> PaymentResult {
-        let repo = try await $repository.resolve()
-        let val = try await $validator.resolve()
-        
-        try val.validate(request)
-        return try await repo.processPayment(request)
+        try validator.validate(request)
+        return try await repository.processPayment(request)
     }
 }
 
 // View Model
 class PaymentViewModel: ObservableObject {
-    @Injected private var useCase: PaymentUseCase
+    private let useCase: PaymentUseCase
     @Published var state: PaymentState = .idle
+    
+    init() async throws {
+        guard let container = await DIContainer.current else {
+            throw ContainerError.containerUnavailable
+        }
+        
+        self.useCase = try await container.resolve(PaymentUseCase.self)
+    }
     
     func processPayment(_ request: PaymentRequest) async {
         state = .processing
         
         do {
-            let uc = try await $useCase.resolve()
-            let result = try await uc.processPayment(request)
+            let result = try await useCase.processPayment(request)
             state = .success(result)
         } catch {
             state = .failure(error)
@@ -432,11 +437,7 @@ The DI container provides comprehensive diagnostics and health monitoring capabi
 Get detailed information about your container's state:
 
 ```swift
-let container = Container()
-
-// Register some dependencies
-_ = try await container.register(PaymentService.self).asSingleton().with { _ in PaymentServiceImpl() }
-_ = try await container.register(Logger.self).asWeak().with { _ in ConsoleLogger() }
+guard let container = await DIContainer.current as? Container else { return }
 
 // Get diagnostics
 let diagnostics = await container.getDiagnostics()
@@ -482,27 +483,6 @@ case .critical:
 }
 ```
 
-**Health Check Output:**
-```
-🔍 Container Health Report
-Status: hasIssues
-
-⚠️ Issues Found:
-  - Low weak reference efficiency: 50.0%
-  - orphanedRegistrations(3)
-
-💡 Recommendations:
-  - Consider calling performMaintenanceCleanup() more frequently
-  - Remove unused registrations to improve performance
-
-📊 Diagnostics:
-Container Diagnostics:
-- Total Registrations: 8
-- Singleton Instances: 5
-- Weak References: 4 (active: 2)
-- Memory Efficiency: 50.0%
-```
-
 ### Memory Management
 
 Clean up dead weak references and optimize memory usage:
@@ -524,8 +504,7 @@ Use `InstrumentedContainer` for detailed performance tracking:
 ```swift
 // Create container with performance monitoring
 let container = InstrumentedContainer(
-    metrics: DefaultContainerMetrics(),
-    logger: { message in print("Container: \(message)") }
+    metrics: DefaultContainerMetrics()
 )
 
 // Register and use dependencies
@@ -534,137 +513,6 @@ let service = try await container.resolve(PaymentService.self)
 
 // Get performance metrics
 await container.printPerformanceReport()
-```
-
-**Performance Report Output:**
-```
-Container Performance Metrics:
-- Total Resolutions: 150
-- Average Resolution Time: 0.45ms
-- Cache Hit Rate: 85.3%
-- Memory Usage: ~2048 bytes
-
-Slowest Resolutions:
-  - PaymentService: 2.1ms
-  - DatabaseManager: 1.8ms
-  - NetworkClient: 1.2ms
-```
-
-### Diagnostic Integration in App Lifecycle
-
-Integrate diagnostics into your app's lifecycle for continuous monitoring:
-
-```swift
-class AppDelegate: UIApplicationDelegate {
-    func applicationDidEnterBackground(_ application: UIApplication) {
-        Task {
-            // Perform cleanup when app goes to background
-            if let container = await DIContainer.current as? Container {
-                await container.performMaintenanceCleanup()
-            }
-        }
-    }
-    
-    func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
-        Task {
-            // Emergency cleanup on memory warning
-            if let container = await DIContainer.current as? Container {
-                await container.performMaintenanceCleanup()
-                
-                let healthReport = await container.performHealthCheck()
-                if healthReport.status == .critical {
-                    // Log critical issues for debugging
-                    print("🚨 Container health critical after memory warning")
-                    healthReport.printReport()
-                }
-            }
-        }
-    }
-}
-```
-
-### Debug Logging Integration
-
-Enable detailed logging for troubleshooting:
-
-```swift
-let container = Container { message in
-    #if DEBUG
-    print("📦 Container: \(message)")
-    #endif
-}
-
-// Or with PrimerLogger integration
-let container = Container { message in
-    PrimerLogging.shared.logger.debug(message: "Container: \(message)")
-}
-```
-
-### Advanced Diagnostics for Development
-
-Create development-only diagnostic tools:
-
-```swift
-#if DEBUG
-extension Container {
-    func printDetailedStatus() async {
-        let diagnostics = getDiagnostics()
-        let healthReport = await performHealthCheck()
-        
-        print("""
-        
-        🔍 CONTAINER STATUS REPORT
-        =========================
-        \(diagnostics.description)
-        
-        Health Status: \(healthReport.status)
-        Issues: \(healthReport.issues.count)
-        Recommendations: \(healthReport.recommendations.count)
-        
-        """)
-        
-        if let instrumented = self as? InstrumentedContainer {
-            await instrumented.printPerformanceReport()
-        }
-    }
-}
-#endif
-
-// Usage in development
-#if DEBUG
-await container.printDetailedStatus()
-#endif
-```
-
-### Monitoring Best Practices
-
-1. **Regular Health Checks**: Check container health during app launch and periodically
-2. **Memory Cleanup**: Call `performMaintenanceCleanup()` during low-memory warnings
-3. **Performance Monitoring**: Use `InstrumentedContainer` in debug builds
-4. **Diagnostic Logging**: Enable container logging for development and testing
-
-```swift
-// Best practice setup
-func setupContainer() async {
-    #if DEBUG
-    let container = InstrumentedContainer(
-        metrics: DefaultContainerMetrics(),
-        logger: { PrimerLogging.shared.logger.debug(message: $0) }
-    )
-    #else
-    let container = Container()
-    #endif
-    
-    // Register dependencies...
-    
-    // Initial health check
-    let healthReport = await container.performHealthCheck()
-    if healthReport.status != .healthy {
-        healthReport.printReport()
-    }
-    
-    await DIContainer.setContainer(container)
-}
 ```
 
 ## Container Features
@@ -718,6 +566,36 @@ await DIContainer.withContainer(testContainer) {
 // Previous container is automatically restored
 ```
 
+## SwiftUI Integration
+
+Limited SwiftUI integration is available through the DIContainer extension:
+
+```swift
+@available(iOS 15.0, *)
+extension DIContainer {
+    @MainActor
+    static func stateObject<T: ObservableObject>(
+        _ type: T.Type = T.self,
+        name: String? = nil,
+        default fallback: @autoclosure @escaping () -> T
+    ) -> StateObject<T> {
+        // Attempts to resolve from container, falls back to default if resolution fails
+    }
+}
+
+// Usage in SwiftUI views:
+struct PaymentView: View {
+    @StateObject private var viewModel = DIContainer.stateObject(
+        PaymentViewModel.self,
+        default: PaymentViewModel()
+    )
+    
+    var body: some View {
+        // View implementation
+    }
+}
+```
+
 ## Performance Considerations
 
 - **Actor-based Implementation**: Thread-safe without locks
@@ -725,52 +603,7 @@ await DIContainer.withContainer(testContainer) {
 - **Weak References**: Prevent memory leaks for temporary objects
 - **Type Safety**: No runtime type checking overhead with TypeKey
 - **Cached Resolution**: Singletons are cached for fast access
-
-## Migration from Other DI Frameworks
-
-### From Swinject
-
-```swift
-// Swinject
-container.register(PaymentService.self) { r in
-    PaymentServiceImpl(apiClient: r.resolve(APIClient.self)!)
-}
-
-// Primer DI
-_ = try await container.register(PaymentService.self)
-    .asSingleton()
-    .with { resolver in
-        PaymentServiceImpl(apiClient: try await resolver.resolve(APIClient.self))
-    }
-```
-
-### From Resolver
-
-```swift
-// Both frameworks use similar property wrapper syntax
-@Injected var paymentService: PaymentService
-
-// But Primer DI requires async resolution:
-let service = try await $paymentService.resolve()
-```
-
-## Logging Integration
-
-The container integrates with PrimerLogger for debugging and monitoring:
-
-```swift
-// Logger is automatically registered during setup
-let logger = try await container.resolve(PrimerLogger.self)
-logger.debug(message: "Container operation completed")
-```
-
-Internal container operations are logged when a logger is configured:
-
-```swift
-let container = Container { message in
-    print("Container: \(message)")
-}
-```
+- **Synchronous Resolution**: Available with timeout protection for SwiftUI contexts
 
 ## Troubleshooting
 
@@ -793,9 +626,10 @@ let container = Container { message in
    - Weak retention only works with class types (AnyObject)
    - Use `.singleton` or `.transient` for value types
 
-5. **Property wrapper resolution issues**
-   - Remember to use `try await $property.resolve()` syntax
-   - Property wrappers cannot be accessed synchronously
+5. **Synchronous resolution timeout**
+   - Synchronous resolution has a 500ms timeout
+   - Use async resolution when possible
+   - Ensure dependencies can be resolved quickly
 
 ## Contributing
 
