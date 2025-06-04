@@ -1,3 +1,9 @@
+## 2.38.1 (2025-06-04)
+
+### Refactor
+
+- **UIColor**: add 'primer' prefix to gray color (#1182)
+
 ## 2.38.0 (2025-05-30)
 
 ### Feat
