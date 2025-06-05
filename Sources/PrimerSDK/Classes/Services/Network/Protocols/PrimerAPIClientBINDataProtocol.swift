@@ -12,5 +12,11 @@ protocol PrimerAPIClientBINDataProtocol {
     func listCardNetworks(
         clientToken: DecodedJWTToken,
         bin: String,
-        completion: @escaping (_ result: Result<Response.Body.Bin.Networks, Error>) -> Void) -> PrimerCancellable?
+        completion: @escaping (_ result: Result<Response.Body.Bin.Networks, Error>) -> Void
+    ) -> PrimerCancellable?
+
+    func listCardNetworks(
+        clientToken: DecodedJWTToken,
+        bin: String
+    ) async throws -> Response.Body.Bin.Networks
 }

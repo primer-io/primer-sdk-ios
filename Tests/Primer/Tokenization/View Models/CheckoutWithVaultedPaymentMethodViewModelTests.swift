@@ -121,6 +121,60 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
         ], timeout: 10.0, enforceOrder: true)
     }
 
+    func testStartWithFullCheckoutFlow_async() async throws {
+        SDKSessionHelper.setUp()
+        let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
+        PrimerHeadlessUniversalCheckout.current.delegate = delegate
+
+        let apiClient = MockPrimerAPIClient()
+        PrimerAPIConfigurationModule.apiClient = apiClient
+        apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
+
+        let expectWillCreatePaymentData = expectation(description: "onWillCreatePaymentData is called")
+        delegate.onWillCreatePaymentWithData = { data, decision in
+            XCTAssertEqual(data.paymentMethodType.type, "PAYMENT_CARD")
+            decision(.continuePaymentCreation())
+            expectWillCreatePaymentData.fulfill()
+        }
+
+        let expectCheckoutDidCompletewithData = expectation(description: "")
+        delegate.onDidCompleteCheckoutWithData = { data in
+            XCTAssertEqual(data.payment?.id, "id")
+            XCTAssertEqual(data.payment?.orderId, "order_id")
+            expectCheckoutDidCompletewithData.fulfill()
+        }
+
+        let expectDidExchangeToken = expectation(description: "didExchangeToken called")
+        tokenizationService.onExchangePaymentMethodToken = { tokenId, _ in
+            XCTAssertEqual(tokenId, "mock_payment_method_token_data_id")
+            expectDidExchangeToken.fulfill()
+            return Promise.fulfilled(self.tokenizationResponseBody)
+        }
+
+        let expectDidCreatePayment = expectation(description: "didCreatePayment called")
+        createResumePaymentService.onCreatePayment = { _ in
+            expectDidCreatePayment.fulfill()
+            return self.paymentResponseBody
+        }
+
+        delegate.onDidFail = { error in
+            print(error)
+        }
+
+        do {
+            try await sut.start()
+        } catch {
+            XCTFail("Expected start to succeed, but it failed with error: \(error)")
+        }
+
+        await fulfillment(of: [
+            expectWillCreatePaymentData,
+            expectDidExchangeToken,
+            expectDidCreatePayment,
+            expectCheckoutDidCompletewithData
+        ], timeout: 10.0, enforceOrder: true)
+    }
+
     // MARK: Helpers
 
     var tokenizationResponseBody: Response.Body.Tokenization {

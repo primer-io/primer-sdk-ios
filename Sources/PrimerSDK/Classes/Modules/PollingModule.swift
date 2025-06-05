@@ -17,6 +17,7 @@ protocol Module {
     init(url: URL)
 
     func start() -> Promise<T>
+    func start() async throws -> T
     func cancel(withError err: PrimerError)
 }
 
@@ -45,6 +46,10 @@ final class PollingModule: Module {
                 }
             }
         }
+    }
+
+    func start() async throws -> String {
+        try await start().async()
     }
 
     func cancel(withError err: PrimerError) {
