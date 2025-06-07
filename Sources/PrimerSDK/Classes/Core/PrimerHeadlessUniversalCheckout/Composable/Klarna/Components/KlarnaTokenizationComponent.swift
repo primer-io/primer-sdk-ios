@@ -313,14 +313,12 @@ private extension KlarnaTokenizationComponent {
         with body: Request.Body.Klarna.CreatePaymentSession,
         decodedJWTToken: DecodedJWTToken
     ) async throws -> Response.Body.Klarna.PaymentSession {
-
         let response = try await apiClient.createKlarnaPaymentSession(
             clientToken: decodedJWTToken,
             klarnaCreatePaymentSessionAPIRequest: body
         )
         paymentSessionId = response.sessionId
         return response
-
     }
 }
 

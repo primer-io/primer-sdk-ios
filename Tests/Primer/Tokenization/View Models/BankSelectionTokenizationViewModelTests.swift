@@ -53,7 +53,6 @@ final class BankSelectionTokenizationViewModelTests: XCTestCase {
         let mockViewController = MockPrimerRootViewController()
         uiManager.onPrepareViewController = {
             self.uiManager.primerRootViewController = mockViewController
-            return Promise.fulfilled(())
         }
 
         _ = uiManager.prepareRootViewController()
@@ -107,7 +106,6 @@ final class BankSelectionTokenizationViewModelTests: XCTestCase {
         let mockViewController = MockPrimerRootViewController()
         uiManager.onPrepareViewController = {
             self.uiManager.primerRootViewController = mockViewController
-            return Promise.fulfilled(())
         }
 
         let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
