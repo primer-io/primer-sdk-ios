@@ -552,6 +552,27 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
+    func listAdyenBanks(
+        clientToken: DecodedJWTToken,
+        request: Request.Body.Adyen.BanksList
+    ) async throws -> PrimerSDK.BanksListSessionResponse {
+        guard let result = listAdyenBanksResult else {
+            XCTAssert(false, "Set 'listAdyenBanksResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        if let errorResult = result.1 {
+            throw errorResult
+        } else if let successResult = result.0 {
+            return successResult
+        } else {
+            XCTAssert(false, "Set 'listAdyenBanksResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+    }
+
     func listRetailOutlets(
         clientToken _: PrimerSDK.DecodedJWTToken,
         paymentMethodId _: String,

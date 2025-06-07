@@ -15,6 +15,7 @@ protocol PrimerUIManaging {
     var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol? { get }
 
     func prepareRootViewController() -> Promise<Void>
+    func prepareRootViewController() async throws
     func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType,
                                    paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
                                    withMessage message: String?)
@@ -152,6 +153,29 @@ final class PrimerUIManager: PrimerUIManaging {
 
                 seal.fulfill()
             }
+        }
+    }
+
+    @MainActor
+    func prepareRootViewController() async throws {
+        if PrimerUIManager.primerRootViewController == nil {
+            self.primerRootViewController = PrimerRootViewController()
+        }
+
+        if PrimerUIManager.primerWindow == nil {
+            if let windowScene = UIApplication.shared.connectedScenes
+                .filter({ $0.activationState == .foregroundActive })
+                .first as? UIWindowScene {
+                self.primerWindow = UIWindow(windowScene: windowScene)
+            } else {
+                // Not opted-in in UISceneDelegate
+                self.primerWindow = UIWindow(frame: UIScreen.main.bounds)
+            }
+
+            self.primerWindow!.rootViewController = self.primerRootViewController
+            self.primerWindow!.backgroundColor = UIColor.clear
+            self.primerWindow!.windowLevel = UIWindow.Level.normal
+            self.primerWindow!.makeKeyAndVisible()
         }
     }
 
