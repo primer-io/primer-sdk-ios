@@ -72,6 +72,7 @@ internal protocol DownloaderModule {
     func download(files: [File]) async throws -> [File]
 }
 
+// MARK: MISSING_TESTS
 final class Downloader: NSObject, DownloaderModule {
     private var documentDirectoryUrl: URL? {
         return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first

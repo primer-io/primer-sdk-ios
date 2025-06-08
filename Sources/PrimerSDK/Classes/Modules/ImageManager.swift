@@ -9,6 +9,7 @@
 
 import UIKit
 
+// MARK: MISSING_TESTS
 final class ImageFile: File {
     static func getPaymentMethodType(fromFileName fileName: String) -> String? {
         var tmpFileName = fileName.replacingOccurrences(of: "-logo", with: "")

@@ -38,7 +38,7 @@ class MockBanksAPIClient: PrimerAPIClientBanksProtocol {
         }
     }
 }
-
+// MARK: MISSING_TESTS
 final class BanksTokenizationComponentTests: XCTestCase {
     var apiClient: MockBanksAPIClient!
 
