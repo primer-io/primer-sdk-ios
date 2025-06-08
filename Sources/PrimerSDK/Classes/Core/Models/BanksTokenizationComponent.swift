@@ -176,9 +176,9 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
                    PrimerInternal.shared.sdkIntegrationType == .dropIn,
                    PrimerInternal.shared.selectedPaymentMethodType == nil,
                    self.config.implementationType == .webRedirect ||
-                   self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
-                   self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-                   self.config.type == PrimerPaymentMethodType.payPal.rawValue {
+                    self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
+                    self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
+                    self.config.type == PrimerPaymentMethodType.payPal.rawValue {
                     firstly {
                         clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                     }
@@ -292,9 +292,6 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         }
     }
 
-    // MARK: REVIEW_CHECK
-
-    // Async/Await - Double check the catch flow since it's not returning anything when cancelledError != nil
     func startPaymentFlow(
         withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) async throws -> PrimerCheckoutData? {
@@ -342,6 +339,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             }
 
         } catch {
+            // MARK: REVIEW_CHECK - Check the catch flow since it's not returning anything when cancelledError != nil
             if cancelledError == nil {
                 throw error
             }

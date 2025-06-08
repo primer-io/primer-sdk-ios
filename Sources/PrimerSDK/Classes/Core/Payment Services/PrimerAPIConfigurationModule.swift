@@ -33,11 +33,11 @@ internal protocol PrimerAPIConfigurationModuleProtocol {
 
 // swiftlint:disable type_body_length
 final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, LogReporter {
-
     static var apiClient: PrimerAPIClientProtocol?
 
     private static let queue = DispatchQueue(label: "com.primer.configurationQueue")
     private static var pendingPromises: [String: Promise<PrimerAPIConfiguration>] = [:]
+    private static var pendingTasks: [String: Task<PrimerAPIConfiguration, Error>] = [:]
 
     static var clientToken: JWTToken? {
         get {
@@ -106,7 +106,8 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
             .then { () -> Promise<PrimerAPIConfiguration> in
                 return self.fetchConfigurationAndVaultedPaymentMethodsIfNeeded(
                     requestDisplayMetadata: requestDisplayMetadata,
-                    requestVaultedPaymentMethods: requestVaultedPaymentMethods)
+                    requestVaultedPaymentMethods: requestVaultedPaymentMethods
+                )
             }
             .done { apiConfiguration in
                 PrimerAPIConfigurationModule.clientToken = clientToken
@@ -128,12 +129,23 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         requestClientTokenValidation: Bool = true,
         requestVaultedPaymentMethods: Bool = false
     ) async throws {
-        try await setupSession(
-            forClientToken: clientToken,
-            requestDisplayMetadata: requestDisplayMetadata,
-            requestClientTokenValidation: requestClientTokenValidation,
-            requestVaultedPaymentMethods: requestVaultedPaymentMethods
-        ).async()
+        do {
+            try await validateClientToken(
+                clientToken,
+                requestRemoteClientTokenValidation: requestClientTokenValidation
+            )
+            let apiConfiguration = try await fetchConfigurationAndVaultedPaymentMethodsIfNeeded(
+                requestDisplayMetadata: requestDisplayMetadata,
+                requestVaultedPaymentMethods: requestVaultedPaymentMethods
+            )
+            PrimerAPIConfigurationModule.clientToken = clientToken
+            PrimerAPIConfigurationModule.apiConfiguration = apiConfiguration
+            reportAllowedCardNetworks()
+        } catch {
+            PrimerAPIConfigurationModule.clientToken = nil
+            PrimerAPIConfigurationModule.apiConfiguration = nil
+            throw error
+        }
     }
 
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
@@ -168,7 +180,30 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
     }
 
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) async throws {
-        try await updateSession(withActions: actionsRequest).async()
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
+              let cacheKey = Self.cacheKey
+        else {
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
+        let (configuration, responseHeaders) = try await apiClient.requestPrimerConfigurationWithActions(
+            clientToken: decodedJWTToken,
+            request: actionsRequest
+        )
+
+        do {
+            _ = try await ImageFileProcessor().process(configuration: configuration)
+        } catch {
+            // MARK: REVIEW_CHECK - Ignore image processing errors
+        }
+        PrimerAPIConfigurationModule.apiConfiguration?.clientSession = configuration.clientSession
+        PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules = configuration.checkoutModules
+        let cachedData = ConfigurationCachedData(config: configuration, headers: responseHeaders)
+        ConfigurationCache.shared.setData(cachedData, forKey: cacheKey)
     }
 
     func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void> {
@@ -189,7 +224,14 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
     }
 
     func storeRequiredActionClientToken(_ newClientToken: String) async throws {
-        try await storeRequiredActionClientToken(newClientToken).async()
+        do {
+            try await validateClientToken(newClientToken, requestRemoteClientTokenValidation: true)
+            PrimerAPIConfigurationModule.clientToken = newClientToken
+        } catch {
+            PrimerAPIConfigurationModule.clientToken = nil
+            PrimerAPIConfigurationModule.apiConfiguration = nil
+            throw error
+        }
     }
 
     // MARK: - HELPERS
@@ -227,10 +269,14 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         _ clientToken: String,
         requestRemoteClientTokenValidation: Bool
     ) async throws {
-        try await validateClientToken(
-            clientToken,
-            requestRemoteClientTokenValidation: requestRemoteClientTokenValidation
-        ).async()
+        _ = try validateClientTokenInternally(clientToken)
+
+        let isAutoPaymentHandling = PrimerSettings.current.paymentHandling == .auto
+        if !requestRemoteClientTokenValidation || isAutoPaymentHandling {
+            AppState.current.clientToken = clientToken
+        } else {
+            try await validateClientTokenRemotely(clientToken)
+        }
     }
 
     private func validateClientTokenInternally(_ tokenToValidate: JWTToken) throws -> JWTToken {
@@ -306,6 +352,13 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         }
     }
 
+    private func validateClientTokenRemotely(_ clientToken: JWTToken) async throws {
+        let clientTokenRequest = Request.Body.ClientTokenValidation(clientToken: clientToken)
+
+        let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
+        _ = try await apiClient.validateClientToken(request: clientTokenRequest)
+    }
+
     // swiftlint:disable:next function_body_length
     private func fetchConfiguration(requestDisplayMetadata: Bool) -> Promise<PrimerAPIConfiguration> {
         let start = Date().millisecondsSince1970
@@ -325,7 +378,8 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
                     let event = Analytics.Event.message(
                         message: "Configuration cache hit with key: \(cacheKey)",
                         messageType: .info,
-                        severity: .info)
+                        severity: .info
+                    )
                     Analytics.Service.record(event: event)
                     logger.debug(message: "Cached config used")
                     self.recordLoadedEvent(start, source: .cache)
@@ -345,7 +399,8 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
                 let promise = Promise<PrimerAPIConfiguration> { innerSeal in
                     let requestParameters = Request.URLParameters.Configuration(
                         skipPaymentMethodTypes: [],
-                        requestDisplayMetadata: requestDisplayMetadata)
+                        requestDisplayMetadata: requestDisplayMetadata
+                    )
 
                     let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
                     apiClient.fetchConfiguration(clientToken: clientToken, requestParameters: requestParameters) { result, responseHeaders in
@@ -377,6 +432,90 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
                 promise.ensure {
                     PrimerAPIConfigurationModule.queue.async {
                         PrimerAPIConfigurationModule.pendingPromises.removeValue(forKey: cacheKey as String)
+                    }
+                }
+            }
+        }
+    }
+
+    private func fetchConfiguration(requestDisplayMetadata: Bool) async throws -> PrimerAPIConfiguration {
+        let start = Date().millisecondsSince1970
+
+        guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken,
+              let cacheKey = Self.cacheKey
+        else {
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        return try await withCheckedThrowingContinuation { continuation in
+            PrimerAPIConfigurationModule.queue.sync {
+                if cachingEnabled, let cachedConfig = ConfigurationCache.shared.data(forKey: cacheKey) {
+                    let event = Analytics.Event.message(
+                        message: "Configuration cache hit with key: \(cacheKey)",
+                        messageType: .info,
+                        severity: .info
+                    )
+                    Analytics.Service.record(event: event)
+                    logger.debug(message: "Cached config used")
+                    self.recordLoadedEvent(start, source: .cache)
+                    continuation.resume(returning: cachedConfig.config)
+                    return
+                }
+
+                if let pendingTask = PrimerAPIConfigurationModule.pendingTasks[cacheKey as String] {
+                    Task {
+                        do {
+                            let config = try await pendingTask.value
+                            continuation.resume(returning: config)
+                        } catch {
+                            continuation.resume(throwing: error)
+                        }
+                    }
+                    return
+                }
+
+                let task = Task<PrimerAPIConfiguration, Error> {
+                    let requestParameters = Request.URLParameters.Configuration(
+                        skipPaymentMethodTypes: [],
+                        requestDisplayMetadata: requestDisplayMetadata
+                    )
+
+                    let apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient()
+                    let (config, responseHeaders) = try await apiClient.fetchConfiguration(
+                        clientToken: clientToken,
+                        requestParameters: requestParameters
+                    )
+                    do {
+                        try await ImageFileProcessor().process(configuration: config)
+                    } catch {
+                        // MARK: REVIEW_CHECK - Ignore image processing errors
+                    }
+
+                    // Cache the result
+                    if self.cachingEnabled {
+                        let cachedData = ConfigurationCachedData(config: config, headers: responseHeaders)
+                        ConfigurationCache.shared.setData(cachedData, forKey: cacheKey)
+                    }
+
+                    self.recordLoadedEvent(start, source: .network)
+                    return config
+                }
+
+                PrimerAPIConfigurationModule.pendingTasks[cacheKey as String] = task
+
+                Task {
+                    do {
+                        let config = try await task.value
+                        continuation.resume(returning: config)
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
+
+                    PrimerAPIConfigurationModule.queue.async {
+                        PrimerAPIConfigurationModule.pendingTasks.removeValue(forKey: cacheKey as String)
                     }
                 }
             }
@@ -415,12 +554,27 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         }
     }
 
+    private func fetchConfigurationAndVaultedPaymentMethodsIfNeeded(
+        requestDisplayMetadata: Bool,
+        requestVaultedPaymentMethods: Bool
+    ) async throws -> PrimerAPIConfiguration {
+        if requestVaultedPaymentMethods {
+            let vaultService: VaultServiceProtocol = VaultService(apiClient: PrimerAPIClient())
+            try await vaultService.fetchVaultedPaymentMethods()
+            let apiConfiguration = try await fetchConfiguration(requestDisplayMetadata: true)
+            return apiConfiguration
+        } else {
+            return try await fetchConfiguration(requestDisplayMetadata: requestDisplayMetadata)
+        }
+    }
+
     private func reportAllowedCardNetworks() {
         let networksDescription = [CardNetwork].allowedCardNetworks.map { $0.rawValue }.joined(separator: ", ")
         let event = Analytics.Event.message(
             message: "Merchant supported networks: \(networksDescription)",
             messageType: .other,
-            severity: .info)
+            severity: .info
+        )
         Analytics.Service.record(event: event)
     }
 
