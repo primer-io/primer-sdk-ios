@@ -49,7 +49,17 @@ final class PollingModule: Module {
     }
 
     func start() async throws -> String {
-        try await start().async()
+        return try await withCheckedThrowingContinuation { continuation in
+            self.startPolling { id, err in
+                if let err = err {
+                    continuation.resume(throwing: err)
+                } else if let id = id {
+                    continuation.resume(returning: id)
+                } else {
+                    precondition(false, "Should always return an id or an error")
+                }
+            }
+        }
     }
 
     func cancel(withError err: PrimerError) {

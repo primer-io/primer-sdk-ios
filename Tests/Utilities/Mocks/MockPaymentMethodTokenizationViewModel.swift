@@ -211,7 +211,9 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
         try await tokenize().async()
     }
 
-    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
+    func startPaymentFlow(
+        withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) -> Promise<PrimerCheckoutData?> {
         return self.handleResumeStepsBasedOnSDKSettings(resumeToken: "mock_resume_token")
     }
 

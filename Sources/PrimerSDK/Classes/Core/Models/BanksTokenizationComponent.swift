@@ -38,6 +38,9 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     var didStartPayment: (() -> Void)?
     var paymentCheckoutData: PrimerCheckoutData?
     var didCancel: (() -> Void)?
+    var startPaymentFlowTask: Task<PrimerCheckoutData?, Error>?
+    var startTokenizationFlowTask: Task<PrimerPaymentMethodTokenData?, Error>?
+    var awaitUserInputTask: Task<String, Error>?
     var isCancelled: Bool = false
     var successMessage: String?
     var resumePaymentId: String?
@@ -64,7 +67,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         self.tokenizationService = tokenizationService
         self.createResumePaymentService = createResumePaymentService
         self.apiClient = apiClient
-        paymentMethodType = config.internalPaymentMethodType!
+        self.paymentMethodType = config.internalPaymentMethodType!
     }
 
     func validate() throws {
@@ -215,7 +218,9 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
         }
     }
 
-    func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
+    func startPaymentFlow(
+        withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) -> Promise<PrimerCheckoutData?> {
         return Promise { seal in
             var cancelledError: PrimerError?
             self.didCancel = {
@@ -229,37 +234,37 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
             }
 
             firstly { () -> Promise<DecodedJWTToken?> in
-                if let cancelledError = cancelledError {
+                if let cancelledError {
                     throw cancelledError
                 }
                 return self.startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
             }
             .done { decodedJWTToken in
-                if let cancelledError = cancelledError {
+                if let cancelledError {
                     throw cancelledError
                 }
 
                 if let decodedJWTToken = decodedJWTToken {
                     firstly { () -> Promise<String?> in
-                        if let cancelledError = cancelledError {
+                        if let cancelledError {
                             throw cancelledError
                         }
                         return self.handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
                     }
                     .done { resumeToken in
-                        if let cancelledError = cancelledError {
+                        if let cancelledError {
                             throw cancelledError
                         }
 
                         if let resumeToken = resumeToken {
                             firstly { () -> Promise<PrimerCheckoutData?> in
-                                if let cancelledError = cancelledError {
+                                if let cancelledError {
                                     throw cancelledError
                                 }
                                 return self.handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
                             }
                             .done { checkoutData in
-                                if let cancelledError = cancelledError {
+                                if let cancelledError {
                                     throw cancelledError
                                 }
                                 seal.fulfill(checkoutData)
@@ -295,59 +300,40 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     func startPaymentFlow(
         withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) async throws -> PrimerCheckoutData? {
-        var cancelledError: PrimerError?
-        didCancel = {
-            self.isCancelled = true
-            cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type,
-                                                   userInfo: .errorUserInfoDictionary(),
-                                                   diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: cancelledError!)
-            self.isCancelled = false
-        }
+        startPaymentFlowTask = Task {
+            do {
+                try Task.checkCancellation()
 
-        do {
-            if let cancelledError = cancelledError {
-                throw cancelledError
-            }
+                let decodedJWTToken = try await startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
+                try Task.checkCancellation()
 
-            let decodedJWTToken = try await startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
-            if let cancelledError = cancelledError {
-                throw cancelledError
-            }
+                if let decodedJWTToken {
+                    let resumeToken = try await handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
+                    try Task.checkCancellation()
 
-            if let decodedJWTToken = decodedJWTToken {
-                let resumeToken = try await handleDecodedClientTokenIfNeeded(decodedJWTToken, paymentMethodTokenData: paymentMethodTokenData)
-                if let cancelledError = cancelledError {
-                    throw cancelledError
-                }
+                    if let resumeToken {
+                        let checkoutData = try await handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
+                        try Task.checkCancellation()
 
-                if let resumeToken = resumeToken {
-                    let checkoutData = try await handleResumeStepsBasedOnSDKSettings(resumeToken: resumeToken)
-
-                    if let cancelledError = cancelledError {
-                        throw cancelledError
+                        return checkoutData
                     }
-
-                    return checkoutData
-                } else if let checkoutData = paymentCheckoutData {
-                    return checkoutData
-                } else {
-                    return nil
                 }
-            } else {
-                return paymentCheckoutData
-            }
 
-        } catch {
-            // MARK: REVIEW_CHECK - Check the catch flow since it's not returning anything when cancelledError != nil
-            if cancelledError == nil {
+                return self.paymentCheckoutData
+            } catch is CancellationError {
+                let cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type,
+                                                           userInfo: .errorUserInfoDictionary(),
+                                                           diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: cancelledError)
+                throw cancelledError
+            } catch {
                 throw error
             }
         }
-
-        // MARK: REVIEW_CHECK: It should return nil?
-
-        return nil
+        
+        let checkoutData = try await startPaymentFlowTask?.value
+        startPaymentFlowTask = nil
+        return checkoutData
     }
 
     // This function will do one of the two following:
@@ -1277,6 +1263,9 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
         case Notification.Name.receivedUrlSchemeCancellation.rawValue:
             webViewController?.dismiss(animated: true)
             didCancel?()
+            startPaymentFlowTask?.cancel()
+            startTokenizationFlowTask?.cancel()
+            awaitUserInputTask?.cancel()
             uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
 
         default: break
@@ -1512,31 +1501,31 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
             }
 
             firstly { () -> Promise<Void> in
-                if let cancelledError = cancelledError {
+                if let cancelledError {
                     throw cancelledError
                 }
                 return self.performPreTokenizationSteps()
             }
             .then { () -> Promise<Void> in
-                if let cancelledError = cancelledError {
+                if let cancelledError {
                     throw cancelledError
                 }
                 return self.performTokenizationStep()
             }
             .then { () -> Promise<Void> in
-                if let cancelledError = cancelledError {
+                if let cancelledError {
                     throw cancelledError
                 }
                 return self.performPostTokenizationSteps()
             }
             .done {
-                if let cancelledError = cancelledError {
+                if let cancelledError {
                     throw cancelledError
                 }
                 seal.fulfill(self.paymentMethodTokenData!)
             }
             .catch { err in
-                if cancelledError == nil {
+                if cancelledError == nil { 
                     seal.reject(err)
                 }
             }
@@ -1544,43 +1533,44 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
     }
 
     func startTokenizationFlow() async throws -> PrimerPaymentMethodTokenData {
-        return try await withCheckedThrowingContinuation { continuation in
-            var cancelledError: PrimerError?
-            self.didCancel = {
-                self.isCancelled = true
-                cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type,
-                                                       userInfo: .errorUserInfoDictionary(),
-                                                       diagnosticsId: UUID().uuidString)
-                ErrorHandler.handle(error: cancelledError!)
-                continuation.resume(throwing: cancelledError!)
-                self.isCancelled = false
-            }
+        startTokenizationFlowTask = Task {
+            do {
+                try Task.checkCancellation()
 
-            Task {
-                do {
-                    if let cancelledError = cancelledError {
-                        throw cancelledError
-                    }
-                    try await self.performPreTokenizationSteps()
-                    if let cancelledError = cancelledError {
-                        throw cancelledError
-                    }
-                    try await self.performTokenizationStep()
-                    if let cancelledError = cancelledError {
-                        throw cancelledError
-                    }
-                    try await self.performPostTokenizationSteps()
-                    if let cancelledError = cancelledError {
-                        throw cancelledError
-                    }
-                    continuation.resume(returning: self.paymentMethodTokenData!)
-                } catch {
-                    if cancelledError == nil {
-                        continuation.resume(throwing: error)
-                    }
-                }
+                try await self.performPreTokenizationSteps()
+                try Task.checkCancellation()
+
+                try await self.performTokenizationStep()
+                try Task.checkCancellation()
+
+                try await self.performPostTokenizationSteps()
+                try Task.checkCancellation()
+
+                return self.paymentMethodTokenData
+            } catch is CancellationError {
+                let cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type,
+                                                           userInfo: .errorUserInfoDictionary(),
+                                                           diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: cancelledError)
+                throw cancelledError
+            } catch {
+                throw error
             }
         }
+
+        let paymentMethodTokenData = try await startTokenizationFlowTask?.value
+        startTokenizationFlowTask = nil
+
+        guard let paymentMethodTokenData else {
+            throw PrimerError.invalidValue(
+                key: "paymentMethodTokenData",
+                value: "Payment method token data is not valid",
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+        }
+
+        return paymentMethodTokenData
     }
 
     func awaitUserInput() -> Promise<Void> {
@@ -1621,29 +1611,28 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
 
     func awaitUserInput() async throws {
         let pollingModule = PollingModule(url: statusUrl)
-        didCancel = {
-            let err = PrimerError.cancelled(
-                paymentMethodType: self.config.type,
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            )
-            ErrorHandler.handle(error: err)
-            pollingModule.cancel(withError: err)
-            self.didDismissPaymentMethodUI?()
+        awaitUserInputTask = Task {
+            do {
+                try Task.checkCancellation()
+
+                let resumeToken = try await pollingModule.start()
+                try Task.checkCancellation()
+
+                return resumeToken
+            } catch is CancellationError {
+                let cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type,
+                                                           userInfo: .errorUserInfoDictionary(),
+                                                           diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: cancelledError)
+                throw cancelledError
+            } catch {
+                throw error
+            }
         }
 
-        defer {
-            self.didCancel = nil
-        }
-
-        if isCancelled {
-            let err = PrimerError.cancelled(paymentMethodType: config.type,
-                                            userInfo: .errorUserInfoDictionary(),
-                                            diagnosticsId: UUID().uuidString)
-            throw err
-        }
-        let resumeToken = try await pollingModule.start()
+        let resumeToken = try await awaitUserInputTask?.value
         self.resumeToken = resumeToken
+        awaitUserInputTask = nil
     }
 }
 
