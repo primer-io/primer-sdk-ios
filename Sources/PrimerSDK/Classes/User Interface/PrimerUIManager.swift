@@ -22,16 +22,18 @@ protocol PrimerUIManaging {
 }
 
 // MARK: MISSING_TESTS
-final class PrimerUIManager: PrimerUIManaging {
 
+final class PrimerUIManager: PrimerUIManaging {
     static let shared: PrimerUIManager = .init()
 
     static var primerWindow: UIWindow? {
         shared.primerWindow
     }
+
     static var primerRootViewController: PrimerRootViewController? {
         shared.primerRootViewController
     }
+
     static var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol? {
         shared.apiConfigurationModule
     }
@@ -53,7 +55,8 @@ final class PrimerUIManager: PrimerUIManaging {
                     forClientToken: clientToken,
                     requestDisplayMetadata: true,
                     requestClientTokenValidation: false,
-                    requestVaultedPaymentMethods: !isHeadlessCheckoutDelegateImplemented)
+                    requestVaultedPaymentMethods: !isHeadlessCheckoutDelegateImplemented
+                )
             }
             .then { () -> Promise<Void> in
                 return PrimerUIManager.validatePaymentUIPresentation()
@@ -87,7 +90,7 @@ final class PrimerUIManager: PrimerUIManaging {
     }
 
     func presentPaymentMethod(type: String) {
-        let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first
+        let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter { $0.config.type == type }.first
 
         guard let paymentMethodTokenizationViewModel else {
             let error = PrimerError.unableToPresentPaymentMethod(
@@ -95,7 +98,8 @@ final class PrimerUIManager: PrimerUIManaging {
                 userInfo: .errorUserInfoDictionary(
                     additionalInfo: ["message": "paymentMethodTokenizationViewModel was not present when calling presentPaymentMethod"]
                 ),
-                diagnosticsId: UUID().uuidString)
+                diagnosticsId: UUID().uuidString
+            )
             ErrorHandler.handle(error: error)
             return
         }
@@ -160,23 +164,23 @@ final class PrimerUIManager: PrimerUIManaging {
     @MainActor
     func prepareRootViewController() async throws {
         if PrimerUIManager.primerRootViewController == nil {
-            self.primerRootViewController = PrimerRootViewController()
+            primerRootViewController = PrimerRootViewController()
         }
 
         if PrimerUIManager.primerWindow == nil {
             if let windowScene = UIApplication.shared.connectedScenes
                 .filter({ $0.activationState == .foregroundActive })
                 .first as? UIWindowScene {
-                self.primerWindow = UIWindow(windowScene: windowScene)
+                primerWindow = UIWindow(windowScene: windowScene)
             } else {
                 // Not opted-in in UISceneDelegate
-                self.primerWindow = UIWindow(frame: UIScreen.main.bounds)
+                primerWindow = UIWindow(frame: UIScreen.main.bounds)
             }
 
-            self.primerWindow!.rootViewController = self.primerRootViewController
-            self.primerWindow!.backgroundColor = UIColor.clear
-            self.primerWindow!.windowLevel = UIWindow.Level.normal
-            self.primerWindow!.makeKeyAndVisible()
+            primerWindow!.rootViewController = primerRootViewController
+            primerWindow!.backgroundColor = UIColor.clear
+            primerWindow!.windowLevel = UIWindow.Level.normal
+            primerWindow!.makeKeyAndVisible()
         }
     }
 
@@ -187,7 +191,8 @@ final class PrimerUIManager: PrimerUIManaging {
                     let err = PrimerError.unableToPresentPaymentMethod(
                         paymentMethodType: paymentMethodType,
                         userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
+                        diagnosticsId: UUID().uuidString
+                    )
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -197,7 +202,8 @@ final class PrimerUIManager: PrimerUIManaging {
                     let err = PrimerError.unableToPresentPaymentMethod(
                         paymentMethodType: paymentMethodType,
                         userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
+                        diagnosticsId: UUID().uuidString
+                    )
                     ErrorHandler.handle(error: err)
                     seal.reject(err)
                     return
@@ -207,7 +213,8 @@ final class PrimerUIManager: PrimerUIManaging {
                     let err = PrimerError.unsupportedIntent(
                         intent: .checkout,
                         userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
+                        diagnosticsId: UUID().uuidString
+                    )
                     seal.reject(err)
                     return
 
@@ -215,7 +222,8 @@ final class PrimerUIManager: PrimerUIManaging {
                     let err = PrimerError.unsupportedIntent(
                         intent: .vault,
                         userInfo: .errorUserInfoDictionary(),
-                        diagnosticsId: UUID().uuidString)
+                        diagnosticsId: UUID().uuidString
+                    )
                     seal.reject(err)
                     return
                 }
@@ -230,7 +238,6 @@ final class PrimerUIManager: PrimerUIManaging {
                                                    diagnosticsId: UUID().uuidString)
                 seal.reject(err)
                 return
-
             }
 
             seal.fulfill()
@@ -325,7 +332,6 @@ final class PrimerUIManager: PrimerUIManaging {
 
 // Legacy static support
 extension PrimerUIManager {
-
     static func preparePresentation(clientToken: String) -> Promise<Void> {
         shared.preparePresentation(clientToken: clientToken)
     }
@@ -340,6 +346,11 @@ extension PrimerUIManager {
 
     static func prepareRootViewController() -> Promise<Void> {
         shared.prepareRootViewController()
+    }
+
+    @MainActor
+    static func prepareRootViewController() async throws {
+        try await shared.prepareRootViewController()
     }
 
     static func validatePaymentUIPresentation() -> Promise<Void> {
@@ -373,9 +384,10 @@ extension PrimerUIManager {
         shared.showResultScreen(for: paymentMethodType, error: error)
     }
 
-    static fileprivate func showResultScreenForResultType(type: PrimerResultViewController.ScreenType,
+    fileprivate static func showResultScreenForResultType(type: PrimerResultViewController.ScreenType,
                                                           message: String? = nil) {
         shared.showResultScreenForResultType(type: type, message: message)
     }
 }
+
 // swiftlint:enable function_body_length
