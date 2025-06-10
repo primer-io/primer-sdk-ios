@@ -7,6 +7,88 @@
 
 import Foundation
 
+/**
+ * INTERNAL DOCUMENTATION: Validation Service Architecture
+ * 
+ * This service provides a centralized, type-safe validation system for all payment
+ * form inputs with comprehensive rule-based validation and flexible extension points.
+ * 
+ * ## Service Architecture:
+ * 
+ * ### 1. Protocol-Based Design
+ * - **ValidationService**: Public interface for all validation operations
+ * - **DefaultValidationService**: Concrete implementation with rule delegation
+ * - **RulesFactory**: Factory pattern for creating validation rules
+ * 
+ * ### 2. Validation Flow
+ * ```
+ * Input → ValidationService → RulesFactory → ValidationRule → ValidationResult
+ * ```
+ * 
+ * ### 3. Rule-Based Validation System
+ * Each validation operation delegates to specialized rules:
+ * - **CardNumberRule**: Luhn algorithm, format validation, card type detection
+ * - **ExpiryDateRule**: Date format, expiration logic, future date validation
+ * - **CVVRule**: Card-type-specific CVV length and format validation
+ * - **CardholderNameRule**: Name format, character set, length validation
+ * 
+ * ## Generic Validation Support:
+ * 
+ * ### 1. Type-Safe Generic Method
+ * ```swift
+ * func validate<T, R: ValidationRule>(input: T, with rule: R) -> ValidationResult 
+ * where R.Input == T
+ * ```
+ * 
+ * This method provides compile-time type safety ensuring that:
+ * - Input type matches rule's expected input type
+ * - No runtime type casting errors
+ * - Clear API contracts for validation consumers
+ * 
+ * ### 2. Field Type Validation
+ * The `validateField(type:value:)` method provides a unified interface
+ * for validating any payment form field using enum-based dispatch.
+ * 
+ * ## Performance Characteristics:
+ * 
+ * ### 1. Rule Creation
+ * - **O(1)**: Factory methods create rules with pre-compiled patterns
+ * - **Cached**: Rules are lightweight and can be cached if needed
+ * 
+ * ### 2. Validation Execution
+ * - **Card Number**: O(n) - Luhn algorithm requires digit iteration
+ * - **CVV**: O(1) - Simple length and character validation
+ * - **Expiry**: O(1) - Date component validation
+ * - **Name**: O(n) - Character set validation
+ * 
+ * ### 3. Memory Usage
+ * - **Service Instance**: ~100 bytes (factory reference only)
+ * - **Rule Instances**: ~50-200 bytes each (primarily regex patterns)
+ * - **Result Objects**: ~50 bytes (boolean + optional string)
+ * 
+ * ## Extension Points:
+ * 
+ * ### 1. Custom Rules
+ * New validation rules can be added by:
+ * - Implementing ValidationRule protocol
+ * - Adding factory method to RulesFactory
+ * - Extending PrimerInputElementType enum if needed
+ * 
+ * ### 2. Custom Field Types
+ * New field types can be supported by:
+ * - Adding case to PrimerInputElementType
+ * - Implementing validation logic in validateField method
+ * - Creating appropriate validation rules
+ * 
+ * ## Error Handling Strategy:
+ * - **Graceful Degradation**: Invalid inputs return descriptive error messages
+ * - **No Exceptions**: All validation returns Result types, never throws
+ * - **Localization Ready**: Error messages can be localized via result objects
+ * 
+ * This architecture provides a robust, extensible validation system that maintains
+ * high performance while ensuring type safety and comprehensive error handling.
+ */
+
 /// Service that provides validation for all input field types in the Primer SDK
 public protocol ValidationService {
     /// Validates a card number

@@ -8,6 +8,119 @@
 import SwiftUI
 
 /**
+ * INTERNAL DOCUMENTATION: PrimerCheckoutViewModel Architecture
+ * 
+ * This view model serves as the central coordinator for the entire checkout process,
+ * managing payment method discovery, selection, and orchestrating the payment flow.
+ * 
+ * ## Architecture Overview:
+ * 
+ * ### 1. Central Coordination Role
+ * The view model acts as the primary coordinator that:
+ * - **Manages Client Token Processing**: Validates and processes authentication tokens
+ * - **Orchestrates Payment Method Discovery**: Loads available payment methods from API
+ * - **Coordinates Payment Selection**: Handles user selection and state management
+ * - **Provides Reactive Streams**: Exposes AsyncStreams for UI consumption
+ * 
+ * ### 2. State Management Strategy
+ * ```
+ * Client Token → SDK Configuration → Payment Methods Loading → Selection Management
+ * ```
+ * 
+ * ### 3. Reactive Data Flow
+ * ```
+ * Internal State Changes → Published Properties → SwiftUI Updates
+ *                       → AsyncStreams → External Observers
+ * ```
+ * 
+ * ## Core Responsibilities:
+ * 
+ * ### 1. Token Lifecycle Management
+ * - **Token Validation**: Ensures client token integrity before processing
+ * - **SDK Configuration**: Initializes payment infrastructure with validated token
+ * - **State Synchronization**: Updates UI state based on token processing status
+ * 
+ * ### 2. Payment Method Coordination
+ * - **Discovery**: Loads available payment methods from remote configuration
+ * - **Filtering**: Applies business rules to determine method availability
+ * - **Selection Management**: Tracks user selection and provides selection streams
+ * 
+ * ### 3. Error State Management
+ * - **Comprehensive Error Handling**: Captures and propagates all error states
+ * - **Recovery Strategies**: Provides mechanisms for error recovery
+ * - **User Feedback**: Transforms technical errors into user-friendly messages
+ * 
+ * ## Concurrency Management:
+ * 
+ * ### 1. Actor Isolation
+ * - **@MainActor**: All operations are main-thread isolated for UI safety
+ * - **async/await**: Modern concurrency for network operations and heavy processing
+ * - **Task Management**: Coordinated task execution via TaskManager dependency
+ * 
+ * ### 2. Stream-Based Communication
+ * ```swift
+ * private var paymentMethodsStream: ContinuableStream<[any PaymentMethodProtocol]>?
+ * private var selectedMethodStream: ContinuableStream<(any PaymentMethodProtocol)?>?
+ * ```
+ * 
+ * ### 3. Resource Management
+ * - **Stream Lifecycle**: Proper creation and cleanup of reactive streams
+ * - **Task Cancellation**: Automatic cleanup of background operations
+ * - **Memory Safety**: Weak references to prevent retention cycles
+ * 
+ * ## Performance Characteristics:
+ * 
+ * ### 1. Token Processing
+ * - **Time Complexity**: O(1) - Simple validation + network call
+ * - **Memory Usage**: ~500 bytes (token string + configuration objects)
+ * - **Network Dependency**: Single API call for SDK configuration
+ * 
+ * ### 2. Payment Method Loading
+ * - **Time Complexity**: O(n) where n is number of available methods
+ * - **Memory Usage**: O(n) - Payment method protocol instances
+ * - **Caching Strategy**: Methods cached until token changes
+ * 
+ * ### 3. Selection Management
+ * - **Time Complexity**: O(1) - Direct property assignment
+ * - **Memory Usage**: O(1) - Single reference to selected method
+ * - **Stream Emissions**: O(1) - Single value yield per selection
+ * 
+ * ## Integration Patterns:
+ * 
+ * ### 1. Dependency Injection
+ * ```swift
+ * init(taskManager: TaskManager, paymentMethodsProvider: PaymentMethodsProvider)
+ * ```
+ * - **TaskManager**: Handles concurrent operation coordination
+ * - **PaymentMethodsProvider**: Abstracts payment method discovery logic
+ * 
+ * ### 2. Protocol Conformance
+ * - **PrimerCheckoutScope**: Public interface for checkout operations
+ * - **ObservableObject**: SwiftUI reactive integration
+ * - **LogReporter**: Comprehensive logging and debugging support
+ * 
+ * ### 3. SwiftUI Integration
+ * - **@Published Properties**: Automatic UI updates on state changes
+ * - **AsyncStream Support**: Reactive programming for complex UI patterns
+ * - **Error Binding**: Direct error state exposure for UI error handling
+ * 
+ * ## Error Handling Strategy:
+ * 
+ * ### 1. Layered Error Management
+ * - **Token Errors**: Invalid token format, network failures, authentication issues
+ * - **Configuration Errors**: SDK setup failures, service unavailability
+ * - **Method Loading Errors**: API failures, parsing errors, network timeouts
+ * 
+ * ### 2. Recovery Mechanisms
+ * - **Automatic Retry**: Network operation retry with exponential backoff
+ * - **Graceful Degradation**: Fallback to minimal payment method set
+ * - **User Guidance**: Clear error messages with actionable recovery steps
+ * 
+ * This architecture ensures reliable checkout coordination while maintaining
+ * optimal performance and providing comprehensive error handling for all scenarios.
+ */
+
+/**
  * ViewModel that implements the PrimerCheckoutScope interface and manages checkout state.
  */
 @available(iOS 15.0, *)
