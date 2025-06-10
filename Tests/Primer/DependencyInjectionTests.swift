@@ -19,6 +19,7 @@ enum DummyError: Error, Equatable {
 // MARK: - Dummy DependencyScope
 
 /// Implements DependencyScope for testing scope registration/unregistration
+@available(iOS 15.0, *)
 class DummyScope: DependencyScope {
     let scopeId: String
     init(id: String) { self.scopeId = id }
@@ -51,6 +52,7 @@ struct StringFactory: Factory {
     func create(with params: Void) async throws -> String { "hello" }
 }
 
+@available(iOS 15.0, *)
 final class DIFrameworkTests: XCTestCase {
 
     // MARK: - TypeKey
