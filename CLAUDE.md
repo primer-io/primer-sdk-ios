@@ -49,12 +49,27 @@ bundle exec fastlane test_debug_app
 
 ### Linting
 
+SwiftLint is configured and runs automatically during Xcode builds. Configuration is in `Debug App/.swiftlint.yml`.
+
 ```bash
-# SwiftLint is configured in Debug App/.swiftlint.yml
-# Run from Debug App directory:
+# Run SwiftLint manually from Debug App directory:
+cd "Debug App"
 swiftlint
 # Or use Xcode's build phase which runs SwiftLint automatically
 ```
+
+**SwiftLint Configuration:**
+- **Line Length**: Warning at 150 characters (ignores function declarations, comments, interpolated strings, URLs)
+- **Included**: `../Sources` directory
+- **Excluded**: Third-party code (`../Sources/PrimerSDK/Classes/Third Party/PromiseKit`)
+- **Type Names**: 3-40 characters (excludes generic type "T")
+- **Identifier Names**: 3-40 characters (excludes "i" for loops and "id")
+- **Disabled Rules**: `superfluous_disable_command`, `type_body_length`
+
+**Common Violations to Avoid:**
+- Lines longer than 150 characters - break into multiple lines
+- Force try (`try!`) and force cast (`as!`) - use safe alternatives with guard statements
+- Short identifier names (< 3 characters) except for allowed exceptions
 
 ### Building Debug App
 
