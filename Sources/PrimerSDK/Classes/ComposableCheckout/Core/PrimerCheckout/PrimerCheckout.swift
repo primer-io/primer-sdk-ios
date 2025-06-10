@@ -15,7 +15,7 @@ public struct PrimerCheckout: View {
     private let failureContent: ((ComponentsPrimerError) -> AnyView)?
     private let content: ((PrimerCheckoutScope) -> AnyView)?
 
-    @StateObject private var viewModel = PrimerCheckoutViewModel()
+    @State private var viewModel: PrimerCheckoutViewModel?
     @StateObject private var tokensManager = DesignTokensManager()
     @Environment(\.colorScheme) private var colorScheme
     @State private var diContainer: (any ContainerProtocol)?
@@ -53,44 +53,68 @@ public struct PrimerCheckout: View {
         Task {
             await CompositionRoot.configure()
             diContainer = await DIContainer.current
+            
+            // Resolve viewModel from DI container
+            if let container = diContainer {
+                do {
+                    let resolvedViewModel = try await container.resolve(PrimerCheckoutViewModel.self)
+                    await MainActor.run {
+                        viewModel = resolvedViewModel
+                    }
+                } catch {
+                    await MainActor.run {
+                        // Create fallback viewModel with default dependencies
+                        let taskManager = TaskManager()
+                        let paymentMethodsProvider = DefaultPaymentMethodsProvider(container: container)
+                        viewModel = PrimerCheckoutViewModel(
+                            taskManager: taskManager,
+                            paymentMethodsProvider: paymentMethodsProvider
+                        )
+                    }
+                }
+            }
         }
     }
 
     public var body: some View {
         ZStack {
-            if diContainer == nil {
+            if diContainer == nil || viewModel == nil {
                 ProgressView("Initializing...")
                     .onAppear {
                         setupContainer()
                     }
-            } else if !viewModel.isClientTokenProcessed {
-                ProgressView("Processing client token...")
-                    .onAppear {
-                        Task {
-                            await viewModel.processClientToken(clientToken)
+            } else if let vm = viewModel {
+                if !vm.isClientTokenProcessed {
+                    ProgressView("Processing client token...")
+                        .onAppear {
+                            Task {
+                                await vm.processClientToken(clientToken)
+                            }
                         }
-                    }
-            } else if let error = viewModel.error {
-                failureView(error: error)
-            } else if viewModel.isCheckoutComplete {
-                successView()
-            } else {
-                checkoutContent()
+                } else if let error = vm.error {
+                    failureView(error: error)
+                } else if vm.isCheckoutComplete {
+                    successView()
+                } else {
+                    checkoutContent(viewModel: vm)
+                }
             }
         }
         .environment(\.diContainer, diContainer)
         .environment(\.designTokens, tokensManager.tokens)
         .task {
-            do {
-                try await tokensManager.fetchTokens(for: colorScheme)
-            } catch {
-                viewModel.setError(ComponentsPrimerError.designTokensError(error))
+            if let vm = viewModel {
+                do {
+                    try await tokensManager.fetchTokens(for: colorScheme)
+                } catch {
+                    vm.setError(ComponentsPrimerError.designTokensError(error))
+                }
             }
         }
     }
 
     @ViewBuilder
-    private func checkoutContent() -> some View {
+    private func checkoutContent(viewModel: PrimerCheckoutViewModel) -> some View {
         if let content = content {
             content(viewModel)
         } else {

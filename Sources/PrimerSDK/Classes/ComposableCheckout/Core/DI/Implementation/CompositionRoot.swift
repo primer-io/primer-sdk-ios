@@ -19,7 +19,76 @@ public final class CompositionRoot {
 
         // Set as global container
         await DIContainer.setContainer(container)
+        
+        // Perform health checks in debug builds
+        #if DEBUG
+        await performHealthChecks(container: container)
+        #endif
     }
+    
+    #if DEBUG
+    private static func performHealthChecks(container: Container) async {
+        print("🔍 Performing DI Container Health Checks...")
+        
+        // Get diagnostics
+        let diagnostics = await container.getDiagnostics()
+        print("📊 Container Diagnostics:")
+        print("   - Total Registrations: \(diagnostics.totalRegistrations)")
+        print("   - Singleton Instances: \(diagnostics.singletonInstances)")
+        print("   - Weak References: \(diagnostics.weakReferences)")
+        
+        // Perform health check
+        let healthReport = await container.performHealthCheck()
+        print("🏥 Health Status: \(healthReport.status)")
+        
+        if !healthReport.issues.isEmpty {
+            print("⚠️ Issues Found:")
+            for issue in healthReport.issues {
+                print("   - \(issue)")
+            }
+        }
+        
+        if !healthReport.recommendations.isEmpty {
+            print("💡 Recommendations:")
+            for recommendation in healthReport.recommendations {
+                print("   - \(recommendation)")
+            }
+        }
+        
+        // Test key dependency resolutions
+        await testKeyDependencies(container: container)
+    }
+    
+    private static func testKeyDependencies(container: Container) async {
+        print("🧪 Testing Key Dependency Resolutions...")
+        
+        // Test ValidationService resolution
+        do {
+            _ = try await container.resolve(ValidationService.self)
+            print("✅ ValidationService resolution successful")
+        } catch {
+            print("❌ ValidationService resolution failed: \(error)")
+        }
+        
+        // Test PaymentMethodsProvider resolution
+        do {
+            _ = try await container.resolve(PaymentMethodsProvider.self)
+            print("✅ PaymentMethodsProvider resolution successful")
+        } catch {
+            print("❌ PaymentMethodsProvider resolution failed: \(error)")
+        }
+        
+        // Test CardViewModel resolution
+        do {
+            _ = try await container.resolve(CardViewModel.self)
+            print("✅ CardViewModel resolution successful")
+        } catch {
+            print("❌ CardViewModel resolution failed: \(error)")
+        }
+        
+        print("🎯 Health checks completed!")
+    }
+    #endif
 }
 
 // MARK: - Registration Categories
@@ -35,6 +104,11 @@ extension CompositionRoot {
         _ = try? await container.register(TaskManager.self)
             .asSingleton()
             .with { _ in TaskManager() }
+
+        // DI Error handler
+        _ = try? await container.register(DIErrorHandler.self)
+            .asSingleton()
+            .with { _ in DefaultDIErrorHandler() }
 
     }
 
@@ -114,9 +188,13 @@ extension CompositionRoot {
             .with { resolver in
                 // Resolve dependencies
                 let taskManager = (try? await resolver.resolve(TaskManager.self)) ?? TaskManager()
+                let paymentMethodsProvider = (try? await resolver.resolve(PaymentMethodsProvider.self)) ?? DefaultPaymentMethodsProvider(container: container)
                 
                 return await MainActor.run {
-                    return PrimerCheckoutViewModel(taskManager: taskManager)
+                    return PrimerCheckoutViewModel(
+                        taskManager: taskManager,
+                        paymentMethodsProvider: paymentMethodsProvider
+                    )
                 }
             }
 
@@ -147,6 +225,13 @@ extension CompositionRoot {
     }
 
     private static func registerComponents(in container: Container) async {
+        // Register payment methods provider
+        _ = try? await container.register(PaymentMethodsProvider.self)
+            .asSingleton()
+            .with { resolver in
+                DefaultPaymentMethodsProvider(container: container)
+            }
+            
         // Register input field components with their dependencies
         // Note: These registrations are primarily for factories or scenarios where
         // components need to be created programmatically. Most of the time,
@@ -161,8 +246,7 @@ extension CompositionRoot {
             .named("card")  // Names help distinguish between implementations
             .asTransient()
             .with { resolver in
-                let validationService = try await resolver.resolve(ValidationService.self)
-                return await CardPaymentMethod(validationService: validationService)
+                return try await CardPaymentMethod()
             }
 
 //        // Apple Pay

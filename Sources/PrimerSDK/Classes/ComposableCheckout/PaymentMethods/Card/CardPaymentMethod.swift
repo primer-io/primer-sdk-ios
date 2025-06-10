@@ -24,41 +24,13 @@ class CardPaymentMethod: PaymentMethodProtocol {
     private let _scope: CardViewModel
 
     @MainActor
-    init(validationService: ValidationService) async {
-        // Create validators with callback placeholders (will be set up in CardViewModel)
-        let formValidator = CardFormValidator(validationService: validationService)
-        let cardNumberValidator = CardNumberValidator(
-            validationService: validationService,
-            onValidationChange: { _ in },
-            onErrorMessageChange: { _ in }
-        )
-        let cvvValidator = CVVValidator(
-            validationService: validationService,
-            cardNetwork: .unknown,
-            onValidationChange: { _ in },
-            onErrorMessageChange: { _ in }
-        )
-        let expiryDateValidator = ExpiryDateValidator(
-            validationService: validationService,
-            onValidationChange: { _ in },
-            onErrorMessageChange: { _ in },
-            onMonthChange: { _ in },
-            onYearChange: { _ in }
-        )
-        let cardholderNameValidator = CardholderNameValidator(
-            validationService: validationService,
-            onValidationChange: { _ in },
-            onErrorMessageChange: { _ in }
-        )
+    init() async throws {
+        // Resolve CardViewModel from DI container
+        guard let container = await DIContainer.current else {
+            throw ContainerError.containerUnavailable
+        }
         
-        self._scope = CardViewModel(
-            validationService: validationService,
-            formValidator: formValidator,
-            cardNumberValidator: cardNumberValidator,
-            cvvValidator: cvvValidator,
-            expiryDateValidator: expiryDateValidator,
-            cardholderNameValidator: cardholderNameValidator
-        )
+        self._scope = try await container.resolve(CardViewModel.self)
     }
 
     @MainActor

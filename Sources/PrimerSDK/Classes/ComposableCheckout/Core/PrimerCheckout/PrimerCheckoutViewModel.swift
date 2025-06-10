@@ -25,14 +25,17 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope, LogReporte
 
     // Task manager to handle concurrent operations
     private let taskManager: TaskManager
+    // Payment methods provider to handle payment method discovery
+    private let paymentMethodsProvider: PaymentMethodsProvider
 
     // Streams for payment methods and selection
     private var paymentMethodsStream: ContinuableStream<[any PaymentMethodProtocol]>?
     private var selectedMethodStream: ContinuableStream<(any PaymentMethodProtocol)?>?
 
     // MARK: - Initialization
-    init(taskManager: TaskManager = TaskManager()) {
+    init(taskManager: TaskManager, paymentMethodsProvider: PaymentMethodsProvider) {
         self.taskManager = taskManager
+        self.paymentMethodsProvider = paymentMethodsProvider
     }
 
     // MARK: - Public Methods
@@ -110,16 +113,13 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope, LogReporte
     }
 
     private func loadPaymentMethods() async -> [any PaymentMethodProtocol] {
-        // In a real implementation, this would load payment methods from the SDK
-        // For now, return a card payment method
-        guard let container = await DIContainer.current else {
-            logger.error(message: "DIContainer not available, returning empty payment methods list")
-            return []
-        }
-
-        // Retrieve all registered payment methods in a single call
-        let paymentMethods = await container.resolveAll((any PaymentMethodProtocol).self)
-
+        logger.debug(message: "🔄 Loading available payment methods")
+        
+        // Use the injected payment methods provider
+        let paymentMethods = await paymentMethodsProvider.getAvailablePaymentMethods()
+        
+        logger.debug(message: "✅ Loaded \(paymentMethods.count) payment methods")
+        
         // Optionally filter or sort payment methods based on configuration
         // let enabledMethods = paymentMethods.filter { /* filter condition from config */ }
 
