@@ -27,8 +27,9 @@ struct CardNumberInputField: View, LogReporter {
 
     // MARK: - Private Properties
 
-    /// The validation service used to validate the card number
-    private let validationService: ValidationService
+    /// The validation service resolved from DI environment
+    @Environment(\.diContainer) private var container
+    @State private var validationService: ValidationService?
 
     /// The card number entered by the user (without formatting)
     @State private var cardNumber: String = ""
@@ -49,13 +50,11 @@ struct CardNumberInputField: View, LogReporter {
     init(
         label: String,
         placeholder: String,
-        validationService: ValidationService,
         onCardNetworkChange: ((CardNetwork) -> Void)? = nil,
         onValidationChange: ((Bool) -> Void)? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
-        self.validationService = validationService
         self.onCardNetworkChange = onCardNetworkChange
         self.onValidationChange = onValidationChange
     }
@@ -71,17 +70,26 @@ struct CardNumberInputField: View, LogReporter {
 
             // Card input field with network icon
             HStack(spacing: 8) {
-                CardNumberTextField(
-                    cardNumber: $cardNumber,
-                    isValid: $isValid,
-                    cardNetwork: $cardNetwork,
-                    errorMessage: $errorMessage,
-                    placeholder: placeholder,
-                    validationService: validationService
-                )
-                .padding()
-                .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-                .cornerRadius(8)
+                if let validationService = validationService {
+                    CardNumberTextField(
+                        cardNumber: $cardNumber,
+                        isValid: $isValid,
+                        cardNetwork: $cardNetwork,
+                        errorMessage: $errorMessage,
+                        placeholder: placeholder,
+                        validationService: validationService
+                    )
+                    .padding()
+                    .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
+                    .cornerRadius(8)
+                } else {
+                    // Fallback view while loading validation service
+                    TextField(placeholder, text: .constant(""))
+                        .disabled(true)
+                        .padding()
+                        .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
+                        .cornerRadius(8)
+                }
 
                 // Card network icon if detected
                 if cardNetwork != .unknown {
@@ -102,6 +110,9 @@ struct CardNumberInputField: View, LogReporter {
                     .padding(.top, 2)
             }
         }
+        .onAppear {
+            setupValidationService()
+        }
         .onChange(of: cardNetwork) { newValue in
             // Use DispatchQueue to avoid state updates during view update
             DispatchQueue.main.async {
@@ -115,6 +126,19 @@ struct CardNumberInputField: View, LogReporter {
                     onValidationChange?(isValid)
                 }
             }
+        }
+    }
+    
+    private func setupValidationService() {
+        guard let container = container else {
+            logger.error(message: "DIContainer not available for CardNumberInputField")
+            return
+        }
+        
+        do {
+            validationService = try container.resolveSync(ValidationService.self)
+        } catch {
+            logger.error(message: "Failed to resolve ValidationService: \(error)")
         }
     }
 

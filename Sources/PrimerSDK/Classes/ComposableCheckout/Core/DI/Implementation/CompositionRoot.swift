@@ -13,6 +13,7 @@ public final class CompositionRoot {
         let container = Container()
         await registerInfrastructure(in: container)
         await registerValidation(in: container)
+        await registerComponents(in: container)
         await registerViewModels(in: container)
         await registerPaymentMethods(in: container)
 
@@ -59,6 +60,50 @@ extension CompositionRoot {
                     validationService: try await resolver.resolve(ValidationService.self)
                 )
             }
+        
+        // Register individual validators
+        _ = try? await container.register(CardNumberValidator.self)
+            .asTransient()
+            .with { resolver in
+                CardNumberValidator(
+                    validationService: try await resolver.resolve(ValidationService.self),
+                    onValidationChange: { _ in }, // Will be set by consumers
+                    onErrorMessageChange: { _ in }
+                )
+            }
+        
+        _ = try? await container.register(CVVValidator.self)
+            .asTransient()
+            .with { resolver in
+                CVVValidator(
+                    validationService: try await resolver.resolve(ValidationService.self),
+                    cardNetwork: .unknown, // Will be updated by consumers
+                    onValidationChange: { _ in },
+                    onErrorMessageChange: { _ in }
+                )
+            }
+        
+        _ = try? await container.register(ExpiryDateValidator.self)
+            .asTransient()
+            .with { resolver in
+                ExpiryDateValidator(
+                    validationService: try await resolver.resolve(ValidationService.self),
+                    onValidationChange: { _ in },
+                    onErrorMessageChange: { _ in },
+                    onMonthChange: { _ in },
+                    onYearChange: { _ in }
+                )
+            }
+        
+        _ = try? await container.register(CardholderNameValidator.self)
+            .asTransient()
+            .with { resolver in
+                CardholderNameValidator(
+                    validationService: try await resolver.resolve(ValidationService.self),
+                    onValidationChange: { _ in },
+                    onErrorMessageChange: { _ in }
+                )
+            }
     }
 
 
@@ -82,6 +127,13 @@ extension CompositionRoot {
             .with { resolver in
                 await CardViewModel(validationService: try await resolver.resolve(ValidationService.self))
             }
+    }
+
+    private static func registerComponents(in container: Container) async {
+        // Register input field components with their dependencies
+        // Note: These registrations are primarily for factories or scenarios where
+        // components need to be created programmatically. Most of the time,
+        // views will resolve dependencies directly from the environment.
     }
 
     private static func registerPaymentMethods(in container: Container) async {

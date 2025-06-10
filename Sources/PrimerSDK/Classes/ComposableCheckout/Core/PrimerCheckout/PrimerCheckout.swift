@@ -18,6 +18,7 @@ public struct PrimerCheckout: View {
     @StateObject private var viewModel = PrimerCheckoutViewModel()
     @StateObject private var tokensManager = DesignTokensManager()
     @Environment(\.colorScheme) private var colorScheme
+    @State private var diContainer: (any ContainerProtocol)?
 
     /// Creates a new PrimerCheckout instance with default UI.
     ///
@@ -27,7 +28,6 @@ public struct PrimerCheckout: View {
         self.successContent = nil
         self.failureContent = nil
         self.content = nil
-        self.setupContainer()
     }
 
     /// Creates a new PrimerCheckout instance with customization options.
@@ -47,18 +47,23 @@ public struct PrimerCheckout: View {
         self.successContent = successContent
         self.failureContent = failureContent
         self.content = content
-        self.setupContainer()
     }
 
     private func setupContainer() {
         Task {
-            await DIContainer.setupMainContainer()
+            await CompositionRoot.configure()
+            diContainer = await DIContainer.current
         }
     }
 
     public var body: some View {
         ZStack {
-            if !viewModel.isClientTokenProcessed {
+            if diContainer == nil {
+                ProgressView("Initializing...")
+                    .onAppear {
+                        setupContainer()
+                    }
+            } else if !viewModel.isClientTokenProcessed {
                 ProgressView("Processing client token...")
                     .onAppear {
                         Task {
@@ -73,6 +78,8 @@ public struct PrimerCheckout: View {
                 checkoutContent()
             }
         }
+        .environment(\.diContainer, diContainer)
+        .environment(\.designTokens, tokensManager.tokens)
         .task {
             do {
                 try await tokensManager.fetchTokens(for: colorScheme)
@@ -80,7 +87,6 @@ public struct PrimerCheckout: View {
                 viewModel.setError(ComponentsPrimerError.designTokensError(error))
             }
         }
-        .environment(\.designTokens, tokensManager.tokens)
     }
 
     @ViewBuilder
