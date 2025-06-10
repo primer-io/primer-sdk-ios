@@ -24,6 +24,19 @@ let package = Package(
                 .product(name: "Primer3DS", package: "primer-sdk-3ds-ios")
             ],
             path: "Sources/PrimerSDK",
+            exclude: [
+                "CLAUDE.md",
+                "Classes/CLAUDE.md",
+                "Classes/ComposableCheckout/CLAUDE.md",
+                "Classes/ComposableCheckout/Core/DI/CLAUDE.md",
+                "Classes/ComposableCheckout/Core/DI/Framework/README.md",
+                "Classes/Core/CLAUDE.md",
+                "Classes/Data Models/CLAUDE.md",
+                "Classes/PCI/CLAUDE.md",
+                "Classes/PaymentMethods/CLAUDE.md",
+                "Classes/Services/CLAUDE.md",
+                "Classes/User Interface/CLAUDE.md"
+            ],
             resources: [
                 .process("Resources"),
                 .copy("Classes/Third Party/PromiseKit/LICENSE")
@@ -39,7 +52,11 @@ let package = Package(
             sources: [
                 "3DS/",
                 "Utilities/",
-                "Primer/"
+                "Primer/",
+                "ComposableCheckout/",
+                "Klarna/",
+                "NolPay/",
+                "Stripe/"
             ]
         )
     ],

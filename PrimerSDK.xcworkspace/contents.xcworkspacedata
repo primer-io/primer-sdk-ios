@@ -2036,6 +2036,21 @@
       location = "group:Tests"
       name = "Tests">
       <Group
+         location = "group:ComposableCheckout"
+         name = "ComposableCheckout">
+         <Group
+            location = "group:Core"
+            name = "Core">
+            <Group
+               location = "group:DI"
+               name = "DI">
+               <FileRef
+                  location = "group:SwiftUIDITests.swift">
+               </FileRef>
+            </Group>
+         </Group>
+      </Group>
+      <Group
          location = "group:Klarna"
          name = "Klarna">
          <FileRef
