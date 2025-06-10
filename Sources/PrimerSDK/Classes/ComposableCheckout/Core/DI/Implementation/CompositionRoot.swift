@@ -107,6 +107,7 @@ extension CompositionRoot {
 
     }
 
+    // swiftlint:disable:next function_body_length
     private static func registerValidation(in container: Container) async {
         // Register the rules factory as singleton for reuse
         _ = try? await container.register(RulesFactory.self)
@@ -175,6 +176,7 @@ extension CompositionRoot {
             }
     }
 
+    // swiftlint:disable:next function_body_length
     private static func registerViewModels(in container: Container) async {
         // Checkout view model
         _ = try? await container.register(PrimerCheckoutViewModel.self)

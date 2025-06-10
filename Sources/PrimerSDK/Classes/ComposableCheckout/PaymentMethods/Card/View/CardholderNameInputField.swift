@@ -4,6 +4,8 @@
 //  Created on 21.03.2025.
 //
 
+// swiftlint:disable file_length
+
 import SwiftUI
 import UIKit
 
@@ -493,3 +495,5 @@ extension CardholderNameInputField {
         return view
     }
 }
+
+// swiftlint:enable file_length

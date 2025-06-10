@@ -763,6 +763,7 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
         )
     }
 
+    // swiftlint:disable:next function_body_length
     private func validateAllFields() async -> Bool {
         logger.debug(message: "🔍 Validating all fields for form submission")
 

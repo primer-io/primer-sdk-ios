@@ -5,6 +5,8 @@
 //  Created by Boris on 21.3.25..
 //
 
+// swiftlint:disable file_length
+
 import SwiftUI
 import UIKit
 
@@ -542,3 +544,5 @@ extension ExpiryDateInputField {
         return view
     }
 }
+
+// swiftlint:enable file_length

@@ -5,6 +5,8 @@
 //  Created by Boris on 7. 5. 2025.
 //
 
+// swiftlint:disable file_length
+
 import Foundation
 
 final class WeakBox<T: AnyObject> {
@@ -432,3 +434,5 @@ public actor Container: ContainerProtocol, Sendable, LogReporter {
         )
     }
 }
+
+// swiftlint:enable file_length

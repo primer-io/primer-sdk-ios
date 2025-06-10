@@ -82,6 +82,7 @@ class CardFormValidator: FormValidator, LogReporter {
     }
 
     // Helper to generate consistent error messages
+    // swiftlint:disable:next cyclomatic_complexity
     private func errorMessageFor(fieldType: PrimerInputElementType, errorType: FieldErrorType) -> String {
         switch (fieldType, errorType) {
         case (.postalCode, .required): return "Postal code is required."

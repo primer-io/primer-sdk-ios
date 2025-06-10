@@ -5,6 +5,8 @@
 //  Created by Boris on 6.2.25..
 //
 
+// swiftlint:disable file_length
+
 import UIKit
 import SwiftUI
 
@@ -41,6 +43,7 @@ public class PrimerCheckoutViewController: UIViewController {
         setupSelectedExample()
     }
 
+    // swiftlint:disable:next function_body_length
     private func setupSelectedExample() {
         let rootView: AnyView
 
@@ -512,3 +515,5 @@ extension Array {
         return indices.contains(index) ? self[index] : nil
     }
 }
+
+// swiftlint:enable file_length

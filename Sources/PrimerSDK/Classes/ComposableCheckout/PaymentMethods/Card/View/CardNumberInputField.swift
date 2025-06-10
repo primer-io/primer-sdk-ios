@@ -4,6 +4,8 @@
 //  Created by Boris on 12.3.25..
 //
 
+// swiftlint:disable file_length
+
 import SwiftUI
 import UIKit
 
@@ -257,6 +259,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
         return formatted
     }
 
+    // swiftlint:disable:next todo
     // FIXME: Update with new ValidationCoordinator implementation
     class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
         // MARK: - Properties
@@ -359,6 +362,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             }
         }
 
+        // swiftlint:disable:next cyclomatic_complexity function_body_length
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             // Avoid reentrance
             if isUpdating {
@@ -563,6 +567,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
             return currentText
         }
 
+        // swiftlint:disable:next cyclomatic_complexity function_body_length
         private func processTextChange(primerTextField: PrimerCardNumberTextField, newText: String, isDeletion: Bool) {
             logger.debug(message: "🔄 Processing text change: current='\(primerTextField.text ?? "")', new unformatted='\(newText)'")
 
@@ -843,3 +848,5 @@ class PrimerCardNumberTextField: UITextField, LogReporter {
         return result
     }
 }
+
+// swiftlint:enable file_length
