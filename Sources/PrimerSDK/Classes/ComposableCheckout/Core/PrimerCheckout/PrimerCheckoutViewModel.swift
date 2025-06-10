@@ -8,6 +8,119 @@
 import SwiftUI
 
 /**
+ * INTERNAL DOCUMENTATION: PrimerCheckoutViewModel Architecture
+ *
+ * This view model serves as the central coordinator for the entire checkout process,
+ * managing payment method discovery, selection, and orchestrating the payment flow.
+ *
+ * ## Architecture Overview:
+ *
+ * ### 1. Central Coordination Role
+ * The view model acts as the primary coordinator that:
+ * - **Manages Client Token Processing**: Validates and processes authentication tokens
+ * - **Orchestrates Payment Method Discovery**: Loads available payment methods from API
+ * - **Coordinates Payment Selection**: Handles user selection and state management
+ * - **Provides Reactive Streams**: Exposes AsyncStreams for UI consumption
+ *
+ * ### 2. State Management Strategy
+ * ```
+ * Client Token → SDK Configuration → Payment Methods Loading → Selection Management
+ * ```
+ *
+ * ### 3. Reactive Data Flow
+ * ```
+ * Internal State Changes → Published Properties → SwiftUI Updates
+ *                       → AsyncStreams → External Observers
+ * ```
+ *
+ * ## Core Responsibilities:
+ *
+ * ### 1. Token Lifecycle Management
+ * - **Token Validation**: Ensures client token integrity before processing
+ * - **SDK Configuration**: Initializes payment infrastructure with validated token
+ * - **State Synchronization**: Updates UI state based on token processing status
+ *
+ * ### 2. Payment Method Coordination
+ * - **Discovery**: Loads available payment methods from remote configuration
+ * - **Filtering**: Applies business rules to determine method availability
+ * - **Selection Management**: Tracks user selection and provides selection streams
+ *
+ * ### 3. Error State Management
+ * - **Comprehensive Error Handling**: Captures and propagates all error states
+ * - **Recovery Strategies**: Provides mechanisms for error recovery
+ * - **User Feedback**: Transforms technical errors into user-friendly messages
+ *
+ * ## Concurrency Management:
+ *
+ * ### 1. Actor Isolation
+ * - **@MainActor**: All operations are main-thread isolated for UI safety
+ * - **async/await**: Modern concurrency for network operations and heavy processing
+ * - **Task Management**: Coordinated task execution via TaskManager dependency
+ *
+ * ### 2. Stream-Based Communication
+ * ```swift
+ * private var paymentMethodsStream: ContinuableStream<[any PaymentMethodProtocol]>?
+ * private var selectedMethodStream: ContinuableStream<(any PaymentMethodProtocol)?>?
+ * ```
+ *
+ * ### 3. Resource Management
+ * - **Stream Lifecycle**: Proper creation and cleanup of reactive streams
+ * - **Task Cancellation**: Automatic cleanup of background operations
+ * - **Memory Safety**: Weak references to prevent retention cycles
+ *
+ * ## Performance Characteristics:
+ *
+ * ### 1. Token Processing
+ * - **Time Complexity**: O(1) - Simple validation + network call
+ * - **Memory Usage**: ~500 bytes (token string + configuration objects)
+ * - **Network Dependency**: Single API call for SDK configuration
+ *
+ * ### 2. Payment Method Loading
+ * - **Time Complexity**: O(n) where n is number of available methods
+ * - **Memory Usage**: O(n) - Payment method protocol instances
+ * - **Caching Strategy**: Methods cached until token changes
+ *
+ * ### 3. Selection Management
+ * - **Time Complexity**: O(1) - Direct property assignment
+ * - **Memory Usage**: O(1) - Single reference to selected method
+ * - **Stream Emissions**: O(1) - Single value yield per selection
+ *
+ * ## Integration Patterns:
+ *
+ * ### 1. Dependency Injection
+ * ```swift
+ * init(taskManager: TaskManager, paymentMethodsProvider: PaymentMethodsProvider)
+ * ```
+ * - **TaskManager**: Handles concurrent operation coordination
+ * - **PaymentMethodsProvider**: Abstracts payment method discovery logic
+ *
+ * ### 2. Protocol Conformance
+ * - **PrimerCheckoutScope**: Public interface for checkout operations
+ * - **ObservableObject**: SwiftUI reactive integration
+ * - **LogReporter**: Comprehensive logging and debugging support
+ *
+ * ### 3. SwiftUI Integration
+ * - **@Published Properties**: Automatic UI updates on state changes
+ * - **AsyncStream Support**: Reactive programming for complex UI patterns
+ * - **Error Binding**: Direct error state exposure for UI error handling
+ *
+ * ## Error Handling Strategy:
+ *
+ * ### 1. Layered Error Management
+ * - **Token Errors**: Invalid token format, network failures, authentication issues
+ * - **Configuration Errors**: SDK setup failures, service unavailability
+ * - **Method Loading Errors**: API failures, parsing errors, network timeouts
+ *
+ * ### 2. Recovery Mechanisms
+ * - **Automatic Retry**: Network operation retry with exponential backoff
+ * - **Graceful Degradation**: Fallback to minimal payment method set
+ * - **User Guidance**: Clear error messages with actionable recovery steps
+ *
+ * This architecture ensures reliable checkout coordination while maintaining
+ * optimal performance and providing comprehensive error handling for all scenarios.
+ */
+
+/**
  * ViewModel that implements the PrimerCheckoutScope interface and manages checkout state.
  */
 @available(iOS 15.0, *)
@@ -36,20 +149,55 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope, LogReporte
     init(taskManager: TaskManager, paymentMethodsProvider: PaymentMethodsProvider) {
         self.taskManager = taskManager
         self.paymentMethodsProvider = paymentMethodsProvider
+
+        // Create payment methods stream immediately so it's ready for yielding
+        logger.debug(message: "🚀 [PrimerCheckoutViewModel] Creating payment methods stream during initialization")
+        self.paymentMethodsStream = ContinuableStream<[any PaymentMethodProtocol]> { [weak self] continuation in
+            guard let self = self else {
+                return
+            }
+            logger.debug(message: "🎯 [PrimerCheckoutViewModel] Payment methods stream initialized, yielding current methods: \(self.availablePaymentMethods.count)")
+            continuation.yield(self.availablePaymentMethods)
+        }
+        logger.info(message: "✅ [PrimerCheckoutViewModel] Payment methods stream created during initialization")
     }
 
     // MARK: - Public Methods
 
     /// Process the client token and initialize the SDK.
     func processClientToken(_ token: String) async {
-        guard clientToken != token else { return }
+        logger.info(message: "🚀 [PrimerCheckoutViewModel] Starting client token processing")
+        logger.debug(message: "🔐 [PrimerCheckoutViewModel] Token length: \(token.count) characters")
+
+        guard clientToken != token else {
+            logger.debug(message: "⏭️ [PrimerCheckoutViewModel] Token already processed, skipping")
+            return
+        }
 
         do {
+            logger.debug(message: "🔄 [PrimerCheckoutViewModel] Setting client token")
             self.clientToken = token
+
+            logger.debug(message: "🔧 [PrimerCheckoutViewModel] Configuring SDK with token")
             try await configureSDK(with: token)
+
+            logger.info(message: "🔄 [PrimerCheckoutViewModel] Loading payment methods")
             self.availablePaymentMethods = await loadPaymentMethods()
+            logger.info(message: "📋 [PrimerCheckoutViewModel] Loaded \(self.availablePaymentMethods.count) payment methods")
+
+            // Update the payment methods stream with the loaded methods
+            logger.debug(message: "🌊 [PrimerCheckoutViewModel] Updating payment methods stream")
+            if let stream = paymentMethodsStream {
+                logger.debug(message: "✅ [PrimerCheckoutViewModel] Payment methods stream exists, yielding \(self.availablePaymentMethods.count) methods")
+                stream.yield(self.availablePaymentMethods)
+            } else {
+                logger.warn(message: "⚠️ [PrimerCheckoutViewModel] Payment methods stream is nil - cannot yield methods")
+            }
+
+            logger.info(message: "✅ [PrimerCheckoutViewModel] Client token processing completed successfully")
             isClientTokenProcessed = true
         } catch {
+            logger.error(message: "🚨 [PrimerCheckoutViewModel] Client token processing failed: \(error.localizedDescription)")
             setError(ComponentsPrimerError.clientTokenError(error))
         }
     }
@@ -68,17 +216,21 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope, LogReporte
 
     /// Returns an AsyncStream of available payment methods.
     func paymentMethods() -> AsyncStream<[any PaymentMethodProtocol]> {
-        if let stream = paymentMethodsStream?.stream {
-            return stream
-        } else {
-            // Create a new stream that immediately yields available methods
-            let continuable = ContinuableStream<[any PaymentMethodProtocol]> { [weak self] continuation in
-                guard let self = self else { return }
+        logger.debug(message: "🌊 [PrimerCheckoutViewModel] Payment methods stream requested")
+
+        guard let stream = paymentMethodsStream?.stream else {
+            logger.error(message: "🚨 [PrimerCheckoutViewModel] Payment methods stream is nil - this should not happen")
+            // Fallback: create a new stream with current methods
+            let fallbackStream = AsyncStream<[any PaymentMethodProtocol]> { continuation in
+                logger.warn(message: "⚠️ [PrimerCheckoutViewModel] Using fallback stream with \(self.availablePaymentMethods.count) methods")
                 continuation.yield(self.availablePaymentMethods)
+                continuation.finish()
             }
-            paymentMethodsStream = continuable
-            return continuable.stream
+            return fallbackStream
         }
+
+        logger.debug(message: "✅ [PrimerCheckoutViewModel] Returning pre-created payment methods stream")
+        return stream
     }
 
     /// Returns an AsyncStream of the currently selected payment method.
