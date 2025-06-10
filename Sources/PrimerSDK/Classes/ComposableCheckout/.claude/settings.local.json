@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(find:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "Bash(/Users/boris/.nvm/versions/node/v18.20.8/lib/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/arm64-darwin/rg \"TaskManager.*\\?\" -A 2 -B 2)"
     ],
     "deny": []
   }

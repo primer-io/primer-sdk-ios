@@ -112,20 +112,37 @@ extension CompositionRoot {
         _ = try? await container.register(PrimerCheckoutViewModel.self)
             .asTransient() // Create a new instance each time
             .with { resolver in
-                await MainActor.run {
-                    // Resolve dependencies
-                    let taskManager = try? await resolver.resolve(TaskManager.self)
-                        ?? TaskManager() // Fallback
-
+                // Resolve dependencies
+                let taskManager = (try? await resolver.resolve(TaskManager.self)) ?? TaskManager()
+                
+                return await MainActor.run {
                     return PrimerCheckoutViewModel(taskManager: taskManager)
                 }
             }
 
-        // Card view model
+        // Card view model  
         _ = try? await container.register(CardViewModel.self)
             .asTransient()
             .with { resolver in
-                await CardViewModel(validationService: try await resolver.resolve(ValidationService.self))
+                let validationService = (try? await resolver.resolve(ValidationService.self)) ?? DefaultValidationService(rulesFactory: RulesFactory())
+                let formValidator = (try? await resolver.resolve(FormValidator.self)) ?? CardFormValidator(validationService: validationService)
+                
+                // Create validators with callback placeholders (will be set up in CardViewModel)
+                let cardNumberValidator = (try? await resolver.resolve(CardNumberValidator.self)) ?? CardNumberValidator(validationService: validationService, onValidationChange: { _ in }, onErrorMessageChange: { _ in })
+                let cvvValidator = (try? await resolver.resolve(CVVValidator.self)) ?? CVVValidator(validationService: validationService, cardNetwork: .unknown, onValidationChange: { _ in }, onErrorMessageChange: { _ in })
+                let expiryDateValidator = (try? await resolver.resolve(ExpiryDateValidator.self)) ?? ExpiryDateValidator(validationService: validationService, onValidationChange: { _ in }, onErrorMessageChange: { _ in }, onMonthChange: { _ in }, onYearChange: { _ in })
+                let cardholderNameValidator = (try? await resolver.resolve(CardholderNameValidator.self)) ?? CardholderNameValidator(validationService: validationService, onValidationChange: { _ in }, onErrorMessageChange: { _ in })
+                
+                return await MainActor.run {
+                    return CardViewModel(
+                        validationService: validationService,
+                        formValidator: formValidator,
+                        cardNumberValidator: cardNumberValidator,
+                        cvvValidator: cvvValidator,
+                        expiryDateValidator: expiryDateValidator,
+                        cardholderNameValidator: cardholderNameValidator
+                    )
+                }
             }
     }
 

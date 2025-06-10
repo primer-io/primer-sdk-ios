@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-
 /**
  * Implementation of a payment method that handles card payments.
  *
@@ -25,8 +24,41 @@ class CardPaymentMethod: PaymentMethodProtocol {
     private let _scope: CardViewModel
 
     @MainActor
-    init(validationService: ValidationService) {
-        self._scope = CardViewModel(validationService: validationService)
+    init(validationService: ValidationService) async {
+        // Create validators with callback placeholders (will be set up in CardViewModel)
+        let formValidator = CardFormValidator(validationService: validationService)
+        let cardNumberValidator = CardNumberValidator(
+            validationService: validationService,
+            onValidationChange: { _ in },
+            onErrorMessageChange: { _ in }
+        )
+        let cvvValidator = CVVValidator(
+            validationService: validationService,
+            cardNetwork: .unknown,
+            onValidationChange: { _ in },
+            onErrorMessageChange: { _ in }
+        )
+        let expiryDateValidator = ExpiryDateValidator(
+            validationService: validationService,
+            onValidationChange: { _ in },
+            onErrorMessageChange: { _ in },
+            onMonthChange: { _ in },
+            onYearChange: { _ in }
+        )
+        let cardholderNameValidator = CardholderNameValidator(
+            validationService: validationService,
+            onValidationChange: { _ in },
+            onErrorMessageChange: { _ in }
+        )
+        
+        self._scope = CardViewModel(
+            validationService: validationService,
+            formValidator: formValidator,
+            cardNumberValidator: cardNumberValidator,
+            cvvValidator: cvvValidator,
+            expiryDateValidator: expiryDateValidator,
+            cardholderNameValidator: cardholderNameValidator
+        )
     }
 
     @MainActor

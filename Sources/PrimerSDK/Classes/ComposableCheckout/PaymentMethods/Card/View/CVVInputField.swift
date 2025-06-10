@@ -26,8 +26,9 @@ struct CVVInputField: View, LogReporter {
 
     // MARK: - Private Properties
 
-    /// The validation service used to validate the CVV
-    private let validationService: ValidationService
+    /// The validation service resolved from DI environment
+    @Environment(\.diContainer) private var container
+    @State private var validationService: ValidationService?
 
     /// The CVV entered by the user
     @State private var cvv: String = ""
@@ -46,13 +47,11 @@ struct CVVInputField: View, LogReporter {
         label: String,
         placeholder: String,
         cardNetwork: CardNetwork,
-        validationService: ValidationService,
         onValidationChange: ((Bool) -> Void)? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
         self.cardNetwork = cardNetwork
-        self.validationService = validationService
         self.onValidationChange = onValidationChange
     }
 
@@ -66,17 +65,27 @@ struct CVVInputField: View, LogReporter {
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
 
             // CVV input field
-            CVVTextField(
-                cvv: $cvv,
-                isValid: $isValid,
-                errorMessage: $errorMessage,
-                placeholder: placeholder,
-                cardNetwork: cardNetwork,
-                validationService: validationService
-            )
-            .padding()
-            .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-            .cornerRadius(8)
+            if let validationService = validationService {
+                CVVTextField(
+                    cvv: $cvv,
+                    isValid: $isValid,
+                    errorMessage: $errorMessage,
+                    placeholder: placeholder,
+                    cardNetwork: cardNetwork,
+                    validationService: validationService
+                )
+                .padding()
+                .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
+                .cornerRadius(8)
+            } else {
+                // Fallback view while loading validation service
+                TextField(placeholder, text: $cvv)
+                    .keyboardType(.numberPad)
+                    .disabled(true)
+                    .padding()
+                    .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
+                    .cornerRadius(8)
+            }
 
             // Error message
             if let errorMessage = errorMessage {
@@ -86,6 +95,9 @@ struct CVVInputField: View, LogReporter {
                     .padding(.top, 2)
             }
         }
+        .onAppear {
+            setupValidationService()
+        }
         .onChange(of: isValid) { newValue in
             if let isValid = newValue {
                 // Use DispatchQueue to avoid state updates during view update
@@ -93,6 +105,19 @@ struct CVVInputField: View, LogReporter {
                     onValidationChange?(isValid)
                 }
             }
+        }
+    }
+    
+    private func setupValidationService() {
+        guard let container = container else {
+            logger.error(message: "DIContainer not available for CVVInputField")
+            return
+        }
+        
+        do {
+            validationService = try container.resolveSync(ValidationService.self)
+        } catch {
+            logger.error(message: "Failed to resolve ValidationService: \(error)")
         }
     }
 

@@ -24,8 +24,9 @@ struct CardholderNameInputField: View, LogReporter {
 
     // MARK: - Private Properties
 
-    /// The validation service used to validate the card holder name
-    private let validationService: ValidationService
+    /// The validation service resolved from DI environment
+    @Environment(\.diContainer) private var container
+    @State private var validationService: ValidationService?
 
     /// The cardholder name entered by the user
     @State private var cardholderName: String = ""
@@ -43,12 +44,10 @@ struct CardholderNameInputField: View, LogReporter {
     init(
         label: String,
         placeholder: String,
-        validationService: ValidationService,
         onValidationChange: ((Bool) -> Void)? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
-        self.validationService = validationService
         self.onValidationChange = onValidationChange
     }
 
@@ -62,16 +61,27 @@ struct CardholderNameInputField: View, LogReporter {
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
 
             // Cardholder name input field
-            CardholderNameTextField(
-                cardholderName: $cardholderName,
-                isValid: $isValid,
-                errorMessage: $errorMessage,
-                placeholder: placeholder,
-                validationService: validationService
-            )
-            .padding()
-            .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-            .cornerRadius(8)
+            if let validationService = validationService {
+                CardholderNameTextField(
+                    cardholderName: $cardholderName,
+                    isValid: $isValid,
+                    errorMessage: $errorMessage,
+                    placeholder: placeholder,
+                    validationService: validationService
+                )
+                .padding()
+                .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
+                .cornerRadius(8)
+            } else {
+                // Fallback view while loading validation service
+                TextField(placeholder, text: $cardholderName)
+                    .keyboardType(.default)
+                    .autocapitalization(.words)
+                    .disabled(true)
+                    .padding()
+                    .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
+                    .cornerRadius(8)
+            }
 
             // Error message
             if let errorMessage = errorMessage {
@@ -81,6 +91,10 @@ struct CardholderNameInputField: View, LogReporter {
                     .padding(.top, 2)
             }
         }
+        .onAppear {
+            setupValidationService()
+            logger.debug(message: "👁️ Cardholder name input field appeared")
+        }
         .onChange(of: isValid) { newValue in
             // Use DispatchQueue to avoid state updates during view update
             DispatchQueue.main.async {
@@ -88,8 +102,18 @@ struct CardholderNameInputField: View, LogReporter {
                 onValidationChange?(newValue)
             }
         }
-        .onAppear {
-            logger.debug(message: "👁️ Cardholder name input field appeared")
+    }
+    
+    private func setupValidationService() {
+        guard let container = container else {
+            logger.error(message: "DIContainer not available for CardholderNameInputField")
+            return
+        }
+        
+        do {
+            validationService = try container.resolveSync(ValidationService.self)
+        } catch {
+            logger.error(message: "Failed to resolve ValidationService: \(error)")
         }
     }
 

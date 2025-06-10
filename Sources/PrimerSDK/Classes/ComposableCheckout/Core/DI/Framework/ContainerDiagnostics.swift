@@ -116,6 +116,10 @@ public actor InstrumentedContainer: ContainerProtocol, Sendable {
         }
     }
 
+    public nonisolated func resolveSync<T>(_ type: T.Type, name: String? = nil) throws -> T {
+        return try container.resolveSync(type, name: name)
+    }
+
     public func resolveAll<T>(_ type: T.Type) async -> [T] {
         return await container.resolveAll(type)
     }

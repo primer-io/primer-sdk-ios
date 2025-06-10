@@ -248,19 +248,19 @@ struct TestResultRow: View {
                     .foregroundColor(.green)
                     .frame(width: 16, height: 16)
                 Text(result)
-                    .font(.system(size: 11, family: .monospaced))
+                    .font(.system(size: 11, design: .monospaced))
             } else if result.starts(with: "❌") {
                 Image(systemName: "xmark.circle.fill")
                     .foregroundColor(.red)
                     .frame(width: 16, height: 16)
                 Text(result)
-                    .font(.system(size: 11, family: .monospaced))
+                    .font(.system(size: 11, design: .monospaced))
             } else if result.starts(with: "⚠️") {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundColor(.orange)
                     .frame(width: 16, height: 16)
                 Text(result)
-                    .font(.system(size: 11, family: .monospaced))
+                    .font(.system(size: 11, design: .monospaced))
             } else if result.starts(with: "🎉") || result.starts(with: "🚨") {
                 Text(result)
                     .font(.headline)
@@ -268,7 +268,7 @@ struct TestResultRow: View {
                     .padding(.top, 4)
             } else if !result.isEmpty {
                 Text(result)
-                    .font(.system(size: 11, family: .monospaced))
+                    .font(.system(size: 11, design: .monospaced))
                     .foregroundColor(.secondary)
             }
             

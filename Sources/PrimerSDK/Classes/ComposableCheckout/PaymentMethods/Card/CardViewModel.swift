@@ -20,84 +20,49 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
     // Validation services
     private let validationService: ValidationService
     private let formValidator: FormValidator
-
-    // Field validators for real-time validation during typing
-    private lazy var cardNumberValidator = CardNumberValidator(
-        validationService: validationService,
-        onValidationChange: { [weak self] isValid in
-            self?.updateCardNumberValidationState(isValid: isValid)
-        },
-        onErrorMessageChange: { [weak self] errorMessage in
-            self?.updateCardNumberErrorMessage(errorMessage)
-        }
-    )
-
-    private lazy var cvvValidator = CVVValidator(
-        validationService: validationService,
-        cardNetwork: .unknown,
-        onValidationChange: { [weak self] isValid in
-            self?.updateCvvValidationState(isValid: isValid)
-        },
-        onErrorMessageChange: { [weak self] errorMessage in
-            self?.updateCvvErrorMessage(errorMessage)
-        }
-    )
-
-    private lazy var expiryDateValidator = ExpiryDateValidator(
-        validationService: validationService,
-        onValidationChange: { [weak self] isValid in
-            self?.updateExpiryValidationState(isValid: isValid)
-        },
-        onErrorMessageChange: { [weak self] errorMessage in
-            self?.updateExpiryErrorMessage(errorMessage)
-        },
-        onMonthChange: { [weak self] month in
-            self?.handleExpiryMonthChange(month)
-        },
-        onYearChange: { [weak self] year in
-            self?.handleExpiryYearChange(year)
-        }
-    )
-
-    private lazy var cardholderNameValidator = CardholderNameValidator(
-        validationService: validationService,
-        onValidationChange: { [weak self] isValid in
-            self?.updateCardholderNameValidationState(isValid: isValid)
-        },
-        onErrorMessageChange: { [weak self] errorMessage in
-            self?.updateCardholderNameErrorMessage(errorMessage)
-        }
-    )
+    private let cardNumberValidator: CardNumberValidator
+    private let cvvValidator: CVVValidator
+    private let expiryDateValidator: ExpiryDateValidator
+    private let cardholderNameValidator: CardholderNameValidator
 
     // MARK: - Initialization
 
-    init(validationService: ValidationService) {
+    init(
+        validationService: ValidationService,
+        formValidator: FormValidator,
+        cardNumberValidator: CardNumberValidator,
+        cvvValidator: CVVValidator,
+        expiryDateValidator: ExpiryDateValidator,
+        cardholderNameValidator: CardholderNameValidator
+    ) {
         self.validationService = validationService
-        self.formValidator = CardFormValidator(validationService: validationService)
-
-        // Setup network change handler
+        self.formValidator = formValidator
+        self.cardNumberValidator = cardNumberValidator
+        self.cvvValidator = cvvValidator
+        self.expiryDateValidator = expiryDateValidator
+        self.cardholderNameValidator = cardholderNameValidator
+        
+        setupValidatorCallbacks()
+        
+        logger.debug(message: "📝 CardViewModel initialized with injected validators")
+    }
+    
+    private func setupValidatorCallbacks() {
+        // Setup card number validator callbacks
         cardNumberValidator.onCardNetworkChange = { [weak self] network in
             guard let self = self else { return }
 
             // Update the context in form validator
             self.formValidator.updateContext(key: "cardNetwork", value: network)
-
+            
             // Update the CVV validator with the new network
-            self.cvvValidator = CVVValidator(
-                validationService: self.validationService,
-                cardNetwork: network,
-                onValidationChange: { [weak self] isValid in
-                    self?.updateCvvValidationState(isValid: isValid)
-                },
-                onErrorMessageChange: { [weak self] errorMessage in
-                    self?.updateCvvErrorMessage(errorMessage)
-                }
-            )
-
+            self.cvvValidator.updateCardNetwork(network)
+            
             self.updateCardNetwork(network)
         }
-
-        logger.debug(message: "📝 CardViewModel initialized with new validation system")
+        
+        // Note: Other validator callbacks are set up during registration in CompositionRoot
+        // This maintains proper separation of concerns
     }
 
     // MARK: - PrimerPaymentMethodScope Implementation
@@ -317,17 +282,8 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
             return newState
         }
 
-        // Update the CVV validator to use the new network
-        cvvValidator = CVVValidator(
-            validationService: validationService,
-            cardNetwork: network,
-            onValidationChange: { [weak self] isValid in
-                self?.updateCvvValidationState(isValid: isValid)
-            },
-            onErrorMessageChange: { [weak self] errorMessage in
-                self?.updateCvvErrorMessage(errorMessage)
-            }
-        )
+        // Update the CVV validator with the new network (using the existing method)
+        cvvValidator.updateCardNetwork(network)
 
         // Update context in the form validator
         formValidator.updateContext(key: "cardNetwork", value: network)
@@ -547,7 +503,6 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
         return CardholderNameInputField(
             label: label ?? "Cardholder Name",
             placeholder: "John Doe",
-            validationService: validationService,
             onValidationChange: { _ in
                 // Validation state is handled in the validator
             }
@@ -558,7 +513,6 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
         return CardNumberInputField(
             label: label ?? "Card Number",
             placeholder: "1234 5678 9012 3456",
-            validationService: validationService,
             onCardNetworkChange: { [weak self] network in
                 self?.updateCardNetwork(network)
             },
@@ -573,7 +527,6 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
             label: label ?? "CVV",
             placeholder: "123",
             cardNetwork: uiState.cardNetworkData.selectedNetwork ?? .unknown,
-            validationService: validationService,
             onValidationChange: { _ in
                 // Validation state is handled in the validator
             }
@@ -584,7 +537,6 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
         return ExpiryDateInputField(
             label: label ?? "Expiry Date",
             placeholder: "MM/YY",
-            validationService: validationService,
             onValidationChange: { _ in
                 // Validation state is handled in the validator
             },

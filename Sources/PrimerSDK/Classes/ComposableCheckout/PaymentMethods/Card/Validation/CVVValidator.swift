@@ -10,7 +10,7 @@ import Foundation
 /// Validates CVV/security code fields based on card network
 class CVVValidator: BaseInputFieldValidator<String> {
     /// The card network that determines expected CVV length
-    private let cardNetwork: CardNetwork
+    private var cardNetwork: CardNetwork
 
     init(
         validationService: ValidationService,
@@ -54,5 +54,11 @@ class CVVValidator: BaseInputFieldValidator<String> {
 
         // Full validation on blur
         return validationService.validateCVV(input, cardNetwork: cardNetwork)
+    }
+    
+    /// Updates the card network for CVV validation
+    /// - Parameter network: The new card network
+    func updateCardNetwork(_ network: CardNetwork) {
+        cardNetwork = network
     }
 }
