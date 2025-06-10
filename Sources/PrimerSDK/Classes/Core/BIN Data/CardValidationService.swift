@@ -29,6 +29,21 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
 
     private var mostRecentCardNumber: String?
 
+    // MARK: Thread‐safe metadata cache
+
+    private let metadataCacheQueue = DispatchQueue(label: "com.primer.cardValidationService.metadataCacheQueue", attributes: .concurrent)
+    private var metadataCacheBacking: [String: PrimerCardNumberEntryMetadata] = [:]
+
+    private func getCachedMetadata(for key: String) -> PrimerCardNumberEntryMetadata? {
+        return metadataCacheQueue.sync { metadataCacheBacking[key] }
+    }
+
+    private func setCachedMetadata(_ metadata: PrimerCardNumberEntryMetadata, for key: String) {
+        metadataCacheQueue.async(flags: .barrier) {
+            self.metadataCacheBacking[key] = metadata
+        }
+    }
+
     init(rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
          allowedCardNetworks: [CardNetwork] = [CardNetwork].allowedCardNetworks,
          apiClient: PrimerAPIClientBINDataProtocol = PrimerAPIClient(),
@@ -47,10 +62,10 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
 
         // Don't validate if the BIN (first eight digits) hasn't changed
         let bin = String(sanitizedCardNumber.prefix(Self.maximumBinLength))
-        if let mostRecentCardNumber = mostRecentCardNumber,
-           mostRecentCardNumber.prefix(Self.maximumBinLength) == bin {
-            if let cachedMetadata = metadataCache[bin] {
-                handle(cardMetadata: cachedMetadata, forCardState: cardState)
+        if let mostRecent = mostRecentCardNumber,
+           mostRecent.prefix(Self.maximumBinLength) == bin {
+            if let cached = getCachedMetadata(for: bin) {
+                handle(cardMetadata: cached, forCardState: cardState)
             }
             return
         }
@@ -63,26 +78,17 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             return
         }
 
-        let isFirstTimeRemoteValidation = mostRecentCardNumber == nil
-
-        if isFirstTimeRemoteValidation {
-            useRemoteValidation(withCardState: cardState)
-        } else {
-            debouncer.debounce { [weak self] in
-                self?.useRemoteValidation(withCardState: cardState)
-            }
+        debouncer.debounce { [weak self] in
+            self?.useRemoteValidation(withCardState: cardState)
         }
     }
-
-    private var metadataCache: [String: PrimerCardNumberEntryMetadata] = [:]
 
     private func useRemoteValidation(withCardState cardState: PrimerCardNumberEntryState) {
         delegate?.primerRawDataManager?(rawDataManager,
                                         willFetchMetadataForState: cardState)
 
-        if let cachedMetadata = metadataCache[cardState.cardNumber] {
-            handle(cardMetadata: cachedMetadata, forCardState: cardState)
-            return
+        if let cached = getCachedMetadata(for: cardState.cardNumber) {
+            return handle(cardMetadata: cached, forCardState: cardState)
         }
 
         _ = listCardNetworks(cardState.cardNumber).done { [weak self] result in
@@ -94,10 +100,10 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
             }
 
             let networks = result.networks.map { CardNetwork(cardNetworkStr: $0.value) }
-            let cardMetadata = self.createValidationMetadata(networks: networks,
-                                                             source: .remote)
+            let metadata = createValidationMetadata(networks: networks,
+                                                         source: .remote)
 
-            self.handle(cardMetadata: cardMetadata, forCardState: cardState)
+            self.handle(cardMetadata: metadata, forCardState: cardState)
         }.catch { error in
             self.sendEvent(forError: error)
             self.logger.warn(message: "Remote card validation failed: \(error.localizedDescription)")
@@ -106,16 +112,18 @@ final class DefaultCardValidationService: CardValidationService, LogReporter {
     }
 
     private func useLocalValidation(withCardState cardState: PrimerCardNumberEntryState, isFallback: Bool) {
-        let localValidationNetwork = CardNetwork(cardNumber: cardState.cardNumber)
-        let metadata = createValidationMetadata(networks: cardState.cardNumber.isEmpty ? [] : [localValidationNetwork],
-                                                source: isFallback ? .localFallback : .local)
+        // Only build the network if there's actually a card number
+        let networks: [CardNetwork] = cardState.cardNumber.isEmpty ? [] : [CardNetwork(cardNumber: cardState.cardNumber)]
+        let metadata = createValidationMetadata(
+            networks: networks,
+            source: isFallback ? .localFallback : .local
+        )
 
         if cardState.cardNumber.count >= Self.maximumBinLength {
             let logMessage = """
-Local validation was used where remote validation \
-would have been preferred (max BIN length exceeded).
-"""
-
+            Local validation was used where remote validation \
+            would have been preferred (max BIN length exceeded).
+            """
             logger.warn(message: logMessage)
             let event = Analytics.Event.message(
                 message: logMessage,
@@ -136,11 +144,10 @@ would have been preferred (max BIN length exceeded).
     }
 
     private func handle(cardMetadata: PrimerCardNumberEntryMetadata, forCardState cardState: PrimerCardNumberEntryState) {
-        self.metadataCache[cardState.cardNumber] = cardMetadata
+        setCachedMetadata(cardMetadata, for: cardState.cardNumber)
 
-        let trackableNetworks = cardMetadata.selectableCardNetworks ?? cardMetadata.detectedCardNetworks
-        self.sendEvent(forNetworks: trackableNetworks.items,
-                       source: cardMetadata.source)
+        let trackable = cardMetadata.selectableCardNetworks ?? cardMetadata.detectedCardNetworks
+        sendEvent(forNetworks: trackable.items, source: cardMetadata.source)
 
         delegate?.primerRawDataManager?(rawDataManager,
                                         didReceiveMetadata: cardMetadata,
@@ -155,17 +162,17 @@ would have been preferred (max BIN length exceeded).
 
     func createValidationMetadata(networks: [CardNetwork],
                                   source: PrimerCardValidationSource) -> PrimerCardNumberEntryMetadata {
-        let selectableNetworks: [PrimerCardNetwork] = allowedCardNetworks
+        let selectable = allowedCardNetworks
             .filter { networks.contains($0) }
             .map { PrimerCardNetwork(network: $0) }
 
-        let detectedNetworks = selectableNetworks + networks.filter { !allowedCardNetworks.contains($0) }
+        let detected = selectable + networks.filter { !allowedCardNetworks.contains($0) }
             .map { PrimerCardNetwork(network: $0) }
 
         return .init(
             source: source,
-            selectableCardNetworks: selectableNetworks,
-            detectedCardNetworks: detectedNetworks
+            selectableCardNetworks: selectable.isEmpty ? nil : selectable,
+            detectedCardNetworks: detected
         )
     }
 
@@ -198,22 +205,17 @@ would have been preferred (max BIN length exceeded).
     private var validateCardNetworksCancellable: PrimerCancellable?
 
     private func listCardNetworks(_ cardNumber: String) -> Promise<Response.Body.Bin.Networks> {
+        let bin = String(cardNumber.prefix(Self.maximumBinLength))
 
-        // ⚠️ We must only ever send eight or less digits to the endpoint
-        let cardNumber = String(cardNumber.prefix(Self.maximumBinLength))
-
-        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+        guard let token = PrimerAPIConfigurationModule.decodedJWTToken else {
             return rejectedPromise(withError: PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
                                                                              diagnosticsId: ""))
         }
 
         return Promise { resolver in
-            if let cancellable = validateCardNetworksCancellable {
-                cancellable.cancel()
-            }
-
-            validateCardNetworksCancellable = apiClient.listCardNetworks(clientToken: decodedJWTToken,
-                                                                         bin: cardNumber) { result in
+            validateCardNetworksCancellable?.cancel()
+            validateCardNetworksCancellable = apiClient.listCardNetworks(clientToken: token,
+                                                                         bin: bin) { result in
                 switch result {
                 case .success(let networks):
                     resolver.fulfill(networks)
@@ -231,5 +233,4 @@ would have been preferred (max BIN length exceeded).
             $0.reject(error)
         }
     }
-
 }

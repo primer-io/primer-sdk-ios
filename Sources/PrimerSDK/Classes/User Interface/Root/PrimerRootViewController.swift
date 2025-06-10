@@ -44,15 +44,6 @@ class PrimerRootViewController: PrimerViewController {
         NotificationCenter.default.removeObserver(self)
     }
 
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        self.registerForNotifications()
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     // MARK: Helpers
 
     private func registerForNotifications() {
@@ -120,10 +111,11 @@ class PrimerRootViewController: PrimerViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.setupChildViews()
-        self.setupGestureRecognizers()
-        self.blurBackgroundIfNeeded()
-        self.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+        registerForNotifications()
+        setupChildViews()
+        setupGestureRecognizers()
+        blurBackgroundIfNeeded()
+        showLoadingScreenIfNeeded(imageView: nil, message: nil)
     }
 
     // MARK: Helpers

@@ -39,6 +39,7 @@ protocol InternalCardComponentsManagerProtocol {
     var expiryDateField: PrimerExpiryDateFieldView { get }
     var cvvField: PrimerCVVFieldView { get }
     var cardholderField: PrimerCardholderNameFieldView? { get }
+    var selectedCardNetwork: CardNetwork? { get }
     var delegate: InternalCardComponentsManagerDelegate { get }
     var customerId: String? { get }
     var merchantIdentifier: String? { get }
@@ -61,6 +62,7 @@ final class InternalCardComponentsManager: NSObject, InternalCardComponentsManag
     var expiryDateField: PrimerExpiryDateFieldView
     var cvvField: PrimerCVVFieldView
     var cardholderField: PrimerCardholderNameFieldView?
+    var selectedCardNetwork: CardNetwork? // Network selected by the customer in Co-Badged Cards feature
     var billingAddressFieldViews: [PrimerTextFieldView]?
     var isRequiringCVVInput: Bool
     var paymentMethodType: String
@@ -236,7 +238,7 @@ and 4 characters for expiry year separated by '/'.
                     diagnosticsId: UUID().uuidString)
                 errors.append(err)
 
-            } else if !cvvField.cvv.isValidCVV(cardNetwork: CardNetwork(cardNumber: cardnumberField.cardnumber)) {
+            } else if !cvvField.cvv.isValidCVV(cardNetwork: selectedCardNetwork ?? CardNetwork(cardNumber: cardnumberField.cardnumber)) {
                 let err = PrimerValidationError.invalidCvv(
                     message: "CVV is not valid.",
                     userInfo: .errorUserInfoDictionary(),
@@ -288,19 +290,20 @@ and 4 characters for expiry year separated by '/'.
 
         if isRequiringCVVInput {
 
-            let cardPaymentInstrument = CardPaymentInstrument(number: self.cardnumberField.cardnumber,
-                                                              cvv: self.cvvField.cvv,
+            let cardPaymentInstrument = CardPaymentInstrument(number: cardnumberField.cardnumber,
+                                                              cvv: cvvField.cvv,
                                                               expirationMonth: expiryMonth,
                                                               expirationYear: cardExpirationYear,
-                                                              cardholderName: self.cardholderField?.cardholderName)
+                                                              cardholderName: cardholderField?.cardholderName,
+                                                              preferredNetwork: selectedCardNetwork?.rawValue)
             return cardPaymentInstrument
 
-        } else if let configId = AppState.current.apiConfiguration?.getConfigId(for: self.primerPaymentMethodType.rawValue),
-                  let cardholderName = self.cardholderField?.cardholderName {
+        } else if let configId = AppState.current.apiConfiguration?.getConfigId(for: primerPaymentMethodType.rawValue),
+                  let cardholderName = cardholderField?.cardholderName {
 
             let cardOffSessionPaymentInstrument = CardOffSessionPaymentInstrument(paymentMethodConfigId: configId,
-                                                                                  paymentMethodType: self.primerPaymentMethodType.rawValue,
-                                                                                  number: self.cardnumberField.cardnumber,
+                                                                                  paymentMethodType: primerPaymentMethodType.rawValue,
+                                                                                  number: cardnumberField.cardnumber,
                                                                                   expirationMonth: expiryMonth,
                                                                                   expirationYear: cardExpirationYear,
                                                                                   cardholderName: cardholderName)

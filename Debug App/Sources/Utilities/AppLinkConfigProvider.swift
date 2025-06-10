@@ -60,10 +60,11 @@ extension UserDefaults: AppLinkPayloadProviding {
     }
 }
 
-struct AppetizeUrlHandler {
+struct SDKDemoUrlHandler {
     // Handle incoming livedemostore url
+    @discardableResult
     static func handleUrl(_ url: URL) -> Bool {
-        if url.absoluteString.contains("https://sdk-demo.primer.io"),
+        if url.absoluteString.contains("sdk-demo.primer.io"),
         let clientToken = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems?.first(where: { $0.name == "clientToken"}),
         let settings = URLComponents(url: url, resolvingAgainstBaseURL: true)?.queryItems?.first(where: { $0.name == "settings"}) {
             let DeeplinkConfigProvider = DeeplinkConfigProvider(clientToken: clientToken.value, settingsJwt: settings.value)

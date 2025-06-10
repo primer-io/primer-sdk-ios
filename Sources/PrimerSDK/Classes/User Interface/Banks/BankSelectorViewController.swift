@@ -9,10 +9,10 @@ import UIKit
 
 final class BankSelectorViewController: PrimerFormViewController {
 
-    let theme: PrimerThemeProtocol = DependencyContainer.resolve()
+    private let theme: PrimerThemeProtocol = DependencyContainer.resolve()
 
     private var viewModel: BankSelectorTokenizationViewModel!
-    internal private(set) var subtitle: String?
+    private(set) var subtitle: String?
 
     deinit {
         viewModel.cancel()
@@ -21,12 +21,8 @@ final class BankSelectorViewController: PrimerFormViewController {
 
     init(viewModel: BankSelectorTokenizationViewModel) {
         self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
+        super.init()
         self.titleImage = viewModel.uiModule.invertedLogo
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
     override func viewDidLoad() {

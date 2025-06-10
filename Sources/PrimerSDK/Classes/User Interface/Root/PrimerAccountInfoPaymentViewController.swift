@@ -13,7 +13,7 @@ final class PrimerAccountInfoPaymentViewController: PrimerFormViewController {
 
     init(navigationBarLogo: UIImage?, formPaymentMethodTokenizationViewModel: FormPaymentMethodTokenizationViewModel) {
         self.formPaymentMethodTokenizationViewModel = formPaymentMethodTokenizationViewModel
-        super.init(nibName: nil, bundle: nil)
+        super.init()
         self.titleImage = navigationBarLogo
     }
 

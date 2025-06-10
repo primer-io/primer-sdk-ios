@@ -205,12 +205,6 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         return textField
     }()
 
-    var cardNetwork: CardNetwork? {
-        didSet {
-            cvvField.cardNetwork = cardNetwork ?? .unknown
-        }
-    }
-
     var isShowingBillingAddressFieldsRequired: Bool {
         let billingAddressModuleOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
             .first { $0.type == "BILLING_ADDRESS" }?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions

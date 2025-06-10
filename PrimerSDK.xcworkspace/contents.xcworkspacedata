@@ -439,9 +439,6 @@
                   location = "group:UIScreenExtension.swift">
                </FileRef>
                <FileRef
-                  location = "group:WebViewUtil.swift">
-               </FileRef>
-               <FileRef
                   location = "group:NSObject+ClassName.swift">
                </FileRef>
                <FileRef
@@ -449,9 +446,6 @@
                </FileRef>
                <FileRef
                   location = "group:VersionUtils.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PresentationController.swift">
                </FileRef>
                <FileRef
                   location = "group:NSErrorExtension.swift">
@@ -478,9 +472,6 @@
                   location = "group:PrimerCancellable.swift">
                </FileRef>
                <FileRef
-                  location = "group:PostalCode.swift">
-               </FileRef>
-               <FileRef
                   location = "group:IntExtension.swift">
                </FileRef>
                <FileRef
@@ -493,12 +484,6 @@
                   location = "group:AlertController.swift">
                </FileRef>
                <FileRef
-                  location = "group:PrimerTableViewCell.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:URLExtension.swift">
-               </FileRef>
-               <FileRef
                   location = "group:PrimerStackVIew.swift">
                </FileRef>
                <FileRef
@@ -506,9 +491,6 @@
                </FileRef>
                <FileRef
                   location = "group:PrimerImageView.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerCustomStyleTextField.swift">
                </FileRef>
                <FileRef
                   location = "group:Mask.swift">
@@ -521,9 +503,6 @@
                </FileRef>
                <FileRef
                   location = "group:DeeplinkUtils.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerScrollView.swift">
                </FileRef>
                <FileRef
                   location = "group:UIDeviceExtension.swift">
@@ -569,9 +548,6 @@
                </FileRef>
                <FileRef
                   location = "group:AnyEncodable.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:Weak.swift">
                </FileRef>
             </Group>
             <Group
@@ -2222,9 +2198,6 @@
             <FileRef
                location = "group:CurrencyStorageTests.swift">
             </FileRef>
-            <FileRef
-               location = "group:PostalCodeTests.swift">
-            </FileRef>
          </Group>
          <Group
             location = "group:CVV Recapture"
@@ -2356,9 +2329,6 @@
             </FileRef>
             <FileRef
                location = "group:StringTests.swift">
-            </FileRef>
-            <FileRef
-               location = "group:WebViewUtilTests.swift">
             </FileRef>
             <FileRef
                location = "group:DateTests.swift">
@@ -2581,7 +2551,7 @@
                location = "group:Services"
                name = "Services">
                <FileRef
-                  location = "group:CreateResumePaymentService.swift">
+                  location = "group:MockCreateResumePaymentService.swift">
                </FileRef>
                <FileRef
                   location = "group:MockAPIClient.swift">
