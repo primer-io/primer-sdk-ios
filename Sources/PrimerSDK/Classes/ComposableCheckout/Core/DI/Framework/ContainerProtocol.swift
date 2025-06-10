@@ -44,7 +44,6 @@ public extension DIResolver {
     }
 }
 
-
 // MARK: – LifecycleManager: container lifecycle
 public protocol LifecycleManager: Sendable {
     /// Reset all except these

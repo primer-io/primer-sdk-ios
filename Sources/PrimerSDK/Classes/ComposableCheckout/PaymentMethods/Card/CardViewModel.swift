@@ -41,12 +41,12 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
         self.cvvValidator = cvvValidator
         self.expiryDateValidator = expiryDateValidator
         self.cardholderNameValidator = cardholderNameValidator
-        
+
         setupValidatorCallbacks()
-        
+
         logger.debug(message: "📝 CardViewModel initialized with injected validators")
     }
-    
+
     private func setupValidatorCallbacks() {
         // Setup card number validator callbacks
         cardNumberValidator.onCardNetworkChange = { [weak self] network in
@@ -54,13 +54,13 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
 
             // Update the context in form validator
             self.formValidator.updateContext(key: "cardNetwork", value: network)
-            
+
             // Update the CVV validator with the new network
             self.cvvValidator.updateCardNetwork(network)
-            
+
             self.updateCardNetwork(network)
         }
-        
+
         // Note: Other validator callbacks are set up during registration in CompositionRoot
         // This maintains proper separation of concerns
     }

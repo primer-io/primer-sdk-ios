@@ -53,7 +53,7 @@ public struct PrimerCheckout: View {
         Task {
             await CompositionRoot.configure()
             diContainer = await DIContainer.current
-            
+
             // Resolve viewModel from DI container
             if let container = diContainer {
                 do {

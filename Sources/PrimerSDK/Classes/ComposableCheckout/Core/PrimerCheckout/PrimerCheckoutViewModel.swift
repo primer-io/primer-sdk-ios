@@ -114,12 +114,12 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope, LogReporte
 
     private func loadPaymentMethods() async -> [any PaymentMethodProtocol] {
         logger.debug(message: "🔄 Loading available payment methods")
-        
+
         // Use the injected payment methods provider
         let paymentMethods = await paymentMethodsProvider.getAvailablePaymentMethods()
-        
+
         logger.debug(message: "✅ Loaded \(paymentMethods.count) payment methods")
-        
+
         // Optionally filter or sort payment methods based on configuration
         // let enabledMethods = paymentMethods.filter { /* filter condition from config */ }
 

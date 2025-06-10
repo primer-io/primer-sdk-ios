@@ -29,7 +29,7 @@ class CardPaymentMethod: PaymentMethodProtocol {
         guard let container = await DIContainer.current else {
             throw ContainerError.containerUnavailable
         }
-        
+
         self._scope = try await container.resolve(CardViewModel.self)
     }
 

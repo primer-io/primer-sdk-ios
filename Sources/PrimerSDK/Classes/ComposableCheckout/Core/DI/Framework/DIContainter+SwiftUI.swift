@@ -1,6 +1,6 @@
 //
 //  DIContainter+SwiftUI.swift
-//  
+//
 //
 //  Created by Boris on 22. 5. 2025..
 //
@@ -14,7 +14,7 @@ extension DIContainer {
     internal struct DIContainerEnvironmentKey: EnvironmentKey {
         static let defaultValue: (any ContainerProtocol)? = nil
     }
-    
+
     @MainActor
     static func stateObject<T: ObservableObject>(
         _ type: T.Type = T.self,
@@ -35,7 +35,7 @@ extension DIContainer {
 
         return StateObject(wrappedValue: instance)
     }
-    
+
     /// Helper for resolving dependencies in SwiftUI views
     @MainActor
     static func resolve<T>(_ type: T.Type, from environment: EnvironmentValues, name: String? = nil) throws -> T {
@@ -44,7 +44,7 @@ extension DIContainer {
         }
         return try container.resolveSync(type, name: name)
     }
-    
+
     /// StateObject creation with DI fallback using environment
     @MainActor
     static func stateObject<T: ObservableObject>(

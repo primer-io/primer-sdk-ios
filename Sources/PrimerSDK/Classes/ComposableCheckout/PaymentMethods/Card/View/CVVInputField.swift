@@ -107,13 +107,13 @@ struct CVVInputField: View, LogReporter {
             }
         }
     }
-    
+
     private func setupValidationService() {
         guard let container = container else {
             logger.error(message: "DIContainer not available for CVVInputField")
             return
         }
-        
+
         do {
             validationService = try container.resolveSync(ValidationService.self)
         } catch {

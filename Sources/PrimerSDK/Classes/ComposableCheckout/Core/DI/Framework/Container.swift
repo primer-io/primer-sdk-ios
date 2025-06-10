@@ -259,7 +259,6 @@ public actor Container: ContainerProtocol, Sendable, LogReporter {
         }
     }
 
-
     /// Resolve multiple dependencies in parallel
     public func resolveBatch<T>(_ requests: [(type: T.Type, name: String?)]) async throws -> [T] {
         return try await withThrowingTaskGroup(of: (Int, T).self) { group in

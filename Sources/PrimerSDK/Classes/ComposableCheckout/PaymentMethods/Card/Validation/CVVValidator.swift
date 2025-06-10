@@ -55,7 +55,7 @@ class CVVValidator: BaseInputFieldValidator<String> {
         // Full validation on blur
         return validationService.validateCVV(input, cardNetwork: cardNetwork)
     }
-    
+
     /// Updates the card network for CVV validation
     /// - Parameter network: The new card network
     func updateCardNetwork(_ network: CardNetwork) {

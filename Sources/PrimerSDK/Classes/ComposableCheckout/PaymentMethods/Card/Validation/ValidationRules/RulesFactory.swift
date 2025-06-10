@@ -1,10 +1,9 @@
 //
 //  RulesFactory.swift
-//  
+//
 //
 //  Created by Boris on 20. 5. 2025..
 //
-
 
 // RulesFactory.swift
 
@@ -43,18 +42,30 @@ public struct RulesFactory: SynchronousFactory {
 // For convenience, add type-safe helpers
 public extension RulesFactory {
     func createCardNumberRule() -> CardNumberRule {
-        return try! createSync(with: .cardNumber) as! CardNumberRule
+        guard let rule = try? createSync(with: .cardNumber) as? CardNumberRule else {
+            return CardNumberRule()
+        }
+        return rule
     }
 
     func createCardholderNameRule() -> CardholderNameRule {
-        return try! createSync(with: .cardholderName) as! CardholderNameRule
+        guard let rule = try? createSync(with: .cardholderName) as? CardholderNameRule else {
+            return CardholderNameRule()
+        }
+        return rule
     }
 
     func createCVVRule(cardNetwork: CardNetwork) -> CVVRule {
-        return try! createSync(with: .cvv(cardNetwork: cardNetwork)) as! CVVRule
+        guard let rule = try? createSync(with: .cvv(cardNetwork: cardNetwork)) as? CVVRule else {
+            return CVVRule(cardNetwork: cardNetwork)
+        }
+        return rule
     }
 
     func createExpiryDateRule() -> ExpiryDateRule {
-        return try! createSync(with: .expiryDate) as! ExpiryDateRule
+        guard let rule = try? createSync(with: .expiryDate) as? ExpiryDateRule else {
+            return ExpiryDateRule()
+        }
+        return rule
     }
 }
