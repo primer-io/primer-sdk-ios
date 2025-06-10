@@ -144,7 +144,19 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
     func validateRawData(_ data: PrimerRawData, cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> Promise<Void> {
         return Promise { seal in
-            DispatchQueue.global(qos: .userInteractive).async { [self] in
+            DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+                guard let self = self else {
+                    // If self is deallocated, reject the promise gracefully
+                    DispatchQueue.main.async {
+                        let err = PrimerError.unknown(
+                            userInfo: .errorUserInfoDictionary(),
+                            diagnosticsId: UUID().uuidString
+                        )
+                        seal.reject(err)
+                    }
+                    return
+                }
+
                 var errors: [PrimerValidationError] = []
 
                 // Invalid raw data error
