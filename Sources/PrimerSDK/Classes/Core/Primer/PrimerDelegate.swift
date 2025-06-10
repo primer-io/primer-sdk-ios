@@ -4,7 +4,6 @@ public typealias PrimerPaymentMethodTokenData = Response.Body.Tokenization
 
 @objc
 public protocol PrimerDelegate {
-
     // MARK: Required
 
     /// This function will be called when the checkout has been successful.
@@ -24,7 +23,10 @@ public protocol PrimerDelegate {
     /// - Parameters:
     ///   - data: The payment method data containing the token's information.
     ///   - decisionHandler: The handler managing a custom error to optionally pass to the SDK
-    @objc optional func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void)
+    @objc optional func primerWillCreatePaymentWithData(
+        _ data: PrimerCheckoutPaymentMethodData,
+        decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void
+    )
 
     /// This function will be called when the checkout encountered an error.
     /// - Parameters:
@@ -34,14 +36,19 @@ public protocol PrimerDelegate {
     @objc optional func primerDidFailWithError(_ error: Error, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void))
     @objc optional func primerDidDismiss()
 
-    @objc optional func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
+    @objc optional func primerDidTokenizePaymentMethod(
+        _ paymentMethodTokenData: PrimerPaymentMethodTokenData,
+        decisionHandler: @escaping (PrimerResumeDecision) -> Void
+    )
     @objc optional func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecision) -> Void)
     @objc optional func primerDidEnterResumePendingWithPaymentAdditionalInfo(_ additionalInfo: PrimerCheckoutAdditionalInfo?)
 }
 
 final class PrimerDelegateProxy: LogReporter {
-
-    static func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData, decisionHandler: @escaping (PrimerResumeDecisionProtocol) -> Void) {
+    static func primerDidTokenizePaymentMethod(
+        _ paymentMethodTokenData: PrimerPaymentMethodTokenData,
+        decisionHandler: @escaping (PrimerResumeDecisionProtocol) -> Void
+    ) {
         DispatchQueue.main.async {
             if PrimerInternal.shared.sdkIntegrationType == .headless,
                (decisionHandler as ((PrimerHeadlessUniversalCheckoutResumeDecision) -> Void)?) != nil {
@@ -69,7 +76,10 @@ final class PrimerDelegateProxy: LogReporter {
         }
     }
 
-    static func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData, decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void) {
+    static func primerWillCreatePaymentWithData(
+        _ data: PrimerCheckoutPaymentMethodData,
+        decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void
+    ) {
         DispatchQueue.main.async {
             if PrimerInternal.shared.sdkIntegrationType == .headless {
                 let delegate = PrimerHeadlessUniversalCheckout.current.delegate
@@ -144,9 +154,12 @@ final class PrimerDelegateProxy: LogReporter {
         }
     }
 
-    static func primerDidFailWithError(_ error: any PrimerErrorProtocol, data: PrimerCheckoutData?, decisionHandler: @escaping ((PrimerErrorDecision) -> Void)) {
+    static func primerDidFailWithError(
+        _ error: any PrimerErrorProtocol,
+        data: PrimerCheckoutData?,
+        decisionHandler: @escaping ((PrimerErrorDecision) -> Void)
+    ) {
         DispatchQueue.main.async {
-
             let exposedError: Error = error.exposedError
 
             if PrimerInternal.shared.sdkIntegrationType == .headless {
@@ -177,9 +190,9 @@ final class PrimerDelegateProxy: LogReporter {
             } else if PrimerInternal.shared.sdkIntegrationType == .dropIn {
                 if Primer.shared.delegate?.primerDidFailWithError == nil {
                     let message = """
-Delegate function 'primerDidFailWithError' hasn't been implemented.\
-No custom error message will be displayed on the error screen.
-"""
+                    Delegate function 'primerDidFailWithError' hasn't been implemented.\
+                    No custom error message will be displayed on the error screen.
+                    """
                     logger.warn(message: message)
                     decisionHandler(.fail(withErrorMessage: nil))
 
@@ -193,7 +206,6 @@ No custom error message will be displayed on the error screen.
                         }
                     })
                 }
-
             }
         }
     }
@@ -208,6 +220,19 @@ No custom error message will be displayed on the error screen.
                     switch errorDecision.type {
                     case .fail(let message):
                         seal.fulfill(message)
+                    }
+                }
+            }
+        }
+    }
+
+    static func raisePrimerDidFailWithError(_ primerError: PrimerError, data: PrimerCheckoutData?) async throws -> String? {
+        return try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.main.async {
+                PrimerDelegateProxy.primerDidFailWithError(primerError, data: data) { errorDecision in
+                    switch errorDecision.type {
+                    case .fail(let message):
+                        continuation.resume(returning: message)
                     }
                 }
             }

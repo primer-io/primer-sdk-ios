@@ -31,8 +31,8 @@ extension PaymentMethodTokenizationViewModel {
                case .cancelled = primerErr,
                PrimerInternal.shared.sdkIntegrationType == .dropIn,
                self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
-               self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-               self.config.type == PrimerPaymentMethodType.payPal.rawValue {
+                self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
+                self.config.type == PrimerPaymentMethodType.payPal.rawValue {
                 firstly {
                     clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                 }
@@ -126,9 +126,9 @@ extension PaymentMethodTokenizationViewModel {
                PrimerInternal.shared.sdkIntegrationType == .dropIn,
                PrimerInternal.shared.selectedPaymentMethodType == nil,
                self.config.implementationType == .webRedirect ||
-               self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
-               self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
-               self.config.type == PrimerPaymentMethodType.payPal.rawValue {
+                self.config.type == PrimerPaymentMethodType.applePay.rawValue ||
+                self.config.type == PrimerPaymentMethodType.adyenIDeal.rawValue ||
+                self.config.type == PrimerPaymentMethodType.payPal.rawValue {
                 firstly {
                     clientSessionActionsModule.unselectPaymentMethodIfNeeded()
                 }
@@ -429,6 +429,17 @@ extension PaymentMethodTokenizationViewModel {
                 PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { resumeDecision in
                     if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
                         switch resumeDecisionType {
+                        case .fail(let message):
+                            let err: Error!
+                            if let message {
+                                err = PrimerError.merchantError(message: message,
+                                                                userInfo: .errorUserInfoDictionary(),
+                                                                diagnosticsId: UUID().uuidString)
+                            } else {
+                                err = NSError.emptyDescriptionError
+                            }
+                            continuation.resume(throwing: err)
+
                         case .succeed:
                             continuation.resume(returning: nil)
 
@@ -445,23 +456,12 @@ extension PaymentMethodTokenizationViewModel {
                                         throw err
                                     }
                                     continuation.resume(returning: decodedJWTToken)
-
                                 } catch {
                                     continuation.resume(throwing: error)
                                 }
                             }
-
-                        case .fail(let message):
-                            let err: Error!
-                            if let message {
-                                err = PrimerError.merchantError(message: message,
-                                                                userInfo: .errorUserInfoDictionary(),
-                                                                diagnosticsId: UUID().uuidString)
-                            } else {
-                                err = NSError.emptyDescriptionError
-                            }
-                            continuation.resume(throwing: err)
                         }
+
                     } else {
                         preconditionFailure()
                     }
