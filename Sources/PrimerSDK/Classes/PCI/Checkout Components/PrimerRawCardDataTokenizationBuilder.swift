@@ -46,8 +46,6 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
     var cardValidationService: CardValidationService?
 
-    private var lastValidationErrors: [PrimerValidationError] = []
-
     var isDataValid: Bool = false
     var paymentMethodType: String
 
@@ -257,8 +255,6 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                             diagnosticsId: UUID().uuidString))
                     }
                 }
-
-                self.lastValidationErrors = errors
 
                 if !errors.isEmpty {
                     let err = PrimerError.underlyingErrors(
