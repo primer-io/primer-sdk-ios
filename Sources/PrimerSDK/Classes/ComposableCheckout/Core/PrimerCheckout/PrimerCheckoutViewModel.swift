@@ -149,24 +149,55 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope, LogReporte
     init(taskManager: TaskManager, paymentMethodsProvider: PaymentMethodsProvider) {
         self.taskManager = taskManager
         self.paymentMethodsProvider = paymentMethodsProvider
+
+        // Create payment methods stream immediately so it's ready for yielding
+        logger.debug(message: "🚀 [PrimerCheckoutViewModel] Creating payment methods stream during initialization")
+        self.paymentMethodsStream = ContinuableStream<[any PaymentMethodProtocol]> { [weak self] continuation in
+            guard let self = self else {
+                return
+            }
+            logger.debug(message: "🎯 [PrimerCheckoutViewModel] Payment methods stream initialized, yielding current methods: \(self.availablePaymentMethods.count)")
+            continuation.yield(self.availablePaymentMethods)
+        }
+        logger.info(message: "✅ [PrimerCheckoutViewModel] Payment methods stream created during initialization")
     }
 
     // MARK: - Public Methods
 
     /// Process the client token and initialize the SDK.
     func processClientToken(_ token: String) async {
-        guard clientToken != token else { return }
+        logger.info(message: "🚀 [PrimerCheckoutViewModel] Starting client token processing")
+        logger.debug(message: "🔐 [PrimerCheckoutViewModel] Token length: \(token.count) characters")
+
+        guard clientToken != token else {
+            logger.debug(message: "⏭️ [PrimerCheckoutViewModel] Token already processed, skipping")
+            return
+        }
 
         do {
+            logger.debug(message: "🔄 [PrimerCheckoutViewModel] Setting client token")
             self.clientToken = token
+
+            logger.debug(message: "🔧 [PrimerCheckoutViewModel] Configuring SDK with token")
             try await configureSDK(with: token)
+
+            logger.info(message: "🔄 [PrimerCheckoutViewModel] Loading payment methods")
             self.availablePaymentMethods = await loadPaymentMethods()
+            logger.info(message: "📋 [PrimerCheckoutViewModel] Loaded \(self.availablePaymentMethods.count) payment methods")
 
             // Update the payment methods stream with the loaded methods
-            paymentMethodsStream?.yield(self.availablePaymentMethods)
+            logger.debug(message: "🌊 [PrimerCheckoutViewModel] Updating payment methods stream")
+            if let stream = paymentMethodsStream {
+                logger.debug(message: "✅ [PrimerCheckoutViewModel] Payment methods stream exists, yielding \(self.availablePaymentMethods.count) methods")
+                stream.yield(self.availablePaymentMethods)
+            } else {
+                logger.warn(message: "⚠️ [PrimerCheckoutViewModel] Payment methods stream is nil - cannot yield methods")
+            }
 
+            logger.info(message: "✅ [PrimerCheckoutViewModel] Client token processing completed successfully")
             isClientTokenProcessed = true
         } catch {
+            logger.error(message: "🚨 [PrimerCheckoutViewModel] Client token processing failed: \(error.localizedDescription)")
             setError(ComponentsPrimerError.clientTokenError(error))
         }
     }
@@ -185,17 +216,21 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope, LogReporte
 
     /// Returns an AsyncStream of available payment methods.
     func paymentMethods() -> AsyncStream<[any PaymentMethodProtocol]> {
-        if let stream = paymentMethodsStream?.stream {
-            return stream
-        } else {
-            // Create a new stream that immediately yields available methods
-            let continuable = ContinuableStream<[any PaymentMethodProtocol]> { [weak self] continuation in
-                guard let self = self else { return }
+        logger.debug(message: "🌊 [PrimerCheckoutViewModel] Payment methods stream requested")
+
+        guard let stream = paymentMethodsStream?.stream else {
+            logger.error(message: "🚨 [PrimerCheckoutViewModel] Payment methods stream is nil - this should not happen")
+            // Fallback: create a new stream with current methods
+            let fallbackStream = AsyncStream<[any PaymentMethodProtocol]> { continuation in
+                logger.warn(message: "⚠️ [PrimerCheckoutViewModel] Using fallback stream with \(self.availablePaymentMethods.count) methods")
                 continuation.yield(self.availablePaymentMethods)
+                continuation.finish()
             }
-            paymentMethodsStream = continuable
-            return continuable.stream
+            return fallbackStream
         }
+
+        logger.debug(message: "✅ [PrimerCheckoutViewModel] Returning pre-created payment methods stream")
+        return stream
     }
 
     /// Returns an AsyncStream of the currently selected payment method.

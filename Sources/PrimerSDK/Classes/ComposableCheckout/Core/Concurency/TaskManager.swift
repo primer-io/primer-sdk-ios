@@ -9,7 +9,7 @@ import Foundation
 
 /// An actor‑based task manager to track and cancel async tasks.
 @available(iOS 15.0, *)
-actor TaskManager {
+actor TaskManager: LogReporter {
     private var tasks = [UUID: Task<Void, Never>]()
 
     /// Starts and tracks a new task.
@@ -19,11 +19,16 @@ actor TaskManager {
         operation: @escaping () async -> Void
     ) -> UUID {
         let id = UUID()
+        logger.debug(message: "🚀 [TaskManager] Starting new task: \(id) with priority: \(priority?.rawValue ?? 0)")
+
         let task = Task(priority: priority) {
+            logger.debug(message: "🔄 [TaskManager] Executing task: \(id)")
             await operation()
+            logger.debug(message: "✅ [TaskManager] Task \(id) completed, removing from tracking")
             self.removeTask(id: id)
         }
         tasks[id] = task
+        logger.debug(message: "📋 [TaskManager] Task \(id) registered. Total active tasks: \(tasks.count)")
         return id
     }
 

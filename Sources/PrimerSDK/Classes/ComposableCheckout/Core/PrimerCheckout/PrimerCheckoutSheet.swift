@@ -9,7 +9,7 @@ import SwiftUI
 
 /// Default sheet UI for the Primer checkout experience.
 @available(iOS 15.0, *)
-struct PrimerCheckoutSheet: View {
+struct PrimerCheckoutSheet: View, LogReporter {
     @ObservedObject var viewModel: PrimerCheckoutViewModel
 
     @State private var paymentMethods: [any PaymentMethodProtocol] = []
@@ -18,7 +18,8 @@ struct PrimerCheckoutSheet: View {
     @Environment(\.designTokens) private var tokens
 
     var body: some View {
-        VStack(spacing: 0) {
+        logger.debug(message: "🎨 [PrimerCheckoutSheet] Rendering body - payment methods: \(paymentMethods.count), selected: \(selectedMethod?.name ?? "none")")
+        return VStack(spacing: 0) {
             headerView
 
             if let selectedMethod = selectedMethod {
@@ -31,14 +32,29 @@ struct PrimerCheckoutSheet: View {
         .background(tokens?.primerColorBackground ?? .white)
         .cornerRadius(12)
         .task {
+            logger.info(message: "🌊 [PrimerCheckoutSheet] Starting payment methods stream task")
             for await methods in viewModel.paymentMethods() {
+                logger.info(message: "📋 [PrimerCheckoutSheet] Received \(methods.count) payment methods from stream")
+                for (index, method) in methods.enumerated() {
+                    logger.debug(message: "📋 [PrimerCheckoutSheet] Method \(index + 1): \(method.name ?? "Unknown") (ID: \(method.id))")
+                }
                 paymentMethods = methods
             }
+            logger.warn(message: "⚠️ [PrimerCheckoutSheet] Payment methods stream ended")
         }
         .task {
+            logger.debug(message: "🌊 [PrimerCheckoutSheet] Starting selected payment method stream task")
             for await method in viewModel.selectedPaymentMethod() {
+                logger.debug(message: "🎯 [PrimerCheckoutSheet] Selected method changed: \(method?.name ?? "nil")")
                 selectedMethod = method
             }
+            logger.warn(message: "⚠️ [PrimerCheckoutSheet] Selected payment method stream ended")
+        }
+        .onAppear {
+            logger.info(message: "👁️ [PrimerCheckoutSheet] View appeared")
+        }
+        .onDisappear {
+            logger.info(message: "👋 [PrimerCheckoutSheet] View disappeared")
         }
     }
 
