@@ -108,8 +108,8 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope, LogReporte
 
     private func configureSDK(with token: String) async throws {
         // This would integrate with the actual Primer SDK
-        // For now, simulate initialization delay
-        try await Task.sleep(nanoseconds: 1 * 1_000_000_000)
+        // For now, just log the token processing without delay
+        logger.debug(message: "🔧 Configuring SDK with client token: \(token.prefix(20))...")
     }
 
     private func loadPaymentMethods() async -> [any PaymentMethodProtocol] {

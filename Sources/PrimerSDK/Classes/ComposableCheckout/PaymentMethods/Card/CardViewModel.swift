@@ -953,7 +953,7 @@ struct CountryPickerField: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
 
-            Button(action: { isShowingPicker = true }) {
+            Button(action: { isShowingPicker = true }, label: {
                 HStack {
                     Text(selectedCountry.isEmpty ? "Select a country" : selectedCountry)
                         .foregroundColor(selectedCountry.isEmpty ? .gray : .primary)
@@ -964,7 +964,7 @@ struct CountryPickerField: View {
                 .padding()
                 .background(Color(.systemGray6))
                 .cornerRadius(8)
-            }
+            })
 
             if let validationError = validationError {
                 Text(validationError)
@@ -1012,7 +1012,7 @@ struct CountryPickerView: View {
         NavigationView {
             List {
                 ForEach(filteredCountries, id: \.code) { country in
-                    Button(action: { onCountrySelected(country) }) {
+                    Button(action: { onCountrySelected(country) }, label: {
                         HStack {
                             Text(country.flag)
                                 .padding(.trailing, 8)
@@ -1023,7 +1023,7 @@ struct CountryPickerView: View {
                                     .foregroundColor(.blue)
                             }
                         }
-                    }
+                    })
                     .foregroundColor(.primary)
                 }
             }

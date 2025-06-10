@@ -83,31 +83,31 @@ public struct PrimerCheckout: View {
                     .onAppear {
                         setupContainer()
                     }
-            } else if let vm = viewModel {
-                if !vm.isClientTokenProcessed {
+            } else if let viewModel = viewModel {
+                if !viewModel.isClientTokenProcessed {
                     ProgressView("Processing client token...")
                         .onAppear {
                             Task {
-                                await vm.processClientToken(clientToken)
+                                await viewModel.processClientToken(clientToken)
                             }
                         }
-                } else if let error = vm.error {
+                } else if let error = viewModel.error {
                     failureView(error: error)
-                } else if vm.isCheckoutComplete {
+                } else if viewModel.isCheckoutComplete {
                     successView()
                 } else {
-                    checkoutContent(viewModel: vm)
+                    checkoutContent(viewModel: viewModel)
                 }
             }
         }
         .environment(\.diContainer, diContainer)
         .environment(\.designTokens, tokensManager.tokens)
         .task {
-            if let vm = viewModel {
+            if let viewModel = viewModel {
                 do {
                     try await tokensManager.fetchTokens(for: colorScheme)
                 } catch {
-                    vm.setError(ComponentsPrimerError.designTokensError(error))
+                    viewModel.setError(ComponentsPrimerError.designTokensError(error))
                 }
             }
         }

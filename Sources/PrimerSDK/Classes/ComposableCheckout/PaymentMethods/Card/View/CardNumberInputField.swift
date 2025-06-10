@@ -257,7 +257,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
         return formatted
     }
 
-    // TODO: Needs to be udpated with new ValidationCoordinator implementation like
+    // FIXME: Update with new ValidationCoordinator implementation
     class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
         // MARK: - Properties
 
@@ -394,7 +394,11 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 // Handle deletion operation
                 if range.length > 0 {
                     // Convert formatted range to unformatted range for selection deletion
-                    let unformattedRange = getUnformattedRange(formattedRange: range, formattedText: textField.text ?? "", unformattedText: currentText)
+                    let unformattedRange = getUnformattedRange(
+                        formattedRange: range,
+                        formattedText: textField.text ?? "",
+                        unformattedText: currentText
+                    )
                     logger.debug(message: "🗑️ Deletion - formatted range \(range.location),\(range.length) → unformatted range \(unformattedRange.location),\(unformattedRange.length)")
                     newCardNumber = handleDeletion(currentText: currentText, unformattedRange: unformattedRange)
                 } else if range.location > 0 {

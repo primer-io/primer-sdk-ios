@@ -182,7 +182,8 @@ extension CompositionRoot {
             .with { resolver in
                 // Resolve dependencies
                 let taskManager = (try? await resolver.resolve(TaskManager.self)) ?? TaskManager()
-                let paymentMethodsProvider = (try? await resolver.resolve(PaymentMethodsProvider.self)) ?? DefaultPaymentMethodsProvider(container: container)
+                let paymentMethodsProvider = (try? await resolver.resolve(PaymentMethodsProvider.self)) ??
+                    DefaultPaymentMethodsProvider(container: container)
 
                 return await MainActor.run {
                     return PrimerCheckoutViewModel(
@@ -196,7 +197,8 @@ extension CompositionRoot {
         _ = try? await container.register(CardViewModel.self)
             .asTransient()
             .with { resolver in
-                let validationService = (try? await resolver.resolve(ValidationService.self)) ?? DefaultValidationService(rulesFactory: RulesFactory())
+                let validationService = (try? await resolver.resolve(ValidationService.self)) ??
+                    DefaultValidationService(rulesFactory: RulesFactory())
                 let formValidator = (try? await resolver.resolve(FormValidator.self)) ?? CardFormValidator(validationService: validationService)
 
                 // Create validators with callback placeholders (will be set up in CardViewModel)

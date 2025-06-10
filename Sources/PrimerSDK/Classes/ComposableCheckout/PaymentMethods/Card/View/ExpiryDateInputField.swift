@@ -340,7 +340,8 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
                 logger.debug(message: "🗑️ Deletion detected in expiry date field")
 
                 // If deleting the separator, also remove the character before it
-                if range.location == 2 && range.length == 1 && currentText.count >= 3 && currentText[currentText.index(currentText.startIndex, offsetBy: 2)] == "/" {
+                if range.location == 2 && range.length == 1 && currentText.count >= 3 &&
+                   currentText[currentText.index(currentText.startIndex, offsetBy: 2)] == "/" {
                     let newText = String(currentText.prefix(1))
                     logger.debug(message: "🗑️ Deleting separator and character before it: '\(currentText)' → '\(newText)'")
                     return newText
