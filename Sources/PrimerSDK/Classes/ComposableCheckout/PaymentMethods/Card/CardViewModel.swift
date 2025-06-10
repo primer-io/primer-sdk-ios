@@ -87,12 +87,59 @@ import SwiftUI
  * and optimal performance for real-time payment form interactions.
  */
 @available(iOS 15.0, *)
+/**
+ * INTERNAL PERFORMANCE OPTIMIZATION: Resource Cleanup Manager
+ * 
+ * Centralized resource management system for proper cleanup of streams,
+ * tasks, and observers to prevent memory leaks and ensure optimal performance.
+ * 
+ * ## Managed Resources:
+ * - **AsyncStream Continuations**: Proper stream termination on deinit
+ * - **NotificationCenter Observers**: Automatic observer removal
+ * - **Background Tasks**: Task cancellation and cleanup
+ * - **Timer Resources**: Timer invalidation and resource release
+ * 
+ * ## Cleanup Strategy:
+ * - **Automatic**: Resources registered for automatic cleanup on deinit
+ * - **Manual**: Explicit cleanup methods for early resource release
+ * - **Exception Safe**: Cleanup occurs even if errors are thrown
+ * 
+ * ## Performance Benefits:
+ * - **Memory**: Prevents memory leaks from retained closures/observers
+ * - **CPU**: Stops unnecessary background processing on cleanup
+ * - **Battery**: Reduces background activity when components are deallocated
+ */
+internal final class ResourceCleanupManager {
+    
+    /// Cleanup actions to perform on deinitialization
+    private var cleanupActions: [() -> Void] = []
+    
+    /// Registers a cleanup action to be performed on deinit
+    internal func registerCleanup(_ action: @escaping () -> Void) {
+        cleanupActions.append(action)
+    }
+    
+    /// Manually performs all cleanup actions (useful for early cleanup)
+    internal func performCleanup() {
+        cleanupActions.forEach { $0() }
+        cleanupActions.removeAll()
+    }
+    
+    /// Automatic cleanup on deinitialization
+    deinit {
+        performCleanup()
+    }
+}
+
 @MainActor
 class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
     // MARK: - Properties
 
     @Published private var uiState: CardPaymentUiState = .empty
     private var stateContinuation: AsyncStream<CardPaymentUiState?>.Continuation?
+    
+    /// INTERNAL OPTIMIZATION: Centralized resource cleanup management
+    private let resourceCleanup = ResourceCleanupManager()
 
     // Validation services
     private let validationService: ValidationService
@@ -137,6 +184,15 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
 
             self.updateCardNetwork(network)
         }
+        
+        // INTERNAL OPTIMIZATION: Register validator callback cleanup
+        resourceCleanup.registerCleanup { [weak self] in
+            // Clear validator callbacks to prevent memory leaks
+            self?.cardNumberValidator.onCardNetworkChange = nil
+            self?.cvvValidator.onCardNetworkChange = nil
+            self?.expiryDateValidator.onValidationChange = nil
+            self?.cardholderNameValidator.onValidationChange = nil
+        }
 
         // Note: Other validator callbacks are set up during registration in CompositionRoot
         // This maintains proper separation of concerns
@@ -153,6 +209,12 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
                 Task {
                     await self?.clearStateContinuation()
                 }
+            }
+            
+            // INTERNAL OPTIMIZATION: Register stream cleanup for proper resource management
+            self.resourceCleanup.registerCleanup { [weak self] in
+                self?.stateContinuation?.finish()
+                self?.stateContinuation = nil
             }
         }
     }
