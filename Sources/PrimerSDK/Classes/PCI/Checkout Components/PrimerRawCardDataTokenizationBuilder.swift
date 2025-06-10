@@ -16,7 +16,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
         didSet {
             if let rawCardData = self.rawData as? PrimerCardData {
                 rawCardData.onDataDidChange = { [weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     _ = self.validateRawData(rawCardData)
 
                     let newCardNetwork = CardNetwork(cardNumber: rawCardData.cardNumber)
@@ -143,7 +143,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
     func validateRawData(_ data: PrimerRawData, cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> Promise<Void> {
         return Promise { seal in
             DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-                guard let self = self else {
+                guard let self else {
                     // If self is deallocated, reject the promise gracefully
                     DispatchQueue.main.async {
                         let err = PrimerError.unknown(
