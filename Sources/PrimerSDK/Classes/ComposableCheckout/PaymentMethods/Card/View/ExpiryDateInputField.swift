@@ -343,7 +343,7 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
 
                 // If deleting the separator, also remove the character before it
                 if range.location == 2 && range.length == 1 && currentText.count >= 3 &&
-                   currentText[currentText.index(currentText.startIndex, offsetBy: 2)] == "/" {
+                    currentText[currentText.index(currentText.startIndex, offsetBy: 2)] == "/" {
                     let newText = String(currentText.prefix(1))
                     logger.debug(message: "🗑️ Deleting separator and character before it: '\(currentText)' → '\(newText)'")
                     return newText
@@ -357,7 +357,6 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
                     newText = currentText.replacingCharacters(in: start..<end, with: "")
                     logger.debug(message: "🗑️ Range deletion from \(range.location) to \(range.location + range.length)")
                 } else if range.location < currentText.count {
-                    let index = currentText.index(currentText.startIndex, offsetBy: range.location)
                     var chars = Array(currentText)
                     chars.remove(at: range.location)
                     newText = String(chars)

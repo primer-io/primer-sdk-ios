@@ -9,31 +9,31 @@ import Foundation
 
 /**
  * INTERNAL DOCUMENTATION: Validation Coordination Strategy
- * 
+ *
  * This protocol defines a sophisticated validation timing system that balances
  * user experience with validation accuracy through strategic timing of feedback.
- * 
+ *
  * ## Validation Timing Strategy:
- * 
+ *
  * ### 1. Two-Phase Validation Approach
  * - **While Typing (`validateWhileTyping`)**: Lenient, non-disruptive validation
  * - **On Blur (`validateOnBlur`)**: Comprehensive validation with full error feedback
- * 
+ *
  * ### 2. Timing Rationale
  * ```
  * User Types → Light Validation (No Errors Shown)
  * User Leaves Field → Full Validation (Errors Displayed)
  * ```
- * 
+ *
  * This pattern prevents annoying users with premature error messages while
  * still providing real-time positive feedback for valid input.
- * 
+ *
  * ### 3. Validation Feedback Coordination
  * - **onValidationChange**: Immediate boolean feedback for UI state changes
  * - **onErrorMessageChange**: Contextual error messages for user guidance
- * 
+ *
  * ## Implementation Pattern:
- * 
+ *
  * ### 1. During Typing (Non-Intrusive)
  * ```swift
  * func validateWhileTyping(_ input: String) -> ValidationResult {
@@ -42,7 +42,7 @@ import Foundation
  *     return result.isValid ? .valid : .valid // Suppress errors while typing
  * }
  * ```
- * 
+ *
  * ### 2. On Focus Loss (Comprehensive)
  * ```swift
  * func validateOnBlur(_ input: String) -> ValidationResult {
@@ -50,18 +50,18 @@ import Foundation
  *     return validationService.validate(input, strict: true)
  * }
  * ```
- * 
+ *
  * ## User Experience Benefits:
  * - **Reduced Frustration**: No premature error interruptions
  * - **Progressive Disclosure**: Errors appear when user is ready
  * - **Immediate Positive Feedback**: Valid states are confirmed immediately
  * - **Clear Error Context**: Full error messages when user completes field
- * 
+ *
  * ## Performance Characteristics:
  * - **Typing Validation**: O(1) - Basic format checks only
  * - **Blur Validation**: O(n) - Complete rule evaluation
  * - **Callback Overhead**: Minimal - Single closure invocation
- * 
+ *
  * This coordination strategy ensures optimal balance between validation accuracy
  * and user experience, following modern UX best practices for form validation.
  */

@@ -5,6 +5,9 @@
 //  Created by Boris on 16. 5. 2025..
 //
 
+import SwiftUI
+import Foundation
+
 // CompositionRoot.swift
 @available(iOS 15.0, *)
 public final class CompositionRoot {
@@ -201,7 +204,8 @@ extension CompositionRoot {
             .with { resolver in
                 let validationService = (try? await resolver.resolve(ValidationService.self)) ??
                     DefaultValidationService(rulesFactory: RulesFactory())
-                let formValidator = (try? await resolver.resolve(FormValidator.self)) ?? CardFormValidator(validationService: validationService)
+                let formValidator = (try? await resolver.resolve(FormValidator.self)) ??
+                    CardFormValidator(validationService: validationService)
 
                 // Create validators with callback placeholders (will be set up in CardViewModel)
                 let cardNumberValidator = (try? await resolver.resolve(CardNumberValidator.self)) ??
@@ -262,12 +266,12 @@ extension CompositionRoot {
     private static func registerPaymentMethods(in container: Container) async {
         // Register ALL payment method implementations with the same protocol
 
-        // Card payment
+        // Card payment - use mock implementation for now
         _ = try? await container.register((any PaymentMethodProtocol).self)
             .named("card")  // Names help distinguish between implementations
-            .asTransient()
+            .asSingleton()  // Use singleton so resolveAll can find it
             .with { _ in
-                return try await CardPaymentMethod()
+                return await MockCardPaymentMethod()
             }
 
         //        // Apple Pay
@@ -288,5 +292,142 @@ extension CompositionRoot {
 
         // Easily add new payment methods by just registering them here
         // No need to modify the ViewModel!
+    }
+}
+
+// MARK: - Mock Implementations
+
+// MARK: - Mock Payment Method Scope
+
+// Mock UI State for the payment method
+@available(iOS 15.0, *)
+internal struct MockCardPaymentUiState: PrimerPaymentMethodUiState {
+    var isProcessing: Bool = false
+    var errorMessage: String?
+    var isReady: Bool = true
+}
+
+@available(iOS 15.0, *)
+internal final class MockCardPaymentMethodScope: PrimerPaymentMethodScope {
+    typealias T = MockCardPaymentUiState
+
+    @MainActor
+    private var uiState: MockCardPaymentUiState = MockCardPaymentUiState()
+    private var stateContinuation: AsyncStream<MockCardPaymentUiState?>.Continuation?
+
+    func state() -> AsyncStream<MockCardPaymentUiState?> {
+        return AsyncStream { continuation in
+            self.stateContinuation = continuation
+            continuation.yield(uiState)
+
+            continuation.onTermination = { [weak self] _ in
+                Task {
+                    await self?.clearStateContinuation()
+                }
+            }
+        }
+    }
+
+    @MainActor
+    private func clearStateContinuation() {
+        stateContinuation = nil
+    }
+
+    func submit() async throws -> PaymentResult {
+        // Update state to processing
+        await MainActor.run {
+            uiState.isProcessing = true
+            stateContinuation?.yield(uiState)
+        }
+
+        // Simulate processing delay
+        try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
+
+        // Update state to completed
+        await MainActor.run {
+            uiState.isProcessing = false
+            stateContinuation?.yield(uiState)
+        }
+
+        // Return mock successful result
+        return PaymentResult(
+            transactionId: "mock_tx_\(UUID().uuidString.prefix(8))",
+            amount: Decimal(99.99),
+            currency: "USD"
+        )
+    }
+
+    func cancel() async {
+        // Mock cancel implementation
+        await MainActor.run {
+            uiState.isProcessing = false
+            uiState.errorMessage = nil
+            stateContinuation?.yield(uiState)
+        }
+        print("🛑 Mock payment cancelled")
+    }
+
+    deinit {
+        stateContinuation?.finish()
+    }
+}
+
+@available(iOS 15.0, *)
+internal final class MockCardPaymentMethod: PaymentMethodProtocol {
+    typealias ScopeType = MockCardPaymentMethodScope
+
+    var id: String = "mock_card"
+    var name: String? = "Card (Mock)"
+    var type: PaymentMethodType = .paymentCard
+
+    @MainActor
+    private let _scope: MockCardPaymentMethodScope
+
+    @MainActor
+    init() async {
+        // Simple mock initialization without DI dependencies
+        self._scope = MockCardPaymentMethodScope()
+    }
+
+    @MainActor
+    var scope: MockCardPaymentMethodScope {
+        _scope
+    }
+
+    @MainActor
+    func content<V: View>(@ViewBuilder content: @escaping (MockCardPaymentMethodScope) -> V) -> AnyView {
+        return AnyView(content(_scope))
+    }
+
+    @MainActor
+    func defaultContent() -> AnyView {
+        AnyView(
+            VStack(spacing: 16) {
+                Text("Mock Card Payment")
+                    .font(.headline)
+                    .padding()
+
+                Text("This is a mock implementation for testing")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+
+                Button("Process Mock Payment") {
+                    Task {
+                        do {
+                            let result = try await self._scope.submit()
+                            print("✅ Mock payment processed: \(result.transactionId)")
+                        } catch {
+                            print("❌ Mock payment failed: \(error)")
+                        }
+                    }
+                }
+                .padding()
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(8)
+            }
+            .padding()
+        )
     }
 }

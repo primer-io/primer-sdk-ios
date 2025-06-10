@@ -12,7 +12,7 @@ import Foundation
  * This centralizes payment method discovery and management.
  */
 @available(iOS 15.0, *)
-protocol PaymentMethodsProvider: Sendable {
+protocol PaymentMethodsProvider {
     /// Get all available payment methods
     func getAvailablePaymentMethods() async -> [any PaymentMethodProtocol]
 
@@ -24,7 +24,7 @@ protocol PaymentMethodsProvider: Sendable {
 }
 
 @available(iOS 15.0, *)
-class DefaultPaymentMethodsProvider: PaymentMethodsProvider, LogReporter {
+final class DefaultPaymentMethodsProvider: PaymentMethodsProvider, LogReporter, @unchecked Sendable {
     private let container: any ContainerProtocol
 
     init(container: any ContainerProtocol) {

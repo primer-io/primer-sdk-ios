@@ -11,17 +11,17 @@ import UIKit
 
 /**
  * INTERNAL PERFORMANCE OPTIMIZATION: Card Number Formatting Cache
- * 
+ *
  * High-performance caching system for card number formatting operations.
  * Since card formatting happens on every keystroke, caching provides significant
  * performance improvements for repeated formatting operations.
- * 
+ *
  * ## Cache Strategy:
  * - **Key**: Combination of card number + card network type
  * - **Value**: Pre-formatted card number string
  * - **Size Limit**: 100 entries (typical user session has 10-20 unique formats)
  * - **Eviction**: LRU eviction when cache reaches capacity
- * 
+ *
  * ## Performance Impact:
  * - **Cache Hit**: O(1) - Direct hash table lookup
  * - **Cache Miss**: O(n) - Original formatting algorithm + cache store
@@ -29,45 +29,45 @@ import UIKit
  * - **Hit Rate**: Expected 85-95% for typical user input patterns
  */
 internal final class CardFormattingCache {
-    
+
     /// Shared cache instance for optimal memory usage across all card input fields
     internal static let shared = CardFormattingCache()
-    
+
     /// Internal cache storage with automatic cleanup
     private let cache = NSCache<NSString, NSString>()
-    
+
     private init() {
         // Configure cache for optimal performance
         cache.countLimit = 100  // Limit to prevent excessive memory usage
         cache.totalCostLimit = 5000  // ~5KB memory limit
     }
-    
+
     /// Generates cache key from card number and network type
     private func cacheKey(for number: String, network: CardNetwork) -> String {
         return "\(number)_\(network.rawValue)"
     }
-    
+
     /// Retrieves formatted card number from cache or performs formatting
     internal func formattedCardNumber(
-        _ number: String, 
-        for network: CardNetwork, 
+        _ number: String,
+        for network: CardNetwork,
         formatter: (String, CardNetwork) -> String
     ) -> String {
-        let key = cacheKey(for: number, network)
+        let key = cacheKey(for: number, network: network)
         let cacheKey = key as NSString
-        
+
         // Check cache first
         if let cachedResult = cache.object(forKey: cacheKey) {
             return cachedResult as String
         }
-        
+
         // Cache miss - perform formatting and store result
         let formatted = formatter(number, network)
         cache.setObject(formatted as NSString, forKey: cacheKey)
-        
+
         return formatted
     }
-    
+
     /// Clears cache when memory pressure is detected
     internal func clearCache() {
         cache.removeAllObjects()
@@ -642,7 +642,7 @@ struct CardNumberTextField: UIViewRepresentable, LogReporter {
 
             // Get current text for comparison
             let currentFormattedText = primerTextField.text ?? ""
-            let currentUnformattedText = primerTextField.internalText ?? ""
+            _ = primerTextField.internalText ?? "" // Suppress unused variable warning
 
             // Determine card network only if we have enough digits
             let networkChanged = updateCardNetworkIfNeeded(newText: newText)
