@@ -5,6 +5,8 @@
 //  Created by Boris on 21.3.25..
 //
 
+// swiftlint:disable file_length
+
 import SwiftUI
 import UIKit
 
@@ -31,8 +33,9 @@ struct ExpiryDateInputField: View, LogReporter {
 
     // MARK: - Private Properties
 
-    /// The validation service used to validate the expiry date
-    private let validationService: ValidationService
+    /// The validation service resolved from DI environment
+    @Environment(\.diContainer) private var container
+    @State private var validationService: ValidationService?
 
     /// The expiry date entered by the user
     @State private var expiryDate: String = ""
@@ -56,14 +59,12 @@ struct ExpiryDateInputField: View, LogReporter {
     init(
         label: String,
         placeholder: String,
-        validationService: ValidationService = DefaultValidationService(),
         onValidationChange: ((Bool) -> Void)? = nil,
         onMonthChange: ((String) -> Void)? = nil,
         onYearChange: ((String) -> Void)? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
-        self.validationService = validationService
         self.onValidationChange = onValidationChange
         self.onMonthChange = onMonthChange
         self.onYearChange = onYearChange
@@ -79,18 +80,28 @@ struct ExpiryDateInputField: View, LogReporter {
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
 
             // Expiry date input field
-            ExpiryDateTextField(
-                expiryDate: $expiryDate,
-                month: $month,
-                year: $year,
-                isValid: $isValid,
-                errorMessage: $errorMessage,
-                placeholder: placeholder,
-                validationService: validationService
-            )
-            .padding()
-            .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-            .cornerRadius(8)
+            if let validationService = validationService {
+                ExpiryDateTextField(
+                    expiryDate: $expiryDate,
+                    month: $month,
+                    year: $year,
+                    isValid: $isValid,
+                    errorMessage: $errorMessage,
+                    placeholder: placeholder,
+                    validationService: validationService
+                )
+                .padding()
+                .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
+                .cornerRadius(8)
+            } else {
+                // Fallback view while loading validation service
+                TextField(placeholder, text: $expiryDate)
+                    .keyboardType(.numberPad)
+                    .disabled(true)
+                    .padding()
+                    .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
+                    .cornerRadius(8)
+            }
 
             // Error message
             if let errorMessage = errorMessage {
@@ -99,6 +110,10 @@ struct ExpiryDateInputField: View, LogReporter {
                     .foregroundColor(.red)
                     .padding(.top, 2)
             }
+        }
+        .onAppear {
+            setupValidationService()
+            logger.debug(message: "👁️ Expiry date input field appeared")
         }
         .onChange(of: isValid) { newValue in
             if let isValid = newValue {
@@ -121,8 +136,18 @@ struct ExpiryDateInputField: View, LogReporter {
                 onYearChange?(newValue)
             }
         }
-        .onAppear {
-            logger.debug(message: "👁️ Expiry date input field appeared")
+    }
+
+    private func setupValidationService() {
+        guard let container = container else {
+            logger.error(message: "DIContainer not available for ExpiryDateInputField")
+            return
+        }
+
+        do {
+            validationService = try container.resolveSync(ValidationService.self)
+        } catch {
+            logger.error(message: "Failed to resolve ValidationService: \(error)")
         }
     }
 
@@ -317,7 +342,8 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
                 logger.debug(message: "🗑️ Deletion detected in expiry date field")
 
                 // If deleting the separator, also remove the character before it
-                if range.location == 2 && range.length == 1 && currentText.count >= 3 && currentText[currentText.index(currentText.startIndex, offsetBy: 2)] == "/" {
+                if range.location == 2 && range.length == 1 && currentText.count >= 3 &&
+                    currentText[currentText.index(currentText.startIndex, offsetBy: 2)] == "/" {
                     let newText = String(currentText.prefix(1))
                     logger.debug(message: "🗑️ Deleting separator and character before it: '\(currentText)' → '\(newText)'")
                     return newText
@@ -331,7 +357,6 @@ struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
                     newText = currentText.replacingCharacters(in: start..<end, with: "")
                     logger.debug(message: "🗑️ Range deletion from \(range.location) to \(range.location + range.length)")
                 } else if range.location < currentText.count {
-                    let index = currentText.index(currentText.startIndex, offsetBy: range.location)
                     var chars = Array(currentText)
                     chars.remove(at: range.location)
                     newText = String(chars)
@@ -518,3 +543,5 @@ extension ExpiryDateInputField {
         return view
     }
 }
+
+// swiftlint:enable file_length

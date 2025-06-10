@@ -12,7 +12,6 @@ import PassKit
 
 typealias PrimerAPIConfiguration = Response.Body.Configuration
 
-// swiftlint:disable file_length
 extension Request.URLParameters {
 
     final class Configuration: Codable {

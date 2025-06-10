@@ -5,6 +5,8 @@
 //  Created by Boris on 7. 5. 2025.
 //
 
+// swiftlint:disable file_length
+
 import Foundation
 
 final class WeakBox<T: AnyObject> {
@@ -223,6 +225,42 @@ public actor Container: ContainerProtocol, Sendable, LogReporter {
         }
     }
 
+    /// Synchronous resolution for SwiftUI and other sync contexts
+    /// Note: This method uses a timeout to prevent indefinite blocking
+    public nonisolated func resolveSync<T>(_ type: T.Type, name: String? = nil) throws -> T {
+        let semaphore = DispatchSemaphore(value: 0)
+        var result: Result<T, Error>?
+
+        Task {
+            do {
+                let resolved = try await self.resolve(type, name: name)
+                result = .success(resolved)
+            } catch {
+                result = .failure(error)
+            }
+            semaphore.signal()
+        }
+
+        // Wait with a reasonable timeout (500ms)
+        let timeoutResult = semaphore.wait(timeout: .now() + 0.5)
+
+        guard timeoutResult == .success, let finalResult = result else {
+            throw ContainerError.factoryFailed(
+                TypeKey(type, name: name),
+                underlyingError: NSError(domain: "DIContainer", code: -1, userInfo: [
+                    NSLocalizedDescriptionKey: "Synchronous resolution timed out"
+                ])
+            )
+        }
+
+        switch finalResult {
+        case .success(let value):
+            return value
+        case .failure(let error):
+            throw error
+        }
+    }
+
     /// Resolve multiple dependencies in parallel
     public func resolveBatch<T>(_ requests: [(type: T.Type, name: String?)]) async throws -> [T] {
         return try await withThrowingTaskGroup(of: (Int, T).self) { group in
@@ -396,3 +434,5 @@ public actor Container: ContainerProtocol, Sendable, LogReporter {
         )
     }
 }
+
+// swiftlint:enable file_length

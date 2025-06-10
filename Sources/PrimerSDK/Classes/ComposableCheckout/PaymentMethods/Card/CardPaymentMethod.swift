@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-
 /**
  * Implementation of a payment method that handles card payments.
  *
@@ -25,8 +24,13 @@ class CardPaymentMethod: PaymentMethodProtocol {
     private let _scope: CardViewModel
 
     @MainActor
-    init(validationService: ValidationService = DefaultValidationService()) {
-        self._scope = CardViewModel(validationService: validationService)
+    init() async throws {
+        // Resolve CardViewModel from DI container
+        guard let container = await DIContainer.current else {
+            throw ContainerError.containerUnavailable
+        }
+
+        self._scope = try await container.resolve(CardViewModel.self)
     }
 
     @MainActor
