@@ -11,7 +11,7 @@ import SwiftUI
 @available(iOS 15.0, *)
 extension DIContainer {
     /// Environment key for accessing the DI container in SwiftUI views
-    private struct DIContainerEnvironmentKey: EnvironmentKey {
+    internal struct DIContainerEnvironmentKey: EnvironmentKey {
         static let defaultValue: (any ContainerProtocol)? = nil
     }
     
