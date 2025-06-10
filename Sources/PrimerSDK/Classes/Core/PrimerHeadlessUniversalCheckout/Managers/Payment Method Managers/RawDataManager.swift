@@ -335,7 +335,49 @@ public extension PrimerHeadlessUniversalCheckout {
         }
 
         func validateRawData(_ data: PrimerRawData) async throws {
-            try await validateRawData(data).async()
+            return try await withCheckedThrowingContinuation { continuation in
+                validationQueue.async { [weak self] in
+                    guard let self = self else {
+                        continuation.resume()
+                        return
+                    }
+
+                    // Store the latest data
+                    self.latestDataForValidation = data
+
+                    // If validation is already running, mark for re-validation
+                    if self.isValidationInProgress {
+                        self.pendingValidation = true
+                        self.logger.debug(message: "Marking for validation after current one completes")
+                        continuation.resume()
+                        return
+                    }
+
+                    // Mark validation as started
+                    self.isValidationInProgress = true
+
+                    Task {
+                        defer {
+                            // Check if we need to validate again with newer data
+                            let needsRevalidation = self.pendingValidation
+                            self.isValidationInProgress = false
+                            self.pendingValidation = false
+
+                            if needsRevalidation, let latestData = self.latestDataForValidation {
+                                _ = self.validateRawData(latestData)
+                            }
+                        }
+
+                        do {
+                            try await self.rawDataTokenizationBuilder.validateRawData(data)
+                            self.isDataValid = self.rawDataTokenizationBuilder.isDataValid
+                            continuation.resume()
+                        } catch {
+                            continuation.resume(throwing: error)
+                        }
+                    }
+                }
+            }
         }
 
         func validateRawData(withCardNetworksMetadata cardNetworksMetadata: PrimerCardNumberEntryMetadata?) -> Promise<Void>? {
@@ -348,7 +390,16 @@ public extension PrimerHeadlessUniversalCheckout {
         }
 
         func validateRawData(withCardNetworksMetadata cardNetworksMetadata: PrimerCardNumberEntryMetadata?) async throws -> Void? {
-            try await validateRawData(withCardNetworksMetadata: cardNetworksMetadata)?.async()
+            guard let rawData = rawData else {
+                logger.warn(message: "Unable to validate with card networks metadata as `rawData` was nil")
+                return nil
+            }
+
+            guard let rawDataTokenizationBuilder = rawDataTokenizationBuilder as? PrimerRawCardDataTokenizationBuilder else {
+                return nil
+            }
+
+            return try await rawDataTokenizationBuilder.validateRawData(rawData, cardNetworksMetadata: cardNetworksMetadata)
         }
 
         private func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) -> Promise<Void> {
@@ -392,7 +443,39 @@ public extension PrimerHeadlessUniversalCheckout {
         }
 
         private func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) async throws {
-            try await handlePrimerWillCreatePaymentEvent(paymentMethodData).async()
+            guard PrimerInternal.shared.intent != .vault else {
+                return
+            }
+
+            let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
+            let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
+            var decisionHandlerHasBeenCalled = false
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+                if !decisionHandlerHasBeenCalled {
+                    let message =
+                        """
+                        "The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. \
+                        Make sure you call the decision handler otherwise the SDK will hang."
+                        """
+                    self?.logger.warn(message: message)
+                }
+            }
+
+            return try await withCheckedThrowingContinuation { continuation in
+                PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData, decisionHandler: { paymentCreationDecision in
+                    decisionHandlerHasBeenCalled = true
+                    switch paymentCreationDecision.type {
+                    case .abort(let errorMessage):
+                        let error = PrimerError.merchantError(message: errorMessage ?? "",
+                                                              userInfo: .errorUserInfoDictionary(),
+                                                              diagnosticsId: UUID().uuidString)
+                        continuation.resume(throwing: error)
+                    case .continue:
+                        continuation.resume()
+                    }
+                })
+            }
         }
 
         private func makeRequestBody() -> Promise<Request.Body.Tokenization> {
