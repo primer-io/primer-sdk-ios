@@ -37,7 +37,7 @@ struct PaymentMethodsListView: View {
             // Payment methods list
             ScrollView {
                 LazyVStack(spacing: PaymentMethodsListLayout.buttonSpacing) {
-                    ForEach(viewModel.paymentMethods) { paymentMethod in
+                    ForEach(Array(viewModel.paymentMethods.enumerated()), id: \.element.id) { index, paymentMethod in
                         PaymentMethodButton(
                             paymentMethod: paymentMethod,
                             onTap: {
@@ -45,6 +45,11 @@ struct PaymentMethodsListView: View {
                                 onPaymentMethodSelected(paymentMethod)
                             }
                         )
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .leading).combined(with: .opacity),
+                            removal: .move(edge: .trailing).combined(with: .opacity)
+                        ))
+                        .animation(.easeOut(duration: 0.4).delay(Double(index) * 0.1), value: viewModel.paymentMethods.count)
                     }
                 }
                 .padding(.horizontal, PaymentMethodsListLayout.horizontalPadding)

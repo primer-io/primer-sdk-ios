@@ -682,16 +682,24 @@ struct PrimerInputField: View {
                             .fill(backgroundColor)
                     )
             )
+            .scaleEffect(isFocused ? 1.02 : 1.0)
+            .animation(.easeInOut(duration: 0.2), value: isFocused)
+            .animation(.easeInOut(duration: 0.3), value: isError)
 
             // Error text or supporting text below the input field
             if isError, let validationError = validationError {
                 Text(validationError)
                     .font(.caption)
                     .foregroundColor(tokens?.primerColorBorderOutlinedError ?? .red)
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .leading).combined(with: .opacity),
+                        removal: .opacity
+                    ))
             } else if let supportingText = supportingText {
                 Text(supportingText)
                     .font(.caption)
                     .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                    .transition(.opacity)
             }
         }
     }

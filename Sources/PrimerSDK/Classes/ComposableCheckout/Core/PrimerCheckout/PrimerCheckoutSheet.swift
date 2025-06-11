@@ -26,12 +26,21 @@ struct PrimerCheckoutSheet: View, LogReporter {
                     selectedMethodView(selectedMethod)
                 }
                 .padding(16)
+                .transition(.asymmetric(
+                    insertion: .move(edge: .trailing).combined(with: .opacity),
+                    removal: .move(edge: .leading).combined(with: .opacity)
+                ))
             } else {
                 paymentMethodsListView
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .leading).combined(with: .opacity),
+                        removal: .move(edge: .trailing).combined(with: .opacity)
+                    ))
             }
         }
         .background(tokens?.primerColorBackground ?? .white)
         .cornerRadius(12)
+        .animation(.easeInOut(duration: 0.3), value: selectedMethod != nil)
         .task {
             logger.info(message: "🌊 [PrimerCheckoutSheet] Starting payment methods stream task")
             for await methods in viewModel.paymentMethods() {
@@ -79,10 +88,14 @@ struct PrimerCheckoutSheet: View, LogReporter {
                 }, label: {
                     HStack {
                         Image(systemName: "arrow.backward")
+                            .transition(.move(edge: .leading).combined(with: .scale))
                         Text("Back")
                     }
                     .foregroundColor(tokens?.primerColorBrand ?? .blue)
                 })
+                .buttonStyle(.borderless)
+                .scaleEffect(1.0)
+                .animation(.spring(response: 0.3, dampingFraction: 0.8), value: selectedMethod != nil)
                 Spacer()
             }
             .padding(.bottom, 16)
@@ -100,8 +113,8 @@ struct PrimerCheckoutSheet: View, LogReporter {
             onPaymentMethodSelected: { displayModel in
                 logger.info(message: "🎯 [PrimerCheckoutSheet] Payment method selected: \(displayModel.name) (ID: \(displayModel.id))")
                 logger.debug(message: "🔍 [PrimerCheckoutSheet] Available payment methods: \(paymentMethods.count)")
-                for (index, pm) in paymentMethods.enumerated() {
-                    logger.debug(message: "   \(index): \(pm.name ?? "Unknown") - Type: \(pm.type.rawValue) - ID: \(String(describing: pm.id))")
+                for (index, paymentMethod) in paymentMethods.enumerated() {
+                    logger.debug(message: "   \(index): \(paymentMethod.name ?? "Unknown") - Type: \(paymentMethod.type.rawValue) - ID: \(String(describing: paymentMethod.id))")
                 }
 
                 // Convert display model back to protocol method by finding matching payment method

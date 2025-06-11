@@ -5,6 +5,7 @@ struct PaymentMethodButton: View {
     let paymentMethod: PaymentMethodDisplayModel
     let onTap: () -> Void
     @Environment(\.designTokens) private var designTokens
+    @State private var isPressed = false
 
     private var backgroundColor: Color {
         paymentMethod.backgroundColor ?? designTokens?.primerColorGray000 ?? .white
@@ -41,13 +42,18 @@ struct PaymentMethodButton: View {
             }
             .padding(.horizontal, PaymentMethodsListLayout.horizontalPadding)
             .frame(height: PaymentMethodsListLayout.buttonHeight)
-            .background(backgroundColor)
+            .background(isPressed ? backgroundColor.opacity(0.8) : backgroundColor)
             .overlay(
                 RoundedRectangle(cornerRadius: PaymentMethodsListLayout.buttonCornerRadius)
-                    .stroke(borderColor, lineWidth: PaymentMethodsListLayout.buttonBorderWidth)
+                    .stroke(isPressed ? borderColor.opacity(0.8) : borderColor, lineWidth: PaymentMethodsListLayout.buttonBorderWidth)
             )
             .cornerRadius(PaymentMethodsListLayout.buttonCornerRadius)
+            .scaleEffect(isPressed ? 0.98 : 1.0)
+            .animation(.easeInOut(duration: 0.1), value: isPressed)
         }
+        .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
+            isPressed = pressing
+        }, perform: {})
         .disabled(!paymentMethod.isEnabled)
         .opacity(paymentMethod.isEnabled ? 1.0 : 0.6)
         .accessibility(identifier: PaymentMethodsListAccessibility.paymentMethodButtonPrefix + paymentMethod.id)
