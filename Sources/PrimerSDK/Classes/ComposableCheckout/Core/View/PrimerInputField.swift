@@ -529,6 +529,17 @@ struct PrimerInputField: View {
     private var labelColor: Color {
         isError ? (tokens?.primerColorBorderOutlinedError ?? .red) : (tokens?.primerColorTextSecondary ?? .secondary)
     }
+    
+    /// Determines the label font using design tokens.
+    private var labelFont: Font {
+        if let fontName = tokens?.primerTypographyBodyMediumFont,
+           let fontSize = tokens?.primerTypographyBodyMediumSize,
+           let fontWeight = tokens?.primerTypographyBodyMediumWeight {
+            return Font.custom(fontName, size: fontSize)
+                .weight(mapCGFloatToFontWeight(fontWeight))
+        }
+        return .caption
+    }
 
     /// Determines the color for the leading icon.
     private var leadingIconColor: Color {
@@ -615,7 +626,7 @@ struct PrimerInputField: View {
             // Label (if provided)
             if let labelText = labelText {
                 Text(labelText)
-                    .font(.caption)
+                    .font(labelFont)
                     .foregroundColor(labelColor)
             }
 
@@ -672,13 +683,14 @@ struct PrimerInputField: View {
                         .foregroundColor(trailingIconColor)
                 }
             }
-            .padding()
+            .padding(tokens?.primerSpaceMedium ?? 12)
+            .frame(height: tokens?.primerSizeXxxlarge ?? 56)
             // Separate the background styling into its own sub-expression to help the compiler.
             .background(
-                RoundedRectangle(cornerRadius: 8)
+                RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
                     .stroke(borderColor, lineWidth: borderWidth)
                     .background(
-                        RoundedRectangle(cornerRadius: 8)
+                        RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
                             .fill(backgroundColor)
                     )
             )
@@ -701,6 +713,23 @@ struct PrimerInputField: View {
                     .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
                     .transition(.opacity)
             }
+        }
+    }
+    
+    // MARK: - Helper Functions
+    
+    /// Maps CGFloat font weight values to SwiftUI Font.Weight enum cases
+    private func mapCGFloatToFontWeight(_ weight: CGFloat) -> Font.Weight {
+        switch weight {
+        case ...200: return .ultraLight
+        case 200..<300: return .thin
+        case 300..<400: return .light
+        case 400..<500: return .regular
+        case 500..<600: return .medium
+        case 600..<700: return .semibold
+        case 700..<800: return .bold
+        case 800..<900: return .heavy
+        default: return .black
         }
     }
 }
