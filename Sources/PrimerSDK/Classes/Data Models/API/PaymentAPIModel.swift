@@ -230,35 +230,6 @@ extension PrimerCheckoutDataPayment {
     }
 }
 
-// MARK: Client Session
-
-@objc public final class PrimerClientSession: NSObject, Codable {
-
-    public let customerId: String?
-    public let orderId: String?
-    public let currencyCode: String?
-    public let totalAmount: Int?
-    public let lineItems: [PrimerLineItem]?
-    public let orderDetails: PrimerOrder?
-    public let customer: PrimerCustomer?
-
-    public init(customerId: String?,
-                orderId: String?,
-                currencyCode: String?,
-                totalAmount: Int?,
-                lineItems: [PrimerLineItem]?,
-                orderDetails: PrimerOrder?,
-                customer: PrimerCustomer?) {
-        self.customerId = customerId
-        self.orderId = orderId
-        self.currencyCode = currencyCode
-        self.totalAmount = totalAmount
-        self.lineItems = lineItems
-        self.orderDetails = orderDetails
-        self.customer = customer
-    }
-}
-
 // MARK: Client Session Order
 
 @objc public final class PrimerOrder: NSObject, Codable {
