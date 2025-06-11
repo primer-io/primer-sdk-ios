@@ -33,12 +33,14 @@ class ExpiryDateValidator: BaseInputFieldValidator<String> {
 
     override func validateWhileTyping(_ input: String) -> ValidationResult {
         if input.isEmpty {
+            onValidationChange?(true)
             return .valid // Don't show errors for empty field during typing
         }
 
         // Extract month and year
         let parts = input.components(separatedBy: "/")
         if parts.count < 2 || parts[1].count < 2 {
+            onValidationChange?(true)
             return .valid // Still typing, don't validate yet
         }
 
@@ -59,30 +61,44 @@ class ExpiryDateValidator: BaseInputFieldValidator<String> {
 
             if let monthInt = Int(month), let yearInt = Int(year) {
                 if yearInt < currentYear || (yearInt == currentYear && monthInt < currentMonth) {
-                    return .invalid(code: "expired-date", message: "Card has expired")
+                    let result = ValidationResult.invalid(code: "expired-date", message: "Card has expired")
+                    onValidationChange?(false)
+                    onErrorMessageChange?(result.errorMessage)
+                    return result
                 }
             }
 
+            onValidationChange?(true)
             return .valid
         }
 
+        onValidationChange?(true)
         return .valid // Continue to allow typing
     }
 
     override func validateOnBlur(_ input: String) -> ValidationResult {
         if input.isEmpty {
-            return .invalid(code: "invalid-expiry-date", message: "Expiry date is required")
+            let result = ValidationResult.invalid(code: "invalid-expiry-date", message: "Expiry date is required")
+            onValidationChange?(false)
+            onErrorMessageChange?(result.errorMessage)
+            return result
         }
 
         // Create input object for validation service
         guard let expiryInput = ExpiryDateInput(formattedDate: input) else {
-            return .invalid(code: "invalid-expiry-format", message: "Please enter date as MM/YY")
+            let result = ValidationResult.invalid(code: "invalid-expiry-format", message: "Please enter date as MM/YY")
+            onValidationChange?(false)
+            onErrorMessageChange?(result.errorMessage)
+            return result
         }
 
         // Full validation on blur
-        return validationService.validateExpiry(
+        let result = validationService.validateExpiry(
             month: expiryInput.month,
             year: expiryInput.year
         )
+        onValidationChange?(result.isValid)
+        onErrorMessageChange?(result.isValid ? nil : result.errorMessage)
+        return result
     }
 }

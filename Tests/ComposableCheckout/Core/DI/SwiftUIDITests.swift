@@ -111,7 +111,9 @@ final class SwiftUIDITests: XCTestCase {
         _ = await hostingController.view
         
         // View should be created successfully with environment
-        XCTAssertNotNil(hostingController.rootView)
+        await MainActor.run {
+            XCTAssertNotNil(hostingController.rootView)
+        }
     }
     
     func testViewWithResolvedDependency() async throws {
@@ -135,7 +137,9 @@ final class SwiftUIDITests: XCTestCase {
         _ = await hostingController.view
         
         // View should be created successfully
-        XCTAssertNotNil(hostingController.rootView)
+        await MainActor.run {
+            XCTAssertNotNil(hostingController.rootView)
+        }
     }
     
     func testViewWithResolvedDependencyNamedRegistration() async throws {
@@ -159,7 +163,9 @@ final class SwiftUIDITests: XCTestCase {
         _ = await hostingController.view
         
         // View should be created successfully
-        XCTAssertNotNil(hostingController.rootView)
+        await MainActor.run {
+            XCTAssertNotNil(hostingController.rootView)
+        }
     }
     
     // MARK: - Injected Property Wrapper Tests
@@ -181,7 +187,9 @@ final class SwiftUIDITests: XCTestCase {
         _ = await hostingController.view
         
         // Test that view can be created successfully with @Injected property wrapper
-        XCTAssertNotNil(hostingController.rootView)
+        await MainActor.run {
+            XCTAssertNotNil(hostingController.rootView)
+        }
     }
     
     func testInjectedPropertyWrapperWithoutContainer() async throws {
@@ -197,7 +205,9 @@ final class SwiftUIDITests: XCTestCase {
         _ = await hostingController.view
         
         // Should handle missing service gracefully without crash
-        XCTAssertNotNil(hostingController.rootView)
+        await MainActor.run {
+            XCTAssertNotNil(hostingController.rootView)
+        }
     }
     
     func testInjectedPropertyWrapperBinding() async throws {
@@ -217,7 +227,9 @@ final class SwiftUIDITests: XCTestCase {
         _ = await hostingController.view
         
         // View should be created successfully
-        XCTAssertNotNil(hostingController.rootView)
+        await MainActor.run {
+            XCTAssertNotNil(hostingController.rootView)
+        }
     }
     
     // MARK: - RequiredInjected Property Wrapper Tests
@@ -239,7 +251,9 @@ final class SwiftUIDITests: XCTestCase {
         _ = await hostingController.view
         
         // The property wrapper should resolve the dependency or use fallback
-        XCTAssertNotNil(hostingController.rootView)
+        await MainActor.run {
+            XCTAssertNotNil(hostingController.rootView)
+        }
     }
     
     func testRequiredInjectedFallback() async throws {
@@ -254,7 +268,9 @@ final class SwiftUIDITests: XCTestCase {
         _ = await hostingController.view
         
         // Should use the fallback MockTestService without crash
-        XCTAssertNotNil(hostingController.rootView)
+        await MainActor.run {
+            XCTAssertNotNil(hostingController.rootView)
+        }
     }
     
     // MARK: - Modifier Tests
@@ -300,7 +316,9 @@ final class SwiftUIDITests: XCTestCase {
         _ = await hostingController.view
         
         // Error should be logged but view should still be created
-        XCTAssertNotNil(hostingController.rootView)
+        await MainActor.run {
+            XCTAssertNotNil(hostingController.rootView)
+        }
     }
     
     // MARK: - Integration Tests
@@ -348,6 +366,8 @@ final class SwiftUIDITests: XCTestCase {
         _ = await hostingController.view
         
         // Complex view hierarchy should be created successfully
-        XCTAssertNotNil(hostingController.rootView)
+        await MainActor.run {
+            XCTAssertNotNil(hostingController.rootView)
+        }
     }
 }

@@ -270,7 +270,7 @@ public class DefaultValidationService: ValidationService {
         for fieldType in allFieldTypes {
             let result = validateField(type: fieldType, value: nil)
             if result.isValid && fieldType != .addressLine2 {
-                warnings.append("Field type \(fieldType.rawValue) allows nil values unexpectedly")
+                warnings.append("Field type \(fieldType.stringValue) allows nil values unexpectedly")
             }
         }
 

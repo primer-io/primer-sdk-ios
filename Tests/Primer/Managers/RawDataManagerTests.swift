@@ -143,13 +143,18 @@ final class RawDataManagerTests: XCTestCase {
         }
 
         let expectDidFail = self.expectation(description: "Did fail with merchant error")
+        var didFailFulfilled = false
         headlessCheckoutDelegate.onDidFail = { error in
+            // Guard against multiple fulfillments
+            guard !didFailFulfilled else { return }
+            
             switch error {
             case PrimerError.merchantError:
                 break
             default:
                 XCTFail("Expected merchant error")
             }
+            didFailFulfilled = true
             expectDidFail.fulfill()
         }
 
@@ -162,28 +167,47 @@ final class RawDataManagerTests: XCTestCase {
 
         waitForExpectations(timeout: 5.0)
     }
-
+    
     func testNoRawDataSubmit() {
 
         let expectDidFail = self.expectation(description: "Did fail")
-        headlessCheckoutDelegate.onDidFail = { error in
+        var didFailFulfilled = false
+        headlessCheckoutDelegate.onDidFail = { [weak self] error in
+            guard let self = self else {
+                XCTFail("Test instance deallocated before callback")
+                return
+            }
+            
+            // Guard against multiple fulfillments
+            guard !didFailFulfilled else { return }
+            
             switch error {
             case PrimerError.invalidValue(let key, let value, _, _):
                 XCTAssertEqual(key, "rawData")
                 XCTAssertNil(value)
-                XCTAssertFalse(self.sut.isDataValid)
+                if let sut = self.sut {
+                    XCTAssertFalse(sut.isDataValid)
+                } else {
+                    XCTFail("sut is nil in error callback")
+                }
             default:
                 XCTFail()
             }
+            didFailFulfilled = true
             expectDidFail.fulfill()
         }
 
         let expectDidValidate = self.expectation(description: "Did validate")
+        var didValidateFulfilled = false
         rawDataManagerDelegate.onDataIsValid = { _, isValid, errors in
+            // Guard against multiple fulfillments
+            guard !didValidateFulfilled else { return }
+            
             XCTAssertFalse(isValid)
             XCTAssertTrue(errors!.first!.localizedDescription.starts(
                 with: "[invalid-value] Invalid value 'nil' for key 'rawData' ")
             )
+            didValidateFulfilled = true
             expectDidValidate.fulfill()
         }
 

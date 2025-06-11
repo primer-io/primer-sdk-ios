@@ -21,7 +21,7 @@ public struct CardholderNameRule: ValidationRule {
         }
 
         // Check minimum length
-        if name.trimmingCharacters(in: .whitespacesAndNewlines).count < 2 {
+        if name.trimmingCharacters(in: .whitespacesAndNewlines).count < 3 {
             return .invalid(
                 code: "invalid-cardholder-name-length",
                 message: "Cardholder name is too short"
@@ -29,7 +29,11 @@ public struct CardholderNameRule: ValidationRule {
         }
 
         // Check for valid characters
-        let allowedCharacterSet = CharacterSet.letters.union(.whitespaces)
+        // Allow letters (including accented), spaces, apostrophes, hyphens, periods, and commas
+        let allowedCharacterSet = CharacterSet.letters
+            .union(.whitespaces)
+            .union(CharacterSet(charactersIn: "'-.,"))
+        
         let disallowedChars = CharacterSet(charactersIn: name).subtracting(allowedCharacterSet)
 
         if !disallowedChars.isEmpty {

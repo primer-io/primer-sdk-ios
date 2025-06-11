@@ -58,7 +58,19 @@ public struct ExpiryDateInput {
     public init?(formattedDate: String) {
         let components = formattedDate.components(separatedBy: "/")
         guard components.count == 2 else { return nil }
-        self.month = components[0]
-        self.year = components[1]
+        
+        let month = components[0]
+        let year = components[1]
+        
+        // Validate format - month should be 1-2 digits, year should be 2 digits
+        guard month.count >= 1 && month.count <= 2,
+              year.count == 2,
+              month.allSatisfy({ $0.isNumber }),
+              year.allSatisfy({ $0.isNumber }) else {
+            return nil
+        }
+        
+        self.month = month
+        self.year = year
     }
 }

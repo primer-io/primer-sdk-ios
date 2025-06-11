@@ -31,18 +31,18 @@ class CardFormValidator: FormValidator, LogReporter {
 
     func validateField(type: PrimerInputElementType, value: String?) -> ValidationResult {
         // Log the validation input to help debug
-        logger.debug(message: "Validating field \(type.rawValue) with value: \(value?.isEmpty == true ? "[empty]" : (value == nil ? "[nil]" : "[filled]"))")
+        logger.debug(message: "Validating field \(type.stringValue) with value: \(value?.isEmpty == true ? "[empty]" : (value == nil ? "[nil]" : "[filled]"))")
 
         guard let value = value else {
             // Handle nil values with appropriate error messages
             let message = errorMessageFor(fieldType: type, errorType: .required)
-            return .invalid(code: "required-\(type.rawValue)", message: message)
+            return .invalid(code: "required-\(type.simpleIdentifier)", message: message)
         }
 
         // Check for empty strings and treat them as missing values for required fields
         if value.isEmpty {
             let message = errorMessageFor(fieldType: type, errorType: .required)
-            return .invalid(code: "required-\(type.rawValue)", message: message)
+            return .invalid(code: "required-\(type.simpleIdentifier)", message: message)
         }
 
         // Validate based on field type
@@ -64,7 +64,7 @@ class CardFormValidator: FormValidator, LogReporter {
         case .postalCode, .countryCode, .city, .state, .addressLine1, .addressLine2, .firstName, .lastName:
             if value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 let message = errorMessageFor(fieldType: type, errorType: .required)
-                return .invalid(code: "invalid-\(type.rawValue)", message: message)
+                return .invalid(code: "invalid-\(type.simpleIdentifier)", message: message)
             }
             return .valid
 

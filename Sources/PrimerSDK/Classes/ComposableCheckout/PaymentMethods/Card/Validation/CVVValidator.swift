@@ -64,7 +64,7 @@ internal extension CardNetwork {
 }
 
 // MARK: - Internal CVV Status Enumeration
-internal enum CVVCompletionStatus {
+internal enum CVVCompletionStatus: Equatable {
     case incomplete(remaining: Int)
     case complete
     case tooLong
@@ -106,29 +106,45 @@ class CVVValidator: BaseInputFieldValidator<String> {
 
     override func validateWhileTyping(_ input: String) -> ValidationResult {
         if input.isEmpty {
+            onValidationChange?(true)
             return .valid // Don't show errors for empty field during typing
         }
 
         // INTERNAL OPTIMIZATION: Use format validation helper
         if !input.isValidCVVFormat {
-            return .invalid(code: "invalid-cvv-format", message: "Input should contain only digits")
+            let result = ValidationResult.invalid(code: "invalid-cvv-format", message: "Input should contain only digits")
+            onValidationChange?(false)
+            onErrorMessageChange?(result.errorMessage)
+            return result
         }
 
         // INTERNAL OPTIMIZATION: Use length validation helper
         if input.hasValidCVVLength(for: cardNetwork) {
-            return validationService.validateCVV(input, cardNetwork: cardNetwork)
+            let result = validationService.validateCVV(input, cardNetwork: cardNetwork)
+            onValidationChange?(result.isValid)
+            if !result.isValid {
+                onErrorMessageChange?(result.errorMessage)
+            }
+            return result
         }
 
+        onValidationChange?(true)
         return .valid
     }
 
     override func validateOnBlur(_ input: String) -> ValidationResult {
         if input.isEmpty {
-            return .invalid(code: "invalid-cvv", message: "CVV is required")
+            let result = ValidationResult.invalid(code: "invalid-cvv", message: "CVV is required")
+            onValidationChange?(false)
+            onErrorMessageChange?(result.errorMessage)
+            return result
         }
 
         // Full validation on blur
-        return validationService.validateCVV(input, cardNetwork: cardNetwork)
+        let result = validationService.validateCVV(input, cardNetwork: cardNetwork)
+        onValidationChange?(result.isValid)
+        onErrorMessageChange?(result.isValid ? nil : result.errorMessage)
+        return result
     }
 
     /// Updates the card network for CVV validation

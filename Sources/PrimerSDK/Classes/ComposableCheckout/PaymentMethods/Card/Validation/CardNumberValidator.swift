@@ -48,8 +48,8 @@ internal extension CardNetwork {
         let sanitized = input.sanitizedCardNumber
         let validLengths = self.validation?.lengths ?? [16]
 
-        // Perform full validation if we have a potentially complete number
-        return sanitized.count >= 13 && validLengths.contains(sanitized.count)
+        // Perform full validation if we have at least minimum card length (13)
+        return sanitized.count >= 13
     }
 
     /// Provides validation hints for incomplete card numbers
@@ -75,6 +75,7 @@ class CardNumberValidator: BaseInputFieldValidator<String> {
 
     override func validateWhileTyping(_ input: String) -> ValidationResult {
         if input.isEmpty {
+            onValidationChange?(true)
             return .valid // Don't show errors for empty field during typing
         }
 
@@ -89,19 +90,31 @@ class CardNumberValidator: BaseInputFieldValidator<String> {
 
         // INTERNAL OPTIMIZATION: Use network-specific validation timing helper
         if network.shouldPerformFullValidation(for: input) {
-            return validationService.validateCardNumber(sanitized)
+            let result = validationService.validateCardNumber(sanitized)
+            onValidationChange?(result.isValid)
+            if !result.isValid {
+                onErrorMessageChange?(result.errorMessage)
+            }
+            return result
         }
 
+        onValidationChange?(true)
         return .valid
     }
 
     override func validateOnBlur(_ input: String) -> ValidationResult {
         if input.isEmpty {
-            return .invalid(code: "invalid-card-number", message: "Card number is required")
+            let result = ValidationResult.invalid(code: "invalid-card-number", message: "Card number is required")
+            onValidationChange?(false)
+            onErrorMessageChange?(result.errorMessage)
+            return result
         }
 
         // INTERNAL OPTIMIZATION: Use sanitized helper for validation
-        return validationService.validateCardNumber(input.sanitizedCardNumber)
+        let result = validationService.validateCardNumber(input.sanitizedCardNumber)
+        onValidationChange?(result.isValid)
+        onErrorMessageChange?(result.isValid ? nil : result.errorMessage)
+        return result
     }
 
     // MARK: - Internal Helper Methods

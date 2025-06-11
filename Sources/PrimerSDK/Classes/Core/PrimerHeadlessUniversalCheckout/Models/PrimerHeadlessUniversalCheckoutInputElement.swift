@@ -62,6 +62,45 @@ public enum PrimerInputElementType: Int {
         }
     }
 
+    public var simpleIdentifier: String {
+        switch self {
+        case .cardNumber:
+            return "cardNumber"
+        case .expiryDate:
+            return "expiryDate"
+        case .cvv:
+            return "cvv"
+        case .cardholderName:
+            return "cardholderName"
+        case .otp:
+            return "otp"
+        case .postalCode:
+            return "postalCode"
+        case .phoneNumber:
+            return "phoneNumber"
+        case .retailer:
+            return "retailer"
+        case .unknown:
+            return "unknown"
+        case .countryCode:
+            return "countryCode"
+        case .firstName:
+            return "firstName"
+        case .lastName:
+            return "lastName"
+        case .addressLine1:
+            return "addressLine1"
+        case .addressLine2:
+            return "addressLine2"
+        case .city:
+            return "city"
+        case .state:
+            return "state"
+        case .all:
+            return "all"
+        }
+    }
+
     /// Refactored validation method with reduced cyclomatic complexity.
     internal func validate(value: Any, detectedValueType: Any?) -> Bool {
         // For .all and .retailer, no validation is needed.
