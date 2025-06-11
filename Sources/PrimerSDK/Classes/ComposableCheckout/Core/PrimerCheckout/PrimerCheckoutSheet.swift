@@ -20,15 +20,16 @@ struct PrimerCheckoutSheet: View, LogReporter {
     var body: some View {
         logger.debug(message: "🎨 [PrimerCheckoutSheet] Rendering body - payment methods: \(paymentMethods.count), selected: \(selectedMethod?.name ?? "none")")
         return VStack(spacing: 0) {
-            headerView
-
             if let selectedMethod = selectedMethod {
-                selectedMethodView(selectedMethod)
+                VStack(spacing: 0) {
+                    headerView
+                    selectedMethodView(selectedMethod)
+                }
+                .padding(16)
             } else {
-                paymentMethodsList
+                paymentMethodsListView
             }
         }
-        .padding(16)
         .background(tokens?.primerColorBackground ?? .white)
         .cornerRadius(12)
         .task {
@@ -93,56 +94,50 @@ struct PrimerCheckoutSheet: View, LogReporter {
         .cornerRadius(12)
     }
 
-    private var paymentMethodsList: some View {
-        ScrollView {
-            PaymentMethodListContent(
-                paymentMethods: paymentMethods,
-                tokens: tokens,
-                onSelect: { method in
-                    Task {
-                        await viewModel.selectPaymentMethod(method)
-                    }
+    private var paymentMethodsListView: some View {
+        PaymentMethodsListView(
+            amount: "Pay $99.00", // TODO: Get from viewModel
+            onPaymentMethodSelected: { displayModel in
+                logger.info(message: "🎯 [PrimerCheckoutSheet] Payment method selected: \(displayModel.name) (ID: \(displayModel.id))")
+                logger.debug(message: "🔍 [PrimerCheckoutSheet] Available payment methods: \(paymentMethods.count)")
+                for (index, pm) in paymentMethods.enumerated() {
+                    logger.debug(message: "   \(index): \(pm.name ?? "Unknown") - Type: \(pm.type.rawValue) - ID: \(String(describing: pm.id))")
                 }
-            )
-            .padding(16)
-        }
-    }
-}
-
-struct IdentifiablePaymentMethod: Identifiable {
-    let id: String
-    let method: any PaymentMethodProtocol
-
-    init(_ method: any PaymentMethodProtocol) {
-        // Safely convert any Hashable ID to a String
-        self.id = String(describing: method.id)
-        self.method = method
-    }
-}
-
-struct PaymentMethodListContent: View {
-    let paymentMethods: [any PaymentMethodProtocol]
-    let tokens: DesignTokens?
-    let onSelect: (any PaymentMethodProtocol) -> Void
-
-    var body: some View {
-        VStack(spacing: 12) {
-            ForEach(paymentMethods.map { IdentifiablePaymentMethod($0) }) { wrapper in
-                Button {
-                    onSelect(wrapper.method)
-                } label: {
-                    HStack {
-                        Text(wrapper.method.name ?? "Payment Method")
-                            .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .foregroundColor(tokens?.primerColorIconPrimary ?? .gray)
+                
+                // Convert display model back to protocol method by finding matching payment method
+                let method: (any PaymentMethodProtocol)? = {
+                    switch displayModel.id {
+                    case "payment_card":
+                        logger.debug(message: "🔍 [PrimerCheckoutSheet] Looking for payment card...")
+                        let found = paymentMethods.first(where: { $0.type == .paymentCard })
+                        logger.debug(message: "🔍 [PrimerCheckoutSheet] Found card method: \(found != nil)")
+                        return found
+                    case "apple_pay":
+                        logger.debug(message: "🔍 [PrimerCheckoutSheet] Looking for Apple Pay...")
+                        return paymentMethods.first(where: { $0.type == .applePay })
+                    case "paypal":
+                        logger.debug(message: "🔍 [PrimerCheckoutSheet] Looking for PayPal...")
+                        return paymentMethods.first(where: { $0.type == .payPal })
+                    default:
+                        logger.debug(message: "🔍 [PrimerCheckoutSheet] Using fallback matching for: \(displayModel.id)")
+                        // Fallback: try to match by name or ID string representation
+                        return paymentMethods.first(where: { 
+                            String(describing: $0.id) == displayModel.id || $0.name == displayModel.name 
+                        })
                     }
-                    .padding(16)
-                    .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-                    .cornerRadius(8)
+                }()
+                
+                if let method = method {
+                    logger.info(message: "✅ [PrimerCheckoutSheet] Found matching payment method: \(method.name ?? "Unknown")")
+                    Task {
+                        logger.debug(message: "🚀 [PrimerCheckoutSheet] Calling viewModel.selectPaymentMethod...")
+                        await viewModel.selectPaymentMethod(method)
+                        logger.info(message: "✅ [PrimerCheckoutSheet] selectPaymentMethod completed")
+                    }
+                } else {
+                    logger.warn(message: "⚠️ [PrimerCheckoutSheet] Could not find matching payment method for: \(displayModel.name) (ID: \(displayModel.id))")
                 }
             }
-        }
+        )
     }
 }

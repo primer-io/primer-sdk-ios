@@ -263,6 +263,15 @@ extension CompositionRoot {
                     )
                 }
             }
+
+        // Payment methods list view model
+        _ = try? await container.register(PaymentMethodsListViewModel.self)
+            .asTransient()
+            .with { _ in
+                return await MainActor.run {
+                    return PaymentMethodsListViewModel()
+                }
+            }
     }
 
     private static func registerComponents(in container: Container) async {
