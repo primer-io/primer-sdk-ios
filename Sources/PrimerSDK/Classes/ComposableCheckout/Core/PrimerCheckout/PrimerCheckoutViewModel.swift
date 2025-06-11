@@ -253,10 +253,10 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope, LogReporte
     func selectPaymentMethod(_ method: (any PaymentMethodProtocol)?) async {
         logger.info(message: "🎯 [PrimerCheckoutViewModel] selectPaymentMethod called with: \(method?.name ?? "nil")")
         logger.debug(message: "🔄 [PrimerCheckoutViewModel] Previous selected method: \(currentSelectedMethod?.name ?? "nil")")
-        
+
         currentSelectedMethod = method
         logger.info(message: "✅ [PrimerCheckoutViewModel] Updated currentSelectedMethod to: \(currentSelectedMethod?.name ?? "nil")")
-        
+
         // Actively yield the new method to the stored continuation.
         logger.debug(message: "📡 [PrimerCheckoutViewModel] Yielding to selectedMethodStream...")
         selectedMethodStream?.yield(method)

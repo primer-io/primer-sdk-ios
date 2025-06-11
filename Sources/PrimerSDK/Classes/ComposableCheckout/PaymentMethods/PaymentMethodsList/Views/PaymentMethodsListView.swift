@@ -9,7 +9,7 @@ struct PaymentMethodsListView: View {
     let amount: String
     let onPaymentMethodSelected: (PaymentMethodDisplayModel) -> Void
     let onCancel: (() -> Void)?
-    
+
     init(amount: String, onPaymentMethodSelected: @escaping (PaymentMethodDisplayModel) -> Void, onCancel: (() -> Void)? = nil) {
         self.amount = amount
         self.onPaymentMethodSelected = onPaymentMethodSelected

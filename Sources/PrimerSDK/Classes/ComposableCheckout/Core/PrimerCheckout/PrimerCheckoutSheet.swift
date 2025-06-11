@@ -103,7 +103,7 @@ struct PrimerCheckoutSheet: View, LogReporter {
                 for (index, pm) in paymentMethods.enumerated() {
                     logger.debug(message: "   \(index): \(pm.name ?? "Unknown") - Type: \(pm.type.rawValue) - ID: \(String(describing: pm.id))")
                 }
-                
+
                 // Convert display model back to protocol method by finding matching payment method
                 let method: (any PaymentMethodProtocol)? = {
                     switch displayModel.id {
@@ -121,12 +121,12 @@ struct PrimerCheckoutSheet: View, LogReporter {
                     default:
                         logger.debug(message: "🔍 [PrimerCheckoutSheet] Using fallback matching for: \(displayModel.id)")
                         // Fallback: try to match by name or ID string representation
-                        return paymentMethods.first(where: { 
-                            String(describing: $0.id) == displayModel.id || $0.name == displayModel.name 
+                        return paymentMethods.first(where: {
+                            String(describing: $0.id) == displayModel.id || $0.name == displayModel.name
                         })
                     }
                 }()
-                
+
                 if let method = method {
                     logger.info(message: "✅ [PrimerCheckoutSheet] Found matching payment method: \(method.name ?? "Unknown")")
                     Task {
