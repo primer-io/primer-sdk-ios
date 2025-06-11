@@ -86,6 +86,9 @@ struct CardNumberInputField: View, LogReporter {
     /// Placeholder text for the input field
     var placeholder: String
 
+    /// Callback when the card number changes
+    var onCardNumberChange: ((String) -> Void)?
+
     /// Callback when the card network changes
     var onCardNetworkChange: ((CardNetwork) -> Void)?
 
@@ -117,11 +120,13 @@ struct CardNumberInputField: View, LogReporter {
     init(
         label: String,
         placeholder: String,
+        onCardNumberChange: ((String) -> Void)? = nil,
         onCardNetworkChange: ((CardNetwork) -> Void)? = nil,
         onValidationChange: ((Bool) -> Void)? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
+        self.onCardNumberChange = onCardNumberChange
         self.onCardNetworkChange = onCardNetworkChange
         self.onValidationChange = onValidationChange
     }
@@ -179,6 +184,12 @@ struct CardNumberInputField: View, LogReporter {
         }
         .onAppear {
             setupValidationService()
+        }
+        .onChange(of: cardNumber) { newValue in
+            // Use DispatchQueue to avoid state updates during view update
+            DispatchQueue.main.async {
+                onCardNumberChange?(newValue)
+            }
         }
         .onChange(of: cardNetwork) { newValue in
             // Use DispatchQueue to avoid state updates during view update

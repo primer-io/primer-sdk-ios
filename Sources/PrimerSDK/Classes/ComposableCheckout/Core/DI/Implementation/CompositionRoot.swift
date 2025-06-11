@@ -284,21 +284,21 @@ extension CompositionRoot {
 
         // Register ALL payment method implementations with the same protocol
 
-        // Card payment - use mock implementation for now
-        logger.debug(message: "🃏 [CompositionRoot] Registering mock card payment method...")
+        // Card payment - use actual implementation
+        logger.debug(message: "🃏 [CompositionRoot] Registering card payment method...")
         do {
             _ = try await container.register((any PaymentMethodProtocol).self)
                 .named("card")  // Names help distinguish between implementations
                 .asSingleton()  // Use singleton so resolveAll can find it
                 .with { _ in
-                    logger.debug(message: "🏭 [CompositionRoot] Creating MockCardPaymentMethod instance")
-                    let mockMethod = await MockCardPaymentMethod()
-                    logger.info(message: "✅ [CompositionRoot] MockCardPaymentMethod created successfully")
-                    return mockMethod
+                    logger.debug(message: "🏭 [CompositionRoot] Creating CardPaymentMethod instance")
+                    let cardMethod = try await CardPaymentMethod()
+                    logger.info(message: "✅ [CompositionRoot] CardPaymentMethod created successfully")
+                    return cardMethod
                 }
-            logger.info(message: "✅ [CompositionRoot] Mock card payment method registered successfully")
+            logger.info(message: "✅ [CompositionRoot] Card payment method registered successfully")
         } catch {
-            logger.error(message: "🚨 [CompositionRoot] Failed to register mock card payment method: \(error.localizedDescription)")
+            logger.error(message: "🚨 [CompositionRoot] Failed to register card payment method: \(error.localizedDescription)")
         }
 
         //        // Apple Pay
@@ -321,152 +321,5 @@ extension CompositionRoot {
         // No need to modify the ViewModel!
 
         logger.info(message: "✅ [CompositionRoot] Payment methods registration completed")
-    }
-}
-
-// MARK: - Mock Implementations
-
-// MARK: - Mock Payment Method Scope
-
-// Mock UI State for the payment method
-@available(iOS 15.0, *)
-internal struct MockCardPaymentUiState: PrimerPaymentMethodUiState {
-    var isProcessing: Bool = false
-    var errorMessage: String?
-    var isReady: Bool = true
-}
-
-@available(iOS 15.0, *)
-internal final class MockCardPaymentMethodScope: PrimerPaymentMethodScope, LogReporter {
-    typealias T = MockCardPaymentUiState
-
-    @MainActor
-    private var uiState: MockCardPaymentUiState = MockCardPaymentUiState()
-    private var stateContinuation: AsyncStream<MockCardPaymentUiState?>.Continuation?
-
-    func state() -> AsyncStream<MockCardPaymentUiState?> {
-        return AsyncStream { continuation in
-            self.stateContinuation = continuation
-            continuation.yield(uiState)
-
-            continuation.onTermination = { [weak self] _ in
-                Task {
-                    await self?.clearStateContinuation()
-                }
-            }
-        }
-    }
-
-    @MainActor
-    private func clearStateContinuation() {
-        stateContinuation = nil
-    }
-
-    func submit() async throws -> PaymentResult {
-        logger.info(message: "💳 [MockCardPaymentMethodScope] Starting payment submission")
-
-        // Update state to processing
-        await MainActor.run {
-            logger.debug(message: "🔄 [MockCardPaymentMethodScope] Setting processing state to true")
-            uiState.isProcessing = true
-            stateContinuation?.yield(uiState)
-        }
-
-        // Simulate processing delay
-        logger.debug(message: "⏱️ [MockCardPaymentMethodScope] Simulating 1 second processing delay")
-        try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
-
-        // Update state to completed
-        await MainActor.run {
-            logger.debug(message: "✅ [MockCardPaymentMethodScope] Setting processing state to false")
-            uiState.isProcessing = false
-            stateContinuation?.yield(uiState)
-        }
-
-        // Return mock successful result
-        let transactionId = "mock_tx_\(UUID().uuidString.prefix(8))"
-        let result = PaymentResult(
-            transactionId: transactionId,
-            amount: Decimal(99.99),
-            currency: "USD"
-        )
-
-        logger.info(message: "🎉 [MockCardPaymentMethodScope] Payment submission completed successfully - ID: \(transactionId)")
-        return result
-    }
-
-    func cancel() async {
-        // Mock cancel implementation
-        await MainActor.run {
-            uiState.isProcessing = false
-            uiState.errorMessage = nil
-            stateContinuation?.yield(uiState)
-        }
-        print("🛑 Mock payment cancelled")
-    }
-
-    deinit {
-        stateContinuation?.finish()
-    }
-}
-
-@available(iOS 15.0, *)
-internal final class MockCardPaymentMethod: PaymentMethodProtocol, LogReporter {
-    typealias ScopeType = MockCardPaymentMethodScope
-
-    var id: String = "mock_card"
-    var name: String? = "Card (Mock)"
-    var type: PaymentMethodType = .paymentCard
-
-    @MainActor
-    private let _scope: MockCardPaymentMethodScope
-
-    @MainActor
-    init() async {
-        // Simple mock initialization without DI dependencies
-        self._scope = MockCardPaymentMethodScope()
-        logger.info(message: "✅ [MockCardPaymentMethod] Mock card payment method initialized successfully")
-    }
-
-    @MainActor
-    var scope: MockCardPaymentMethodScope {
-        _scope
-    }
-
-    @MainActor
-    func content<V: View>(@ViewBuilder content: @escaping (MockCardPaymentMethodScope) -> V) -> AnyView {
-        return AnyView(content(_scope))
-    }
-
-    @MainActor
-    func defaultContent() -> AnyView {
-        AnyView(
-            VStack(spacing: 16) {
-                Text("Mock Card Payment")
-                    .font(.headline)
-                    .padding()
-
-                Text("This is a mock implementation for testing")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-
-                Button("Process Mock Payment") {
-                    Task {
-                        do {
-                            let result = try await self._scope.submit()
-                            print("✅ Mock payment processed: \(result.transactionId)")
-                        } catch {
-                            print("❌ Mock payment failed: \(error)")
-                        }
-                    }
-                }
-                .padding()
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(8)
-            }
-            .padding()
-        )
     }
 }

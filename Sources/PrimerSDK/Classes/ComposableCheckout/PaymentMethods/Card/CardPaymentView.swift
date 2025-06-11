@@ -20,17 +20,56 @@ struct CardPaymentView: View, LogReporter {
 
     var body: some View {
         VStack(spacing: 16) {
-            // Use CardViewModel factory methods instead of manual instantiation
-            AnyView(scope.PrimerCardNumberField(modifier: (), label: "Card Number"))
+            // Card Number Field
+            CardNumberInputField(
+                label: "Card Number",
+                placeholder: "1234 5678 9012 3456",
+                onCardNumberChange: { cardNumber in
+                    if let viewModel = scope as? CardViewModel {
+                        viewModel.updateCardNumber(cardNumber)
+                    }
+                },
+                onCardNetworkChange: { network in
+                    if let viewModel = scope as? CardViewModel {
+                        viewModel.updateCardNetwork(network)
+                    }
+                }
+            )
 
             // Expiry Date and CVV Row
             HStack(spacing: 16) {
-                AnyView(scope.PrimerCardExpirationField(modifier: (), label: "Expiry Date"))
-                AnyView(scope.PrimerCvvField(modifier: (), label: "CVV"))
+                ExpiryDateInputField(
+                    label: "Expiry Date",
+                    placeholder: "MM/YY",
+                    onExpiryDateChange: { expiryDate in
+                        if let viewModel = scope as? CardViewModel {
+                            viewModel.updateExpirationValue(expiryDate)
+                        }
+                    }
+                )
+
+                CVVInputField(
+                    label: "CVV",
+                    placeholder: "123",
+                    cardNetwork: uiState?.cardNetworkData.selectedNetwork ?? .unknown,
+                    onCvvChange: { cvv in
+                        if let viewModel = scope as? CardViewModel {
+                            viewModel.updateCvv(cvv)
+                        }
+                    }
+                )
             }
 
             // Cardholder Name Field
-            AnyView(scope.PrimerCardholderNameField(modifier: (), label: "Cardholder Name"))
+            CardholderNameInputField(
+                label: "Cardholder Name",
+                placeholder: "John Doe",
+                onCardholderNameChange: { name in
+                    if let viewModel = scope as? CardViewModel {
+                        viewModel.updateCardholderName(name)
+                    }
+                }
+            )
 
             // Submit Button - use the factory method from scope
             AnyView(scope.PrimerPayButton(enabled: isValid, modifier: (), text: "Pay"))
@@ -60,5 +99,6 @@ struct CardPaymentView: View, LogReporter {
         isValid = cardNumberValid && expiryValid && cvvValid && nameValid
 
         logger.debug(message: "💳 Form validity updated: \(isValid)")
+        logger.debug(message: "💳 Field validity: cardNumber=\(cardNumberValid), expiry=\(expiryValid), cvv=\(cvvValid), name=\(nameValid)")
     }
 }

@@ -22,6 +22,9 @@ struct ExpiryDateInputField: View, LogReporter {
     /// Placeholder text for the input field
     var placeholder: String
 
+    /// Callback when the expiry date changes
+    var onExpiryDateChange: ((String) -> Void)?
+
     /// Callback when the validation state changes
     var onValidationChange: ((Bool) -> Void)?
 
@@ -59,12 +62,14 @@ struct ExpiryDateInputField: View, LogReporter {
     init(
         label: String,
         placeholder: String,
+        onExpiryDateChange: ((String) -> Void)? = nil,
         onValidationChange: ((Bool) -> Void)? = nil,
         onMonthChange: ((String) -> Void)? = nil,
         onYearChange: ((String) -> Void)? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
+        self.onExpiryDateChange = onExpiryDateChange
         self.onValidationChange = onValidationChange
         self.onMonthChange = onMonthChange
         self.onYearChange = onYearChange
@@ -114,6 +119,12 @@ struct ExpiryDateInputField: View, LogReporter {
         .onAppear {
             setupValidationService()
             logger.debug(message: "👁️ Expiry date input field appeared")
+        }
+        .onChange(of: expiryDate) { newValue in
+            DispatchQueue.main.async {
+                logger.debug(message: "📅 Expiry date changed: \(newValue)")
+                onExpiryDateChange?(newValue)
+            }
         }
         .onChange(of: isValid) { newValue in
             if let isValid = newValue {

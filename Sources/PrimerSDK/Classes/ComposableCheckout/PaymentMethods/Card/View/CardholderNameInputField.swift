@@ -21,6 +21,9 @@ struct CardholderNameInputField: View, LogReporter {
     /// Placeholder text for the input field
     var placeholder: String
 
+    /// Callback when the cardholder name changes
+    var onCardholderNameChange: ((String) -> Void)?
+
     /// Callback when the validation state changes
     var onValidationChange: ((Bool) -> Void)?
 
@@ -46,10 +49,12 @@ struct CardholderNameInputField: View, LogReporter {
     init(
         label: String,
         placeholder: String,
+        onCardholderNameChange: ((String) -> Void)? = nil,
         onValidationChange: ((Bool) -> Void)? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
+        self.onCardholderNameChange = onCardholderNameChange
         self.onValidationChange = onValidationChange
     }
 
@@ -96,6 +101,12 @@ struct CardholderNameInputField: View, LogReporter {
         .onAppear {
             setupValidationService()
             logger.debug(message: "👁️ Cardholder name input field appeared")
+        }
+        .onChange(of: cardholderName) { newValue in
+            DispatchQueue.main.async {
+                logger.debug(message: "👤 Cardholder name changed: \(newValue)")
+                onCardholderNameChange?(newValue)
+            }
         }
         .onChange(of: isValid) { newValue in
             // Use DispatchQueue to avoid state updates during view update

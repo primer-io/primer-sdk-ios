@@ -541,7 +541,7 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
     }
 
     // Helper method to update the expiration value
-    private func updateExpirationValue(_ value: String) {
+    func updateExpirationValue(_ value: String) {
         // Use formValidator for validation
         let validationResult = formValidator.validateField(type: .expiryDate, value: value)
 
@@ -792,6 +792,9 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
         return CardholderNameInputField(
             label: label ?? "Cardholder Name",
             placeholder: "John Doe",
+            onCardholderNameChange: { [weak self] name in
+                self?.updateCardholderName(name)
+            },
             onValidationChange: { _ in
                 // Validation state is handled in the validator
             }
@@ -802,6 +805,9 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
         return CardNumberInputField(
             label: label ?? "Card Number",
             placeholder: "1234 5678 9012 3456",
+            onCardNumberChange: { [weak self] cardNumber in
+                self?.updateCardNumber(cardNumber)
+            },
             onCardNetworkChange: { [weak self] network in
                 self?.updateCardNetwork(network)
             },
@@ -816,6 +822,9 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
             label: label ?? "CVV",
             placeholder: "123",
             cardNetwork: uiState.cardNetworkData.selectedNetwork ?? .unknown,
+            onCvvChange: { [weak self] cvv in
+                self?.updateCvv(cvv)
+            },
             onValidationChange: { _ in
                 // Validation state is handled in the validator
             }
@@ -826,6 +835,9 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
         return ExpiryDateInputField(
             label: label ?? "Expiry Date",
             placeholder: "MM/YY",
+            onExpiryDateChange: { [weak self] expiryDate in
+                self?.updateExpirationValue(expiryDate)
+            },
             onValidationChange: { _ in
                 // Validation state is handled in the validator
             },

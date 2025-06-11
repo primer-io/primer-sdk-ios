@@ -20,7 +20,7 @@ ComposableCheckout/
 ├── Design/                  # Design tokens and theming
 ├── Extensions/              # Swift extensions
 ├── PaymentMethods/          # Payment method implementations
-└── UIKitSupport/           # UIKit integration
+└── UIKitSupport/           # UIKit integration examples
 ```
 
 ### Key Components

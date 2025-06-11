@@ -21,6 +21,9 @@ struct CVVInputField: View, LogReporter {
     /// The card network to validate against (determines CVV length requirements)
     var cardNetwork: CardNetwork
 
+    /// Callback when the CVV changes
+    var onCvvChange: ((String) -> Void)?
+
     /// Callback when the validation state changes
     var onValidationChange: ((Bool) -> Void)?
 
@@ -47,11 +50,13 @@ struct CVVInputField: View, LogReporter {
         label: String,
         placeholder: String,
         cardNetwork: CardNetwork,
+        onCvvChange: ((String) -> Void)? = nil,
         onValidationChange: ((Bool) -> Void)? = nil
     ) {
         self.label = label
         self.placeholder = placeholder
         self.cardNetwork = cardNetwork
+        self.onCvvChange = onCvvChange
         self.onValidationChange = onValidationChange
     }
 
@@ -97,6 +102,12 @@ struct CVVInputField: View, LogReporter {
         }
         .onAppear {
             setupValidationService()
+        }
+        .onChange(of: cvv) { newValue in
+            // Use DispatchQueue to avoid state updates during view update
+            DispatchQueue.main.async {
+                onCvvChange?(newValue)
+            }
         }
         .onChange(of: isValid) { newValue in
             if let isValid = newValue {
