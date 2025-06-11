@@ -15,10 +15,11 @@ class CardholderNameValidator: BaseInputFieldValidator<String> {
             return .valid // Don't show errors for empty field during typing
         }
 
-        // Minimal validation during typing - just check length
-        if input.trimmingCharacters(in: .whitespacesAndNewlines).count < 2 {
+        // During typing, be very lenient - only check for completely invalid characters
+        // Don't validate length while typing to avoid frustrating users
+        if input.trimmingCharacters(in: .whitespacesAndNewlines).count < 3 {
             onValidationChange?(true)
-            return .valid // Don't show error while still typing
+            return .valid // Don't show error while still typing short names
         }
 
         // Only validate if we have a name of reasonable length

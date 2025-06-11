@@ -123,12 +123,14 @@ final class StripeAchTokenizationViewModelTests: XCTestCase {
         delegate.onDidReceiveAdditionalInfo = { additionalInfo in
             if additionalInfo is ACHBankAccountCollectorAdditionalInfo {
                 expectDidReceiveStripeCollectorAdditionalInfo.fulfill()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                // Give time for completion handler to be set up in the promise chain
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     self.sut.stripeBankAccountCollectorCompletion?(.success(()))
                 }
             } else {
                 expectDidReceiveMandateAdditionalInfo.fulfill()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                // Give time for completion handler to be set up in the promise chain
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     self.mandateDelegate?.acceptMandate()
                 }
             }

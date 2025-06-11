@@ -310,8 +310,7 @@ class MockValidationCoordinator: ValidationCoordinator {
         
         if result.isValid {
             onValidationChange?(true)
-            errorMessageChangeCallCount += 1
-            onErrorMessageChange?(nil) // Clear any existing error
+            // Don't call error message callback for valid results
         } else {
             onValidationChange?(false)
             errorMessageChangeCallCount += 1
