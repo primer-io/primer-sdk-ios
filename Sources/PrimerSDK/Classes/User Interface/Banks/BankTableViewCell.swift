@@ -16,7 +16,7 @@ final class BankTableViewCell: UITableViewCell {
     var nameLabel = UILabel()
     var arrowImageView = UIImageView()
 
-    internal private(set) var bank: AdyenBank!
+    private(set) var bank: AdyenBank!
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -36,7 +36,7 @@ final class BankTableViewCell: UITableViewCell {
         logoImageView.contentMode = .scaleAspectFit
         arrowImageView.contentMode = .center
 
-        arrowImageView.image = UIImage(named: "right-arrow-icon", in: Bundle.primerResources, compatibleWith: nil)
+        arrowImageView.image = .rightArrowIcon
 
         stackView.translatesAutoresizingMaskIntoConstraints = false
         logoImageView.translatesAutoresizingMaskIntoConstraints = false

@@ -8,14 +8,13 @@
 import UIKit
 
 final class PrimerResultViewController: PrimerViewController {
-
-    internal enum ScreenType {
+    enum ScreenType {
         case success, failure
     }
 
-    private(set) internal var message: String?
-    private(set) internal var screenType: ScreenType
-    private(set) internal var resultView: PrimerResultComponentView!
+    private(set) var message: String?
+    private(set) var screenType: ScreenType
+    private(set) var resultView: PrimerResultComponentView!
 
     init(screenType: PrimerResultViewController.ScreenType, message: String?) {
         self.message = message
@@ -39,14 +38,14 @@ final class PrimerResultViewController: PrimerViewController {
 
         (parent as? PrimerContainerViewController)?.navigationItem.hidesBackButton = true
 
-        let successImage = UIImage(named: "check-circle", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        let successImage: UIImage? = .checkCircle
         successImage?.accessibilityIdentifier = "check-circle"
 
-        let failureImage = UIImage(named: "x-circle", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+        let failureImage: UIImage? = .xCircle
         failureImage?.accessibilityIdentifier = "x-circle"
 
         let img = (screenType == .success) ? successImage : failureImage
-        let imgView = UIImageView(image: img)
+        let imgView = UIImageView(image: img?.withRenderingMode(.alwaysTemplate))
         imgView.contentMode = .scaleAspectFit
         imgView.tintColor = .label
         imgView.translatesAutoresizingMaskIntoConstraints = false
@@ -72,5 +71,4 @@ final class PrimerResultViewController: PrimerViewController {
         super.viewDidAppear(animated)
         (parent as? PrimerContainerViewController)?.navigationItem.hidesBackButton = true
     }
-
 }

@@ -250,36 +250,14 @@ public enum CardNetwork: String, Codable, CaseIterable, LogReporter {
 
     public var icon: UIImage? {
         switch self {
-        case .amex:
-            return UIImage(named: "amex-card-icon-colored", in: Bundle.primerResources, compatibleWith: nil)
-        case .bancontact:
-            return UIImage(named: "bancontact-icon", in: Bundle.primerResources, compatibleWith: nil)
-        case .cartesBancaires:
-            return UIImage(named: "cartesbancaires-card-icon-colored", in: Bundle.primerResources, compatibleWith: nil)
-        case .diners:
-            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
-        case .discover:
-            return UIImage(named: "discover-card-icon-colored", in: Bundle.primerResources, compatibleWith: nil)
-        case .elo:
-            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
-        case .hiper:
-            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
-        case .hipercard:
-            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
-        case .jcb:
-            return UIImage(named: "jcb-icon", in: Bundle.primerResources, compatibleWith: nil)
-        case .maestro:
-            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
-        case .mir:
-            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
-        case .masterCard:
-            return UIImage(named: "mastercard-card-icon-colored", in: Bundle.primerResources, compatibleWith: nil)
-        case .unionpay:
-            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
-        case .visa:
-            return UIImage(named: "visa-card-icon-colored", in: Bundle.primerResources, compatibleWith: nil)
-        case .unknown:
-            return UIImage(named: "genericCard", in: Bundle.primerResources, compatibleWith: nil)
+        case .amex: .amexColored
+        case .bancontact: .bancontact
+        case .cartesBancaires: .cartesBancairesColored
+        case .discover: .discoverColored
+        case .jcb: .jcb
+        case .masterCard: .masterCardColored
+        case .visa: .visaColored
+        case .diners, .elo, .hiper, .hipercard, .maestro, .mir, .unionpay, .unknown: .genericCard
         }
     }
 
