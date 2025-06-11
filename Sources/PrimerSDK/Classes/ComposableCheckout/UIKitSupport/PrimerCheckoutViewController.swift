@@ -20,11 +20,23 @@ public class PrimerCheckoutViewController: UIViewController {
     private var exampleToShow = ExampleType.default
     //     private var exampleToShow = ExampleType.tabLayout
     //     private var exampleToShow = ExampleType.customCardForm
+    //     private var exampleToShow = ExampleType.gridLayout
+    //     private var exampleToShow = ExampleType.listLayout
+    //     private var exampleToShow = ExampleType.accordionLayout
+    //     private var exampleToShow = ExampleType.modalSheet
+    //     private var exampleToShow = ExampleType.segmentedControl
+    //     private var exampleToShow = ExampleType.mixedLayout
 
     enum ExampleType {
         case `default`
         case tabLayout
         case customCardForm
+        case gridLayout
+        case listLayout
+        case accordionLayout
+        case modalSheet
+        case segmentedControl
+        case mixedLayout
     }
 
     public init(clientToken: String, onComplete: ((Result<PaymentResult, Error>) -> Void)? = nil) {
@@ -87,6 +99,132 @@ public class PrimerCheckoutViewController: UIViewController {
                                     .padding(.top, 20)
 
                                 CustomCheckoutWithCardForm(scope: checkoutScope)
+                                    .padding(.horizontal)
+                            }
+                        )
+                    }
+                )
+            )
+
+        case .gridLayout:
+            // EXAMPLE 4: Grid Layout with Payment Methods
+            rootView = AnyView(
+                PrimerCheckout(
+                    clientToken: clientToken,
+                    content: { checkoutScope in
+                        AnyView(
+                            VStack(spacing: 16) {
+                                Text("Grid Layout Example")
+                                    .font(.title)
+                                    .fontWeight(.bold)
+                                    .padding(.top, 20)
+
+                                GridLayoutExample(scope: checkoutScope)
+                                    .padding(.horizontal)
+                            }
+                        )
+                    }
+                )
+            )
+
+        case .listLayout:
+            // EXAMPLE 5: List Layout with Detailed Payment Methods
+            rootView = AnyView(
+                PrimerCheckout(
+                    clientToken: clientToken,
+                    content: { checkoutScope in
+                        AnyView(
+                            VStack(spacing: 16) {
+                                Text("List Layout Example")
+                                    .font(.title)
+                                    .fontWeight(.bold)
+                                    .padding(.top, 20)
+
+                                ListLayoutExample(scope: checkoutScope)
+                                    .padding(.horizontal)
+                            }
+                        )
+                    }
+                )
+            )
+
+        case .accordionLayout:
+            // EXAMPLE 6: Accordion Layout for Payment Methods
+            rootView = AnyView(
+                PrimerCheckout(
+                    clientToken: clientToken,
+                    content: { checkoutScope in
+                        AnyView(
+                            VStack(spacing: 16) {
+                                Text("Accordion Layout Example")
+                                    .font(.title)
+                                    .fontWeight(.bold)
+                                    .padding(.top, 20)
+
+                                AccordionLayoutExample(scope: checkoutScope)
+                                    .padding(.horizontal)
+                            }
+                        )
+                    }
+                )
+            )
+
+        case .modalSheet:
+            // EXAMPLE 7: Modal Sheet Presentation
+            rootView = AnyView(
+                PrimerCheckout(
+                    clientToken: clientToken,
+                    content: { checkoutScope in
+                        AnyView(
+                            VStack(spacing: 16) {
+                                Text("Modal Sheet Example")
+                                    .font(.title)
+                                    .fontWeight(.bold)
+                                    .padding(.top, 20)
+
+                                ModalSheetExample(scope: checkoutScope)
+                                    .padding(.horizontal)
+                            }
+                        )
+                    }
+                )
+            )
+
+        case .segmentedControl:
+            // EXAMPLE 8: Segmented Control Layout
+            rootView = AnyView(
+                PrimerCheckout(
+                    clientToken: clientToken,
+                    content: { checkoutScope in
+                        AnyView(
+                            VStack(spacing: 16) {
+                                Text("Segmented Control Example")
+                                    .font(.title)
+                                    .fontWeight(.bold)
+                                    .padding(.top, 20)
+
+                                SegmentedControlExample(scope: checkoutScope)
+                                    .padding(.horizontal)
+                            }
+                        )
+                    }
+                )
+            )
+
+        case .mixedLayout:
+            // EXAMPLE 9: Mixed Layout Combining Multiple Styles
+            rootView = AnyView(
+                PrimerCheckout(
+                    clientToken: clientToken,
+                    content: { checkoutScope in
+                        AnyView(
+                            VStack(spacing: 16) {
+                                Text("Mixed Layout Example")
+                                    .font(.title)
+                                    .fontWeight(.bold)
+                                    .padding(.top, 20)
+
+                                MixedLayoutExample(scope: checkoutScope)
                                     .padding(.horizontal)
                             }
                         )
@@ -216,7 +354,7 @@ struct CustomCheckoutWithCardForm: View {
 
                     ScrollView {
                         VStack(spacing: 12) {
-                            ForEach(paymentMethods.map { IdentifiablePaymentMethod($0) }) { wrapper in
+                            ForEach(paymentMethods.map { PaymentMethodWrapper($0) }) { wrapper in
                                 Button {
                                     Task {
                                         await scope.selectPaymentMethod(wrapper.method)
@@ -505,6 +643,606 @@ struct CustomCardFormExample: View {
         // Simplified validation for example purposes
         let digits = number.filter { $0.isNumber }
         return digits.count >= 13 && digits.count <= 19
+    }
+}
+
+/// Example showing a grid layout for payment methods
+@available(iOS 15.0, *)
+struct GridLayoutExample: View {
+    let scope: PrimerCheckoutScope
+
+    @State private var paymentMethods: [any PaymentMethodProtocol] = []
+    @State private var selectedMethod: (any PaymentMethodProtocol)?
+
+    let columns = [
+        GridItem(.flexible()),
+        GridItem(.flexible())
+    ]
+
+    var body: some View {
+        VStack(spacing: 20) {
+            if let selectedMethod = selectedMethod {
+                // Show selected method
+                VStack {
+                    HStack {
+                        Button {
+                            Task {
+                                await scope.selectPaymentMethod(nil)
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "arrow.left")
+                                Text("Back")
+                            }
+                        }
+                        Spacer()
+                    }
+                    .padding(.bottom)
+
+                    selectedMethod.defaultContent()
+                }
+            } else {
+                // Grid of payment methods
+                ScrollView {
+                    LazyVGrid(columns: columns, spacing: 16) {
+                        ForEach(paymentMethods.map { PaymentMethodWrapper($0) }) { wrapper in
+                            Button {
+                                Task {
+                                    await scope.selectPaymentMethod(wrapper.method)
+                                }
+                            } label: {
+                                VStack(spacing: 12) {
+                                    Image(systemName: "creditcard.fill")
+                                        .font(.system(size: 30))
+                                        .foregroundColor(.blue)
+
+                                    Text(wrapper.method.name ?? "Payment")
+                                        .font(.caption)
+                                        .fontWeight(.medium)
+                                        .multilineTextAlignment(.center)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 100)
+                                .background(Color(.systemGray6))
+                                .cornerRadius(12)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                    }
+                }
+            }
+        }
+        .task {
+            for await methods in scope.paymentMethods() {
+                paymentMethods = methods
+            }
+        }
+        .task {
+            for await method in scope.selectedPaymentMethod() {
+                selectedMethod = method
+            }
+        }
+    }
+}
+
+/// Example showing a detailed list layout
+@available(iOS 15.0, *)
+struct ListLayoutExample: View {
+    let scope: PrimerCheckoutScope
+
+    @State private var paymentMethods: [any PaymentMethodProtocol] = []
+    @State private var selectedMethod: (any PaymentMethodProtocol)?
+
+    var body: some View {
+        VStack(spacing: 16) {
+            if let selectedMethod = selectedMethod {
+                // Show selected method
+                VStack {
+                    HStack {
+                        Button {
+                            Task {
+                                await scope.selectPaymentMethod(nil)
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "arrow.left")
+                                Text("Back")
+                            }
+                        }
+                        Spacer()
+                    }
+                    .padding(.bottom)
+
+                    selectedMethod.defaultContent()
+                }
+            } else {
+                // List of payment methods with details
+                ScrollView {
+                    VStack(spacing: 12) {
+                        ForEach(paymentMethods.map { PaymentMethodWrapper($0) }) { wrapper in
+                            Button {
+                                Task {
+                                    await scope.selectPaymentMethod(wrapper.method)
+                                }
+                            } label: {
+                                HStack(spacing: 16) {
+                                    Circle()
+                                        .fill(Color.blue.opacity(0.1))
+                                        .frame(width: 50, height: 50)
+                                        .overlay(
+                                            Image(systemName: "creditcard.fill")
+                                                .foregroundColor(.blue)
+                                        )
+
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(wrapper.method.name ?? "Payment Method")
+                                            .font(.headline)
+                                            .foregroundColor(.primary)
+
+                                        Text("Secure and fast payment")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+
+                                    Spacer()
+
+                                    Image(systemName: "chevron.right")
+                                        .foregroundColor(.gray)
+                                }
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(12)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                    }
+                }
+            }
+        }
+        .task {
+            for await methods in scope.paymentMethods() {
+                paymentMethods = methods
+            }
+        }
+        .task {
+            for await method in scope.selectedPaymentMethod() {
+                selectedMethod = method
+            }
+        }
+    }
+}
+
+/// Example showing accordion-style collapsible payment methods
+@available(iOS 15.0, *)
+struct AccordionLayoutExample: View {
+    let scope: PrimerCheckoutScope
+
+    @State private var paymentMethods: [any PaymentMethodProtocol] = []
+    @State private var expandedMethodId: String?
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 8) {
+                ForEach(paymentMethods.map { PaymentMethodWrapper($0) }) { wrapper in
+                    VStack(spacing: 0) {
+                        // Accordion header
+                        Button {
+                            withAnimation(.spring()) {
+                                if expandedMethodId == wrapper.id {
+                                    expandedMethodId = nil
+                                } else {
+                                    expandedMethodId = wrapper.id
+                                    Task {
+                                        await scope.selectPaymentMethod(wrapper.method)
+                                    }
+                                }
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "creditcard.fill")
+                                    .foregroundColor(.blue)
+
+                                Text(wrapper.method.name ?? "Payment Method")
+                                    .fontWeight(.medium)
+
+                                Spacer()
+
+                                Image(systemName: expandedMethodId == wrapper.id ? "chevron.up" : "chevron.down")
+                                    .foregroundColor(.gray)
+                            }
+                            .padding()
+                            .background(Color(.systemGray6))
+                        }
+                        .buttonStyle(PlainButtonStyle())
+
+                        // Accordion content
+                        if expandedMethodId == wrapper.id {
+                            wrapper.method.defaultContent()
+                                .padding()
+                                .background(Color(.systemGray6).opacity(0.5))
+                                .transition(.opacity.combined(with: .move(edge: .top)))
+                        }
+                    }
+                    .cornerRadius(8)
+                }
+            }
+        }
+        .task {
+            for await methods in scope.paymentMethods() {
+                paymentMethods = methods
+            }
+        }
+    }
+}
+
+/// Example showing modal sheet presentation
+@available(iOS 15.0, *)
+struct ModalSheetExample: View {
+    let scope: PrimerCheckoutScope
+
+    @State private var paymentMethods: [any PaymentMethodProtocol] = []
+    @State private var showingPaymentSheet = false
+    @State private var selectedMethod: (any PaymentMethodProtocol)?
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Ready to checkout?")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+
+            Text("Total: $99.99")
+                .font(.title2)
+                .foregroundColor(.secondary)
+
+            Spacer()
+
+            Button {
+                showingPaymentSheet = true
+            } label: {
+                Text("Choose Payment Method")
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+        }
+        .padding()
+        .sheet(isPresented: $showingPaymentSheet) {
+            NavigationView {
+                VStack {
+                    if let selectedMethod = selectedMethod {
+                        selectedMethod.defaultContent()
+                            .navigationTitle(selectedMethod.name ?? "Payment")
+                            .navigationBarItems(
+                                leading: Button("Back") {
+                                    Task {
+                                        await scope.selectPaymentMethod(nil)
+                                    }
+                                }
+                            )
+                    } else {
+                        List(paymentMethods.map { PaymentMethodWrapper($0) }) { wrapper in
+                            Button {
+                                Task {
+                                    await scope.selectPaymentMethod(wrapper.method)
+                                }
+                            } label: {
+                                HStack {
+                                    Image(systemName: "creditcard.fill")
+                                        .foregroundColor(.blue)
+                                    Text(wrapper.method.name ?? "Payment")
+                                    Spacer()
+                                }
+                                .padding(.vertical, 8)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                        .navigationTitle("Payment Methods")
+                        .navigationBarItems(
+                            trailing: Button("Cancel") {
+                                showingPaymentSheet = false
+                            }
+                        )
+                    }
+                }
+            }
+        }
+        .task {
+            for await methods in scope.paymentMethods() {
+                paymentMethods = methods
+            }
+        }
+        .task {
+            for await method in scope.selectedPaymentMethod() {
+                selectedMethod = method
+            }
+        }
+    }
+}
+
+/// Example showing segmented control for payment method categories
+@available(iOS 15.0, *)
+struct SegmentedControlExample: View {
+    let scope: PrimerCheckoutScope
+
+    @State private var paymentMethods: [any PaymentMethodProtocol] = []
+    @State private var selectedCategory = "Cards"
+    @State private var selectedMethod: (any PaymentMethodProtocol)?
+
+    let categories = ["Cards", "Wallets", "Bank", "Other"]
+
+    var body: some View {
+        VStack(spacing: 20) {
+            if let selectedMethod = selectedMethod {
+                // Show selected method
+                VStack {
+                    HStack {
+                        Button {
+                            Task {
+                                await scope.selectPaymentMethod(nil)
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "arrow.left")
+                                Text("Back")
+                            }
+                        }
+                        Spacer()
+                    }
+                    .padding(.bottom)
+
+                    selectedMethod.defaultContent()
+                }
+            } else {
+                // Segmented control
+                Picker("Category", selection: $selectedCategory) {
+                    ForEach(categories, id: \.self) { category in
+                        Text(category).tag(category)
+                    }
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .padding(.horizontal)
+
+                // Filtered payment methods
+                ScrollView {
+                    VStack(spacing: 12) {
+                        ForEach(filteredMethods) { wrapper in
+                            Button {
+                                Task {
+                                    await scope.selectPaymentMethod(wrapper.method)
+                                }
+                            } label: {
+                                HStack {
+                                    Image(systemName: iconForCategory(selectedCategory))
+                                        .foregroundColor(.blue)
+                                        .frame(width: 30)
+
+                                    Text(wrapper.method.name ?? "Payment")
+                                        .fontWeight(.medium)
+
+                                    Spacer()
+
+                                    Image(systemName: "chevron.right")
+                                        .foregroundColor(.gray)
+                                }
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(10)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+            }
+        }
+        .task {
+            for await methods in scope.paymentMethods() {
+                paymentMethods = methods
+            }
+        }
+        .task {
+            for await method in scope.selectedPaymentMethod() {
+                selectedMethod = method
+            }
+        }
+    }
+
+    fileprivate var filteredMethods: [PaymentMethodWrapper] {
+        // In a real implementation, you would filter by actual category
+        // For demo purposes, we'll show all methods for each category
+        paymentMethods.map { PaymentMethodWrapper($0) }
+    }
+
+    func iconForCategory(_ category: String) -> String {
+        switch category {
+        case "Cards": return "creditcard.fill"
+        case "Wallets": return "wallet.pass.fill"
+        case "Bank": return "building.columns.fill"
+        default: return "dollarsign.circle.fill"
+        }
+    }
+}
+
+/// Example showing a mixed layout combining multiple UI patterns
+@available(iOS 15.0, *)
+struct MixedLayoutExample: View {
+    let scope: PrimerCheckoutScope
+
+    @State private var paymentMethods: [any PaymentMethodProtocol] = []
+    @State private var selectedMethod: (any PaymentMethodProtocol)?
+    @State private var showSavedCards = true
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                if let selectedMethod = selectedMethod {
+                    // Show selected method
+                    VStack {
+                        HStack {
+                            Button {
+                                Task {
+                                    await scope.selectPaymentMethod(nil)
+                                }
+                            } label: {
+                                HStack {
+                                    Image(systemName: "arrow.left")
+                                    Text("Back")
+                                }
+                            }
+                            Spacer()
+                        }
+                        .padding(.bottom)
+
+                        selectedMethod.defaultContent()
+                    }
+                } else {
+                    // Mixed layout sections
+
+                    // Section 1: Saved Cards (Collapsible)
+                    VStack(alignment: .leading, spacing: 12) {
+                        Button {
+                            withAnimation {
+                                showSavedCards.toggle()
+                            }
+                        } label: {
+                            HStack {
+                                Text("Saved Cards")
+                                    .font(.headline)
+                                Spacer()
+                                Image(systemName: showSavedCards ? "chevron.up" : "chevron.down")
+                            }
+                            .foregroundColor(.primary)
+                        }
+
+                        if showSavedCards {
+                            // Horizontal scroll for saved cards
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 12) {
+                                    ForEach(0..<3) { _ in
+                                        VStack(alignment: .leading, spacing: 8) {
+                                            HStack {
+                                                Image(systemName: "creditcard.fill")
+                                                    .foregroundColor(.white)
+                                                Spacer()
+                                                Text("VISA")
+                                                    .font(.caption)
+                                                    .fontWeight(.bold)
+                                                    .foregroundColor(.white)
+                                            }
+
+                                            Text("•••• •••• •••• 4242")
+                                                .font(.caption)
+                                                .foregroundColor(.white.opacity(0.8))
+
+                                            Text("Expires 12/24")
+                                                .font(.caption2)
+                                                .foregroundColor(.white.opacity(0.6))
+                                        }
+                                        .padding()
+                                        .frame(width: 200, height: 120)
+                                        .background(
+                                            LinearGradient(
+                                                gradient: Gradient(colors: [.blue, .purple]),
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
+                                        .cornerRadius(12)
+                                        .onTapGesture {
+                                            // Select saved card
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Divider()
+
+                    // Section 2: Popular Payment Methods (Grid)
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Popular Methods")
+                            .font(.headline)
+
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                            ForEach(paymentMethods.prefix(3).map { PaymentMethodWrapper($0) }) { wrapper in
+                                Button {
+                                    Task {
+                                        await scope.selectPaymentMethod(wrapper.method)
+                                    }
+                                } label: {
+                                    VStack(spacing: 8) {
+                                        Image(systemName: "star.fill")
+                                            .foregroundColor(.yellow)
+                                        Text(wrapper.method.name ?? "Pay")
+                                            .font(.caption)
+                                            .multilineTextAlignment(.center)
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 16)
+                                    .background(Color(.systemGray6))
+                                    .cornerRadius(8)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                            }
+                        }
+                    }
+
+                    // Section 3: All Payment Methods (List)
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("All Payment Methods")
+                            .font(.headline)
+
+                        ForEach(paymentMethods.map { PaymentMethodWrapper($0) }) { wrapper in
+                            Button {
+                                Task {
+                                    await scope.selectPaymentMethod(wrapper.method)
+                                }
+                            } label: {
+                                HStack {
+                                    Image(systemName: "creditcard")
+                                        .foregroundColor(.blue)
+                                    Text(wrapper.method.name ?? "Payment")
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .foregroundColor(.gray)
+                                }
+                                .padding(.vertical, 12)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+
+                            if wrapper.id != paymentMethods.map({ PaymentMethodWrapper($0) }).last?.id {
+                                Divider()
+                            }
+                        }
+                    }
+                }
+            }
+            .padding()
+        }
+        .task {
+            for await methods in scope.paymentMethods() {
+                paymentMethods = methods
+            }
+        }
+        .task {
+            for await method in scope.selectedPaymentMethod() {
+                selectedMethod = method
+            }
+        }
+    }
+}
+
+// Helper wrapper to make payment methods identifiable for ForEach
+private struct PaymentMethodWrapper: Identifiable {
+    let id = UUID().uuidString
+    let method: any PaymentMethodProtocol
+
+    init(_ method: any PaymentMethodProtocol) {
+        self.method = method
     }
 }
 
