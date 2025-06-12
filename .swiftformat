@@ -1,0 +1,22 @@
+--maxwidth 150
+--exclude Sources/PrimerSDK/Classes/Third Party/PromiseKit,**/Pods/**,Dangerfile.swift
+
+# Basic rules
+--indent 4
+--trimwhitespace always
+--linebreaks lf
+
+# Matches with SwiftLint
+--disable redundantSelf
+--disable unusedArguments
+--swiftversion 5.0
+
+# File organization
+--header ignore
+
+# Wrapping
+--wraparguments before-first
+--wrapcollections before-first
+--funcattributes prev-line
+--typeattributes prev-line
+--varattributes same-line 

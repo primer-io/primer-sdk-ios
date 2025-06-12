@@ -21,7 +21,7 @@ on:
 
 jobs:
   build-and-upload-to-appetize:
-    runs-on: macos-latest
+    runs-on: macos-15
     timeout-minutes: 20
     name: "Build and upload app to Appetize"
     steps:
@@ -54,8 +54,10 @@ jobs:
           slack-reporter-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
           github-run-id: ${{ github.run_id }}
           stripe-publishable-key: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
+          gitlab-username: ${{ secrets.GITLAB_USERNAME }}
+          gitlab-password: ${{ secrets.GITLAB_PASSWORD }}
   build-and-upload-to-firebase-and-browserstack:
-    runs-on: macos-latest
+    runs-on: macos-15
     timeout-minutes: 20
     name: "Distribute app to Firebase and Browserstack"
     outputs:
@@ -120,6 +122,8 @@ jobs:
           BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
           BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
           SOURCE_BRANCH: ${{ github.ref }}
+          GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
+          GITLAB_PASSWORD: ${{ secrets.GITLAB_PASSWORD }}
       - name: Save Browserstack ID
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 #v4.6.2
         id: save_browserstack_id_step

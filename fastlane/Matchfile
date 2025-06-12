@@ -1,19 +1,10 @@
-git_url("git@github.com:primer-io/ios_sdk_match_repo.git")
-# git_url("https://github.com/primer-io/ios_sdk_match_repo.git")
-
+git_url("https://gitlab.com/primer-io/acceptance/mobile/ios-sdk-match-repo.git")
 storage_mode("git")
-
+git_branch("main")
 type("development") # The default type, can be: appstore, adhoc, enterprise or development
+
 
 app_identifier("com.primerapi.PrimerSDKExample")
 username("security@primerapi.com") # Your Apple Developer Portal username
 
 platform("ios")
-shallow_clone true
-force_for_new_devices true
-clone_branch_directly true
-
-# For all available options run `fastlane match --help`
-# Remove the # in the beginning of the line to enable the other options
-
-# The docs are available on https://docs.fastlane.tools/actions/match

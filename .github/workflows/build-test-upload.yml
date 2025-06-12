@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   unit-tests-sdk:
-    runs-on: macos-latest-large
+    runs-on: macos-15-large
     timeout-minutes: 20
     name: "Unit Tests - SDK"
     steps:
@@ -30,16 +30,17 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_KEY }}
           known-hosts: ${{ secrets.KNOWN_HOSTS }}
           match-password: ${{ secrets.MATCH_PASSWORD }}
-          match-git-private-key: ${{ secrets.FASTLANE_PASSWORD }}
           fastlane-session: ${{ secrets.FASTLANE_SESSION }}
           fastlane-password: ${{ secrets.FASTLANE_PASSWORD }}
           match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          gitlab-username: ${{ secrets.GITLAB_USERNAME }}
+          gitlab-password: ${{ secrets.GITLAB_PASSWORD }}
           sdk-name: sdk
 
   optional-sdk-tests:
     name: Optional SDK Tests
-    runs-on: macos-latest-large
+    runs-on: macos-15-large
     strategy:
       max-parallel: 3
       matrix:
@@ -70,9 +71,11 @@ jobs:
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           sdk-name: ${{ matrix.package-swift.name }}
           package-swift: ${{  matrix.package-swift.file }}
+          gitlab-username: ${{ secrets.GITLAB_USERNAME }}
+          gitlab-password: ${{ secrets.GITLAB_PASSWORD }}
 
   unit-tests-debug-app:
-    runs-on: macos-latest-large
+    runs-on: macos-15-large
     timeout-minutes: 20
     name: "Unit Tests - Debug App"
     steps:
@@ -96,11 +99,13 @@ jobs:
           match-keychain-name: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           fastlane-test-lane: test_debug_app
+          gitlab-username: ${{ secrets.GITLAB_USERNAME }}
+          gitlab-password: ${{ secrets.GITLAB_PASSWORD }}
 
 
   spm-build:
     needs: unit-tests-debug-app
-    runs-on: macos-latest-large
+    runs-on: macos-15-large
     timeout-minutes: 20
     name: "Build app with SPM Integration"
     steps:
@@ -140,13 +145,15 @@ jobs:
           MATCH_KEYCHAIN_NAME: ${{ secrets.MATCH_KEYCHAIN_NAME }}
           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           SOURCE_BRANCH: ${{ github.head_ref }}
+          GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
+          GITLAB_PASSWORD: ${{ secrets.GITLAB_PASSWORD }}
 
   sonarcloud:
     needs:
       - unit-tests-sdk
       - optional-sdk-tests
     name: SonarCloud
-    runs-on: macos-latest
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -168,7 +175,7 @@ jobs:
     needs: 
       - unit-tests-sdk
       - unit-tests-debug-app
-    runs-on: macos-latest-large
+    runs-on: macos-15-large
     timeout-minutes: 45
     name: "Run Critical Path UI Tests"
     steps:
@@ -219,7 +226,7 @@ jobs:
     needs:
       - unit-tests-sdk
       - unit-tests-debug-app
-    runs-on: macos-latest-large
+    runs-on: macos-15-large
     timeout-minutes: 45
     name: "Build and upload app to Appetize"
     steps:
@@ -252,6 +259,8 @@ jobs:
           slack-reporter-token: ${{ secrets.SLACK_REPORTER_BOT_TOKEN }}
           github-run-id: ${{ github.run_id }}
           stripe-publishable-key: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
+          gitlab-username: ${{ secrets.GITLAB_USERNAME }}
+          gitlab-password: ${{ secrets.GITLAB_PASSWORD }}
       - uses: peter-evans/find-comment@3eae4d37986fb5a8592848f6a574fdf654e61f9e #v3.1.0
         if: ${{ success() }}
         id: find_comment
