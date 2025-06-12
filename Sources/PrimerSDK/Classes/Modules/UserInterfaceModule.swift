@@ -45,17 +45,10 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             return logo
         }
 
-        switch internaPaymentMethodType {
-        case .adyenBlik:
-            return UIScreen.isDarkModeEnabled ? logo : UIImage(named: "blik-logo-light",
-                                                               in: Bundle.primerResources,
-                                                               compatibleWith: nil)
-        case .adyenMultibanco:
-            return UIScreen.isDarkModeEnabled ? logo : UIImage(named: "multibanco-logo-light",
-                                                               in: Bundle.primerResources,
-                                                               compatibleWith: nil)
-        default:
-            return logo
+        return switch internaPaymentMethodType {
+            case .adyenBlik: UIScreen.isDarkModeEnabled ? logo : .blikLight
+            case .adyenMultibanco: UIScreen.isDarkModeEnabled ? logo : .multibancoLight
+            default: logo
         }
     }
 
@@ -74,7 +67,7 @@ final class UserInterfaceModule: NSObject, UserInterfaceModuleProtocol {
             fileName += "-colored"
         }
 
-        return UIImage(named: fileName, in: Bundle.primerResources, compatibleWith: nil)
+        return UIImage(primerResource: fileName)
     }
 
     var themeMode: PrimerTheme.Mode {

@@ -1,5 +1,5 @@
 //
-//  PrimerAssetsManager.swift
+//  AssetsManager.swift
 //  PrimerSDK
 //
 //  Created by Evangelos on 26/9/22.
@@ -15,7 +15,7 @@ extension PrimerHeadlessUniversalCheckout {
         public static func getCardNetworkImage(for cardNetwork: CardNetwork) throws -> UIImage? {
             try verifyAPIConfig()
 
-            return UIImage(named: "\(cardNetwork.rawValue)-logo-colored", in: Bundle.primerResources, compatibleWith: nil)
+            return UIImage(primerResource: "\(cardNetwork.rawValue)-logo-colored")
         }
 
         public static func getCardNetworkAsset(cardNetworkString: String?) -> PrimerCardNetworkAsset? {
@@ -24,9 +24,8 @@ extension PrimerHeadlessUniversalCheckout {
         }
 
         public static func getCardNetworkAsset(for cardNetwork: CardNetwork) -> PrimerCardNetworkAsset? {
-
             let assetName = "\(cardNetwork.assetName.lowercased())-card-icon-colored"
-            let cardImage = UIImage(named: assetName, in: Bundle.primerResources, compatibleWith: nil)
+            let cardImage = UIImage(primerResource: assetName)
 
             let event = Analytics.Event.message(
                 message: "Providing single asset for card network: \(cardNetwork.rawValue)",
