@@ -1,63 +1,28 @@
-//
-//  ApplePayUtils.swift
-//  PrimerSDK
-//
-//  Created by Jack Newcombe on 07/11/2023.
-//
+import struct PassKit.PKPaymentNetwork
 
-// swiftlint:disable cyclomatic_complexity
+enum ApplePayUtils {
 
-import PassKit
-
-final class ApplePayUtils {
+    private static let networkMap: [CardNetwork: PKPaymentNetwork?] = [
+        .amex: .amex,
+        .cartesBancaires: .cartesBancaires,
+        .discover: .discover,
+        .elo: .elo,
+        .jcb: .JCB,
+        .masterCard: .masterCard,
+        .maestro: .maestro,
+        .mir: ._mir,
+        .unionpay: .chinaUnionPay,
+        .visa: .visa
+    ]
 
     static func supportedPKPaymentNetworks(cardNetworks: [CardNetwork] = .allowedCardNetworks) -> [PKPaymentNetwork] {
-        return cardNetworks.compactMap { cardNetwork in
-            switch cardNetwork {
-            case .amex:
-                return .amex
-            case .cartesBancaires:
-                if #available(iOS 11.2, *) {
-                    return .cartesBancaires
-                } else {
-                    return nil
-                }
-            case .discover:
-                return .discover
-            case .elo:
-                if #available(iOS 12.1.1, *) {
-                    return .elo
-                } else {
-                    return nil
-                }
-            case .jcb:
-                if #available(iOS 10.1, *) {
-                    return .JCB
-                } else {
-                    return nil
-                }
-            case .masterCard:
-                return .masterCard
-            case .maestro:
-                if #available(iOS 12.0, *) {
-                    return .maestro
-                } else {
-                    return nil
-                }
-            case .mir:
-                if #available(iOS 14.5, *) {
-                    return .mir
-                } else {
-                    return nil
-                }
-            case .unionpay:
-                return .chinaUnionPay
-            case .visa:
-                return .visa
-            default:
-                return nil
-            }
-        }
+        cardNetworks.compactMap { networkMap[$0] ?? nil }
     }
 }
-// swiftlint:enable cyclomatic_complexity
+
+private extension PKPaymentNetwork {
+    static var _mir: PKPaymentNetwork? {
+        guard #available(iOS 14.5, *) else { return nil }
+        return .mir
+    }
+}

@@ -143,7 +143,6 @@ public struct PrimerDefaultTheme: ColorTheme {
     }
 }
 
-@available(iOS 13.0, *)
 public struct PrimerDarkTheme: ColorTheme {
     public var text1: UIColor
     public var text2: UIColor
