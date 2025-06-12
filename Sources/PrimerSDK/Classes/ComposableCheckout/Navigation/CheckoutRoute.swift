@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 @available(iOS 15.0, *)
-enum CheckoutRoute: Hashable, Identifiable, CaseIterable {
+enum CheckoutRoute: Hashable, Identifiable {
     case splash
     case paymentMethodsList
     case paymentMethod(PaymentMethodProtocol)
@@ -17,10 +17,6 @@ enum CheckoutRoute: Hashable, Identifiable, CaseIterable {
         case .success: return "success"
         case .failure: return "failure"
         }
-    }
-
-    static var allCases: [CheckoutRoute] {
-        [.splash, .paymentMethodsList]
     }
 
     // Implement Hashable for NavigationPath compatibility

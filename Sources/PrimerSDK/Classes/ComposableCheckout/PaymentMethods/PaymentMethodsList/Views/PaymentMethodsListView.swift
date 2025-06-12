@@ -11,9 +11,9 @@ struct PaymentMethodsListView: View {
     let onCancel: (() -> Void)?
 
     init(
-        amount: String, 
+        amount: String,
         paymentMethods: [PaymentMethodDisplayModel],
-        onPaymentMethodSelected: @escaping (PaymentMethodDisplayModel) -> Void, 
+        onPaymentMethodSelected: @escaping (PaymentMethodDisplayModel) -> Void,
         onCancel: (() -> Void)? = nil
     ) {
         self.amount = amount

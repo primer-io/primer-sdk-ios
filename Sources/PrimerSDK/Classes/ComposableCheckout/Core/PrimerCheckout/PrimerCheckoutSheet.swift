@@ -58,7 +58,7 @@ struct PrimerCheckoutSheet: View, LogReporter {
 
     @Environment(\.designTokens) private var tokens
     @Environment(\.diContainer) private var container
-    
+
     // Animation configuration
     private let animationConfig: NavigationAnimationConfiguration
 
@@ -138,7 +138,7 @@ struct PrimerCheckoutSheet: View, LogReporter {
         }
         return coordinator.navigationStack[coordinator.navigationStack.count - 2]
     }
-    
+
     static func create(viewModel: PrimerCheckoutViewModel, container: ContainerProtocol, animationConfig: NavigationAnimationConfiguration = .default) async throws -> PrimerCheckoutSheet {
         let coordinator = try await container.resolve(CheckoutCoordinator.self)
         return PrimerCheckoutSheet(viewModel: viewModel, coordinator: coordinator, animationConfig: animationConfig)
