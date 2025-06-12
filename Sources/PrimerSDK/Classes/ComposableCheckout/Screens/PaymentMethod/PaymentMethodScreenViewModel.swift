@@ -9,14 +9,9 @@ final class PaymentMethodScreenViewModel: ObservableObject {
     @Published var errorMessage: String?
 
     private let coordinator: CheckoutCoordinator
-    private var cancellables = Set<AnyCancellable>()
 
     init(coordinator: CheckoutCoordinator) {
         self.coordinator = coordinator
-    }
-
-    func setupPaymentMethod(_ method: PaymentMethodProtocol) async {
-        // Setup any method-specific configuration
     }
 
     func goBack() {

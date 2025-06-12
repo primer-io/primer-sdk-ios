@@ -82,7 +82,7 @@ private struct CheckoutContentView: View, LogReporter {
             // Fallback to creating coordinator manually if DI fails
             logger.warn(message: "⚠️ [PrimerCheckout] Failed to create checkout sheet with DI, using fallback: \(error.localizedDescription)")
             let fallbackContainer = DIContainer.createContainer()
-            let coordinator = CheckoutCoordinator(container: fallbackContainer)
+            let coordinator = CheckoutCoordinator()
             return PrimerCheckoutSheet(viewModel: viewModel, coordinator: coordinator, animationConfig: .default)
         }
     }

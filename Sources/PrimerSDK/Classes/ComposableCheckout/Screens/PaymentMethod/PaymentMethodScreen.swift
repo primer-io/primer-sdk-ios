@@ -23,9 +23,6 @@ struct PaymentMethodScreen: View {
         }
         .background(tokens?.primerColorBackground ?? .white)
         .navigationBarHidden(true)
-        .task {
-            await viewModel.setupPaymentMethod(paymentMethod)
-        }
     }
 
     private var headerView: some View {

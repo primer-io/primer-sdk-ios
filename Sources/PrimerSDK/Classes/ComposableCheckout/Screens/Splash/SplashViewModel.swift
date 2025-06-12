@@ -10,7 +10,6 @@ final class SplashViewModel: ObservableObject {
 
     private let coordinator: CheckoutCoordinator
     private let checkoutViewModel: PrimerCheckoutViewModel
-    private var cancellables = Set<AnyCancellable>()
 
     init(coordinator: CheckoutCoordinator, checkoutViewModel: PrimerCheckoutViewModel) {
         self.coordinator = coordinator
@@ -20,7 +19,7 @@ final class SplashViewModel: ObservableObject {
     func initialize() async {
         do {
             // Initialize payment methods and other dependencies
-            try await initializePaymentMethods()
+            // TODO: Add initialization logic if needed
 
             // Small delay for UX (optional)
             try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
@@ -32,11 +31,6 @@ final class SplashViewModel: ObservableObject {
             errorMessage = "Failed to initialize: \(error.localizedDescription)"
             // Handle error - maybe show retry button or navigate to error state
         }
-    }
-
-    private func initializePaymentMethods() async throws {
-        // Initialize payment methods through checkoutViewModel
-        // This replaces the current initialization logic
     }
 
     static func create(container: ContainerProtocol) async throws -> SplashViewModel {
