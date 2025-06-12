@@ -52,7 +52,7 @@ struct CardPaymentView: View, LogReporter {
                     )
                     .transition(CardPaymentAnimationConfig.fieldEntranceTransition)
                 }
-                
+
                 // Main Content
                 VStack(spacing: CardPaymentDesign.fieldVerticalSpacing(from: tokens)) {
                     // Card Network Icons
@@ -62,7 +62,7 @@ struct CardPaymentView: View, LogReporter {
                     )
                     .padding(.bottom, CardPaymentDesign.cardNetworkIconsSpacing(from: tokens))
                     .transition(CardPaymentAnimationConfig.iconEntranceTransition)
-                    
+
                     // Card Number Field
                     CardNumberInputField(
                         label: CardPaymentLocalizable.cardNumberLabel,
@@ -187,12 +187,12 @@ struct CardPaymentView: View, LogReporter {
     }
 
     // MARK: - Private Methods
-    
+
     private func handlePayButtonTapped() {
         guard !isSubmitting else { return }
-        
+
         isSubmitting = true
-        
+
         // Announce payment processing for accessibility
         if animationConfig.respectReduceMotion {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -202,7 +202,7 @@ struct CardPaymentView: View, LogReporter {
                 )
             }
         }
-        
+
         // Trigger the existing pay button from scope
         // This maintains the original payment processing logic
         if let payButton = scope.PrimerPayButton(enabled: true, modifier: (), text: "Pay") as? UIView {
@@ -210,23 +210,23 @@ struct CardPaymentView: View, LogReporter {
             // In a real implementation, we would extract the action from the scope
             logger.info(message: "💳 Pay button tapped - triggering payment flow")
         }
-        
+
         // Reset submitting state after a reasonable delay
         // This should be managed by the actual payment flow
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             isSubmitting = false
         }
     }
-    
+
     private func extractAmount() -> String? {
         // Extract amount from scope or UI state if available
         // This would need to be implemented based on the actual data structure
         return nil
     }
-    
+
     private func updateDetectedCardNetwork(_ network: CardNetwork) {
         let newDetectedNetwork: CardNetworkType
-        
+
         switch network {
         case .visa:
             newDetectedNetwork = .visa
@@ -243,10 +243,10 @@ struct CardPaymentView: View, LogReporter {
         default:
             newDetectedNetwork = .unknown
         }
-        
+
         if detectedCardNetwork != newDetectedNetwork {
             detectedCardNetwork = newDetectedNetwork
-            
+
             // Announce card network detection for accessibility
             if newDetectedNetwork != .unknown && animationConfig.respectReduceMotion {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -277,21 +277,21 @@ struct CardPaymentView: View, LogReporter {
         logger.debug(message: "💳 Form validity updated: \(isValid)")
         logger.debug(message: "💳 Field validity: cardNumber=\(cardNumberValid), expiry=\(expiryValid), cvv=\(cvvValid), name=\(nameValid)")
     }
-    
+
     private func updateFormErrors() {
         guard let state = uiState else {
             formHasErrors = false
             return
         }
-        
+
         let hasErrors = state.cardData.cardNumber.validationError != nil ||
-                       state.cardData.expiration.validationError != nil ||
-                       state.cardData.cvv.validationError != nil ||
-                       state.cardData.cardholderName.validationError != nil
-        
+            state.cardData.expiration.validationError != nil ||
+            state.cardData.cvv.validationError != nil ||
+            state.cardData.cardholderName.validationError != nil
+
         if hasErrors != formHasErrors {
             formHasErrors = hasErrors
-            
+
             // Announce form errors for accessibility
             if hasErrors && animationConfig.respectReduceMotion {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -303,20 +303,20 @@ struct CardPaymentView: View, LogReporter {
             }
         }
     }
-    
+
     // Error state helpers for shake animations
     private var hasCardNumberError: Bool {
         uiState?.cardData.cardNumber.validationError != nil
     }
-    
+
     private var hasExpiryError: Bool {
         uiState?.cardData.expiration.validationError != nil
     }
-    
+
     private var hasCvvError: Bool {
         uiState?.cardData.cvv.validationError != nil
     }
-    
+
     private var hasNameError: Bool {
         uiState?.cardData.cardholderName.validationError != nil
     }

@@ -33,7 +33,7 @@ public struct CVVRule: ValidationRule {
         }
 
         // Check length based on card type
-        let expectedLength = cardNetwork == .amex ? 4 : 3
+        let expectedLength = cardNetwork.validation?.code.length ?? 3
         if cvv.count != expectedLength {
             return .invalid(
                 code: "invalid-cvv-length",

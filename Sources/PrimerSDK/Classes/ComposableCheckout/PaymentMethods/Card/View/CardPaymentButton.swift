@@ -14,10 +14,10 @@ internal struct CardPaymentButton: View {
     let amount: String?
     let action: () -> Void
     let animationConfig: CardPaymentAnimationConfiguration
-    
+
     @Environment(\.designTokens) private var tokens
     @State private var isPressed = false
-    
+
     init(
         enabled: Bool,
         isLoading: Bool = false,
@@ -31,7 +31,7 @@ internal struct CardPaymentButton: View {
         self.action = action
         self.animationConfig = animationConfig
     }
-    
+
     private var buttonText: String {
         if isLoading {
             return NSLocalizedString(
@@ -40,21 +40,21 @@ internal struct CardPaymentButton: View {
                 comment: "Pay button text when processing payment"
             )
         }
-        
+
         return CardPaymentLocalizable.payButtonTextWithAmount(amount)
     }
-    
+
     private var backgroundColor: Color {
         if !enabled || isLoading {
             return tokens?.primerColorGray400 ?? Color.gray
         }
         return tokens?.primerColorBrand ?? Color.blue
     }
-    
+
     private var textColor: Color {
         return tokens?.primerColorGray000 ?? Color.white
     }
-    
+
     var body: some View {
         Button(action: {
             guard enabled && !isLoading else { return }
@@ -71,7 +71,7 @@ internal struct CardPaymentButton: View {
                             removal: .opacity
                         ))
                 }
-                
+
                 // Button text
                 Text(buttonText)
                     .font(CardPaymentDesign.buttonFont(from: tokens))
@@ -109,7 +109,7 @@ internal struct CardPaymentButton: View {
         .accessibilityHint(accessibilityHint)
         .accessibilityAddTraits(isLoading ? [.updatesFrequently] : [])
     }
-    
+
     private var accessibilityHint: String {
         if isLoading {
             return CardPaymentLocalizable.paymentProcessingAnnouncement
@@ -128,7 +128,7 @@ internal struct CardPaymentSubmitButton: View {
     let isLoading: Bool
     let onSubmit: () -> Void
     let animationConfig: CardPaymentAnimationConfiguration
-    
+
     init(
         enabled: Bool,
         isLoading: Bool = false,
@@ -140,7 +140,7 @@ internal struct CardPaymentSubmitButton: View {
         self.onSubmit = onSubmit
         self.animationConfig = animationConfig
     }
-    
+
     var body: some View {
         CardPaymentButton(
             enabled: enabled,
@@ -162,10 +162,10 @@ internal struct CustomCardPaymentButton: View {
     let textColor: Color?
     let action: () -> Void
     let animationConfig: CardPaymentAnimationConfiguration
-    
+
     @Environment(\.designTokens) private var tokens
     @State private var isPressed = false
-    
+
     init(
         enabled: Bool,
         isLoading: Bool = false,
@@ -183,22 +183,22 @@ internal struct CustomCardPaymentButton: View {
         self.action = action
         self.animationConfig = animationConfig
     }
-    
+
     private var resolvedBackgroundColor: Color {
         if let backgroundColor = backgroundColor {
             return backgroundColor
         }
-        
+
         if !enabled || isLoading {
             return tokens?.primerColorGray400 ?? Color.gray
         }
         return tokens?.primerColorBrand ?? Color.blue
     }
-    
+
     private var resolvedTextColor: Color {
         return textColor ?? tokens?.primerColorGray000 ?? Color.white
     }
-    
+
     var body: some View {
         Button(action: {
             guard enabled && !isLoading else { return }
@@ -210,7 +210,7 @@ internal struct CustomCardPaymentButton: View {
                         .progressViewStyle(CircularProgressViewStyle(tint: resolvedTextColor))
                         .scaleEffect(0.8)
                 }
-                
+
                 Text(title)
                     .font(CardPaymentDesign.buttonFont(from: tokens))
                     .fontWeight(.medium)
@@ -242,23 +242,23 @@ internal class CardPaymentButtonState: ObservableObject {
     @Published var isEnabled: Bool = false
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
-    
+
     func setEnabled(_ enabled: Bool) {
         isEnabled = enabled
     }
-    
+
     func setLoading(_ loading: Bool) {
         isLoading = loading
         if loading {
             errorMessage = nil
         }
     }
-    
+
     func setError(_ error: String?) {
         errorMessage = error
         isLoading = false
     }
-    
+
     func reset() {
         isEnabled = false
         isLoading = false
@@ -276,27 +276,27 @@ struct CardPaymentButton_Previews: PreviewProvider {
                 enabled: true,
                 action: { print("Pay tapped") }
             )
-            
+
             // Disabled button
             CardPaymentButton(
                 enabled: false,
                 action: { print("Pay tapped") }
             )
-            
+
             // Loading button
             CardPaymentButton(
                 enabled: true,
                 isLoading: true,
                 action: { print("Pay tapped") }
             )
-            
+
             // Button with amount
             CardPaymentButton(
                 enabled: true,
                 amount: "$99.00",
                 action: { print("Pay tapped") }
             )
-            
+
             // Custom button
             CustomCardPaymentButton(
                 enabled: true,
@@ -305,7 +305,7 @@ struct CardPaymentButton_Previews: PreviewProvider {
                 textColor: .white,
                 action: { print("Custom pay tapped") }
             )
-            
+
             // No animations
             CardPaymentButton(
                 enabled: true,
@@ -315,13 +315,13 @@ struct CardPaymentButton_Previews: PreviewProvider {
         }
         .padding()
         .previewDisplayName("Card Payment Buttons")
-        
+
         VStack(spacing: 20) {
             CardPaymentButton(
                 enabled: true,
                 action: { print("Pay tapped") }
             )
-            
+
             CardPaymentButton(
                 enabled: false,
                 action: { print("Pay tapped") }

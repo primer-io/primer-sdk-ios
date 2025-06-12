@@ -529,7 +529,7 @@ struct PrimerInputField: View {
     private var labelColor: Color {
         isError ? (tokens?.primerColorBorderOutlinedError ?? .red) : (tokens?.primerColorTextSecondary ?? .secondary)
     }
-    
+
     /// Determines the label font using design tokens.
     private var labelFont: Font {
         if let fontName = tokens?.primerTypographyBodyMediumFont,
@@ -715,9 +715,9 @@ struct PrimerInputField: View {
             }
         }
     }
-    
+
     // MARK: - Helper Functions
-    
+
     /// Maps CGFloat font weight values to SwiftUI Font.Weight enum cases
     private func mapCGFloatToFontWeight(_ weight: CGFloat) -> Font.Weight {
         switch weight {

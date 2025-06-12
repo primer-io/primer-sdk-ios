@@ -7,150 +7,140 @@
 
 import SwiftUI
 
-/// Default sheet UI for the Primer checkout experience.
+/// Helper view for handling async view creation with error handling
+@available(iOS 15.0, *)
+private struct AsyncViewBuilder<Content: View>: View {
+    @State private var content: Content?
+    @State private var isLoading = true
+    @State private var error: Error?
+    private let asyncContent: () async throws -> Content
+
+    init(@ViewBuilder asyncContent: @escaping () async throws -> Content) {
+        self.asyncContent = asyncContent
+    }
+
+    var body: some View {
+        Group {
+            if let content = content {
+                content
+            } else if let error = error {
+                VStack {
+                    Image(systemName: "exclamationmark.triangle")
+                        .foregroundColor(.red)
+                    Text("Failed to load view")
+                        .font(.caption)
+                    Text(error.localizedDescription)
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+                .padding()
+            } else if isLoading {
+                ProgressView("Loading...")
+            }
+        }
+        .task {
+            do {
+                content = try await asyncContent()
+                isLoading = false
+            } catch {
+                self.error = error
+                isLoading = false
+            }
+        }
+    }
+}
+
+/// Default sheet UI for the Primer checkout experience with state-driven navigation.
 @available(iOS 15.0, *)
 struct PrimerCheckoutSheet: View, LogReporter {
     @ObservedObject var viewModel: PrimerCheckoutViewModel
-
-    @State private var paymentMethods: [any PaymentMethodProtocol] = []
-    @State private var selectedMethod: (any PaymentMethodProtocol)?
+    @StateObject private var coordinator: CheckoutCoordinator
 
     @Environment(\.designTokens) private var tokens
+    @Environment(\.diContainer) private var container
+    
+    // Animation configuration
+    private let animationConfig: NavigationAnimationConfiguration
+
+    init(viewModel: PrimerCheckoutViewModel, coordinator: CheckoutCoordinator, animationConfig: NavigationAnimationConfiguration = .default) {
+        self.viewModel = viewModel
+        self._coordinator = StateObject(wrappedValue: coordinator)
+        self.animationConfig = animationConfig
+    }
 
     var body: some View {
-        logger.debug(message: "🎨 [PrimerCheckoutSheet] Rendering body - payment methods: \(paymentMethods.count), selected: \(selectedMethod?.name ?? "none")")
-        return VStack(spacing: 0) {
-            if let selectedMethod = selectedMethod {
-                VStack(spacing: 0) {
-                    headerView
-                    selectedMethodView(selectedMethod)
-                }
-                .padding(16)
-                .transition(.asymmetric(
-                    insertion: .move(edge: .trailing).combined(with: .opacity),
-                    removal: .move(edge: .leading).combined(with: .opacity)
-                ))
-            } else {
-                paymentMethodsListView
-                    .transition(.asymmetric(
-                        insertion: .move(edge: .leading).combined(with: .opacity),
-                        removal: .move(edge: .trailing).combined(with: .opacity)
-                    ))
-            }
+        VStack(spacing: 0) {
+            currentScreen
         }
         .background(tokens?.primerColorBackground ?? .white)
         .cornerRadius(12)
-        .animation(.easeInOut(duration: 0.3), value: selectedMethod != nil)
-        .task {
-            logger.info(message: "🌊 [PrimerCheckoutSheet] Starting payment methods stream task")
-            for await methods in viewModel.paymentMethods() {
-                logger.info(message: "📋 [PrimerCheckoutSheet] Received \(methods.count) payment methods from stream")
-                for (index, method) in methods.enumerated() {
-                    logger.debug(message: "📋 [PrimerCheckoutSheet] Method \(index + 1): \(method.name ?? "Unknown") (ID: \(method.id))")
-                }
-                paymentMethods = methods
-            }
-            logger.warn(message: "⚠️ [PrimerCheckoutSheet] Payment methods stream ended")
-        }
-        .task {
-            logger.debug(message: "🌊 [PrimerCheckoutSheet] Starting selected payment method stream task")
-            for await method in viewModel.selectedPaymentMethod() {
-                logger.debug(message: "🎯 [PrimerCheckoutSheet] Selected method changed: \(method?.name ?? "nil")")
-                selectedMethod = method
-            }
-            logger.warn(message: "⚠️ [PrimerCheckoutSheet] Selected payment method stream ended")
-        }
+        .environmentObject(coordinator)
+        .navigationScreenTransition(currentRoute: coordinator.currentRoute, config: animationConfig)
         .onAppear {
-            logger.info(message: "👁️ [PrimerCheckoutSheet] View appeared")
+            logger.debug(message: "🎨 [PrimerCheckoutSheet] View appeared")
         }
-        .onDisappear {
-            logger.info(message: "👋 [PrimerCheckoutSheet] View disappeared")
-        }
-    }
-
-    private var headerView: some View {
-        Text("Select Payment Method")
-            .font(.title2)
-            .fontWeight(.semibold)
-            .padding(.vertical, 16)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
     }
 
     @ViewBuilder
-    private func selectedMethodView(_ method: any PaymentMethodProtocol) -> some View {
-        VStack {
-            HStack {
-                Button(action: {
-                    Task {
-                        await viewModel.selectPaymentMethod(nil)
-                    }
-                }, label: {
-                    HStack {
-                        Image(systemName: "arrow.backward")
-                            .transition(.move(edge: .leading).combined(with: .scale))
-                        Text("Back")
-                    }
-                    .foregroundColor(tokens?.primerColorBrand ?? .blue)
-                })
-                .buttonStyle(.borderless)
-                .scaleEffect(1.0)
-                .animation(.spring(response: 0.3, dampingFraction: 0.8), value: selectedMethod != nil)
-                Spacer()
+    private var currentScreen: some View {
+        if let container = container {
+            switch coordinator.currentRoute {
+            case .splash:
+                AsyncViewBuilder {
+                    try await SplashView.create(container: container)
+                }
+                .transition(animationConfig.transition(from: .splash, to: coordinator.currentRoute))
+                .navigationEntrance(delay: 0, config: animationConfig)
+            case .paymentMethodsList:
+                AsyncViewBuilder {
+                    try await PaymentMethodsListScreen.create(container: container)
+                }
+                .transition(animationConfig.transition(from: getPreviousRoute(), to: coordinator.currentRoute))
+                .navigationEntrance(delay: 0.1, config: animationConfig)
+            case .paymentMethod(let method):
+                AsyncViewBuilder {
+                    try await PaymentMethodScreen.create(paymentMethod: method, container: container)
+                }
+                .transition(animationConfig.transition(from: getPreviousRoute(), to: coordinator.currentRoute))
+                .navigationEntrance(delay: 0.05, config: animationConfig)
+            case .success(let result):
+                AsyncViewBuilder {
+                    try await ResultScreen.create(result: .success(result), container: container)
+                }
+                .transition(animationConfig.transition(from: getPreviousRoute(), to: coordinator.currentRoute))
+                .navigationEntrance(delay: 0.2, config: animationConfig)
+                .navigationResultBounce(isSuccess: true, config: animationConfig)
+            case .failure(let error):
+                AsyncViewBuilder {
+                    try await ResultScreen.create(result: .failure(error), container: container)
+                }
+                .transition(animationConfig.transition(from: getPreviousRoute(), to: coordinator.currentRoute))
+                .navigationEntrance(delay: 0.2, config: animationConfig)
+                .navigationResultBounce(isSuccess: false, config: animationConfig)
             }
-            .padding(.bottom, 16)
-
-            method.defaultContent()
+        } else {
+            VStack {
+                ProgressView("Loading container...")
+                    .navigationLoading(isLoading: true, config: animationConfig)
+                Text("Initializing dependencies")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .transition(.opacity)
+            .navigationEntrance(delay: 0, config: animationConfig)
         }
-        .padding(16)
-        .background(tokens?.primerColorGray000 ?? .white)
-        .cornerRadius(12)
     }
 
-    private var paymentMethodsListView: some View {
-        PaymentMethodsListView(
-            amount: "Pay $99.00", // TODO: Get from viewModel
-            onPaymentMethodSelected: { displayModel in
-                logger.info(message: "🎯 [PrimerCheckoutSheet] Payment method selected: \(displayModel.name) (ID: \(displayModel.id))")
-                logger.debug(message: "🔍 [PrimerCheckoutSheet] Available payment methods: \(paymentMethods.count)")
-                for (index, paymentMethod) in paymentMethods.enumerated() {
-                    logger.debug(message: "   \(index): \(paymentMethod.name ?? "Unknown") - Type: \(paymentMethod.type.rawValue) - ID: \(String(describing: paymentMethod.id))")
-                }
-
-                // Convert display model back to protocol method by finding matching payment method
-                let method: (any PaymentMethodProtocol)? = {
-                    switch displayModel.id {
-                    case "payment_card":
-                        logger.debug(message: "🔍 [PrimerCheckoutSheet] Looking for payment card...")
-                        let found = paymentMethods.first(where: { $0.type == .paymentCard })
-                        logger.debug(message: "🔍 [PrimerCheckoutSheet] Found card method: \(found != nil)")
-                        return found
-                    case "apple_pay":
-                        logger.debug(message: "🔍 [PrimerCheckoutSheet] Looking for Apple Pay...")
-                        return paymentMethods.first(where: { $0.type == .applePay })
-                    case "paypal":
-                        logger.debug(message: "🔍 [PrimerCheckoutSheet] Looking for PayPal...")
-                        return paymentMethods.first(where: { $0.type == .payPal })
-                    default:
-                        logger.debug(message: "🔍 [PrimerCheckoutSheet] Using fallback matching for: \(displayModel.id)")
-                        // Fallback: try to match by name or ID string representation
-                        return paymentMethods.first(where: {
-                            String(describing: $0.id) == displayModel.id || $0.name == displayModel.name
-                        })
-                    }
-                }()
-
-                if let method = method {
-                    logger.info(message: "✅ [PrimerCheckoutSheet] Found matching payment method: \(method.name ?? "Unknown")")
-                    Task {
-                        logger.debug(message: "🚀 [PrimerCheckoutSheet] Calling viewModel.selectPaymentMethod...")
-                        await viewModel.selectPaymentMethod(method)
-                        logger.info(message: "✅ [PrimerCheckoutSheet] selectPaymentMethod completed")
-                    }
-                } else {
-                    logger.warn(message: "⚠️ [PrimerCheckoutSheet] Could not find matching payment method for: \(displayModel.name) (ID: \(displayModel.id))")
-                }
-            }
-        )
+    /// Helper method to determine the previous route for transition direction
+    private func getPreviousRoute() -> CheckoutRoute {
+        guard coordinator.navigationStack.count > 1 else {
+            return .splash
+        }
+        return coordinator.navigationStack[coordinator.navigationStack.count - 2]
+    }
+    
+    static func create(viewModel: PrimerCheckoutViewModel, container: ContainerProtocol, animationConfig: NavigationAnimationConfiguration = .default) async throws -> PrimerCheckoutSheet {
+        let coordinator = try await container.resolve(CheckoutCoordinator.self)
+        return PrimerCheckoutSheet(viewModel: viewModel, coordinator: coordinator, animationConfig: animationConfig)
     }
 }

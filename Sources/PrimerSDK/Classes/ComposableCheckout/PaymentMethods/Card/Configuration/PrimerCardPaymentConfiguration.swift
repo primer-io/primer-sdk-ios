@@ -14,7 +14,7 @@ public struct PrimerCardPaymentConfiguration {
     public let designConfig: CardPaymentDesignConfiguration
     public let features: CardPaymentFeatureConfiguration
     public let accessibility: CardPaymentAccessibilityConfiguration
-    
+
     public init(
         animationConfig: CardPaymentAnimationConfiguration = .default,
         designConfig: CardPaymentDesignConfiguration = .default,
@@ -26,24 +26,24 @@ public struct PrimerCardPaymentConfiguration {
         self.features = features
         self.accessibility = accessibility
     }
-    
+
     // MARK: - Predefined Configurations
     public static let `default` = PrimerCardPaymentConfiguration()
-    
+
     public static let minimal = PrimerCardPaymentConfiguration(
         animationConfig: .minimal,
         designConfig: .default,
         features: .minimal,
         accessibility: .default
     )
-    
+
     public static let enhanced = PrimerCardPaymentConfiguration(
         animationConfig: .enhanced,
         designConfig: .default,
         features: .enhanced,
         accessibility: .enhanced
     )
-    
+
     public static let accessible = PrimerCardPaymentConfiguration(
         animationConfig: .minimal,
         designConfig: .default,
@@ -62,7 +62,7 @@ public struct CardPaymentFeatureConfiguration {
     public let showFieldLabels: Bool
     public let enableHapticFeedback: Bool
     public let autoAdvanceFields: Bool
-    
+
     public init(
         showCardNetworkIcons: Bool = true,
         enableDynamicCardNetworkDetection: Bool = true,
@@ -80,10 +80,10 @@ public struct CardPaymentFeatureConfiguration {
         self.enableHapticFeedback = enableHapticFeedback
         self.autoAdvanceFields = autoAdvanceFields
     }
-    
+
     // MARK: - Predefined Feature Sets
     public static let `default` = CardPaymentFeatureConfiguration()
-    
+
     public static let minimal = CardPaymentFeatureConfiguration(
         showCardNetworkIcons: false,
         enableDynamicCardNetworkDetection: false,
@@ -91,7 +91,7 @@ public struct CardPaymentFeatureConfiguration {
         enableHapticFeedback: false,
         autoAdvanceFields: false
     )
-    
+
     public static let enhanced = CardPaymentFeatureConfiguration(
         showCardNetworkIcons: true,
         enableDynamicCardNetworkDetection: true,
@@ -101,7 +101,7 @@ public struct CardPaymentFeatureConfiguration {
         enableHapticFeedback: true,
         autoAdvanceFields: true
     )
-    
+
     public static let accessible = CardPaymentFeatureConfiguration(
         showCardNetworkIcons: true,
         enableDynamicCardNetworkDetection: true,
@@ -124,7 +124,7 @@ public struct CardPaymentAccessibilityConfiguration {
     public let announceCardNetworkDetection: Bool
     public let announcePaymentProcessing: Bool
     public let useSemanticHeaders: Bool
-    
+
     public init(
         enableVoiceOverEnhancements: Bool = true,
         enableLargeTextSupport: Bool = true,
@@ -144,10 +144,10 @@ public struct CardPaymentAccessibilityConfiguration {
         self.announcePaymentProcessing = announcePaymentProcessing
         self.useSemanticHeaders = useSemanticHeaders
     }
-    
+
     // MARK: - Predefined Accessibility Configurations
     public static let `default` = CardPaymentAccessibilityConfiguration()
-    
+
     public static let enhanced = CardPaymentAccessibilityConfiguration(
         enableVoiceOverEnhancements: true,
         enableLargeTextSupport: true,
@@ -158,7 +158,7 @@ public struct CardPaymentAccessibilityConfiguration {
         announcePaymentProcessing: true,
         useSemanticHeaders: true
     )
-    
+
     public static let minimal = CardPaymentAccessibilityConfiguration(
         enableVoiceOverEnhancements: false,
         enableLargeTextSupport: false,
@@ -192,7 +192,7 @@ public extension View {
     func cardPaymentConfiguration(_ configuration: PrimerCardPaymentConfiguration) -> some View {
         self.environment(\.cardPaymentConfiguration, configuration)
     }
-    
+
     /// Applies card payment animation configuration
     func cardPaymentAnimationConfiguration(_ config: CardPaymentAnimationConfiguration) -> some View {
         self.environment(\.cardPaymentConfiguration, PrimerCardPaymentConfiguration(
@@ -202,7 +202,7 @@ public extension View {
             accessibility: .default
         ))
     }
-    
+
     /// Applies card payment feature configuration
     func cardPaymentFeatureConfiguration(_ config: CardPaymentFeatureConfiguration) -> some View {
         self.environment(\.cardPaymentConfiguration, PrimerCardPaymentConfiguration(
@@ -221,33 +221,33 @@ public class PrimerCardPaymentConfigurationBuilder {
     private var designConfig = CardPaymentDesignConfiguration.default
     private var features = CardPaymentFeatureConfiguration.default
     private var accessibility = CardPaymentAccessibilityConfiguration.default
-    
+
     public init() {}
-    
+
     @discardableResult
     public func withAnimations(_ config: CardPaymentAnimationConfiguration) -> Self {
         self.animationConfig = config
         return self
     }
-    
+
     @discardableResult
     public func withDesign(_ config: CardPaymentDesignConfiguration) -> Self {
         self.designConfig = config
         return self
     }
-    
+
     @discardableResult
     public func withFeatures(_ config: CardPaymentFeatureConfiguration) -> Self {
         self.features = config
         return self
     }
-    
+
     @discardableResult
     public func withAccessibility(_ config: CardPaymentAccessibilityConfiguration) -> Self {
         self.accessibility = config
         return self
     }
-    
+
     @discardableResult
     public func enableAnimations(_ enable: Bool = true) -> Self {
         if enable {
@@ -257,7 +257,7 @@ public class PrimerCardPaymentConfigurationBuilder {
         }
         return self
     }
-    
+
     @discardableResult
     public func enableCardNetworkIcons(_ enable: Bool = true) -> Self {
         self.features = CardPaymentFeatureConfiguration(
@@ -271,7 +271,7 @@ public class PrimerCardPaymentConfigurationBuilder {
         )
         return self
     }
-    
+
     @discardableResult
     public func enableAccessibilityEnhancements(_ enable: Bool = true) -> Self {
         if enable {
@@ -281,7 +281,7 @@ public class PrimerCardPaymentConfigurationBuilder {
         }
         return self
     }
-    
+
     public func build() -> PrimerCardPaymentConfiguration {
         return PrimerCardPaymentConfiguration(
             animationConfig: animationConfig,
@@ -301,7 +301,7 @@ public extension PrimerCardPaymentConfiguration {
         builderBlock(builder)
         return builder.build()
     }
-    
+
     /// Quick configuration for merchants who want minimal setup
     static func simple(
         animations: Bool = true,

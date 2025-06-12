@@ -12,11 +12,11 @@ internal struct CardPaymentHeaderView: View {
     let onBackTapped: () -> Void
     let onCancelTapped: () -> Void
     let animationConfig: CardPaymentAnimationConfiguration
-    
+
     @Environment(\.designTokens) private var tokens
     @State private var isBackPressed = false
     @State private var isCancelPressed = false
-    
+
     init(
         onBackTapped: @escaping () -> Void,
         onCancelTapped: @escaping () -> Void,
@@ -26,7 +26,7 @@ internal struct CardPaymentHeaderView: View {
         self.onCancelTapped = onCancelTapped
         self.animationConfig = animationConfig
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Navigation bar with back and cancel buttons
@@ -48,9 +48,9 @@ internal struct CardPaymentHeaderView: View {
                 .accessibilityIdentifier("card_payment_button_back")
                 .accessibilityLabel(CardPaymentLocalizable.backButton)
                 .accessibilityHint(CardPaymentLocalizable.backButtonHint)
-                
+
                 Spacer()
-                
+
                 // Cancel button
                 Button(action: onCancelTapped) {
                     Text(CardPaymentLocalizable.cancelButton)
@@ -67,7 +67,7 @@ internal struct CardPaymentHeaderView: View {
             }
             .padding(.horizontal, CardPaymentDesign.containerPadding(from: tokens))
             .padding(.top, CardPaymentDesign.fieldVerticalSpacing(from: tokens))
-            
+
             // Title
             HStack {
                 Text(CardPaymentLocalizable.payWithCardTitle)
@@ -75,7 +75,7 @@ internal struct CardPaymentHeaderView: View {
                     .foregroundColor(CardPaymentDesign.titleColor(from: tokens))
                     .accessibilityIdentifier("card_payment_header_title")
                     .accessibilityAddTraits(.isHeader)
-                
+
                 Spacer()
             }
             .padding(.horizontal, CardPaymentDesign.containerPadding(from: tokens))
@@ -94,29 +94,29 @@ struct CardPaymentHeaderView_Previews: PreviewProvider {
                 onBackTapped: { print("Back tapped") },
                 onCancelTapped: { print("Cancel tapped") }
             )
-            
+
             Spacer()
         }
         .previewDisplayName("Default Header")
-        
+
         VStack {
             CardPaymentHeaderView(
                 onBackTapped: { print("Back tapped") },
                 onCancelTapped: { print("Cancel tapped") },
                 animationConfig: .minimal
             )
-            
+
             Spacer()
         }
         .previewDisplayName("Minimal Animations")
-        
+
         VStack {
             CardPaymentHeaderView(
                 onBackTapped: { print("Back tapped") },
                 onCancelTapped: { print("Cancel tapped") },
                 animationConfig: .disabled
             )
-            
+
             Spacer()
         }
         .preferredColorScheme(.dark)

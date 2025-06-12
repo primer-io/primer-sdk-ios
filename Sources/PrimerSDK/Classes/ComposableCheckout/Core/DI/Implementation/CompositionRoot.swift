@@ -33,6 +33,9 @@ public final class CompositionRoot: LogReporter {
         logger.debug(message: "💳 [CompositionRoot] Registering payment methods...")
         await registerPaymentMethods(in: container)
 
+        logger.debug(message: "🧭 [CompositionRoot] Registering navigation...")
+        await registerNavigation(in: container)
+
         // Set as global container
         logger.debug(message: "🌍 [CompositionRoot] Setting global container...")
         await DIContainer.setContainer(container)
@@ -47,31 +50,18 @@ public final class CompositionRoot: LogReporter {
 
     #if DEBUG
     private static func performHealthChecks(container: Container) async {
-        print("🔍 Performing DI Container Health Checks...")
+        logger.debug(message: "🔍 [CompositionRoot] Performing DI Container Health Checks...")
 
         // Get diagnostics
         let diagnostics = await container.getDiagnostics()
-        print("📊 Container Diagnostics:")
-        print("   - Total Registrations: \(diagnostics.totalRegistrations)")
-        print("   - Singleton Instances: \(diagnostics.singletonInstances)")
-        print("   - Weak References: \(diagnostics.weakReferences)")
+        logger.debug(message: "📊 [CompositionRoot] Container Diagnostics: \(diagnostics.totalRegistrations) registrations, \(diagnostics.singletonInstances) singletons, \(diagnostics.weakReferences) weak refs")
 
         // Perform health check
         let healthReport = await container.performHealthCheck()
-        print("🏥 Health Status: \(healthReport.status)")
+        logger.debug(message: "🏥 [CompositionRoot] Health Status: \(healthReport.status)")
 
         if !healthReport.issues.isEmpty {
-            print("⚠️ Issues Found:")
-            for issue in healthReport.issues {
-                print("   - \(issue)")
-            }
-        }
-
-        if !healthReport.recommendations.isEmpty {
-            print("💡 Recommendations:")
-            for recommendation in healthReport.recommendations {
-                print("   - \(recommendation)")
-            }
+            logger.warn(message: "⚠️ [CompositionRoot] DI Issues: \(healthReport.issues.count) found")
         }
 
         // Test key dependency resolutions
@@ -79,33 +69,33 @@ public final class CompositionRoot: LogReporter {
     }
 
     private static func testKeyDependencies(container: Container) async {
-        print("🧪 Testing Key Dependency Resolutions...")
+        logger.debug(message: "🧪 [CompositionRoot] Testing key dependency resolutions...")
 
         // Test ValidationService resolution
         do {
             _ = try await container.resolve(ValidationService.self)
-            print("✅ ValidationService resolution successful")
+            logger.debug(message: "✅ [CompositionRoot] ValidationService resolution successful")
         } catch {
-            print("❌ ValidationService resolution failed: \(error)")
+            logger.error(message: "❌ [CompositionRoot] ValidationService resolution failed: \(error.localizedDescription)")
         }
 
         // Test PaymentMethodsProvider resolution
         do {
             _ = try await container.resolve(PaymentMethodsProvider.self)
-            print("✅ PaymentMethodsProvider resolution successful")
+            logger.debug(message: "✅ [CompositionRoot] PaymentMethodsProvider resolution successful")
         } catch {
-            print("❌ PaymentMethodsProvider resolution failed: \(error)")
+            logger.error(message: "❌ [CompositionRoot] PaymentMethodsProvider resolution failed: \(error.localizedDescription)")
         }
 
         // Test CardViewModel resolution
         do {
             _ = try await container.resolve(CardViewModel.self)
-            print("✅ CardViewModel resolution successful")
+            logger.debug(message: "✅ [CompositionRoot] CardViewModel resolution successful")
         } catch {
-            print("❌ CardViewModel resolution failed: \(error)")
+            logger.error(message: "❌ [CompositionRoot] CardViewModel resolution failed: \(error.localizedDescription)")
         }
 
-        print("🎯 Health checks completed!")
+        logger.debug(message: "🎯 [CompositionRoot] Health checks completed")
     }
     #endif
 }
@@ -199,7 +189,7 @@ extension CompositionRoot {
     private static func registerViewModels(in container: Container) async {
         // Checkout view model
         _ = try? await container.register(PrimerCheckoutViewModel.self)
-            .asTransient() // Create a new instance each time
+            .asSingleton() // Keep the same instance with loaded payment methods
             .with { resolver in
                 // Resolve dependencies
                 let taskManager = (try? await resolver.resolve(TaskManager.self)) ?? TaskManager()
@@ -272,6 +262,31 @@ extension CompositionRoot {
                     return PaymentMethodsListViewModel()
                 }
             }
+
+        // Navigation screen view models
+        _ = try? await container.register(SplashViewModel.self)
+            .asTransient()
+            .with { container in
+                try await SplashViewModel.create(container: container)
+            }
+
+        _ = try? await container.register(PaymentMethodsListScreenViewModel.self)
+            .asTransient()
+            .with { container in
+                try await PaymentMethodsListScreenViewModel.create(container: container)
+            }
+
+        _ = try? await container.register(PaymentMethodScreenViewModel.self)
+            .asTransient()
+            .with { container in
+                try await PaymentMethodScreenViewModel.create(container: container)
+            }
+
+        _ = try? await container.register(ResultScreenViewModel.self)
+            .asTransient()
+            .with { container in
+                try await ResultScreenViewModel.create(container: container)
+            }
     }
 
     private static func registerComponents(in container: Container) async {
@@ -330,5 +345,24 @@ extension CompositionRoot {
         // No need to modify the ViewModel!
 
         logger.info(message: "✅ [CompositionRoot] Payment methods registration completed")
+    }
+
+    @available(iOS 15.0, *)
+    private static func registerNavigation(in container: Container) async {
+        logger.info(message: "🧭 [CompositionRoot] Starting navigation registration")
+
+        // Register CheckoutCoordinator directly in the main container
+        do {
+            _ = try await container.register(CheckoutCoordinator.self)
+                .asSingleton()
+                .with { container in
+                    try await CheckoutCoordinator.create(container: container)
+                }
+            logger.info(message: "✅ [CompositionRoot] CheckoutCoordinator registered successfully")
+        } catch {
+            logger.error(message: "🚨 [CompositionRoot] Failed to register CheckoutCoordinator: \(error.localizedDescription)")
+        }
+
+        logger.info(message: "✅ [CompositionRoot] Navigation registration completed")
     }
 }

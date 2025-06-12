@@ -7,8 +7,34 @@
 
 import SwiftUI
 
+/// Helper view for handling async view creation
 @available(iOS 15.0, *)
-private struct CheckoutContentView: View {
+private struct AsyncView<Content: View>: View {
+    @State private var content: Content?
+    @State private var isLoading = true
+    private let asyncContent: () async -> Content
+
+    init(@ViewBuilder asyncContent: @escaping () async -> Content) {
+        self.asyncContent = asyncContent
+    }
+
+    var body: some View {
+        Group {
+            if let content = content {
+                content
+            } else if isLoading {
+                ProgressView("Loading...")
+            }
+        }
+        .task {
+            content = await asyncContent()
+            isLoading = false
+        }
+    }
+}
+
+@available(iOS 15.0, *)
+private struct CheckoutContentView: View, LogReporter {
     @ObservedObject var viewModel: PrimerCheckoutViewModel
     let clientToken: String
     let successContent: (() -> AnyView)?
@@ -37,7 +63,27 @@ private struct CheckoutContentView: View {
         if let content = content {
             content(viewModel)
         } else {
-            PrimerCheckoutSheet(viewModel: viewModel)
+            // Use the new async factory method to create sheet with navigation
+            AsyncView {
+                await createCheckoutSheet(viewModel: viewModel)
+            }
+        }
+    }
+
+    private func createCheckoutSheet(viewModel: PrimerCheckoutViewModel) async -> PrimerCheckoutSheet {
+        do {
+            // Get the DI container from environment
+            guard let container = await DIContainer.current else {
+                throw ContainerError.containerUnavailable
+            }
+
+            return try await PrimerCheckoutSheet.create(viewModel: viewModel, container: container, animationConfig: .default)
+        } catch {
+            // Fallback to creating coordinator manually if DI fails
+            logger.warn(message: "⚠️ [PrimerCheckout] Failed to create checkout sheet with DI, using fallback: \(error.localizedDescription)")
+            let fallbackContainer = DIContainer.createContainer()
+            let coordinator = CheckoutCoordinator(container: fallbackContainer)
+            return PrimerCheckoutSheet(viewModel: viewModel, coordinator: coordinator, animationConfig: .default)
         }
     }
 

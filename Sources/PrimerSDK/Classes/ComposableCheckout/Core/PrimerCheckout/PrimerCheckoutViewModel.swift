@@ -233,6 +233,11 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope, LogReporte
         return stream
     }
 
+    /// Returns the current payment methods synchronously if available
+    func getCurrentPaymentMethods() async -> [any PaymentMethodProtocol] {
+        return availablePaymentMethods
+    }
+
     /// Returns an AsyncStream of the currently selected payment method.
     func selectedPaymentMethod() -> AsyncStream<(any PaymentMethodProtocol)?> {
         if let stream = selectedMethodStream?.stream {

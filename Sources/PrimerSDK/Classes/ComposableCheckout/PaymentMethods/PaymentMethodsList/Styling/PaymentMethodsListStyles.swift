@@ -47,6 +47,7 @@ struct PaymentMethodsListView_Previews: PreviewProvider {
     static var previews: some View {
         PaymentMethodsListView(
             amount: "Pay $99.00",
+            paymentMethods: PaymentMethodDisplayModel.previewData,
             onPaymentMethodSelected: { _ in }
         )
         .environment(\.designTokens, nil) // Use nil for preview - components handle fallback colors

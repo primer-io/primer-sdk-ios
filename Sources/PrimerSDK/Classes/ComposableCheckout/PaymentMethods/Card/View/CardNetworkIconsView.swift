@@ -10,14 +10,14 @@ import SwiftUI
 @available(iOS 15.0, *)
 internal struct CardNetworkIconsView: View {
     let animationConfig: CardPaymentAnimationConfiguration
-    
+
     @Environment(\.designTokens) private var tokens
     @State private var isVisible = false
-    
+
     init(animationConfig: CardPaymentAnimationConfiguration = .default) {
         self.animationConfig = animationConfig
     }
-    
+
     // Card networks data with system symbol names and colors
     private let cardNetworks: [(String, String, Color)] = [
         ("creditcard", CardPaymentLocalizable.mastercardName, Color.red),
@@ -26,12 +26,12 @@ internal struct CardNetworkIconsView: View {
         ("creditcard.and.123", CardPaymentLocalizable.discoverName, Color.orange),
         ("person.crop.circle.dashed", CardPaymentLocalizable.dinersName, Color.purple)
     ]
-    
+
     var body: some View {
         HStack(spacing: CardPaymentDesign.cardNetworkIconsSpacing(from: tokens)) {
             ForEach(Array(cardNetworks.enumerated()), id: \.offset) { index, cardNetwork in
                 let (systemName, accessibilityLabel, iconColor) = cardNetwork
-                
+
                 ZStack {
                     // Background circle
                     Circle()
@@ -40,7 +40,7 @@ internal struct CardNetworkIconsView: View {
                             width: CardPaymentDesign.cardNetworkIconSize(from: tokens),
                             height: CardPaymentDesign.cardNetworkIconSize(from: tokens)
                         )
-                    
+
                     // Card network icon
                     Image(systemName: systemName)
                         .font(.system(size: 16, weight: .medium))
@@ -77,14 +77,14 @@ internal struct CardNetworkIconsView: View {
 @available(iOS 15.0, *)
 internal struct CardNetworkIconsViewWithAssets: View {
     let animationConfig: CardPaymentAnimationConfiguration
-    
+
     @Environment(\.designTokens) private var tokens
     @State private var isVisible = false
-    
+
     init(animationConfig: CardPaymentAnimationConfiguration = .default) {
         self.animationConfig = animationConfig
     }
-    
+
     // Card networks data with asset names (would be used when actual assets are available)
     private let cardNetworks: [(String, String)] = [
         ("mastercard_logo", CardPaymentLocalizable.mastercardName),
@@ -93,12 +93,12 @@ internal struct CardNetworkIconsViewWithAssets: View {
         ("discover_logo", CardPaymentLocalizable.discoverName),
         ("diners_logo", CardPaymentLocalizable.dinersName)
     ]
-    
+
     var body: some View {
         HStack(spacing: CardPaymentDesign.cardNetworkIconsSpacing(from: tokens)) {
             ForEach(Array(cardNetworks.enumerated()), id: \.offset) { index, cardNetwork in
                 let (assetName, accessibilityLabel) = cardNetwork
-                
+
                 // Placeholder for actual card network logos
                 RoundedRectangle(cornerRadius: CardPaymentDesign.cardNetworkIconCornerRadius(from: tokens))
                     .fill(tokens?.primerColorGray200 ?? Color.gray.opacity(0.2))
@@ -151,7 +151,7 @@ internal enum CardNetworkType: String, CaseIterable {
     case dinersClub
     case cb
     case unknown
-    
+
     var displayName: String {
         switch self {
         case .visa: return CardPaymentLocalizable.visaCardName
@@ -163,7 +163,7 @@ internal enum CardNetworkType: String, CaseIterable {
         case .unknown: return CardPaymentLocalizable.unknownCardName
         }
     }
-    
+
     var systemIconName: String {
         switch self {
         case .visa: return "creditcard.fill"
@@ -175,7 +175,7 @@ internal enum CardNetworkType: String, CaseIterable {
         case .unknown: return "creditcard"
         }
     }
-    
+
     var brandColor: Color {
         switch self {
         case .visa: return Color.blue
@@ -194,10 +194,10 @@ internal enum CardNetworkType: String, CaseIterable {
 internal struct DynamicCardNetworkIconsView: View {
     let detectedNetwork: CardNetworkType?
     let animationConfig: CardPaymentAnimationConfiguration
-    
+
     @Environment(\.designTokens) private var tokens
     @State private var isVisible = false
-    
+
     init(
         detectedNetwork: CardNetworkType? = nil,
         animationConfig: CardPaymentAnimationConfiguration = .default
@@ -205,28 +205,28 @@ internal struct DynamicCardNetworkIconsView: View {
         self.detectedNetwork = detectedNetwork
         self.animationConfig = animationConfig
     }
-    
+
     var body: some View {
         HStack(spacing: CardPaymentDesign.cardNetworkIconsSpacing(from: tokens)) {
             ForEach(Array(CardNetworkType.allCases.enumerated()), id: \.offset) { index, network in
                 let isDetected = network == detectedNetwork
                 let iconSize = CardPaymentDesign.cardNetworkIconSize(from: tokens)
-                
+
                 ZStack {
                     // Background
                     Circle()
-                        .fill(isDetected ? 
-                              (tokens?.primerColorBrand ?? Color.blue).opacity(0.1) :
-                              (tokens?.primerColorGray100 ?? Color.gray.opacity(0.1))
+                        .fill(isDetected ?
+                                (tokens?.primerColorBrand ?? Color.blue).opacity(0.1) :
+                                (tokens?.primerColorGray100 ?? Color.gray.opacity(0.1))
                         )
                         .frame(width: iconSize, height: iconSize)
-                    
+
                     // Icon
                     Image(systemName: network.systemIconName)
                         .font(.system(size: 14, weight: isDetected ? .semibold : .medium))
-                        .foregroundColor(isDetected ? 
-                                       (tokens?.primerColorBrand ?? network.brandColor) :
-                                       network.brandColor.opacity(0.6)
+                        .foregroundColor(isDetected ?
+                                            (tokens?.primerColorBrand ?? network.brandColor) :
+                                            network.brandColor.opacity(0.6)
                         )
                 }
                 .scaleEffect(isDetected ? 1.1 : 1.0)
@@ -269,19 +269,19 @@ struct CardNetworkIconsView_Previews: PreviewProvider {
                     .font(.headline)
                 CardNetworkIconsView()
             }
-            
+
             VStack {
                 Text("Asset Placeholders")
                     .font(.headline)
                 CardNetworkIconsViewWithAssets()
             }
-            
+
             VStack {
                 Text("Dynamic (Visa Detected)")
                     .font(.headline)
                 DynamicCardNetworkIconsView(detectedNetwork: .visa)
             }
-            
+
             VStack {
                 Text("No Animations")
                     .font(.headline)
