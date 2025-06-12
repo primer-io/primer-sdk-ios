@@ -1,3 +1,14 @@
+## 2.38.2 (2025-06-11)
+
+### Fix
+
+- Fix memory crash in validateRawData with weak self capture (#1185)
+
+### Refactor
+
+- Consolidate `PrimerClientSession` (#1187)
+- Consolidate PrimerClientSession
+
 ## 2.38.1 (2025-06-04)
 
 ### Refactor
