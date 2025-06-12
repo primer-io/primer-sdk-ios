@@ -712,7 +712,7 @@ extension PrimerHeadlessUniversalCheckout {
                                 seal.fulfill(nil)
                             }
 
-                        } else if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
+                        } else if resumeDecision.type is PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
                             // No need to continue if manually handling resume
                             self.paymentCheckoutData = nil
                         } else {

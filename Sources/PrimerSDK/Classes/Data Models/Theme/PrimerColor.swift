@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class PrimerColor: UIColor {
+final class PrimerColor: UIColor, @unchecked Sendable {
 
     static func dynamic(lightMode: PrimerColor, darkMode: PrimerColor) -> PrimerColor {
         return PrimerColor { (traitCollection) -> UIColor in

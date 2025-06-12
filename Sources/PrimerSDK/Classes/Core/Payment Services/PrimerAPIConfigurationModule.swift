@@ -329,7 +329,7 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
                     seal.reject(error)
                 }
 
-                promise.ensure {
+                _ = promise.ensure {
                     PrimerAPIConfigurationModule.queue.async {
                         PrimerAPIConfigurationModule.pendingPromises.removeValue(forKey: cacheKey as String)
                     }

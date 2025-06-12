@@ -33,11 +33,11 @@ public class PrimerNibView: UIView {
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[childView]|",
                                                       options: [],
                                                       metrics: nil,
-                                                      views: ["childView": view]))
+                                                      views: ["childView": view as UIView]))
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[childView]|",
                                                       options: [],
                                                       metrics: nil,
-                                                      views: ["childView": view]))
+                                                      views: ["childView": view as UIView]))
     }
 
     /** Loads instance from nib with the same name. */
