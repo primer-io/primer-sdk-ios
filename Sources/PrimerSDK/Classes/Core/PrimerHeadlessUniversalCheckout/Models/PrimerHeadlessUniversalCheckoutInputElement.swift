@@ -1,17 +1,8 @@
-//
-//  PrimerInputElementType.swift
-//  PrimerSDK
-//
-//  Created by Evangelos on 4/10/22.
-//
-
-// swiftlint:disable cyclomatic_complexity
-
 import UIKit
 
 @objc
 public enum PrimerInputElementType: Int {
-
+    // Existing cases
     case cardNumber
     case expiryDate
     case cvv
@@ -21,9 +12,18 @@ public enum PrimerInputElementType: Int {
     case phoneNumber
     case retailer
     case unknown
+    case countryCode
+    case firstName
+    case lastName
+    case addressLine1
+    case addressLine2
+    case city
+    case state
+    case all // General case for "all fields"
 
     public var stringValue: String {
         switch self {
+        // Existing cases
         case .cardNumber:
             return "CARD_NUMBER"
         case .expiryDate:
@@ -42,58 +42,81 @@ public enum PrimerInputElementType: Int {
             return "RETAILER"
         case .unknown:
             return "UNKNOWN"
+        // New cases
+        case .countryCode:
+            return "COUNTRY_CODE"
+        case .firstName:
+            return "FIRST_NAME"
+        case .lastName:
+            return "LAST_NAME"
+        case .addressLine1:
+            return "ADDRESS_LINE_1"
+        case .addressLine2:
+            return "ADDRESS_LINE_2"
+        case .city:
+            return "CITY"
+        case .state:
+            return "STATE"
+        case .all:
+            return "ALL"
         }
     }
 
+    /// Refactored validation method with reduced cyclomatic complexity.
     internal func validate(value: Any, detectedValueType: Any?) -> Bool {
-        switch self {
-        case .cardNumber:
-            guard let text = value as? String else { return false }
-            return text.isValidCardNumber
-
-        case .expiryDate:
-            guard let text = value as? String else { return false }
-            return text.isValidExpiryDate
-
-        case .cvv:
-            guard let text = value as? String else { return false }
-            if let cardNetwork = detectedValueType as? CardNetwork, cardNetwork != .unknown {
-                return text.isValidCVV(cardNetwork: cardNetwork)
-            } else {
-                return text.count >= 3 && text.count <= 5
-            }
-
-        case .cardholderName:
-            guard let text = value as? String else { return false }
-            return text.isValidNonDecimalString
-
-        case .otp:
-            guard let text = value as? String else { return false }
-            return text.isNumeric
-
-        case .postalCode:
-            guard let text = value as? String else { return false }
-            return text.isValidPostalCode
-
-        case .phoneNumber:
-            guard let text = value as? String else { return false }
-            return text.isNumeric
-
-        default:
+        // For .all and .retailer, no validation is needed.
+        if self == .all || self == .retailer {
             return true
         }
+        // .unknown always fails validation.
+        if self == .unknown {
+            return false
+        }
+
+        // Attempt to cast the input value to a String for the remaining cases.
+        guard let text = value as? String else { return false }
+
+        switch self {
+        case .cardNumber:
+            return text.isValidCardNumber
+        case .expiryDate:
+            return text.isValidExpiryDate
+        case .cvv:
+            // Validate using CardNetwork if available, otherwise check length.
+            if let cardNetwork = detectedValueType as? CardNetwork, cardNetwork != .unknown {
+                return text.isValidCVV(cardNetwork: cardNetwork)
+            }
+            return text.count >= 3 && text.count <= 5
+        case .cardholderName:
+            return text.isValidNonDecimalString
+        case .otp:
+            return text.isNumeric
+        case .postalCode:
+            return text.isValidPostalCode
+        case .phoneNumber:
+            return text.isNumeric
+        case .countryCode:
+            return !text.isEmpty
+        case .firstName, .lastName:
+            return text.isValidNonDecimalString
+        case .addressLine1, .addressLine2, .city, .state:
+            return !text.isEmpty
+        default:
+            // In case additional cases are added later.
+            return false
+        }
     }
+
+    // MARK: - Additional Methods
 
     internal func format(value: Any) -> Any {
         switch self {
         case .cardNumber:
-            guard let text = value as? String else { return value }
-            return text.withoutWhiteSpace.separate(every: 4, with: self.delimiter!)
-
+            guard let text = value as? String, let delimiter = self.delimiter else { return value }
+            return text.withoutWhiteSpace.separate(every: 4, with: delimiter)
         case .expiryDate:
-            guard let text = value as? String else { return value }
-            return text.withoutWhiteSpace.separate(every: 2, with: self.delimiter!)
-
+            guard let text = value as? String, let delimiter = self.delimiter else { return value }
+            return text.withoutWhiteSpace.separate(every: 2, with: delimiter)
         default:
             return value
         }
@@ -101,12 +124,10 @@ public enum PrimerInputElementType: Int {
 
     internal func clearFormatting(value: Any) -> Any? {
         switch self {
-        case .cardNumber,
-             .expiryDate:
-            guard let text = value as? String else { return nil }
+        case .cardNumber, .expiryDate:
+            guard let text = value as? String, let delimiter = self.delimiter else { return nil }
             let textWithoutWhiteSpace = text.withoutWhiteSpace
-            return textWithoutWhiteSpace.replacingOccurrences(of: self.delimiter!, with: "")
-
+            return textWithoutWhiteSpace.replacingOccurrences(of: delimiter, with: "")
         default:
             return value
         }
@@ -117,7 +138,6 @@ public enum PrimerInputElementType: Int {
         case .cardNumber:
             guard let text = value as? String else { return nil }
             return CardNetwork(cardNumber: text)
-
         default:
             return value
         }
@@ -151,16 +171,10 @@ public enum PrimerInputElementType: Int {
 
     internal var allowedCharacterSet: CharacterSet? {
         switch self {
-        case .cardNumber,
-             .expiryDate,
-             .cvv,
-             .otp,
-             .phoneNumber:
+        case .cardNumber, .expiryDate, .cvv, .otp, .phoneNumber:
             return CharacterSet(charactersIn: "0123456789")
-
-        case .cardholderName:
+        case .cardholderName, .firstName, .lastName:
             return CharacterSet.letters.union(.whitespaces)
-
         default:
             return nil
         }
@@ -168,18 +182,11 @@ public enum PrimerInputElementType: Int {
 
     internal var keyboardType: UIKeyboardType {
         switch self {
-        case .cardNumber,
-             .expiryDate,
-             .cvv,
-             .otp,
-             .phoneNumber:
+        case .cardNumber, .expiryDate, .cvv, .otp, .phoneNumber, .postalCode:
             return UIKeyboardType.numberPad
-
-        case .cardholderName,
-             .postalCode:
+        case .cardholderName, .firstName, .lastName, .city, .state:
             return UIKeyboardType.alphabet
-
-        default:
+        case .addressLine1, .addressLine2, .countryCode, .retailer, .unknown, .all:
             return UIKeyboardType.default
         }
     }
