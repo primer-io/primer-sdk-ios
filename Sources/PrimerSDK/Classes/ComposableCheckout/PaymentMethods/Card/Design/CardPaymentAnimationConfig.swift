@@ -187,30 +187,6 @@ internal struct CardPaymentButtonPressModifier: ViewModifier {
     }
 }
 
-@available(iOS 15.0, *)
-internal struct CardPaymentErrorShakeModifier: ViewModifier {
-    let hasError: Bool
-    let animationConfig: CardPaymentAnimationConfiguration
-    @State private var shakeOffset: CGFloat = 0
-
-    func body(content: Content) -> some View {
-        content
-            .offset(x: shakeOffset)
-            .onChange(of: hasError) { error in
-                guard error && animationConfig.enableErrorStateAnimations && animationConfig.shouldAnimateWithReduceMotion else {
-                    return
-                }
-
-                withAnimation(.easeInOut(duration: 0.1).repeatCount(3, autoreverses: true)) {
-                    shakeOffset = CardPaymentAnimationConfig.errorShakeOffset
-                }
-
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    shakeOffset = 0
-                }
-            }
-    }
-}
 
 // MARK: - View Extensions for Easy Animation Application
 @available(iOS 15.0, *)
@@ -223,7 +199,4 @@ internal extension View {
         self.modifier(CardPaymentButtonPressModifier(isPressed: isPressed, animationConfig: config))
     }
 
-    func cardPaymentErrorShake(hasError: Bool, config: CardPaymentAnimationConfiguration = .default) -> some View {
-        self.modifier(CardPaymentErrorShakeModifier(hasError: hasError, animationConfig: config))
-    }
 }

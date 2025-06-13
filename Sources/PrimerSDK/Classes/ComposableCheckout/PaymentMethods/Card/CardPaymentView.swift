@@ -79,7 +79,6 @@ struct CardPaymentView: View, LogReporter {
                             updateDetectedCardNetwork(network)
                         }
                     )
-                    .cardPaymentErrorShake(hasError: hasCardNumberError, config: animationConfig)
                     .transition(CardPaymentAnimationConfig.fieldEntranceTransition)
                     .animation(
                         animationConfig.entranceAnimation()?.delay(
@@ -100,7 +99,6 @@ struct CardPaymentView: View, LogReporter {
                                 }
                             }
                         )
-                        .cardPaymentErrorShake(hasError: hasExpiryError, config: animationConfig)
                         .accessibilityIdentifier("card_payment_field_expiry_date")
 
                         CVVInputField(
@@ -113,7 +111,6 @@ struct CardPaymentView: View, LogReporter {
                                 }
                             }
                         )
-                        .cardPaymentErrorShake(hasError: hasCvvError, config: animationConfig)
                         .accessibilityIdentifier("card_payment_field_cvv")
                     }
                     .transition(CardPaymentAnimationConfig.fieldEntranceTransition)
@@ -134,7 +131,6 @@ struct CardPaymentView: View, LogReporter {
                             }
                         }
                     )
-                    .cardPaymentErrorShake(hasError: hasNameError, config: animationConfig)
                     .transition(CardPaymentAnimationConfig.fieldEntranceTransition)
                     .animation(
                         animationConfig.entranceAnimation()?.delay(
@@ -304,22 +300,6 @@ struct CardPaymentView: View, LogReporter {
         }
     }
 
-    // Error state helpers for shake animations
-    private var hasCardNumberError: Bool {
-        uiState?.cardData.cardNumber.validationError != nil
-    }
-
-    private var hasExpiryError: Bool {
-        uiState?.cardData.expiration.validationError != nil
-    }
-
-    private var hasCvvError: Bool {
-        uiState?.cardData.cvv.validationError != nil
-    }
-
-    private var hasNameError: Bool {
-        uiState?.cardData.cardholderName.validationError != nil
-    }
 }
 
 // MARK: - Compatibility Extension for Existing Usage
