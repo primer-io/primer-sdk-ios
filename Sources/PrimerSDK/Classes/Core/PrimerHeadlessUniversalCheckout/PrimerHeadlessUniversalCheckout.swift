@@ -11,7 +11,6 @@
 import UIKit
 
 public final class PrimerHeadlessUniversalCheckout: LogReporter {
-
     public static let current = PrimerHeadlessUniversalCheckout()
 
     public weak var delegate: PrimerHeadlessUniversalCheckoutDelegate? {
@@ -217,7 +216,37 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
     }
 
     private func continueValidateSession() async throws {
-        try await continueValidateSession().async()
+        guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
+            let info = ["reason": "Client token is nil"]
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info),
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        guard let decodedJWTToken = clientToken.decodedJWTToken else {
+            let info = ["reason": "Client token cannot be decoded"]
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info),
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        try decodedJWTToken.validate()
+
+        guard let apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration else {
+            let err = PrimerError.missingPrimerConfiguration(userInfo: .errorUserInfoDictionary(),
+                                                             diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        guard let paymentMethods = apiConfiguration.paymentMethods, !paymentMethods.isEmpty else {
+            let err = PrimerError.misconfiguredPaymentMethods(userInfo: .errorUserInfoDictionary(),
+                                                              diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
     }
 
     func validateSession() -> Promise<Void> {
@@ -264,7 +293,37 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
     }
 
     func validateSession() async throws {
-        try await validateSession().async()
+        guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
+            let info = ["reason": "Client token is nil"]
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info),
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        guard let decodedJWTToken = clientToken.decodedJWTToken else {
+            let info = ["reason": "Client token cannot be decoded"]
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info),
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        try decodedJWTToken.validate()
+
+        guard let apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration else {
+            let err = PrimerError.missingPrimerConfiguration(userInfo: .errorUserInfoDictionary(),
+                                                             diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        guard let paymentMethods = apiConfiguration.paymentMethods, !paymentMethods.isEmpty else {
+            let err = PrimerError.misconfiguredPaymentMethods(userInfo: .errorUserInfoDictionary(),
+                                                              diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
     }
 
     func listAvailablePaymentMethodsTypes() -> [String]? {
@@ -275,10 +334,10 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
             paymentMethods?.remove(at: klarnaIndex)
             let message =
                 """
-                    Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing. \
-                    Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your Podfile, \
-                    or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager
-                    """
+                Klarna configuration has been found but module 'PrimerKlarnaSDK' is missing. \
+                Add `PrimerKlarnaSDK' in your project by adding \"pod 'PrimerKlarnaSDK'\" in your Podfile, \
+                or by adding \"primer-klarna-sdk-ios\" in your Swift Package Manager
+                """
             logger.warn(message: message)
         }
         #endif
@@ -288,9 +347,9 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
             paymentMethods?.remove(at: iPay88ViewModelIndex)
             let message =
                 """
-                    iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. \
-                    Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your Podfile.
-                    """
+                iPay88 configuration has been found but module 'PrimerIPay88SDK' is missing. \
+                Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in your Podfile.
+                """
             logger.warn(message: message)
         }
         #endif
@@ -300,9 +359,9 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
             paymentMethods?.remove(at: nolPayViewModelIndex)
             let message =
                 """
-                    NolPay configuration has been found but module 'PrimerNolPaySDK' is missing. \
-                    Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in your Podfile.
-                    """
+                NolPay configuration has been found but module 'PrimerNolPaySDK' is missing. \
+                Add `PrimerNolPaySDK' in your project by adding \"pod 'PrimerNolPaySDK'\" in your Podfile.
+                """
             logger.warn(message: message)
         }
         #endif

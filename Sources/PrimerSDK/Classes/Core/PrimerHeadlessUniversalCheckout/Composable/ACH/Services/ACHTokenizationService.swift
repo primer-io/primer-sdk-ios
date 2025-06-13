@@ -27,11 +27,13 @@ protocol ACHValidationDelegate: AnyObject {
 
 final class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelegate {
     // MARK: - Properties
+
     private let tokenizationService: TokenizationServiceProtocol
     private let paymentMethod: PrimerPaymentMethod
     private var clientSession: ClientSession.APIResponse?
 
     // MARK: - Init
+
     init(paymentMethod: PrimerPaymentMethod, tokenizationService: TokenizationServiceProtocol = TokenizationService()) {
         self.paymentMethod = paymentMethod
         self.tokenizationService = tokenizationService
@@ -39,6 +41,7 @@ final class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelega
     }
 
     // MARK: - Tokenize
+
     func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             // Ensure the payment method has a valid ID
@@ -63,10 +66,18 @@ final class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelega
     }
 
     func tokenize() async throws -> PrimerPaymentMethodTokenData {
-        try await self.tokenize().async()
+        // Ensure the payment method has a valid ID
+        guard paymentMethod.id != nil else {
+            throw ACHHelpers.getInvalidValueError(key: "configuration.id", value: paymentMethod.id)
+        }
+
+        let requestBody = try await getRequestBody()
+        let paymentMethodTokenData = try await tokenizationService.tokenize(requestBody: requestBody)
+        return paymentMethodTokenData
     }
 
     // MARK: - Validation
+
     func validate() throws {
         guard
             let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken,
@@ -96,7 +107,7 @@ final class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelega
             throw ACHHelpers.getInvalidValueError(key: "lineItems")
         }
 
-        if !(lineItems.filter({ $0.amount == nil })).isEmpty {
+        if !(lineItems.filter { $0.amount == nil }).isEmpty {
             throw ACHHelpers.getInvalidValueError(key: "settings.orderItems")
         }
 
@@ -108,7 +119,7 @@ final class ACHTokenizationService: ACHTokenizationDelegate, ACHValidationDelega
 
         do {
             _ = try PrimerSettings.current.paymentMethodOptions.validSchemeForUrlScheme()
-        } catch let error {
+        } catch {
             throw error
         }
     }
@@ -140,6 +151,14 @@ extension ACHTokenizationService {
     }
 
     private func getRequestBody() async throws -> Request.Body.Tokenization {
-        try await self.getRequestBody().async()
+        guard let paymentInstrument = ACHHelpers.getACHPaymentInstrument(paymentMethod: paymentMethod) else {
+            throw ACHHelpers.getInvalidValueError(
+                key: "configuration.type",
+                value: paymentMethod.type
+            )
+        }
+
+        let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
+        return requestBody
     }
 }

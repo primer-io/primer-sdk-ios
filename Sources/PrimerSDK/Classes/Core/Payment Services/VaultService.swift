@@ -8,7 +8,6 @@ internal protocol VaultServiceProtocol {
 }
 
 final class VaultService: VaultServiceProtocol {
-
     let apiClient: PrimerAPIClientVaultProtocol
 
     init(apiClient: PrimerAPIClientVaultProtocol) {
@@ -42,10 +41,22 @@ final class VaultService: VaultServiceProtocol {
     }
 
     func fetchVaultedPaymentMethods() async throws {
-        try await fetchVaultedPaymentMethods().async()
+        guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        let state: AppStateProtocol = AppState.current
+        let paymentMethods = try await apiClient.fetchVaultedPaymentMethods(clientToken: clientToken)
+        state.paymentMethods = paymentMethods.data
+        state.selectedPaymentMethodId = paymentMethods.data.first?.id
     }
 
-    func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) -> Promise<Response.Body.VaultedPaymentMethods> {
+    internal func fetchVaultedPaymentMethods(
+        clientToken: DecodedJWTToken
+    ) -> Promise<Response.Body.VaultedPaymentMethods> {
         return Promise { seal in
             apiClient.fetchVaultedPaymentMethods(clientToken: clientToken, completion: { result in
                 switch result {
@@ -56,12 +67,6 @@ final class VaultService: VaultServiceProtocol {
                 }
             })
         }
-    }
-
-    func fetchVaultedPaymentMethods(
-        clientToken: DecodedJWTToken
-    ) async throws -> Response.Body.VaultedPaymentMethods {
-        try await fetchVaultedPaymentMethods(clientToken: clientToken).async()
     }
 
     func deleteVaultedPaymentMethod(with id: String) -> Promise<Void> {
@@ -90,6 +95,23 @@ final class VaultService: VaultServiceProtocol {
     }
 
     func deleteVaultedPaymentMethod(with id: String) async throws {
-        try await deleteVaultedPaymentMethod(with: id).async()
+        guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        do {
+            try await apiClient.deleteVaultedPaymentMethod(clientToken: clientToken, id: id)
+        } catch {
+            let containerErr = PrimerError.failedToCreateSession(
+                error: error,
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            ErrorHandler.handle(error: containerErr)
+            throw containerErr
+        }
     }
 }

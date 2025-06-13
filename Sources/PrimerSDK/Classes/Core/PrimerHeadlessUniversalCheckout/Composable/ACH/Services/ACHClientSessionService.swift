@@ -23,7 +23,6 @@ protocol ACHUserDetailsProviding {
 }
 
 final class ACHClientSessionService: ACHUserDetailsProviding {
-
     // MARK: - Properties
 
     let apiClient: PrimerAPIClientProtocol
@@ -56,7 +55,11 @@ extension ACHClientSessionService {
     }
 
     func getClientSessionUserDetails() async throws -> ACHUserDetails {
-        try await getClientSessionUserDetails().async()
+        let customerDetails = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer
+        let userDetails = ACHUserDetails(firstName: customerDetails?.firstName ?? "",
+                                         lastName: customerDetails?.lastName ?? "",
+                                         emailAddress: customerDetails?.emailAddress ?? "")
+        return userDetails
     }
 }
 
@@ -86,7 +89,8 @@ extension ACHClientSessionService {
     }
 
     func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) async throws {
-        try await patchClientSession(with: actionsRequest).async()
+        let apiConfigurationModule = PrimerAPIConfigurationModule()
+        try await apiConfigurationModule.updateSession(withActions: actionsRequest)
     }
 
     func prepareClientSessionActionsRequestBody(paymentMethodType: String) -> ClientSessionUpdateRequest {

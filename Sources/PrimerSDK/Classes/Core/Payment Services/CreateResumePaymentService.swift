@@ -63,7 +63,20 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
     }
 
     func createPayment(paymentRequest: Request.Body.Payment.Create) async throws -> Response.Body.Payment {
-        try await createPayment(paymentRequest: paymentRequest).async()
+        guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        let paymentResponse = try await self.apiClient.createPayment(
+            clientToken: clientToken,
+            paymentRequestBody: paymentRequest
+        )
+
+        try self.validateResponse(paymentResponse: paymentResponse, callType: .create)
+        return paymentResponse
     }
 
     /**
@@ -144,7 +157,32 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
     }
 
     func resumePaymentWithPaymentId(_ paymentId: String, paymentResumeRequest: Request.Body.Payment.Resume) async throws -> Response.Body.Payment {
-        try await self.resumePaymentWithPaymentId(paymentId, paymentResumeRequest: paymentResumeRequest).async()
+        guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        do {
+            let paymentResponse = try await self.apiClient.resumePayment(
+                clientToken: clientToken,
+                paymentId: paymentId,
+                paymentResumeRequest: paymentResumeRequest
+            )
+
+            try self.validateResponse(paymentResponse: paymentResponse, callType: .resume)
+            return paymentResponse
+        } catch {
+            let error = PrimerError.failedToResumePayment(
+                paymentMethodType: self.paymentMethodType,
+                description: error.localizedDescription,
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            ErrorHandler.handle(error: error)
+            throw error
+        }
     }
 
     /**
@@ -182,11 +220,11 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         completeUrl: URL,
         body: Request.Body.Payment.Complete
     ) async throws {
-        try await self.completePayment(
+        try await self.apiClient.completePayment(
             clientToken: clientToken,
-            completeUrl: completeUrl,
-            body: body
-        ).async()
+            url: completeUrl,
+            paymentRequest: body
+        )
     }
 }
 
