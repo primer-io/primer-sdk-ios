@@ -7,36 +7,26 @@ struct PaymentMethodsHeader: View {
     @Environment(\.designTokens) private var designTokens
 
     var body: some View {
-        VStack(alignment: .leading, spacing: PaymentMethodsListLayout.titleToSubtitleSpacing) {
-            // Top bar with amount and cancel
-            HStack {
-                Text(amount)
-                    .font(.system(
-                        size: PaymentMethodsListTypography.titleSize,
-                        weight: PaymentMethodsListTypography.titleWeight
-                    ))
-                    .foregroundColor(designTokens?.primerColorTextPrimary ?? .primary)
-                    .accessibility(identifier: PaymentMethodsListAccessibility.headerAmountIdentifier)
-
-                Spacer()
-
-                Button("Cancel", action: onCancel)
-                    .font(.system(
-                        size: PaymentMethodsListTypography.cancelButtonSize,
-                        weight: PaymentMethodsListTypography.cancelButtonWeight
-                    ))
-                    .foregroundColor(designTokens?.primerColorTextLink ?? .blue)
-                    .accessibility(identifier: PaymentMethodsListAccessibility.cancelButtonIdentifier)
-            }
-
-            // Subtitle
-            Text("Choose payment method")
+        HStack(alignment: .top) {
+            // Left side: Amount only
+            Text(amount)
                 .font(.system(
-                    size: PaymentMethodsListTypography.subtitleSize,
-                    weight: PaymentMethodsListTypography.subtitleWeight
+                    size: PaymentMethodsListTypography.titleSize,
+                    weight: PaymentMethodsListTypography.titleWeight
                 ))
-                .foregroundColor(designTokens?.primerColorTextSecondary ?? .secondary)
-                .accessibility(identifier: PaymentMethodsListAccessibility.headerSubtitleIdentifier)
+                .foregroundColor(designTokens?.primerColorTextPrimary ?? .primary)
+                .accessibility(identifier: PaymentMethodsListAccessibility.headerAmountIdentifier)
+            
+            Spacer()
+            
+            // Right side: Cancel button aligned to top
+            Button("Cancel", action: onCancel)
+                .font(.system(
+                    size: PaymentMethodsListTypography.cancelButtonSize,
+                    weight: PaymentMethodsListTypography.cancelButtonWeight
+                ))
+                .foregroundColor(designTokens?.primerColorTextPrimary ?? .primary)
+                .accessibility(identifier: PaymentMethodsListAccessibility.cancelButtonIdentifier)
         }
         .padding(.horizontal, PaymentMethodsListLayout.horizontalPadding)
     }

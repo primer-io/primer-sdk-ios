@@ -79,13 +79,13 @@ final class PrimerUIManager: PrimerUIManaging {
     func presentPaymentUI() {
         presentPaymentUI(checkoutStyle: .composable)
     }
-    
+
     func presentPaymentUI(checkoutStyle: CheckoutStyle) {
         if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
             PrimerUIManager.presentPaymentMethod(type: paymentMethodType)
         } else if PrimerInternal.shared.intent == .checkout {
             let resolvedStyle = resolveCheckoutStyle(checkoutStyle)
-            
+
             switch resolvedStyle {
             case .composable:
                 if #available(iOS 15.0, *) {
@@ -112,7 +112,7 @@ final class PrimerUIManager: PrimerUIManaging {
             PrimerUIManager.handleErrorBasedOnSDKSettings(err)
         }
     }
-    
+
     private func resolveCheckoutStyle(_ style: CheckoutStyle) -> CheckoutStyle {
         switch style {
         case .automatic:
@@ -126,41 +126,41 @@ final class PrimerUIManager: PrimerUIManaging {
             return style
         }
     }
-    
+
     private func presentDropInCheckout() {
         let pucvc = PrimerUniversalCheckoutViewController()
         PrimerUIManager.primerRootViewController?.show(viewController: pucvc)
     }
-    
+
     @available(iOS 15.0, *)
     private func presentComposableCheckout() {
         // Get client token (using mock for now, should be from actual configuration)
         let clientToken = "mock-token" // TODO: Get from actual client session
-        
+
         // Create the SwiftUI checkout view
         let checkoutView = PrimerCheckout(clientToken: clientToken)
-        
+
         // Wrap in our bridge controller for integration with Drop-in system
         let bridgeController = PrimerSwiftUIHostController(rootView: checkoutView)
 
         // Use the existing Drop-in presentation system
         PrimerUIManager.primerRootViewController?.show(viewController: bridgeController)
     }
-    
+
     @available(iOS 15.0, *)
     private func handleSwiftUIHeightChange(_ height: CGFloat) {
         // This can be used for additional height change handling if needed
         // The bridge controller already updates preferredContentSize automatically
     }
-    
+
     @available(iOS 15.0, *)
     func handleSwiftUIHeightChange(_ newHeight: CGFloat, for hostController: UIViewController) {
         guard let root = PrimerUIManager.primerRootViewController,
               // Find the matching container for this host
               let container = root.navController
-                              .viewControllers
-                              .compactMap({ $0 as? PrimerContainerViewController })
-                              .first(where: { $0.childViewController === hostController })
+                .viewControllers
+                .compactMap({ $0 as? PrimerContainerViewController })
+                .first(where: { $0.childViewController === hostController })
         else { return }
 
         // Compute total sheet height (content + nav bar)

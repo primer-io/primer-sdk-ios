@@ -13,7 +13,7 @@ final class PaymentMethodsListScreenViewModel: ObservableObject {
 
     private let coordinator: CheckoutCoordinator
     private let checkoutViewModel: PrimerCheckoutViewModel
-    private var allPaymentMethods: [PaymentMethodProtocol] = []
+    private var allPaymentMethods: [any PaymentMethodProtocol] = []
 
     init(coordinator: CheckoutCoordinator, checkoutViewModel: PrimerCheckoutViewModel) {
         self.coordinator = coordinator
@@ -50,6 +50,15 @@ final class PaymentMethodsListScreenViewModel: ObservableObject {
             coordinator.handlePaymentMethodSelection(method)
         } else {
             errorMessage = "Could not find matching payment method"
+        }
+    }
+    
+    func handleCancelAction() {
+        // Dismiss the entire Primer UI and notify the delegate
+        PrimerUIManager.dismissPrimerUI(animated: true) {
+            // The delegate's primerDidDismiss() will be called automatically
+            // by the PrimerDelegateProxy
+            PrimerDelegateProxy.primerDidDismiss(paymentMethodManagerCategories: [])
         }
     }
 

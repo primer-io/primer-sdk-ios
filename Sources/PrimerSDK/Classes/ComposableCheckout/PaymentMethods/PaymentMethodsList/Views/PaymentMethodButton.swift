@@ -37,10 +37,8 @@ struct PaymentMethodButton: View {
                         weight: PaymentMethodsListTypography.buttonTextWeight
                     ))
                     .foregroundColor(paymentMethod.textColor)
-
-                Spacer()
             }
-            .padding(.horizontal, PaymentMethodsListLayout.horizontalPadding)
+            .frame(maxWidth: .infinity)
             .frame(height: PaymentMethodsListLayout.buttonHeight)
             .background(isPressed ? backgroundColor.opacity(0.8) : backgroundColor)
             .overlay(

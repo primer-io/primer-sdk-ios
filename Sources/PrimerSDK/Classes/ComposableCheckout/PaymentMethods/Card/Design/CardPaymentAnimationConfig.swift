@@ -187,7 +187,6 @@ internal struct CardPaymentButtonPressModifier: ViewModifier {
     }
 }
 
-
 // MARK: - View Extensions for Easy Animation Application
 @available(iOS 15.0, *)
 internal extension View {

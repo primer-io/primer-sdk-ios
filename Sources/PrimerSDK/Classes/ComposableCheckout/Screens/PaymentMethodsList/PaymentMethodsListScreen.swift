@@ -11,30 +11,18 @@ struct PaymentMethodsListScreen: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Header
-            headerView
-
-            // Payment methods list
+            // Payment methods list with integrated cancel button
             PaymentMethodsListView(
                 amount: viewModel.amount,
                 paymentMethods: viewModel.paymentMethods,
-                onPaymentMethodSelected: viewModel.handlePaymentMethodSelection
+                onPaymentMethodSelected: viewModel.handlePaymentMethodSelection,
+                onCancel: viewModel.handleCancelAction
             )
         }
         .background(tokens?.primerColorBackground ?? .white)
         .task {
             await viewModel.loadPaymentMethods()
         }
-    }
-
-    private var headerView: some View {
-        Text("Select Payment Method")
-            .font(.title2)
-            .fontWeight(.semibold)
-            .padding(.vertical, 16)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-            .padding(.horizontal, 16)
     }
 
     static func create(container: ContainerProtocol) async throws -> PaymentMethodsListScreen {

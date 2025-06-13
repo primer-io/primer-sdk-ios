@@ -23,8 +23,8 @@ struct PaymentMethodsListView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Header section
+        VStack(spacing: 0) {
+            // Header section with proper spacing
             PaymentMethodsHeader(
                 amount: amount,
                 onCancel: {
@@ -36,9 +36,19 @@ struct PaymentMethodsListView: View {
                 }
             )
             .padding(.top, PaymentMethodsListLayout.topSafeAreaPadding)
+            .padding(.bottom, PaymentMethodsListLayout.headerToListSpacing)
 
-            Spacer()
-                .frame(height: PaymentMethodsListLayout.headerToListSpacing)
+            // Subtitle above payment methods
+            Text("Choose payment method")
+                .font(.system(
+                    size: PaymentMethodsListTypography.subtitleSize,
+                    weight: PaymentMethodsListTypography.subtitleWeight
+                ))
+                .foregroundColor(designTokens?.primerColorTextSecondary ?? Color(red: 0.47, green: 0.47, blue: 0.48))
+                .accessibility(identifier: PaymentMethodsListAccessibility.headerSubtitleIdentifier)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, PaymentMethodsListLayout.horizontalPadding)
+                .padding(.bottom, PaymentMethodsListLayout.titleToSubtitleSpacing)
 
             // Payment methods list
             ScrollView {
