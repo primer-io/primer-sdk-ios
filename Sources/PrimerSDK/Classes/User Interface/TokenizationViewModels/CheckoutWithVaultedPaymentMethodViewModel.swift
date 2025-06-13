@@ -826,7 +826,7 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
                 throw err
             }
         } else if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-            // REVIEW_CHECK: This is a workaround to ensure the 3DS service is executed on the detached task.
+            // MARK: REVIEW_CHECK - This is a workaround to ensure the 3DS service is executed on the detached task.
             // And the result is returned on the main thread.
             let resumeTokenResult = await Task.detached {
                 let threeDSService = ThreeDSService()

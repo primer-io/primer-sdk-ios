@@ -183,7 +183,7 @@ final class ImageManager: LogReporter {
             id: timingEventId
         )
 
-        // MARK: REVIEW_CHECK: Same logic as PromiseKit's ensure
+        // MARK: REVIEW_CHECK - Same logic as PromiseKit's ensure
 
         defer {
             let timingEventEnd = Analytics.Event.allImagesLoading(

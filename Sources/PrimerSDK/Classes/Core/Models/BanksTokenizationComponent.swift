@@ -1049,7 +1049,7 @@ final class BanksTokenizationComponent: NSObject, LogReporter {
     }
 
     func performTokenizationStep() async throws {
-        // MARK: REVIEW_CHECK: Same logic as PromiseKit's ensure
+        // MARK: REVIEW_CHECK - Same logic as PromiseKit's ensure
 
         defer {
             Task { @MainActor in
@@ -1341,8 +1341,8 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
 
     func performPreTokenizationSteps() async throws {
         if !PrimerInternal.isInHeadlessMode {
-            DispatchQueue.main.async {
-                self.uiManager.primerRootViewController?.enableUserInteraction(true)
+            DispatchQueue.main.async { [weak self] in
+                self?.uiManager.primerRootViewController?.enableUserInteraction(true)
             }
         }
 
@@ -1360,7 +1360,7 @@ extension BanksTokenizationComponent: PaymentMethodTokenizationModelProtocol {
             place: .bankSelectionList
         )
 
-        // MARK: REVIEW_CHECK: Same logic as PromiseKit's ensure
+        // MARK: REVIEW_CHECK - Same logic as PromiseKit's ensure
 
         defer {
             self.closePaymentMethodUI()

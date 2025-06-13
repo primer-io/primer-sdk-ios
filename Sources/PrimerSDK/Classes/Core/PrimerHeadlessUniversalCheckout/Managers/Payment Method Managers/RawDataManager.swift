@@ -337,7 +337,7 @@ public extension PrimerHeadlessUniversalCheckout {
         func validateRawData(_ data: PrimerRawData) async throws {
             return try await withCheckedThrowingContinuation { continuation in
                 validationQueue.async { [weak self] in
-                    guard let self = self else {
+                    guard let self else {
                         continuation.resume()
                         return
                     }
@@ -1005,7 +1005,7 @@ public extension PrimerHeadlessUniversalCheckout {
             paymentMethodTokenData: PrimerPaymentMethodTokenData
         ) async throws -> String? {
             if decodedJWTToken.intent == RequiredActionName.threeDSAuthentication.rawValue {
-                // REVIEW_CHECK: This is a workaround to ensure the 3DS service is executed on the detached task.
+                // MARK: REVIEW_CHECK - This is a workaround to ensure the 3DS service is executed on the detached task.
                 // And the result is returned on the main thread.
                 let resumeTokenResult = await Task.detached {
                     let threeDSService = ThreeDSService()
@@ -1034,7 +1034,7 @@ public extension PrimerHeadlessUniversalCheckout {
                     }
 
                     return try await Task {
-                        // MARK: REVIEW_CHECK: Same logic as PromiseKit's ensure
+                        // MARK: REVIEW_CHECK - Same logic as PromiseKit's ensure
 
                         defer {
                             DispatchQueue.main.async { [weak self] in
