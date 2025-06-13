@@ -60,7 +60,16 @@ final class PrimerContainerViewController: PrimerViewController {
         childView.pin(view: scrollView)
         childViewController.view.pin(view: childView)
         childView.widthAnchor.constraint(equalTo: childViewController.view.widthAnchor).isActive = true
-        childViewHeightConstraint = childView.heightAnchor.constraint(equalToConstant: childViewController.view.bounds.size.height)
+        
+        // Use preferredContentSize if available, otherwise fall back to bounds height
+        let initialHeight: CGFloat
+        if childViewController.preferredContentSize.height > 0 {
+            initialHeight = childViewController.preferredContentSize.height
+        } else {
+            initialHeight = childViewController.view.bounds.size.height
+        }
+        
+        childViewHeightConstraint = childView.heightAnchor.constraint(equalToConstant: initialHeight)
         childViewHeightConstraint.isActive = true
         view.layoutIfNeeded()
 
@@ -81,8 +90,22 @@ final class PrimerContainerViewController: PrimerViewController {
         self.view.layoutIfNeeded()
         self.childViewHeightConstraint?.isActive = false
         self.childViewHeightConstraint = nil
-        childViewHeightConstraint = childView.heightAnchor.constraint(equalToConstant: childViewController.view.bounds.size.height)
+        
+        // Use preferredContentSize if available, otherwise fall back to bounds height
+        let childHeight: CGFloat
+        if childViewController.preferredContentSize.height > 0 {
+            // Use the preferred content size for dynamic sizing (e.g., SwiftUI bridge controllers)
+            childHeight = childViewController.preferredContentSize.height
+        } else {
+            // Fall back to bounds height for traditional view controllers
+            childHeight = childViewController.view.bounds.size.height
+        }
+        
+        // Create new height constraint based on the measured/preferred height
+        childViewHeightConstraint = childView.heightAnchor.constraint(equalToConstant: childHeight)
         childViewHeightConstraint?.isActive = true
+        
+        // Reset the root view controller's constraint to match
         PrimerUIManager.primerRootViewController?.resetConstraint(for: childViewController)
         view.layoutIfNeeded()
     }
