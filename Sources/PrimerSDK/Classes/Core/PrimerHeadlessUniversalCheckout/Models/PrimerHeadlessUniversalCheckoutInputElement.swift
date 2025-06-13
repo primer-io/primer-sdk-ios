@@ -88,11 +88,11 @@ public enum PrimerInputElementType: Int {
         switch self {
         case .cardNumber:
             guard let text = value as? String else { return value }
-            return text.withoutWhiteSpace.separate(every: 4, with: self.delimiter!)
+            return text.withoutWhiteSpace.separate(every: 4, with: delimiter!)
 
         case .expiryDate:
             guard let text = value as? String else { return value }
-            return text.withoutWhiteSpace.separate(every: 2, with: self.delimiter!)
+            return text.withoutWhiteSpace.separate(every: 2, with: delimiter!)
 
         default:
             return value
@@ -105,7 +105,7 @@ public enum PrimerInputElementType: Int {
              .expiryDate:
             guard let text = value as? String else { return nil }
             let textWithoutWhiteSpace = text.withoutWhiteSpace
-            return textWithoutWhiteSpace.replacingOccurrences(of: self.delimiter!, with: "")
+            return textWithoutWhiteSpace.replacingOccurrences(of: delimiter!, with: "")
 
         default:
             return value

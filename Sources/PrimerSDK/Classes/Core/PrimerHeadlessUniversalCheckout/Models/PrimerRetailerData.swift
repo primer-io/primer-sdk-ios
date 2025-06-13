@@ -11,7 +11,7 @@ public final class PrimerRetailerData: PrimerRawData {
 
     public var id: String {
         didSet {
-            self.onDataDidChange?()
+            onDataDidChange?()
         }
     }
 

@@ -110,7 +110,7 @@ class RawDataManagerValidationTests: XCTestCase {
     // MARK: Tests
 
     func test_validation_callback_invalidData() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -133,13 +133,13 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "",
                                       cvv: "",
                                       cardholderName: nil)
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
 
     }
 
     func test_validation_callback_validData() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -158,13 +158,13 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "03/2030",
                                       cvv: "123",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
 
     }
 
     func test_validation_callback_invalidCardNumberLengthShort() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -184,12 +184,12 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "03/2030",
                                       cvv: "123",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
     }
 
     func test_validation_callback_invalidCardNumberLengthLong() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -209,13 +209,13 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "03/2030",
                                       cvv: "123",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
 
     }
 
     func test_validation_callback_invalidCardNumberEmpty() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -235,12 +235,12 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "03/2030",
                                       cvv: "123",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
     }
 
     func test_validation_callback_invalidCardNumberLuhnFailure() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -260,12 +260,12 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "03/2030",
                                       cvv: "123",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
     }
 
     func test_validation_callback_invalidExpiryDateMonthInvalid() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -285,14 +285,14 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "0/2030",
                                       cvv: "123",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
     }
 
     func test_validation_callback_invalidExpiryDateMonthMissing() throws {
         setupRawDataManager()
 
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -312,13 +312,13 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "/2030",
                                       cvv: "123",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
 
     }
 
     func test_validation_callback_invalidExpiryDateMonth() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -338,12 +338,12 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "2030",
                                       cvv: "123",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
     }
 
     func test_validation_callback_invalidExpiryDateInvalid() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -363,13 +363,13 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "/",
                                       cvv: "123",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
 
     }
 
     func test_validation_callback_invalidExpiryDatePast() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -389,12 +389,12 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "01/2022",
                                       cvv: "123",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
     }
 
     func test_validation_callback_invalidExpiryDatePast2() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -414,12 +414,12 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "05/2022",
                                       cvv: "123",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
     }
 
     func test_validation_callback_invalidExpiryDateMonthOnly() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -439,12 +439,12 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "02",
                                       cvv: "123",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
     }
 
     func test_validation_callback_invalidExpiryDateNonNumeric() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -464,12 +464,12 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "aa",
                                       cvv: "123",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
     }
 
     func test_validation_callback_invalidExpiryDateOrder() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -489,12 +489,12 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "2030/03",
                                       cvv: "123",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
     }
 
     func test_validation_callback_invalidExpiryDateYearShort() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -514,12 +514,12 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "03/30",
                                       cvv: "123",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
     }
 
     func test_validation_callback_invalidExpiryDateYearMalformed() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -539,12 +539,12 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "03/203030",
                                       cvv: "123",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
     }
 
     func test_validation_callback_invalidCVVLengthShort() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -564,12 +564,12 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "03/2030",
                                       cvv: "12",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
     }
 
     func test_validation_callback_invalidCVVNonNumeric() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -589,12 +589,12 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "03/2030",
                                       cvv: "abc",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
     }
 
     func test_validation_callback_invalidCVVLengthLong() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -614,12 +614,12 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "03/2030",
                                       cvv: "12345",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
     }
 
     func test_validation_callback_invalidCVVLengthShorter() throws {
-        let validation = self.expectation(description: "Await validation")
+        let validation = expectation(description: "Await validation")
 
         firstly {
             self.validateWithRawDataManager()
@@ -639,7 +639,7 @@ class RawDataManagerValidationTests: XCTestCase {
                                       expiryDate: "03/2030",
                                       cvv: "1",
                                       cardholderName: "Test")
-        self.rawDataManager.rawData = cardData
+        rawDataManager.rawData = cardData
         wait(for: [validation], timeout: Self.validationTimeout)
     }
 }
@@ -667,15 +667,15 @@ extension RawDataManagerValidationTests {
 
         do {
             let paymentMethodType = "PAYMENT_CARD"
-            self.rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: paymentMethodType)
-            self.rawDataManager.delegate = delegate
-            self.rawDataManager.tokenizationService = TokenizationService(apiClient: Self.mockApiClient)
+            rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(paymentMethodType: paymentMethodType)
+            rawDataManager.delegate = delegate
+            rawDataManager.tokenizationService = TokenizationService(apiClient: Self.mockApiClient)
 
             let rawDataTokenizationBuilder = PrimerRawCardDataTokenizationBuilder(paymentMethodType: paymentMethodType)
             rawDataTokenizationBuilder.rawDataManager = rawDataManager
             rawDataTokenizationBuilder.cardValidationService = nil
 
-            self.rawDataManager.rawDataTokenizationBuilder = rawDataTokenizationBuilder
+            rawDataManager.rawDataTokenizationBuilder = rawDataTokenizationBuilder
         } catch {
             print("ERROR: \(error.localizedDescription)")
             XCTAssert(false, "Raw Data Manager should had been initialized")

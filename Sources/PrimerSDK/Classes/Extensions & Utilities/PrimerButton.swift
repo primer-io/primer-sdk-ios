@@ -114,7 +114,7 @@ import UIKit
                      title: String? = nil,
                      imageLogo: UIImage? = nil) {
         self.init()
-        self.setupView(theme: theme, title: title, imageLogo: imageLogo)
+        setupView(theme: theme, title: title, imageLogo: imageLogo)
     }
 
     public override func layoutSubviews() {

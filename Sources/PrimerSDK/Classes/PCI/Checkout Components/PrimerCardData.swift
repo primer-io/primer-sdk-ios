@@ -11,29 +11,29 @@ public final class PrimerCardData: PrimerRawData {
 
     public var cardNumber: String {
         didSet {
-            self.onDataDidChange?()
+            onDataDidChange?()
         }
     }
     public var expiryDate: String {
         didSet {
-            self.onDataDidChange?()
+            onDataDidChange?()
         }
     }
     public var cvv: String {
         didSet {
-            self.onDataDidChange?()
+            onDataDidChange?()
         }
     }
     public var cardholderName: String? {
         didSet {
-            self.onDataDidChange?()
+            onDataDidChange?()
         }
     }
 
     public var cardNetwork: CardNetwork? {
         didSet {
             if cardNetwork != oldValue {
-                self.onDataDidChange?()
+                onDataDidChange?()
             }
         }
     }

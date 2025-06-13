@@ -15,13 +15,13 @@ final class PrimerHeadlessFormWithRedirectManagerTests: XCTestCase {
 
     override func tearDown() {
         super.tearDown()
-        self.resetTestingEnvironment()
+        resetTestingEnvironment()
     }
 
     func testInit() {
         let subject = PrimerHeadlessUniversalCheckout.current
         PrimerInternal.shared.sdkIntegrationType = .headless
-        self.resetTestingEnvironment()
+        resetTestingEnvironment()
 
         let clientSession = ClientSession.APIResponse(
             clientSessionId: "mock_client_session_ideal_id",
@@ -48,7 +48,7 @@ final class PrimerHeadlessFormWithRedirectManagerTests: XCTestCase {
         PrimerAPIConfigurationModule.apiClient = mockApiClient
 
         let expectation = XCTestExpectation(description: "Successful HUC initialization")
-        self.availablePaymentMethodsLoadedCompletion = { _, _ in
+        availablePaymentMethodsLoadedCompletion = { _, _ in
             XCTAssertTrue(subject.listAvailablePaymentMethodsTypes()?.contains(PrimerPaymentMethodType.adyenIDeal.rawValue) ?? false)
             PrimerPaymentMethodType.allCases.forEach {
                 let manager = PrimerHeadlessUniversalCheckout.ComponentWithRedirectManager()
@@ -78,13 +78,13 @@ final class PrimerHeadlessFormWithRedirectManagerTests: XCTestCase {
 
 extension PrimerHeadlessFormWithRedirectManagerTests: TokenizationTestDelegate {
     func cleanup() {
-        self.availablePaymentMethodsLoadedCompletion = nil
+        availablePaymentMethodsLoadedCompletion = nil
     }
 }
 
 extension PrimerHeadlessFormWithRedirectManagerTests: PrimerHeadlessUniversalCheckoutDelegate, PrimerHeadlessUniversalCheckoutUIDelegate {
     func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerSDK.PrimerCheckoutData) {}
     func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]) {
-        self.availablePaymentMethodsLoadedCompletion?(paymentMethods, nil)
+        availablePaymentMethodsLoadedCompletion?(paymentMethods, nil)
     }
 }

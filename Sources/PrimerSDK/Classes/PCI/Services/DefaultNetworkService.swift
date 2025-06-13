@@ -50,9 +50,9 @@ final class DefaultNetworkService: NetworkService, LogReporter {
 
     init(withUrlSession urlSession: URLSession = .shared,
          analyticsService: Analytics.Service = .shared) {
-        self.requestFactory = DefaultNetworkRequestFactory()
-        self.requestDispatcher = DefaultRequestDispatcher(urlSession: urlSession)
-        self.reportingService = DefaultNetworkReportingService(analyticsService: analyticsService)
+        requestFactory = DefaultNetworkRequestFactory()
+        requestDispatcher = DefaultRequestDispatcher(urlSession: urlSession)
+        reportingService = DefaultNetworkReportingService(analyticsService: analyticsService)
     }
 
     @discardableResult
@@ -163,7 +163,7 @@ final class DefaultNetworkService: NetworkService, LogReporter {
             return
         }
 
-        self.logger.debug(message: response.metadata.description)
+        logger.debug(message: response.metadata.description)
         guard let data = response.data else {
             completion(.failure(InternalError.noData(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)))
             return
@@ -193,7 +193,7 @@ final class DefaultNetworkService: NetworkService, LogReporter {
             return
         }
 
-        self.logger.debug(message: response.metadata.description)
+        logger.debug(message: response.metadata.description)
         guard let data = response.data else {
             completion(.failure(InternalError.noData(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)), nil)
             return

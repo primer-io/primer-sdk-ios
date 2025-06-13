@@ -23,7 +23,7 @@ class MockAnalyticsStorage: Analytics.Storage {
 
     func delete(_ eventsToDelete: [Analytics.Event]) {
         let idsToDelete = eventsToDelete.map { $0.localId }
-        self.events = self.events.filter { event in
+        events = events.filter { event in
             !idsToDelete.contains(event.localId)
         }
 

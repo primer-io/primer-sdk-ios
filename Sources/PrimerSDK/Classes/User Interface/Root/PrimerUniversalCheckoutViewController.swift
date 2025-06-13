@@ -244,7 +244,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
             }
         }
 
-        (self.parent as? PrimerContainerViewController)?.layoutContainerViewControllerIfNeeded {
+        (parent as? PrimerContainerViewController)?.layoutContainerViewControllerIfNeeded {
             self.verticalStackView.layoutIfNeeded()
         }
 
@@ -271,7 +271,7 @@ final class PrimerUniversalCheckoutViewController: PrimerFormViewController {
         let vpivc = VaultedPaymentInstrumentsViewController()
         vpivc.delegate = self
         vpivc.view.translatesAutoresizingMaskIntoConstraints = false
-        vpivc.view.heightAnchor.constraint(equalToConstant: self.parent!.view.bounds.height).isActive = true
+        vpivc.view.heightAnchor.constraint(equalToConstant: parent!.view.bounds.height).isActive = true
         PrimerUIManager.primerRootViewController?.show(viewController: vpivc)
     }
 

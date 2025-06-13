@@ -27,7 +27,7 @@ extension XCTestCase {
     func createMockApiConfiguration(clientSession: ClientSession.APIResponse, mockPaymentMethods: [PrimerPaymentMethod]) -> PrimerAPIConfiguration? {
         PrimerInternal.shared.sdkIntegrationType = .headless
 
-        self.resetTestingEnvironment()
+        resetTestingEnvironment()
 
         let clientSession = ClientSession.APIResponse(
             clientSessionId: "mock_client_session_id",

@@ -42,7 +42,7 @@ final class CheckoutWithVaultedPaymentMethodViewModel: LogReporter {
          additionalData: PrimerVaultedCardAdditionalData?,
          tokenizationService: TokenizationServiceProtocol = TokenizationService(),
          createResumePaymentService: CreateResumePaymentServiceProtocol) {
-        self.config = configuration
+        config = configuration
         self.selectedPaymentMethodTokenData = selectedPaymentMethodTokenData
         self.additionalData = additionalData
 
@@ -336,7 +336,7 @@ Make sure you call the decision handler otherwise the SDK will hang.
 
     private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment> {
         let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
-        return self.createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
+        return createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
                                                                           paymentResumeRequest: resumeRequest)
     }
 
@@ -528,21 +528,21 @@ Make sure you call the decision handler otherwise the SDK will hang.
            paymentMethodType == .stripeAch {
             PrimerUIManager.showResultScreen(for: paymentMethodType, error: nil)
         } else {
-            let categories = self.config.paymentMethodManagerCategories
+            let categories = config.paymentMethodManagerCategories
             PrimerUIManager.dismissOrShowResultScreen(type: .success,
                                                       paymentMethodManagerCategories: categories ?? [])
         }
     }
 
     func handleFailureFlow(errorMessage: String?) {
-        let categories = self.config.paymentMethodManagerCategories
+        let categories = config.paymentMethodManagerCategories
         PrimerUIManager.dismissOrShowResultScreen(type: .failure,
                                                   paymentMethodManagerCategories: categories ?? [],
                                                   withMessage: errorMessage)
     }
 
     private var paymentMethodType: String {
-        self.paymentMethodTokenData?.paymentInstrumentData?.paymentMethodType ?? "UNKNOWN"
+        paymentMethodTokenData?.paymentInstrumentData?.paymentMethodType ?? "UNKNOWN"
     }
 }
 // swiftlint:enable type_name

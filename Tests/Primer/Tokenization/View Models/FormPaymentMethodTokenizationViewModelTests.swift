@@ -51,20 +51,20 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
             return Promise.fulfilled(())
         }
 
-        let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
+        let expectShowPaymentMethod = expectation(description: "Showed view controller")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
             self.sut.userInputCompletion?()
             expectShowPaymentMethod.fulfill()
         }
 
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        let expectWillCreatePaymentData = expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, "ADYEN_BLIK")
             decision(.abortPaymentCreation())
             expectWillCreatePaymentData.fulfill()
         }
 
-        let expectWillAbort = self.expectation(description: "onDidAbort is called")
+        let expectWillAbort = expectation(description: "onDidAbort is called")
         delegate.onDidFail = { error in
             switch error {
             case PrimerError.merchantError:
@@ -103,7 +103,7 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
             self.uiManager.primerRootViewController = mockViewController
             return Promise.fulfilled(())
         }
-        let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
+        let expectShowPaymentMethod = expectation(description: "Showed view controller")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
             self.sut.userInputCompletion?()
             expectShowPaymentMethod.fulfill()
@@ -113,21 +113,21 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
 
         sut.inputs.append(MockInput(name: "blikCode", text: "123456"))
 
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        let expectWillCreatePaymentData = expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, "ADYEN_BLIK")
             decision(.continuePaymentCreation())
             expectWillCreatePaymentData.fulfill()
         }
 
-        let expectCheckoutDidCompletewithData = self.expectation(description: "")
+        let expectCheckoutDidCompletewithData = expectation(description: "")
         delegate.onDidCompleteCheckoutWithData = { data in
             XCTAssertEqual(data.payment?.id, "id")
             XCTAssertEqual(data.payment?.orderId, "order_id")
             expectCheckoutDidCompletewithData.fulfill()
         }
 
-        let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
+        let expectOnTokenize = expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
             return Promise.fulfilled(self.tokenizationResponseBody)
@@ -140,7 +140,7 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
         //            return Promise.fulfilled(self.tokenizationResponseBody)
         //        }
 
-        let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
+        let expectDidCreatePayment = expectation(description: "didCreatePayment called")
         createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
@@ -218,6 +218,6 @@ private class MockInput: Input {
     init(name: String, text: String) {
         super.init()
         self.name = name
-        self.mockText = text
+        mockText = text
     }
 }

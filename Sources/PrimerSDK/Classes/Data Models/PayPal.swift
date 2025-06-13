@@ -100,39 +100,39 @@ extension Response.Body.Tokenization {
                 let container: KeyedDecodingContainer<Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys> =
                     try decoder.container(keyedBy: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.self)
 
-                self.externalPayerId = try container.decodeIfPresent(
+                externalPayerId = try container.decodeIfPresent(
                     String.self,
                     forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.externalPayerId)
 
-                self.externalPayerIdSnakeCase = try container.decodeIfPresent(
+                externalPayerIdSnakeCase = try container.decodeIfPresent(
                     String.self,
                     forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.externalPayerIdSnakeCase)
 
-                self.email = try container.decodeIfPresent(
+                email = try container.decodeIfPresent(
                     String.self,
                     forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.email)
 
-                self.firstName = try container.decodeIfPresent(
+                firstName = try container.decodeIfPresent(
                     String.self,
                     forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.firstName)
 
-                self.firstNameSnakeCase = try container.decodeIfPresent(
+                firstNameSnakeCase = try container.decodeIfPresent(
                     String.self,
                     forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.firstNameSnakeCase)
 
-                self.lastName = try container.decodeIfPresent(
+                lastName = try container.decodeIfPresent(
                     String.self,
                     forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.lastName)
 
-                self.lastNameSnakeCase = try container.decodeIfPresent(
+                lastNameSnakeCase = try container.decodeIfPresent(
                     String.self,
                     forKey: Response.Body.Tokenization.PayPal.ExternalPayerInfo.CodingKeys.lastNameSnakeCase)
 
                 // This logic ensures we mirror externalPayerId to external_payer_id and vice versa
-                if self.externalPayerId == nil && self.externalPayerIdSnakeCase != nil {
-                    self.externalPayerId = self.externalPayerIdSnakeCase
-                } else if self.externalPayerIdSnakeCase == nil && self.externalPayerId != nil {
-                    self.externalPayerIdSnakeCase = self.externalPayerId
+                if externalPayerId == nil && externalPayerIdSnakeCase != nil {
+                    externalPayerId = externalPayerIdSnakeCase
+                } else if externalPayerIdSnakeCase == nil && externalPayerId != nil {
+                    externalPayerIdSnakeCase = externalPayerId
                 }
 
                 if firstName == nil && firstNameSnakeCase != nil {

@@ -18,7 +18,7 @@ final class IdealPaymentMethodTests: XCTestCase {
 
         PrimerInternal.shared.sdkIntegrationType = .headless
 
-        self.resetTestingEnvironment()
+        resetTestingEnvironment()
 
         let clientSession = ClientSession.APIResponse(
             clientSessionId: "mock_client_session_ideal_id",
@@ -53,7 +53,7 @@ final class IdealPaymentMethodTests: XCTestCase {
             }
             expectation.fulfill()
         }
-        self.availablePaymentMethodsLoadedCompletion = { _, _ in
+        availablePaymentMethodsLoadedCompletion = { _, _ in
             XCTAssertTrue(subject.listAvailablePaymentMethodsTypes()?.contains(PrimerPaymentMethodType.adyenIDeal.rawValue) ?? false)
         }
         wait(for: [expectation], timeout: 10)
@@ -62,7 +62,7 @@ final class IdealPaymentMethodTests: XCTestCase {
 
     override func tearDown() {
         PrimerInternal.shared.sdkIntegrationType = .dropIn
-        self.resetTestingEnvironment()
+        resetTestingEnvironment()
     }
 
 }
@@ -70,7 +70,7 @@ final class IdealPaymentMethodTests: XCTestCase {
 extension IdealPaymentMethodTests: PrimerHeadlessUniversalCheckoutDelegate {
     func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerSDK.PrimerCheckoutData) {}
     func primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods(_ paymentMethods: [PrimerHeadlessUniversalCheckout.PaymentMethod]) {
-        self.availablePaymentMethodsLoadedCompletion?(paymentMethods, nil)
+        availablePaymentMethodsLoadedCompletion?(paymentMethods, nil)
     }
 }
 
@@ -79,6 +79,6 @@ extension IdealPaymentMethodTests: PrimerHeadlessUniversalCheckoutUIDelegate {
 
 extension IdealPaymentMethodTests: TokenizationTestDelegate {
     func cleanup() {
-        self.availablePaymentMethodsLoadedCompletion = nil
+        availablePaymentMethodsLoadedCompletion = nil
     }
 }

@@ -14,7 +14,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
     var rawData: PrimerRawData? {
         didSet {
-            if let rawCardData = self.rawData as? PrimerCardData {
+            if let rawCardData = rawData as? PrimerCardData {
                 rawCardData.onDataDidChange = { [weak self] in
                     guard let self else { return }
                     _ = self.validateRawData(rawCardData)
@@ -26,18 +26,18 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
                 }
 
                 let newCardNetwork = CardNetwork(cardNumber: rawCardData.cardNumber)
-                if newCardNetwork != self.cardNetwork {
-                    self.cardNetwork = newCardNetwork
+                if newCardNetwork != cardNetwork {
+                    cardNetwork = newCardNetwork
                 }
 
             } else {
-                if self.cardNetwork != .unknown {
-                    self.cardNetwork = .unknown
+                if cardNetwork != .unknown {
+                    cardNetwork = .unknown
                 }
             }
 
-            if let rawData = self.rawData {
-                _ = self.validateRawData(rawData)
+            if let rawData = rawData {
+                _ = validateRawData(rawData)
             }
         }
     }
@@ -92,7 +92,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
 
     func configure(withRawDataManager rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager) {
         self.rawDataManager = rawDataManager
-        self.cardValidationService = DefaultCardValidationService(rawDataManager: rawDataManager)
+        cardValidationService = DefaultCardValidationService(rawDataManager: rawDataManager)
     }
 
     func makeRequestBodyWithRawData(_ data: PrimerRawData) -> Promise<Request.Body.Tokenization> {
@@ -280,7 +280,7 @@ final class PrimerRawCardDataTokenizationBuilder: PrimerRawDataTokenizationBuild
     }
 
     private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {
-        self.isDataValid = isValid
+        isDataValid = isValid
 
         DispatchQueue.main.async { [weak self] in
             guard let self = self, let rawDataManager = self.rawDataManager else { return }

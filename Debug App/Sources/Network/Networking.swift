@@ -397,7 +397,7 @@ public struct Payment {
         let paymentMethodToken: String
 
         public init(token: String) {
-            self.paymentMethodToken = token
+            paymentMethodToken = token
         }
     }
 
@@ -405,7 +405,7 @@ public struct Payment {
         let resumeToken: String
 
         public init(token: String) {
-            self.resumeToken = token
+            resumeToken = token
         }
     }
 

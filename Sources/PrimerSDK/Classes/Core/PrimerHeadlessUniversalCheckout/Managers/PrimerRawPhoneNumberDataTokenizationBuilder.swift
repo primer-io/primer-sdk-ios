@@ -14,15 +14,15 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
 
     var rawData: PrimerRawData? {
         didSet {
-            if let rawPhoneNumberInput = self.rawData as? PrimerPhoneNumberData {
+            if let rawPhoneNumberInput = rawData as? PrimerPhoneNumberData {
                 rawPhoneNumberInput.onDataDidChange = { [weak self] in
                     guard let self = self else { return }
                     _ = self.validateRawData(rawPhoneNumberInput)
                 }
             }
 
-            if let rawData = self.rawData {
-                _ = self.validateRawData(rawData)
+            if let rawData = rawData {
+                _ = validateRawData(rawData)
             }
         }
     }
@@ -130,7 +130,7 @@ final class PrimerRawPhoneNumberDataTokenizationBuilder: PrimerRawDataTokenizati
     }
 
     private func notifyDelegateOfValidationResult(isValid: Bool, errors: [Error]?) {
-        self.isDataValid = isValid
+        isDataValid = isValid
 
         DispatchQueue.main.async { [weak self] in
             guard let self = self, let rawDataManager = self.rawDataManager else { return }
