@@ -150,6 +150,26 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
+    func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken) async throws -> Response.Body.VaultedPaymentMethods {
+        guard let result = fetchVaultedPaymentMethodsResult,
+              result.0 != nil || result.1 != nil
+        else {
+            XCTAssert(false, "Set 'fetchVaultedPaymentMethodsResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        if let errorResult = result.1 {
+            throw errorResult
+        } else if let successResult = result.0 {
+            return successResult
+        } else {
+            XCTAssert(false, "Set 'fetchVaultedPaymentMethodsResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+    }
+
     func deleteVaultedPaymentMethod(
         clientToken _: DecodedJWTToken,
         id _: String,
@@ -166,6 +186,24 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             } else {
                 completion(.success(()))
             }
+        }
+    }
+
+    func deleteVaultedPaymentMethod(
+        clientToken _: DecodedJWTToken,
+        id _: String
+    ) async throws {
+        guard let result = deleteVaultedPaymentMethodResult else {
+            XCTAssert(false, "Set 'deleteVaultedPaymentMethodResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        if let errorResult = result.1 {
+            throw errorResult
+        } else {
+            return
         }
     }
 
@@ -512,8 +550,11 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
-    func continue3DSAuth(clientToken _: DecodedJWTToken, threeDSTokenId _: String, continueInfo _: ThreeDS.ContinueInfo) async throws -> ThreeDS
-    .PostAuthResponse {
+    func continue3DSAuth(
+        clientToken _: DecodedJWTToken,
+        threeDSTokenId _: String,
+        continueInfo _: ThreeDS.ContinueInfo
+    ) async throws -> ThreeDS.PostAuthResponse {
         guard let result = continue3DSAuthResult else {
             XCTAssert(false, "Set 'continue3DSAuthResult' on your MockPrimerAPIClient")
             throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
@@ -549,6 +590,27 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             } else if let successResult = result.0 {
                 completion(.success(successResult))
             }
+        }
+    }
+
+    func listAdyenBanks(
+        clientToken: DecodedJWTToken,
+        request: Request.Body.Adyen.BanksList
+    ) async throws -> PrimerSDK.BanksListSessionResponse {
+        guard let result = listAdyenBanksResult else {
+            XCTAssert(false, "Set 'listAdyenBanksResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        if let errorResult = result.1 {
+            throw errorResult
+        } else if let successResult = result.0 {
+            return successResult
+        } else {
+            XCTAssert(false, "Set 'listAdyenBanksResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
         }
     }
 
@@ -1331,11 +1393,15 @@ extension MockPrimerAPIClient {
 
         static let mockFetchNolSdkSecret = Response.Body.NolPay.NolPaySecretDataResponse(sdkSecret: "")
         static let mockSdkCompleteUrl = Response.Body.Complete()
-        static let mockBinNetworks: Response.Body.Bin.Networks = Response.Body.Bin.Networks(
+        static let mockBinNetworks = Response.Body.Bin.Networks(
             networks: [
                 .init(value: "MOCK_NETWORK")
             ]
         )
-        static let mockPhoneMetadataResponse = Response.Body.PhoneMetadata.PhoneMetadataDataResponse.init(isValid: true, countryCode: "+1", nationalNumber: nil)
+        static let mockPhoneMetadataResponse = Response.Body.PhoneMetadata.PhoneMetadataDataResponse(
+            isValid: true,
+            countryCode: "+1",
+            nationalNumber: nil
+        )
     }
 }

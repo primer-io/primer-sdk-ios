@@ -48,7 +48,6 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
         let mockViewController = MockPrimerRootViewController()
         uiManager.onPrepareViewController = {
             self.uiManager.primerRootViewController = mockViewController
-            return Promise.fulfilled(())
         }
 
         let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
@@ -101,7 +100,6 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
         let mockViewController = MockPrimerRootViewController()
         uiManager.onPrepareViewController = {
             self.uiManager.primerRootViewController = mockViewController
-            return Promise.fulfilled(())
         }
         let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
