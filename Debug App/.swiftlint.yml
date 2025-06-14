@@ -1,5 +1,5 @@
 disabled_rules:
-    - superfluous_disable_command
+  - superfluous_disable_command
 
 line_length:
   warning: 150
@@ -7,7 +7,10 @@ line_length:
   ignores_comments: true
   ignores_interpolated_strings: true
   ignores_urls: true
-  
+
+type_body_length:
+  warning: 300 # TODO: Remove this after migrating to Swift 6
+
 included:
   - ../Sources
 

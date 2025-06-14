@@ -6,11 +6,10 @@
 //  Copyright © 2024 Primer API Ltd. All rights reserved.
 //
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 class MockAnalyticsService: AnalyticsServiceProtocol {
-
     var events: [Analytics.Event] = []
 
     var onRecord: (([Analytics.Event]) -> Void)?
@@ -20,10 +19,14 @@ class MockAnalyticsService: AnalyticsServiceProtocol {
         onRecord?(events)
         return Promise.fulfilled(())
     }
+
+    func record(events: [Analytics.Event]) async throws {
+        self.events.append(contentsOf: events)
+        onRecord?(events)
+    }
 }
 
 final class NetworkingReportingServiceTests: XCTestCase {
-
     var analyticsService: MockAnalyticsService!
 
     var networkReportingService: NetworkReportingService!
@@ -39,7 +42,6 @@ final class NetworkingReportingServiceTests: XCTestCase {
     }
 
     func testRequestStartEventSent() throws {
-
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken,
                                                     requestParameters: nil)
         let request = try DefaultNetworkRequestFactory().request(for: endpoint, identifier: nil)
@@ -60,7 +62,6 @@ final class NetworkingReportingServiceTests: XCTestCase {
     }
 
     func testRequestEndEventSent() throws {
-
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken,
                                                     requestParameters: nil)
         let responseMetadata = ResponseMetadataModel(responseUrl: nil, statusCode: 0, headers: nil)
@@ -82,7 +83,6 @@ final class NetworkingReportingServiceTests: XCTestCase {
     }
 
     func testNetworkConnectivityEventSent() throws {
-
         let endpoint = PrimerAPI.fetchConfiguration(clientToken: Mocks.decodedJWTToken,
                                                     requestParameters: nil)
 
@@ -100,7 +100,6 @@ final class NetworkingReportingServiceTests: XCTestCase {
     }
 
     func testAnalyticsEndpointEventsNotSent_checkoutTrack() throws {
-
         let url = URL(string: "https://analytics_url/checkout/track")!
         let endpoint = PrimerAPI.sendAnalyticsEvents(clientToken: Mocks.decodedJWTToken, url: url, body: [])
         let request = try DefaultNetworkRequestFactory().request(for: endpoint, identifier: nil)
@@ -111,7 +110,6 @@ final class NetworkingReportingServiceTests: XCTestCase {
     }
 
     func testAnalyticsEndpointEventsNotSent_sdkLogs() throws {
-
         let url = URL(string: "https://analytics_url/sdk-logs")!
         let endpoint = PrimerAPI.sendAnalyticsEvents(clientToken: Mocks.decodedJWTToken, url: url, body: [])
         let request = try DefaultNetworkRequestFactory().request(for: endpoint, identifier: nil)

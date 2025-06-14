@@ -16,16 +16,20 @@ import Foundation
  */
 protocol ACHUserDetailsProviding {
     func getClientSessionUserDetails() -> Promise<ACHUserDetails>
+    func getClientSessionUserDetails() async throws -> ACHUserDetails
+
     func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) -> Promise<Void>
+    func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) async throws
 }
 
 final class ACHClientSessionService: ACHUserDetailsProviding {
-
     // MARK: - Properties
+
     let apiClient: PrimerAPIClientProtocol
     let settings: PrimerSettingsProtocol
 
     // MARK: - Init
+
     init(apiClient: PrimerAPIClientProtocol = PrimerAPIConfigurationModule.apiClient ?? PrimerAPIClient(),
          settings: PrimerSettingsProtocol = DependencyContainer.resolve()) {
         self.apiClient = apiClient
@@ -48,7 +52,14 @@ extension ACHClientSessionService {
                                              emailAddress: customerDetails?.emailAddress ?? "")
             seal.fulfill(userDetails)
         }
+    }
 
+    func getClientSessionUserDetails() async throws -> ACHUserDetails {
+        let customerDetails = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer
+        let userDetails = ACHUserDetails(firstName: customerDetails?.firstName ?? "",
+                                         lastName: customerDetails?.lastName ?? "",
+                                         emailAddress: customerDetails?.emailAddress ?? "")
+        return userDetails
     }
 }
 
@@ -74,8 +85,12 @@ extension ACHClientSessionService {
             .catch { error in
                 seal.reject(error)
             }
-
         }
+    }
+
+    func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) async throws {
+        let apiConfigurationModule = PrimerAPIConfigurationModule()
+        try await apiConfigurationModule.updateSession(withActions: actionsRequest)
     }
 
     func prepareClientSessionActionsRequestBody(paymentMethodType: String) -> ClientSessionUpdateRequest {

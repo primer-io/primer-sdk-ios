@@ -17,6 +17,7 @@ protocol Module {
     init(url: URL)
 
     func start() -> Promise<T>
+    func start() async throws -> T
     func cancel(withError err: PrimerError)
 }
 
@@ -40,6 +41,20 @@ final class PollingModule: Module {
                     seal.reject(err)
                 } else if let resumeToken = resumeToken {
                     seal.fulfill(resumeToken)
+                } else {
+                    precondition(false, "Should always return an id or an error")
+                }
+            }
+        }
+    }
+
+    func start() async throws -> String {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.startPolling { id, err in
+                if let err = err {
+                    continuation.resume(throwing: err)
+                } else if let id = id {
+                    continuation.resume(returning: id)
                 } else {
                     precondition(false, "Should always return an id or an error")
                 }

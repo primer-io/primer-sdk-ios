@@ -5,11 +5,10 @@
 //  Created by Jack Newcombe on 13/05/2024.
 //
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class PrimerColorTests: XCTestCase {
-
     func testRedGreenBlueInit() {
         let blackColor = PrimerColor(red: 0, green: 0, blue: 0)
         XCTAssertEqual(blackColor.cgColor.components, UIColor.black.cgColor.toSRGB().components)
@@ -53,15 +52,11 @@ final class PrimerColorTests: XCTestCase {
         let invalidHexColor2 = PrimerColor(hex: "#00FF00FF00FF")
         XCTAssertNil(invalidHexColor2)
     }
-
- 
-
 }
 
 private let defaultColorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
 
 private extension CGColor {
-
     func toSRGB() -> CGColor! {
         return converted(to: defaultColorSpace, intent: .defaultIntent, options: nil)
     }
