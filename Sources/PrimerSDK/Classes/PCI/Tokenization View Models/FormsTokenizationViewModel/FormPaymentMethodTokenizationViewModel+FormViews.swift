@@ -66,10 +66,7 @@ extension FormPaymentMethodTokenizationViewModel {
         dueAtContainerStackView.axis = .horizontal
         dueAtContainerStackView.spacing = 8.0
 
-        let calendarImage = UIImage(named: "calendar",
-                                    in: Bundle.primerResources,
-                                    compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        let calendarImageView = UIImageView(image: calendarImage)
+        let calendarImageView = UIImageView(image: .calendar?.withRenderingMode(.alwaysTemplate))
         calendarImageView.tintColor = .primerGray600
         calendarImageView.clipsToBounds = true
         calendarImageView.contentMode = .scaleAspectFit
@@ -138,11 +135,9 @@ extension FormPaymentMethodTokenizationViewModel {
             accountNumberStackView.addArrangedSubview(accountNumberLabel)
         }
 
-        let copyToClipboardImage = UIImage(named: "copy-to-clipboard", in: Bundle.primerResources, compatibleWith: nil)
-        let copiedToClipboardImage = UIImage(named: "check-circle", in: Bundle.primerResources, compatibleWith: nil)
         let copyToClipboardButton = UIButton(type: .custom)
-        copyToClipboardButton.setImage(copyToClipboardImage, for: .normal)
-        copyToClipboardButton.setImage(copiedToClipboardImage, for: .selected)
+        copyToClipboardButton.setImage(.copyToClipboard, for: .normal)
+        copyToClipboardButton.setImage(.checkCircle, for: .selected)
         copyToClipboardButton.translatesAutoresizingMaskIntoConstraints = false
         copyToClipboardButton.addTarget(self, action: #selector(copyToClipboardTapped), for: .touchUpInside)
         accountNumberStackView.addArrangedSubview(copyToClipboardButton)
@@ -222,10 +217,7 @@ extension FormPaymentMethodTokenizationViewModel {
         expiresAtContainerStackView.axis = .horizontal
         expiresAtContainerStackView.spacing = 8.0
 
-        let calendarImage = UIImage(named: "calendar",
-                                    in: Bundle.primerResources,
-                                    compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-        let calendarImageView = UIImageView(image: calendarImage)
+        let calendarImageView = UIImageView(image: .calendar?.withRenderingMode(.alwaysTemplate))
         calendarImageView.tintColor = .primerGray600
         calendarImageView.clipsToBounds = true
         calendarImageView.contentMode = .scaleAspectFit
@@ -297,16 +289,7 @@ extension FormPaymentMethodTokenizationViewModel {
             }
         }
 
-        //        let copyToClipboardImage = UIImage(named: "copy-to-clipboard", in: Bundle.primerResources, compatibleWith: nil)
-        //        let copiedToClipboardImage = UIImage(named: "check-circle", in: Bundle.primerResources, compatibleWith: nil)
-        //        let copyToClipboardButton = UIButton(type: .custom)
-        //        copyToClipboardButton.setImage(copyToClipboardImage, for: .normal)
-        //        copyToClipboardButton.setImage(copiedToClipboardImage, for: .selected)
-        //        copyToClipboardButton.translatesAutoresizingMaskIntoConstraints = false
-        //        copyToClipboardButton.addTarget(self, action: #selector(copyToClipboardTapped), for: .touchUpInside)
-        //        entityStackView.addArrangedSubview(copyToClipboardButton)
-
-        self.uiModule.submitButton = nil
+        uiModule.submitButton = nil
 
         let views = [[completeYourPaymentLabel],
                      [expiresAtContainerStackView],

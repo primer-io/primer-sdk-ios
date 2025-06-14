@@ -5,8 +5,8 @@
 //  Created by Stefan Vrancianu on 08.03.2024.
 //
 
-import UIKit
 import SwiftUI
+import UIKit
 
 final class SharedUIViewWrapper: ObservableObject {
     @Published var uiView: UIView?
@@ -32,14 +32,13 @@ struct DynamicUIViewRepresentable: UIViewRepresentable {
 }
 
 struct KlarnaCategoryButton: View {
-
     @ObservedObject var sharedWrapper: SharedUIViewWrapper
 
     var isSelected: Bool
     let title: String
     let action: () -> Void
-    let klarnaCategoryImage = UIImage(named: "klarna_payment_category", in: Bundle.primerResources, compatibleWith: nil) ?? UIImage()
-    let checkmarkImage = UIImage(named: "check2", in: Bundle.primerResources, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate) ?? UIImage()
+    let klarnaCategoryImage = UIImage.klarnaCategory ?? UIImage()
+    let checkmarkImage = UIImage.checkmark?.withRenderingMode(.alwaysTemplate) ?? UIImage()
 
     var body: some View {
         VStack {

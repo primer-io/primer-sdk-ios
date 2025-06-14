@@ -71,39 +71,27 @@ final class ImageFile: File {
             if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType,
                                                                                  themeMode: .dark,
                                                                                  assetType: .logo),
-               let image = UIImage(named: paymentMethodLogoFileName,
-                                   in: Bundle.primerResources,
-                                   compatibleWith: nil) {
+               let image = UIImage(primerResource: paymentMethodLogoFileName) {
                 return image
-            } else if let image = UIImage(named: fileName,
-                                          in: Bundle.primerResources,
-                                          compatibleWith: nil) {
+            } else if let image = UIImage(primerResource: fileName) {
                 return image
             }
         } else if fileName.contains("light") == true {
             if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType,
                                                                                  themeMode: .light,
                                                                                  assetType: .logo),
-               let image = UIImage(named: paymentMethodLogoFileName,
-                                   in: Bundle.primerResources,
-                                   compatibleWith: nil) {
+               let image = UIImage(primerResource: paymentMethodLogoFileName) {
                 return image
-            } else if let image = UIImage(named: fileName,
-                                          in: Bundle.primerResources,
-                                          compatibleWith: nil) {
+            } else if let image = UIImage(primerResource: fileName) {
                 return image
             }
         } else if fileName.contains("colored") == true {
             if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType,
                                                                                  themeMode: .colored,
                                                                                  assetType: .logo),
-               let image = UIImage(named: paymentMethodLogoFileName,
-                                   in: Bundle.primerResources,
-                                   compatibleWith: nil) {
+               let image = UIImage(primerResource: paymentMethodLogoFileName) {
                 return image
-            } else if let image = UIImage(named: fileName,
-                                          in: Bundle.primerResources,
-                                          compatibleWith: nil) {
+            } else if let image = UIImage(primerResource: fileName) {
                 return image
             }
         }

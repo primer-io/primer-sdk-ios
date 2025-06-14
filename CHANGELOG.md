@@ -1,3 +1,14 @@
+## 2.38.2 (2025-06-11)
+
+### Fix
+
+- Fix memory crash in validateRawData with weak self capture (#1185)
+
+### Refactor
+
+- Consolidate `PrimerClientSession` (#1187)
+- Consolidate PrimerClientSession
+
 ## 2.38.1 (2025-06-04)
 
 ### Refactor
@@ -9,7 +20,7 @@
 ### Feat
 
 - **Klarna**: auto continue when single payment option (#1176)
-- Implement Co-badged Cards on Drop-in  (#1050)
+- Implement Co-badged Cards on Drop-in (#1050)
 
 ### Fix
 
@@ -44,7 +55,7 @@
 ### Fix
 
 - Klarna Popup Dismissal Triggering authorizationFailed (#1147)
-- Fix RawDataManager Callback Triggering  (#1145)
+- Fix RawDataManager Callback Triggering (#1145)
 
 ## 2.36.0 (2025-03-24)
 
@@ -139,7 +150,7 @@
 - Expose VaultedPaymentMethod initialiser (#1032)
 - Prevent dismissal of Drop-in card form while a payment is active (#1031)
 - Discover card network image not showing (#1025)
-- Move the cursor to the end of the text after pasting the card number  (#1027)
+- Move the cursor to the end of the text after pasting the card number (#1027)
 
 ## 2.31.2 (2024-10-16)
 
