@@ -432,6 +432,9 @@
                location = "group:Extensions &amp; Utilities"
                name = "Extensions &amp; Utilities">
                <FileRef
+                  location = "group:AsyncUtils.swift">
+               </FileRef>
+               <FileRef
                   location = "group:UIScreenExtension.swift">
                </FileRef>
                <FileRef
@@ -2544,7 +2547,7 @@
                   location = "group:MockAPIClient.swift">
                </FileRef>
                <FileRef
-                  location = "group:NetworkService.swift">
+                  location = "group:MockNetworkService.swift">
                </FileRef>
                <FileRef
                   location = "group:MockBINDataAPIClient.swift">
