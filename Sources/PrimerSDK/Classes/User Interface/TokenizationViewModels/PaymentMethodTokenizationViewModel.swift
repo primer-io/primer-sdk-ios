@@ -26,6 +26,7 @@ internal protocol SearchableItemsPaymentMethodTokenizationViewModelProtocol {
     func cancel()
 }
 
+// MARK: MISSING_TESTS
 class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationViewModelProtocol, LogReporter {
 
     // Events
@@ -37,6 +38,8 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     var willDismissPaymentMethodUI: (() -> Void)?
     var didDismissPaymentMethodUI: (() -> Void)?
     var didCancel: (() -> Void)?
+    var startTokenizationFlowTask: Task<PrimerPaymentMethodTokenData?, Error>?
+    var startPaymentFlowTask: Task<PrimerCheckoutData?, Error>?
     var isCancelled: Bool = false
     var paymentMethodTokenData: PrimerPaymentMethodTokenData?
     var paymentCheckoutData: PrimerCheckoutData?
@@ -93,7 +96,15 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         fatalError("\(#function) must be overriden")
     }
 
+    func performPreTokenizationSteps() async throws {
+        fatalError("\(#function) must be overriden")
+    }
+
     func performTokenizationStep() -> Promise<Void> {
+        fatalError("\(#function) must be overriden")
+    }
+
+    func performTokenizationStep() async throws {
         fatalError("\(#function) must be overriden")
     }
 
@@ -101,7 +112,15 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         fatalError("\(#function) must be overriden")
     }
 
+    func tokenize() async throws -> PrimerPaymentMethodTokenData {
+        fatalError("\(#function) must be overriden")
+    }
+
     func performPostTokenizationSteps() -> Promise<Void> {
+        fatalError("\(#function) must be overriden")
+    }
+
+    func performPostTokenizationSteps() async throws {
         fatalError("\(#function) must be overriden")
     }
 
@@ -152,6 +171,47 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         }
     }
 
+    func startTokenizationFlow() async throws -> PrimerPaymentMethodTokenData {
+        startTokenizationFlowTask = Task {
+            do {
+                try Task.checkCancellation()
+
+                try await self.performPreTokenizationSteps()
+                try Task.checkCancellation()
+
+                try await self.performTokenizationStep()
+                try Task.checkCancellation()
+
+                try await self.performPostTokenizationSteps()
+                try Task.checkCancellation()
+
+                return self.paymentMethodTokenData
+            } catch is CancellationError {
+                let cancelledError = PrimerError.cancelled(paymentMethodType: self.config.type,
+                                                           userInfo: .errorUserInfoDictionary(),
+                                                           diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: cancelledError)
+                throw cancelledError
+            } catch {
+                throw error
+            }
+        }
+
+        let paymentMethodTokenData = try await startTokenizationFlowTask?.value
+        startTokenizationFlowTask = nil
+
+        guard let paymentMethodTokenData else {
+            throw PrimerError.invalidValue(
+                key: "paymentMethodTokenData",
+                value: "Payment method token data is not valid",
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+        }
+
+        return paymentMethodTokenData
+    }
+
     func handleSuccessfulFlow() {
         if config.internalPaymentMethodType != .stripeAch {
             let categories = self.config.paymentMethodManagerCategories
@@ -165,12 +225,25 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         fatalError("\(#function) must be overriden")
     }
 
+    func presentPaymentMethodUserInterface() async throws {
+        fatalError("\(#function) must be overriden")
+    }
+
     func awaitUserInput() -> Promise<Void> {
+        fatalError("\(#function) must be overriden")
+    }
+
+    func awaitUserInput() async throws {
         fatalError("\(#function) must be overriden")
     }
 
     func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
                                           paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
+        fatalError("\(#function) must be overriden")
+    }
+
+    func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
+                                          paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
         fatalError("\(#function) must be overriden")
     }
 
@@ -180,5 +253,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
 
     func cancel() {
         self.didCancel?()
+        startTokenizationFlowTask?.cancel()
+        startPaymentFlowTask?.cancel()
     }
 }
