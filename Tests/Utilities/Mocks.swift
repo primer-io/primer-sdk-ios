@@ -427,6 +427,23 @@ class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
         }
     }
 
+    func setupSession(
+        forClientToken clientToken: String,
+        requestDisplayMetadata _: Bool,
+        requestClientTokenValidation _: Bool,
+        requestVaultedPaymentMethods _: Bool
+    ) async throws {
+        guard let mockedAPIConfiguration = mockedAPIConfiguration else {
+            XCTAssert(false, "Set 'mockedAPIConfiguration' on your MockPrimerAPIConfigurationModule")
+            return
+        }
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        PrimerAPIConfigurationModule.clientToken = clientToken
+        PrimerAPIConfigurationModule.apiConfiguration = mockedAPIConfiguration
+    }
+
     func updateSession(withActions actionsRequest: ClientSessionUpdateRequest) -> Promise<Void> {
         return Promise { _ in
             guard let mockedAPIConfiguration = mockedAPIConfiguration else {
@@ -440,6 +457,17 @@ class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
         }
     }
 
+    func updateSession(withActions _: ClientSessionUpdateRequest) async throws {
+        guard let mockedAPIConfiguration = mockedAPIConfiguration else {
+            XCTAssert(false, "Set 'mockedAPIConfiguration' on your MockPrimerAPIConfigurationModule")
+            return
+        }
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        PrimerAPIConfigurationModule.apiConfiguration = mockedAPIConfiguration
+    }
+
     func storeRequiredActionClientToken(_ newClientToken: String) -> Promise<Void> {
         return Promise { _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + self.mockedNetworkDelay) {
@@ -447,4 +475,12 @@ class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
             }
         }
     }
+
+    func storeRequiredActionClientToken(_ newClientToken: String) async throws {
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        PrimerAPIConfigurationModule.clientToken = newClientToken
+    }
 }
+
+class MockTokenizationRequestBodyPaymentInstrument: TokenizationRequestBodyPaymentInstrument {}
