@@ -60,12 +60,32 @@ final class SDKSessionHelper {
         try completion()
         tearDown()
     }
+        
+    static func test(
+        withPaymentMethods paymentMethods: [PrimerPaymentMethod]? = nil,
+        order: ClientSession.Order? = nil,
+        _ completion: () async throws -> Void
+    ) async throws {
+        setUp(withPaymentMethods: paymentMethods, order: order)
+        defer { tearDown() }
+        try await completion()
+    }
 
     static func test(withPaymentMethods paymentMethods: [PrimerPaymentMethod]? = nil,
                      _ completion: @escaping (_ done: @escaping () -> Void) throws -> Void) throws {
         setUp(withPaymentMethods: paymentMethods)
         try completion(tearDown)
     }
+    
+    static func test(
+        withPaymentMethods paymentMethods: [PrimerPaymentMethod]? = nil,
+        _ completion: @escaping (_ done: @escaping () async -> Void) async throws -> Void
+    ) async throws {
+        setUp(withPaymentMethods: paymentMethods)
+        defer { tearDown() }
+        try await completion(tearDown)
+    }
+
 
     static func updateAllowedCardNetworks(cardNetworks: [CardNetwork]) {
         PrimerAPIConfigurationModule.apiConfiguration?.clientSession = .init(
