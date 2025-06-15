@@ -10,6 +10,7 @@
 
 import UIKit
 
+// MARK: MISSING_TESTS
 public final class PrimerHeadlessUniversalCheckout: LogReporter {
 
     public static let current = PrimerHeadlessUniversalCheckout()
@@ -136,6 +137,23 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
         }
     }
 
+    public func start(
+        withClientToken clientToken: String,
+        settings: PrimerSettings? = nil,
+        delegate: PrimerHeadlessUniversalCheckoutDelegate? = nil,
+        uiDelegate: PrimerHeadlessUniversalCheckoutUIDelegate? = nil
+    ) async throws -> [PrimerHeadlessUniversalCheckout.PaymentMethod]? {
+        try await awaitResult { completion in
+            start(
+                withClientToken: clientToken,
+                settings: settings,
+                delegate: delegate,
+                uiDelegate: uiDelegate,
+                completion: completion
+            )
+        }
+    }
+
     private func recordLoadedEvent(_ start: Int) {
         let end = Date().millisecondsSince1970
         let interval = end - start
@@ -196,6 +214,40 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
         }
     }
 
+    private func continueValidateSession() async throws {
+        guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
+            let info = ["reason": "Client token is nil"]
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info),
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        guard let decodedJWTToken = clientToken.decodedJWTToken else {
+            let info = ["reason": "Client token cannot be decoded"]
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info),
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        try decodedJWTToken.validate()
+
+        guard let apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration else {
+            let err = PrimerError.missingPrimerConfiguration(userInfo: .errorUserInfoDictionary(),
+                                                             diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        guard let paymentMethods = apiConfiguration.paymentMethods, !paymentMethods.isEmpty else {
+            let err = PrimerError.misconfiguredPaymentMethods(userInfo: .errorUserInfoDictionary(),
+                                                              diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+    }
+
     internal func validateSession() -> Promise<Void> {
         return Promise { seal in
             guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
@@ -236,6 +288,40 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
             }
 
             seal.fulfill()
+        }
+    }
+
+    func validateSession() async throws {
+        guard let clientToken = PrimerAPIConfigurationModule.clientToken else {
+            let info = ["reason": "Client token is nil"]
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info),
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        guard let decodedJWTToken = clientToken.decodedJWTToken else {
+            let info = ["reason": "Client token cannot be decoded"]
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(additionalInfo: info),
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        try decodedJWTToken.validate()
+
+        guard let apiConfiguration = PrimerAPIConfigurationModule.apiConfiguration else {
+            let err = PrimerError.missingPrimerConfiguration(userInfo: .errorUserInfoDictionary(),
+                                                             diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        guard let paymentMethods = apiConfiguration.paymentMethods, !paymentMethods.isEmpty else {
+            let err = PrimerError.misconfiguredPaymentMethods(userInfo: .errorUserInfoDictionary(),
+                                                              diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
         }
     }
 
