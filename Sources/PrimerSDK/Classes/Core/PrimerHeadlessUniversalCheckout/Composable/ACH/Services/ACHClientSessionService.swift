@@ -16,7 +16,9 @@ import Foundation
  */
 protocol ACHUserDetailsProviding {
     func getClientSessionUserDetails() -> Promise<ACHUserDetails>
+    func getClientSessionUserDetails() async throws -> ACHUserDetails
     func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) -> Promise<Void>
+    func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) async throws
 }
 
 final class ACHClientSessionService: ACHUserDetailsProviding {
@@ -48,7 +50,14 @@ extension ACHClientSessionService {
                                              emailAddress: customerDetails?.emailAddress ?? "")
             seal.fulfill(userDetails)
         }
+    }
 
+    func getClientSessionUserDetails() async throws -> ACHUserDetails {
+        let customerDetails = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer
+        let userDetails = ACHUserDetails(firstName: customerDetails?.firstName ?? "",
+                                         lastName: customerDetails?.lastName ?? "",
+                                         emailAddress: customerDetails?.emailAddress ?? "")
+        return userDetails
     }
 }
 
@@ -76,6 +85,11 @@ extension ACHClientSessionService {
             }
 
         }
+    }
+
+    func patchClientSession(with actionsRequest: ClientSessionUpdateRequest) async throws {
+        let apiConfigurationModule = PrimerAPIConfigurationModule()
+        try await apiConfigurationModule.updateSession(withActions: actionsRequest)
     }
 
     func prepareClientSessionActionsRequestBody(paymentMethodType: String) -> ClientSessionUpdateRequest {

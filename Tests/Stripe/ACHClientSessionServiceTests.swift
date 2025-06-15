@@ -48,6 +48,25 @@ final class ACHClientSessionServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
 
+    func test_getClientSession_userDetails_async() async {
+        // The user details that will be patched in the client session
+        let expectedUserDetails = ACHUserDetails(firstName: "firstname-test",
+                                                 lastName: "lastname-test",
+                                                 emailAddress: "test@mail.com")
+
+        // Prepare the client session with the current user details
+        prepareConfigurations(firstName: expectedUserDetails.firstName,
+                              lastName: expectedUserDetails.lastName,
+                              email: expectedUserDetails.emailAddress)
+        do {
+            let userDetails = try await clientSessionService.getClientSessionUserDetails()
+            XCTAssertNotNil(userDetails, "Result should not be nil")
+            XCTAssertTrue(ACHUserDetails.compare(lhs: expectedUserDetails, rhs: userDetails).areEqual)
+        } catch {
+            XCTFail("Result should be nil")
+        }
+    }
+
     func test_patchClientSession_userDetails_success() {
         let expectation = XCTestExpectation(description: "Successful patch client session.")
 
@@ -97,6 +116,50 @@ final class ACHClientSessionServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
 
+    func test_patchClientSession_userDetails_success_async() async {
+        // The user details that are already in the client session
+        let currentUserDetails = ACHUserDetails(firstName: "firstname-test",
+                                                lastName: "lastname-test",
+                                                emailAddress: "test@mail.com")
+
+        // The user details that will be patched in the client session
+        let expectedUserDetails = ACHUserDetails(firstName: "updated_firstname-test",
+                                                 lastName: "updated_lastname-test",
+                                                 emailAddress: "updated_test@mail.com")
+
+        // Prepare the client session with the current user details
+        prepareConfigurations(firstName: currentUserDetails.firstName,
+                              lastName: currentUserDetails.lastName,
+                              email: currentUserDetails.emailAddress)
+
+        let configurationsFetchWithActions = getFetchConfiguration(
+            firstName: expectedUserDetails.firstName,
+            lastName: expectedUserDetails.lastName,
+            email: expectedUserDetails.emailAddress
+        )
+
+        mockApiClient.fetchConfigurationWithActionsResult = (configurationsFetchWithActions, nil)
+
+        // Creating the actions for the patch request with the updated new user details
+        let actionsArray = [ClientSession.Action.setCustomerFirstName(expectedUserDetails.firstName),
+                            ClientSession.Action.setCustomerLastName(expectedUserDetails.lastName),
+                            ClientSession.Action.setCustomerEmailAddress(expectedUserDetails.emailAddress)]
+
+        let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actionsArray))
+
+        do {
+            try await clientSessionService.patchClientSession(with: clientSessionActionsRequest)
+            let updatedCustomer = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.customer
+            let updatedUserDetails = ACHUserDetails(firstName: updatedCustomer?.firstName ?? "",
+                                                    lastName: updatedCustomer?.lastName ?? "",
+                                                    emailAddress: updatedCustomer?.emailAddress ?? "")
+
+            XCTAssertTrue(ACHUserDetails.compare(lhs: expectedUserDetails, rhs: updatedUserDetails).areEqual)
+        } catch {
+            XCTFail("Result should be nil")
+        }
+    }
+
     func test_patchClientSession_userDetails_failure() {
         let error = getInvalidTokenError()
         let expectation = XCTestExpectation(description: "Failure to patch client session")
@@ -140,6 +203,40 @@ final class ACHClientSessionServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
 
+    func test_patchClientSession_userDetails_failure_async() async {
+        let error = getInvalidTokenError()
+
+        // The user details that are already in the client session
+        let currentUserDetails = ACHUserDetails(firstName: "firstname-test",
+                                                lastName: "lastname-test",
+                                                emailAddress: "test@mail.com")
+
+        // The user details that will be patched in the client session
+        let expectedUserDetails = ACHUserDetails(firstName: "updated_firstname-test",
+                                                 lastName: "updated_lastname-test",
+                                                 emailAddress: "updated_test@mail.com")
+
+        // Prepare the client session with the current user details
+        prepareConfigurations(firstName: currentUserDetails.firstName,
+                              lastName: currentUserDetails.lastName,
+                              email: currentUserDetails.emailAddress)
+
+        mockApiClient.fetchConfigurationWithActionsResult = (nil, error)
+
+        // Creating the actions for the patch request with the updated new user details
+        let actionsArray = [ClientSession.Action.setCustomerFirstName(expectedUserDetails.firstName),
+                            ClientSession.Action.setCustomerLastName(expectedUserDetails.lastName),
+                            ClientSession.Action.setCustomerEmailAddress(expectedUserDetails.emailAddress)]
+
+        let clientSessionActionsRequest = ClientSessionUpdateRequest(actions: ClientSessionAction(actions: actionsArray))
+
+        do {
+            try await clientSessionService.patchClientSession(with: clientSessionActionsRequest)
+            XCTFail("Result should be nil")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
+    }
 }
 
 extension ACHClientSessionServiceTests {
