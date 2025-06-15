@@ -21,6 +21,19 @@ class MockBanksAPIClient: PrimerAPIClientBanksProtocol {
             completion(.success(result))
         }
     }
+
+    func listAdyenBanks(
+        clientToken: DecodedJWTToken,
+        request: Request.Body.Adyen.BanksList
+    ) async throws -> BanksListSessionResponse {
+        if let error = error {
+            throw error
+        } else if let result = result {
+            return result
+        } else {
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        }
+    }
 }
 
 final class BanksTokenizationComponentTests: XCTestCase {
@@ -106,6 +119,19 @@ final class BanksTokenizationComponentTests: XCTestCase {
         }
 
         waitForExpectations(timeout: 5.0)
+    }
+
+    func testFetchBanksSuccess_async() async throws {
+        let banks: BanksListSessionResponse = .init(
+            result: [.init(id: "id", name: "name", iconUrlStr: "icon", disabled: false)]
+        )
+
+        apiClient.result = banks
+
+        try await SDKSessionHelper.test {
+            let result = try await self.sut.retrieveListOfBanks()
+            XCTAssertEqual(result, banks.result)
+        }
     }
 
     func testFullPaymentFlow() throws {
