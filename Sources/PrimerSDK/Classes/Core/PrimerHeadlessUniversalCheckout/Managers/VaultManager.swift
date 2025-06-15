@@ -746,15 +746,74 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
 
+        private func handleResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
+            if PrimerSettings.current.paymentHandling == .manual {
+                return try await withCheckedThrowingContinuation { continuation in
+                    PrimerDelegateProxy.primerDidResumeWith(resumeToken) { resumeDecision in
+                        if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
+                            switch resumeDecisionType {
+                            case .fail(let message):
+                                let err: Error
+                                if let message {
+                                    err = PrimerError.merchantError(message: message,
+                                                                    userInfo: .errorUserInfoDictionary(),
+                                                                    diagnosticsId: UUID().uuidString)
+                                } else {
+                                    err = NSError.emptyDescriptionError
+                                }
+                                continuation.resume(throwing: err)
+
+                            case .succeed:
+                                continuation.resume(returning: nil)
+
+                            case .continueWithNewClientToken:
+                                continuation.resume(returning: nil)
+                            }
+                        } else if let _ = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
+                            // No need to continue if manually handling resume
+                            self.paymentCheckoutData = nil
+                        } else {
+                            assertionFailure("A relevant decision type was not found - decision type was: \(type(of: resumeDecision.type))")
+                        }
+                    }
+                }
+            } else {
+                guard let resumePaymentId = resumePaymentId else {
+                    let resumePaymentIdError = PrimerError.invalidValue(key: "resumePaymentId",
+                                                                        value: "Resume Payment ID not valid",
+                                                                        userInfo: .errorUserInfoDictionary(),
+                                                                        diagnosticsId: UUID().uuidString)
+                    ErrorHandler.handle(error: resumePaymentIdError)
+                    throw resumePaymentIdError
+                }
+
+                let paymentResponse = try await handleResumePaymentEvent(resumePaymentId, resumeToken: resumeToken)
+                let paymentData = PrimerCheckoutDataPayment(from: paymentResponse)
+                paymentCheckoutData = PrimerCheckoutData(payment: paymentData)
+                return paymentCheckoutData
+            }
+        }
+
         private func handleCreatePaymentEvent(_ paymentMethodData: String) -> Promise<Response.Body.Payment> {
             let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
             return createResumePaymentService.createPayment(paymentRequest: paymentRequest)
+        }
+
+        private func handleCreatePaymentEvent(_ paymentMethodData: String) async throws -> Response.Body.Payment {
+            let paymentRequest = Request.Body.Payment.Create(token: paymentMethodData)
+            return try await createResumePaymentService.createPayment(paymentRequest: paymentRequest)
         }
 
         private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) -> Promise<Response.Body.Payment> {
             let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
             return createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
                                                                          paymentResumeRequest: resumeRequest)
+        }
+
+        private func handleResumePaymentEvent(_ resumePaymentId: String, resumeToken: String) async throws -> Response.Body.Payment {
+            let resumeRequest = Request.Body.Payment.Resume(token: resumeToken)
+            return try await createResumePaymentService.resumePaymentWithPaymentId(resumePaymentId,
+                                                                                   paymentResumeRequest: resumeRequest)
         }
 
         private func presentWebRedirectViewControllerWithRedirectUrl(_ redirectUrl: URL) -> Promise<Void> {
