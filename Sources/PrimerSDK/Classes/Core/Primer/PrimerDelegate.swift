@@ -214,6 +214,19 @@ No custom error message will be displayed on the error screen.
         }
     }
 
+    static func raisePrimerDidFailWithError(_ primerError: PrimerError, data: PrimerCheckoutData?) async throws -> String? {
+        return try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.main.async {
+                PrimerDelegateProxy.primerDidFailWithError(primerError, data: data) { errorDecision in
+                    switch errorDecision.type {
+                    case .fail(let message):
+                        continuation.resume(returning: message)
+                    }
+                }
+            }
+        }
+    }
+
     static func primerClientSessionWillUpdate() {
         DispatchQueue.main.async {
             if PrimerInternal.shared.sdkIntegrationType == .headless {
