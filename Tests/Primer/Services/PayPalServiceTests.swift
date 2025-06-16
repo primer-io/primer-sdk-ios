@@ -934,6 +934,22 @@ private class MockPayPalAPIClient: PrimerAPIClientPayPalProtocol {
         }
     }
 
+    func createPayPalOrderSession(
+        clientToken: PrimerSDK.DecodedJWTToken,
+        payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder
+    ) async throws -> Response.Body.PayPal.CreateOrder {
+        guard let result = createPayPalOrderSessionResult else {
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        }
+
+        switch result {
+        case .success(let order):
+            return order
+        case .failure(let error):
+            throw error
+        }
+    }
+
     var createPayPalBillingAgreementSessionResult: Result<Response.Body.PayPal.CreateBillingAgreement, PrimerError>?
     func createPayPalBillingAgreementSession(clientToken: DecodedJWTToken,
                                              payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement,
@@ -947,6 +963,22 @@ private class MockPayPalAPIClient: PrimerAPIClientPayPalProtocol {
             completion(.success(billingAgreement))
         case .failure(let error):
             completion(.failure(error))
+        }
+    }
+
+    func createPayPalBillingAgreementSession(
+        clientToken: PrimerSDK.DecodedJWTToken,
+        payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement
+    ) async throws -> Response.Body.PayPal.CreateBillingAgreement {
+        guard let result = createPayPalBillingAgreementSessionResult else {
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        }
+
+        switch result {
+        case .success(let billingAgreement):
+            return billingAgreement
+        case .failure(let error):
+            throw error
         }
     }
 
@@ -967,6 +999,22 @@ private class MockPayPalAPIClient: PrimerAPIClientPayPalProtocol {
         }
     }
 
+    func confirmPayPalBillingAgreement(
+        clientToken: PrimerSDK.DecodedJWTToken,
+        payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement
+    ) async throws -> Response.Body.PayPal.ConfirmBillingAgreement {
+        guard let result = confirmBillingAgreementResult else {
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        }
+
+        switch result {
+        case .success(let billingAgreement):
+            return billingAgreement
+        case .failure(let error):
+            throw error
+        }
+    }
+
     var fetchPayPalExternalPayerInfoResult: Result<Response.Body.PayPal.PayerInfo, PrimerError>?
     func fetchPayPalExternalPayerInfo(clientToken: DecodedJWTToken,
                                       payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo,
@@ -980,6 +1028,22 @@ private class MockPayPalAPIClient: PrimerAPIClientPayPalProtocol {
             completion(.success(onFetchExternalPayerInfo))
         case .failure(let error):
             completion(.failure(error))
+        }
+    }
+
+    func fetchPayPalExternalPayerInfo(
+        clientToken: PrimerSDK.DecodedJWTToken,
+        payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo
+    ) async throws -> Response.Body.PayPal.PayerInfo {
+        guard let result = fetchPayPalExternalPayerInfoResult else {
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        }
+
+        switch result {
+        case .success(let payerInfo):
+            return payerInfo
+        case .failure(let error):
+            throw error
         }
     }
 }
