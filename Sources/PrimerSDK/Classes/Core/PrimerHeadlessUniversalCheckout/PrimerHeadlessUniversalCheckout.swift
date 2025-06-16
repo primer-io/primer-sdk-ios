@@ -136,21 +136,87 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
             }
         }
     }
+    
+    // MARK: REVIEW_CHECK - @MainActor ?
 
+    @MainActor
     public func start(
         withClientToken clientToken: String,
         settings: PrimerSettings? = nil,
         delegate: PrimerHeadlessUniversalCheckoutDelegate? = nil,
         uiDelegate: PrimerHeadlessUniversalCheckoutUIDelegate? = nil
     ) async throws -> [PrimerHeadlessUniversalCheckout.PaymentMethod]? {
-        try await awaitResult { completion in
-            start(
-                withClientToken: clientToken,
-                settings: settings,
-                delegate: delegate,
-                uiDelegate: uiDelegate,
-                completion: completion
-            )
+        let start = Date().millisecondsSince1970
+
+        PrimerInternal.shared.sdkIntegrationType = .headless
+        PrimerInternal.shared.intent = .checkout
+
+        DependencyContainer.register(settings ?? PrimerSettings() as PrimerSettingsProtocol)
+
+        if delegate != nil {
+            PrimerHeadlessUniversalCheckout.current.delegate = delegate
+        }
+
+        if uiDelegate != nil {
+            PrimerHeadlessUniversalCheckout.current.uiDelegate = uiDelegate
+        }
+
+        if PrimerHeadlessUniversalCheckout.current.delegate == nil {
+            let message = """
+            PrimerHeadlessUniversalCheckout delegate has not been set, \
+            and you won't be able to receive the Payment Method Token \
+            data to create a payment."
+            """
+            logger.warn(message: message)
+        }
+
+        PrimerInternal.shared.checkoutSessionId = UUID().uuidString
+        PrimerInternal.shared.timingEventId = UUID().uuidString
+
+        var events: [Analytics.Event] = []
+
+        let sdkEvent = Analytics.Event.sdk(
+            name: "\(Self.self).\(#function)",
+            params: ["intent": PrimerInternal.shared.intent?.rawValue ?? "null"]
+        )
+
+        let connectivityEvent = Analytics.Event.networkConnectivity(networkType: Connectivity.networkType)
+
+        let timingStartEvent = Analytics.Event.timer(
+            momentType: .start,
+            id: PrimerInternal.shared.timingEventId ?? "Unknown"
+        )
+
+        events = [sdkEvent, connectivityEvent, timingStartEvent]
+        Analytics.Service.record(events: events)
+
+        let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
+        settings.uiOptions.isInitScreenEnabled = false
+        settings.uiOptions.isSuccessScreenEnabled = false
+        settings.uiOptions.isErrorScreenEnabled = false
+
+        try await apiConfigurationModule.setupSession(
+            forClientToken: clientToken,
+            requestDisplayMetadata: true,
+            requestClientTokenValidation: false,
+            requestVaultedPaymentMethods: false
+        )
+
+        let currencyLoader = CurrencyLoader(storage: DefaultCurrencyStorage(), networkService: CurrencyNetworkService())
+        currencyLoader.updateCurrenciesFromAPI()
+
+        let availablePaymentMethodsTypes = PrimerHeadlessUniversalCheckout.current.listAvailablePaymentMethodsTypes()
+        if (availablePaymentMethodsTypes ?? []).isEmpty {
+            let err = PrimerError.misconfiguredPaymentMethods(userInfo: .errorUserInfoDictionary(),
+                                                              diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        } else {
+            let availablePaymentMethods = PrimerHeadlessUniversalCheckout.PaymentMethod.availablePaymentMethods
+            let delegate = PrimerHeadlessUniversalCheckout.current.delegate
+            delegate?.primerHeadlessUniversalCheckoutDidLoadAvailablePaymentMethods?(availablePaymentMethods)
+            self.recordLoadedEvent(start)
+            return availablePaymentMethods
         }
     }
 
