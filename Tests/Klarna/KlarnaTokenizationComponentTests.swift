@@ -150,6 +150,21 @@ final class KlarnaTokenizationComponentTests: XCTestCase {
 
         wait(for: [expectation], timeout: 10.0)
     }
+
+    func test_authorizePaymentSessionSuccess_async() async throws {
+        let clientSession = KlarnaTestsMocks.getClientSession()
+        let successApiConfiguration = KlarnaTestsMocks.getMockPrimerApiConfiguration(clientSession: clientSession)
+        setupPrimerConfiguration(paymentMethod: paymentMethod, apiConfiguration: successApiConfiguration)
+
+        tokenizationComponent.setSessionId(paymentSessionId: "mock-session-id")
+
+        do {
+            let paymentSession = try await tokenizationComponent.authorizePaymentSession(authorizationToken: "")
+            XCTAssertNotNil(paymentSession, "Result should not be nil")
+        } catch {
+            XCTFail("Request failed with: \(error)")
+        }
+    }
 }
 
 extension KlarnaTokenizationComponentTests {
