@@ -1,5 +1,5 @@
 //
-//  OrderItem.swift
+//  ApplePayOrderItem.swift
 //  PrimerSDK
 //
 //  Created by Evangelos Pittas on 24/3/21.
@@ -8,8 +8,7 @@
 import Foundation
 import PassKit
 
-internal struct ApplePayOrderItem: Codable, Equatable {
-
+struct ApplePayOrderItem: Codable, Equatable {
     public let name: String
     public let unitAmount: Int?
     public let quantity: Int
@@ -18,7 +17,6 @@ internal struct ApplePayOrderItem: Codable, Equatable {
     public var isPending: Bool = false
 
     public var applePayItem: PKPaymentSummaryItem {
-
         var paymentSummaryItem: NSDecimalNumber!
 
         let tmpUnitAmount = unitAmount ?? 0
@@ -43,15 +41,15 @@ internal struct ApplePayOrderItem: Codable, Equatable {
         name: String,
         unitAmount: Int?,
         quantity: Int,
-        discountAmount: Int?,
-        taxAmount: Int?,
+        discountAmount: Int? = nil,
+        taxAmount: Int? = nil,
         isPending: Bool = false
     ) throws {
         if isPending && unitAmount != nil {
             let err = PrimerError.invalidValue(key: "amount",
                                                value: unitAmount,
                                                userInfo: .errorUserInfoDictionary(additionalInfo: [
-                                                "message": "amount should be null for pending items"
+                                                   "message": "amount should be null for pending items"
                                                ]),
                                                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
@@ -62,7 +60,7 @@ internal struct ApplePayOrderItem: Codable, Equatable {
             let err = PrimerError.invalidValue(key: "amount",
                                                value: unitAmount,
                                                userInfo: .errorUserInfoDictionary(additionalInfo: [
-                                                "message": "amount cannot be null for non-pending items"
+                                                   "message": "amount cannot be null for non-pending items"
                                                ]),
                                                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
@@ -76,5 +74,4 @@ internal struct ApplePayOrderItem: Codable, Equatable {
         self.discountAmount = discountAmount
         self.taxAmount = taxAmount
     }
-
 }

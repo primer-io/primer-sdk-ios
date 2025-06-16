@@ -1,5 +1,5 @@
 //
-//  TokenizationPaymentInstrument.swift
+//  TokenizationRequestPaymentInstrument.swift
 //  PrimerSDK
 //
 //  Created by Evangelos on 29/8/22.
@@ -8,24 +8,6 @@
 import Foundation
 
 protocol TokenizationRequestBodyPaymentInstrument: Encodable {}
-
-struct ApplePayPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
-
-    var paymentMethodConfigId: String
-    var sourceConfig: ApplePayPaymentInstrument.SourceConfig
-    var token: ApplePayPaymentInstrument.PaymentResponseToken
-
-    struct SourceConfig: Codable {
-        let source: String
-        let merchantId: String
-    }
-
-    struct PaymentResponseToken: Codable {
-        let paymentMethod: ApplePayPaymentResponsePaymentMethod
-        let transactionIdentifier: String
-        let paymentData: ApplePayPaymentResponseTokenPaymentData
-    }
-}
 
 struct CardPaymentInstrument: TokenizationRequestBodyPaymentInstrument {
     var number: String
