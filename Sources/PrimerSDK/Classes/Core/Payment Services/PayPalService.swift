@@ -5,9 +5,13 @@ import Foundation
 
 internal protocol PayPalServiceProtocol {
     func startOrderSession(_ completion: @escaping (Result<Response.Body.PayPal.CreateOrder, Error>) -> Void)
+    func startOrderSession() async throws -> Response.Body.PayPal.CreateOrder
     func startBillingAgreementSession(_ completion: @escaping (Result<String, Error>) -> Void)
+    func startBillingAgreementSession() async throws -> String
     func confirmBillingAgreement(_ completion: @escaping (Result<Response.Body.PayPal.ConfirmBillingAgreement, Error>) -> Void)
+    func confirmBillingAgreement() async throws -> Response.Body.PayPal.ConfirmBillingAgreement
     func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, Error>) -> Void)
+    func fetchPayPalExternalPayerInfo(orderId: String) async throws -> Response.Body.PayPal.PayerInfo
 }
 
 final class PayPalService: PayPalServiceProtocol {
