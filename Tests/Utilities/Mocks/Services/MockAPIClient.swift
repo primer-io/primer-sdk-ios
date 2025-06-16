@@ -231,6 +231,29 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
+    func createPayPalOrderSession(
+        clientToken: DecodedJWTToken,
+        payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder
+    ) async throws -> Response.Body.PayPal.CreateOrder {
+        guard let result = createPayPalOrderSessionResult,
+              result.0 != nil || result.1 != nil
+        else {
+            XCTAssert(false, "Set 'createPayPalOrderSessionResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        if let errorResult = result.1 {
+            throw errorResult
+        } else if let successResult = result.0 {
+            return successResult
+        } else {
+            XCTAssert(false, "Set 'createPayPalOrderSessionResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+    }
+
     func createPayPalBillingAgreementSession(
         clientToken: DecodedJWTToken,
         payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement,
@@ -252,6 +275,29 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
         }
     }
 
+    func createPayPalBillingAgreementSession(
+        clientToken: DecodedJWTToken,
+        payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement
+    ) async throws -> Response.Body.PayPal.CreateBillingAgreement {
+        guard let result = createPayPalBillingAgreementSessionResult,
+              result.0 != nil || result.1 != nil
+        else {
+            XCTAssert(false, "Set 'createPayPalBillingAgreementSessionResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        if let errorResult = result.1 {
+            throw errorResult
+        } else if let successResult = result.0 {
+            return successResult
+        } else {
+            XCTAssert(false, "Set 'createPayPalBillingAgreementSessionResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+    }
+
     func confirmPayPalBillingAgreement(
         clientToken: DecodedJWTToken,
         payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement,
@@ -270,6 +316,29 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             } else if let successResult = result.0 {
                 completion(.success(successResult))
             }
+        }
+    }
+
+    func confirmPayPalBillingAgreement(
+        clientToken: DecodedJWTToken,
+        payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement
+    ) async throws -> Response.Body.PayPal.ConfirmBillingAgreement {
+        guard let result = confirmPayPalBillingAgreementResult,
+              result.0 != nil || result.1 != nil
+        else {
+            XCTAssert(false, "Set 'confirmPayPalBillingAgreementResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        if let errorResult = result.1 {
+            throw errorResult
+        } else if let successResult = result.0 {
+            return successResult
+        } else {
+            XCTAssert(false, "Set 'confirmPayPalBillingAgreementResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
         }
     }
 
@@ -797,6 +866,29 @@ class MockPrimerAPIClient: PrimerAPIClientProtocol {
             } else if let successResult = result.0 {
                 completion(.success(successResult))
             }
+        }
+    }
+
+    func fetchPayPalExternalPayerInfo(
+        clientToken: DecodedJWTToken,
+        payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo
+    ) async throws -> Response.Body.PayPal.PayerInfo {
+        guard let result = fetchPayPalExternalPayerInfoResult,
+              result.0 != nil || result.1 != nil
+        else {
+            XCTAssert(false, "Set 'fetchPayPalExternalPayerInfoResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
+        }
+
+        try await Task.sleep(nanoseconds: UInt64(mockedNetworkDelay * 1_000_000_000))
+
+        if let errorResult = result.1 {
+            throw errorResult
+        } else if let successResult = result.0 {
+            return successResult
+        } else {
+            XCTAssert(false, "Set 'fetchPayPalExternalPayerInfoResult' on your MockPrimerAPIClient")
+            throw NSError(domain: "MockPrimerAPIClient", code: 1, userInfo: nil)
         }
     }
 

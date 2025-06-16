@@ -228,6 +228,14 @@ class MockPayPalService: PayPalServiceProtocol {
         }
     }
 
+    func startOrderSession() async throws -> Response.Body.PayPal.CreateOrder {
+        if let onStartOrderSession = onStartOrderSession {
+            return onStartOrderSession()
+        } else {
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        }
+    }
+
     // MARK: startBillingAgreementSession
 
     var onStartBillingAgreementSession: (() -> String)?
@@ -237,6 +245,14 @@ class MockPayPalService: PayPalServiceProtocol {
             completion(.success(onStartBillingAgreementSession()))
         } else {
             completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
+        }
+    }
+
+    func startBillingAgreementSession() async throws -> String {
+        if let onStartBillingAgreementSession = onStartBillingAgreementSession {
+            return onStartBillingAgreementSession()
+        } else {
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         }
     }
 
@@ -252,6 +268,14 @@ class MockPayPalService: PayPalServiceProtocol {
         }
     }
 
+    func confirmBillingAgreement() async throws -> Response.Body.PayPal.ConfirmBillingAgreement {
+        if let onConfirmBillingAgreement = onConfirmBillingAgreement {
+            return onConfirmBillingAgreement()
+        } else {
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        }
+    }
+
     // MARK: fetchPayPalExternalPayerInfo
 
     var onFetchPayPalExternalPayerInfo: ((String) -> Response.Body.PayPal.PayerInfo)?
@@ -261,6 +285,14 @@ class MockPayPalService: PayPalServiceProtocol {
             completion(.success(onFetchPayPalExternalPayerInfo(orderId)))
         } else {
             completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
+        }
+    }
+
+    func fetchPayPalExternalPayerInfo(orderId: String) async throws -> Response.Body.PayPal.PayerInfo {
+        if let onFetchPayPalExternalPayerInfo {
+            return onFetchPayPalExternalPayerInfo(orderId)
+        } else {
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         }
     }
 }
