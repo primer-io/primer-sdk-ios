@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  MockPrimerUIManager.swift
 //
 //
 //  Created by Jack Newcombe on 22/05/2024.
@@ -19,10 +19,15 @@ class MockPrimerUIManager: PrimerUIManaging {
 
     // MARK: prepareRootViewController
 
-    var onPrepareViewController: (() -> Promise<Void>)?
+    var onPrepareViewController: (() -> Void)?
 
     func prepareRootViewController() -> PrimerSDK.Promise<Void> {
-        return onPrepareViewController?() ?? Promise { $0.resolve(.success(()))}
+        onPrepareViewController?()
+        return Promise.fulfilled(())
+    }
+
+    func prepareRootViewController() async throws {
+        onPrepareViewController?()
     }
 
     // MARK: dismissOrShowResultScreen

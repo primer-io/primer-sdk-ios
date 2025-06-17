@@ -48,7 +48,6 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
         let mockViewController = MockPrimerRootViewController()
         uiManager.onPrepareViewController = {
             self.uiManager.primerRootViewController = mockViewController
-            return Promise.fulfilled(())
         }
 
         _ = uiManager.prepareRootViewController()
@@ -116,7 +115,6 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
         let mockViewController = MockPrimerRootViewController()
         uiManager.onPrepareViewController = {
             self.uiManager.primerRootViewController = mockViewController
-            return Promise.fulfilled(())
         }
 
         let expectShowPaymentMethod = self.expectation(description: "Showed view controller")
@@ -229,11 +227,11 @@ class MockPayPalService: PayPalServiceProtocol {
     }
 
     func startOrderSession() async throws -> Response.Body.PayPal.CreateOrder {
-        if let onStartOrderSession = onStartOrderSession {
-            return onStartOrderSession()
-        } else {
+        guard let result = onStartOrderSession?() else {
             throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         }
+
+        return result
     }
 
     // MARK: startBillingAgreementSession
@@ -249,11 +247,11 @@ class MockPayPalService: PayPalServiceProtocol {
     }
 
     func startBillingAgreementSession() async throws -> String {
-        if let onStartBillingAgreementSession = onStartBillingAgreementSession {
-            return onStartBillingAgreementSession()
-        } else {
+        guard let result = onStartBillingAgreementSession?() else {
             throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         }
+
+        return result
     }
 
     // MARK: confirmBillingAgreement
@@ -269,11 +267,11 @@ class MockPayPalService: PayPalServiceProtocol {
     }
 
     func confirmBillingAgreement() async throws -> Response.Body.PayPal.ConfirmBillingAgreement {
-        if let onConfirmBillingAgreement = onConfirmBillingAgreement {
-            return onConfirmBillingAgreement()
-        } else {
+        guard let result = onConfirmBillingAgreement?() else {
             throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         }
+
+        return result
     }
 
     // MARK: fetchPayPalExternalPayerInfo
@@ -289,11 +287,11 @@ class MockPayPalService: PayPalServiceProtocol {
     }
 
     func fetchPayPalExternalPayerInfo(orderId: String) async throws -> Response.Body.PayPal.PayerInfo {
-        if let onFetchPayPalExternalPayerInfo {
-            return onFetchPayPalExternalPayerInfo(orderId)
-        } else {
+        guard let result = onFetchPayPalExternalPayerInfo?(orderId) else {
             throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         }
+
+        return result
     }
 }
 
@@ -303,10 +301,18 @@ class MockWebAuthenticationService: WebAuthenticationService {
     var onConnect: ((URL, String) -> URL)?
 
     func connect(paymentMethodType: String, url: URL, scheme: String, _ completion: @escaping (Result<URL, any Error>) -> Void) {
-        if let onConnect = onConnect {
-            completion(.success(onConnect(url, scheme)))
-        } else {
+        guard let onConnect = onConnect else {
             completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
+            return
         }
+
+        completion(.success(onConnect(url, scheme)))
+    }
+
+    func connect(paymentMethodType: String, url: URL, scheme: String) async throws -> URL {
+        guard let onConnect = onConnect else {
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        }
+        return onConnect(url, scheme)
     }
 }
