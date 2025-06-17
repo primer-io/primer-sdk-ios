@@ -327,7 +327,6 @@ final class AnalyticsServiceTests: XCTestCase {
         XCTAssertEqual(storage.loadEvents().count, 0)
     }
 
-
     func testSendFailureDeleteSdkEvents() throws {
         SDKSessionHelper.setUp()
         defer { SDKSessionHelper.tearDown() }
@@ -489,6 +488,31 @@ final class AnalyticsServiceTests: XCTestCase {
         return when(fulfilled: promises)
     }
 
+    func sendEvents(
+        numberOfEvents: Int,
+        eventType: Analytics.Event.EventType = .message,
+        after delay: TimeInterval? = nil
+    ) async throws {
+        let events = (0 ..< numberOfEvents).compactMap { num in
+            switch eventType {
+            case .message:
+                return messageEvent(withMessage: "Test #\(num + 1)")
+            case .sdkEvent:
+                return sdkEvent(name: "Test #\(num + 1)")
+            default:
+                XCTFail()
+                return nil
+            }
+        }
+
+        for event in events {
+            if let delay = delay {
+                try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            }
+            try await service.record(event: event)
+        }
+    }
+    
     func messageEvent(withMessage message: String) -> Analytics.Event {
         Analytics.Event.message(
             message: message,

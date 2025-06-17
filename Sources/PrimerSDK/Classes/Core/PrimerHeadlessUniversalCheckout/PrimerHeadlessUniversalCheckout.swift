@@ -188,7 +188,7 @@ public final class PrimerHeadlessUniversalCheckout: LogReporter {
         )
 
         events = [sdkEvent, connectivityEvent, timingStartEvent]
-        Analytics.Service.record(events: events)
+        try await Analytics.Service.record(events: events)
 
         let settings: PrimerSettingsProtocol = DependencyContainer.resolve()
         settings.uiOptions.isInitScreenEnabled = false

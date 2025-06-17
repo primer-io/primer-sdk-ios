@@ -164,6 +164,11 @@ extension Analytics {
             }
         }
 
+        internal func flush() async throws {
+            let events = storage.loadEvents()
+            try await sync(events: events, isFlush: true)
+        }
+
         @discardableResult
         private func sync(events: [Analytics.Event], isFlush: Bool = false) -> Promise<Void> {
             let syncType = isFlush ? "flush" : "sync"
@@ -285,6 +290,15 @@ extension Analytics {
             }
 
             return when(fulfilled: promises)
+        }
+
+        private func sendSdkLogEvents(events: [Analytics.Event]) async throws {
+            let sdkLogEvents = events.filter { $0.analyticsUrl == nil }
+            let sdkLogEventsBatches = sdkLogEvents.toBatches(of: batchSize)
+
+            for batch in sdkLogEventsBatches {
+                try await sendEvents(batch, to: sdkLogsUrl)
+            }
         }
 
         private func sendSdkAnalyticsEvents(events: [Analytics.Event]) -> Promise<Void> {
