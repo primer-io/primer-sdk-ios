@@ -36,6 +36,9 @@ public final class CompositionRoot: LogReporter {
         logger.debug(message: "🧭 [CompositionRoot] Registering navigation...")
         await registerNavigation(in: container)
 
+        logger.debug(message: "🎯 [CompositionRoot] Registering new API scopes...")
+        await registerNewAPIScopes(in: container)
+
         // Set as global container
         logger.debug(message: "🌍 [CompositionRoot] Setting global container...")
         await DIContainer.setContainer(container)
@@ -364,5 +367,29 @@ extension CompositionRoot {
         }
 
         logger.info(message: "✅ [CompositionRoot] Navigation registration completed")
+    }
+
+    /// Register new API scope implementations for the refactored public API
+    @available(iOS 15.0, *)
+    private static func registerNewAPIScopes(in container: Container) async {
+        logger.info(message: "🎯 [CompositionRoot] Starting new API scopes registration")
+
+        // Register scope implementations for the new Android-matching API
+        
+        // Register default scope implementations (temporary placeholders)
+        _ = try? await container.register(DefaultPrimerCheckoutScope.self)
+            .asTransient()
+            .with { _ in DefaultPrimerCheckoutScope() }
+
+        _ = try? await container.register(DefaultCardFormScope.self)
+            .asTransient()
+            .with { _ in DefaultCardFormScope() }
+
+        _ = try? await container.register(DefaultPaymentMethodSelectionScope.self)
+            .asTransient()
+            .with { _ in DefaultPaymentMethodSelectionScope() }
+
+        logger.info(message: "✅ [CompositionRoot] New API scopes registration completed")
+        logger.debug(message: "📝 [CompositionRoot] Note: Currently using default implementations - will be replaced with proper ViewModels in later phases")
     }
 }
