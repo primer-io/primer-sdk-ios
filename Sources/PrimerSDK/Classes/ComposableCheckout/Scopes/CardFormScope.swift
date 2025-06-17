@@ -46,31 +46,31 @@ public extension CardFormScope {
     /// Submit button component
     @ViewBuilder
     func PrimerSubmitButton(text: String = "Submit") -> some View {
-        SubmitButtonView(scope: self, text: text)
+        SubmitButtonWrapper(scope: self, text: text)
     }
     
     /// Card number input component
     @ViewBuilder
     func PrimerCardNumberInput() -> some View {
-        CardNumberInputView(scope: self)
+        CardNumberInputWrapper(scope: self)
     }
     
     /// CVV input component
     @ViewBuilder
     func PrimerCvvInput() -> some View {
-        CvvInputView(scope: self)
+        CVVInputWrapper(scope: self)
     }
     
     /// Expiry date input component
     @ViewBuilder
     func PrimerExpiryDateInput() -> some View {
-        ExpiryDateInputView(scope: self)
+        ExpiryDateInputWrapper(scope: self)
     }
     
     /// Cardholder name input component
     @ViewBuilder
     func PrimerCardholderNameInput() -> some View {
-        CardholderNameInputView(scope: self)
+        CardholderNameInputWrapper(scope: self)
     }
     
     /// Postal code input component
@@ -142,7 +142,16 @@ public extension CardFormScope {
     /// Composite card details form (card number, cvv, expiry, cardholder name)
     @ViewBuilder
     func PrimerCardDetails() -> some View {
-        CardDetailsFormView(scope: self)
+        VStack(spacing: 16) {
+            PrimerCardNumberInput()
+            
+            HStack(spacing: 12) {
+                PrimerExpiryDateInput()
+                PrimerCvvInput()
+            }
+            
+            PrimerCardholderNameInput()
+        }
     }
     
     /// Composite billing address form (all address fields)
