@@ -40,26 +40,26 @@ public struct Primer: LogReporter {
     }
     
     /// ComposableCheckout that matches Android's API structure.
-    /// Each screen parameter receives the appropriate scope as a parameter.
+    /// Provides customizable screen implementations using ViewBuilder closures.
     ///
     /// - Parameters:
-    ///   - container: Custom container for the entire checkout flow
-    ///   - splashScreen: Custom splash screen (receives PrimerCheckoutScope)
-    ///   - loadingScreen: Custom loading screen (receives PrimerCheckoutScope)
-    ///   - paymentSelectionScreen: Custom payment selection screen (receives PaymentMethodSelectionScope)
-    ///   - cardFormScreen: Custom card form screen (receives CardFormScope)
-    ///   - successScreen: Custom success screen (receives PrimerCheckoutScope)
-    ///   - errorScreen: Custom error screen (receives PrimerCheckoutScope and error message)
+    ///   - container: Custom container wrapper for the entire checkout flow
+    ///   - splashScreen: Custom splash screen implementation
+    ///   - loadingScreen: Custom loading screen implementation
+    ///   - paymentSelectionScreen: Custom payment selection screen implementation
+    ///   - cardFormScreen: Custom card form screen implementation
+    ///   - successScreen: Custom success screen implementation
+    ///   - errorScreen: Custom error screen implementation (receives error message)
     /// - Returns: SwiftUI view for the checkout flow
     @ViewBuilder
-    public static func ComposableCheckout<Container: View>(
-        container: ((AnyView) -> Container)? = nil,
-        splashScreen: ((PrimerCheckoutScope) -> AnyView)? = nil,
-        loadingScreen: ((PrimerCheckoutScope) -> AnyView)? = nil,
-        paymentSelectionScreen: ((PaymentMethodSelectionScope) -> AnyView)? = nil,
-        cardFormScreen: ((CardFormScope) -> AnyView)? = nil,
-        successScreen: ((PrimerCheckoutScope) -> AnyView)? = nil,
-        errorScreen: ((PrimerCheckoutScope, String) -> AnyView)? = nil
+    public static func ComposableCheckout(
+        container: (@ViewBuilder (_ content: @escaping () -> any View) -> any View)? = nil,
+        splashScreen: (@ViewBuilder () -> any View)? = nil,
+        loadingScreen: (@ViewBuilder () -> any View)? = nil,
+        paymentSelectionScreen: (@ViewBuilder () -> any View)? = nil,
+        cardFormScreen: (@ViewBuilder () -> any View)? = nil,
+        successScreen: (@ViewBuilder () -> any View)? = nil,
+        errorScreen: (@ViewBuilder (_ cause: String) -> any View)? = nil
     ) -> some View {
         ComposableCheckoutView(
             container: container,
