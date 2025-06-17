@@ -82,7 +82,7 @@ internal struct ComposableCheckoutView<Container: View>: View, LogReporter {
     private var splashScreenView: some View {
         if let splashScreen = splashScreen {
             AsyncScopeView { container in
-                let scope = try await container.resolve(DefaultPrimerCheckoutScope.self)
+                let scope = try await container.resolve(CheckoutViewModel.self)
                 return splashScreen(scope)
             }
         } else {
@@ -94,7 +94,7 @@ internal struct ComposableCheckoutView<Container: View>: View, LogReporter {
     private var loadingScreenView: some View {
         if let loadingScreen = loadingScreen {
             AsyncScopeView { container in
-                let scope = try await container.resolve(DefaultPrimerCheckoutScope.self)
+                let scope = try await container.resolve(CheckoutViewModel.self)
                 return loadingScreen(scope)
             }
         } else {
@@ -106,7 +106,7 @@ internal struct ComposableCheckoutView<Container: View>: View, LogReporter {
     private var paymentSelectionScreenView: some View {
         if let paymentSelectionScreen = paymentSelectionScreen {
             AsyncScopeView { container in
-                let scope = try await container.resolve(DefaultPaymentMethodSelectionScope.self)
+                let scope = try await container.resolve(PaymentMethodSelectionViewModel.self)
                 return paymentSelectionScreen(scope)
             }
         } else {
@@ -118,7 +118,7 @@ internal struct ComposableCheckoutView<Container: View>: View, LogReporter {
     private var cardFormScreenView: some View {
         if let cardFormScreen = cardFormScreen {
             AsyncScopeView { container in
-                let scope = try await container.resolve(DefaultCardFormScope.self)
+                let scope = try await container.resolve(CardFormViewModel.self)
                 return cardFormScreen(scope)
             }
         } else {
@@ -130,7 +130,7 @@ internal struct ComposableCheckoutView<Container: View>: View, LogReporter {
     private var successScreenView: some View {
         if let successScreen = successScreen {
             AsyncScopeView { container in
-                let scope = try await container.resolve(DefaultPrimerCheckoutScope.self)
+                let scope = try await container.resolve(CheckoutViewModel.self)
                 return successScreen(scope)
             }
         } else {
@@ -142,7 +142,7 @@ internal struct ComposableCheckoutView<Container: View>: View, LogReporter {
     private var errorScreenView: some View {
         if let errorScreen = errorScreen {
             AsyncScopeView { container in
-                let scope = try await container.resolve(DefaultPrimerCheckoutScope.self)
+                let scope = try await container.resolve(CheckoutViewModel.self)
                 return errorScreen(scope, errorMessage)
             }
         } else {

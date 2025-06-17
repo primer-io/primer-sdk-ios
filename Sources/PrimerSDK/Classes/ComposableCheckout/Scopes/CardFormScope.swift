@@ -152,74 +152,7 @@ public extension CardFormScope {
     }
 }
 
-// MARK: - State Model
-
-/// State model for card form (matches Android exactly)
-public struct CardFormState {
-    public let cardFields: [PrimerInputElementType]
-    public let billingFields: [PrimerInputElementType]
-    public let fieldErrors: [PrimerInputValidationError]
-    public let inputFields: [PrimerInputElementType: String]
-    public let isLoading: Bool
-    public let isSubmitEnabled: Bool
-    
-    public static let initial = CardFormState(
-        cardFields: [],
-        billingFields: [],
-        fieldErrors: [],
-        inputFields: [:],
-        isLoading: false,
-        isSubmitEnabled: false
-    )
-    
-    public init(
-        cardFields: [PrimerInputElementType],
-        billingFields: [PrimerInputElementType],
-        fieldErrors: [PrimerInputValidationError],
-        inputFields: [PrimerInputElementType: String],
-        isLoading: Bool,
-        isSubmitEnabled: Bool
-    ) {
-        self.cardFields = cardFields
-        self.billingFields = billingFields
-        self.fieldErrors = fieldErrors
-        self.inputFields = inputFields
-        self.isLoading = isLoading
-        self.isSubmitEnabled = isSubmitEnabled
-    }
-}
-
-// MARK: - Supporting Models
-
-/// Input element types (matches Android)
-public enum PrimerInputElementType: CaseIterable {
-    case cardNumber
-    case cvv
-    case expiryDate
-    case cardholderName
-    case postalCode
-    case countryCode
-    case city
-    case state
-    case addressLine1
-    case addressLine2
-    case phoneNumber
-    case firstName
-    case lastName
-    case retailOutlet
-    case otpCode
-}
-
-/// Input validation error (matches Android)
-public struct PrimerInputValidationError {
-    public let elementType: PrimerInputElementType
-    public let errorMessage: String
-    
-    public init(elementType: PrimerInputElementType, errorMessage: String) {
-        self.elementType = elementType
-        self.errorMessage = errorMessage
-    }
-}
+// Note: State models are now defined in Models/States/ directory
 
 // MARK: - Default Implementation (Temporary)
 

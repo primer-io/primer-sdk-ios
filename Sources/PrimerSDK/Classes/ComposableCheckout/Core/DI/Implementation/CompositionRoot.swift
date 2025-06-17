@@ -98,6 +98,28 @@ public final class CompositionRoot: LogReporter {
             logger.error(message: "❌ [CompositionRoot] CardViewModel resolution failed: \(error.localizedDescription)")
         }
 
+        // Test new API ViewModels
+        do {
+            _ = try await container.resolve(CheckoutViewModel.self)
+            logger.debug(message: "✅ [CompositionRoot] CheckoutViewModel resolution successful")
+        } catch {
+            logger.error(message: "❌ [CompositionRoot] CheckoutViewModel resolution failed: \(error.localizedDescription)")
+        }
+
+        do {
+            _ = try await container.resolve(CardFormViewModel.self)
+            logger.debug(message: "✅ [CompositionRoot] CardFormViewModel resolution successful")
+        } catch {
+            logger.error(message: "❌ [CompositionRoot] CardFormViewModel resolution failed: \(error.localizedDescription)")
+        }
+
+        do {
+            _ = try await container.resolve(PaymentMethodSelectionViewModel.self)
+            logger.debug(message: "✅ [CompositionRoot] PaymentMethodSelectionViewModel resolution successful")
+        } catch {
+            logger.error(message: "❌ [CompositionRoot] PaymentMethodSelectionViewModel resolution failed: \(error.localizedDescription)")
+        }
+
         logger.debug(message: "🎯 [CompositionRoot] Health checks completed")
     }
     #endif
@@ -374,22 +396,53 @@ extension CompositionRoot {
     private static func registerNewAPIScopes(in container: Container) async {
         logger.info(message: "🎯 [CompositionRoot] Starting new API scopes registration")
 
-        // Register scope implementations for the new Android-matching API
+        // Register the new ViewModel implementations that implement the scope protocols
         
-        // Register default scope implementations (temporary placeholders)
-        _ = try? await container.register(DefaultPrimerCheckoutScope.self)
+        // CheckoutViewModel - implements PrimerCheckoutScope
+        _ = try? await container.register(CheckoutViewModel.self)
             .asTransient()
-            .with { _ in DefaultPrimerCheckoutScope() }
+            .with { container in
+                try await CheckoutViewModel(container: container)
+            }
+        
+        // CardFormViewModel - implements CardFormScope
+        _ = try? await container.register(CardFormViewModel.self)
+            .asTransient()
+            .with { resolver in
+                let validationService = try await resolver.resolve(ValidationService.self)
+                return try await CardFormViewModel(
+                    container: container,
+                    validationService: validationService
+                )
+            }
+            
+        // PaymentMethodSelectionViewModel - implements PaymentMethodSelectionScope
+        _ = try? await container.register(PaymentMethodSelectionViewModel.self)
+            .asTransient()
+            .with { container in
+                try await PaymentMethodSelectionViewModel(container: container)
+            }
 
-        _ = try? await container.register(DefaultCardFormScope.self)
+        // Register protocol implementations using the new ViewModels
+        _ = try? await container.register((any PrimerCheckoutScope).self)
             .asTransient()
-            .with { _ in DefaultCardFormScope() }
-
-        _ = try? await container.register(DefaultPaymentMethodSelectionScope.self)
+            .with { resolver in
+                try await resolver.resolve(CheckoutViewModel.self)
+            }
+            
+        _ = try? await container.register((any CardFormScope).self)
             .asTransient()
-            .with { _ in DefaultPaymentMethodSelectionScope() }
+            .with { resolver in
+                try await resolver.resolve(CardFormViewModel.self)
+            }
+            
+        _ = try? await container.register((any PaymentMethodSelectionScope).self)
+            .asTransient()
+            .with { resolver in
+                try await resolver.resolve(PaymentMethodSelectionViewModel.self)
+            }
 
         logger.info(message: "✅ [CompositionRoot] New API scopes registration completed")
-        logger.debug(message: "📝 [CompositionRoot] Note: Currently using default implementations - will be replaced with proper ViewModels in later phases")
+        logger.debug(message: "📝 [CompositionRoot] Using proper ViewModel implementations that implement scope protocols")
     }
 }
