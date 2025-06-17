@@ -178,9 +178,11 @@ internal struct ComposableCheckoutView<Container: View>: View, LogReporter {
             // Ensure configuration exists
             guard let config = Primer.configuration else {
                 logger.error(message: "❌ [ComposableCheckoutView] No configuration found - call Primer.configure() first")
-                errorMessage = "Configuration missing. Please call Primer.configure() first."
-                currentScreen = .error
-                isContainerReady = true
+                await MainActor.run {
+                    errorMessage = "Configuration missing. Please call Primer.configure() first."
+                    currentScreen = .error
+                    isContainerReady = true
+                }
                 return
             }
             

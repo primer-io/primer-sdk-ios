@@ -148,14 +148,9 @@ public class CardFormViewModel: CardFormScope, LogReporter {
     private func setupInitialState() async {
         logger.debug(message: "⚙️ [CardFormViewModel] Setting up initial state")
         
-        let cardFields: [PrimerInputElementType] = [.cardNumber, .cvv, .expiryDate, .cardholderName]
-        let billingFields: [PrimerInputElementType] = [.postalCode, .countryCode, .city, .state, .addressLine1, .addressLine2]
-        
         _state = CardFormState(
-            cardFields: cardFields,
-            billingFields: billingFields,
-            fieldErrors: [],
             inputFields: [:],
+            fieldErrors: [],
             isLoading: false,
             isSubmitEnabled: false
         )
@@ -166,10 +161,8 @@ public class CardFormViewModel: CardFormScope, LogReporter {
         updatedFields[elementType] = value
         
         _state = CardFormState(
-            cardFields: _state.cardFields,
-            billingFields: _state.billingFields,
-            fieldErrors: _state.fieldErrors,
             inputFields: updatedFields,
+            fieldErrors: _state.fieldErrors,
             isLoading: _state.isLoading,
             isSubmitEnabled: calculateSubmitEnabled(updatedFields)
         )
@@ -183,10 +176,8 @@ public class CardFormViewModel: CardFormScope, LogReporter {
     
     private func updateState(isLoading: Bool? = nil, isSubmitEnabled: Bool? = nil) {
         _state = CardFormState(
-            cardFields: _state.cardFields,
-            billingFields: _state.billingFields,
-            fieldErrors: _state.fieldErrors,
             inputFields: _state.inputFields,
+            fieldErrors: _state.fieldErrors,
             isLoading: isLoading ?? _state.isLoading,
             isSubmitEnabled: isSubmitEnabled ?? _state.isSubmitEnabled
         )

@@ -26,8 +26,8 @@ public enum PrimerInputElementType: String, CaseIterable, Hashable {
     case otpCode = "OTP_CODE"
 }
 
-/// Input validation error that matches Android's PrimerInputValidationError
-public struct PrimerInputValidationError: Equatable, Identifiable {
+/// Input validation error that matches Android's PrimerInputValidationError exactly
+public struct PrimerInputValidationError: Equatable, Identifiable, Hashable {
     /// Unique identifier for the error
     public var id: String { "\(elementType.rawValue)_\(errorMessage.hashValue)" }
     
@@ -49,5 +49,11 @@ public struct PrimerInputValidationError: Equatable, Identifiable {
     /// Equatable implementation
     public static func == (lhs: PrimerInputValidationError, rhs: PrimerInputValidationError) -> Bool {
         return lhs.elementType == rhs.elementType && lhs.errorMessage == rhs.errorMessage
+    }
+    
+    /// Hashable implementation
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(elementType)
+        hasher.combine(errorMessage)
     }
 }

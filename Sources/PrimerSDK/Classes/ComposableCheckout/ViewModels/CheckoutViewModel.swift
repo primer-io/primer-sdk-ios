@@ -53,7 +53,7 @@ public class CheckoutViewModel: PrimerCheckoutScope, LogReporter {
             
         } catch {
             logger.error(message: "❌ [CheckoutViewModel] Failed to configure: \(error)")
-            _state = .error(error)
+            _state = .error(error.localizedDescription)
         }
     }
     

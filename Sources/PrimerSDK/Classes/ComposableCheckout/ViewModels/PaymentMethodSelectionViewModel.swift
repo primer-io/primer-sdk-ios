@@ -74,7 +74,7 @@ public class PaymentMethodSelectionViewModel: PaymentMethodSelectionScope, LogRe
             
         } catch {
             logger.error(message: "❌ [PaymentMethodSelectionViewModel] Failed to load payment methods: \(error)")
-            _state = .error(error)
+            _state = .error(error.localizedDescription)
         }
     }
     
