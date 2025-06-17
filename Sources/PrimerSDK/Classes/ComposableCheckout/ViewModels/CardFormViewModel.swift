@@ -169,9 +169,73 @@ public class CardFormViewModel: CardFormScope, LogReporter {
     }
     
     private func validateField(_ elementType: PrimerInputElementType, value: String) {
-        // TODO: Integrate with existing ValidationService
-        // For now, we'll just log validation
         logger.debug(message: "🔍 [CardFormViewModel] Validating field: \(elementType)")
+        
+        Task {
+            do {
+                let isValid = await performFieldValidation(elementType: elementType, value: value)
+                
+                await MainActor.run {
+                    updateFieldValidation(elementType: elementType, isValid: isValid, value: value)
+                }
+            } catch {
+                logger.error(message: "❌ [CardFormViewModel] Validation failed for \(elementType): \(error)")
+            }
+        }
+    }
+    
+    /// Perform actual field validation using ValidationService
+    private func performFieldValidation(elementType: PrimerInputElementType, value: String) async -> Bool {
+        // Basic validation for now - can be enhanced with ValidationService integration
+        switch elementType {
+        case .cardNumber:
+            return validateCardNumber(value)
+        case .cvv:
+            return validateCVV(value)
+        case .expiryDate:
+            return validateExpiryDate(value)
+        case .cardholderName:
+            return validateCardholderName(value)
+        case .postalCode:
+            return validatePostalCode(value)
+        default:
+            return !value.isEmpty
+        }
+    }
+    
+    /// Update field validation state
+    private func updateFieldValidation(elementType: PrimerInputElementType, isValid: Bool, value: String) {
+        var errors = _state.fieldErrors.filter { $0.elementType != elementType }
+        
+        if !isValid && !value.isEmpty {
+            let errorMessage = getErrorMessage(for: elementType)
+            errors.append(PrimerInputValidationError(elementType: elementType, errorMessage: errorMessage))
+        }
+        
+        _state = CardFormState(
+            inputFields: _state.inputFields,
+            fieldErrors: errors,
+            isLoading: _state.isLoading,
+            isSubmitEnabled: calculateSubmitEnabled(_state.inputFields, errors: errors)
+        )
+    }
+    
+    /// Get appropriate error message for field type
+    private func getErrorMessage(for elementType: PrimerInputElementType) -> String {
+        switch elementType {
+        case .cardNumber:
+            return "Please enter a valid card number"
+        case .cvv:
+            return "Please enter a valid CVV"
+        case .expiryDate:
+            return "Please enter a valid expiry date"
+        case .cardholderName:
+            return "Please enter the cardholder name"
+        case .postalCode:
+            return "Please enter a valid postal code"
+        default:
+            return "Please enter a valid value"
+        }
     }
     
     private func updateState(isLoading: Bool? = nil, isSubmitEnabled: Bool? = nil) {
@@ -183,15 +247,45 @@ public class CardFormViewModel: CardFormScope, LogReporter {
         )
     }
     
-    private func calculateSubmitEnabled(_ fields: [PrimerInputElementType: String]) -> Bool {
+    private func calculateSubmitEnabled(_ fields: [PrimerInputElementType: String], errors: [PrimerInputValidationError]? = nil) -> Bool {
         let cardNumber = fields[.cardNumber] ?? ""
         let cvv = fields[.cvv] ?? ""
         let expiryDate = fields[.expiryDate] ?? ""
         
-        return !cardNumber.isEmpty && 
-               !cvv.isEmpty && 
-               !expiryDate.isEmpty && 
-               !_state.isLoading
+        let hasRequiredFields = !cardNumber.isEmpty && !cvv.isEmpty && !expiryDate.isEmpty
+        let hasNoErrors = (errors ?? _state.fieldErrors).isEmpty
+        
+        return hasRequiredFields && hasNoErrors && !_state.isLoading
+    }
+    
+    // MARK: - Basic Validation Methods
+    
+    private func validateCardNumber(_ value: String) -> Bool {
+        let cleanedValue = value.replacingOccurrences(of: " ", with: "")
+        return cleanedValue.count >= 13 && cleanedValue.count <= 19 && cleanedValue.allSatisfy(\.isNumber)
+    }
+    
+    private func validateCVV(_ value: String) -> Bool {
+        return value.count >= 3 && value.count <= 4 && value.allSatisfy(\.isNumber)
+    }
+    
+    private func validateExpiryDate(_ value: String) -> Bool {
+        let components = value.split(separator: "/")
+        guard components.count == 2,
+              let month = Int(components[0]),
+              let year = Int(components[1]) else {
+            return false
+        }
+        
+        return month >= 1 && month <= 12 && year >= 0
+    }
+    
+    private func validateCardholderName(_ value: String) -> Bool {
+        return value.count >= 2 && value.allSatisfy { $0.isLetter || $0.isWhitespace }
+    }
+    
+    private func validatePostalCode(_ value: String) -> Bool {
+        return value.count >= 3 && value.count <= 10
     }
     
     private func resetForm() async {

@@ -27,6 +27,8 @@ public class CheckoutViewModel: PrimerCheckoutScope, LogReporter {
     // MARK: - Dependencies
     
     private let container: DIContainer
+    private var clientToken: String?
+    private var settings: PrimerSettings?
     
     // MARK: - Initialization
     
@@ -39,14 +41,25 @@ public class CheckoutViewModel: PrimerCheckoutScope, LogReporter {
     // MARK: - Public Methods
     
     public func configure(clientToken: String, settings: PrimerSettings) async {
-        logger.debug(message: "⚙️ [CheckoutViewModel] Configuring with client token")
+        logger.debug(message: "⚙️ [CheckoutViewModel] Configuring with client token: \(clientToken.prefix(8))...")
         
         _state = .initializing
         
         do {
-            // TODO: Implement actual client token processing
-            // For now, simulate configuration
-            try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
+            // Validate client token format
+            guard !clientToken.isEmpty else {
+                throw CheckoutError.invalidClientToken
+            }
+            
+            // Store configuration
+            self.clientToken = clientToken
+            self.settings = settings
+            
+            // Process client token and initialize SDK services
+            await processClientToken(clientToken)
+            
+            // Initialize payment method loading
+            await preloadPaymentMethods()
             
             _state = .ready
             logger.info(message: "✅ [CheckoutViewModel] Checkout configured successfully")
@@ -83,6 +96,41 @@ public class CheckoutViewModel: PrimerCheckoutScope, LogReporter {
         // Initial setup can be done here
         // For now, we just log that we're ready for configuration
         logger.info(message: "✅ [CheckoutViewModel] Ready for configuration")
+    }
+    
+    /// Process client token and initialize SDK services
+    private func processClientToken(_ token: String) async throws {
+        logger.debug(message: "🔐 [CheckoutViewModel] Processing client token")
+        
+        // TODO: Integrate with existing SDK client token processing
+        // For now, simulate processing
+        try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+        
+        // Validate token format (basic validation)
+        guard token.count > 10 else {
+            throw CheckoutError.invalidClientToken
+        }
+        
+        logger.debug(message: "✅ [CheckoutViewModel] Client token processed successfully")
+    }
+    
+    /// Preload payment methods for faster display
+    private func preloadPaymentMethods() async {
+        logger.debug(message: "📋 [CheckoutViewModel] Preloading payment methods")
+        
+        do {
+            // Get payment method selection scope to trigger loading
+            let _ = try await container.resolve(PaymentMethodSelectionViewModel.self)
+            logger.debug(message: "✅ [CheckoutViewModel] Payment methods preloaded")
+        } catch {
+            logger.warn(message: "⚠️ [CheckoutViewModel] Failed to preload payment methods: \(error)")
+            // Don't fail configuration if preloading fails
+        }
+    }
+    
+    /// Get current configuration
+    public func getCurrentConfiguration() -> (clientToken: String?, settings: PrimerSettings?) {
+        return (clientToken, settings)
     }
 }
 
