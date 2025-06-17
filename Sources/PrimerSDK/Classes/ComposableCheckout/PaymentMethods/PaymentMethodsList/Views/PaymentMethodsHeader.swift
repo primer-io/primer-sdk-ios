@@ -16,9 +16,9 @@ struct PaymentMethodsHeader: View {
                 ))
                 .foregroundColor(designTokens?.primerColorTextPrimary ?? .primary)
                 .accessibility(identifier: PaymentMethodsListAccessibility.headerAmountIdentifier)
-            
+
             Spacer()
-            
+
             // Right side: Cancel button aligned to top
             Button("Cancel", action: onCancel)
                 .font(.system(

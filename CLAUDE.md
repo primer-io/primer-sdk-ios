@@ -97,10 +97,12 @@ The SDK has three main integration approaches:
    - API-driven, no UI
    - Delegate pattern: `PrimerHeadlessUniversalCheckoutDelegate`
 
-3. **ComposableCheckout (New)**: `Sources/PrimerSDK/Classes/ComposableCheckout/`
-   - Entry point: `PrimerCheckout.swift` (SwiftUI)
-   - Component-based architecture
-   - Uses modern DI container system
+3. **ComposableCheckout (Modern)**: `Sources/PrimerSDK/Classes/ComposableCheckout/`
+   - Entry point: `PrimerCheckout.swift` (SwiftUI view)
+   - Component-based architecture with scoped interfaces
+   - Uses modern async/await DI container system
+   - Implements scope-based API design pattern similar to Android Compose
+   - iOS 15+ required for modern Swift concurrency features
 
 ### Dependency Injection
 
@@ -112,8 +114,11 @@ The SDK uses two DI systems:
 
 2. **Modern DI**: `DIContainer` in `ComposableCheckout/Core/DI/`
    - Used by ComposableCheckout
-   - Async/await based with health checks
-   - SwiftUI environment integration
+   - Actor-based thread-safe design
+   - Async/await based with health checks and diagnostics
+   - SwiftUI environment integration via `@Environment(\.diContainer)`
+   - Three retention policies: transient, singleton, weak
+   - Circular dependency detection with O(1) performance
 
 ### Key Components
 
@@ -125,11 +130,18 @@ The SDK uses two DI systems:
 
 ### Payment Method Architecture
 
-Payment methods follow a consistent pattern:
+**Legacy Payment Methods** (Drop-in/Headless):
 - Tokenization components handle the payment flow
 - View models manage UI state
 - Managers coordinate between components
 - Each payment method can have headless and/or UI implementations
+
+**ComposableCheckout Payment Methods**:
+- **PaymentMethodProtocol**: Common interface with scope-based architecture
+- **Scope Pattern**: Each payment method exposes a scope (e.g., `CardPaymentMethodScope`) for state and behavior
+- **Component-Based**: SwiftUI components with `@ViewBuilder` customization
+- **Validation System**: Comprehensive input validation with `ValidationService` and field-specific validators
+- **DI Integration**: Payment methods resolved from modern DI container
 
 ### Testing
 
@@ -137,9 +149,30 @@ Payment methods follow a consistent pattern:
 - Tests use mocks extensively (see `Tests/Utilities/Mocks/`)
 - Test utilities include JWT factory, SDK session helpers
 
+### ComposableCheckout Public API
+
+The ComposableCheckout module provides a modern, scope-based API similar to Android's Compose pattern:
+
+**Main Entry Point:**
+```swift
+PrimerCheckout(clientToken: String)
+```
+
+**Scope-Based Customization:**
+- `PrimerCheckoutScope`: Access to payment methods and selection state
+- Payment method specific scopes (e.g., `CardFormScope` for card payments)
+- Each scope provides both default UI components and customization hooks
+
+**Key Design Patterns:**
+- **Scope Functions**: Extension functions on scopes for UI components
+- **StateFlow Equivalent**: AsyncStream for reactive state management
+- **Modifier Pattern**: SwiftUI modifiers for styling and behavior
+- **Environment Integration**: DI container and design tokens via SwiftUI environment
+
 ### Important Notes
 
 - Always check for existing payment method implementations before creating new ones
 - The SDK supports multiple Package.swift variants for different feature sets (3DS, Klarna, NolPay, Stripe)
 - Design tokens are managed separately in the `DesignTokens/` directory
-- The current branch (`bn/feature/stepByStepDI`) appears to be working on DI improvements
+- ComposableCheckout is under active development - current focus on scope-based API alignment with Android
+- When adding ComposableCheckout files, run `pod install` to update project references

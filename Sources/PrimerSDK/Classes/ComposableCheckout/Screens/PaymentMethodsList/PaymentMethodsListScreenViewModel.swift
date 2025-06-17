@@ -52,7 +52,7 @@ final class PaymentMethodsListScreenViewModel: ObservableObject {
             errorMessage = "Could not find matching payment method"
         }
     }
-    
+
     func handleCancelAction() {
         // Dismiss the entire Primer UI and notify the delegate
         PrimerUIManager.dismissPrimerUI(animated: true) {

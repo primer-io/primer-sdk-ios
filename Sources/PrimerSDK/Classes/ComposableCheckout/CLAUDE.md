@@ -26,10 +26,10 @@ ComposableCheckout/
 ### Key Components
 
 #### 1. PrimerCheckout (Entry Point)
-- **PrimerCheckout.swift**: Main SwiftUI view for the checkout experience
-- **PrimerCheckoutSheet.swift**: Bottom sheet presentation
-- **PrimerCheckoutViewModel.swift**: Main view model managing checkout state
-- **PrimerCheckoutScope.swift**: Dependency scope for checkout lifecycle
+- **PrimerCheckout.swift**: Main SwiftUI view with async container setup and error handling
+- **PrimerCheckoutSheet.swift**: Bottom sheet presentation with navigation coordination
+- **PrimerCheckoutViewModel.swift**: Central coordinator for checkout state and client token processing
+- **PrimerCheckoutScope.swift**: Protocol interface for payment method access and selection
 
 #### 2. Dependency Injection System
 The module uses a custom async-first DI container:
@@ -40,17 +40,18 @@ The module uses a custom async-first DI container:
 - **SwiftUI integration**: Environment-based injection
 
 #### 3. Payment Methods
-Each payment method follows a consistent pattern:
-- **PaymentMethodProtocol**: Common interface for all payment methods
-- **Scope**: Dependency container for method-specific dependencies
-- **ViewModel**: Business logic and state management
-- **View**: SwiftUI presentation
-- **Validators**: Input validation rules
+Each payment method follows a scope-based pattern:
+- **PaymentMethodProtocol**: Common interface with `ScopeType` associated type
+- **Scope Protocol**: Payment method specific scope (e.g., `CardPaymentMethodScope`)
+- **View Model**: Implements scope protocol, manages state and business logic
+- **View**: SwiftUI presentation with `@ViewBuilder` customization support
+- **Validators**: Input validation with comprehensive rule system
 
 Currently implemented:
-- Card payments (we need to start using DI framework where needed)
-- Apple Pay (todo)
-- PayPal (todo)
+- **Card payments**: Complete implementation with CardPaymentMethod, CardViewModel, CardPaymentView
+- **Payment Methods List**: PaymentMethodsListView with selection functionality
+- **Apple Pay**: Structure exists, needs implementation
+- **PayPal**: Structure exists, needs implementation
 
 #### 4. Validation System
 Comprehensive input validation framework:
@@ -59,16 +60,62 @@ Comprehensive input validation framework:
 - **FormValidator**: Coordinates multiple field validations
 - **Field-specific validators**: CVV, card number, expiry, etc.
 
+## Public API Design
+
+### Scope-Based Architecture
+
+The ComposableCheckout follows a scope-based pattern similar to Android Compose:
+
+#### PrimerCheckoutScope
+```swift
+public protocol PrimerCheckoutScope {
+    /// AsyncStream of available payment methods
+    func paymentMethods() -> AsyncStream<[any PaymentMethodProtocol]>
+    
+    /// AsyncStream of currently selected payment method
+    func selectedPaymentMethod() -> AsyncStream<(any PaymentMethodProtocol)?>
+    
+    /// Updates the selected payment method
+    func selectPaymentMethod(_ method: (any PaymentMethodProtocol)?) async
+}
+```
+
+#### Payment Method Scope Pattern
+```swift
+public protocol PaymentMethodProtocol: Identifiable {
+    associatedtype ScopeType: PrimerPaymentMethodScope
+    
+    var name: String? { get }
+    var type: PaymentMethodType { get }
+    var scope: ScopeType { get }
+    
+    /// Custom content with scope access
+    func content<V: View>(@ViewBuilder content: @escaping (ScopeType) -> V) -> AnyView
+    
+    /// Default UI implementation
+    func defaultContent() -> AnyView
+}
+```
+
 ## Usage Patterns
+
+### Creating Custom Checkout Experience
+
+```swift
+PrimerCheckout(clientToken: "your_token") { scope in
+    // Access payment methods and selection state
+    // Build custom UI using scope
+}
+```
 
 ### Adding a New Payment Method
 
-1. Create the payment method structure:
+1. Create the payment method structure following Card implementation pattern:
 ```
 PaymentMethods/NewMethod/
 ├── NewMethodPaymentMethod.swift      # PaymentMethodProtocol implementation
-├── NewMethodScope.swift             # DependencyScope implementation
-├── NewMethodViewModel.swift         # Business logic
+├── NewMethodScope.swift             # Method-specific scope protocol
+├── NewMethodViewModel.swift         # Scope implementation + business logic
 ├── NewMethodView.swift             # SwiftUI view
 └── Validation/                     # If needed
     └── NewMethodValidator.swift
@@ -76,29 +123,46 @@ PaymentMethods/NewMethod/
 
 2. Implement PaymentMethodProtocol:
 ```swift
-@MainActor
-final class NewMethodPaymentMethod: PaymentMethodProtocol {
-    let id = "new_method"
-    let name = "New Method"
-    let icon = "newmethod.icon"
+@available(iOS 15.0, *)
+class NewMethodPaymentMethod: PaymentMethodProtocol {
+    typealias ScopeType = NewMethodViewModel
     
-    func process() async throws -> PaymentResult {
-        // Implementation
+    var id: String = UUID().uuidString
+    var name: String? = "New Method"
+    var type: PaymentMethodType = .newMethod
+    
+    @MainActor
+    private let _scope: NewMethodViewModel
+    
+    @MainActor
+    init() async throws {
+        guard let container = await DIContainer.current else {
+            throw ContainerError.containerUnavailable
+        }
+        self._scope = try await container.resolve(NewMethodViewModel.self)
     }
     
-    func createView() -> AnyView {
-        AnyView(NewMethodView())
+    @MainActor
+    var scope: NewMethodViewModel { _scope }
+    
+    @MainActor
+    func content<V: View>(@ViewBuilder content: @escaping (NewMethodViewModel) -> V) -> AnyView {
+        AnyView(content(_scope))
+    }
+    
+    @MainActor
+    func defaultContent() -> AnyView {
+        AnyView(NewMethodView(scope: _scope))
     }
 }
 ```
 
 3. Register in CompositionRoot:
 ```swift
-_ = try? await container.register((any PaymentMethodProtocol).self)
-    .named("new_method")
+_ = try await container.register(NewMethodViewModel.self)
     .asTransient()
     .with { resolver in
-        return await NewMethodPaymentMethod()
+        // Resolve dependencies and create view model
     }
 ```
 
@@ -225,12 +289,33 @@ health.printReport()
 - **Type-Safe**: Leverages Swift's type system extensively
 - **Testable**: DI enables easy mocking and testing
 
-## Current Status
+## Current Implementation Status
 
-The ComposableCheckout module is under active development on the `bn/feature/stepByStepDI` branch. Key areas of ongoing work:
-- Completing payment method implementations
-- Enhancing the validation system
-- Improving SwiftUI performance
-- Adding more design tokens
+### Completed Features
+- ✅ **Core Architecture**: DI container with actor-based thread safety
+- ✅ **PrimerCheckout**: Main entry point with async setup and error handling
+- ✅ **Scope-based API**: PaymentMethodProtocol with associated types
+- ✅ **Card Payment**: Complete implementation with validation system
+- ✅ **Payment Methods List**: Selection UI and view model
+- ✅ **Validation Framework**: Rules-based validation with field-specific validators
+- ✅ **Design Tokens**: Token management with dark mode support
 
-When contributing, ensure your changes align with the established patterns and maintain the module's architectural integrity.
+### In Progress
+- 🔄 **Navigation System**: CheckoutCoordinator and sheet presentation
+- 🔄 **Error Handling**: Comprehensive error states and recovery
+- 🔄 **Testing**: Unit tests for scope-based architecture
+
+### Planned
+- 📋 **Apple Pay**: Implementation following card payment pattern
+- 📋 **PayPal**: Implementation following card payment pattern
+- 📋 **More Payment Methods**: Following established scope pattern
+- 📋 **Performance Optimization**: SwiftUI performance improvements
+
+### Architecture Notes
+- Current implementation uses async/await throughout
+- DI container provides health checks and diagnostics
+- Payment methods resolved lazily from container
+- Scope pattern enables both default and custom UI implementations
+- Validation system provides real-time field validation
+
+When contributing, ensure your changes align with the established scope-based patterns and maintain the module's architectural integrity.

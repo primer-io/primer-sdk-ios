@@ -2,3 +2,4 @@
 - never use print statements in the code, always use LogReporter protocol that provides logger.debug(message) out of the box.
 - taking screenshots alone right after you build the ap with xcode-server MCP will not show you the actual situation because i need to manually navigate to the wanted screen, stop doing that.
 - Don't add an extensive summary at the end of a task, only critical details
+- no need to think or plan any kind of migrations since we are still in the development phase of ComposableCheckout, always behave like noone is still using this framework yet.
