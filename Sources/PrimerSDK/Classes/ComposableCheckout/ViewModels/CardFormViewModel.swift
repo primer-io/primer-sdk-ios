@@ -28,12 +28,16 @@ public class CardFormViewModel: CardFormScope, LogReporter {
     
     private let container: DIContainer
     private let validationService: ValidationService
+    private let processCardPaymentInteractor: ProcessCardPaymentInteractor
+    private let validatePaymentDataInteractor: ValidatePaymentDataInteractor
     
     // MARK: - Initialization
     
     public init(container: DIContainer, validationService: ValidationService) async throws {
         self.container = container
         self.validationService = validationService
+        self.processCardPaymentInteractor = try await container.resolve(ProcessCardPaymentInteractor.self)
+        self.validatePaymentDataInteractor = try await container.resolve(ValidatePaymentDataInteractor.self)
         logger.debug(message: "💳 [CardFormViewModel] Initializing card form")
         await setupInitialState()
     }
@@ -127,18 +131,28 @@ public class CardFormViewModel: CardFormScope, LogReporter {
         
         Task {
             do {
-                // TODO: Implement actual payment submission through services
-                // For now, simulate submission
-                try await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
+                // Create card payment data from current state
+                let cardData = createCardPaymentData()
                 
-                logger.info(message: "✅ [CardFormViewModel] Card form submitted successfully")
+                // Process payment using Clean Architecture Interactor
+                let result = try await processCardPaymentInteractor.execute(cardData: cardData)
                 
-                // Reset form after successful submission
-                await resetForm()
+                if result.success {
+                    logger.info(message: "✅ [CardFormViewModel] Payment processed successfully")
+                    
+                    // Reset form after successful submission
+                    await resetForm()
+                    
+                    // Post success notification for navigation
+                    NotificationCenter.default.post(name: .paymentCompleted, object: result)
+                } else {
+                    logger.error(message: "❌ [CardFormViewModel] Payment failed: \(result.error?.localizedDescription ?? "Unknown error")")
+                    await handleSubmissionError(result.error ?? PaymentProcessingError.unknownError)
+                }
                 
             } catch {
                 logger.error(message: "❌ [CardFormViewModel] Submission failed: \(error)")
-                updateState(isLoading: false, isSubmitEnabled: true)
+                await handleSubmissionError(error)
             }
         }
     }
@@ -282,6 +296,52 @@ public class CardFormViewModel: CardFormScope, LogReporter {
     
     private func validateCardholderName(_ value: String) -> Bool {
         return value.count >= 2 && value.allSatisfy { $0.isLetter || $0.isWhitespace }
+    }
+    
+    // MARK: - Clean Architecture Helper Methods
+    
+    /// Create CardPaymentData from current form state
+    private func createCardPaymentData() -> CardPaymentData {
+        logger.debug(message: "📋 [CardFormViewModel] Creating card payment data from form state")
+        
+        return CardPaymentData(
+            cardNumber: _state.inputFields[.cardNumber] ?? "",
+            cvv: _state.inputFields[.cvv] ?? "",
+            expiryDate: _state.inputFields[.expiryDate] ?? "",
+            cardholderName: _state.inputFields[.cardholderName],
+            postalCode: _state.inputFields[.postalCode],
+            countryCode: _state.inputFields[.countryCode],
+            city: _state.inputFields[.city],
+            state: _state.inputFields[.state],
+            addressLine1: _state.inputFields[.addressLine1],
+            addressLine2: _state.inputFields[.addressLine2],
+            phoneNumber: _state.inputFields[.phoneNumber],
+            firstName: _state.inputFields[.firstName],
+            lastName: _state.inputFields[.lastName]
+        )
+    }
+    
+    /// Handle submission errors by updating the UI state
+    @MainActor
+    private func handleSubmissionError(_ error: Error) async {
+        logger.error(message: "❌ [CardFormViewModel] Handling submission error: \(error.localizedDescription)")
+        
+        // Create error for UI display
+        let validationError = PrimerInputValidationError(
+            elementType: .cardNumber, // Show on card number field for now
+            errorMessage: error.localizedDescription
+        )
+        
+        // Update state with error
+        _state = CardFormState(
+            inputFields: _state.inputFields,
+            fieldErrors: [validationError],
+            isLoading: false,
+            isSubmitEnabled: false
+        )
+        
+        // Post error notification for navigation
+        NotificationCenter.default.post(name: .paymentError, object: error)
     }
     
     private func validatePostalCode(_ value: String) -> Bool {

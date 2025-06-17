@@ -27,11 +27,13 @@ public class PaymentMethodSelectionViewModel: PaymentMethodSelectionScope, LogRe
     // MARK: - Dependencies
     
     private let container: DIContainer
+    private let getPaymentMethodsInteractor: GetPaymentMethodsInteractor
     
     // MARK: - Initialization
     
     public init(container: DIContainer) async throws {
         self.container = container
+        self.getPaymentMethodsInteractor = try await container.resolve(GetPaymentMethodsInteractor.self)
         logger.debug(message: "📋 [PaymentMethodSelectionViewModel] Initializing payment method selection")
         await loadPaymentMethods()
     }
@@ -64,10 +66,9 @@ public class PaymentMethodSelectionViewModel: PaymentMethodSelectionScope, LogRe
         logger.debug(message: "📥 [PaymentMethodSelectionViewModel] Loading payment methods")
         
         do {
-            // TODO: Implement actual payment method loading through services
-            // For now, create mock payment methods
-            let paymentMethods = await createMockPaymentMethods()
-            let currency = Currency(code: "USD", symbol: "$")
+            // Use Clean Architecture Interactor to load payment methods
+            let paymentMethods = try await getPaymentMethodsInteractor.execute()
+            let currency = try await getPaymentMethodsInteractor.getCurrency()
             
             _state = .ready(paymentMethods: paymentMethods, currency: currency)
             logger.info(message: "✅ [PaymentMethodSelectionViewModel] Loaded \(paymentMethods.count) payment methods")
