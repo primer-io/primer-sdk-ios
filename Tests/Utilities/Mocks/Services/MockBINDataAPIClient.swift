@@ -55,4 +55,17 @@ class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
 
         return cancellable
     }
+
+    func listCardNetworks(clientToken: PrimerSDK.DecodedJWTToken, bin: String) async throws -> PrimerSDK.Response.Body.Bin.Networks {
+        // Sleep for 0.25 seconds to simulate network delay
+        try await Task.sleep(nanoseconds: 250_000_000)
+
+        if let error = error {
+            throw error
+        } else if let result = results[bin] {
+            return result
+        } else {
+            throw NSError(domain: "MockBINDataAPIClient", code: 404, userInfo: [NSLocalizedDescriptionKey: "No data found for the provided BIN"])
+        }
+    }
 }
