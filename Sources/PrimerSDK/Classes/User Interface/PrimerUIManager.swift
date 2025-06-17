@@ -15,11 +15,13 @@ protocol PrimerUIManaging {
     var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol? { get }
 
     func prepareRootViewController() -> Promise<Void>
+    func prepareRootViewController() async throws
     func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType,
                                    paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
                                    withMessage message: String?)
 }
 
+// MARK: MISSING_TESTS
 final class PrimerUIManager: PrimerUIManaging {
 
     static let shared: PrimerUIManager = .init()
@@ -152,6 +154,29 @@ final class PrimerUIManager: PrimerUIManaging {
 
                 seal.fulfill()
             }
+        }
+    }
+
+    @MainActor
+    func prepareRootViewController() async throws {
+        if PrimerUIManager.primerRootViewController == nil {
+            primerRootViewController = PrimerRootViewController()
+        }
+
+        if PrimerUIManager.primerWindow == nil {
+            if let windowScene = UIApplication.shared.connectedScenes
+                .filter({ $0.activationState == .foregroundActive })
+                .first as? UIWindowScene {
+                primerWindow = UIWindow(windowScene: windowScene)
+            } else {
+                // Not opted-in in UISceneDelegate
+                primerWindow = UIWindow(frame: UIScreen.main.bounds)
+            }
+
+            primerWindow!.rootViewController = primerRootViewController
+            primerWindow!.backgroundColor = UIColor.clear
+            primerWindow!.windowLevel = UIWindow.Level.normal
+            primerWindow!.makeKeyAndVisible()
         }
     }
 
@@ -315,6 +340,11 @@ extension PrimerUIManager {
 
     static func prepareRootViewController() -> Promise<Void> {
         shared.prepareRootViewController()
+    }
+
+    @MainActor
+    static func prepareRootViewController() async throws {
+        try await shared.prepareRootViewController()
     }
 
     static func validatePaymentUIPresentation() -> Promise<Void> {
