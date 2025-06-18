@@ -121,7 +121,7 @@ internal struct AsyncScopeView<Content: View>: View, LogReporter {
 
     @ViewBuilder
     private func ErrorView(error: Error) -> some View {
-    // swiftlint:enable identifier_name
+        // swiftlint:enable identifier_name
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 48))

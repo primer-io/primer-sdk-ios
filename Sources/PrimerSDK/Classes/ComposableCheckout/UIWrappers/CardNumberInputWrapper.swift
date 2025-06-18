@@ -15,8 +15,9 @@ public struct CardNumberInputWrapper: View {
     // MARK: - Properties
 
     private let scope: any CardFormScope
-    private let label: String
-    private let placeholder: String
+    private let modifier: PrimerModifier
+    private let label: String?
+    private let placeholder: String?
 
     // MARK: - State
 
@@ -28,10 +29,12 @@ public struct CardNumberInputWrapper: View {
 
     public init(
         scope: any CardFormScope,
-        label: String = "Card Number",
-        placeholder: String = "1234 5678 9012 3456"
+        modifier: PrimerModifier = PrimerModifier(),
+        label: String? = "Card Number",
+        placeholder: String? = "1234 5678 9012 3456"
     ) {
         self.scope = scope
+        self.modifier = modifier
         self.label = label
         self.placeholder = placeholder
     }
@@ -40,8 +43,8 @@ public struct CardNumberInputWrapper: View {
 
     public var body: some View {
         CardNumberInputField(
-            label: label,
-            placeholder: placeholder,
+            label: label ?? "Card Number",
+            placeholder: placeholder ?? "1234 5678 9012 3456",
             onCardNumberChange: { newValue in
                 // Update the scope when card number changes
                 scope.updateCardNumber(newValue)
@@ -55,6 +58,7 @@ public struct CardNumberInputWrapper: View {
                 // The existing component's validation is kept for immediate feedback
             }
         )
+        .primerModifier(modifier)
         .onAppear {
             setupStateBinding()
         }

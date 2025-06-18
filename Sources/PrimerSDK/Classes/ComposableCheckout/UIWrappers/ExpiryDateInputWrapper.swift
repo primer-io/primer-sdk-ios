@@ -15,8 +15,9 @@ public struct ExpiryDateInputWrapper: View {
     // MARK: - Properties
 
     private let scope: any CardFormScope
-    private let label: String
-    private let placeholder: String
+    private let modifier: PrimerModifier
+    private let label: String?
+    private let placeholder: String?
 
     // MARK: - State
 
@@ -28,10 +29,12 @@ public struct ExpiryDateInputWrapper: View {
 
     public init(
         scope: any CardFormScope,
-        label: String = "Expiry Date",
-        placeholder: String = "MM/YY"
+        modifier: PrimerModifier = PrimerModifier(),
+        label: String? = "Expiry Date",
+        placeholder: String? = "MM/YY"
     ) {
         self.scope = scope
+        self.modifier = modifier
         self.label = label
         self.placeholder = placeholder
     }
@@ -40,8 +43,8 @@ public struct ExpiryDateInputWrapper: View {
 
     public var body: some View {
         ExpiryDateInputField(
-            label: label,
-            placeholder: placeholder,
+            label: label ?? "Expiry Date",
+            placeholder: placeholder ?? "MM/YY",
             onExpiryDateChange: { newValue in
                 // Update the scope when expiry date changes
                 scope.updateExpiryDate(newValue)
@@ -57,6 +60,7 @@ public struct ExpiryDateInputWrapper: View {
                 // Additional callback if needed
             }
         )
+        .primerModifier(modifier)
         .onAppear {
             setupStateBinding()
         }

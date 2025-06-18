@@ -15,7 +15,7 @@ import SwiftUI
 // swiftlint:disable type_name
 @available(iOS 15.0, *)
 public class PrimerCheckoutViewController_Migrated: UIViewController {
-// swiftlint:enable type_name
+    // swiftlint:enable type_name
     private let clientToken: String
     private let onComplete: ((Result<PaymentResult, Error>) -> Void)?
 

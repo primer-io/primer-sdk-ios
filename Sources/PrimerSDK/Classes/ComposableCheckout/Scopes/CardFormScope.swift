@@ -46,103 +46,168 @@ public extension CardFormScope {
     /// Submit button component
     // swiftlint:disable identifier_name
     @ViewBuilder
-    func PrimerSubmitButton(text: String = "Submit") -> some View {
-        SubmitButtonWrapper(scope: self, text: text)
+    func PrimerSubmitButton(
+        modifier: PrimerModifier = PrimerModifier(),
+        text: String = "Submit"
+    ) -> some View {
+        SubmitButtonWrapper(scope: self, modifier: modifier, text: text)
     }
 
     /// Card number input component
     @ViewBuilder
-    func PrimerCardNumberInput() -> some View {
-        CardNumberInputWrapper(scope: self)
+    func PrimerCardNumberInput(
+        modifier: PrimerModifier = PrimerModifier(),
+        label: String? = nil,
+        placeholder: String? = nil
+    ) -> some View {
+        CardNumberInputWrapper(scope: self, modifier: modifier, label: label, placeholder: placeholder)
     }
 
     /// CVV input component
     @ViewBuilder
-    func PrimerCvvInput() -> some View {
-        CVVInputWrapper(scope: self)
+    func PrimerCvvInput(
+        modifier: PrimerModifier = PrimerModifier(),
+        label: String? = nil,
+        placeholder: String? = nil
+    ) -> some View {
+        CVVInputWrapper(scope: self, modifier: modifier, label: label, placeholder: placeholder)
     }
 
     /// Expiry date input component
     @ViewBuilder
-    func PrimerExpiryDateInput() -> some View {
-        ExpiryDateInputWrapper(scope: self)
+    func PrimerExpiryDateInput(
+        modifier: PrimerModifier = PrimerModifier(),
+        label: String? = nil,
+        placeholder: String? = nil
+    ) -> some View {
+        ExpiryDateInputWrapper(scope: self, modifier: modifier, label: label, placeholder: placeholder)
     }
 
     /// Cardholder name input component
     @ViewBuilder
-    func PrimerCardholderNameInput() -> some View {
-        CardholderNameInputWrapper(scope: self)
+    func PrimerCardholderNameInput(
+        modifier: PrimerModifier = PrimerModifier(),
+        label: String? = nil,
+        placeholder: String? = nil
+    ) -> some View {
+        CardholderNameInputWrapper(scope: self, modifier: modifier, label: label, placeholder: placeholder)
     }
 
     /// Postal code input component
     @ViewBuilder
-    func PrimerPostalCodeInput() -> some View {
-        PostalCodeInputView(scope: self)
+    func PrimerPostalCodeInput(
+        modifier: PrimerModifier = PrimerModifier(),
+        label: String? = nil,
+        placeholder: String? = nil
+    ) -> some View {
+        PostalCodeInputView(scope: self, modifier: modifier, label: label, placeholder: placeholder)
     }
 
     /// Country code input component
     @ViewBuilder
-    func PrimerCountryCodeInput() -> some View {
-        CountryCodeInputView(scope: self)
+    func PrimerCountryCodeInput(
+        modifier: PrimerModifier = PrimerModifier(),
+        label: String? = nil,
+        placeholder: String? = nil
+    ) -> some View {
+        CountryCodeInputView(scope: self, modifier: modifier, label: label, placeholder: placeholder)
     }
 
     /// City input component
     @ViewBuilder
-    func PrimerCityInput() -> some View {
-        CityInputView(scope: self)
+    func PrimerCityInput(
+        modifier: PrimerModifier = PrimerModifier(),
+        label: String? = nil,
+        placeholder: String? = nil
+    ) -> some View {
+        CityInputView(scope: self, modifier: modifier, label: label, placeholder: placeholder)
     }
 
     /// State input component
     @ViewBuilder
-    func PrimerStateInput() -> some View {
-        StateInputView(scope: self)
+    func PrimerStateInput(
+        modifier: PrimerModifier = PrimerModifier(),
+        label: String? = nil,
+        placeholder: String? = nil
+    ) -> some View {
+        StateInputView(scope: self, modifier: modifier, label: label, placeholder: placeholder)
     }
 
     /// Address line 1 input component
     @ViewBuilder
-    func PrimerAddressLine1Input() -> some View {
-        AddressLine1InputView(scope: self)
+    func PrimerAddressLine1Input(
+        modifier: PrimerModifier = PrimerModifier(),
+        label: String? = nil,
+        placeholder: String? = nil
+    ) -> some View {
+        AddressLine1InputView(scope: self, modifier: modifier, label: label, placeholder: placeholder)
     }
 
     /// Address line 2 input component
     @ViewBuilder
-    func PrimerAddressLine2Input() -> some View {
-        AddressLine2InputView(scope: self)
+    func PrimerAddressLine2Input(
+        modifier: PrimerModifier = PrimerModifier(),
+        label: String? = nil,
+        placeholder: String? = nil
+    ) -> some View {
+        AddressLine2InputView(scope: self, modifier: modifier, label: label, placeholder: placeholder)
     }
 
     /// Phone number input component
     @ViewBuilder
-    func PrimerPhoneNumberInput() -> some View {
-        PhoneNumberInputView(scope: self)
+    func PrimerPhoneNumberInput(
+        modifier: PrimerModifier = PrimerModifier(),
+        label: String? = nil,
+        placeholder: String? = nil
+    ) -> some View {
+        PhoneNumberInputView(scope: self, modifier: modifier, label: label, placeholder: placeholder)
     }
 
     /// First name input component
     @ViewBuilder
-    func PrimerFirstNameInput() -> some View {
-        FirstNameInputView(scope: self)
+    func PrimerFirstNameInput(
+        modifier: PrimerModifier = PrimerModifier(),
+        label: String? = nil,
+        placeholder: String? = nil
+    ) -> some View {
+        FirstNameInputView(scope: self, modifier: modifier, label: label, placeholder: placeholder)
     }
 
     /// Last name input component
     @ViewBuilder
-    func PrimerLastNameInput() -> some View {
-        LastNameInputView(scope: self)
+    func PrimerLastNameInput(
+        modifier: PrimerModifier = PrimerModifier(),
+        label: String? = nil,
+        placeholder: String? = nil
+    ) -> some View {
+        LastNameInputView(scope: self, modifier: modifier, label: label, placeholder: placeholder)
     }
 
     /// Retail outlet input component
     @ViewBuilder
-    func PrimerRetailOutletInput() -> some View {
-        RetailOutletInputView(scope: self)
+    func PrimerRetailOutletInput(
+        modifier: PrimerModifier = PrimerModifier(),
+        label: String? = nil,
+        placeholder: String? = nil
+    ) -> some View {
+        RetailOutletInputView(scope: self, modifier: modifier, label: label, placeholder: placeholder)
     }
 
     /// OTP code input component
     @ViewBuilder
-    func PrimerOtpCodeInput() -> some View {
-        OtpCodeInputView(scope: self)
+    func PrimerOtpCodeInput(
+        modifier: PrimerModifier = PrimerModifier(),
+        label: String? = nil,
+        placeholder: String? = nil
+    ) -> some View {
+        OtpCodeInputView(scope: self, modifier: modifier, label: label, placeholder: placeholder)
     }
 
     /// Composite card details form (card number, cvv, expiry, cardholder name)
     @ViewBuilder
-    func PrimerCardDetails() -> some View {
+    func PrimerCardDetails(
+        modifier: PrimerModifier = PrimerModifier()
+    ) -> some View {
         VStack(spacing: 16) {
             PrimerCardNumberInput()
 
@@ -153,12 +218,15 @@ public extension CardFormScope {
 
             PrimerCardholderNameInput()
         }
+        .primerModifier(modifier)
     }
 
     /// Composite billing address form (all address fields)
     @ViewBuilder
-    func PrimerBillingAddress() -> some View {
-        BillingAddressFormView(scope: self)
+    func PrimerBillingAddress(
+        modifier: PrimerModifier = PrimerModifier()
+    ) -> some View {
+        BillingAddressFormView(scope: self, modifier: modifier)
     }
     // swiftlint:enable identifier_name
 }
@@ -339,99 +407,143 @@ internal struct CardholderNameInputView: View {
 @available(iOS 15.0, *)
 internal struct PostalCodeInputView: View {
     let scope: any CardFormScope
+    let modifier: PrimerModifier
+    let label: String?
+    let placeholder: String?
 
     var body: some View {
         Text("Postal Code Input Placeholder")
+            .primerModifier(modifier)
     }
 }
 
 @available(iOS 15.0, *)
 internal struct CountryCodeInputView: View {
     let scope: any CardFormScope
+    let modifier: PrimerModifier
+    let label: String?
+    let placeholder: String?
 
     var body: some View {
         Text("Country Code Input Placeholder")
+            .primerModifier(modifier)
     }
 }
 
 @available(iOS 15.0, *)
 internal struct CityInputView: View {
     let scope: any CardFormScope
+    let modifier: PrimerModifier
+    let label: String?
+    let placeholder: String?
 
     var body: some View {
         Text("City Input Placeholder")
+            .primerModifier(modifier)
     }
 }
 
 @available(iOS 15.0, *)
 internal struct StateInputView: View {
     let scope: any CardFormScope
+    let modifier: PrimerModifier
+    let label: String?
+    let placeholder: String?
 
     var body: some View {
         Text("State Input Placeholder")
+            .primerModifier(modifier)
     }
 }
 
 @available(iOS 15.0, *)
 internal struct AddressLine1InputView: View {
     let scope: any CardFormScope
+    let modifier: PrimerModifier
+    let label: String?
+    let placeholder: String?
 
     var body: some View {
         Text("Address Line 1 Input Placeholder")
+            .primerModifier(modifier)
     }
 }
 
 @available(iOS 15.0, *)
 internal struct AddressLine2InputView: View {
     let scope: any CardFormScope
+    let modifier: PrimerModifier
+    let label: String?
+    let placeholder: String?
 
     var body: some View {
         Text("Address Line 2 Input Placeholder")
+            .primerModifier(modifier)
     }
 }
 
 @available(iOS 15.0, *)
 internal struct PhoneNumberInputView: View {
     let scope: any CardFormScope
+    let modifier: PrimerModifier
+    let label: String?
+    let placeholder: String?
 
     var body: some View {
         Text("Phone Number Input Placeholder")
+            .primerModifier(modifier)
     }
 }
 
 @available(iOS 15.0, *)
 internal struct FirstNameInputView: View {
     let scope: any CardFormScope
+    let modifier: PrimerModifier
+    let label: String?
+    let placeholder: String?
 
     var body: some View {
         Text("First Name Input Placeholder")
+            .primerModifier(modifier)
     }
 }
 
 @available(iOS 15.0, *)
 internal struct LastNameInputView: View {
     let scope: any CardFormScope
+    let modifier: PrimerModifier
+    let label: String?
+    let placeholder: String?
 
     var body: some View {
         Text("Last Name Input Placeholder")
+            .primerModifier(modifier)
     }
 }
 
 @available(iOS 15.0, *)
 internal struct RetailOutletInputView: View {
     let scope: any CardFormScope
+    let modifier: PrimerModifier
+    let label: String?
+    let placeholder: String?
 
     var body: some View {
         Text("Retail Outlet Input Placeholder")
+            .primerModifier(modifier)
     }
 }
 
 @available(iOS 15.0, *)
 internal struct OtpCodeInputView: View {
     let scope: any CardFormScope
+    let modifier: PrimerModifier
+    let label: String?
+    let placeholder: String?
 
     var body: some View {
         Text("OTP Code Input Placeholder")
+            .primerModifier(modifier)
     }
 }
 
@@ -452,6 +564,7 @@ internal struct CardDetailsFormView: View {
 @available(iOS 15.0, *)
 internal struct BillingAddressFormView: View {
     let scope: any CardFormScope
+    let modifier: PrimerModifier
 
     var body: some View {
         VStack {
@@ -460,5 +573,6 @@ internal struct BillingAddressFormView: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
+        .primerModifier(modifier)
     }
 }

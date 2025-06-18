@@ -15,8 +15,9 @@ public struct CVVInputWrapper: View {
     // MARK: - Properties
 
     private let scope: any CardFormScope
-    private let label: String
-    private let placeholder: String
+    private let modifier: PrimerModifier
+    private let label: String?
+    private let placeholder: String?
 
     // MARK: - State
 
@@ -29,10 +30,12 @@ public struct CVVInputWrapper: View {
 
     public init(
         scope: any CardFormScope,
-        label: String = "CVV",
-        placeholder: String = "123"
+        modifier: PrimerModifier = PrimerModifier(),
+        label: String? = "CVV",
+        placeholder: String? = "123"
     ) {
         self.scope = scope
+        self.modifier = modifier
         self.label = label
         self.placeholder = placeholder
     }
@@ -41,8 +44,8 @@ public struct CVVInputWrapper: View {
 
     public var body: some View {
         CVVInputField(
-            label: label,
-            placeholder: placeholder,
+            label: label ?? "CVV",
+            placeholder: placeholder ?? "123",
             cardNetwork: cardNetwork,
             onCvvChange: { newValue in
                 // Update the scope when CVV changes
@@ -53,6 +56,7 @@ public struct CVVInputWrapper: View {
                 // The existing component's validation is kept for immediate feedback
             }
         )
+        .primerModifier(modifier)
         .onAppear {
             setupStateBinding()
         }

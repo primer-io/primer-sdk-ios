@@ -15,6 +15,7 @@ public struct SubmitButtonWrapper: View {
     // MARK: - Properties
 
     private let scope: any CardFormScope
+    private let modifier: PrimerModifier
     private let text: String
 
     // MARK: - State
@@ -28,9 +29,11 @@ public struct SubmitButtonWrapper: View {
 
     public init(
         scope: any CardFormScope,
+        modifier: PrimerModifier = PrimerModifier(),
         text: String = "Submit"
     ) {
         self.scope = scope
+        self.modifier = modifier
         self.text = text
     }
 
@@ -61,6 +64,7 @@ public struct SubmitButtonWrapper: View {
             .cornerRadius(8)
         }
         .disabled(!isEnabled || isLoading)
+        .primerModifier(modifier)
         .onAppear {
             setupStateBinding()
         }
