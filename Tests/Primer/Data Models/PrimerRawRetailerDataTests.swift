@@ -1,5 +1,5 @@
 //
-//  PrimerRawRetailDataTests.swift
+//  PrimerRawRetailerDataTests.swift
 //  ExampleAppTests
 //
 //  Created by Dario Carlomagno on 20/10/22.
@@ -34,6 +34,20 @@ class PrimerRawRetailerDataTests: XCTestCase {
         wait(for: [exp], timeout: Self.expectationTimeout)
     }
 
+    func test_invalid_raw_retail_data_async() async throws {
+        let rawRetailData = PrimerRetailerData(id: "")
+
+        let tokenizationBuilder = PrimerRawRetailerDataTokenizationBuilder(paymentMethodType: "XENDIT_RETAIL_OUTLETS")
+
+        do {
+            try await tokenizationBuilder.validateRawData(rawRetailData)
+            XCTAssert(false, "Card data should not pass validation")
+        } catch {
+            // Expected error
+            XCTAssertNotNil(error, "Expected an error when validating invalid raw retailer data")
+        }
+    }
+
     func test_valid_raw_retail_data() throws {
         let exp = expectation(description: "Await validation")
 
@@ -53,6 +67,18 @@ class PrimerRawRetailerDataTests: XCTestCase {
         }
 
         wait(for: [exp], timeout: Self.expectationTimeout)
+    }
+
+    func test_valid_raw_retail_data_async() async throws {
+        let rawRetailData = PrimerRetailerData(id: "test")
+
+        let tokenizationBuilder = PrimerRawRetailerDataTokenizationBuilder(paymentMethodType: "XENDIT_RETAIL_OUTLETS")
+
+        do {
+            try await tokenizationBuilder.validateRawData(rawRetailData)
+        } catch {
+            XCTAssert(false, "Card data should pass validation")
+        }
     }
 
 }
