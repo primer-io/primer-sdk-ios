@@ -37,7 +37,8 @@ final class PrimerAPIClient: PrimerAPIClientProtocol {
 
     func genericAPICall(clientToken: DecodedJWTToken, url: URL) async throws -> Bool {
         let endpoint = PrimerAPI.redirect(clientToken: clientToken, url: url)
-        return try await networkService.request(endpoint)
+        let _: SuccessResponse = try await networkService.request(endpoint)
+        return true
     }
 
     func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken,
