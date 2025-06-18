@@ -2468,6 +2468,9 @@
             location = "group:Services"
             name = "Services">
             <FileRef
+               location = "group:VaultServiceTests.swift">
+            </FileRef>
+            <FileRef
                location = "group:PrimerAPIClientTests.swift">
             </FileRef>
             <FileRef
@@ -2543,6 +2546,9 @@
             <Group
                location = "group:Services"
                name = "Services">
+               <FileRef
+                  location = "group:MockWebAuthenticationService.swift">
+               </FileRef>
                <FileRef
                   location = "group:MockPrimerAPIClientVault.swift">
                </FileRef>
