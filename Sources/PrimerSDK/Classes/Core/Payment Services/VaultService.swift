@@ -7,7 +7,6 @@ internal protocol VaultServiceProtocol {
     func deleteVaultedPaymentMethod(with id: String) async throws
 }
 
-// MARK: MISSING_TESTS
 final class VaultService: VaultServiceProtocol {
 
     let apiClient: PrimerAPIClientVaultProtocol
