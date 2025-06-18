@@ -164,7 +164,7 @@ extension CompositionRoot {
             .asTransient()
             .with { resolver in
                 CardFormValidator(
-                    validationService: try await resolver.resolve(ValidationService.self)
+                    validationService: try await resolver.resolve(ValidationService.self, name: nil)
                 )
             }
 
@@ -173,7 +173,7 @@ extension CompositionRoot {
             .asTransient()
             .with { resolver in
                 CardNumberValidator(
-                    validationService: try await resolver.resolve(ValidationService.self),
+                    validationService: try await resolver.resolve(ValidationService.self, name: nil),
                     onValidationChange: { _ in }, // Will be set by consumers
                     onErrorMessageChange: { _ in }
                 )
@@ -183,7 +183,7 @@ extension CompositionRoot {
             .asTransient()
             .with { resolver in
                 CVVValidator(
-                    validationService: try await resolver.resolve(ValidationService.self),
+                    validationService: try await resolver.resolve(ValidationService.self, name: nil),
                     cardNetwork: .unknown, // Will be updated by consumers
                     onValidationChange: { _ in },
                     onErrorMessageChange: { _ in }
@@ -194,7 +194,7 @@ extension CompositionRoot {
             .asTransient()
             .with { resolver in
                 ExpiryDateValidator(
-                    validationService: try await resolver.resolve(ValidationService.self),
+                    validationService: try await resolver.resolve(ValidationService.self, name: nil),
                     onValidationChange: { _ in },
                     onErrorMessageChange: { _ in },
                     onMonthChange: { _ in },
@@ -206,7 +206,7 @@ extension CompositionRoot {
             .asTransient()
             .with { resolver in
                 CardholderNameValidator(
-                    validationService: try await resolver.resolve(ValidationService.self),
+                    validationService: try await resolver.resolve(ValidationService.self, name: nil),
                     onValidationChange: { _ in },
                     onErrorMessageChange: { _ in }
                 )
@@ -479,7 +479,7 @@ extension CompositionRoot {
                 logger.debug(message: "🏭 [CompositionRoot] Creating ConfigurationService")
                 return ConfigurationServiceImpl() 
             }
-        
+
         // Payment Method Service
         _ = try? await container.register(PaymentMethodService.self)
             .asSingleton()
@@ -496,13 +496,13 @@ extension CompositionRoot {
                 return PaymentServiceImpl() 
             }
         
-        // Tokenization Service
-        _ = try? await container.register(ComposableTokenizationService.self)
-            .asSingleton()
-            .with { _ in 
-                logger.debug(message: "🏭 [CompositionRoot] Creating ComposableTokenizationService")
-                return ComposableTokenizationServiceImpl() 
-            }
+        // Tokenization Service - TODO: Fix scope visibility issue
+        // _ = try? await container.register(ComposableTokenizationService.self)
+        //     .asSingleton()
+        //     .with { _ in 
+        //         logger.debug(message: "🏭 [CompositionRoot] Creating ComposableTokenizationService")
+        //         return ComposableTokenizationServiceImpl() 
+        //     }
         
         logger.debug(message: "✅ [CompositionRoot] Services registration completed")
     }
@@ -518,7 +518,7 @@ extension CompositionRoot {
             .with { resolver in
                 logger.debug(message: "🏭 [CompositionRoot] Creating ConfigurationRepository")
                 return ConfigurationRepositoryImpl(
-                    configurationService: try await resolver.resolve(ConfigurationService.self)
+                    configurationService: try await resolver.resolve(ConfigurationService.self, name: nil)
                 )
             }
         
@@ -528,7 +528,7 @@ extension CompositionRoot {
             .with { resolver in
                 logger.debug(message: "🏭 [CompositionRoot] Creating PaymentMethodRepository")
                 return PaymentMethodRepositoryImpl(
-                    paymentMethodService: try await resolver.resolve(PaymentMethodService.self)
+                    paymentMethodService: try await resolver.resolve(PaymentMethodService.self, name: nil)
                 )
             }
         
@@ -538,19 +538,19 @@ extension CompositionRoot {
             .with { resolver in
                 logger.debug(message: "🏭 [CompositionRoot] Creating PaymentRepository")
                 return PaymentRepositoryImpl(
-                    paymentService: try await resolver.resolve(PaymentService.self)
+                    paymentService: try await resolver.resolve(PaymentService.self, name: nil)
                 )
             }
         
-        // Tokenization Repository
-        _ = try? await container.register(TokenizationRepository.self)
-            .asSingleton()
-            .with { resolver in
-                logger.debug(message: "🏭 [CompositionRoot] Creating TokenizationRepository")
-                return TokenizationRepositoryImpl(
-                    tokenizationService: try await resolver.resolve(ComposableTokenizationService.self)
-                )
-            }
+        // Tokenization Repository - TODO: Re-enable when tokenization service is fixed
+        // _ = try? await container.register(TokenizationRepository.self)
+        //     .asSingleton()
+        //     .with { resolver in
+        //         logger.debug(message: "🏭 [CompositionRoot] Creating TokenizationRepository")
+        //         return TokenizationRepositoryImpl(
+        //             tokenizationService: try await resolver.resolve(ComposableTokenizationService.self, name: nil)
+        //         )
+        //     }
         
         logger.debug(message: "✅ [CompositionRoot] Repositories registration completed")
     }
@@ -566,21 +566,21 @@ extension CompositionRoot {
             .with { resolver in
                 logger.debug(message: "🏭 [CompositionRoot] Creating InitializeCheckoutInteractor")
                 return InitializeCheckoutInteractorImpl(
-                    configurationRepository: try await resolver.resolve(ConfigurationRepository.self),
-                    paymentMethodRepository: try await resolver.resolve(PaymentMethodRepository.self)
+                    configurationRepository: try await resolver.resolve(ConfigurationRepository.self, name: nil),
+                    paymentMethodRepository: try await resolver.resolve(PaymentMethodRepository.self, name: nil)
                 )
             }
         
-        // Process Card Payment Interactor
-        _ = try? await container.register(ProcessCardPaymentInteractor.self)
-            .asTransient()
-            .with { resolver in
-                logger.debug(message: "🏭 [CompositionRoot] Creating ProcessCardPaymentInteractor")
-                return ProcessCardPaymentInteractorImpl(
-                    paymentRepository: try await resolver.resolve(PaymentRepository.self),
-                    tokenizationRepository: try await resolver.resolve(TokenizationRepository.self)
-                )
-            }
+        // Process Card Payment Interactor - TODO: Re-enable when tokenization repository is fixed
+        // _ = try? await container.register(ProcessCardPaymentInteractor.self)
+        //     .asTransient()
+        //     .with { resolver in
+        //         logger.debug(message: "🏭 [CompositionRoot] Creating ProcessCardPaymentInteractor")
+        //         return ProcessCardPaymentInteractorImpl(
+        //             paymentRepository: try await resolver.resolve(PaymentRepository.self),
+        //             tokenizationRepository: try await resolver.resolve(TokenizationRepository.self)
+        //         )
+        //     }
         
         // Get Payment Methods Interactor
         _ = try? await container.register(GetPaymentMethodsInteractor.self)
@@ -588,7 +588,7 @@ extension CompositionRoot {
             .with { resolver in
                 logger.debug(message: "🏭 [CompositionRoot] Creating GetPaymentMethodsInteractor")
                 return GetPaymentMethodsInteractorImpl(
-                    paymentMethodRepository: try await resolver.resolve(PaymentMethodRepository.self)
+                    paymentMethodRepository: try await resolver.resolve(PaymentMethodRepository.self, name: nil)
                 )
             }
         
@@ -598,7 +598,7 @@ extension CompositionRoot {
             .with { resolver in
                 logger.debug(message: "🏭 [CompositionRoot] Creating ValidatePaymentDataInteractor")
                 return ValidatePaymentDataInteractorImpl(
-                    validationService: try await resolver.resolve(ValidationService.self)
+                    validationService: try await resolver.resolve(ValidationService.self, name: nil)
                 )
             }
         
