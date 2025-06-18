@@ -72,8 +72,8 @@ public struct SubmitButtonWrapper: View {
         // Subscribe to scope state changes
         scope.state
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] state in
-                self?.updateFromScopeState(state)
+            .sink { [self] state in
+                updateFromScopeState(state)
             }
             .store(in: &cancellables)
     }

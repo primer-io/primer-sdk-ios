@@ -404,8 +404,11 @@ extension CompositionRoot {
         // CheckoutViewModel - implements PrimerCheckoutScope
         _ = try? await container.register(CheckoutViewModel.self)
             .asTransient()
-            .with { container in
-                try await CheckoutViewModel(container: container)
+            .with { _ in
+                guard let diContainer = await DIContainer.current else {
+                    throw ContainerError.containerUnavailable
+                }
+                return try await CheckoutViewModel(container: diContainer)
             }
         
         // CardFormViewModel - implements CardFormScope
@@ -413,8 +416,11 @@ extension CompositionRoot {
             .asTransient()
             .with { resolver in
                 let validationService = try await resolver.resolve(ValidationService.self)
+                guard let diContainer = await DIContainer.current else {
+                    throw ContainerError.containerUnavailable
+                }
                 return try await CardFormViewModel(
-                    container: container,
+                    container: diContainer,
                     validationService: validationService
                 )
             }
@@ -422,8 +428,11 @@ extension CompositionRoot {
         // PaymentMethodSelectionViewModel - implements PaymentMethodSelectionScope
         _ = try? await container.register(PaymentMethodSelectionViewModel.self)
             .asTransient()
-            .with { container in
-                try await PaymentMethodSelectionViewModel(container: container)
+            .with { _ in
+                guard let diContainer = await DIContainer.current else {
+                    throw ContainerError.containerUnavailable
+                }
+                return try await PaymentMethodSelectionViewModel(container: diContainer)
             }
 
         // Register protocol implementations using the new ViewModels

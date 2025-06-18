@@ -7,6 +7,26 @@
 
 import SwiftUI
 
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:14:17 Invalid redeclaration of 'ComposableCheckoutView'
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:22:25 'PrimerCheckoutScope' is ambiguous for type lookup in this context
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:23:26 'PrimerCheckoutScope' is ambiguous for type lookup in this context
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:26:26 'PrimerCheckoutScope' is ambiguous for type lookup in this context
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:27:24 'PrimerCheckoutScope' is ambiguous for type lookup in this context
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:108:13 Generic parameter 'Content' could not be inferred
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:120:13 Generic parameter 'Content' could not be inferred
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:168:14 'presentationDragIndicator' is only available in iOS 16.0 or newer
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:179:39 Type 'Primer' has no member 'configuration'
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:224:17 Invalid redeclaration of 'AsyncScopeView'
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:264:59 Cannot convert value of type 'any ContainerProtocol' to expected argument type 'Container'
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:297:17 Invalid redeclaration of 'DefaultSplashScreen'
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:314:17 Invalid redeclaration of 'DefaultLoadingScreen'
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:330:17 Invalid redeclaration of 'DefaultPaymentSelectionScreen'
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:338:36 Extra arguments at positions #1, #2, #3 in call
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:338:36 Missing arguments for parameters 'paymentMethod', 'onTap' in call
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:361:17 Invalid redeclaration of 'DefaultCardFormScreen'
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:381:17 Invalid redeclaration of 'DefaultSuccessScreen'
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:403:17 Invalid redeclaration of 'DefaultErrorScreen'
+/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/ComposableCheckout/Core/ComposableCheckoutView.swift:427:17 Invalid redeclaration of 'PaymentMethodButton'
 /// Internal view that implements the ComposableCheckout functionality.
 /// This view manages the navigation between different checkout screens
 /// and provides the appropriate scopes to each screen.
