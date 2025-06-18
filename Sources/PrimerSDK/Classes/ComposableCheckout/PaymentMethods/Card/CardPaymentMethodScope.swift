@@ -64,7 +64,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
     @ViewBuilder func PrimerCardholderNameField(
         modifier: Any,
         label: String?
-    ) -> any View
+    ) -> AnyView
 
     /// Use this function to display a card number input field in your custom card form implementation.
     /// - Parameters:
@@ -73,7 +73,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
     @ViewBuilder func PrimerCardNumberField(
         modifier: Any,
         label: String?
-    ) -> any View
+    ) -> AnyView
 
     /// Use this function to display a CVV input field in your custom card form implementation.
     /// - Parameters:
@@ -82,7 +82,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
     @ViewBuilder func PrimerCvvField(
         modifier: Any,
         label: String?
-    ) -> any View
+    ) -> AnyView
 
     /// Use this function to display a card expiration input field in your custom card form implementation.
     /// - Parameters:
@@ -91,7 +91,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
     @ViewBuilder func PrimerCardExpirationField(
         modifier: Any,
         label: String?
-    ) -> any View
+    ) -> AnyView
 
     // MARK: - Billing address field components
 
@@ -102,7 +102,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
     @ViewBuilder func PrimerCountryField(
         modifier: Any,
         label: String?
-    ) -> any View
+    ) -> AnyView
 
     /// Use this function to display a first name input field in your custom card form implementation.
     /// - Parameters:
@@ -111,7 +111,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
     @ViewBuilder func PrimerFirstNameField(
         modifier: Any,
         label: String?
-    ) -> any View
+    ) -> AnyView
 
     /// Use this function to display a last name input field in your custom card form implementation.
     /// - Parameters:
@@ -120,7 +120,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
     @ViewBuilder func PrimerLastNameField(
         modifier: Any,
         label: String?
-    ) -> any View
+    ) -> AnyView
 
     /// Use this function to display an address line 1 input field in your custom card form implementation.
     /// - Parameters:
@@ -129,7 +129,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
     @ViewBuilder func PrimerAddressLine1Field(
         modifier: Any,
         label: String?
-    ) -> any View
+    ) -> AnyView
 
     /// Use this function to display an address line 2 input field in your custom card form implementation.
     /// - Parameters:
@@ -138,7 +138,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
     @ViewBuilder func PrimerAddressLine2Field(
         modifier: Any,
         label: String?
-    ) -> any View
+    ) -> AnyView
 
     /// Use this function to display a postal code input field in your custom card form implementation.
     /// - Parameters:
@@ -147,7 +147,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
     @ViewBuilder func PrimerPostalCodeField(
         modifier: Any,
         label: String?
-    ) -> any View
+    ) -> AnyView
 
     /// Use this function to display a city input field in your custom card form implementation.
     /// - Parameters:
@@ -156,7 +156,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
     @ViewBuilder func PrimerCityField(
         modifier: Any,
         label: String?
-    ) -> any View
+    ) -> AnyView
 
     /// Use this function to display a state input field in your custom card form implementation.
     /// - Parameters:
@@ -165,7 +165,7 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
     @ViewBuilder func PrimerStateField(
         modifier: Any,
         label: String?
-    ) -> any View
+    ) -> AnyView
 
     /// Use this function to display a pay button in your custom card form implementation.
     /// - Parameters:
@@ -176,6 +176,6 @@ protocol CardPaymentMethodScope: PrimerPaymentMethodScope where T == CardPayment
         enabled: Bool,
         modifier: Any,
         text: String?
-    ) -> any View
+    ) -> AnyView
 }
 // swiftlint:enable all

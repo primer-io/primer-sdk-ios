@@ -19,7 +19,7 @@ internal struct DefaultPaymentSelectionScreen: View, LogReporter {
     // MARK: - State
     
     @State private var paymentMethods: [PrimerComposablePaymentMethod] = []
-    @State private var currency: Currency?
+    @State private var currency: ComposableCurrency?
     @State private var isLoading = true
     @State private var errorMessage: String?
     @State private var cancellables = Set<AnyCancellable>()
@@ -174,7 +174,7 @@ internal struct DefaultPaymentSelectionScreen: View, LogReporter {
 private struct PaymentMethodItemView: View {
     
     let paymentMethod: PrimerComposablePaymentMethod
-    let currency: Currency?
+    let currency: ComposableCurrency?
     let onSelection: () -> Void
     
     @Environment(\.designTokens) private var tokens
@@ -269,7 +269,7 @@ private class MockPaymentMethodSelectionScope: PaymentMethodSelectionScope, Obse
                 surcharge: nil
             )
         ],
-        currency: Currency(code: "USD", decimalDigits: 2)
+        currency: ComposableCurrency(code: "USD", decimalDigits: 2)
     )
     
     var state: AnyPublisher<PaymentMethodSelectionState, Never> {
