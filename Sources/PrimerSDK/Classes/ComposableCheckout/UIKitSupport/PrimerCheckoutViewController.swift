@@ -51,6 +51,9 @@ public class PrimerCheckoutViewController: UIViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Configure Primer with the client token (NEW API)
+        Primer.configure(clientToken: clientToken)
 
         setupSelectedExample()
     }
@@ -62,25 +65,22 @@ public class PrimerCheckoutViewController: UIViewController {
         switch exampleToShow {
         case .default:
             // EXAMPLE 1: Default Checkout Experience
-            rootView = AnyView(PrimerCheckout(clientToken: clientToken))
+            rootView = AnyView(Primer.ComposableCheckout())
 
         case .tabLayout:
             // EXAMPLE 2: Custom Tab Layout Checkout
             rootView = AnyView(
-                PrimerCheckout(
-                    clientToken: clientToken,
-                    content: { checkoutScope in
-                        AnyView(
-                            VStack(spacing: 24) {
-                                Text("Primer Custom Tab Experience")
-                                    .font(.title)
-                                    .fontWeight(.bold)
-                                    .padding(.top, 20)
+                Primer.ComposableCheckout(
+                    container: { content in
+                        VStack(spacing: 24) {
+                            Text("Primer Custom Tab Experience")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .padding(.top, 20)
 
-                                TabLayoutExample(scope: checkoutScope)
-                                    .padding(.horizontal)
-                            }
-                        )
+                            content()
+                                .padding(.horizontal)
+                        }
                     }
                 )
             )
@@ -88,20 +88,20 @@ public class PrimerCheckoutViewController: UIViewController {
         case .customCardForm:
             // EXAMPLE 3: Custom Card Form Checkout
             rootView = AnyView(
-                PrimerCheckout(
-                    clientToken: clientToken,
-                    content: { checkoutScope in
-                        AnyView(
-                            VStack(spacing: 16) {
-                                Text("Custom Card Form Example")
-                                    .font(.title)
-                                    .fontWeight(.bold)
-                                    .padding(.top, 20)
+                Primer.ComposableCheckout(
+                    cardFormScreen: {
+                        VStack(spacing: 16) {
+                            Text("Custom Card Form Example")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .padding(.top, 20)
 
-                                CustomCheckoutWithCardForm(scope: checkoutScope)
+                            // Use AsyncScopeView to access scopes
+                            AsyncScopeView { checkoutScope, cardFormScope, paymentSelectionScope in
+                                cardFormScope.PrimerCardForm()
                                     .padding(.horizontal)
                             }
-                        )
+                        }
                     }
                 )
             )
@@ -109,20 +109,20 @@ public class PrimerCheckoutViewController: UIViewController {
         case .gridLayout:
             // EXAMPLE 4: Grid Layout with Payment Methods
             rootView = AnyView(
-                PrimerCheckout(
-                    clientToken: clientToken,
-                    content: { checkoutScope in
-                        AnyView(
-                            VStack(spacing: 16) {
-                                Text("Grid Layout Example")
-                                    .font(.title)
-                                    .fontWeight(.bold)
-                                    .padding(.top, 20)
+                Primer.ComposableCheckout(
+                    paymentSelectionScreen: {
+                        VStack(spacing: 16) {
+                            Text("Grid Layout Example")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .padding(.top, 20)
 
-                                GridLayoutExample(scope: checkoutScope)
+                            // Use AsyncScopeView to access payment selection
+                            AsyncScopeView { checkoutScope, cardFormScope, paymentSelectionScope in
+                                paymentSelectionScope.PrimerPaymentMethodSelectionScreen()
                                     .padding(.horizontal)
                             }
-                        )
+                        }
                     }
                 )
             )
@@ -130,20 +130,17 @@ public class PrimerCheckoutViewController: UIViewController {
         case .listLayout:
             // EXAMPLE 5: List Layout with Detailed Payment Methods
             rootView = AnyView(
-                PrimerCheckout(
-                    clientToken: clientToken,
-                    content: { checkoutScope in
-                        AnyView(
-                            VStack(spacing: 16) {
-                                Text("List Layout Example")
-                                    .font(.title)
-                                    .fontWeight(.bold)
-                                    .padding(.top, 20)
+                Primer.ComposableCheckout(
+                    container: { content in
+                        VStack(spacing: 16) {
+                            Text("List Layout Example")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .padding(.top, 20)
 
-                                ListLayoutExample(scope: checkoutScope)
-                                    .padding(.horizontal)
-                            }
-                        )
+                            content()
+                                .padding(.horizontal)
+                        }
                     }
                 )
             )
@@ -151,20 +148,17 @@ public class PrimerCheckoutViewController: UIViewController {
         case .accordionLayout:
             // EXAMPLE 6: Accordion Layout for Payment Methods
             rootView = AnyView(
-                PrimerCheckout(
-                    clientToken: clientToken,
-                    content: { checkoutScope in
-                        AnyView(
-                            VStack(spacing: 16) {
-                                Text("Accordion Layout Example")
-                                    .font(.title)
-                                    .fontWeight(.bold)
-                                    .padding(.top, 20)
+                Primer.ComposableCheckout(
+                    container: { content in
+                        VStack(spacing: 16) {
+                            Text("Accordion Layout Example")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .padding(.top, 20)
 
-                                AccordionLayoutExample(scope: checkoutScope)
-                                    .padding(.horizontal)
-                            }
-                        )
+                            content()
+                                .padding(.horizontal)
+                        }
                     }
                 )
             )
@@ -172,20 +166,17 @@ public class PrimerCheckoutViewController: UIViewController {
         case .modalSheet:
             // EXAMPLE 7: Modal Sheet Presentation
             rootView = AnyView(
-                PrimerCheckout(
-                    clientToken: clientToken,
-                    content: { checkoutScope in
-                        AnyView(
-                            VStack(spacing: 16) {
-                                Text("Modal Sheet Example")
-                                    .font(.title)
-                                    .fontWeight(.bold)
-                                    .padding(.top, 20)
+                Primer.ComposableCheckout(
+                    container: { content in
+                        VStack(spacing: 16) {
+                            Text("Modal Sheet Example")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .padding(.top, 20)
 
-                                ModalSheetExample(scope: checkoutScope)
-                                    .padding(.horizontal)
-                            }
-                        )
+                            content()
+                                .padding(.horizontal)
+                        }
                     }
                 )
             )
@@ -193,20 +184,17 @@ public class PrimerCheckoutViewController: UIViewController {
         case .segmentedControl:
             // EXAMPLE 8: Segmented Control Layout
             rootView = AnyView(
-                PrimerCheckout(
-                    clientToken: clientToken,
-                    content: { checkoutScope in
-                        AnyView(
-                            VStack(spacing: 16) {
-                                Text("Segmented Control Example")
-                                    .font(.title)
-                                    .fontWeight(.bold)
-                                    .padding(.top, 20)
+                Primer.ComposableCheckout(
+                    container: { content in
+                        VStack(spacing: 16) {
+                            Text("Segmented Control Example")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .padding(.top, 20)
 
-                                SegmentedControlExample(scope: checkoutScope)
-                                    .padding(.horizontal)
-                            }
-                        )
+                            content()
+                                .padding(.horizontal)
+                        }
                     }
                 )
             )
@@ -214,20 +202,17 @@ public class PrimerCheckoutViewController: UIViewController {
         case .mixedLayout:
             // EXAMPLE 9: Mixed Layout Combining Multiple Styles
             rootView = AnyView(
-                PrimerCheckout(
-                    clientToken: clientToken,
-                    content: { checkoutScope in
-                        AnyView(
-                            VStack(spacing: 16) {
-                                Text("Mixed Layout Example")
-                                    .font(.title)
-                                    .fontWeight(.bold)
-                                    .padding(.top, 20)
+                Primer.ComposableCheckout(
+                    container: { content in
+                        VStack(spacing: 16) {
+                            Text("Mixed Layout Example")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .padding(.top, 20)
 
-                                MixedLayoutExample(scope: checkoutScope)
-                                    .padding(.horizontal)
-                            }
-                        )
+                            content()
+                                .padding(.horizontal)
+                        }
                     }
                 )
             )
