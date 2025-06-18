@@ -43,14 +43,14 @@ internal class PaymentServiceImpl: PaymentService, LogReporter {
                 logger.debug(message: "🎯 [PaymentService] Transaction ID: \(result.transactionId ?? "N/A")")
                 
                 // Post success notification for navigation
-                NotificationCenter.default.post(name: .paymentCompleted, object: result)
+                NotificationCenter.default.post(name: .composablePaymentCompleted, object: result)
             } else {
                 logger.warn(message: "⚠️ [PaymentService] Payment processing failed")
                 if let error = result.error {
                     logger.error(message: "❌ [PaymentService] Payment error: \(error.localizedDescription)")
                     
                     // Post error notification for navigation
-                    NotificationCenter.default.post(name: .paymentError, object: error)
+                    NotificationCenter.default.post(name: .composablePaymentError, object: error)
                 }
             }
             
@@ -60,7 +60,7 @@ internal class PaymentServiceImpl: PaymentService, LogReporter {
             logger.error(message: "❌ [PaymentService] Payment processing threw error: \(error.localizedDescription)")
             
             // Post error notification for navigation
-            NotificationCenter.default.post(name: .paymentError, object: error)
+            NotificationCenter.default.post(name: .composablePaymentError, object: error)
             
             throw error
         }
