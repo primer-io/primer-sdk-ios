@@ -7,15 +7,15 @@
 
 import SwiftUI
 
-/// Static Primer object that matches Android's API structure.
+/// Static ComposablePrimer object that matches Android's API structure.
 /// Provides a simple configuration pattern and scope-based ComposableCheckout.
 @available(iOS 15.0, *)
-public struct Primer: LogReporter {
+public struct ComposablePrimer: LogReporter {
     
     // MARK: - Configuration Storage
     
     /// Current configuration set via configure() method
-    internal static var configuration: PrimerConfiguration?
+    internal static var configuration: ComposablePrimerConfiguration?
     
     // MARK: - Public API
     
@@ -27,16 +27,16 @@ public struct Primer: LogReporter {
     ///   - settings: Configuration settings (defaults to .default)
     public static func configure(
         clientToken: String,
-        settings: PrimerSettings = .default
+        settings: ComposablePrimerSettings = .default
     ) {
-        logger.debug(message: "🔧 [Primer] Configuring with client token")
+        logger.debug(message: "🔧 [ComposablePrimer] Configuring with client token")
         
-        self.configuration = PrimerConfiguration(
+        self.configuration = ComposablePrimerConfiguration(
             clientToken: clientToken,
             settings: settings
         )
         
-        logger.info(message: "✅ [Primer] Configuration completed")
+        logger.info(message: "✅ [ComposablePrimer] Configuration completed")
     }
     
     /// ComposableCheckout that matches Android's API structure.
@@ -51,15 +51,14 @@ public struct Primer: LogReporter {
     ///   - successScreen: Custom success screen implementation
     ///   - errorScreen: Custom error screen implementation (receives error message)
     /// - Returns: SwiftUI view for the checkout flow
-    @ViewBuilder
     public static func ComposableCheckout(
-        container: (@ViewBuilder (_ content: @escaping () -> any View) -> any View)? = nil,
-        splashScreen: (@ViewBuilder () -> any View)? = nil,
-        loadingScreen: (@ViewBuilder () -> any View)? = nil,
-        paymentSelectionScreen: (@ViewBuilder () -> any View)? = nil,
-        cardFormScreen: (@ViewBuilder () -> any View)? = nil,
-        successScreen: (@ViewBuilder () -> any View)? = nil,
-        errorScreen: (@ViewBuilder (_ cause: String) -> any View)? = nil
+        container: ((_ content: @escaping () -> AnyView) -> AnyView)? = nil,
+        splashScreen: (() -> AnyView)? = nil,
+        loadingScreen: (() -> AnyView)? = nil,
+        paymentSelectionScreen: (() -> AnyView)? = nil,
+        cardFormScreen: (() -> AnyView)? = nil,
+        successScreen: (() -> AnyView)? = nil,
+        errorScreen: ((_ cause: String) -> AnyView)? = nil
     ) -> some View {
         ComposableCheckoutView(
             container: container,
@@ -76,25 +75,25 @@ public struct Primer: LogReporter {
 // MARK: - Internal Configuration Model
 
 /// Internal configuration storage that holds client token and settings
-internal struct PrimerConfiguration: LogReporter {
+internal struct ComposablePrimerConfiguration: LogReporter {
     let clientToken: String
-    let settings: PrimerSettings
+    let settings: ComposablePrimerSettings
     
-    init(clientToken: String, settings: PrimerSettings) {
+    init(clientToken: String, settings: ComposablePrimerSettings) {
         self.clientToken = clientToken
         self.settings = settings
         
-        logger.debug(message: "📋 [PrimerConfiguration] Created with token: \(clientToken.prefix(8))...")
+        logger.debug(message: "📋 [ComposablePrimerConfiguration] Created with token: \(clientToken.prefix(8))...")
     }
 }
 
 // MARK: - Public Settings Model
 
 /// Public settings model that matches Android's structure
-public struct PrimerSettings {
+public struct ComposablePrimerSettings {
     
     /// Default settings instance
-    public static let `default` = PrimerSettings()
+    public static let `default` = ComposablePrimerSettings()
     
     // Additional settings properties can be added here as needed
     // to match Android's PrimerSettings structure

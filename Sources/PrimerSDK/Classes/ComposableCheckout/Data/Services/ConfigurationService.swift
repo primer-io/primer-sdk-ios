@@ -12,9 +12,9 @@ import Foundation
 internal protocol ConfigurationService: LogReporter {
     /// Initializes the SDK configuration with the provided client token
     /// - Parameter clientToken: The client token for SDK initialization
-    /// - Returns: PrimerConfiguration object
+    /// - Returns: ComposablePrimerConfiguration object
     /// - Throws: Error if initialization fails
-    func initialize(clientToken: String) async throws -> PrimerConfiguration
+    func initialize(clientToken: String) async throws -> ComposablePrimerConfiguration
 }
 
 /// Implementation of ConfigurationService that integrates with existing SDK configuration
@@ -23,7 +23,7 @@ internal class ConfigurationServiceImpl: ConfigurationService, LogReporter {
     
     // MARK: - ConfigurationService
     
-    func initialize(clientToken: String) async throws -> PrimerConfiguration {
+    func initialize(clientToken: String) async throws -> ComposablePrimerConfiguration {
         logger.debug(message: "🔧 [ConfigurationService] Starting SDK configuration initialization")
         
         do {
@@ -74,7 +74,7 @@ internal class ConfigurationServiceImpl: ConfigurationService, LogReporter {
         logger.debug(message: "✅ [ConfigurationService] Client token validation passed")
     }
     
-    private func initializeSDKConfiguration(clientToken: String) async throws -> PrimerConfiguration {
+    private func initializeSDKConfiguration(clientToken: String) async throws -> ComposablePrimerConfiguration {
         logger.debug(message: "🌐 [ConfigurationService] Initializing configuration with existing SDK")
         
         // TODO: Replace with actual SDK configuration initialization
@@ -89,8 +89,8 @@ internal class ConfigurationServiceImpl: ConfigurationService, LogReporter {
         try await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
         
         // Create configuration with settings
-        let settings = PrimerSettings.default
-        let configuration = PrimerConfiguration(
+        let settings = ComposablePrimerSettings.default
+        let configuration = ComposablePrimerConfiguration(
             clientToken: clientToken,
             settings: settings
         )
