@@ -12,12 +12,12 @@ import Foundation
 internal struct CheckoutConfiguration {
     let configuration: PrimerConfiguration
     let paymentMethods: [PrimerComposablePaymentMethod]
-    let currency: Currency?
+    let currency: ComposableCurrency?
     
     init(
         config: PrimerConfiguration,
         paymentMethods: [PrimerComposablePaymentMethod],
-        currency: Currency? = nil
+        currency: ComposableCurrency? = nil
     ) {
         self.configuration = config
         self.paymentMethods = paymentMethods
@@ -91,9 +91,9 @@ internal struct PaymentToken {
     }
 }
 
-/// Domain model for payment result
+/// Domain model for payment result (internal)
 @available(iOS 15.0, *)
-internal struct PaymentResult {
+internal struct ComposablePaymentResult {
     let success: Bool
     let transactionId: String?
     let error: Error?

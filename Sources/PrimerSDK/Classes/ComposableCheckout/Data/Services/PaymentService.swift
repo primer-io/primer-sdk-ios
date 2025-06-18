@@ -14,7 +14,7 @@ internal protocol PaymentService: LogReporter {
     /// - Parameter token: The payment token to process
     /// - Returns: PaymentResult containing the processing outcome
     /// - Throws: Error if payment processing fails
-    func processPayment(token: PaymentToken) async throws -> PaymentResult
+    func processPayment(token: PaymentToken) async throws -> ComposablePaymentResult
 }
 
 /// Implementation of PaymentService that integrates with existing SDK payment processing
@@ -23,7 +23,7 @@ internal class PaymentServiceImpl: PaymentService, LogReporter {
     
     // MARK: - PaymentService
     
-    func processPayment(token: PaymentToken) async throws -> PaymentResult {
+    func processPayment(token: PaymentToken) async throws -> ComposablePaymentResult {
         logger.debug(message: "💰 [PaymentService] Starting payment processing with existing SDK")
         logger.debug(message: "🔐 [PaymentService] Token type: \(token.tokenType)")
         
@@ -45,7 +45,7 @@ internal class PaymentServiceImpl: PaymentService, LogReporter {
                 // Post success notification for navigation
                 NotificationCenter.default.post(name: .paymentCompleted, object: result)
             } else {
-                logger.warning(message: "⚠️ [PaymentService] Payment processing failed")
+                logger.warn(message: "⚠️ [PaymentService] Payment processing failed")
                 if let error = result.error {
                     logger.error(message: "❌ [PaymentService] Payment error: \(error.localizedDescription)")
                     
@@ -68,7 +68,7 @@ internal class PaymentServiceImpl: PaymentService, LogReporter {
     
     // MARK: - Private Methods
     
-    private func processPaymentWithSDK(token: PaymentToken) async throws -> PaymentResult {
+    private func processPaymentWithSDK(token: PaymentToken) async throws -> ComposablePaymentResult {
         logger.debug(message: "🌐 [PaymentService] Integrating with existing SDK payment processing")
         
         // TODO: Replace with actual SDK integration
@@ -89,7 +89,7 @@ internal class PaymentServiceImpl: PaymentService, LogReporter {
             
             logger.debug(message: "✅ [PaymentService] SDK payment processing successful")
             
-            return PaymentResult(
+            return ComposablePaymentResult(
                 success: true,
                 transactionId: transactionId,
                 error: nil,
@@ -100,7 +100,7 @@ internal class PaymentServiceImpl: PaymentService, LogReporter {
             
             logger.debug(message: "❌ [PaymentService] SDK payment processing failed")
             
-            return PaymentResult(
+            return ComposablePaymentResult(
                 success: false,
                 transactionId: nil,
                 error: error,

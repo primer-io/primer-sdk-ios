@@ -99,7 +99,7 @@ public struct PrimerComposablePaymentMethodSurcharge: Equatable, Hashable {
 }
 
 /// Currency information (matches Android exactly)
-public struct Currency: Equatable, Hashable {
+public struct ComposableCurrency: Equatable, Hashable {
     /// Currency code (e.g., "USD", "EUR")
     public let code: String
     
@@ -116,7 +116,7 @@ public struct Currency: Equatable, Hashable {
     }
     
     /// Equatable implementation
-    public static func == (lhs: Currency, rhs: Currency) -> Bool {
+    public static func == (lhs: ComposableCurrency, rhs: ComposableCurrency) -> Bool {
         return lhs.code == rhs.code && lhs.symbol == rhs.symbol
     }
     

@@ -8,7 +8,7 @@
 import Foundation
 
 /// Input element types that match Android's PrimerInputElementType exactly
-public enum PrimerInputElementType: String, CaseIterable, Hashable {
+internal enum ComposableInputElementType: String, CaseIterable, Hashable {
     case cardNumber = "CARD_NUMBER"
     case cvv = "CVV"
     case expiryDate = "EXPIRY_DATE"
@@ -27,32 +27,32 @@ public enum PrimerInputElementType: String, CaseIterable, Hashable {
 }
 
 /// Input validation error that matches Android's PrimerInputValidationError exactly
-public struct PrimerInputValidationError: Equatable, Identifiable, Hashable {
+internal struct ComposableInputValidationError: Equatable, Identifiable, Hashable {
     /// Unique identifier for the error
-    public var id: String { "\(elementType.rawValue)_\(errorMessage.hashValue)" }
+    var id: String { "\(elementType.rawValue)_\(errorMessage.hashValue)" }
     
     /// The input element type that has the error
-    public let elementType: PrimerInputElementType
+    let elementType: ComposableInputElementType
     
     /// The error message to display
-    public let errorMessage: String
+    let errorMessage: String
     
     /// Initialize validation error
     /// - Parameters:
     ///   - elementType: Input element type with error
     ///   - errorMessage: Error message to display
-    public init(elementType: PrimerInputElementType, errorMessage: String) {
+    init(elementType: ComposableInputElementType, errorMessage: String) {
         self.elementType = elementType
         self.errorMessage = errorMessage
     }
     
     /// Equatable implementation
-    public static func == (lhs: PrimerInputValidationError, rhs: PrimerInputValidationError) -> Bool {
+    static func == (lhs: ComposableInputValidationError, rhs: ComposableInputValidationError) -> Bool {
         return lhs.elementType == rhs.elementType && lhs.errorMessage == rhs.errorMessage
     }
     
     /// Hashable implementation
-    public func hash(into hasher: inout Hasher) {
+    func hash(into hasher: inout Hasher) {
         hasher.combine(elementType)
         hasher.combine(errorMessage)
     }

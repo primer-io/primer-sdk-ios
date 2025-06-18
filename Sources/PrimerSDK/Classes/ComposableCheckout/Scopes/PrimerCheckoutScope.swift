@@ -49,8 +49,8 @@ public extension PrimerCheckoutScope {
 
 // MARK: - State Model
 
-/// State model for the overall checkout process
-public enum CheckoutState {
+/// Internal state model for scope implementation
+internal enum ScopeCheckoutState {
     case notInitialized
     case initializing
     case ready
@@ -63,27 +63,40 @@ public enum CheckoutState {
 @available(iOS 15.0, *)
 internal class DefaultPrimerCheckoutScope: PrimerCheckoutScope, LogReporter {
     
-    @Published private var _state: CheckoutState = .notInitialized
+    @Published private var _internalState: ScopeCheckoutState = .notInitialized
     
     public var state: AnyPublisher<CheckoutState, Never> {
-        $_state.eraseToAnyPublisher()
+        $_internalState
+            .map { internalState in
+                switch internalState {
+                case .notInitialized:
+                    return CheckoutState.notInitialized
+                case .initializing:
+                    return CheckoutState.initializing
+                case .ready:
+                    return CheckoutState.ready
+                case .error(let error):
+                    return CheckoutState.error(error.localizedDescription)
+                }
+            }
+            .eraseToAnyPublisher()
     }
     
     public func initialize() {
         logger.debug(message: "🚀 [DefaultPrimerCheckoutScope] Initializing checkout")
-        _state = .initializing
+        _internalState = .initializing
         
         // Simulate initialization
         Task {
             try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
             await MainActor.run {
-                _state = .ready
+                _internalState = .ready
             }
         }
     }
     
     public func cleanup() {
         logger.debug(message: "🧹 [DefaultPrimerCheckoutScope] Cleaning up checkout")
-        _state = .notInitialized
+        _internalState = .notInitialized
     }
 }
