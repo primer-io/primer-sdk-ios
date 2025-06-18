@@ -157,7 +157,7 @@ private struct PrimaryButtonStyle: ButtonStyle {
             .frame(height: 50)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(tokens?.primerColorPrimary ?? .blue)
+                    .fill(tokens?.primerColorBrand ?? .blue)
                     .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
             )
             .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
@@ -170,13 +170,13 @@ private struct SecondaryButtonStyle: ButtonStyle {
     
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .foregroundColor(tokens?.primerColorPrimary ?? .blue)
+            .foregroundColor(tokens?.primerColorBrand ?? .blue)
             .font(.headline)
             .frame(maxWidth: .infinity)
             .frame(height: 50)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(tokens?.primerColorPrimary ?? .blue, lineWidth: 2)
+                    .stroke(tokens?.primerColorBrand ?? .blue, lineWidth: 2)
                     .background(
                         RoundedRectangle(cornerRadius: 12)
                             .fill(Color.clear)

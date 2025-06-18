@@ -55,7 +55,7 @@ public struct SubmitButtonWrapper: View {
             .foregroundColor(.white)
             .background(
                 (isEnabled && !isLoading) 
-                    ? (tokens?.primerColorPrimary ?? .blue)
+                    ? (tokens?.primerColorBrand ?? .blue)
                     : (tokens?.primerColorGray300 ?? .gray)
             )
             .cornerRadius(8)
@@ -72,7 +72,7 @@ public struct SubmitButtonWrapper: View {
         // Subscribe to scope state changes
         scope.state
             .receive(on: DispatchQueue.main)
-            .sink { [weak self = self] state in
+            .sink { [weak self] state in
                 self?.updateFromScopeState(state)
             }
             .store(in: &cancellables)

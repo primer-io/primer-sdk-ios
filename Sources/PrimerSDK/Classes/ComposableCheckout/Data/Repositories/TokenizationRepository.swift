@@ -23,11 +23,11 @@ internal class TokenizationRepositoryImpl: TokenizationRepository, LogReporter {
     
     // MARK: - Dependencies
     
-    private let tokenizationService: TokenizationService
+    private let tokenizationService: ComposableTokenizationService
     
     // MARK: - Initialization
     
-    init(tokenizationService: TokenizationService) {
+    init(tokenizationService: ComposableTokenizationService) {
         self.tokenizationService = tokenizationService
         logger.debug(message: "🏗️ [TokenizationRepository] Initialized")
     }

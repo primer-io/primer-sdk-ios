@@ -9,7 +9,7 @@ import Foundation
 
 /// Service interface for card tokenization that integrates with existing SDK
 @available(iOS 15.0, *)
-internal protocol TokenizationService: LogReporter {
+internal protocol ComposableTokenizationService: LogReporter {
     /// Tokenizes card data using the existing SDK's PCI-compliant tokenization
     /// - Parameter cardData: The card data to tokenize
     /// - Returns: PaymentToken containing the tokenized card information
@@ -17,11 +17,11 @@ internal protocol TokenizationService: LogReporter {
     func tokenizeCard(_ cardData: CardPaymentData) async throws -> PaymentToken
 }
 
-/// Implementation of TokenizationService that integrates with existing SDK PCI-compliant tokenization
+/// Implementation of ComposableTokenizationService that integrates with existing SDK PCI-compliant tokenization
 @available(iOS 15.0, *)
-internal class TokenizationServiceImpl: TokenizationService, LogReporter {
+internal class ComposableTokenizationServiceImpl: ComposableTokenizationService, LogReporter {
     
-    // MARK: - TokenizationService
+    // MARK: - ComposableTokenizationService
     
     func tokenizeCard(_ cardData: CardPaymentData) async throws -> PaymentToken {
         logger.debug(message: "🔐 [TokenizationService] Starting card tokenization with existing SDK")

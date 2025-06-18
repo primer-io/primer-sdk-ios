@@ -10,10 +10,10 @@ import Foundation
 /// State model for card form that matches Android's CardFormScope.State exactly
 public struct CardFormState: Equatable, Hashable {
     /// Map of input fields to their current values (simplified)
-    public let inputFields: [PrimerInputElementType: String]
+    public let inputFields: [ComposableInputElementType: String]
     
     /// List of current field validation errors
-    public let fieldErrors: [PrimerInputValidationError]
+    public let fieldErrors: [ComposableInputValidationError]
     
     /// Whether the form is currently loading/submitting
     public let isLoading: Bool
@@ -22,12 +22,12 @@ public struct CardFormState: Equatable, Hashable {
     public let isSubmitEnabled: Bool
     
     /// List of card-related input fields (derived)
-    public var cardFields: [PrimerInputElementType] {
+    public var cardFields: [ComposableInputElementType] {
         [.cardNumber, .cvv, .expiryDate, .cardholderName]
     }
     
     /// List of billing address input fields (derived)
-    public var billingFields: [PrimerInputElementType] {
+    public var billingFields: [ComposableInputElementType] {
         [.postalCode, .countryCode, .city, .state, .addressLine1, .addressLine2]
     }
     
@@ -46,8 +46,8 @@ public struct CardFormState: Equatable, Hashable {
     ///   - isLoading: Loading state
     ///   - isSubmitEnabled: Submit button enabled state
     public init(
-        inputFields: [PrimerInputElementType: String],
-        fieldErrors: [PrimerInputValidationError],
+        inputFields: [ComposableInputElementType: String],
+        fieldErrors: [ComposableInputValidationError],
         isLoading: Bool,
         isSubmitEnabled: Bool
     ) {

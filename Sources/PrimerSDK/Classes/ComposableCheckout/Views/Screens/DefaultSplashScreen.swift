@@ -17,7 +17,7 @@ internal struct DefaultSplashScreen: View {
         VStack(spacing: 24) {
             Image(systemName: "creditcard")
                 .font(.system(size: 64))
-                .foregroundColor(tokens?.primerColorPrimary ?? .blue)
+                .foregroundColor(tokens?.primerColorBrand ?? .blue)
             
             Text("Primer Checkout")
                 .font(.largeTitle)
@@ -25,7 +25,7 @@ internal struct DefaultSplashScreen: View {
                 .foregroundColor(tokens?.primerColorText ?? .primary)
             
             ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: tokens?.primerColorPrimary ?? .blue))
+                .progressViewStyle(CircularProgressViewStyle(tint: tokens?.primerColorBrand ?? .blue))
                 .scaleEffect(1.2)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

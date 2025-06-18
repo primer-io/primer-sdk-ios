@@ -72,7 +72,7 @@ internal struct DefaultPaymentSelectionScreen: View, LogReporter {
     private var loadingView: some View {
         VStack(spacing: 16) {
             ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: tokens?.primerColorPrimary ?? .blue))
+                .progressViewStyle(CircularProgressViewStyle(tint: tokens?.primerColorBrand ?? .blue))
                 .scaleEffect(1.2)
             
             Text("Loading payment methods...")
@@ -104,7 +104,7 @@ internal struct DefaultPaymentSelectionScreen: View, LogReporter {
                 logger.debug(message: "🔄 [DefaultPaymentSelectionScreen] Retry button tapped")
             }
             .buttonStyle(.borderedProminent)
-            .tint(tokens?.primerColorPrimary ?? .blue)
+            .tint(tokens?.primerColorBrand ?? .blue)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
@@ -185,11 +185,11 @@ private struct PaymentMethodItemView: View {
                 // Payment method icon
                 Image(systemName: paymentMethodIcon)
                     .font(.system(size: 24))
-                    .foregroundColor(tokens?.primerColorPrimary ?? .blue)
+                    .foregroundColor(tokens?.primerColorBrand ?? .blue)
                     .frame(width: 40, height: 40)
                     .background(
                         Circle()
-                            .fill((tokens?.primerColorPrimary ?? .blue).opacity(0.1))
+                            .fill((tokens?.primerColorBrand ?? .blue).opacity(0.1))
                     )
                 
                 // Payment method details

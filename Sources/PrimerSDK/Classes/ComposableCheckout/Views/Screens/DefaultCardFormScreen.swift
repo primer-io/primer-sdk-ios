@@ -47,7 +47,7 @@ internal struct DefaultCardFormScreen: View, LogReporter {
                     Button("Cancel") {
                         presentationMode.wrappedValue.dismiss()
                     }
-                    .foregroundColor(tokens?.primerColorPrimary ?? .blue)
+                    .foregroundColor(tokens?.primerColorBrand ?? .blue)
                 }
             }
         }

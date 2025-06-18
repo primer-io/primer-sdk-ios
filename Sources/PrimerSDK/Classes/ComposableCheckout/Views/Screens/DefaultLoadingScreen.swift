@@ -27,7 +27,7 @@ internal struct DefaultLoadingScreen: View {
                 Circle()
                     .trim(from: 0, to: 0.8)
                     .stroke(
-                        tokens?.primerColorPrimary ?? .blue,
+                        tokens?.primerColorBrand ?? .blue,
                         style: StrokeStyle(lineWidth: 8, lineCap: .round)
                     )
                     .frame(width: 80, height: 80)

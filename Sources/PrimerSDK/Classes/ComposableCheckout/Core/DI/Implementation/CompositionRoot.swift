@@ -497,11 +497,11 @@ extension CompositionRoot {
             }
         
         // Tokenization Service
-        _ = try? await container.register(TokenizationService.self)
+        _ = try? await container.register(ComposableTokenizationService.self)
             .asSingleton()
             .with { _ in 
-                logger.debug(message: "🏭 [CompositionRoot] Creating TokenizationService")
-                return TokenizationServiceImpl() 
+                logger.debug(message: "🏭 [CompositionRoot] Creating ComposableTokenizationService")
+                return ComposableTokenizationServiceImpl() 
             }
         
         logger.debug(message: "✅ [CompositionRoot] Services registration completed")
@@ -548,7 +548,7 @@ extension CompositionRoot {
             .with { resolver in
                 logger.debug(message: "🏭 [CompositionRoot] Creating TokenizationRepository")
                 return TokenizationRepositoryImpl(
-                    tokenizationService: try await resolver.resolve(TokenizationService.self)
+                    tokenizationService: try await resolver.resolve(ComposableTokenizationService.self)
                 )
             }
         
