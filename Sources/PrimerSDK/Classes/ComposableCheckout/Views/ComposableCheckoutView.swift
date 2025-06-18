@@ -14,13 +14,13 @@ internal struct ComposableCheckoutView: View, LogReporter {
     
     // MARK: - Customization Closures
     
-    let container: (@ViewBuilder (_ content: @escaping () -> any View) -> any View)?
-    let splashScreen: (@ViewBuilder () -> any View)?
-    let loadingScreen: (@ViewBuilder () -> any View)?
-    let paymentSelectionScreen: (@ViewBuilder () -> any View)?
-    let cardFormScreen: (@ViewBuilder () -> any View)?
-    let successScreen: (@ViewBuilder () -> any View)?
-    let errorScreen: (@ViewBuilder (_ cause: String) -> any View)?
+    let container: ((_ content: @escaping () -> AnyView) -> AnyView)?
+    let splashScreen: (() -> AnyView)?
+    let loadingScreen: (() -> AnyView)?
+    let paymentSelectionScreen: (() -> AnyView)?
+    let cardFormScreen: (() -> AnyView)?
+    let successScreen: (() -> AnyView)?
+    let errorScreen: ((_ cause: String) -> AnyView)?
     
     // MARK: - State
     
@@ -32,13 +32,13 @@ internal struct ComposableCheckoutView: View, LogReporter {
     // MARK: - Initialization
     
     init(
-        container: (@ViewBuilder (_ content: @escaping () -> any View) -> any View)? = nil,
-        splashScreen: (@ViewBuilder () -> any View)? = nil,
-        loadingScreen: (@ViewBuilder () -> any View)? = nil,
-        paymentSelectionScreen: (@ViewBuilder () -> any View)? = nil,
-        cardFormScreen: (@ViewBuilder () -> any View)? = nil,
-        successScreen: (@ViewBuilder () -> any View)? = nil,
-        errorScreen: (@ViewBuilder (_ cause: String) -> any View)? = nil
+        container: ((_ content: @escaping () -> AnyView) -> AnyView)? = nil,
+        splashScreen: (() -> AnyView)? = nil,
+        loadingScreen: (() -> AnyView)? = nil,
+        paymentSelectionScreen: (() -> AnyView)? = nil,
+        cardFormScreen: (() -> AnyView)? = nil,
+        successScreen: (() -> AnyView)? = nil,
+        errorScreen: ((_ cause: String) -> AnyView)? = nil
     ) {
         self.container = container
         self.splashScreen = splashScreen
@@ -85,17 +85,17 @@ internal struct ComposableCheckoutView: View, LogReporter {
         VStack {
             switch currentScreen {
             case .splash:
-                splashScreen?() ?? DefaultSplashScreen()
+                AnyView(splashScreen?() ?? AnyView(DefaultSplashScreen()))
             case .loading:
-                loadingScreen?() ?? DefaultLoadingScreen()
+                AnyView(loadingScreen?() ?? AnyView(DefaultLoadingScreen()))
             case .paymentSelection:
-                paymentSelectionScreen?() ?? DefaultPaymentSelectionScreen(scope: paymentSelectionScope)
+                AnyView(paymentSelectionScreen?() ?? AnyView(DefaultPaymentSelectionScreen(scope: paymentSelectionScope)))
             case .cardForm:
-                cardFormScreen?() ?? DefaultCardFormScreen(scope: cardFormScope)
+                AnyView(cardFormScreen?() ?? AnyView(DefaultCardFormScreen(scope: cardFormScope)))
             case .success:
-                successScreen?() ?? DefaultSuccessScreen()
+                AnyView(successScreen?() ?? AnyView(DefaultSuccessScreen()))
             case .error:
-                errorScreen?(errorMessage) ?? DefaultErrorScreen(errorMessage: errorMessage)
+                AnyView(errorScreen?(errorMessage) ?? AnyView(DefaultErrorScreen(errorMessage: errorMessage)))
             }
         }
         .onReceive(checkoutScope.state) { state in
@@ -143,7 +143,7 @@ internal struct ComposableCheckoutView: View, LogReporter {
         logger.debug(message: "🔗 [ComposableCheckoutView] Setting up navigation observers")
         
         // Observe payment method selection
-        NotificationCenter.default.publisher(for: .paymentMethodSelected)
+        NotificationCenter.default.publisher(for: .composablePaymentMethodSelected)
             .receive(on: DispatchQueue.main)
             .sink { notification in
                 if let paymentMethod = notification.object as? PrimerComposablePaymentMethod {
@@ -153,7 +153,7 @@ internal struct ComposableCheckoutView: View, LogReporter {
             .store(in: &cancellables)
         
         // Observe payment completion
-        NotificationCenter.default.publisher(for: .paymentCompleted)
+        NotificationCenter.default.publisher(for: .composablePaymentCompleted)
             .receive(on: DispatchQueue.main)
             .sink { _ in
                 logger.info(message: "✅ [ComposableCheckoutView] Payment completed successfully")
@@ -162,7 +162,7 @@ internal struct ComposableCheckoutView: View, LogReporter {
             .store(in: &cancellables)
         
         // Observe payment errors
-        NotificationCenter.default.publisher(for: .paymentError)
+        NotificationCenter.default.publisher(for: .composablePaymentError)
             .receive(on: DispatchQueue.main)
             .sink { notification in
                 if let error = notification.object as? Error {
@@ -181,7 +181,7 @@ internal struct ComposableCheckoutView: View, LogReporter {
         case "PAYMENT_CARD":
             currentScreen = .cardForm
         default:
-            logger.warning(message: "⚠️ [ComposableCheckoutView] Unsupported payment method: \(paymentMethod.paymentMethodType)")
+            logger.warn(message: "⚠️ [ComposableCheckoutView] Unsupported payment method: \(paymentMethod.paymentMethodType)")
             // Handle other payment methods in future iterations
             break
         }
@@ -202,9 +202,9 @@ internal struct ComposableCheckoutView: View, LogReporter {
 // MARK: - Notification Names Extension
 
 extension Notification.Name {
-    static let paymentMethodSelected = Notification.Name("PaymentMethodSelected")
-    static let paymentCompleted = Notification.Name("PaymentCompleted")
-    static let paymentError = Notification.Name("PaymentError")
+    static let composablePaymentMethodSelected = Notification.Name("ComposablePaymentMethodSelected")
+    static let composablePaymentCompleted = Notification.Name("ComposablePaymentCompleted")
+    static let composablePaymentError = Notification.Name("ComposablePaymentError")
 }
 
 // MARK: - Preview
@@ -213,36 +213,5 @@ extension Notification.Name {
 struct ComposableCheckoutView_Previews: PreviewProvider {
     static var previews: some View {
         ComposableCheckoutView()
-            .environment(\.diContainer, MockDIContainer())
-    }
-}
-
-// MARK: - Mock DI Container for Preview
-
-@available(iOS 15.0, *)
-private class MockDIContainer: DIContainerProtocol {
-    func resolve<T>(_ type: T.Type) async throws -> T {
-        throw ContainerError.typeNotRegistered(String(describing: type))
-    }
-    
-    func isRegistered<T>(_ type: T.Type) async -> Bool {
-        false
-    }
-    
-    func getDiagnostics() async -> ContainerDiagnostics {
-        ContainerDiagnostics(
-            registeredTypes: [],
-            singletonCount: 0,
-            weakReferenceCount: 0,
-            transientResolutions: 0
-        )
-    }
-    
-    func performHealthCheck() async -> ContainerHealthReport {
-        ContainerHealthReport(
-            isHealthy: false,
-            issues: ["Mock container for preview"],
-            performanceMetrics: [:]
-        )
     }
 }
