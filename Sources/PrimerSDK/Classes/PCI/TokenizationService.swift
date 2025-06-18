@@ -10,7 +10,6 @@ internal protocol TokenizationServiceProtocol {
     func exchangePaymentMethodToken(_ paymentMethodTokenId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?) async throws -> PrimerPaymentMethodTokenData
 }
 
-// MARK: MISSING_TESTS
 final class TokenizationService: TokenizationServiceProtocol, LogReporter {
     var paymentMethodTokenData: PrimerPaymentMethodTokenData?
 
