@@ -46,7 +46,7 @@ internal class PaymentRepositoryImpl: PaymentRepository, LogReporter {
                 logger.debug(message: "🎯 [PaymentRepository] Transaction ID: \(result.transactionId ?? "N/A")")
                 logger.debug(message: "📊 [PaymentRepository] Payment status: \(result.paymentStatus)")
             } else {
-                logger.warning(message: "⚠️ [PaymentRepository] Payment processing failed")
+                logger.warn(message: "⚠️ [PaymentRepository] Payment processing failed")
                 if let error = result.error {
                     logger.error(message: "❌ [PaymentRepository] Payment error: \(error.localizedDescription)")
                 }

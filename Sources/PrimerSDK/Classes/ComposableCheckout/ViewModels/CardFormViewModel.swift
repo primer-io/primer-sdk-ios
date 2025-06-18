@@ -26,18 +26,18 @@ public class CardFormViewModel: CardFormScope, LogReporter {
     
     // MARK: - Dependencies
     
-    private let container: DIContainer
+    private let container: any ContainerProtocol
     private let validationService: ValidationService
     private let processCardPaymentInteractor: ProcessCardPaymentInteractor
     private let validatePaymentDataInteractor: ValidatePaymentDataInteractor
     
     // MARK: - Initialization
     
-    public init(container: DIContainer, validationService: ValidationService) async throws {
+    public init(container: any ContainerProtocol, validationService: ValidationService) async throws {
         self.container = container
         self.validationService = validationService
-        self.processCardPaymentInteractor = try await container.resolve(ProcessCardPaymentInteractor.self)
-        self.validatePaymentDataInteractor = try await container.resolve(ValidatePaymentDataInteractor.self)
+        self.processCardPaymentInteractor = try await container.resolve(ProcessCardPaymentInteractor.self, name: nil)
+        self.validatePaymentDataInteractor = try await container.resolve(ValidatePaymentDataInteractor.self, name: nil)
         logger.debug(message: "💳 [CardFormViewModel] Initializing card form")
         await setupInitialState()
     }

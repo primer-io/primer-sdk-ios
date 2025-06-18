@@ -119,7 +119,7 @@ internal class PaymentMethodRepositoryImpl: PaymentMethodRepository, LogReporter
         }
         
         // Fallback for unknown method types
-        logger.warning(message: "⚠️ [PaymentMethodRepository] Unknown payment method type, creating default")
+        logger.warn(message: "⚠️ [PaymentMethodRepository] Unknown payment method type, creating default")
         
         return PrimerComposablePaymentMethod(
             paymentMethodType: "UNKNOWN",

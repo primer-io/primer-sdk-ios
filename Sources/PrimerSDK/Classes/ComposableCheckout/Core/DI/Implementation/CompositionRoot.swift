@@ -404,23 +404,17 @@ extension CompositionRoot {
         // CheckoutViewModel - implements PrimerCheckoutScope
         _ = try? await container.register(CheckoutViewModel.self)
             .asTransient()
-            .with { _ in
-                guard let diContainer = await DIContainer.current else {
-                    throw ContainerError.containerUnavailable
-                }
-                return try await CheckoutViewModel(container: diContainer)
+            .with { container in
+                return try await CheckoutViewModel(container: container)
             }
         
         // CardFormViewModel - implements CardFormScope
         _ = try? await container.register(CardFormViewModel.self)
             .asTransient()
-            .with { resolver in
-                let validationService = try await resolver.resolve(ValidationService.self)
-                guard let diContainer = await DIContainer.current else {
-                    throw ContainerError.containerUnavailable
-                }
+            .with { container in
+                let validationService = try await container.resolve(ValidationService.self, name: nil)
                 return try await CardFormViewModel(
-                    container: diContainer,
+                    container: container,
                     validationService: validationService
                 )
             }
@@ -428,11 +422,8 @@ extension CompositionRoot {
         // PaymentMethodSelectionViewModel - implements PaymentMethodSelectionScope
         _ = try? await container.register(PaymentMethodSelectionViewModel.self)
             .asTransient()
-            .with { _ in
-                guard let diContainer = await DIContainer.current else {
-                    throw ContainerError.containerUnavailable
-                }
-                return try await PaymentMethodSelectionViewModel(container: diContainer)
+            .with { container in
+                return try await PaymentMethodSelectionViewModel(container: container)
             }
 
         // Register protocol implementations using the new ViewModels

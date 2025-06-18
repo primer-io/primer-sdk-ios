@@ -26,16 +26,16 @@ public class CheckoutViewModel: PrimerCheckoutScope, LogReporter {
     
     // MARK: - Dependencies
     
-    private let container: DIContainer
+    private let container: any ContainerProtocol
     private let initializeCheckoutInteractor: InitializeCheckoutInteractor
     private var clientToken: String?
     private var settings: PrimerSettings?
     
     // MARK: - Initialization
     
-    public init(container: DIContainer) async throws {
+    public init(container: any ContainerProtocol) async throws {
         self.container = container
-        self.initializeCheckoutInteractor = try await container.resolve(InitializeCheckoutInteractor.self)
+        self.initializeCheckoutInteractor = try await container.resolve(InitializeCheckoutInteractor.self, name: nil)
         logger.debug(message: "🚀 [CheckoutViewModel] Initializing checkout")
         await initialize()
     }

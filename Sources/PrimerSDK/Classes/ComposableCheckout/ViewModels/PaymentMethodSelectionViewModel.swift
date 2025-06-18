@@ -26,14 +26,14 @@ public class PaymentMethodSelectionViewModel: PaymentMethodSelectionScope, LogRe
     
     // MARK: - Dependencies
     
-    private let container: DIContainer
+    private let container: any ContainerProtocol
     private let getPaymentMethodsInteractor: GetPaymentMethodsInteractor
     
     // MARK: - Initialization
     
-    public init(container: DIContainer) async throws {
+    public init(container: any ContainerProtocol) async throws {
         self.container = container
-        self.getPaymentMethodsInteractor = try await container.resolve(GetPaymentMethodsInteractor.self)
+        self.getPaymentMethodsInteractor = try await container.resolve(GetPaymentMethodsInteractor.self, name: nil)
         logger.debug(message: "📋 [PaymentMethodSelectionViewModel] Initializing payment method selection")
         await loadPaymentMethods()
     }
