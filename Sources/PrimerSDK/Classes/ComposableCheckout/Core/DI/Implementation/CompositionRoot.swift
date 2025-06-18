@@ -399,26 +399,36 @@ extension CompositionRoot {
     private static func registerNewAPIScopes(in container: Container) async {
         logger.info(message: "🎯 [CompositionRoot] Starting new API scopes registration")
 
+        // Register CheckoutNavigator first (needed by other components)
+        _ = try? await container.register(CheckoutNavigator.self)
+            .asSingleton()
+            .with { _ in
+                logger.debug(message: "🏭 [CompositionRoot] Creating CheckoutNavigator")
+                return CheckoutNavigator()
+            }
+
         // Register the new ViewModel implementations that implement the scope protocols
-        
+
         // CheckoutViewModel - implements PrimerCheckoutScope
         _ = try? await container.register(CheckoutViewModel.self)
             .asTransient()
             .with { container in
                 return try await CheckoutViewModel(container: container)
             }
-        
+
         // CardFormViewModel - implements CardFormScope
         _ = try? await container.register(CardFormViewModel.self)
             .asTransient()
             .with { container in
                 let validationService = try await container.resolve(ValidationService.self, name: nil)
+                let navigator = try await container.resolve(CheckoutNavigator.self)
                 return try await CardFormViewModel(
                     container: container,
-                    validationService: validationService
+                    validationService: validationService,
+                    navigator: navigator
                 )
             }
-            
+
         // PaymentMethodSelectionViewModel - implements PaymentMethodSelectionScope
         _ = try? await container.register(PaymentMethodSelectionViewModel.self)
             .asTransient()
@@ -432,13 +442,13 @@ extension CompositionRoot {
             .with { resolver in
                 try await resolver.resolve(CheckoutViewModel.self)
             }
-            
+
         _ = try? await container.register((any CardFormScope).self)
             .asTransient()
             .with { resolver in
                 try await resolver.resolve(CardFormViewModel.self)
             }
-            
+
         _ = try? await container.register((any PaymentMethodSelectionScope).self)
             .asTransient()
             .with { resolver in
@@ -454,64 +464,65 @@ extension CompositionRoot {
     @available(iOS 15.0, *)
     private static func registerCleanArchitecture(in container: Container) async {
         logger.info(message: "🏗️ [CompositionRoot] Starting Clean Architecture registration")
-        
+
         // Register Services (Data Layer - adapters to existing SDK)
         await registerServices(in: container)
-        
+
         // Register Repositories (Data Layer - abstract data sources)
         await registerRepositories(in: container)
-        
+
         // Register Interactors (Domain Layer - business logic use cases)
         await registerInteractors(in: container)
-        
+
         logger.info(message: "✅ [CompositionRoot] Clean Architecture registration completed")
     }
-    
+
     /// Register Service layer that integrates with existing SDK
     @available(iOS 15.0, *)
     private static func registerServices(in container: Container) async {
         logger.debug(message: "🔧 [CompositionRoot] Registering Services...")
-        
+
         // Configuration Service
         _ = try? await container.register(ConfigurationService.self)
             .asSingleton()
-            .with { _ in 
+            .with { _ in
                 logger.debug(message: "🏭 [CompositionRoot] Creating ConfigurationService")
-                return ConfigurationServiceImpl() 
+                return ConfigurationServiceImpl()
             }
 
         // Payment Method Service
         _ = try? await container.register(PaymentMethodService.self)
             .asSingleton()
-            .with { _ in 
+            .with { _ in
                 logger.debug(message: "🏭 [CompositionRoot] Creating PaymentMethodService")
-                return PaymentMethodServiceImpl() 
+                return PaymentMethodServiceImpl()
             }
-        
+
         // Payment Service
         _ = try? await container.register(PaymentService.self)
             .asSingleton()
-            .with { _ in 
+            .with { resolver in
                 logger.debug(message: "🏭 [CompositionRoot] Creating PaymentService")
-                return PaymentServiceImpl() 
+                let navigator = try await resolver.resolve(CheckoutNavigator.self)
+                return PaymentServiceImpl(navigator: navigator)
             }
-        
-        // Tokenization Service - TODO: Fix scope visibility issue
-        // _ = try? await container.register(ComposableTokenizationService.self)
-        //     .asSingleton()
-        //     .with { _ in 
-        //         logger.debug(message: "🏭 [CompositionRoot] Creating ComposableTokenizationService")
-        //         return ComposableTokenizationServiceImpl() 
-        //     }
-        
+
+        // Tokenization Service
+        _ = try? await container.register(ComposableTokenizationService.self)
+            .asSingleton()
+            .with { _ in
+                logger.debug(message: "🏭 [CompositionRoot] Creating ComposableTokenizationService")
+                return ComposableTokenizationServiceImpl()
+            }
+
         logger.debug(message: "✅ [CompositionRoot] Services registration completed")
     }
-    
+
     /// Register Repository layer
     @available(iOS 15.0, *)
     private static func registerRepositories(in container: Container) async {
         logger.debug(message: "📚 [CompositionRoot] Registering Repositories...")
-        
+
         // Configuration Repository
         _ = try? await container.register(ConfigurationRepository.self)
             .asSingleton()
@@ -521,7 +532,7 @@ extension CompositionRoot {
                     configurationService: try await resolver.resolve(ConfigurationService.self, name: nil)
                 )
             }
-        
+
         // Payment Method Repository
         _ = try? await container.register(PaymentMethodRepository.self)
             .asSingleton()
@@ -531,7 +542,7 @@ extension CompositionRoot {
                     paymentMethodService: try await resolver.resolve(PaymentMethodService.self, name: nil)
                 )
             }
-        
+
         // Payment Repository
         _ = try? await container.register(PaymentRepository.self)
             .asSingleton()
@@ -541,25 +552,25 @@ extension CompositionRoot {
                     paymentService: try await resolver.resolve(PaymentService.self, name: nil)
                 )
             }
-        
-        // Tokenization Repository - TODO: Re-enable when tokenization service is fixed
-        // _ = try? await container.register(TokenizationRepository.self)
-        //     .asSingleton()
-        //     .with { resolver in
-        //         logger.debug(message: "🏭 [CompositionRoot] Creating TokenizationRepository")
-        //         return TokenizationRepositoryImpl(
-        //             tokenizationService: try await resolver.resolve(ComposableTokenizationService.self, name: nil)
-        //         )
-        //     }
-        
+
+        // Tokenization Repository
+        _ = try? await container.register(TokenizationRepository.self)
+            .asSingleton()
+            .with { resolver in
+                logger.debug(message: "🏭 [CompositionRoot] Creating TokenizationRepository")
+                return TokenizationRepositoryImpl(
+                    tokenizationService: try await resolver.resolve(ComposableTokenizationService.self, name: nil)
+                )
+            }
+
         logger.debug(message: "✅ [CompositionRoot] Repositories registration completed")
     }
-    
+
     /// Register Interactor layer (Use Cases)
     @available(iOS 15.0, *)
     private static func registerInteractors(in container: Container) async {
         logger.debug(message: "🎯 [CompositionRoot] Registering Interactors...")
-        
+
         // Initialize Checkout Interactor
         _ = try? await container.register(InitializeCheckoutInteractor.self)
             .asTransient()
@@ -570,18 +581,18 @@ extension CompositionRoot {
                     paymentMethodRepository: try await resolver.resolve(PaymentMethodRepository.self, name: nil)
                 )
             }
-        
-        // Process Card Payment Interactor - TODO: Re-enable when tokenization repository is fixed
-        // _ = try? await container.register(ProcessCardPaymentInteractor.self)
-        //     .asTransient()
-        //     .with { resolver in
-        //         logger.debug(message: "🏭 [CompositionRoot] Creating ProcessCardPaymentInteractor")
-        //         return ProcessCardPaymentInteractorImpl(
-        //             paymentRepository: try await resolver.resolve(PaymentRepository.self),
-        //             tokenizationRepository: try await resolver.resolve(TokenizationRepository.self)
-        //         )
-        //     }
-        
+
+        // Process Card Payment Interactor
+        _ = try? await container.register(ProcessCardPaymentInteractor.self)
+            .asTransient()
+            .with { resolver in
+                logger.debug(message: "🏭 [CompositionRoot] Creating ProcessCardPaymentInteractor")
+                return ProcessCardPaymentInteractorImpl(
+                    paymentRepository: try await resolver.resolve(PaymentRepository.self, name: nil),
+                    tokenizationRepository: try await resolver.resolve(TokenizationRepository.self, name: nil)
+                )
+            }
+
         // Get Payment Methods Interactor
         _ = try? await container.register(GetPaymentMethodsInteractor.self)
             .asTransient()
@@ -591,7 +602,7 @@ extension CompositionRoot {
                     paymentMethodRepository: try await resolver.resolve(PaymentMethodRepository.self, name: nil)
                 )
             }
-        
+
         // Validate Payment Data Interactor (uses existing validation system)
         _ = try? await container.register(ValidatePaymentDataInteractor.self)
             .asTransient()
@@ -601,7 +612,7 @@ extension CompositionRoot {
                     validationService: try await resolver.resolve(ValidationService.self, name: nil)
                 )
             }
-        
+
         logger.debug(message: "✅ [CompositionRoot] Interactors registration completed")
     }
 }

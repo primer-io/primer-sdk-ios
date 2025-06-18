@@ -43,7 +43,7 @@
  *
  * ### 2. Batch Validation
  * ```swift
- * let fields: [PrimerInputElementType: String?] = [
+ * let fields: [ComposableInputElementType: String?] = [
  *     .cardNumber: "4111111111111111",
  *     .cvv: "123",
  *     .expiryDate: "12/25",
@@ -100,10 +100,10 @@
 /// Validates entire forms or individual fields with consistent error formatting
 protocol FormValidator {
     /// Validates all fields at once for form submission
-    func validateForm(fields: [PrimerInputElementType: String?]) -> [PrimerInputElementType: ValidationError?]
+    func validateForm(fields: [ComposableInputElementType: String?]) -> [ComposableInputElementType: ValidationError?]
 
     /// Validates a specific field and returns standard ValidationResult
-    func validateField(type: PrimerInputElementType, value: String?) -> ValidationResult
+    func validateField(type: ComposableInputElementType, value: String?) -> ValidationResult
 
     /// Updates validation context (like card network) for dependent validations
     func updateContext(key: String, value: Any)

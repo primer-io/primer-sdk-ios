@@ -1,6 +1,6 @@
 //
 //  DefaultSplashScreen.swift
-//  
+//
 //
 //  Created on 17.06.2025.
 //
@@ -10,20 +10,20 @@ import SwiftUI
 /// Default splash screen shown during checkout initialization
 @available(iOS 15.0, *)
 internal struct DefaultSplashScreen: View {
-    
+
     @Environment(\.designTokens) private var tokens
-    
+
     var body: some View {
         VStack(spacing: 24) {
             Image(systemName: "creditcard")
                 .font(.system(size: 64))
                 .foregroundColor(tokens?.primerColorBrand ?? .blue)
-            
+
             Text("Primer Checkout")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-                .foregroundColor(tokens?.primerColorText ?? .primary)
-            
+                .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
+
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle(tint: tokens?.primerColorBrand ?? .blue))
                 .scaleEffect(1.2)

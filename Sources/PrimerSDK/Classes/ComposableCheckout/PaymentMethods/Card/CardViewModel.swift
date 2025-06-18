@@ -397,10 +397,11 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
                         // Simulate network call
                         try await Task.sleep(nanoseconds: 2 * 1_000_000_000)
 
+                        let transactionId = UUID().uuidString
                         let result = PaymentResult(
-                            transactionId: UUID().uuidString,
-                            amount: Decimal(100),
-                            currency: "USD"
+                            transactionId: transactionId,
+                            amount: 100.0, // Mock amount
+                            currency: "USD" // Mock currency
                         )
 
                         logger.debug(message: "✅ Payment processed successfully: \(result.transactionId)")
@@ -788,8 +789,8 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
 
     // MARK: - CardPaymentMethodScope Component Methods
 
-    func PrimerCardholderNameField(modifier: Any, label: String?) -> any View {
-        return CardholderNameInputField(
+    func PrimerCardholderNameField(modifier: Any, label: String?) -> AnyView {
+        return AnyView(CardholderNameInputField(
             label: label ?? "Cardholder Name",
             placeholder: "John Doe",
             onCardholderNameChange: { [weak self] name in
@@ -798,11 +799,11 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
             onValidationChange: { _ in
                 // Validation state is handled in the validator
             }
-        )
+        ))
     }
 
-    func PrimerCardNumberField(modifier: Any, label: String?) -> any View {
-        return CardNumberInputField(
+    func PrimerCardNumberField(modifier: Any, label: String?) -> AnyView {
+        return AnyView(CardNumberInputField(
             label: label ?? "Card Number",
             placeholder: "1234 5678 9012 3456",
             onCardNumberChange: { [weak self] cardNumber in
@@ -814,11 +815,11 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
             onValidationChange: { _ in
                 // Validation state is handled in the validator
             }
-        )
+        ))
     }
 
-    func PrimerCvvField(modifier: Any, label: String?) -> any View {
-        return CVVInputField(
+    func PrimerCvvField(modifier: Any, label: String?) -> AnyView {
+        return AnyView(CVVInputField(
             label: label ?? "CVV",
             placeholder: "123",
             cardNetwork: uiState.cardNetworkData.selectedNetwork ?? .unknown,
@@ -828,11 +829,11 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
             onValidationChange: { _ in
                 // Validation state is handled in the validator
             }
-        )
+        ))
     }
 
-    func PrimerCardExpirationField(modifier: Any, label: String?) -> any View {
-        return ExpiryDateInputField(
+    func PrimerCardExpirationField(modifier: Any, label: String?) -> AnyView {
+        return AnyView(ExpiryDateInputField(
             label: label ?? "Expiry Date",
             placeholder: "MM/YY",
             onExpiryDateChange: { [weak self] expiryDate in
@@ -847,140 +848,140 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
             onYearChange: { [weak self] year in
                 self?.updateExpiryYear(year)
             }
-        )
+        ))
     }
 
     // (Keeping the existing billing address field component methods as they are)
-    func PrimerCountryField(modifier: Any, label: String?) -> any View {
+    func PrimerCountryField(modifier: Any, label: String?) -> AnyView {
         // Only show if configured to be visible
         guard uiState.billingAddress.country.isVisible else {
-            return EmptyView()
+            return AnyView(EmptyView())
         }
 
-        return CountryPickerField(
+        return AnyView(CountryPickerField(
             label: label ?? "Country",
             selectedCountry: uiState.billingAddress.country.value,
             onCountrySelected: { country in
                 self.updateCountry(country)
             },
             validationError: uiState.billingAddress.country.validationError?.message
-        )
+        ))
     }
 
-    func PrimerFirstNameField(modifier: Any, label: String?) -> any View {
+    func PrimerFirstNameField(modifier: Any, label: String?) -> AnyView {
         // Only show if configured to be visible
         guard uiState.billingAddress.firstName.isVisible else {
-            return EmptyView()
+            return AnyView(EmptyView())
         }
 
-        return PrimerInputField(
+        return AnyView(PrimerInputField(
             value: uiState.billingAddress.firstName.value,
             onValueChange: { self.updateFirstName($0) },
             labelText: label ?? "First Name",
             validationError: uiState.billingAddress.firstName.validationError?.message,
             keyboardType: .namePhonePad,
             keyboardReturnKey: uiState.billingAddress.firstName.imeAction
-        )
+        ))
     }
 
-    func PrimerLastNameField(modifier: Any, label: String?) -> any View {
+    func PrimerLastNameField(modifier: Any, label: String?) -> AnyView {
         // Only show if configured to be visible
         guard uiState.billingAddress.lastName.isVisible else {
-            return EmptyView()
+            return AnyView(EmptyView())
         }
 
-        return PrimerInputField(
+        return AnyView(PrimerInputField(
             value: uiState.billingAddress.lastName.value,
             onValueChange: { self.updateLastName($0) },
             labelText: label ?? "Last Name",
             validationError: uiState.billingAddress.lastName.validationError?.message,
             keyboardType: .namePhonePad,
             keyboardReturnKey: uiState.billingAddress.lastName.imeAction
-        )
+        ))
     }
 
-    func PrimerAddressLine1Field(modifier: Any, label: String?) -> any View {
+    func PrimerAddressLine1Field(modifier: Any, label: String?) -> AnyView {
         // Only show if configured to be visible
         guard uiState.billingAddress.addressLine1.isVisible else {
-            return EmptyView()
+            return AnyView(EmptyView())
         }
 
-        return PrimerInputField(
+        return AnyView(PrimerInputField(
             value: uiState.billingAddress.addressLine1.value,
             onValueChange: { self.updateAddressLine1($0) },
             labelText: label ?? "Address Line 1",
             validationError: uiState.billingAddress.addressLine1.validationError?.message,
             keyboardType: .default,
             keyboardReturnKey: uiState.billingAddress.addressLine1.imeAction
-        )
+        ))
     }
 
-    func PrimerAddressLine2Field(modifier: Any, label: String?) -> any View {
+    func PrimerAddressLine2Field(modifier: Any, label: String?) -> AnyView {
         // Only show if configured to be visible
         guard uiState.billingAddress.addressLine2.isVisible else {
-            return EmptyView()
+            return AnyView(EmptyView())
         }
 
-        return PrimerInputField(
+        return AnyView(PrimerInputField(
             value: uiState.billingAddress.addressLine2.value,
             onValueChange: { self.updateAddressLine2($0) },
             labelText: label ?? "Address Line 2 (optional)",
             validationError: uiState.billingAddress.addressLine2.validationError?.message,
             keyboardType: .default,
             keyboardReturnKey: uiState.billingAddress.addressLine2.imeAction
-        )
+        ))
     }
 
-    func PrimerPostalCodeField(modifier: Any, label: String?) -> any View {
+    func PrimerPostalCodeField(modifier: Any, label: String?) -> AnyView {
         // Only show if configured to be visible
         guard uiState.billingAddress.postalCode.isVisible else {
-            return EmptyView()
+            return AnyView(EmptyView())
         }
 
-        return PrimerInputField(
+        return AnyView(PrimerInputField(
             value: uiState.billingAddress.postalCode.value,
             onValueChange: { self.updatePostalCode($0) },
             labelText: label ?? "Postal Code",
             validationError: uiState.billingAddress.postalCode.validationError?.message,
             keyboardType: .default,
             keyboardReturnKey: uiState.billingAddress.postalCode.imeAction
-        )
+        ))
     }
 
-    func PrimerCityField(modifier: Any, label: String?) -> any View {
+    func PrimerCityField(modifier: Any, label: String?) -> AnyView {
         // Only show if configured to be visible
         guard uiState.billingAddress.city.isVisible else {
-            return EmptyView()
+            return AnyView(EmptyView())
         }
 
-        return PrimerInputField(
+        return AnyView(PrimerInputField(
             value: uiState.billingAddress.city.value,
             onValueChange: { self.updateCity($0) },
             labelText: label ?? "City",
             validationError: uiState.billingAddress.city.validationError?.message,
             keyboardType: .default,
             keyboardReturnKey: uiState.billingAddress.city.imeAction
-        )
+        ))
     }
 
-    func PrimerStateField(modifier: Any, label: String?) -> any View {
+    func PrimerStateField(modifier: Any, label: String?) -> AnyView {
         // Only show if configured to be visible
         guard uiState.billingAddress.state.isVisible else {
-            return EmptyView()
+            return AnyView(EmptyView())
         }
 
-        return PrimerInputField(
+        return AnyView(PrimerInputField(
             value: uiState.billingAddress.state.value,
             onValueChange: { self.updateState($0) },
             labelText: label ?? "State / Region / County",
             validationError: uiState.billingAddress.state.validationError?.message,
             keyboardType: .default,
             keyboardReturnKey: uiState.billingAddress.state.imeAction
-        )
+        ))
     }
 
-    func PrimerPayButton(enabled: Bool, modifier: Any, text: String?) -> any View {
-        return PrimerComponentsButton(
+    func PrimerPayButton(enabled: Bool, modifier: Any, text: String?) -> AnyView {
+        return AnyView(PrimerComponentsButton(
             text: text ?? "Pay",
             isLoading: uiState.isProcessing,
             isEnabled: enabled && !uiState.isProcessing,
@@ -994,7 +995,7 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
                     }
                 }
             }
-        )
+        ))
     }
     // swiftlint:enable identifier_name
 
@@ -1040,7 +1041,7 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
     private func updateBillingFieldState(
         keyPath: KeyPath<CardPaymentUiState.BillingAddress, InputFieldState>,
         value: String,
-        inputType: PrimerInputElementType
+        inputType: ComposableInputElementType
     ) {
         logger.debug(message: "🔄 Updating billing field \(inputType.rawValue): \(value)")
 
@@ -1101,7 +1102,7 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
         logger.debug(message: "🔍 Validating all fields for form submission")
 
         // Create a map of all card fields
-        let cardFieldsMap: [PrimerInputElementType: String?] = [
+        let cardFieldsMap: [ComposableInputElementType: String?] = [
             .cardNumber: uiState.cardData.cardNumber.value,
             .expiryDate: uiState.cardData.expiration.value,
             .cvv: uiState.cardData.cvv.value,
@@ -1109,7 +1110,7 @@ class CardViewModel: ObservableObject, CardPaymentMethodScope, LogReporter {
         ]
 
         // Create a map of all billing address fields (only required fields)
-        let billingAddressMap: [PrimerInputElementType: String?] = [
+        let billingAddressMap: [ComposableInputElementType: String?] = [
             .countryCode: uiState.billingAddress.country.isRequired ? uiState.billingAddress.country.value : nil,
             .firstName: uiState.billingAddress.firstName.isRequired ? uiState.billingAddress.firstName.value : nil,
             .lastName: uiState.billingAddress.lastName.isRequired ? uiState.billingAddress.lastName.value : nil,

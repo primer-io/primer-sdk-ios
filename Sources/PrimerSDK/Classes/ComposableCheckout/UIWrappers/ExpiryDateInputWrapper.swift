@@ -1,6 +1,6 @@
 //
 //  ExpiryDateInputWrapper.swift
-//  
+//
 //
 //  Created on 17.06.2025.
 //
@@ -11,21 +11,21 @@ import Combine
 /// Wrapper component that connects the existing ExpiryDateInputField with the new CardFormScope
 @available(iOS 15.0, *)
 public struct ExpiryDateInputWrapper: View {
-    
+
     // MARK: - Properties
-    
+
     private let scope: any CardFormScope
     private let label: String
     private let placeholder: String
-    
+
     // MARK: - State
-    
+
     @State private var expiryDate: String = ""
-    @State private var validationErrors: [PrimerInputValidationError] = []
+    @State private var validationErrors: [ComposableInputValidationError] = []
     @State private var cancellables = Set<AnyCancellable>()
-    
+
     // MARK: - Initialization
-    
+
     public init(
         scope: any CardFormScope,
         label: String = "Expiry Date",
@@ -35,9 +35,9 @@ public struct ExpiryDateInputWrapper: View {
         self.label = label
         self.placeholder = placeholder
     }
-    
+
     // MARK: - Body
-    
+
     public var body: some View {
         ExpiryDateInputField(
             label: label,
@@ -46,14 +46,14 @@ public struct ExpiryDateInputWrapper: View {
                 // Update the scope when expiry date changes
                 scope.updateExpiryDate(newValue)
             },
-            onValidationChange: { isValid in
+            onValidationChange: { _ in
                 // Validation is handled by the scope itself
                 // The existing component's validation is kept for immediate feedback
             },
-            onMonthChange: { month in
+            onMonthChange: { _ in
                 // Additional callback if needed
             },
-            onYearChange: { year in
+            onYearChange: { _ in
                 // Additional callback if needed
             }
         )
@@ -61,19 +61,20 @@ public struct ExpiryDateInputWrapper: View {
             setupStateBinding()
         }
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func setupStateBinding() {
         // Subscribe to scope state changes
         scope.state
             .receive(on: DispatchQueue.main)
-            .sink { [weak self = self] state in
-                self?.updateFromScopeState(state)
+            .sink { _ in
+                // Note: No weak reference needed for structs
+                // updateFromScopeState(state)
             }
             .store(in: &cancellables)
     }
-    
+
     private func updateFromScopeState(_ state: CardFormState) {
         // Update local state from scope
         expiryDate = state.inputFields[.expiryDate] ?? ""
@@ -88,7 +89,7 @@ struct ExpiryDateInputWrapper_Previews: PreviewProvider {
     static var previews: some View {
         // Mock scope for preview
         let mockScope = MockCardFormScope()
-        
+
         ExpiryDateInputWrapper(scope: mockScope)
             .padding()
             .previewLayout(.sizeThatFits)
@@ -100,18 +101,18 @@ struct ExpiryDateInputWrapper_Previews: PreviewProvider {
 @available(iOS 15.0, *)
 private class MockCardFormScope: CardFormScope, ObservableObject {
     @Published private var _state = CardFormState.initial
-    
+
     var state: AnyPublisher<CardFormState, Never> {
         $_state.eraseToAnyPublisher()
     }
-    
+
     func updateCardNumber(_ cardNumber: String) {}
     func updateCvv(_ cvv: String) {}
-    
+
     func updateExpiryDate(_ expiryDate: String) {
         var fields = _state.inputFields
         fields[.expiryDate] = expiryDate
-        
+
         _state = CardFormState(
             inputFields: fields,
             fieldErrors: _state.fieldErrors,
@@ -119,7 +120,7 @@ private class MockCardFormScope: CardFormScope, ObservableObject {
             isSubmitEnabled: !expiryDate.isEmpty
         )
     }
-    
+
     func updateCardholderName(_ cardholderName: String) {}
     func updatePostalCode(_ postalCode: String) {}
     func updateCountryCode(_ countryCode: String) {}

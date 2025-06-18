@@ -1,6 +1,6 @@
 //
 //  DefaultErrorScreen.swift
-//  
+//
 //
 //  Created on 17.06.2025.
 //
@@ -10,29 +10,29 @@ import SwiftUI
 /// Default error screen shown when payment fails
 @available(iOS 15.0, *)
 internal struct DefaultErrorScreen: View {
-    
+
     // MARK: - Properties
-    
+
     let errorMessage: String
-    
+
     // MARK: - State
-    
+
     @Environment(\.designTokens) private var tokens
     @Environment(\.presentationMode) private var presentationMode
     @State private var isAnimating = false
-    
+
     // MARK: - Initialization
-    
+
     init(errorMessage: String = "An unexpected error occurred") {
         self.errorMessage = errorMessage
     }
-    
+
     // MARK: - Body
-    
+
     var body: some View {
         VStack(spacing: 32) {
             Spacer()
-            
+
             // Error Animation
             ZStack {
                 Circle()
@@ -40,34 +40,34 @@ internal struct DefaultErrorScreen: View {
                     .frame(width: 120, height: 120)
                     .scaleEffect(isAnimating ? 1.1 : 1.0)
                     .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: isAnimating)
-                
+
                 Image(systemName: "exclamationmark.triangle.fill")
                     .font(.system(size: 64))
                     .foregroundColor(.red)
                     .scaleEffect(isAnimating ? 1.05 : 1.0)
                     .animation(.spring(response: 0.6, dampingFraction: 0.8, blendDuration: 0).delay(0.2), value: isAnimating)
             }
-            
+
             // Error Message
             VStack(spacing: 16) {
                 Text("Payment Failed")
                     .font(.title)
                     .fontWeight(.bold)
-                    .foregroundColor(tokens?.primerColorText ?? .primary)
-                
+                    .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
+
                 Text(errorMessage)
                     .font(.body)
                     .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 20)
             }
-            
+
             // Additional Help Text
             VStack(spacing: 8) {
                 Text("Common solutions:")
                     .font(.headline)
-                    .foregroundColor(tokens?.primerColorText ?? .primary)
-                
+                    .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
+
                 VStack(alignment: .leading, spacing: 6) {
                     HelpTextItem(text: "Check your card details and try again")
                     HelpTextItem(text: "Ensure you have sufficient funds")
@@ -78,16 +78,16 @@ internal struct DefaultErrorScreen: View {
             .padding(.vertical, 16)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(tokens?.primerColorSurface ?? Color(.secondarySystemBackground))
+                    .fill(tokens?.primerColorGray100 ?? Color(.secondarySystemBackground))
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(tokens?.primerColorBorder ?? Color(.separator), lineWidth: 1)
+                            .stroke(tokens?.primerColorBorderOutlinedDefault ?? Color(.separator), lineWidth: 1)
                     )
             )
             .padding(.horizontal, 20)
-            
+
             Spacer()
-            
+
             // Action Buttons
             VStack(spacing: 12) {
                 Button("Try Again") {
@@ -95,13 +95,13 @@ internal struct DefaultErrorScreen: View {
                     presentationMode.wrappedValue.dismiss()
                 }
                 .buttonStyle(PrimaryButtonStyle(tokens: tokens))
-                
+
                 Button("Change Payment Method") {
                     // Handle payment method change
                     presentationMode.wrappedValue.dismiss()
                 }
                 .buttonStyle(SecondaryButtonStyle(tokens: tokens))
-                
+
                 Button("Cancel") {
                     presentationMode.wrappedValue.dismiss()
                 }
@@ -126,18 +126,18 @@ internal struct DefaultErrorScreen: View {
 private struct HelpTextItem: View {
     let text: String
     @Environment(\.designTokens) private var tokens
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
             Text("•")
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
                 .font(.body)
-            
+
             Text(text)
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
                 .font(.body)
                 .multilineTextAlignment(.leading)
-            
+
             Spacer()
         }
     }
@@ -148,7 +148,7 @@ private struct HelpTextItem: View {
 @available(iOS 15.0, *)
 private struct PrimaryButtonStyle: ButtonStyle {
     let tokens: DesignTokens?
-    
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .foregroundColor(.white)
@@ -167,7 +167,7 @@ private struct PrimaryButtonStyle: ButtonStyle {
 @available(iOS 15.0, *)
 private struct SecondaryButtonStyle: ButtonStyle {
     let tokens: DesignTokens?
-    
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .foregroundColor(tokens?.primerColorBrand ?? .blue)
@@ -194,7 +194,7 @@ struct DefaultErrorScreen_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             DefaultErrorScreen(errorMessage: "Your card was declined. Please try a different payment method.")
-            
+
             DefaultErrorScreen(errorMessage: "Network connection failed. Please check your internet connection and try again.")
         }
     }

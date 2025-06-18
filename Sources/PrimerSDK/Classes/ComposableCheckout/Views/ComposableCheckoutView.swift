@@ -1,6 +1,6 @@
 //
 //  ComposableCheckoutView.swift
-//  
+//
 //
 //  Created on 17.06.2025.
 //
@@ -11,9 +11,9 @@ import Combine
 /// Main checkout view that handles navigation and screen transitions
 @available(iOS 15.0, *)
 internal struct ComposableCheckoutView: View, LogReporter {
-    
+
     // MARK: - Customization Closures
-    
+
     let container: ((_ content: @escaping () -> AnyView) -> AnyView)?
     let splashScreen: (() -> AnyView)?
     let loadingScreen: (() -> AnyView)?
@@ -21,16 +21,17 @@ internal struct ComposableCheckoutView: View, LogReporter {
     let cardFormScreen: (() -> AnyView)?
     let successScreen: (() -> AnyView)?
     let errorScreen: ((_ cause: String) -> AnyView)?
-    
+
     // MARK: - State
-    
+
     @State private var currentScreen: CheckoutScreen = .splash
     @State private var errorMessage: String = ""
     @State private var cancellables = Set<AnyCancellable>()
     @Environment(\.diContainer) private var diContainer
-    
+    @StateObject private var navigator = CheckoutNavigator()
+
     // MARK: - Initialization
-    
+
     init(
         container: ((_ content: @escaping () -> AnyView) -> AnyView)? = nil,
         splashScreen: (() -> AnyView)? = nil,
@@ -48,9 +49,9 @@ internal struct ComposableCheckoutView: View, LogReporter {
         self.successScreen = successScreen
         self.errorScreen = errorScreen
     }
-    
+
     // MARK: - Body
-    
+
     var body: some View {
         AsyncScopeView { checkoutScope, cardFormScope, paymentSelectionScope in
             let content = {
@@ -62,20 +63,21 @@ internal struct ComposableCheckoutView: View, LogReporter {
                     )
                 )
             }
-            
+
             if let container = container {
                 container(content)
             } else {
                 defaultContainer(content)
             }
         }
+        .environment(\.checkoutNavigator, navigator)
         .onAppear {
             logger.debug(message: "🏁 [ComposableCheckoutView] View appeared, starting checkout flow")
         }
     }
-    
+
     // MARK: - Content Views
-    
+
     @ViewBuilder
     private func checkoutContent(
         checkoutScope: any PrimerCheckoutScope,
@@ -102,26 +104,23 @@ internal struct ComposableCheckoutView: View, LogReporter {
             handleCheckoutStateChange(state)
         }
         .onAppear {
-            setupNavigationObservers(
-                checkoutScope: checkoutScope,
-                paymentSelectionScope: paymentSelectionScope
-            )
+            setupNavigationObservers()
         }
     }
-    
+
     @ViewBuilder
     private func defaultContainer<Content: View>(_ content: @escaping () -> Content) -> some View {
         content()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(.systemBackground))
     }
-    
+
     // MARK: - Navigation Logic
-    
+
     private func handleCheckoutStateChange(_ state: CheckoutState) {
         Task { @MainActor in
             logger.debug(message: "🔄 [ComposableCheckoutView] Checkout state changed: \(state)")
-            
+
             switch state {
             case .notInitialized:
                 currentScreen = .splash
@@ -135,60 +134,59 @@ internal struct ComposableCheckoutView: View, LogReporter {
             }
         }
     }
-    
-    private func setupNavigationObservers(
-        checkoutScope: any PrimerCheckoutScope,
-        paymentSelectionScope: any PaymentMethodSelectionScope
-    ) {
+
+    private func setupNavigationObservers() {
         logger.debug(message: "🔗 [ComposableCheckoutView] Setting up navigation observers")
-        
-        // Observe payment method selection
-        NotificationCenter.default.publisher(for: .composablePaymentMethodSelected)
+
+        // Observe navigation events from CheckoutNavigator
+        navigator.navigationEvents
             .receive(on: DispatchQueue.main)
-            .sink { notification in
-                if let paymentMethod = notification.object as? PrimerComposablePaymentMethod {
-                    handlePaymentMethodSelection(paymentMethod)
-                }
-            }
-            .store(in: &cancellables)
-        
-        // Observe payment completion
-        NotificationCenter.default.publisher(for: .composablePaymentCompleted)
-            .receive(on: DispatchQueue.main)
-            .sink { _ in
-                logger.info(message: "✅ [ComposableCheckoutView] Payment completed successfully")
-                currentScreen = .success
-            }
-            .store(in: &cancellables)
-        
-        // Observe payment errors
-        NotificationCenter.default.publisher(for: .composablePaymentError)
-            .receive(on: DispatchQueue.main)
-            .sink { notification in
-                if let error = notification.object as? Error {
-                    logger.error(message: "❌ [ComposableCheckoutView] Payment error: \(error.localizedDescription)")
-                    errorMessage = error.localizedDescription
-                    currentScreen = .error
-                }
+            .sink { event in
+                handleNavigationEvent(event)
             }
             .store(in: &cancellables)
     }
-    
-    private func handlePaymentMethodSelection(_ paymentMethod: PrimerComposablePaymentMethod) {
-        logger.debug(message: "💳 [ComposableCheckoutView] Payment method selected: \(paymentMethod.paymentMethodType)")
-        
-        switch paymentMethod.paymentMethodType {
-        case "PAYMENT_CARD":
+
+    private func handleNavigationEvent(_ event: NavigationEvent) {
+        logger.debug(message: "🧭 [ComposableCheckoutView] Handling navigation event: \(event)")
+
+        switch event {
+        case .navigateToPaymentSelection:
+            currentScreen = .paymentSelection
+        case .navigateToCardForm:
             currentScreen = .cardForm
-        default:
-            logger.warn(message: "⚠️ [ComposableCheckoutView] Unsupported payment method: \(paymentMethod.paymentMethodType)")
-            // Handle other payment methods in future iterations
-            break
+        case .navigateToApplePay:
+            // Handle Apple Pay navigation in future iterations
+            logger.debug(message: "📱 [ComposableCheckoutView] Apple Pay navigation not implemented yet")
+        case .navigateToPayPal:
+            // Handle PayPal navigation in future iterations
+            logger.debug(message: "💰 [ComposableCheckoutView] PayPal navigation not implemented yet")
+        case .navigateToSuccess:
+            logger.info(message: "✅ [ComposableCheckoutView] Payment completed successfully")
+            currentScreen = .success
+        case .navigateToError(let message):
+            logger.error(message: "❌ [ComposableCheckoutView] Payment error: \(message)")
+            errorMessage = message
+            currentScreen = .error
+        case .navigateBack:
+            // Handle back navigation based on current screen
+            handleBackNavigation()
         }
     }
-    
+
+    private func handleBackNavigation() {
+        switch currentScreen {
+        case .cardForm, .paymentSelection:
+            currentScreen = .paymentSelection
+        case .error:
+            currentScreen = .paymentSelection
+        default:
+            logger.debug(message: "🔙 [ComposableCheckoutView] Back navigation not applicable for current screen")
+        }
+    }
+
     // MARK: - Screen Enum
-    
+
     private enum CheckoutScreen {
         case splash
         case loading
@@ -197,14 +195,6 @@ internal struct ComposableCheckoutView: View, LogReporter {
         case success
         case error
     }
-}
-
-// MARK: - Notification Names Extension
-
-extension Notification.Name {
-    static let composablePaymentMethodSelected = Notification.Name("ComposablePaymentMethodSelected")
-    static let composablePaymentCompleted = Notification.Name("ComposablePaymentCompleted")
-    static let composablePaymentError = Notification.Name("ComposablePaymentError")
 }
 
 // MARK: - Preview

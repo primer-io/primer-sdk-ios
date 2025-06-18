@@ -1,6 +1,6 @@
 //
 //  DefaultSuccessScreen.swift
-//  
+//
 //
 //  Created on 17.06.2025.
 //
@@ -10,15 +10,15 @@ import SwiftUI
 /// Default success screen shown after successful payment
 @available(iOS 15.0, *)
 internal struct DefaultSuccessScreen: View {
-    
+
     @Environment(\.designTokens) private var tokens
     @Environment(\.presentationMode) private var presentationMode
     @State private var isAnimating = false
-    
+
     var body: some View {
         VStack(spacing: 32) {
             Spacer()
-            
+
             // Success Animation
             ZStack {
                 Circle()
@@ -26,37 +26,37 @@ internal struct DefaultSuccessScreen: View {
                     .frame(width: 120, height: 120)
                     .scaleEffect(isAnimating ? 1.2 : 1.0)
                     .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: isAnimating)
-                
+
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 64))
                     .foregroundColor(.green)
                     .scaleEffect(isAnimating ? 1.1 : 1.0)
                     .animation(.spring(response: 0.6, dampingFraction: 0.8, blendDuration: 0).delay(0.2), value: isAnimating)
             }
-            
+
             // Success Message
             VStack(spacing: 16) {
                 Text("Payment Successful!")
                     .font(.title)
                     .fontWeight(.bold)
-                    .foregroundColor(tokens?.primerColorText ?? .primary)
-                
+                    .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
+
                 Text("Your payment has been processed successfully. You will receive a confirmation email shortly.")
                     .font(.body)
                     .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 20)
             }
-            
+
             Spacer()
-            
+
             // Action Buttons
             VStack(spacing: 12) {
                 Button("Continue") {
                     presentationMode.wrappedValue.dismiss()
                 }
                 .buttonStyle(PrimaryButtonStyle(tokens: tokens))
-                
+
                 Button("View Receipt") {
                     // Handle receipt view
                 }
@@ -78,7 +78,7 @@ internal struct DefaultSuccessScreen: View {
 @available(iOS 15.0, *)
 private struct PrimaryButtonStyle: ButtonStyle {
     let tokens: DesignTokens?
-    
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .foregroundColor(.white)
@@ -97,7 +97,7 @@ private struct PrimaryButtonStyle: ButtonStyle {
 @available(iOS 15.0, *)
 private struct SecondaryButtonStyle: ButtonStyle {
     let tokens: DesignTokens?
-    
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .foregroundColor(tokens?.primerColorBrand ?? .blue)

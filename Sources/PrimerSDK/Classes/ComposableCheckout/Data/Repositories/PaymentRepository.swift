@@ -1,6 +1,6 @@
 //
 //  PaymentRepository.swift
-//  
+//
 //
 //  Created on 17.06.2025.
 //
@@ -12,35 +12,35 @@ import Foundation
 internal protocol PaymentRepository: LogReporter {
     /// Processes a payment using the provided token
     /// - Parameter token: The payment token to process
-    /// - Returns: PaymentResult containing the processing outcome
+    /// - Returns: ComposablePaymentResult containing the processing outcome
     /// - Throws: Error if payment processing fails
-    func processPayment(token: PaymentToken) async throws -> PaymentResult
+    func processPayment(token: PaymentToken) async throws -> ComposablePaymentResult
 }
 
 /// Implementation of PaymentRepository
 @available(iOS 15.0, *)
 internal class PaymentRepositoryImpl: PaymentRepository, LogReporter {
-    
+
     // MARK: - Dependencies
-    
+
     private let paymentService: PaymentService
-    
+
     // MARK: - Initialization
-    
+
     init(paymentService: PaymentService) {
         self.paymentService = paymentService
         logger.debug(message: "🏗️ [PaymentRepository] Initialized")
     }
-    
+
     // MARK: - PaymentRepository
-    
-    func processPayment(token: PaymentToken) async throws -> PaymentResult {
+
+    func processPayment(token: PaymentToken) async throws -> ComposablePaymentResult {
         logger.debug(message: "💰 [PaymentRepository] Starting payment processing")
         logger.debug(message: "🔐 [PaymentRepository] Using token type: \(token.tokenType)")
-        
+
         do {
             let result = try await paymentService.processPayment(token: token)
-            
+
             if result.success {
                 logger.info(message: "✅ [PaymentRepository] Payment processed successfully")
                 logger.debug(message: "🎯 [PaymentRepository] Transaction ID: \(result.transactionId ?? "N/A")")
@@ -51,9 +51,9 @@ internal class PaymentRepositoryImpl: PaymentRepository, LogReporter {
                     logger.error(message: "❌ [PaymentRepository] Payment error: \(error.localizedDescription)")
                 }
             }
-            
+
             return result
-            
+
         } catch {
             logger.error(message: "❌ [PaymentRepository] Payment processing threw error: \(error.localizedDescription)")
             throw PaymentRepositoryError.processingFailed(underlying: error)
@@ -70,7 +70,7 @@ internal enum PaymentRepositoryError: Error, LocalizedError {
     case paymentDeclined
     case networkError
     case unknownError
-    
+
     var errorDescription: String? {
         switch self {
         case .processingFailed(let underlying):

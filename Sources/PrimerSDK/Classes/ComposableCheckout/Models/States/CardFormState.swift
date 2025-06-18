@@ -1,6 +1,6 @@
 //
 //  CardFormState.swift
-//  
+//
 //
 //  Created on 17.06.2025.
 //
@@ -11,26 +11,26 @@ import Foundation
 public struct CardFormState: Equatable, Hashable {
     /// Map of input fields to their current values (simplified)
     public let inputFields: [ComposableInputElementType: String]
-    
+
     /// List of current field validation errors
     public let fieldErrors: [ComposableInputValidationError]
-    
+
     /// Whether the form is currently loading/submitting
     public let isLoading: Bool
-    
+
     /// Whether the submit button should be enabled
     public let isSubmitEnabled: Bool
-    
+
     /// List of card-related input fields (derived)
     public var cardFields: [ComposableInputElementType] {
         [.cardNumber, .cvv, .expiryDate, .cardholderName]
     }
-    
+
     /// List of billing address input fields (derived)
     public var billingFields: [ComposableInputElementType] {
         [.postalCode, .countryCode, .city, .state, .addressLine1, .addressLine2]
     }
-    
+
     /// Default initial state
     public static let initial = CardFormState(
         inputFields: [:],
@@ -38,7 +38,7 @@ public struct CardFormState: Equatable, Hashable {
         isLoading: false,
         isSubmitEnabled: false
     )
-    
+
     /// Initialize card form state (simplified constructor)
     /// - Parameters:
     ///   - inputFields: Current field values
@@ -56,15 +56,15 @@ public struct CardFormState: Equatable, Hashable {
         self.isLoading = isLoading
         self.isSubmitEnabled = isSubmitEnabled
     }
-    
+
     /// Equatable implementation
     public static func == (lhs: CardFormState, rhs: CardFormState) -> Bool {
         return lhs.inputFields == rhs.inputFields &&
-               lhs.fieldErrors == rhs.fieldErrors &&
-               lhs.isLoading == rhs.isLoading &&
-               lhs.isSubmitEnabled == rhs.isSubmitEnabled
+            lhs.fieldErrors == rhs.fieldErrors &&
+            lhs.isLoading == rhs.isLoading &&
+            lhs.isSubmitEnabled == rhs.isSubmitEnabled
     }
-    
+
     /// Hashable implementation
     public func hash(into hasher: inout Hasher) {
         hasher.combine(inputFields)

@@ -1,6 +1,6 @@
 //
 //  ProcessCardPaymentInteractor.swift
-//  
+//
 //
 //  Created on 17.06.2025.
 //
@@ -12,22 +12,22 @@ import Foundation
 internal protocol ProcessCardPaymentInteractor: LogReporter {
     /// Executes the card payment process
     /// - Parameter cardData: The card payment data to process
-    /// - Returns: PaymentResult containing the payment outcome
+    /// - Returns: ComposablePaymentResult containing the payment outcome
     /// - Throws: Error if payment processing fails
-    func execute(cardData: CardPaymentData) async throws -> PaymentResult
+    func execute(cardData: CardPaymentData) async throws -> ComposablePaymentResult
 }
 
 /// Implementation of ProcessCardPaymentInteractor
 @available(iOS 15.0, *)
 internal class ProcessCardPaymentInteractorImpl: ProcessCardPaymentInteractor, LogReporter {
-    
+
     // MARK: - Dependencies
-    
+
     private let paymentRepository: PaymentRepository
     private let tokenizationRepository: TokenizationRepository
-    
+
     // MARK: - Initialization
-    
+
     init(
         paymentRepository: PaymentRepository,
         tokenizationRepository: TokenizationRepository
@@ -36,57 +36,57 @@ internal class ProcessCardPaymentInteractorImpl: ProcessCardPaymentInteractor, L
         self.tokenizationRepository = tokenizationRepository
         logger.debug(message: "🏗️ [ProcessCardPaymentInteractor] Initialized")
     }
-    
+
     // MARK: - ProcessCardPaymentInteractor
-    
-    func execute(cardData: CardPaymentData) async throws -> PaymentResult {
+
+    func execute(cardData: CardPaymentData) async throws -> ComposablePaymentResult {
         logger.debug(message: "💳 [ProcessCardPaymentInteractor] Starting card payment processing")
-        
+
         do {
             // Step 1: Validate card data
             try validateCardData(cardData)
             logger.debug(message: "✅ [ProcessCardPaymentInteractor] Card data validation passed")
-            
+
             // Step 2: Tokenize the card
             logger.debug(message: "🔐 [ProcessCardPaymentInteractor] Tokenizing card data")
             let token = try await tokenizationRepository.tokenizeCard(cardData)
             logger.debug(message: "✅ [ProcessCardPaymentInteractor] Card tokenization successful")
-            
+
             // Step 3: Process the payment
             logger.debug(message: "💰 [ProcessCardPaymentInteractor] Processing payment with token")
             let result = try await paymentRepository.processPayment(token: token)
-            
+
             if result.success {
                 logger.info(message: "✅ [ProcessCardPaymentInteractor] Payment processed successfully")
                 logger.debug(message: "🎯 [ProcessCardPaymentInteractor] Transaction ID: \(result.transactionId ?? "N/A")")
             } else {
-                logger.warning(message: "⚠️ [ProcessCardPaymentInteractor] Payment failed: \(result.error?.localizedDescription ?? "Unknown error")")
+                logger.warn(message: "⚠️ [ProcessCardPaymentInteractor] Payment failed: \(result.error?.localizedDescription ?? "Unknown error")")
             }
-            
+
             return result
-            
+
         } catch {
             logger.error(message: "❌ [ProcessCardPaymentInteractor] Payment processing failed: \(error.localizedDescription)")
             throw error
         }
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func validateCardData(_ cardData: CardPaymentData) throws {
         // Basic validation before processing
         if cardData.cardNumber.isEmpty {
             throw PaymentProcessingError.invalidCardNumber
         }
-        
+
         if cardData.cvv.isEmpty {
             throw PaymentProcessingError.invalidCVV
         }
-        
+
         if cardData.expiryDate.isEmpty {
             throw PaymentProcessingError.invalidExpiryDate
         }
-        
+
         // Additional validation can be added here
         // Note: Detailed validation is handled by the existing validation system
     }
@@ -103,7 +103,7 @@ internal enum PaymentProcessingError: Error, LocalizedError {
     case paymentDeclined
     case networkError
     case unknownError
-    
+
     var errorDescription: String? {
         switch self {
         case .invalidCardNumber:

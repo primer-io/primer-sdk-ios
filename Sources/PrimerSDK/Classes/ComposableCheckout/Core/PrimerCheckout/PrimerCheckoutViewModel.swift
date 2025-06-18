@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 /**
  * INTERNAL DOCUMENTATION: PrimerCheckoutViewModel Architecture
@@ -131,6 +132,7 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope, LogReporte
     @Published private(set) var isClientTokenProcessed = false
     @Published private(set) var isCheckoutComplete = false
     @Published private(set) var error: ComponentsPrimerError?
+    @Published private var _checkoutState: CheckoutState = .notInitialized
 
     // MARK: - Private Properties
     private var availablePaymentMethods: [any PaymentMethodProtocol] = []
@@ -176,6 +178,7 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope, LogReporte
 
         do {
             logger.debug(message: "🔄 [PrimerCheckoutViewModel] Setting client token")
+            _checkoutState = .initializing
             self.clientToken = token
 
             logger.debug(message: "🔧 [PrimerCheckoutViewModel] Configuring SDK with token")
@@ -195,6 +198,7 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope, LogReporte
             }
 
             logger.info(message: "✅ [PrimerCheckoutViewModel] Client token processing completed successfully")
+            _checkoutState = .ready
             isClientTokenProcessed = true
         } catch {
             logger.error(message: "🚨 [PrimerCheckoutViewModel] Client token processing failed: \(error.localizedDescription)")
@@ -205,6 +209,7 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope, LogReporte
     /// Set an error that occurred during checkout.
     func setError(_ error: ComponentsPrimerError) {
         self.error = error
+        _checkoutState = .error(error.localizedDescription)
     }
 
     /// Complete the checkout process successfully.
@@ -213,6 +218,11 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope, LogReporte
     }
 
     // MARK: - PrimerCheckoutScope Implementation
+
+    /// The current state of the checkout process
+    var state: AnyPublisher<CheckoutState, Never> {
+        $_checkoutState.eraseToAnyPublisher()
+    }
 
     /// Returns an AsyncStream of available payment methods.
     func paymentMethods() -> AsyncStream<[any PaymentMethodProtocol]> {

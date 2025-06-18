@@ -18,8 +18,8 @@ class CardFormValidator: FormValidator, LogReporter {
         self.validationService = validationService
     }
 
-    func validateForm(fields: [PrimerInputElementType: String?]) -> [PrimerInputElementType: ValidationError?] {
-        var results: [PrimerInputElementType: ValidationError?] = [:]
+    func validateForm(fields: [ComposableInputElementType: String?]) -> [ComposableInputElementType: ValidationError?] {
+        var results: [ComposableInputElementType: ValidationError?] = [:]
 
         for (type, value) in fields {
             let result = validateField(type: type, value: value)
@@ -29,7 +29,7 @@ class CardFormValidator: FormValidator, LogReporter {
         return results
     }
 
-    func validateField(type: PrimerInputElementType, value: String?) -> ValidationResult {
+    func validateField(type: ComposableInputElementType, value: String?) -> ValidationResult {
         // Log the validation input to help debug
         logger.debug(message: "Validating field \(type.rawValue) with value: \(value?.isEmpty == true ? "[empty]" : (value == nil ? "[nil]" : "[filled]"))")
 
@@ -83,7 +83,7 @@ class CardFormValidator: FormValidator, LogReporter {
 
     // Helper to generate consistent error messages
     // swiftlint:disable:next cyclomatic_complexity
-    private func errorMessageFor(fieldType: PrimerInputElementType, errorType: FieldErrorType) -> String {
+    private func errorMessageFor(fieldType: ComposableInputElementType, errorType: FieldErrorType) -> String {
         switch (fieldType, errorType) {
         case (.postalCode, .required): return "Postal code is required."
         case (.countryCode, .required): return "Country is required."

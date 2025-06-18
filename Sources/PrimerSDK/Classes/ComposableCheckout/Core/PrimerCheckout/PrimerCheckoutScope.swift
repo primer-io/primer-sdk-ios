@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 /**
  * Scope interface for customizing the Primer checkout experience.
@@ -15,6 +16,10 @@ import SwiftUI
  */
 @MainActor
 public protocol PrimerCheckoutScope {
+    /// The current state of the checkout process
+    /// Provides reactive updates about checkout initialization, readiness, and errors
+    var state: AnyPublisher<CheckoutState, Never> { get }
+
     /// An AsyncStream containing the list of available payment methods based on prior merchant configuration.
     /// Each PaymentMethod in this stream contains data to allow for payment method identification along with UI
     /// components for displaying the default experience or a fully custom one.

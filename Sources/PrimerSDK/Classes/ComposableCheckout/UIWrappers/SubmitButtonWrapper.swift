@@ -1,6 +1,6 @@
 //
 //  SubmitButtonWrapper.swift
-//  
+//
 //
 //  Created on 17.06.2025.
 //
@@ -11,21 +11,21 @@ import Combine
 /// Wrapper component that provides a submit button connected to the CardFormScope
 @available(iOS 15.0, *)
 public struct SubmitButtonWrapper: View {
-    
+
     // MARK: - Properties
-    
+
     private let scope: any CardFormScope
     private let text: String
-    
+
     // MARK: - State
-    
+
     @State private var isLoading: Bool = false
     @State private var isEnabled: Bool = false
     @State private var cancellables = Set<AnyCancellable>()
     @Environment(\.designTokens) private var tokens
-    
+
     // MARK: - Initialization
-    
+
     public init(
         scope: any CardFormScope,
         text: String = "Submit"
@@ -33,9 +33,9 @@ public struct SubmitButtonWrapper: View {
         self.scope = scope
         self.text = text
     }
-    
+
     // MARK: - Body
-    
+
     public var body: some View {
         Button(action: {
             scope.submit()
@@ -54,7 +54,7 @@ public struct SubmitButtonWrapper: View {
             .frame(height: 50)
             .foregroundColor(.white)
             .background(
-                (isEnabled && !isLoading) 
+                (isEnabled && !isLoading)
                     ? (tokens?.primerColorBrand ?? .blue)
                     : (tokens?.primerColorGray300 ?? .gray)
             )
@@ -65,9 +65,9 @@ public struct SubmitButtonWrapper: View {
             setupStateBinding()
         }
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func setupStateBinding() {
         // Subscribe to scope state changes
         scope.state
@@ -77,7 +77,7 @@ public struct SubmitButtonWrapper: View {
             }
             .store(in: &cancellables)
     }
-    
+
     private func updateFromScopeState(_ state: CardFormState) {
         // Update button state from scope
         isLoading = state.isLoading
@@ -93,10 +93,10 @@ struct SubmitButtonWrapper_Previews: PreviewProvider {
         VStack(spacing: 16) {
             // Enabled state
             SubmitButtonWrapper(scope: MockCardFormScope(enabled: true))
-            
+
             // Disabled state
             SubmitButtonWrapper(scope: MockCardFormScope(enabled: false))
-            
+
             // Loading state
             SubmitButtonWrapper(scope: MockCardFormScope(enabled: true, loading: true))
         }
@@ -110,7 +110,7 @@ struct SubmitButtonWrapper_Previews: PreviewProvider {
 @available(iOS 15.0, *)
 private class MockCardFormScope: CardFormScope, ObservableObject {
     @Published private var _state: CardFormState
-    
+
     init(enabled: Bool = false, loading: Bool = false) {
         _state = CardFormState(
             inputFields: [:],
@@ -119,11 +119,11 @@ private class MockCardFormScope: CardFormScope, ObservableObject {
             isSubmitEnabled: enabled
         )
     }
-    
+
     var state: AnyPublisher<CardFormState, Never> {
         $_state.eraseToAnyPublisher()
     }
-    
+
     func updateCardNumber(_ cardNumber: String) {}
     func updateCvv(_ cvv: String) {}
     func updateExpiryDate(_ expiryDate: String) {}

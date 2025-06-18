@@ -1,6 +1,6 @@
 //
 //  PaymentMethodSelectionState.swift
-//  
+//
 //
 //  Created on 17.06.2025.
 //
@@ -10,9 +10,9 @@ import Foundation
 /// State model for payment method selection that matches Android exactly
 public enum PaymentMethodSelectionState: Equatable, Hashable {
     case loading
-    case ready(paymentMethods: [PrimerComposablePaymentMethod], currency: Currency?)
+    case ready(paymentMethods: [PrimerComposablePaymentMethod], currency: ComposableCurrency?)
     case error(String) // Use string instead of Error for better matching
-    
+
     /// Equatable implementation
     public static func == (lhs: PaymentMethodSelectionState, rhs: PaymentMethodSelectionState) -> Bool {
         switch (lhs, rhs) {
@@ -26,7 +26,7 @@ public enum PaymentMethodSelectionState: Equatable, Hashable {
             return false
         }
     }
-    
+
     /// Hashable implementation
     public func hash(into hasher: inout Hasher) {
         switch self {

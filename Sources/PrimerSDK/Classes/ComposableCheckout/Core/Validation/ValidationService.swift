@@ -72,11 +72,11 @@ import Foundation
  * New validation rules can be added by:
  * - Implementing ValidationRule protocol
  * - Adding factory method to RulesFactory
- * - Extending PrimerInputElementType enum if needed
+ * - Extending ComposableInputElementType enum if needed
  *
  * ### 2. Custom Field Types
  * New field types can be supported by:
- * - Adding case to PrimerInputElementType
+ * - Adding case to ComposableInputElementType
  * - Implementing validation logic in validateField method
  * - Creating appropriate validation rules
  *
@@ -104,7 +104,7 @@ public protocol ValidationService {
     func validateCardholderName(_ name: String) -> ValidationResult
 
     /// Validates any field type with the provided value
-    func validateField(type: PrimerInputElementType, value: String?) -> ValidationResult
+    func validateField(type: ComposableInputElementType, value: String?) -> ValidationResult
 
     /// Validates a field using a specific validation rule
     func validate<T, R: ValidationRule>(input: T, with rule: R) -> ValidationResult where R.Input == T
@@ -261,7 +261,7 @@ public class DefaultValidationService: ValidationService {
         }
 
         // Test all field types
-        let allFieldTypes: [PrimerInputElementType] = [
+        let allFieldTypes: [ComposableInputElementType] = [
             .cardNumber, .expiryDate, .cvv, .cardholderName,
             .postalCode, .countryCode, .firstName, .lastName,
             .addressLine1, .city, .state
@@ -415,7 +415,7 @@ extension DefaultValidationService {
     }
 
     // swiftlint:disable all
-    public func validateField(type: PrimerInputElementType, value: String?) -> ValidationResult {
+    public func validateField(type: ComposableInputElementType, value: String?) -> ValidationResult {
         switch type {
         case .cardNumber:
             guard let value = value else {
@@ -482,6 +482,21 @@ extension DefaultValidationService {
                 fieldName: "OTP",
                 allowedCharacterSet: CharacterSet(charactersIn: "0123456789"),
                 errorCode: "invalid-otp-format"
+            )
+            return numericRule.validate(value)
+
+        case .retailOutlet:
+            return validate(input: value, with: RequiredFieldRule(fieldName: "Retail outlet", errorCode: "invalid-retail-outlet"))
+
+        case .otpCode:
+            guard let value = value else {
+                return .invalid(code: "invalid-otp-code", message: "OTP code is required")
+            }
+            // Validate OTP code is numeric
+            let numericRule = CharacterSetRule(
+                fieldName: "OTP Code",
+                allowedCharacterSet: CharacterSet(charactersIn: "0123456789"),
+                errorCode: "invalid-otp-code-format"
             )
             return numericRule.validate(value)
 

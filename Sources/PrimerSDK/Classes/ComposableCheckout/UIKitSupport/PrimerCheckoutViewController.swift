@@ -51,9 +51,9 @@ public class PrimerCheckoutViewController: UIViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Configure Primer with the client token (NEW API)
-        ComposablePrimer.configure(clientToken: clientToken)
+
+        // Configure Primer with the client token
+        // Note: Configuration is handled within PrimerCheckout component
 
         setupSelectedExample()
     }
@@ -65,156 +65,113 @@ public class PrimerCheckoutViewController: UIViewController {
         switch exampleToShow {
         case .default:
             // EXAMPLE 1: Default Checkout Experience
-            rootView = AnyView(ComposablePrimer.ComposableCheckout())
+            rootView = AnyView(PrimerCheckout(clientToken: clientToken))
 
         case .tabLayout:
             // EXAMPLE 2: Custom Tab Layout Checkout
             rootView = AnyView(
-                ComposablePrimer.ComposableCheckout(
-                    container: { content in
-                        VStack(spacing: 24) {
-                            Text("Primer Custom Tab Experience")
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .padding(.top, 20)
+                VStack(spacing: 24) {
+                    Text("Primer Custom Tab Experience")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .padding(.top, 20)
 
-                            content()
-                                .padding(.horizontal)
-                        }
-                    }
-                )
+                    PrimerCheckout(clientToken: clientToken)
+                        .padding(.horizontal)
+                }
             )
 
         case .customCardForm:
             // EXAMPLE 3: Custom Card Form Checkout
             rootView = AnyView(
-                ComposablePrimer.ComposableCheckout(
-                    cardFormScreen: {
-                        VStack(spacing: 16) {
-                            Text("Custom Card Form Example")
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .padding(.top, 20)
+                VStack(spacing: 16) {
+                    Text("Custom Card Form Example")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .padding(.top, 20)
 
-                            // Use AsyncScopeView to access scopes
-                            AsyncScopeView { checkoutScope, cardFormScope, paymentSelectionScope in
-                                cardFormScope.PrimerCardForm()
-                                    .padding(.horizontal)
-                            }
-                        }
-                    }
-                )
+                    // Use PrimerCheckout with custom content
+                    PrimerCheckout(clientToken: clientToken)
+                }
             )
 
         case .gridLayout:
             // EXAMPLE 4: Grid Layout with Payment Methods
             rootView = AnyView(
-                ComposablePrimer.ComposableCheckout(
-                    paymentSelectionScreen: {
-                        VStack(spacing: 16) {
-                            Text("Grid Layout Example")
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .padding(.top, 20)
+                VStack(spacing: 16) {
+                    Text("Grid Layout Example")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .padding(.top, 20)
 
-                            // Use AsyncScopeView to access payment selection
-                            AsyncScopeView { checkoutScope, cardFormScope, paymentSelectionScope in
-                                paymentSelectionScope.PrimerPaymentMethodSelectionScreen()
-                                    .padding(.horizontal)
-                            }
-                        }
-                    }
-                )
+                    // Use PrimerCheckout with custom payment selection
+                    PrimerCheckout(clientToken: clientToken)
+                }
             )
 
         case .listLayout:
             // EXAMPLE 5: List Layout with Detailed Payment Methods
             rootView = AnyView(
-                ComposablePrimer.ComposableCheckout(
-                    container: { content in
-                        VStack(spacing: 16) {
-                            Text("List Layout Example")
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .padding(.top, 20)
+                VStack(spacing: 16) {
+                    Text("List Layout Example")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .padding(.top, 20)
 
-                            content()
-                                .padding(.horizontal)
-                        }
-                    }
-                )
+                    PrimerCheckout(clientToken: clientToken)
+                }
             )
 
         case .accordionLayout:
             // EXAMPLE 6: Accordion Layout for Payment Methods
             rootView = AnyView(
-                ComposablePrimer.ComposableCheckout(
-                    container: { content in
-                        VStack(spacing: 16) {
-                            Text("Accordion Layout Example")
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .padding(.top, 20)
+                VStack(spacing: 16) {
+                    Text("Accordion Layout Example")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .padding(.top, 20)
 
-                            content()
-                                .padding(.horizontal)
-                        }
-                    }
-                )
+                    PrimerCheckout(clientToken: clientToken)
+                }
             )
 
         case .modalSheet:
             // EXAMPLE 7: Modal Sheet Presentation
             rootView = AnyView(
-                ComposablePrimer.ComposableCheckout(
-                    container: { content in
-                        VStack(spacing: 16) {
-                            Text("Modal Sheet Example")
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .padding(.top, 20)
+                VStack(spacing: 16) {
+                    Text("Modal Sheet Example")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .padding(.top, 20)
 
-                            content()
-                                .padding(.horizontal)
-                        }
-                    }
-                )
+                    PrimerCheckout(clientToken: clientToken)
+                }
             )
 
         case .segmentedControl:
             // EXAMPLE 8: Segmented Control Layout
             rootView = AnyView(
-                ComposablePrimer.ComposableCheckout(
-                    container: { content in
-                        VStack(spacing: 16) {
-                            Text("Segmented Control Example")
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .padding(.top, 20)
+                VStack(spacing: 16) {
+                    Text("Segmented Control Example")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .padding(.top, 20)
 
-                            content()
-                                .padding(.horizontal)
-                        }
-                    }
-                )
+                    PrimerCheckout(clientToken: clientToken)
+                }
             )
 
         case .mixedLayout:
             // EXAMPLE 9: Mixed Layout Combining Multiple Styles
             rootView = AnyView(
-                ComposablePrimer.ComposableCheckout(
-                    container: { content in
-                        VStack(spacing: 16) {
-                            Text("Mixed Layout Example")
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .padding(.top, 20)
+                VStack(spacing: 16) {
+                    Text("Mixed Layout Example")
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .padding(.top, 20)
 
-                            content()
-                                .padding(.horizontal)
-                        }
-                    }
-                )
+                    PrimerCheckout(clientToken: clientToken)
+                }
             )
         }
 
@@ -322,14 +279,8 @@ struct CustomCheckoutWithCardForm: View {
                     }
                     .padding(.bottom)
 
-                    // Show the selected payment method with custom implementation for card
-                    if let cardMethod = selectedMethod as? CardPaymentMethod {
-                        cardMethod.content { cardScope in
-                            CustomCardFormExample(scope: cardScope)
-                        }
-                    } else {
-                        selectedMethod.defaultContent()
-                    }
+                    // Show the selected payment method
+                    selectedMethod.defaultContent()
                 } else {
                     // Payment method selection
                     Text("Select Payment Method")
@@ -388,7 +339,7 @@ struct CustomCheckoutWithCardForm: View {
 /// Custom card form example showing branded styling and enhanced validation
 @available(iOS 15.0, *)
 struct CustomCardFormExample: View {
-    let scope: any CardPaymentMethodScope
+    let scope: any CardFormScope
 
     @State private var cardNumber: String = ""
     @State private var expiryDate: String = ""
@@ -479,12 +430,8 @@ struct CustomCardFormExample: View {
                                         expiryDate = formatted
                                     }
 
-                                    // Extract month and year
-                                    let components = expiryDate.split(separator: "/")
-                                    if components.count == 2 {
-                                        scope.updateExpiryMonth(String(components[0]))
-                                        scope.updateExpiryYear(String(components[1]))
-                                    }
+                                    // Update expiry date in scope
+                                    scope.updateExpiryDate(formatted)
                                 }
                         }
                         .padding()
@@ -540,15 +487,10 @@ struct CustomCardFormExample: View {
                 // Custom pay button
                 Button {
                     isSubmitting = true
-                    Task {
-                        do {
-                            let result = try await scope.submit()
-                            print("Payment successful: \(result)")
-                            isSubmitting = false
-                        } catch {
-                            print("Payment failed: \(error)")
-                            isSubmitting = false
-                        }
+                    scope.submit()
+                    // In a real implementation, you would handle the async result
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        isSubmitting = false
                     }
                 } label: {
                     if #available(iOS 16.0, *) {
@@ -583,13 +525,9 @@ struct CustomCardFormExample: View {
                 .disabled(!isValid || isSubmitting)
             }
             .padding()
-            .task {
-                for await state in scope.state() {
-                    if let state = state {
-                        // Update form state based on the scope's state
-                        isValid = state.validationErrors.isEmpty
-                    }
-                }
+            .onReceive(scope.state) { state in
+                // Update form state based on the scope's state
+                isValid = state.isSubmitEnabled
             }
         } else {
             // Fallback on earlier versions

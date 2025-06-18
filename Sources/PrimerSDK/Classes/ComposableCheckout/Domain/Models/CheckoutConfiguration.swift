@@ -1,6 +1,6 @@
 //
 //  CheckoutConfiguration.swift
-//  
+//
 //
 //  Created on 17.06.2025.
 //
@@ -10,12 +10,12 @@ import Foundation
 /// Domain model representing the configuration needed for checkout
 @available(iOS 15.0, *)
 internal struct CheckoutConfiguration {
-    let configuration: PrimerConfiguration
+    let configuration: ComposablePrimerConfiguration
     let paymentMethods: [PrimerComposablePaymentMethod]
     let currency: ComposableCurrency?
-    
+
     init(
-        config: PrimerConfiguration,
+        config: ComposablePrimerConfiguration,
         paymentMethods: [PrimerComposablePaymentMethod],
         currency: ComposableCurrency? = nil
     ) {
@@ -41,7 +41,7 @@ internal struct CardPaymentData {
     let phoneNumber: String?
     let firstName: String?
     let lastName: String?
-    
+
     init(
         cardNumber: String,
         cvv: String,
@@ -79,7 +79,7 @@ internal struct PaymentToken {
     let token: String
     let expirationDate: Date?
     let tokenType: String
-    
+
     init(
         token: String,
         expirationDate: Date? = nil,
@@ -98,7 +98,7 @@ internal struct ComposablePaymentResult {
     let transactionId: String?
     let error: Error?
     let paymentStatus: PaymentStatus
-    
+
     init(
         success: Bool,
         transactionId: String? = nil,

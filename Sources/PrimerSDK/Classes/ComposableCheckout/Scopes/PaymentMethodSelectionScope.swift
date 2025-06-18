@@ -1,6 +1,6 @@
 //
 //  PaymentMethodSelectionScope.swift
-//  
+//
 //
 //  Created on 17.06.2025.
 //
@@ -12,10 +12,10 @@ import Combine
 /// This matches Android's PaymentMethodSelectionScope interface exactly.
 @available(iOS 15.0, *)
 public protocol PaymentMethodSelectionScope: ObservableObject {
-    
+
     /// Reactive state stream for payment method selection
     var state: AnyPublisher<PaymentMethodSelectionState, Never> { get }
-    
+
     /// Handle payment method selection
     func onPaymentMethodSelected(_ paymentMethod: PrimerComposablePaymentMethod)
 }
@@ -24,18 +24,19 @@ public protocol PaymentMethodSelectionScope: ObservableObject {
 
 @available(iOS 15.0, *)
 public extension PaymentMethodSelectionScope {
-    
+
     /// Payment method selection screen component
+    // swiftlint:disable identifier_name
     @ViewBuilder
     func PrimerPaymentMethodSelectionScreen() -> some View {
         PaymentMethodSelectionScreenView(scope: self)
     }
-    
+
     /// Individual payment method item component
     @ViewBuilder
     func PrimerPaymentMethodItem(
         paymentMethod: PrimerComposablePaymentMethod,
-        currency: Currency? = nil
+        currency: ComposableCurrency? = nil
     ) -> some View {
         PaymentMethodItemView(
             scope: self,
@@ -43,6 +44,7 @@ public extension PaymentMethodSelectionScope {
             currency: currency
         )
     }
+    // swiftlint:enable identifier_name
 }
 
 // Note: State models and data models are now defined in Models/ directory
@@ -52,20 +54,20 @@ public extension PaymentMethodSelectionScope {
 /// Temporary default implementation for testing
 @available(iOS 15.0, *)
 internal class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScope, LogReporter {
-    
+
     @Published private var _state: PaymentMethodSelectionState = .loading
-    
+
     public var state: AnyPublisher<PaymentMethodSelectionState, Never> {
         $_state.eraseToAnyPublisher()
     }
-    
+
     init() {
         loadPaymentMethods()
     }
-    
+
     public func onPaymentMethodSelected(_ paymentMethod: PrimerComposablePaymentMethod) {
         logger.debug(message: "🎯 [DefaultPaymentMethodSelectionScope] Selected: \(paymentMethod.paymentMethodType)")
-        
+
         // TODO: Navigate to appropriate screen based on payment method type
         // For now, just log the selection
         NotificationCenter.default.post(
@@ -73,16 +75,16 @@ internal class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScope, 
             object: paymentMethod
         )
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func loadPaymentMethods() {
         logger.debug(message: "📋 [DefaultPaymentMethodSelectionScope] Loading payment methods")
-        
+
         Task {
             // Simulate loading
             try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
-            
+
             let mockPaymentMethods = [
                 PrimerComposablePaymentMethod(
                     paymentMethodType: "PAYMENT_CARD",
@@ -97,9 +99,9 @@ internal class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScope, 
                     paymentMethodName: "PayPal"
                 )
             ]
-            
-            let currency = Currency(code: "USD", symbol: "$")
-            
+
+            let currency = ComposableCurrency(code: "USD", symbol: "$")
+
             await MainActor.run {
                 _state = .ready(
                     paymentMethods: mockPaymentMethods,
@@ -126,9 +128,9 @@ extension Notification.Name {
 internal struct PaymentMethodSelectionScreenView: View {
     let scope: any PaymentMethodSelectionScope
     @State private var paymentMethods: [PrimerComposablePaymentMethod] = []
-    @State private var currency: Currency?
+    @State private var currency: ComposableCurrency?
     @State private var isLoading = true
-    
+
     var body: some View {
         VStack {
             if isLoading {
@@ -159,28 +161,28 @@ internal struct PaymentMethodSelectionScreenView: View {
 internal struct PaymentMethodItemView: View {
     let scope: any PaymentMethodSelectionScope
     let paymentMethod: PrimerComposablePaymentMethod
-    let currency: Currency?
-    
+    let currency: ComposableCurrency?
+
     var body: some View {
         Button(action: {
             scope.onPaymentMethodSelected(paymentMethod)
         }) {
             HStack {
                 Image(systemName: iconForPaymentMethod(paymentMethod.paymentMethodType))
-                
+
                 VStack(alignment: .leading) {
                     Text(paymentMethod.paymentMethodName ?? paymentMethod.paymentMethodType)
                         .font(.headline)
-                    
+
                     if let surcharge = paymentMethod.surcharge {
                         Text("+ \(surcharge.amount) \(currency?.code ?? "")")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
-                
+
                 Spacer()
-                
+
                 Image(systemName: "chevron.right")
             }
             .padding()
@@ -192,7 +194,7 @@ internal struct PaymentMethodItemView: View {
                 .stroke(Color(.systemGray4), lineWidth: 1)
         )
     }
-    
+
     private func iconForPaymentMethod(_ type: String) -> String {
         switch type {
         case "PAYMENT_CARD":

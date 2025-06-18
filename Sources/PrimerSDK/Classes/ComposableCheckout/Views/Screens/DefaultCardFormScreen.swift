@@ -1,6 +1,6 @@
 //
 //  DefaultCardFormScreen.swift
-//  
+//
 //
 //  Created on 17.06.2025.
 //
@@ -11,30 +11,30 @@ import Combine
 /// Default card form screen with scope integration
 @available(iOS 15.0, *)
 internal struct DefaultCardFormScreen: View, LogReporter {
-    
+
     // MARK: - Properties
-    
+
     let scope: any CardFormScope
-    
+
     // MARK: - State
-    
+
     @State private var isLoading = false
     @State private var isSubmitEnabled = false
-    @State private var fieldErrors: [PrimerInputValidationError] = []
+    @State private var fieldErrors: [ComposableInputValidationError] = []
     @State private var cancellables = Set<AnyCancellable>()
     @Environment(\.designTokens) private var tokens
     @Environment(\.presentationMode) private var presentationMode
-    
+
     // MARK: - Body
-    
+
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 24) {
                     headerView
-                    
+
                     cardDetailsSection
-                    
+
                     submitButtonSection
                 }
                 .padding(.horizontal, 20)
@@ -55,17 +55,17 @@ internal struct DefaultCardFormScreen: View, LogReporter {
             setupStateBinding()
         }
     }
-    
+
     // MARK: - View Components
-    
+
     @ViewBuilder
     private var headerView: some View {
         VStack(spacing: 16) {
             Text("Enter Card Details")
                 .font(.title2)
                 .fontWeight(.semibold)
-                .foregroundColor(tokens?.primerColorText ?? .primary)
-            
+                .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
+
             Text("Your payment information is encrypted and secure")
                 .font(.subheadline)
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
@@ -73,51 +73,58 @@ internal struct DefaultCardFormScreen: View, LogReporter {
         }
         .padding(.top, 16)
     }
-    
+
     @ViewBuilder
     private var cardDetailsSection: some View {
         VStack(spacing: 20) {
             // Card Details Group
-            VStack(spacing: 16) {
-                Text("Card Information")
-                    .font(.headline)
-                    .foregroundColor(tokens?.primerColorText ?? .primary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                
-                VStack(spacing: 12) {
-                    // Card Number
-                    scope.PrimerCardNumberInput()
-                    
-                    // Expiry and CVV row
-                    HStack(spacing: 12) {
-                        scope.PrimerExpiryDateInput()
-                        scope.PrimerCvvInput()
-                    }
-                    
-                    // Cardholder Name
-                    scope.PrimerCardholderNameInput()
-                }
-                .padding(16)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(tokens?.primerColorSurface ?? Color(.secondarySystemBackground))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(tokens?.primerColorBorder ?? Color(.separator), lineWidth: 1)
-                        )
-                )
-            }
-            
+            cardInformationGroup
+
             // Error Display
             if !fieldErrors.isEmpty {
                 errorSection
             }
-            
+
             // Security Notice
             securityNoticeView
         }
     }
-    
+
+    @ViewBuilder
+    private var cardInformationGroup: some View {
+        VStack(spacing: 16) {
+            Text("Card Information")
+                .font(.headline)
+                .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            VStack(spacing: 12) {
+                // Card Number
+                AnyView(scope.PrimerCardNumberInput())
+
+                // Expiry and CVV row
+                HStack(spacing: 12) {
+                    AnyView(scope.PrimerExpiryDateInput())
+                    AnyView(scope.PrimerCvvInput())
+                }
+
+                // Cardholder Name
+                AnyView(scope.PrimerCardholderNameInput())
+            }
+            .padding(16)
+            .background(cardFormBackground)
+        }
+    }
+
+    private var cardFormBackground: some View {
+        RoundedRectangle(cornerRadius: 12)
+            .fill(tokens?.primerColorGray100 ?? Color(.secondarySystemBackground))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(tokens?.primerColorBorderOutlinedDefault ?? Color(.separator), lineWidth: 1)
+            )
+    }
+
     @ViewBuilder
     private var errorSection: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -129,7 +136,7 @@ internal struct DefaultCardFormScreen: View, LogReporter {
                     .fontWeight(.medium)
                     .foregroundColor(.red)
             }
-            
+
             ForEach(fieldErrors, id: \.elementType) { error in
                 Text("• \(error.errorMessage)")
                     .font(.caption)
@@ -146,25 +153,25 @@ internal struct DefaultCardFormScreen: View, LogReporter {
                 )
         )
     }
-    
+
     @ViewBuilder
     private var securityNoticeView: some View {
         HStack(spacing: 12) {
             Image(systemName: "lock.shield")
                 .font(.system(size: 20))
                 .foregroundColor(.green)
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text("Secure Payment")
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundColor(tokens?.primerColorText ?? .primary)
-                
+                    .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
+
                 Text("Your card details are encrypted and protected")
                     .font(.caption)
                     .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
             }
-            
+
             Spacer()
         }
         .padding(12)
@@ -177,12 +184,12 @@ internal struct DefaultCardFormScreen: View, LogReporter {
                 )
         )
     }
-    
+
     @ViewBuilder
     private var submitButtonSection: some View {
         VStack(spacing: 16) {
-            scope.PrimerSubmitButton(text: "Pay Now")
-            
+            AnyView(scope.PrimerSubmitButton(text: "Pay Now"))
+
             Text("By continuing, you agree to our Terms of Service and Privacy Policy")
                 .font(.caption)
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
@@ -190,29 +197,29 @@ internal struct DefaultCardFormScreen: View, LogReporter {
         }
         .padding(.top, 8)
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func setupStateBinding() {
         logger.debug(message: "🔗 [DefaultCardFormScreen] Setting up state binding")
-        
+
         scope.state
             .receive(on: DispatchQueue.main)
-            .sink { [weak self = self] state in
-                self?.handleStateChange(state)
+            .sink { state in
+                handleStateChange(state)
             }
             .store(in: &cancellables)
     }
-    
+
     private func handleStateChange(_ state: CardFormState) {
         logger.debug(message: "🔄 [DefaultCardFormScreen] State changed - loading: \(state.isLoading), enabled: \(state.isSubmitEnabled)")
-        
+
         isLoading = state.isLoading
         isSubmitEnabled = state.isSubmitEnabled
         fieldErrors = state.fieldErrors
-        
+
         if !fieldErrors.isEmpty {
-            logger.warning(message: "⚠️ [DefaultCardFormScreen] Form has \(fieldErrors.count) validation errors")
+            logger.warn(message: "⚠️ [DefaultCardFormScreen] Form has \(fieldErrors.count) validation errors")
         }
     }
 }
@@ -231,11 +238,11 @@ struct DefaultCardFormScreen_Previews: PreviewProvider {
 @available(iOS 15.0, *)
 private class MockCardFormScope: CardFormScope, ObservableObject {
     @Published private var _state = CardFormState.initial
-    
+
     var state: AnyPublisher<CardFormState, Never> {
         $_state.eraseToAnyPublisher()
     }
-    
+
     func updateCardNumber(_ cardNumber: String) {}
     func updateCvv(_ cvv: String) {}
     func updateExpiryDate(_ expiryDate: String) {}

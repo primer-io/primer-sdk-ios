@@ -1,6 +1,6 @@
 //
 //  CheckoutState.swift
-//  
+//
 //
 //  Created on 17.06.2025.
 //
@@ -13,7 +13,7 @@ public enum CheckoutState: Equatable, Hashable {
     case initializing
     case ready
     case error(String) // Use string instead of Error for better matching
-    
+
     /// Equatable implementation
     public static func == (lhs: CheckoutState, rhs: CheckoutState) -> Bool {
         switch (lhs, rhs) {
@@ -29,7 +29,7 @@ public enum CheckoutState: Equatable, Hashable {
             return false
         }
     }
-    
+
     /// Hashable implementation
     public func hash(into hasher: inout Hasher) {
         switch self {

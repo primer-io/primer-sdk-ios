@@ -1,6 +1,6 @@
 //
 //  DefaultLoadingScreen.swift
-//  
+//
 //
 //  Created on 17.06.2025.
 //
@@ -10,10 +10,10 @@ import SwiftUI
 /// Default loading screen shown during checkout processing
 @available(iOS 15.0, *)
 internal struct DefaultLoadingScreen: View {
-    
+
     @Environment(\.designTokens) private var tokens
     @State private var isAnimating = false
-    
+
     var body: some View {
         VStack(spacing: 32) {
             ZStack {
@@ -23,7 +23,7 @@ internal struct DefaultLoadingScreen: View {
                         lineWidth: 8
                     )
                     .frame(width: 80, height: 80)
-                
+
                 Circle()
                     .trim(from: 0, to: 0.8)
                     .stroke(
@@ -34,12 +34,12 @@ internal struct DefaultLoadingScreen: View {
                     .rotationEffect(.degrees(isAnimating ? 360 : 0))
                     .animation(.linear(duration: 1).repeatForever(autoreverses: false), value: isAnimating)
             }
-            
+
             VStack(spacing: 12) {
                 Text("Loading Payment Methods...")
                     .font(.headline)
-                    .foregroundColor(tokens?.primerColorText ?? .primary)
-                
+                    .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
+
                 Text("Please wait while we prepare your checkout")
                     .font(.body)
                     .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)

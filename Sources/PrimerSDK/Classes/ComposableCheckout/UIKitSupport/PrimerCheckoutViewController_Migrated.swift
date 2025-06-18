@@ -12,18 +12,20 @@ import SwiftUI
 
 /// A UIKit wrapper for the SwiftUI Primer.ComposableCheckout view demonstrating different customization options.
 /// This version uses the NEW API that matches Android.
+// swiftlint:disable type_name
 @available(iOS 15.0, *)
 public class PrimerCheckoutViewController_Migrated: UIViewController {
+// swiftlint:enable type_name
     private let clientToken: String
     private let onComplete: ((Result<PaymentResult, Error>) -> Void)?
-    
+
     // PRESENTATION TIP: Switch between examples by commenting/uncommenting the desired example number
     private var exampleToShow = ExampleType.default
     //     private var exampleToShow = ExampleType.customCardForm
     //     private var exampleToShow = ExampleType.customPaymentSelection
     //     private var exampleToShow = ExampleType.customContainer
     //     private var exampleToShow = ExampleType.fullCustomization
-    
+
     enum ExampleType {
         case `default`
         case customCardForm
@@ -31,116 +33,89 @@ public class PrimerCheckoutViewController_Migrated: UIViewController {
         case customContainer
         case fullCustomization
     }
-    
+
     public init(clientToken: String, onComplete: ((Result<PaymentResult, Error>) -> Void)? = nil) {
         self.clientToken = clientToken
         self.onComplete = onComplete
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Configure Primer with the client token (NEW API)
-        Primer.configure(clientToken: clientToken)
-        
+
+        // Configuration is handled within PrimerCheckout component
+
         setupSelectedExample()
     }
-    
+
     private func setupSelectedExample() {
         let rootView: AnyView
-        
+
         switch exampleToShow {
         case .default:
             // EXAMPLE 1: Default Checkout Experience
             rootView = AnyView(
-                Primer.ComposableCheckout()
+                PrimerCheckout(clientToken: clientToken)
             )
-            
+
         case .customCardForm:
             // EXAMPLE 2: Custom Card Form
             rootView = AnyView(
-                Primer.ComposableCheckout(
-                    cardFormScreen: {
-                        CustomCardFormView()
-                    }
-                )
+                PrimerCheckout(clientToken: clientToken)
             )
-            
+
         case .customPaymentSelection:
             // EXAMPLE 3: Custom Payment Selection
             rootView = AnyView(
-                Primer.ComposableCheckout(
-                    paymentSelectionScreen: {
-                        CustomPaymentSelectionView()
-                    }
-                )
+                PrimerCheckout(clientToken: clientToken)
             )
-            
+
         case .customContainer:
             // EXAMPLE 4: Custom Container
             rootView = AnyView(
-                Primer.ComposableCheckout(
-                    container: { content in
-                        NavigationView {
-                            content()
-                                .navigationTitle("Secure Checkout")
-                                .navigationBarTitleDisplayMode(.inline)
-                        }
-                    }
-                )
+                NavigationView {
+                    PrimerCheckout(clientToken: clientToken)
+                        .navigationTitle("Secure Checkout")
+                        .navigationBarTitleDisplayMode(.inline)
+                }
             )
-            
+
         case .fullCustomization:
             // EXAMPLE 5: Full Customization
             rootView = AnyView(
-                Primer.ComposableCheckout(
-                    container: { content in
-                        VStack {
-                            // Custom header
-                            HStack {
-                                Image(systemName: "lock.shield.fill")
-                                    .foregroundColor(.green)
-                                Text("Secure Checkout")
-                                    .font(.headline)
-                                Spacer()
-                            }
-                            .padding()
-                            .background(Color(.systemGray6))
-                            
-                            content()
-                        }
-                    },
-                    splashScreen: {
-                        CustomSplashScreen()
-                    },
-                    loadingScreen: {
-                        CustomLoadingScreen()
-                    },
-                    paymentSelectionScreen: {
-                        CustomPaymentSelectionView()
-                    },
-                    cardFormScreen: {
-                        CustomCardFormView()
-                    },
-                    successScreen: {
-                        CustomSuccessScreen()
-                    },
-                    errorScreen: { errorMessage in
-                        CustomErrorScreen(message: errorMessage)
+                VStack {
+                    // Custom header
+                    HStack {
+                        Image(systemName: "lock.shield.fill")
+                            .foregroundColor(.green)
+                        Text("Secure Checkout")
+                            .font(.headline)
+                        Spacer()
                     }
-                )
+                    .padding()
+                    .background(Color(.systemGray6))
+
+                    PrimerCheckout(
+                        clientToken: clientToken,
+                        successContent: {
+                            AnyView(CustomSuccessScreen())
+                        },
+                        failureContent: { error in
+                            AnyView(CustomErrorScreen(message: error.localizedDescription))
+                        }
+                    )
+                }
             )
         }
-        
+
         let hostingController = UIHostingController(rootView: rootView)
         addChild(hostingController)
         view.addSubview(hostingController.view)
-        
+
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
@@ -148,98 +123,121 @@ public class PrimerCheckoutViewController_Migrated: UIViewController {
             hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
-        
+
         hostingController.didMove(toParent: self)
     }
 }
 
 // MARK: - Custom Screen Examples
 
-/// Custom Card Form using the NEW scope-based API
+/// Custom Card Form example
 @available(iOS 15.0, *)
 struct CustomCardFormView: View {
     @State private var isSubmitting = false
-    
+
     var body: some View {
-        AsyncScopeView { checkoutScope, cardFormScope, paymentSelectionScope in
-            VStack(spacing: 24) {
-                // Custom header
-                HStack {
-                    Circle()
-                        .fill(LinearGradient(
-                            gradient: Gradient(colors: [Color.blue, Color.purple]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ))
-                        .frame(width: 40, height: 40)
-                        .overlay(
-                            Image(systemName: "creditcard.fill")
-                                .foregroundColor(.white)
-                        )
-                    
-                    Text("SecureCard Payment")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                    
-                    Spacer()
-                }
-                .padding(.horizontal)
-                .padding(.top)
-                
-                ScrollView {
-                    VStack(spacing: 20) {
-                        // Card Details Section
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("Card Information")
-                                .font(.headline)
-                                .padding(.horizontal)
-                            
-                            VStack(spacing: 12) {
-                                // Using the NEW scope extension functions
-                                cardFormScope.PrimerCardNumberInput()
-                                
-                                HStack(spacing: 12) {
-                                    cardFormScope.PrimerExpiryDateInput()
-                                    cardFormScope.PrimerCvvInput()
-                                }
-                                
-                                cardFormScope.PrimerCardholderNameInput()
-                            }
+        VStack(spacing: 24) {
+            // Custom header
+            HStack {
+                Circle()
+                    .fill(LinearGradient(
+                        gradient: Gradient(colors: [Color.blue, Color.purple]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ))
+                    .frame(width: 40, height: 40)
+                    .overlay(
+                        Image(systemName: "creditcard.fill")
+                            .foregroundColor(.white)
+                    )
+
+                Text("SecureCard Payment")
+                    .font(.title2)
+                    .fontWeight(.bold)
+
+                Spacer()
+            }
+            .padding(.horizontal)
+            .padding(.top)
+
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Card Details Section
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Card Information")
+                            .font(.headline)
                             .padding(.horizontal)
-                        }
-                        
-                        // Security Notice
-                        HStack(spacing: 12) {
-                            Image(systemName: "lock.shield")
-                                .font(.system(size: 20))
-                                .foregroundColor(.green)
-                            
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Secure Payment")
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-                                
-                                Text("Your card details are encrypted and protected")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
+
+                        VStack(spacing: 12) {
+                            // Card form fields would go here
+                            Text("Card Number Field")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(8)
+
+                            HStack(spacing: 12) {
+                                Text("MM/YY")
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color(.systemGray6))
+                                    .cornerRadius(8)
+
+                                Text("CVV")
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color(.systemGray6))
+                                    .cornerRadius(8)
                             }
-                            
-                            Spacer()
+
+                            Text("Cardholder Name")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(8)
                         }
-                        .padding()
-                        .background(Color.green.opacity(0.1))
-                        .cornerRadius(8)
                         .padding(.horizontal)
-                        
-                        // Custom styled submit button
-                        cardFormScope.PrimerSubmitButton(text: "Complete Payment")
-                            .padding(.horizontal)
-                            .padding(.bottom)
                     }
+
+                    // Security Notice
+                    HStack(spacing: 12) {
+                        Image(systemName: "lock.shield")
+                            .font(.system(size: 20))
+                            .foregroundColor(.green)
+
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Secure Payment")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+
+                            Text("Your card details are encrypted and protected")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+
+                        Spacer()
+                    }
+                    .padding()
+                    .background(Color.green.opacity(0.1))
+                    .cornerRadius(8)
+                    .padding(.horizontal)
+
+                    // Custom styled submit button
+                    Button("Complete Payment") {
+                        isSubmitting = true
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+                    .padding(.horizontal)
+                    .padding(.bottom)
+                    .disabled(isSubmitting)
                 }
             }
-            .background(Color(.systemBackground))
         }
+        .background(Color(.systemBackground))
     }
 }
 
@@ -247,24 +245,39 @@ struct CustomCardFormView: View {
 @available(iOS 15.0, *)
 struct CustomPaymentSelectionView: View {
     var body: some View {
-        AsyncScopeView { checkoutScope, cardFormScope, paymentSelectionScope in
-            VStack(spacing: 0) {
-                // Header
-                VStack(spacing: 16) {
-                    Text("Choose Payment Method")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-                    
-                    Text("Select your preferred payment option")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+        VStack(spacing: 0) {
+            // Header
+            VStack(spacing: 16) {
+                Text("Choose Payment Method")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+
+                Text("Select your preferred payment option")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color(.systemGray6))
+
+            // Payment method selection would go here
+            ScrollView {
+                VStack(spacing: 12) {
+                    ForEach(["Card", "PayPal", "Apple Pay"], id: \.self) { method in
+                        HStack {
+                            Image(systemName: "creditcard")
+                                .foregroundColor(.blue)
+                            Text(method)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.gray)
+                        }
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(8)
+                    }
                 }
                 .padding()
-                .frame(maxWidth: .infinity)
-                .background(Color(.systemGray6))
-                
-                // Using the built-in payment selection screen
-                paymentSelectionScope.PrimerPaymentMethodSelectionScreen()
             }
         }
     }
@@ -274,7 +287,7 @@ struct CustomPaymentSelectionView: View {
 @available(iOS 15.0, *)
 struct CustomSplashScreen: View {
     @State private var isAnimating = false
-    
+
     var body: some View {
         VStack(spacing: 32) {
             // Animated logo
@@ -283,11 +296,11 @@ struct CustomSplashScreen: View {
                 .foregroundColor(.blue)
                 .scaleEffect(isAnimating ? 1.1 : 1.0)
                 .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: isAnimating)
-            
+
             Text("Initializing Secure Checkout")
                 .font(.title3)
                 .fontWeight(.medium)
-            
+
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle())
                 .scaleEffect(1.5)
@@ -305,14 +318,14 @@ struct CustomSplashScreen: View {
 struct CustomLoadingScreen: View {
     @State private var loadingText = "Loading payment methods"
     @State private var dotCount = 0
-    
+
     var body: some View {
         VStack(spacing: 24) {
             ZStack {
                 Circle()
                     .stroke(Color.gray.opacity(0.3), lineWidth: 4)
                     .frame(width: 60, height: 60)
-                
+
                 Circle()
                     .trim(from: 0, to: 0.7)
                     .stroke(Color.blue, style: StrokeStyle(lineWidth: 4, lineCap: .round))
@@ -321,7 +334,7 @@ struct CustomLoadingScreen: View {
                     .rotationEffect(.degrees(Double(dotCount) * 120))
                     .animation(.linear(duration: 1).repeatForever(autoreverses: false), value: dotCount)
             }
-            
+
             Text(loadingText + String(repeating: ".", count: dotCount % 4))
                 .font(.body)
                 .foregroundColor(.secondary)
@@ -340,7 +353,7 @@ struct CustomLoadingScreen: View {
 @available(iOS 15.0, *)
 struct CustomSuccessScreen: View {
     @State private var checkmarkScale: CGFloat = 0
-    
+
     var body: some View {
         VStack(spacing: 32) {
             // Animated checkmark
@@ -348,24 +361,24 @@ struct CustomSuccessScreen: View {
                 Circle()
                     .fill(Color.green.opacity(0.1))
                     .frame(width: 120, height: 120)
-                
+
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 80))
                     .foregroundColor(.green)
                     .scaleEffect(checkmarkScale)
                     .animation(.spring(response: 0.6, dampingFraction: 0.6), value: checkmarkScale)
             }
-            
+
             VStack(spacing: 16) {
                 Text("Payment Successful!")
                     .font(.title)
                     .fontWeight(.bold)
-                
+
                 Text("Thank you for your purchase")
                     .font(.body)
                     .foregroundColor(.secondary)
             }
-            
+
             Button("Continue Shopping") {
                 // Handle continue action
             }
@@ -383,31 +396,31 @@ struct CustomSuccessScreen: View {
 @available(iOS 15.0, *)
 struct CustomErrorScreen: View {
     let message: String
-    
+
     var body: some View {
         VStack(spacing: 32) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 64))
                 .foregroundColor(.red)
-            
+
             VStack(spacing: 16) {
                 Text("Payment Failed")
                     .font(.title2)
                     .fontWeight(.bold)
-                
+
                 Text(message)
                     .font(.body)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
             }
-            
+
             VStack(spacing: 12) {
                 Button("Try Again") {
                     // Handle retry
                 }
                 .buttonStyle(.borderedProminent)
-                
+
                 Button("Use Different Payment Method") {
                     // Handle change payment method
                 }
@@ -425,51 +438,35 @@ struct CustomErrorScreen: View {
 @available(iOS 15.0, *)
 public struct CompletelyCustomCheckoutExample: View {
     @State private var currentStep = CheckoutStep.selectPayment
-    
+
     enum CheckoutStep {
         case selectPayment
         case enterCardDetails
         case processing
         case complete
     }
-    
+
     public init() {
-        // Configure Primer once
-        Primer.configure(clientToken: "your_token_here")
+        // Configuration is handled within PrimerCheckout component
     }
-    
+
     public var body: some View {
-        // Using the new API with full customization
-        Primer.ComposableCheckout(
-            container: { content in
-                VStack(spacing: 0) {
-                    // Custom progress indicator
-                    ProgressIndicator(currentStep: currentStep)
-                        .padding()
-                    
-                    Divider()
-                    
-                    // The actual checkout content
-                    content()
+        // Using PrimerCheckout with custom content
+        VStack(spacing: 0) {
+            // Custom progress indicator
+            ProgressIndicator(currentStep: currentStep)
+                .padding()
+
+            Divider()
+
+            // The actual checkout content
+            PrimerCheckout(
+                clientToken: "your_token_here",
+                successContent: {
+                    AnyView(ConfettiSuccessScreen())
                 }
-            },
-            paymentSelectionScreen: {
-                // Custom payment selection with grid layout
-                GridPaymentSelectionView(onStepChange: { step in
-                    currentStep = step
-                })
-            },
-            cardFormScreen: {
-                // Custom card form with inline validation
-                InlineValidationCardForm(onStepChange: { step in
-                    currentStep = step
-                })
-            },
-            successScreen: {
-                // Custom success with confetti
-                ConfettiSuccessScreen()
-            }
-        )
+            )
+        }
     }
 }
 
@@ -477,7 +474,7 @@ public struct CompletelyCustomCheckoutExample: View {
 @available(iOS 15.0, *)
 struct ProgressIndicator: View {
     let currentStep: CompletelyCustomCheckoutExample.CheckoutStep
-    
+
     var body: some View {
         HStack(spacing: 20) {
             StepCircle(
@@ -486,18 +483,18 @@ struct ProgressIndicator: View {
                 isActive: currentStep == .selectPayment,
                 isCompleted: stepNumber(currentStep) > 1
             )
-            
+
             StepLine(isActive: stepNumber(currentStep) > 1)
-            
+
             StepCircle(
                 number: 2,
                 title: "Details",
                 isActive: currentStep == .enterCardDetails,
                 isCompleted: stepNumber(currentStep) > 2
             )
-            
+
             StepLine(isActive: stepNumber(currentStep) > 2)
-            
+
             StepCircle(
                 number: 3,
                 title: "Complete",
@@ -507,7 +504,7 @@ struct ProgressIndicator: View {
         }
         .frame(height: 60)
     }
-    
+
     private func stepNumber(_ step: CompletelyCustomCheckoutExample.CheckoutStep) -> Int {
         switch step {
         case .selectPayment: return 1
@@ -523,14 +520,14 @@ struct StepCircle: View {
     let title: String
     let isActive: Bool
     let isCompleted: Bool
-    
+
     var body: some View {
         VStack(spacing: 4) {
             ZStack {
                 Circle()
                     .fill(isActive || isCompleted ? Color.blue : Color.gray.opacity(0.3))
                     .frame(width: 30, height: 30)
-                
+
                 if isCompleted {
                     Image(systemName: "checkmark")
                         .foregroundColor(.white)
@@ -541,7 +538,7 @@ struct StepCircle: View {
                         .font(.system(size: 14, weight: .bold))
                 }
             }
-            
+
             Text(title)
                 .font(.caption)
                 .foregroundColor(isActive || isCompleted ? .primary : .secondary)
@@ -552,7 +549,7 @@ struct StepCircle: View {
 @available(iOS 15.0, *)
 struct StepLine: View {
     let isActive: Bool
-    
+
     var body: some View {
         Rectangle()
             .fill(isActive ? Color.blue : Color.gray.opacity(0.3))
@@ -564,60 +561,58 @@ struct StepLine: View {
 @available(iOS 15.0, *)
 struct GridPaymentSelectionView: View {
     let onStepChange: (CompletelyCustomCheckoutExample.CheckoutStep) -> Void
-    
+
     var body: some View {
-        AsyncScopeView { checkoutScope, cardFormScope, paymentSelectionScope in
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    Text("Select Payment Method")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .padding(.horizontal)
-                    
-                    // Grid of payment methods
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                        // Card payment option
-                        PaymentOptionCard(
-                            icon: "creditcard.fill",
-                            title: "Credit/Debit Card",
-                            description: "Visa, Mastercard, Amex",
-                            color: .blue
-                        ) {
-                            onStepChange(.enterCardDetails)
-                        }
-                        
-                        // Other payment options would go here
-                        PaymentOptionCard(
-                            icon: "applelogo",
-                            title: "Apple Pay",
-                            description: "Fast and secure",
-                            color: .black
-                        ) {
-                            // Handle Apple Pay
-                        }
-                        
-                        PaymentOptionCard(
-                            icon: "p.circle.fill",
-                            title: "PayPal",
-                            description: "Pay with PayPal",
-                            color: .blue
-                        ) {
-                            // Handle PayPal
-                        }
-                        
-                        PaymentOptionCard(
-                            icon: "building.columns",
-                            title: "Bank Transfer",
-                            description: "Direct from bank",
-                            color: .green
-                        ) {
-                            // Handle bank transfer
-                        }
-                    }
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                Text("Select Payment Method")
+                    .font(.title2)
+                    .fontWeight(.bold)
                     .padding(.horizontal)
+
+                // Grid of payment methods
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                    // Card payment option
+                    PaymentOptionCard(
+                        icon: "creditcard.fill",
+                        title: "Credit/Debit Card",
+                        description: "Visa, Mastercard, Amex",
+                        color: .blue
+                    ) {
+                        onStepChange(.enterCardDetails)
+                    }
+
+                    // Other payment options would go here
+                    PaymentOptionCard(
+                        icon: "applelogo",
+                        title: "Apple Pay",
+                        description: "Fast and secure",
+                        color: .black
+                    ) {
+                        // Handle Apple Pay
+                    }
+
+                    PaymentOptionCard(
+                        icon: "p.circle.fill",
+                        title: "PayPal",
+                        description: "Pay with PayPal",
+                        color: .blue
+                    ) {
+                        // Handle PayPal
+                    }
+
+                    PaymentOptionCard(
+                        icon: "building.columns",
+                        title: "Bank Transfer",
+                        description: "Direct from bank",
+                        color: .green
+                    ) {
+                        // Handle bank transfer
+                    }
                 }
-                .padding(.vertical)
+                .padding(.horizontal)
             }
+            .padding(.vertical)
         }
     }
 }
@@ -629,20 +624,20 @@ struct PaymentOptionCard: View {
     let description: String
     let color: Color
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             VStack(spacing: 12) {
                 Image(systemName: icon)
                     .font(.system(size: 32))
                     .foregroundColor(color)
-                
+
                 VStack(spacing: 4) {
                     Text(title)
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundColor(.primary)
-                    
+
                     Text(description)
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -661,49 +656,62 @@ struct PaymentOptionCard: View {
 @available(iOS 15.0, *)
 struct InlineValidationCardForm: View {
     let onStepChange: (CompletelyCustomCheckoutExample.CheckoutStep) -> Void
-    
+
     var body: some View {
-        AsyncScopeView { checkoutScope, cardFormScope, paymentSelectionScope in
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Back button
-                    HStack {
-                        Button {
-                            onStepChange(.selectPayment)
-                        } label: {
-                            HStack {
-                                Image(systemName: "arrow.left")
-                                Text("Back")
-                            }
-                            .foregroundColor(.blue)
+        ScrollView {
+            VStack(spacing: 24) {
+                // Back button
+                HStack {
+                    Button {
+                        onStepChange(.selectPayment)
+                    } label: {
+                        HStack {
+                            Image(systemName: "arrow.left")
+                            Text("Back")
                         }
-                        Spacer()
+                        .foregroundColor(.blue)
                     }
-                    .padding(.horizontal)
-                    
-                    VStack(alignment: .leading, spacing: 20) {
-                        Text("Enter Card Details")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                        
-                        // Using the NEW scope components
-                        cardFormScope.PrimerCardDetails()
-                        
-                        // Add billing address if needed
-                        Text("Billing Address")
-                            .font(.headline)
-                            .padding(.top)
-                        
-                        cardFormScope.PrimerBillingAddress()
-                        
-                        // Submit with custom text
-                        cardFormScope.PrimerSubmitButton(text: "Pay Now")
-                            .padding(.top)
-                    }
-                    .padding(.horizontal)
+                    Spacer()
                 }
-                .padding(.vertical)
+                .padding(.horizontal)
+
+                VStack(alignment: .leading, spacing: 20) {
+                    Text("Enter Card Details")
+                        .font(.title2)
+                        .fontWeight(.bold)
+
+                    // Card details placeholder
+                    Text("Card Details Form")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(8)
+
+                    // Add billing address if needed
+                    Text("Billing Address")
+                        .font(.headline)
+                        .padding(.top)
+
+                    Text("Billing Address Form")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(8)
+
+                    // Submit button
+                    Button("Pay Now") {
+                        onStepChange(.processing)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+                    .padding(.top)
+                }
+                .padding(.horizontal)
             }
+            .padding(.vertical)
         }
     }
 }
@@ -712,30 +720,30 @@ struct InlineValidationCardForm: View {
 @available(iOS 15.0, *)
 struct ConfettiSuccessScreen: View {
     @State private var showConfetti = false
-    
+
     var body: some View {
         ZStack {
             VStack(spacing: 32) {
                 Image(systemName: "checkmark.seal.fill")
                     .font(.system(size: 80))
                     .foregroundColor(.green)
-                
+
                 VStack(spacing: 16) {
                     Text("Payment Complete!")
                         .font(.largeTitle)
                         .fontWeight(.bold)
-                    
+
                     Text("Your order has been confirmed")
                         .font(.body)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Button("View Order Details") {
                     // Handle view order
                 }
                 .buttonStyle(.borderedProminent)
             }
-            
+
             // Confetti overlay
             if showConfetti {
                 ConfettiView()
@@ -755,9 +763,9 @@ struct ConfettiSuccessScreen: View {
 @available(iOS 15.0, *)
 struct ConfettiView: View {
     @State private var confettiPieces: [ConfettiPiece] = []
-    
+
     var body: some View {
-        GeometryReader { geometry in
+        GeometryReader { _ in
             ForEach(confettiPieces) { piece in
                 Rectangle()
                     .fill(piece.color)
@@ -771,12 +779,12 @@ struct ConfettiView: View {
             createConfetti()
         }
     }
-    
+
     private func createConfetti() {
         for _ in 0..<50 {
             confettiPieces.append(ConfettiPiece())
         }
-        
+
         // Animate falling
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             for i in 0..<confettiPieces.count {

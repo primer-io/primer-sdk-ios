@@ -1,6 +1,6 @@
 //
 //  Primer.swift
-//  
+//
 //
 //  Created on 17.06.2025.
 //
@@ -11,17 +11,17 @@ import SwiftUI
 /// Provides a simple configuration pattern and scope-based ComposableCheckout.
 @available(iOS 15.0, *)
 public struct ComposablePrimer: LogReporter {
-    
+
     // MARK: - Configuration Storage
-    
+
     /// Current configuration set via configure() method
     internal static var configuration: ComposablePrimerConfiguration?
-    
+
     // MARK: - Public API
-    
+
     /// Configure Primer with client token and settings.
     /// This matches Android's Primer.configure() method exactly.
-    /// 
+    ///
     /// - Parameters:
     ///   - clientToken: The client token for Primer SDK
     ///   - settings: Configuration settings (defaults to .default)
@@ -30,15 +30,15 @@ public struct ComposablePrimer: LogReporter {
         settings: ComposablePrimerSettings = .default
     ) {
         logger.debug(message: "🔧 [ComposablePrimer] Configuring with client token")
-        
+
         self.configuration = ComposablePrimerConfiguration(
             clientToken: clientToken,
             settings: settings
         )
-        
+
         logger.info(message: "✅ [ComposablePrimer] Configuration completed")
     }
-    
+
     /// ComposableCheckout that matches Android's API structure.
     /// Provides customizable screen implementations using ViewBuilder closures.
     ///
@@ -51,6 +51,7 @@ public struct ComposablePrimer: LogReporter {
     ///   - successScreen: Custom success screen implementation
     ///   - errorScreen: Custom error screen implementation (receives error message)
     /// - Returns: SwiftUI view for the checkout flow
+    // swiftlint:disable identifier_name
     public static func ComposableCheckout(
         container: ((_ content: @escaping () -> AnyView) -> AnyView)? = nil,
         splashScreen: (() -> AnyView)? = nil,
@@ -70,5 +71,5 @@ public struct ComposablePrimer: LogReporter {
             errorScreen: errorScreen
         )
     }
+    // swiftlint:enable identifier_name
 }
-
