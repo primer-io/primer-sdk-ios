@@ -202,6 +202,14 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope, LogReporte
             isClientTokenProcessed = true
         } catch {
             logger.error(message: "🚨 [PrimerCheckoutViewModel] Client token processing failed: \(error.localizedDescription)")
+            
+            // Check if it's a timeout error
+            if let nsError = error as NSError?, 
+               nsError.domain == NSURLErrorDomain,
+               nsError.code == NSURLErrorTimedOut {
+                logger.warn(message: "⏱️ [PrimerCheckoutViewModel] Request timed out. This may be a network issue.")
+            }
+            
             setError(ComponentsPrimerError.clientTokenError(error))
         }
     }

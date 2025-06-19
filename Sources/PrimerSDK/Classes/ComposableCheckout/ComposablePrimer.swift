@@ -22,6 +22,9 @@ import SwiftUI
     /// The currently active checkout view controller
     private weak var activeCheckoutController: UIViewController?
     
+    /// Flag to prevent multiple simultaneous presentations
+    private var isPresentingCheckout = false
+    
     /// Logger for debugging
     private let logger = PrimerLogging.shared.logger
     
@@ -91,6 +94,15 @@ import SwiftUI
     ) {
         logger.info(message: "📱 [ComposablePrimer] Presenting checkout with default UI")
         
+        // Check if already presenting
+        guard !isPresentingCheckout else {
+            logger.warn(message: "⚠️ [ComposablePrimer] Already presenting checkout. Ignoring duplicate request.")
+            completion?()
+            return
+        }
+        
+        isPresentingCheckout = true
+        
         Task { @MainActor in
             do {
                 // Initialize the DI container
@@ -113,13 +125,22 @@ import SwiftUI
                 // Store reference
                 activeCheckoutController = hostingController
                 
-                // Present
-                viewController.present(hostingController, animated: true, completion: completion)
-                
-                logger.info(message: "✅ [ComposablePrimer] Checkout presented successfully")
+                // Check if already presenting
+                if viewController.presentedViewController != nil {
+                    logger.warn(message: "⚠️ [ComposablePrimer] View controller is already presenting. Dismissing first.")
+                    viewController.dismiss(animated: false) { [weak self] in
+                        self?.presentHostingController(hostingController, from: viewController, completion: completion)
+                    }
+                } else {
+                    // Present directly
+                    presentHostingController(hostingController, from: viewController, completion: completion)
+                }
                 
             } catch {
                 logger.error(message: "❌ [ComposablePrimer] Failed to present checkout: \(error)")
+                
+                // Reset presenting flag
+                isPresentingCheckout = false
                 
                 // Call error delegate
                 let primerError = PrimerError.underlyingErrors(
@@ -189,6 +210,13 @@ import SwiftUI
         }
     }
     
+    private func presentHostingController(_ hostingController: UIViewController, from viewController: UIViewController, completion: (() -> Void)?) {
+        viewController.present(hostingController, animated: true) { [weak self] in
+            self?.logger.info(message: "✅ [ComposablePrimer] Checkout presented successfully")
+            completion?()
+        }
+    }
+    
     private func dismiss(animated: Bool, completion: (() -> Void)?) {
         logger.info(message: "🚪 [ComposablePrimer] Dismissing checkout")
         
@@ -200,6 +228,7 @@ import SwiftUI
         
         controller.dismiss(animated: animated) { [weak self] in
             self?.activeCheckoutController = nil
+            self?.isPresentingCheckout = false
             self?.logger.info(message: "✅ [ComposablePrimer] Checkout dismissed")
             completion?()
         }
