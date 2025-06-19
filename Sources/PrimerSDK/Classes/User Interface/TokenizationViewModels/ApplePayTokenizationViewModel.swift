@@ -21,7 +21,6 @@ internal extension PKPaymentMethodType {
     }
 }
 
-@available(iOS 11.0, *)
 final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
     struct ShippingMethodsInfo {
@@ -396,7 +395,6 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 }
 
-@available(iOS 11.0, *)
 extension ApplePayTokenizationViewModel {
 
     private func clientSessionAddressFromApplePayBillingContact(_ billingContact: PKContact?) -> ClientSession.Address? {
@@ -513,7 +511,6 @@ extension ApplePayTokenizationViewModel {
 }
 
 // MARK: - PKPaymentAuthorizationControllerDelegate
-@available(iOS 11.0, *)
 extension ApplePayTokenizationViewModel: PKPaymentAuthorizationControllerDelegate {
 
     func paymentAuthorizationController(_ controller: PKPaymentAuthorizationController,
