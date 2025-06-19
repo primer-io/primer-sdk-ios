@@ -1005,7 +1005,6 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         self.rawDataManager?.rawData = self.rawCardData
 
         var network = cardNetwork?.rawValue.uppercased()
-        let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
 
         if let cardNetwork = cardNetwork,
            cardNetwork != .unknown {
