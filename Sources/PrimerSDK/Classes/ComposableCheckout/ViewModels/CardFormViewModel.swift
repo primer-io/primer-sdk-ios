@@ -34,6 +34,7 @@ public class CardFormViewModel: CardFormScope, LogReporter {
     private let validationService: ValidationService
     private let processCardPaymentInteractor: ProcessCardPaymentInteractor
     private let validatePaymentDataInteractor: ValidatePaymentDataInteractor
+    private let getRequiredFieldsInteractor: GetRequiredFieldsInteractor
     private let navigator: CheckoutNavigator
 
     // MARK: - Initialization
@@ -44,6 +45,7 @@ public class CardFormViewModel: CardFormScope, LogReporter {
         self.navigator = navigator
         self.processCardPaymentInteractor = try await container.resolve(ProcessCardPaymentInteractor.self, name: nil)
         self.validatePaymentDataInteractor = try await container.resolve(ValidatePaymentDataInteractor.self, name: nil)
+        self.getRequiredFieldsInteractor = try await container.resolve(GetRequiredFieldsInteractor.self, name: nil)
         logger.debug(message: "💳 [CardFormViewModel] Initializing card form")
         await setupInitialState()
     }
@@ -176,12 +178,20 @@ public class CardFormViewModel: CardFormScope, LogReporter {
     private func setupInitialState() async {
         logger.debug(message: "⚙️ [CardFormViewModel] Setting up initial state")
 
+        // Get required fields from backend configuration
+        let cardFields = await getRequiredFieldsInteractor.getCardFields()
+        let billingFields = await getRequiredFieldsInteractor.getBillingFields()
+        
+        logger.debug(message: "📋 [CardFormViewModel] Required fields - Card: \(cardFields), Billing: \(billingFields)")
+
         _state = CardFormState(
             inputFields: [:],
             fieldErrors: [],
             isLoading: false,
             isSubmitEnabled: false,
-            cardNetwork: nil
+            cardNetwork: nil,
+            cardFields: cardFields,
+            billingFields: billingFields
         )
     }
 
@@ -194,7 +204,9 @@ public class CardFormViewModel: CardFormScope, LogReporter {
             fieldErrors: _state.fieldErrors,
             isLoading: _state.isLoading,
             isSubmitEnabled: calculateSubmitEnabled(updatedFields),
-            cardNetwork: detectedCardNetwork == .unknown ? nil : detectedCardNetwork
+            cardNetwork: detectedCardNetwork == .unknown ? nil : detectedCardNetwork,
+            cardFields: _state.cardFields,
+            billingFields: _state.billingFields
         )
     }
 
@@ -247,7 +259,9 @@ public class CardFormViewModel: CardFormScope, LogReporter {
             fieldErrors: errors,
             isLoading: _state.isLoading,
             isSubmitEnabled: calculateSubmitEnabled(_state.inputFields, errors: errors),
-            cardNetwork: detectedCardNetwork == .unknown ? nil : detectedCardNetwork
+            cardNetwork: detectedCardNetwork == .unknown ? nil : detectedCardNetwork,
+            cardFields: _state.cardFields,
+            billingFields: _state.billingFields
         )
     }
 
@@ -275,19 +289,28 @@ public class CardFormViewModel: CardFormScope, LogReporter {
             fieldErrors: _state.fieldErrors,
             isLoading: isLoading ?? _state.isLoading,
             isSubmitEnabled: isSubmitEnabled ?? _state.isSubmitEnabled,
-            cardNetwork: detectedCardNetwork == .unknown ? nil : detectedCardNetwork
+            cardNetwork: detectedCardNetwork == .unknown ? nil : detectedCardNetwork,
+            cardFields: _state.cardFields,
+            billingFields: _state.billingFields
         )
     }
 
     private func calculateSubmitEnabled(_ fields: [ComposableInputElementType: String], errors: [ComposableInputValidationError]? = nil) -> Bool {
-        let cardNumber = fields[.cardNumber] ?? ""
-        let cvv = fields[.cvv] ?? ""
-        let expiryDate = fields[.expiryDate] ?? ""
-
-        let hasRequiredFields = !cardNumber.isEmpty && !cvv.isEmpty && !expiryDate.isEmpty
+        // Check all required card fields are filled
+        let hasAllCardFields = _state.cardFields.allSatisfy { fieldType in
+            let value = fields[fieldType] ?? ""
+            return !value.isEmpty
+        }
+        
+        // Check all required billing fields are filled
+        let hasAllBillingFields = _state.billingFields.allSatisfy { fieldType in
+            let value = fields[fieldType] ?? ""
+            return !value.isEmpty
+        }
+        
         let hasNoErrors = (errors ?? _state.fieldErrors).isEmpty
 
-        return hasRequiredFields && hasNoErrors && !_state.isLoading
+        return hasAllCardFields && hasAllBillingFields && hasNoErrors && !_state.isLoading
     }
 
     // MARK: - Basic Validation Methods
@@ -356,7 +379,9 @@ public class CardFormViewModel: CardFormScope, LogReporter {
             fieldErrors: [validationError],
             isLoading: false,
             isSubmitEnabled: false,
-            cardNetwork: detectedCardNetwork == .unknown ? nil : detectedCardNetwork
+            cardNetwork: detectedCardNetwork == .unknown ? nil : detectedCardNetwork,
+            cardFields: _state.cardFields,
+            billingFields: _state.billingFields
         )
 
         // Navigate to error screen using navigator

@@ -21,6 +21,7 @@ internal struct DefaultCardFormScreen: View, LogReporter {
     @State private var isLoading = false
     @State private var isSubmitEnabled = false
     @State private var fieldErrors: [ComposableInputValidationError] = []
+    @State private var hasBillingFields = false
     @State private var cancellables = Set<AnyCancellable>()
     @Environment(\.designTokens) private var tokens
     @Environment(\.presentationMode) private var presentationMode
@@ -33,7 +34,19 @@ internal struct DefaultCardFormScreen: View, LogReporter {
                 VStack(spacing: 24) {
                     headerView
 
-                    cardDetailsSection
+                    // Use composite methods from scope
+                    AnyView(scope.PrimerCardDetails())
+                    
+                    // Show billing address if required
+                    billingAddressSection
+                    
+                    // Error Display
+                    if !fieldErrors.isEmpty {
+                        errorSection
+                    }
+
+                    // Security Notice
+                    securityNoticeView
 
                     submitButtonSection
                 }
@@ -75,44 +88,10 @@ internal struct DefaultCardFormScreen: View, LogReporter {
     }
 
     @ViewBuilder
-    private var cardDetailsSection: some View {
-        VStack(spacing: 20) {
-            // Card Details Group
-            cardInformationGroup
-
-            // Error Display
-            if !fieldErrors.isEmpty {
-                errorSection
-            }
-
-            // Security Notice
-            securityNoticeView
-        }
-    }
-
-    @ViewBuilder
-    private var cardInformationGroup: some View {
-        VStack(spacing: 16) {
-            Text("Card Information")
-                .font(.headline)
-                .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-            VStack(spacing: 12) {
-                // Card Number
-                AnyView(scope.PrimerCardNumberInput())
-
-                // Expiry and CVV row
-                HStack(spacing: 12) {
-                    AnyView(scope.PrimerExpiryDateInput())
-                    AnyView(scope.PrimerCvvInput())
-                }
-
-                // Cardholder Name
-                AnyView(scope.PrimerCardholderNameInput())
-            }
-            .padding(16)
-            .background(cardFormBackground)
+    private var billingAddressSection: some View {
+        // Only show if billing fields are required
+        if hasBillingFields {
+            AnyView(scope.PrimerBillingAddress())
         }
     }
 
@@ -217,6 +196,7 @@ internal struct DefaultCardFormScreen: View, LogReporter {
         isLoading = state.isLoading
         isSubmitEnabled = state.isSubmitEnabled
         fieldErrors = state.fieldErrors
+        hasBillingFields = !state.billingFields.isEmpty
 
         if !fieldErrors.isEmpty {
             logger.warn(message: "⚠️ [DefaultCardFormScreen] Form has \(fieldErrors.count) validation errors")

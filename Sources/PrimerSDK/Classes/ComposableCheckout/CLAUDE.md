@@ -299,6 +299,9 @@ health.printReport()
 - ✅ **Payment Methods List**: Selection UI and view model
 - ✅ **Validation Framework**: Rules-based validation with field-specific validators
 - ✅ **Design Tokens**: Token management with dark mode support
+- ✅ **Android API Alignment**: Complete scope-based architecture matching Android
+- ✅ **Dynamic Field Visibility**: Fields shown/hidden based on backend configuration
+- ✅ **GetRequiredFieldsInteractor**: Determines required fields dynamically
 
 ### In Progress
 - 🔄 **Navigation System**: CheckoutCoordinator and sheet presentation
@@ -317,5 +320,7 @@ health.printReport()
 - Payment methods resolved lazily from container
 - Scope pattern enables both default and custom UI implementations
 - Validation system provides real-time field validation
+- **Android-aligned architecture**: No static API, no wrappers, scope-only access
+- **Dynamic configuration**: Field requirements determined by backend
 
 When contributing, ensure your changes align with the established scope-based patterns and maintain the module's architectural integrity.

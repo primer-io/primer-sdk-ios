@@ -383,7 +383,9 @@ internal class DefaultCardFormScope: CardFormScope, LogReporter {
             fieldErrors: _state.fieldErrors,
             isLoading: true,
             isSubmitEnabled: false,
-            cardNetwork: _state.cardNetwork
+            cardNetwork: _state.cardNetwork,
+            cardFields: _state.cardFields,
+            billingFields: _state.billingFields
         )
 
         // Simulate submission
@@ -407,16 +409,26 @@ internal class DefaultCardFormScope: CardFormScope, LogReporter {
             fieldErrors: _state.fieldErrors,
             isLoading: _state.isLoading,
             isSubmitEnabled: hasRequiredFields(updatedFields),
-            cardNetwork: _state.cardNetwork
+            cardNetwork: _state.cardNetwork,
+            cardFields: _state.cardFields,
+            billingFields: _state.billingFields
         )
     }
 
     private func hasRequiredFields(_ fields: [ComposableInputElementType: String]) -> Bool {
-        let cardNumber = fields[.cardNumber] ?? ""
-        let cvv = fields[.cvv] ?? ""
-        let expiryDate = fields[.expiryDate] ?? ""
-
-        return !cardNumber.isEmpty && !cvv.isEmpty && !expiryDate.isEmpty
+        // Check all required card fields are filled
+        let hasAllCardFields = _state.cardFields.allSatisfy { fieldType in
+            let value = fields[fieldType] ?? ""
+            return !value.isEmpty
+        }
+        
+        // Check all required billing fields are filled
+        let hasAllBillingFields = _state.billingFields.allSatisfy { fieldType in
+            let value = fields[fieldType] ?? ""
+            return !value.isEmpty
+        }
+        
+        return hasAllCardFields && hasAllBillingFields
     }
 }
 

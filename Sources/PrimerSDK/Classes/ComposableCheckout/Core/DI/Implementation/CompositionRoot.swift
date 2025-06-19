@@ -613,6 +613,16 @@ extension CompositionRoot {
                 )
             }
 
+        // Get Required Fields Interactor
+        _ = try? await container.register(GetRequiredFieldsInteractor.self)
+            .asTransient()
+            .with { resolver in
+                logger.debug(message: "📋 [CompositionRoot] Creating GetRequiredFieldsInteractor")
+                return GetRequiredFieldsInteractor(
+                    configurationRepository: try await resolver.resolve(ConfigurationRepository.self, name: nil)
+                )
+            }
+
         logger.debug(message: "✅ [CompositionRoot] Interactors registration completed")
     }
 }

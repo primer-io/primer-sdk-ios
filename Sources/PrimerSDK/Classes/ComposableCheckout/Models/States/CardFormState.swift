@@ -24,15 +24,11 @@ public struct CardFormState: Equatable, Hashable {
     /// Detected card network from card number
     public let cardNetwork: CardNetwork?
 
-    /// List of card-related input fields (derived)
-    public var cardFields: [ComposableInputElementType] {
-        [.cardNumber, .cvv, .expiryDate, .cardholderName]
-    }
+    /// List of card-related input fields (dynamic from backend)
+    public let cardFields: [ComposableInputElementType]
 
-    /// List of billing address input fields (derived)
-    public var billingFields: [ComposableInputElementType] {
-        [.postalCode, .countryCode, .city, .state, .addressLine1, .addressLine2]
-    }
+    /// List of billing address input fields (dynamic from backend)
+    public let billingFields: [ComposableInputElementType]
 
     /// Default initial state
     public static let initial = CardFormState(
@@ -40,28 +36,36 @@ public struct CardFormState: Equatable, Hashable {
         fieldErrors: [],
         isLoading: false,
         isSubmitEnabled: false,
-        cardNetwork: nil
+        cardNetwork: nil,
+        cardFields: [.cardNumber, .cvv, .expiryDate],
+        billingFields: []
     )
 
-    /// Initialize card form state (simplified constructor)
+    /// Initialize card form state
     /// - Parameters:
     ///   - inputFields: Current field values
     ///   - fieldErrors: Current validation errors
     ///   - isLoading: Loading state
     ///   - isSubmitEnabled: Submit button enabled state
     ///   - cardNetwork: Detected card network
+    ///   - cardFields: Required card fields from backend
+    ///   - billingFields: Required billing fields from backend
     public init(
         inputFields: [ComposableInputElementType: String],
         fieldErrors: [ComposableInputValidationError],
         isLoading: Bool,
         isSubmitEnabled: Bool,
-        cardNetwork: CardNetwork? = nil
+        cardNetwork: CardNetwork? = nil,
+        cardFields: [ComposableInputElementType],
+        billingFields: [ComposableInputElementType]
     ) {
         self.inputFields = inputFields
         self.fieldErrors = fieldErrors
         self.isLoading = isLoading
         self.isSubmitEnabled = isSubmitEnabled
         self.cardNetwork = cardNetwork
+        self.cardFields = cardFields
+        self.billingFields = billingFields
     }
 
     /// Equatable implementation
@@ -70,7 +74,9 @@ public struct CardFormState: Equatable, Hashable {
             lhs.fieldErrors == rhs.fieldErrors &&
             lhs.isLoading == rhs.isLoading &&
             lhs.isSubmitEnabled == rhs.isSubmitEnabled &&
-            lhs.cardNetwork == rhs.cardNetwork
+            lhs.cardNetwork == rhs.cardNetwork &&
+            lhs.cardFields == rhs.cardFields &&
+            lhs.billingFields == rhs.billingFields
     }
 
     /// Hashable implementation
@@ -80,5 +86,7 @@ public struct CardFormState: Equatable, Hashable {
         hasher.combine(isLoading)
         hasher.combine(isSubmitEnabled)
         hasher.combine(cardNetwork)
+        hasher.combine(cardFields)
+        hasher.combine(billingFields)
     }
 }
