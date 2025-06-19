@@ -21,6 +21,9 @@ public struct CardFormState: Equatable, Hashable {
     /// Whether the submit button should be enabled
     public let isSubmitEnabled: Bool
 
+    /// Detected card network from card number
+    public let cardNetwork: CardNetwork?
+
     /// List of card-related input fields (derived)
     public var cardFields: [ComposableInputElementType] {
         [.cardNumber, .cvv, .expiryDate, .cardholderName]
@@ -36,7 +39,8 @@ public struct CardFormState: Equatable, Hashable {
         inputFields: [:],
         fieldErrors: [],
         isLoading: false,
-        isSubmitEnabled: false
+        isSubmitEnabled: false,
+        cardNetwork: nil
     )
 
     /// Initialize card form state (simplified constructor)
@@ -45,16 +49,19 @@ public struct CardFormState: Equatable, Hashable {
     ///   - fieldErrors: Current validation errors
     ///   - isLoading: Loading state
     ///   - isSubmitEnabled: Submit button enabled state
+    ///   - cardNetwork: Detected card network
     public init(
         inputFields: [ComposableInputElementType: String],
         fieldErrors: [ComposableInputValidationError],
         isLoading: Bool,
-        isSubmitEnabled: Bool
+        isSubmitEnabled: Bool,
+        cardNetwork: CardNetwork? = nil
     ) {
         self.inputFields = inputFields
         self.fieldErrors = fieldErrors
         self.isLoading = isLoading
         self.isSubmitEnabled = isSubmitEnabled
+        self.cardNetwork = cardNetwork
     }
 
     /// Equatable implementation
@@ -62,7 +69,8 @@ public struct CardFormState: Equatable, Hashable {
         return lhs.inputFields == rhs.inputFields &&
             lhs.fieldErrors == rhs.fieldErrors &&
             lhs.isLoading == rhs.isLoading &&
-            lhs.isSubmitEnabled == rhs.isSubmitEnabled
+            lhs.isSubmitEnabled == rhs.isSubmitEnabled &&
+            lhs.cardNetwork == rhs.cardNetwork
     }
 
     /// Hashable implementation
@@ -71,5 +79,6 @@ public struct CardFormState: Equatable, Hashable {
         hasher.combine(fieldErrors)
         hasher.combine(isLoading)
         hasher.combine(isSubmitEnabled)
+        hasher.combine(cardNetwork)
     }
 }

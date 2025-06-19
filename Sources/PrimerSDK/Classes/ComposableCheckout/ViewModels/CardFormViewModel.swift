@@ -18,6 +18,10 @@ public class CardFormViewModel: CardFormScope, LogReporter {
 
     @Published private var _state: CardFormState = .initial
 
+    // MARK: - Private State
+
+    private var detectedCardNetwork: CardNetwork = .unknown
+
     // MARK: - CardFormScope Implementation
 
     public var state: AnyPublisher<CardFormState, Never> {
@@ -48,6 +52,14 @@ public class CardFormViewModel: CardFormScope, LogReporter {
 
     public func updateCardNumber(_ cardNumber: String) {
         logger.debug(message: "🔢 [CardFormViewModel] Updating card number")
+
+        // Detect card network
+        let network = CardNetworkParser.shared.cardNetwork(from: cardNumber) ?? .unknown
+        if network != detectedCardNetwork {
+            detectedCardNetwork = network
+            logger.debug(message: "💳 [CardFormViewModel] Detected card network: \(network)")
+        }
+
         updateField(.cardNumber, value: cardNumber)
         validateField(.cardNumber, value: cardNumber)
     }
@@ -168,7 +180,8 @@ public class CardFormViewModel: CardFormScope, LogReporter {
             inputFields: [:],
             fieldErrors: [],
             isLoading: false,
-            isSubmitEnabled: false
+            isSubmitEnabled: false,
+            cardNetwork: nil
         )
     }
 
@@ -180,7 +193,8 @@ public class CardFormViewModel: CardFormScope, LogReporter {
             inputFields: updatedFields,
             fieldErrors: _state.fieldErrors,
             isLoading: _state.isLoading,
-            isSubmitEnabled: calculateSubmitEnabled(updatedFields)
+            isSubmitEnabled: calculateSubmitEnabled(updatedFields),
+            cardNetwork: detectedCardNetwork == .unknown ? nil : detectedCardNetwork
         )
     }
 
@@ -232,7 +246,8 @@ public class CardFormViewModel: CardFormScope, LogReporter {
             inputFields: _state.inputFields,
             fieldErrors: errors,
             isLoading: _state.isLoading,
-            isSubmitEnabled: calculateSubmitEnabled(_state.inputFields, errors: errors)
+            isSubmitEnabled: calculateSubmitEnabled(_state.inputFields, errors: errors),
+            cardNetwork: detectedCardNetwork == .unknown ? nil : detectedCardNetwork
         )
     }
 
@@ -259,7 +274,8 @@ public class CardFormViewModel: CardFormScope, LogReporter {
             inputFields: _state.inputFields,
             fieldErrors: _state.fieldErrors,
             isLoading: isLoading ?? _state.isLoading,
-            isSubmitEnabled: isSubmitEnabled ?? _state.isSubmitEnabled
+            isSubmitEnabled: isSubmitEnabled ?? _state.isSubmitEnabled,
+            cardNetwork: detectedCardNetwork == .unknown ? nil : detectedCardNetwork
         )
     }
 
@@ -339,7 +355,8 @@ public class CardFormViewModel: CardFormScope, LogReporter {
             inputFields: _state.inputFields,
             fieldErrors: [validationError],
             isLoading: false,
-            isSubmitEnabled: false
+            isSubmitEnabled: false,
+            cardNetwork: detectedCardNetwork == .unknown ? nil : detectedCardNetwork
         )
 
         // Navigate to error screen using navigator
