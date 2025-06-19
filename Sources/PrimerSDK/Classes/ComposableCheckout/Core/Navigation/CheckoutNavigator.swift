@@ -82,6 +82,11 @@ public class CheckoutNavigator: ObservableObject {
         // Call the legacy delegate to maintain compatibility
         // The delegate proxy already handles UI dismissal
         PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
+        
+        // Also dismiss via ComposablePrimer if it was used to present
+        if #available(iOS 15.0, *) {
+            ComposablePrimer.dismiss(animated: true)
+        }
     }
 
     /// Navigate to error screen with message
@@ -103,8 +108,15 @@ public class CheckoutNavigator: ObservableObject {
         let error = PrimerError.underlyingErrors(errors: [nsError], userInfo: [String: String]?.errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
 
         // Call the legacy delegate to maintain compatibility
-        PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { _ in
-            // Handle error decision - the delegate proxy will manage UI dismissal if needed
+        PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { errorDecision in
+            // Handle error decision
+            switch errorDecision.type {
+            case .fail:
+                // Dismiss via ComposablePrimer if it was used to present
+                if #available(iOS 15.0, *) {
+                    ComposablePrimer.dismiss(animated: true)
+                }
+            }
         }
     }
 
