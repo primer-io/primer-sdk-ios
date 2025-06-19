@@ -1,11 +1,3 @@
-//
-//  HeadlessVaultManagerTests.swift
-//  Debug App Tests
-//
-//  Created by Boris on 21.6.23..
-//  Copyright © 2023 Primer API Ltd. All rights reserved.
-//
-
 import XCTest
 @testable import PrimerSDK
 
@@ -75,43 +67,49 @@ final class HeadlessVaultManagerTests: XCTestCase {
             keys: nil,
             checkoutModules: nil)
 
-        let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(data: [
-            PrimerPaymentMethodTokenData(analyticsId: "test",
-                                         id: "test",
-                                         isVaulted: true,
-                                         isAlreadyVaulted: true,
-                                         paymentInstrumentType: .payPalBillingAgreement,
-                                         paymentMethodType: "PAYPAL",
-                                         paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData(paypalBillingAgreementId: "",
-                                                                                                                 first6Digits: nil,
-                                                                                                                 last4Digits: nil,
-                                                                                                                 expirationMonth: nil,
-                                                                                                                 expirationYear: nil,
-                                                                                                                 cardholderName: nil,
-                                                                                                                 network: nil,
-                                                                                                                 isNetworkTokenized: nil,
-                                                                                                                 klarnaCustomerToken: nil,
-                                                                                                                 sessionData: nil,
-                                                                                                                 externalPayerInfo: nil,
-                                                                                                                 shippingAddress: nil,
-                                                                                                                 binData: nil,
-                                                                                                                 threeDSecureAuthentication: nil,
-                                                                                                                 gocardlessMandateId: nil,
-                                                                                                                 authorizationToken: nil,
-                                                                                                                 mx: nil,
-                                                                                                                 currencyCode: nil,
-                                                                                                                 productId: nil,
-                                                                                                                 paymentMethodConfigId: nil,
-                                                                                                                 paymentMethodType: nil,
-                                                                                                                 sessionInfo: nil,
-                                                                                                                 bankName: nil,
-                                                                                                                 accountNumberLast4Digits: nil,
-                                                                                                                applePayMerchantTokenIdentifier: nil),
-                                         threeDSecureAuthentication: nil,
-                                         token: "anything",
-                                         tokenType: .multiUse,
-                                         vaultData: nil)
-        ])
+        let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(
+            data: [
+                PrimerPaymentMethodTokenData(
+                    analyticsId: "test",
+                    id: "test",
+                    isVaulted: true,
+                    isAlreadyVaulted: true,
+                    paymentInstrumentType: .payPalBillingAgreement,
+                    paymentMethodType: "PAYPAL",
+                    paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData(
+                        paypalBillingAgreementId: "",
+                        first6Digits: nil,
+                        last4Digits: nil,
+                        expirationMonth: nil,
+                        expirationYear: nil,
+                        cardholderName: nil,
+                        network: nil,
+                        isNetworkTokenized: nil,
+                        klarnaCustomerToken: nil,
+                        sessionData: nil,
+                        externalPayerInfo: nil,
+                        shippingAddress: nil,
+                        binData: nil,
+                        threeDSecureAuthentication: nil,
+                        gocardlessMandateId: nil,
+                        authorizationToken: nil,
+                        mx: nil,
+                        currencyCode: nil,
+                        productId: nil,
+                        paymentMethodConfigId: nil,
+                        paymentMethodType: nil,
+                        sessionInfo: nil,
+                        bankName: nil,
+                        accountNumberLast4Digits: nil,
+                        applePayMerchantTokenIdentifier: nil
+                    ),
+                    threeDSecureAuthentication: nil,
+                    token: "anything",
+                    tokenType: .multiUse,
+                    vaultData: nil
+                )
+            ]
+        )
         var availableVaultedPaymentMethods: [PrimerHeadlessUniversalCheckout.VaultedPaymentMethod] = []
 
         let mockApiClient = MockPrimerAPIClient()
@@ -279,43 +277,49 @@ final class HeadlessVaultManagerTests: XCTestCase {
             keys: nil,
             checkoutModules: nil)
 
-        let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(data: [
-            PrimerPaymentMethodTokenData(analyticsId: "test",
-                                         id: "test",
-                                         isVaulted: true,
-                                         isAlreadyVaulted: true,
-                                         paymentInstrumentType: .payPalBillingAgreement,
-                                         paymentMethodType: "PAYPAL",
-                                         paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData(paypalBillingAgreementId: "",
-                                                                                                                 first6Digits: nil,
-                                                                                                                 last4Digits: nil,
-                                                                                                                 expirationMonth: nil,
-                                                                                                                 expirationYear: nil,
-                                                                                                                 cardholderName: nil,
-                                                                                                                 network: nil,
-                                                                                                                 isNetworkTokenized: nil,
-                                                                                                                 klarnaCustomerToken: nil,
-                                                                                                                 sessionData: nil,
-                                                                                                                 externalPayerInfo: nil,
-                                                                                                                 shippingAddress: nil,
-                                                                                                                 binData: nil,
-                                                                                                                 threeDSecureAuthentication: nil,
-                                                                                                                 gocardlessMandateId: nil,
-                                                                                                                 authorizationToken: nil,
-                                                                                                                 mx: nil,
-                                                                                                                 currencyCode: nil,
-                                                                                                                 productId: nil,
-                                                                                                                 paymentMethodConfigId: nil,
-                                                                                                                 paymentMethodType: nil,
-                                                                                                                 sessionInfo: nil,
-                                                                                                                 bankName: nil,
-                                                                                                                 accountNumberLast4Digits: nil,
-                                                                                                                applePayMerchantTokenIdentifier: nil),
-                                         threeDSecureAuthentication: nil,
-                                         token: "anything",
-                                         tokenType: .multiUse,
-                                         vaultData: nil)
-        ])
+        let vaultedPaymentMethods = Response.Body.VaultedPaymentMethods(
+            data: [
+                PrimerPaymentMethodTokenData(
+                    analyticsId: "test",
+                    id: "test",
+                    isVaulted: true,
+                    isAlreadyVaulted: true,
+                    paymentInstrumentType: .payPalBillingAgreement,
+                    paymentMethodType: "PAYPAL",
+                    paymentInstrumentData: Response.Body.Tokenization.PaymentInstrumentData(
+                        paypalBillingAgreementId: "",
+                        first6Digits: nil,
+                        last4Digits: nil,
+                        expirationMonth: nil,
+                        expirationYear: nil,
+                        cardholderName: nil,
+                        network: nil,
+                        isNetworkTokenized: nil,
+                        klarnaCustomerToken: nil,
+                        sessionData: nil,
+                        externalPayerInfo: nil,
+                        shippingAddress: nil,
+                        binData: nil,
+                        threeDSecureAuthentication: nil,
+                        gocardlessMandateId: nil,
+                        authorizationToken: nil,
+                        mx: nil,
+                        currencyCode: nil,
+                        productId: nil,
+                        paymentMethodConfigId: nil,
+                        paymentMethodType: nil,
+                        sessionInfo: nil,
+                        bankName: nil,
+                        accountNumberLast4Digits: nil,
+                        applePayMerchantTokenIdentifier: nil
+                    ),
+                    threeDSecureAuthentication: nil,
+                    token: "anything",
+                    tokenType: .multiUse,
+                    vaultData: nil
+                )
+            ]
+        )
         var mockApiClient = MockPrimerAPIClient()
         mockApiClient.fetchVaultedPaymentMethodsResult = (vaultedPaymentMethods, nil)
         mockApiClient.fetchConfigurationResult = (mockPrimerApiConfiguration, nil)

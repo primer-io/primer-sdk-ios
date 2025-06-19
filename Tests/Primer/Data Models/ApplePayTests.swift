@@ -70,12 +70,7 @@ class ApplePayTests: XCTestCase {
             XCTAssert(orderItems.last!.unitAmount == clientSession.order?.totalOrderAmount)
             XCTAssert(orderItems.last!.name == settings.paymentMethodOptions.applePayOptions?.merchantName)
 
-            let configurationApplePayOptions = ApplePayOptions(
-                merchantName: "Test",
-                recurringPaymentRequest: nil,
-                deferredPaymentRequest: nil,
-                automaticReloadRequest: nil
-            )
+            let configurationApplePayOptions = ApplePayOptions(merchantName: "Test")
             clientSession = ClientSession.APIResponse(
                 clientSessionId: nil,
                 paymentMethod: nil,
@@ -198,12 +193,7 @@ class ApplePayTests: XCTestCase {
                 customer: nil,
                 testId: nil)
 
-            let configurationApplePayOptions = ApplePayOptions(
-                merchantName: "Test",
-                recurringPaymentRequest: nil,
-                deferredPaymentRequest: nil,
-                automaticReloadRequest: nil
-            )
+            let configurationApplePayOptions = ApplePayOptions(merchantName: "Test")
             
             orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSession(clientSession, applePayOptions: configurationApplePayOptions)
             XCTAssert(orderItems.count == 1, "Apple Pay order items should be 1, the summary order item")
@@ -331,12 +321,7 @@ class ApplePayTests: XCTestCase {
             XCTAssert(applePayItems.last!.amount.doubleValue == NSDecimalNumber(floatLiteral: 302.02).doubleValue)
             XCTAssert(applePayItems.last!.label == settings.paymentMethodOptions.applePayOptions?.merchantName)
 
-            let configurationApplePayOptions = ApplePayOptions(
-                merchantName: "Test",
-                recurringPaymentRequest: nil,
-                deferredPaymentRequest: nil,
-                automaticReloadRequest: nil
-            )
+            let configurationApplePayOptions = ApplePayOptions(merchantName: "Test")
             orderItems = try applePayTokenizationViewModel.createOrderItemsFromClientSession(clientSession, applePayOptions: configurationApplePayOptions)
             applePayItems = orderItems.compactMap({ $0.applePayItem })
             XCTAssert(applePayItems.last!.label == configurationApplePayOptions.merchantName)

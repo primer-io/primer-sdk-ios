@@ -1,10 +1,3 @@
-//
-//  PaymentMethodConfigurationOptions.swift
-//  PrimerSDK
-//
-//  Created by Evangelos on 28/12/21.
-//
-
 import Foundation
 
 protocol PaymentMethodOptions: Codable { }
@@ -15,34 +8,33 @@ struct PayPalOptions: PaymentMethodOptions {
     let clientId: String
 }
 
-struct ApplePayRecurringInterval {
-    enum Unit: String, Codable {
-        case minute, hour, day, month, year, unknown
-        init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-            let value = try? container.decode(String.self)
-            self = Unit(rawValue: value ?? "") ?? .unknown
-        }
+enum ApplePayRecurringInterval: String, Codable {
+        case minute
+        case hour
+        case day
+        case month
+        case year
+        case unknown
+    
         var nsCalendarUnit: NSCalendar.Unit? {
             switch self {
-            case .minute: return .minute
-            case .hour: return .hour
-            case .day: return .day
-            case .month: return .month
-            case .year: return .year
-            case .unknown: return nil
+            case .minute: .minute
+            case .hour: .hour
+            case .day: .day
+            case .month: .month
+            case .year: .year
+            case .unknown: nil
             }
         }
-    }
 }
 
 // Base Billing Option Protocol
 protocol ApplePayBillingBase: Codable {
     var label: String { get }
     var amount: Int? { get }
-    var recurringStartDate: Date? { get }
-    var recurringEndDate: Date? { get }
-    var recurringIntervalUnit: ApplePayRecurringInterval.Unit? { get }
+    var recurringStartDate: Double? { get }
+    var recurringEndDate: Double? { get }
+    var recurringIntervalUnit: ApplePayRecurringInterval? { get }
     var recurringIntervalCount: Int? { get }
 }
 
@@ -50,80 +42,12 @@ protocol ApplePayBillingBase: Codable {
 struct ApplePayRegularBillingOption: ApplePayBillingBase {
     let label: String
     let amount: Int?
-    let recurringStartDate: Date?
-    let recurringEndDate: Date?
-    let recurringIntervalUnit: ApplePayRecurringInterval.Unit?
+    let recurringStartDate: Double?
+    let recurringEndDate: Double?
+    let recurringIntervalUnit: ApplePayRecurringInterval?
     let recurringIntervalCount: Int?
 }
 
-// Trial Billing Option
-struct ApplePayTrialBillingOption: ApplePayBillingBase {
-    let label: String
-    var amount: Int?
-    let recurringStartDate: Date?
-    let recurringEndDate: Date?
-    let recurringIntervalUnit: ApplePayRecurringInterval.Unit?
-    let recurringIntervalCount: Int?
-}
-
-// Deferred Billing Option
-struct ApplePayDeferredBillingOption: Codable {
-    let label: String
-    let amount: Int?
-    let deferredPaymentDate: Date
-}
-
-// Automatic Reload Billing Option
-struct ApplePayAutomaticReloadBillingOption: Codable {
-    let label: String
-    let amount: Int?
-    let automaticReloadThresholdAmount: Int
-}
-
-// Payment Request Base
-protocol ApplePayPaymentRequestBase: Codable {
-    var paymentDescription: String? { get }
-    var billingAgreement: String? { get }
-    var managementUrl: String { get }
-    var tokenManagementUrl: String? { get }
-}
-
-// Recurring Payment Request
-struct ApplePayRecurringPaymentRequest: ApplePayPaymentRequestBase {
-    let paymentDescription: String?
-    let billingAgreement: String?
-    let managementUrl: String
-    let regularBilling: ApplePayRegularBillingOption
-    let trialBilling: ApplePayTrialBillingOption?
-    let tokenManagementUrl: String?
-}
-
-// Deferred Payment Request
-struct ApplePayDeferredPaymentRequest: ApplePayPaymentRequestBase {
-    let paymentDescription: String?
-    let billingAgreement: String?
-    let managementUrl: String
-    let deferredBilling: ApplePayDeferredBillingOption
-    let freeCancellationDate: Date?
-    let freeCancellationTimeZone: String?
-    let tokenManagementUrl: String?
-}
-
-// Automatic Reload Request
-struct ApplePayAutomaticReloadRequest: ApplePayPaymentRequestBase {
-    let paymentDescription: String?
-    let billingAgreement: String?
-    let managementUrl: String
-    let automaticReloadBilling: ApplePayAutomaticReloadBillingOption
-    let tokenManagementUrl: String?
-}
-
-struct ApplePayOptions: PaymentMethodOptions {
-    let merchantName: String?
-    let recurringPaymentRequest: ApplePayRecurringPaymentRequest?
-    let deferredPaymentRequest: ApplePayDeferredPaymentRequest?
-    let automaticReloadRequest: ApplePayAutomaticReloadRequest?
-}
 
 struct CardOptions: PaymentMethodOptions {
     let threeDSecureEnabled: Bool

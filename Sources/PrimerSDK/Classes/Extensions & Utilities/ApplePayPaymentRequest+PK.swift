@@ -1,126 +1,63 @@
-//
-//  ApplePayPaymentRequest+PK.swift
-//
-//
-//  Created by Semir on 25/03/2025.
-//
-
 import PassKit
-import Foundation
 
-// MARK: - ApplePayBillingBase to PKRecurringPaymentSummaryItem
 @available(iOS 15.0, *)
-internal extension ApplePayBillingBase {
-
-    func toPKRecurringPaymentSummaryItem(
-        totalAmount: Int,
-        currency: Currency
-    ) -> PKRecurringPaymentSummaryItem {
+extension ApplePayBillingBase {
+    func toPKRecurringPaymentSummaryItem(totalAmount: Int, currency: Currency) -> PKRecurringPaymentSummaryItem {
         let formattedAmount = NSDecimalNumber(decimal: totalAmount.formattedCurrencyAmount(currency: currency))
-        let summaryItem = PKRecurringPaymentSummaryItem(
-            label: self.label,
-            amount: formattedAmount
-        )
+        let summaryItem = PKRecurringPaymentSummaryItem(label: label, amount: formattedAmount)
 
-        summaryItem.startDate = self.recurringStartDate
-        summaryItem.endDate = self.recurringEndDate
-
-        if let recurringIntervalCount = self.recurringIntervalCount {
-            summaryItem.intervalCount = recurringIntervalCount
-        }
-
-        if let recurringIntervalUnit = self.recurringIntervalUnit?.nsCalendarUnit {
-            summaryItem.intervalUnit = recurringIntervalUnit
-        }
-
+        summaryItem.startDate = recurringStartDate.flatMap(Date.init(timeIntervalSince1970:))
+        summaryItem.endDate = recurringEndDate.flatMap(Date.init(timeIntervalSince1970:))
+        summaryItem.intervalCount = recurringIntervalCount ?? summaryItem.intervalCount
+        summaryItem.intervalUnit = recurringIntervalUnit?.nsCalendarUnit ?? summaryItem.intervalUnit
+        
         return summaryItem
     }
 }
 
-// MARK: - ApplePayRecurringPaymentRequest to PKRecurringPaymentRequest
 @available(iOS 16.0, *)
-internal extension ApplePayRecurringPaymentRequest {
-    func toPKRecurringPaymentRequest(orderAmount: Int?, currency: Currency, descriptor: String?) throws -> PKRecurringPaymentRequest {
-        guard let totalAmount = regularBilling.amount ?? orderAmount else {
-            let err = PrimerError.invalidValue(key: "regularBilling.amount or amount",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-
-        guard let paymentDescription = self.paymentDescription ?? descriptor else {
-            let err = PrimerError.invalidValue(key: "recurringPaymentRequest.paymentDescription or paymentMethod.descriptor",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-
-        guard let managementURL = URL(string: self.managementUrl) else {
-            let err = PrimerError.invalidValue(key: "recurringPaymentRequest.managementUrl",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-
+extension ApplePayRecurringPaymentRequest {
+    func toPKRecurringPaymentRequest(
+        orderAmount: Int?,
+        currency: Currency,
+        descriptor: String?
+    ) throws -> PKRecurringPaymentRequest {
+        guard let totalAmount = regularBilling.amount ?? orderAmount else { throw handledError(.regularBillingAmount) }
+        guard let paymentDescription = paymentDescription ?? descriptor else { throw handledError(.recurringPaymentMissingDescription) }
+        guard let managementURL = URL(string: managementUrl) else { throw handledError(.recurringPaymentInvalidManagementUrl) }
+        
+        let summaryItem = regularBilling.toPKRecurringPaymentSummaryItem(totalAmount: totalAmount, currency: currency)
+    
         let request = PKRecurringPaymentRequest(
             paymentDescription: paymentDescription,
-            regularBilling: self.regularBilling.toPKRecurringPaymentSummaryItem(totalAmount: totalAmount, currency: currency),
-            managementURL: managementURL)
-
-        if let trialBilling = self.trialBilling {
-            request.trialBilling = trialBilling.toPKRecurringPaymentSummaryItem(totalAmount: trialBilling.amount ?? 0, currency: currency)
-        }
-
-        if let tokenManagementUrl = self.tokenManagementUrl {
-            request.tokenNotificationURL = URL(string: tokenManagementUrl)
-        }
-        request.billingAgreement = self.billingAgreement
+            regularBilling: summaryItem,
+            managementURL: managementURL
+        )
+        
+        request.trialBilling = trialBilling?.toPKRecurringPaymentSummaryItem(totalAmount: trialBilling?.amount ?? 0, currency: currency)
+        tokenManagementUrl.map { request.tokenNotificationURL = URL(string: $0) }
+        request.billingAgreement = billingAgreement
+        
         return request
     }
 }
 
-// MARK: - ApplePayDeferredPaymentRequest to PKDeferredPaymentRequest
 @available(iOS 16.4, *)
-internal extension ApplePayDeferredPaymentRequest {
-    func toPKDeferredPaymentRequest(orderAmount: Int?, currency: Currency, descriptor: String?) throws -> PKDeferredPaymentRequest {
-        guard let totalAmount = deferredBilling.amount ?? AppState.current.amount else {
-            let err = PrimerError.invalidValue(key: "deferredBilling.amount or amount",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
+extension ApplePayDeferredPaymentRequest {
+    func toPKDeferredPaymentRequest(
+        orderAmount: Int?,
+        currency: Currency,
+        descriptor: String?
+    ) throws -> PKDeferredPaymentRequest {
+        guard let totalAmount = deferredBilling.amount ?? AppState.current.amount else {  throw handledError(.deferredBillingAmount) }
+        guard let paymentDescription = paymentDescription ?? descriptor else { throw handledError(.deferredPaymentMissingDescription) }
+        guard let managementURL = URL(string: managementUrl) else { throw handledError(.deferredPaymentInvalidManagementUrl) }
 
-        guard let paymentDescription = self.paymentDescription ?? descriptor else {
-            let err = PrimerError.invalidValue(key: "deferredPaymentRequest.paymentDescription or paymentMethod.descriptor",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-
-        guard let managementURL = URL(string: self.managementUrl) else {
-            let err = PrimerError.invalidValue(key: "deferredPaymentRequest.managementUrl",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-
-        let summaryItem: PKDeferredPaymentSummaryItem = PKDeferredPaymentSummaryItem(
-            label: self.deferredBilling.label,
+        let summaryItem = PKDeferredPaymentSummaryItem(
+            label: deferredBilling.label,
             amount: NSDecimalNumber(decimal: totalAmount.formattedCurrencyAmount(currency: currency))
         )
-        summaryItem.deferredDate = self.deferredBilling.deferredPaymentDate
+        summaryItem.deferredDate = Date(timeIntervalSince1970: deferredBilling.deferredPaymentDate)
 
         let request = PKDeferredPaymentRequest(
             paymentDescription: paymentDescription,
@@ -128,61 +65,33 @@ internal extension ApplePayDeferredPaymentRequest {
             managementURL: managementURL
         )
 
-        if let freeCancellationDate = self.freeCancellationDate {
-            request.freeCancellationDate = freeCancellationDate
-        }
-
-        if let freeCancellationTimeZone = self.freeCancellationTimeZone {
-            request.freeCancellationDateTimeZone = TimeZone(identifier: freeCancellationTimeZone)
-        }
-
-        if let tokenManagementUrl = self.tokenManagementUrl {
-            request.tokenNotificationURL = URL(string: tokenManagementUrl)
-        }
-        request.billingAgreement = self.billingAgreement
+        request.freeCancellationDate = freeCancellationDate.flatMap(Date.init(timeIntervalSince1970:))
+        freeCancellationTimeZone.map { request.freeCancellationDateTimeZone = TimeZone(identifier: $0) }
+        tokenManagementUrl.map { request.tokenNotificationURL = URL(string: $0) }
+        request.billingAgreement = billingAgreement
 
         return request
     }
 }
 
-// MARK: - ApplePayAutomaticReloadRequest to PKAutomaticReloadPaymentRequest
 @available(iOS 16.0, *)
-internal extension ApplePayAutomaticReloadRequest {
-    func toPKAutomaticReloadPaymentRequest(orderAmount: Int?, currency: Currency, descriptor: String?) throws -> PKAutomaticReloadPaymentRequest {
-        guard let totalAmount = automaticReloadBilling.amount ?? orderAmount else {
-            let err = PrimerError.invalidValue(key: "automaticReloadBilling.amount or amount",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
+extension ApplePayAutomaticReloadRequest {
+    func toPKAutomaticReloadPaymentRequest(
+        orderAmount: Int?,
+        currency: Currency,
+        descriptor: String?
+    ) throws -> PKAutomaticReloadPaymentRequest {
+        guard let totalAmount = automaticReloadBilling.amount ?? orderAmount else { throw handledError(.automaticReloadBillingAmount) }
+        guard let paymentDescription = paymentDescription ?? descriptor else { throw handledError(.automaticReloadMissingDescription) }
+        guard let managementURL = URL(string: managementUrl) else { throw handledError(.automaticReloadInvalidManagementUrl) }
 
-        guard let paymentDescription = self.paymentDescription ?? descriptor else {
-            let err = PrimerError.invalidValue(key: "automaticReloadRequest.paymentDescription or paymentMethod.descriptor",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-
-        guard let managementURL = URL(string: self.managementUrl) else {
-            let err = PrimerError.invalidValue(key: "automaticReloadRequest.managementUrl",
-                                               value: nil,
-                                               userInfo: .errorUserInfoDictionary(),
-                                               diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: err)
-            throw err
-        }
-
-        let summaryItem: PKAutomaticReloadPaymentSummaryItem = PKAutomaticReloadPaymentSummaryItem(
-            label: self.automaticReloadBilling.label,
+        let summaryItem = PKAutomaticReloadPaymentSummaryItem(
+            label: automaticReloadBilling.label,
             amount: NSDecimalNumber(decimal: totalAmount.formattedCurrencyAmount(currency: currency))
         )
-        summaryItem.thresholdAmount = NSDecimalNumber(
-            decimal: self.automaticReloadBilling.automaticReloadThresholdAmount.formattedCurrencyAmount(currency: currency)
-        )
+        
+        let decimal = automaticReloadBilling.automaticReloadThresholdAmount.formattedCurrencyAmount(currency: currency)
+        summaryItem.thresholdAmount = NSDecimalNumber(decimal: decimal)
 
         let request = PKAutomaticReloadPaymentRequest(
             paymentDescription: paymentDescription,
@@ -190,16 +99,14 @@ internal extension ApplePayAutomaticReloadRequest {
             managementURL: managementURL
         )
 
-        if let tokenManagementUrl = self.tokenManagementUrl {
-            request.tokenNotificationURL = URL(string: tokenManagementUrl)
-        }
-        request.billingAgreement = self.billingAgreement
+        tokenManagementUrl.map { request.tokenNotificationURL = URL(string: $0) }
+        request.billingAgreement = billingAgreement
 
         return request
     }
 }
 
-internal extension ApplePayOptions {
+extension ApplePayOptions {
     func updatePKPaymentRequestUpdate(
         _ paymentUpdate: PKPaymentRequestUpdate,
         orderAmount: Int?,
@@ -207,13 +114,13 @@ internal extension ApplePayOptions {
         descriptor: String?
     ) throws {
         if #available(iOS 16.0, *) {
-            paymentUpdate.recurringPaymentRequest = try self.recurringPaymentRequest?.toPKRecurringPaymentRequest(
+            paymentUpdate.recurringPaymentRequest = try recurringPaymentRequest?.toPKRecurringPaymentRequest(
                 orderAmount: orderAmount,
                 currency: currency,
                 descriptor: descriptor
             )
 
-            paymentUpdate.automaticReloadPaymentRequest = try self.automaticReloadRequest?.toPKAutomaticReloadPaymentRequest(
+            paymentUpdate.automaticReloadPaymentRequest = try automaticReloadRequest?.toPKAutomaticReloadPaymentRequest(
                 orderAmount: orderAmount,
                 currency: currency,
                 descriptor: descriptor
@@ -221,11 +128,32 @@ internal extension ApplePayOptions {
         }
 
         if #available(iOS 16.4, *) {
-            paymentUpdate.deferredPaymentRequest = try self.deferredPaymentRequest?.toPKDeferredPaymentRequest(
+            paymentUpdate.deferredPaymentRequest = try deferredPaymentRequest?.toPKDeferredPaymentRequest(
                 orderAmount: orderAmount,
                 currency: currency,
                 descriptor: descriptor
             )
         }
+    }
+}
+
+private extension String {
+    static let regularBillingAmount = "regularBilling.amount or amount"
+    static let recurringPaymentMissingDescription = "recurringPaymentRequest.paymentDescription or paymentMethod.descriptor"
+    static let recurringPaymentInvalidManagementUrl = "recurringPaymentRequest.managementUrl"
+    static let deferredBillingAmount = "deferredBilling.amount or amount"
+    static let deferredPaymentMissingDescription = "deferredPaymentRequest.paymentDescription or paymentMethod.descriptor"
+    static let deferredPaymentInvalidManagementUrl = "deferredPaymentRequest.managementUrl"
+    static let automaticReloadBillingAmount = "automaticReloadBilling.amount or amount"
+    static let automaticReloadMissingDescription = "automaticReloadRequest.paymentDescription or paymentMethod.descriptor"
+    static let automaticReloadInvalidManagementUrl = "automaticReloadRequest.managementUrl"
+}
+
+private extension ApplePayPaymentRequestBase {
+    func handledError(_ key: String) -> PrimerError {
+        let id = UUID().uuidString
+        let error: PrimerError = .invalidValue(key: key, value: nil, userInfo: .errorUserInfoDictionary(), diagnosticsId: id)
+        ErrorHandler.handle(error: error)
+        return error
     }
 }
