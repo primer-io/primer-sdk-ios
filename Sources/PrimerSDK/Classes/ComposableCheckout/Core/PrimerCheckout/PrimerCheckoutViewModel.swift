@@ -281,9 +281,13 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope, LogReporte
     // MARK: - Private Helpers
 
     private func configureSDK(with token: String) async throws {
-        // This would integrate with the actual Primer SDK
-        // For now, just log the token processing without delay
         logger.debug(message: "🔧 Configuring SDK with client token: \(token.prefix(20))...")
+
+        // Use the legacy configuration bridge to setup session
+        let bridge = LegacyConfigurationBridge()
+        try await bridge.setupSession(with: token)
+
+        logger.info(message: "✅ SDK configured successfully")
     }
 
     private func loadPaymentMethods() async -> [any PaymentMethodProtocol] {

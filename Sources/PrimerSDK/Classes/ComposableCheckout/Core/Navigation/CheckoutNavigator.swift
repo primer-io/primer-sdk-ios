@@ -61,16 +61,51 @@ public class CheckoutNavigator: ObservableObject {
         navigationSubject.send(.navigateToPayPal)
     }
 
-    /// Navigate to success screen
+    /// Navigate to success screen and handle final checkout completion
     @MainActor
     public func navigateToSuccess() {
         navigationSubject.send(.navigateToSuccess)
+
+        // Handle the checkout completion with existing delegate system
+        Task {
+            await handleCheckoutCompletion()
+        }
+    }
+
+    /// Handle successful checkout completion
+    @MainActor
+    private func handleCheckoutCompletion() async {
+        // Create minimal checkout data for successful payment
+        // In a full implementation, this would contain the actual payment result
+        let checkoutData = PrimerCheckoutData(payment: nil, additionalInfo: nil)
+
+        // Call the legacy delegate to maintain compatibility
+        // The delegate proxy already handles UI dismissal
+        PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
     }
 
     /// Navigate to error screen with message
     @MainActor
     public func navigateToError(_ message: String) {
         navigationSubject.send(.navigateToError(message))
+
+        // Handle the error with existing delegate system
+        Task {
+            await handleCheckoutError(message)
+        }
+    }
+
+    /// Handle checkout error
+    @MainActor
+    private func handleCheckoutError(_ message: String) async {
+        // Create a generic error for the delegate
+        let nsError = NSError(domain: "ComposableCheckout", code: -1, userInfo: [NSLocalizedDescriptionKey: message])
+        let error = PrimerError.underlyingErrors(errors: [nsError], userInfo: [String: String]?.errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
+
+        // Call the legacy delegate to maintain compatibility
+        PrimerDelegateProxy.primerDidFailWithError(error, data: nil) { _ in
+            // Handle error decision - the delegate proxy will manage UI dismissal if needed
+        }
     }
 
     /// Navigate back

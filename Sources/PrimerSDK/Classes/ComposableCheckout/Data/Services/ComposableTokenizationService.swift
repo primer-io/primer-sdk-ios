@@ -33,13 +33,7 @@ internal class ComposableTokenizationServiceImpl: ComposableTokenizationService,
         logger.debug(message: "  - Has cardholder name: \(cardData.cardholderName?.isEmpty == false)")
 
         do {
-            // TODO: Integrate with existing SDK PCI-compliant tokenization
-            // This would typically involve:
-            // 1. Using existing PCI-compliant tokenization services
-            // 2. Integrating with secure card data handling
-            // 3. Using existing network security measures
-            // 4. Following existing PCI compliance protocols
-
+            // Integrate with existing SDK PCI-compliant tokenization through the bridge
             let token = try await tokenizeCardWithSDK(cardData)
 
             logger.info(message: "✅ [TokenizationService] Card tokenization successful")
@@ -58,28 +52,12 @@ internal class ComposableTokenizationServiceImpl: ComposableTokenizationService,
     private func tokenizeCardWithSDK(_ cardData: CardPaymentData) async throws -> PaymentToken {
         logger.debug(message: "🌐 [TokenizationService] Integrating with existing SDK tokenization")
 
-        // TODO: Replace with actual SDK integration
-        // This is where we would integrate with existing SDK components like:
-        // - PCI-compliant tokenization services
-        // - Secure card data handling components
-        // - Network security layers
-        // - Existing tokenization APIs
-
         // Validate card data before tokenization
         try validateCardDataForTokenization(cardData)
 
-        // Simulate secure tokenization process
-        try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds to simulate secure processing
-
-        // Generate a mock token (in real implementation, this comes from PCI-compliant tokenization)
-        let tokenValue = generateSecureToken(from: cardData)
-        let expirationDate = Calendar.current.date(byAdding: .hour, value: 1, to: Date()) // 1 hour expiry
-
-        let token = PaymentToken(
-            token: tokenValue,
-            expirationDate: expirationDate,
-            tokenType: "card"
-        )
+        // Use the legacy tokenization bridge to connect to existing PCI-compliant services
+        let bridge = LegacyTokenizationBridge()
+        let token = try await bridge.tokenizeCard(cardData)
 
         logger.debug(message: "✅ [TokenizationService] SDK tokenization completed")
 
@@ -106,14 +84,6 @@ internal class ComposableTokenizationServiceImpl: ComposableTokenizationService,
         // This would use existing SDK validation components
 
         logger.debug(message: "✅ [TokenizationService] Card data validation passed")
-    }
-
-    private func generateSecureToken(from cardData: CardPaymentData) -> String {
-        // Generate a mock secure token
-        // In real implementation, this would be handled by PCI-compliant tokenization service
-        let timestamp = Int(Date().timeIntervalSince1970)
-        let randomSuffix = Int.random(in: 100000...999999)
-        return "tok_\(timestamp)_\(randomSuffix)"
     }
 }
 

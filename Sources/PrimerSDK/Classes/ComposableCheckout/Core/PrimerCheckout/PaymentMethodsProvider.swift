@@ -37,20 +37,35 @@ final class DefaultPaymentMethodsProvider: PaymentMethodsProvider, LogReporter, 
 
         // Use resolveAll to get all registered payment method implementations
         logger.debug(message: "🔄 [PaymentMethodsProvider] Calling container.resolveAll for PaymentMethodProtocol")
-        let paymentMethods = await container.resolveAll((any PaymentMethodProtocol).self)
+        let allPaymentMethods = await container.resolveAll((any PaymentMethodProtocol).self)
 
-        logger.info(message: "✅ [PaymentMethodsProvider] Found \(paymentMethods.count) payment methods")
+        logger.info(message: "📦 [PaymentMethodsProvider] Found \(allPaymentMethods.count) registered payment methods")
 
-        // Log details about each payment method found
-        for (index, method) in paymentMethods.enumerated() {
-            logger.debug(message: "📋 [PaymentMethodsProvider] Payment method \(index + 1): \(method.name ?? "Unknown") (ID: \(method.id), Type: \(method.type.rawValue))")
+        // Filter based on legacy configuration
+        let bridge = LegacyConfigurationBridge()
+        let configuredMethods = bridge.getAvailablePaymentMethods()
+        let configuredTypes = Set(configuredMethods.map { $0.type })
+
+        logger.debug(message: "⚙️ [PaymentMethodsProvider] Configuration has \(configuredMethods.count) methods: \(configuredTypes)")
+
+        // Filter registered payment methods to only include those configured in the backend
+        let availablePaymentMethods = allPaymentMethods.filter { method in
+            let isAvailable = configuredTypes.contains(method.type.rawValue) || method.type.rawValue == "PAYMENT_CARD"
+            if isAvailable {
+                logger.debug(message: "✅ [PaymentMethodsProvider] Including method: \(method.name ?? "Unknown") (\(method.type.rawValue))")
+            } else {
+                logger.debug(message: "⏭️ [PaymentMethodsProvider] Skipping method: \(method.name ?? "Unknown") (\(method.type.rawValue)) - not in configuration")
+            }
+            return isAvailable
         }
 
-        if paymentMethods.isEmpty {
-            logger.warn(message: "⚠️ [PaymentMethodsProvider] No payment methods found! This might indicate a DI registration issue")
+        logger.info(message: "✅ [PaymentMethodsProvider] Filtered to \(availablePaymentMethods.count) available payment methods")
+
+        if availablePaymentMethods.isEmpty {
+            logger.warn(message: "⚠️ [PaymentMethodsProvider] No payment methods available after filtering! Check configuration.")
         }
 
-        return paymentMethods
+        return availablePaymentMethods
     }
 
     func getPaymentMethod(named: String) async throws -> (any PaymentMethodProtocol)? {

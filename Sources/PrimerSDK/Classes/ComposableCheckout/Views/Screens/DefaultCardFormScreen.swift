@@ -35,10 +35,10 @@ internal struct DefaultCardFormScreen: View, LogReporter {
 
                     // Use composite methods from scope
                     AnyView(scope.PrimerCardDetails())
-                    
+
                     // Show billing address if required
                     billingAddressSection
-                    
+
                     // Error Display
                     if !fieldErrors.isEmpty {
                         errorSection

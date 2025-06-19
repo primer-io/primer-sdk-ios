@@ -181,7 +181,7 @@ public class CardFormViewModel: CardFormScope, LogReporter {
         // Get required fields from backend configuration
         let cardFields = await getRequiredFieldsInteractor.getCardFields()
         let billingFields = await getRequiredFieldsInteractor.getBillingFields()
-        
+
         logger.debug(message: "📋 [CardFormViewModel] Required fields - Card: \(cardFields), Billing: \(billingFields)")
 
         _state = CardFormState(
@@ -301,13 +301,13 @@ public class CardFormViewModel: CardFormScope, LogReporter {
             let value = fields[fieldType] ?? ""
             return !value.isEmpty
         }
-        
+
         // Check all required billing fields are filled
         let hasAllBillingFields = _state.billingFields.allSatisfy { fieldType in
             let value = fields[fieldType] ?? ""
             return !value.isEmpty
         }
-        
+
         let hasNoErrors = (errors ?? _state.fieldErrors).isEmpty
 
         return hasAllCardFields && hasAllBillingFields && hasNoErrors && !_state.isLoading

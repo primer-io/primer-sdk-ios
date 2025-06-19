@@ -11,94 +11,94 @@ import Foundation
 /// This matches Android's GetRequiredFieldsInteractor for dynamic field visibility
 @available(iOS 15.0, *)
 internal class GetRequiredFieldsInteractor: LogReporter {
-    
+
     // MARK: - Dependencies
-    
+
     private let configurationRepository: ConfigurationRepository
-    
+
     // MARK: - Initialization
-    
+
     internal init(configurationRepository: ConfigurationRepository) {
         self.configurationRepository = configurationRepository
         logger.debug(message: "📋 [GetRequiredFieldsInteractor] Initialized")
     }
-    
+
     // MARK: - Public Methods
-    
+
     /// Get required card fields based on payment method configuration
     public func getCardFields() async -> [ComposableInputElementType] {
         logger.debug(message: "💳 [GetRequiredFieldsInteractor] Getting required card fields")
-        
+
         // Get configuration from repository
         let configuration = configurationRepository.getCurrentConfiguration()
-        
+
         // For now, return standard card fields
         // In production, this would be determined by backend configuration
         var fields: [ComposableInputElementType] = [.cardNumber]
-        
+
         // Add fields based on configuration
         if configuration?.requiresCVV ?? true {
             fields.append(.cvv)
         }
-        
+
         if configuration?.requiresExpiryDate ?? true {
             fields.append(.expiryDate)
         }
-        
+
         if configuration?.requiresCardholderName ?? false {
             fields.append(.cardholderName)
         }
-        
+
         logger.debug(message: "💳 [GetRequiredFieldsInteractor] Required card fields: \(fields)")
         return fields
     }
-    
+
     /// Get required billing fields based on payment method configuration
     public func getBillingFields() async -> [ComposableInputElementType] {
         logger.debug(message: "🏠 [GetRequiredFieldsInteractor] Getting required billing fields")
-        
+
         // Get configuration from repository
         let configuration = configurationRepository.getCurrentConfiguration()
-        
+
         var fields: [ComposableInputElementType] = []
-        
+
         // Add fields based on configuration
         if configuration?.requiresPostalCode ?? false {
             fields.append(.postalCode)
         }
-        
+
         if configuration?.requiresCountryCode ?? false {
             fields.append(.countryCode)
         }
-        
+
         if configuration?.requiresCity ?? false {
             fields.append(.city)
         }
-        
+
         if configuration?.requiresState ?? false {
             fields.append(.state)
         }
-        
+
         if configuration?.requiresAddressLine1 ?? false {
             fields.append(.addressLine1)
         }
-        
+
         if configuration?.requiresAddressLine2 ?? false {
             fields.append(.addressLine2)
         }
-        
+
         if configuration?.requiresFirstName ?? false {
             fields.append(.firstName)
         }
-        
+
         if configuration?.requiresLastName ?? false {
             fields.append(.lastName)
         }
-        
+
         logger.debug(message: "🏠 [GetRequiredFieldsInteractor] Required billing fields: \(fields)")
         return fields
     }
-    
+
     /// Get all required fields (card + billing)
     public func getAllRequiredFields() async -> [ComposableInputElementType] {
         let cardFields = await getCardFields()

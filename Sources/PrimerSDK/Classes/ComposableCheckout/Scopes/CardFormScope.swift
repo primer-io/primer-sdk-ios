@@ -420,13 +420,13 @@ internal class DefaultCardFormScope: CardFormScope, LogReporter {
             let value = fields[fieldType] ?? ""
             return !value.isEmpty
         }
-        
+
         // Check all required billing fields are filled
         let hasAllBillingFields = _state.billingFields.allSatisfy { fieldType in
             let value = fields[fieldType] ?? ""
             return !value.isEmpty
         }
-        
+
         return hasAllCardFields && hasAllBillingFields
     }
 }

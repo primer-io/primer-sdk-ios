@@ -134,8 +134,16 @@ final class PrimerUIManager: PrimerUIManaging {
 
     @available(iOS 15.0, *)
     private func presentComposableCheckout() {
-        // Get client token (using mock for now, should be from actual configuration)
-        let clientToken = "mock-token" // TODO: Get from actual client session
+        // Get client token from the current app state
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        guard let clientToken = state.clientToken else {
+            let error = PrimerError.invalidClientToken(
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: error)
+            PrimerUIManager.handleErrorBasedOnSDKSettings(error)
+            return
+        }
 
         // Create the SwiftUI checkout view
         let checkoutView = PrimerCheckout(clientToken: clientToken)

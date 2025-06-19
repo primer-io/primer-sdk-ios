@@ -12,7 +12,7 @@ import Combine
 /// This enables bridging between Combine (internal) and AsyncStream (public API)
 @available(iOS 15.0, *)
 internal struct PublishedAsyncStream {
-    
+
     /// Converts a @Published property to an AsyncStream
     /// - Parameter publisher: The published property's publisher
     /// - Returns: An AsyncStream that emits the same values as the publisher
@@ -22,13 +22,13 @@ internal struct PublishedAsyncStream {
                 .sink { value in
                     continuation.yield(value)
                 }
-            
+
             continuation.onTermination = { _ in
                 cancellable.cancel()
             }
         }
     }
-    
+
     /// Converts an AnyPublisher to an AsyncStream
     /// - Parameter publisher: Any publisher that emits values
     /// - Returns: An AsyncStream that emits the same values as the publisher
@@ -38,13 +38,13 @@ internal struct PublishedAsyncStream {
                 .sink { value in
                     continuation.yield(value)
                 }
-            
+
             continuation.onTermination = { _ in
                 cancellable.cancel()
             }
         }
     }
-    
+
     /// Creates an AsyncStream from a @Published property with proper lifecycle management
     /// - Parameters:
     ///   - object: The object containing the @Published property
@@ -57,14 +57,14 @@ internal struct PublishedAsyncStream {
         AsyncStream { continuation in
             // Yield initial value
             continuation.yield(object[keyPath: keyPath])
-            
+
             // Subscribe to changes
             let cancellable = object.objectWillChange
                 .receive(on: DispatchQueue.main)
                 .sink { _ in
                     continuation.yield(object[keyPath: keyPath])
                 }
-            
+
             continuation.onTermination = { _ in
                 cancellable.cancel()
             }
@@ -75,7 +75,7 @@ internal struct PublishedAsyncStream {
 /// Extension for easier usage with ViewModels
 @available(iOS 15.0, *)
 internal extension ObservableObject where Self.ObjectWillChangePublisher == ObservableObjectPublisher {
-    
+
     /// Creates an AsyncStream from a keyPath to a property
     /// - Parameter keyPath: KeyPath to the property to observe
     /// - Returns: AsyncStream that emits values when the property changes

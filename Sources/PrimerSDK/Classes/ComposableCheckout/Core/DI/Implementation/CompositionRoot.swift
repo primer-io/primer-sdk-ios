@@ -334,14 +334,15 @@ extension CompositionRoot {
     private static func registerPaymentMethods(in container: Container) async {
         logger.info(message: "💳 [CompositionRoot] Starting payment methods registration")
 
-        // Register ALL payment method implementations with the same protocol
+        // Register all supported payment methods statically
+        // The PaymentMethodsProvider will dynamically filter based on configuration
 
-        // Card payment - use actual implementation
+        // Card payment - always register since it's the core payment method
         logger.debug(message: "🃏 [CompositionRoot] Registering card payment method...")
         do {
             _ = try await container.register((any PaymentMethodProtocol).self)
-                .named("card")  // Names help distinguish between implementations
-                .asSingleton()  // Use singleton so resolveAll can find it
+                .named("card")
+                .asSingleton()
                 .with { _ in
                     logger.debug(message: "🏭 [CompositionRoot] Creating CardPaymentMethod instance")
                     let cardMethod = try await CardPaymentMethod()
@@ -352,25 +353,6 @@ extension CompositionRoot {
         } catch {
             logger.error(message: "🚨 [CompositionRoot] Failed to register card payment method: \(error.localizedDescription)")
         }
-
-        //        // Apple Pay
-        //        _ = try? await container.register((any PaymentMethodProtocol).self)
-        //            .named("apple_pay")
-        //            .asTransient()
-        //            .with { resolver in
-        //                return await ApplePayPaymentMethod()
-        //            }
-        //
-        //        // PayPal
-        //        _ = try? await container.register((any PaymentMethodProtocol).self)
-        //            .named("paypal")
-        //            .asTransient()
-        //            .with { resolver in
-        //                return await PayPalPaymentMethod()
-        //            }
-
-        // Easily add new payment methods by just registering them here
-        // No need to modify the ViewModel!
 
         logger.info(message: "✅ [CompositionRoot] Payment methods registration completed")
     }
