@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Combine
 
 /// Default card form screen with scope integration
 @available(iOS 15.0, *)
@@ -22,7 +21,7 @@ internal struct DefaultCardFormScreen: View, LogReporter {
     @State private var isSubmitEnabled = false
     @State private var fieldErrors: [ComposableInputValidationError] = []
     @State private var hasBillingFields = false
-    @State private var cancellables = Set<AnyCancellable>()
+    @State private var stateTask: Task<Void, Never>?
     @Environment(\.designTokens) private var tokens
     @Environment(\.presentationMode) private var presentationMode
 
@@ -66,6 +65,9 @@ internal struct DefaultCardFormScreen: View, LogReporter {
         }
         .onAppear {
             setupStateBinding()
+        }
+        .onDisappear {
+            stateTask?.cancel()
         }
     }
 
@@ -182,12 +184,11 @@ internal struct DefaultCardFormScreen: View, LogReporter {
     private func setupStateBinding() {
         logger.debug(message: "🔗 [DefaultCardFormScreen] Setting up state binding")
 
-        scope.state
-            .receive(on: DispatchQueue.main)
-            .sink { state in
+        stateTask = Task { @MainActor in
+            for await state in scope.state() {
                 handleStateChange(state)
             }
-            .store(in: &cancellables)
+        }
     }
 
     private func handleStateChange(_ state: CardFormState) {
@@ -219,8 +220,8 @@ struct DefaultCardFormScreen_Previews: PreviewProvider {
 private class MockCardFormScope: CardFormScope, ObservableObject {
     @Published private var _state = CardFormState.initial
 
-    var state: AnyPublisher<CardFormState, Never> {
-        $_state.eraseToAnyPublisher()
+    func state() -> AsyncStream<CardFormState> {
+        asyncStream(for: \._state)
     }
 
     func updateCardNumber(_ cardNumber: String) {}

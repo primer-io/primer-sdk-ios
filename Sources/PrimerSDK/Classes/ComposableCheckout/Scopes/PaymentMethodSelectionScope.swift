@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Combine
 
 /// Payment method selection scope that provides access to available payment methods.
 /// This matches Android's PaymentMethodSelectionScope interface exactly.
@@ -14,7 +13,7 @@ import Combine
 public protocol PaymentMethodSelectionScope: ObservableObject {
 
     /// Reactive state stream for payment method selection
-    var state: AnyPublisher<PaymentMethodSelectionState, Never> { get }
+    func state() -> AsyncStream<PaymentMethodSelectionState>
 
     /// Handle payment method selection
     func onPaymentMethodSelected(_ paymentMethod: PrimerComposablePaymentMethod)
@@ -57,8 +56,8 @@ internal class DefaultPaymentMethodSelectionScope: PaymentMethodSelectionScope, 
 
     @Published private var _state: PaymentMethodSelectionState = .loading
 
-    public var state: AnyPublisher<PaymentMethodSelectionState, Never> {
-        $_state.eraseToAnyPublisher()
+    public func state() -> AsyncStream<PaymentMethodSelectionState> {
+        PublishedAsyncStream.create(from: self, keyPath: \._state)
     }
 
     init() {
@@ -130,6 +129,7 @@ internal struct PaymentMethodSelectionScreenView: View {
     @State private var paymentMethods: [PrimerComposablePaymentMethod] = []
     @State private var currency: ComposableCurrency?
     @State private var isLoading = true
+    @State private var stateTask: Task<Void, Never>?
 
     var body: some View {
         VStack {
@@ -142,17 +142,24 @@ internal struct PaymentMethodSelectionScreenView: View {
                     .foregroundColor(.secondary)
             }
         }
-        .onReceive(scope.state) { state in
-            switch state {
-            case .loading:
-                isLoading = true
-            case .ready(let methods, let curr):
-                paymentMethods = methods
-                currency = curr
-                isLoading = false
-            case .error:
-                isLoading = false
+        .onAppear {
+            stateTask = Task { @MainActor in
+                for await state in scope.state() {
+                    switch state {
+                    case .loading:
+                        isLoading = true
+                    case .ready(let methods, let curr):
+                        paymentMethods = methods
+                        currency = curr
+                        isLoading = false
+                    case .error:
+                        isLoading = false
+                    }
+                }
             }
+        }
+        .onDisappear {
+            stateTask?.cancel()
         }
     }
 }

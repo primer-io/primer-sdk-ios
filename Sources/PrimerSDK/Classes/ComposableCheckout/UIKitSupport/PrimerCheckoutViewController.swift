@@ -525,9 +525,11 @@ struct CustomCardFormExample: View {
                 .disabled(!isValid || isSubmitting)
             }
             .padding()
-            .onReceive(scope.state) { state in
-                // Update form state based on the scope's state
-                isValid = state.isSubmitEnabled
+            .task {
+                for await state in scope.state() {
+                    // Update form state based on the scope's state
+                    isValid = state.isSubmitEnabled
+                }
             }
         } else {
             // Fallback on earlier versions

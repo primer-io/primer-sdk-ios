@@ -27,6 +27,7 @@ internal struct ComposableCheckoutView: View, LogReporter {
     @State private var currentScreen: CheckoutScreen = .splash
     @State private var errorMessage: String = ""
     @State private var cancellables = Set<AnyCancellable>()
+    @State private var stateTask: Task<Void, Never>?
     @Environment(\.diContainer) private var diContainer
     @StateObject private var navigator = CheckoutNavigator()
 
@@ -100,11 +101,16 @@ internal struct ComposableCheckoutView: View, LogReporter {
                 AnyView(errorScreen?(errorMessage) ?? AnyView(DefaultErrorScreen(errorMessage: errorMessage)))
             }
         }
-        .onReceive(checkoutScope.state) { state in
-            handleCheckoutStateChange(state)
+        .task {
+            for await state in checkoutScope.state() {
+                handleCheckoutStateChange(state)
+            }
         }
         .onAppear {
             setupNavigationObservers()
+        }
+        .onDisappear {
+            stateTask?.cancel()
         }
     }
 

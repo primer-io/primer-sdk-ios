@@ -24,8 +24,8 @@ public class CardFormViewModel: CardFormScope, LogReporter {
 
     // MARK: - CardFormScope Implementation
 
-    public var state: AnyPublisher<CardFormState, Never> {
-        $_state.eraseToAnyPublisher()
+    public func state() -> AsyncStream<CardFormState> {
+        asyncStream(for: \._state)
     }
 
     // MARK: - Dependencies

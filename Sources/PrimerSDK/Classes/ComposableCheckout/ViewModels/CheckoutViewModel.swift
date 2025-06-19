@@ -12,7 +12,7 @@ import Combine
 /// This provides the main checkout functionality accessible through the Android-matching API.
 @available(iOS 15.0, *)
 @MainActor
-public class CheckoutViewModel: PrimerCheckoutScope, LogReporter {
+public class CheckoutViewModel: PrimerCheckoutScope, ObservableObject, LogReporter {
 
     // MARK: - Published State
 
@@ -20,8 +20,8 @@ public class CheckoutViewModel: PrimerCheckoutScope, LogReporter {
 
     // MARK: - PrimerCheckoutScope Implementation
 
-    public var state: AnyPublisher<CheckoutState, Never> {
-        $_state.eraseToAnyPublisher()
+    public func state() -> AsyncStream<CheckoutState> {
+        PublishedAsyncStream.create(from: self, keyPath: \._state)
     }
 
     public func paymentMethods() -> AsyncStream<[any PaymentMethodProtocol]> {

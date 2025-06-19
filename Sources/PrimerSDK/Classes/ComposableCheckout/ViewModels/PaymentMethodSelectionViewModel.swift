@@ -20,8 +20,8 @@ public class PaymentMethodSelectionViewModel: PaymentMethodSelectionScope, LogRe
 
     // MARK: - PaymentMethodSelectionScope Implementation
 
-    public var state: AnyPublisher<PaymentMethodSelectionState, Never> {
-        $_state.eraseToAnyPublisher()
+    public func state() -> AsyncStream<PaymentMethodSelectionState> {
+        asyncStream(for: \._state)
     }
 
     // MARK: - Dependencies

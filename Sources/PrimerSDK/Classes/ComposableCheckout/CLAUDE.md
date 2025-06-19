@@ -69,6 +69,9 @@ The ComposableCheckout follows a scope-based pattern similar to Android Compose:
 #### PrimerCheckoutScope
 ```swift
 public protocol PrimerCheckoutScope {
+    /// Reactive state stream for checkout state
+    func state() -> AsyncStream<CheckoutState>
+    
     /// AsyncStream of available payment methods
     func paymentMethods() -> AsyncStream<[any PaymentMethodProtocol]>
     
@@ -96,6 +99,23 @@ public protocol PaymentMethodProtocol: Identifiable {
     func defaultContent() -> AnyView
 }
 ```
+
+#### Reactive State Management
+All scopes use AsyncStream instead of Combine for state management:
+```swift
+public protocol CardFormScope: ObservableObject {
+    /// Reactive state stream for card form
+    func state() -> AsyncStream<CardFormState>
+    
+    // Update methods...
+}
+```
+
+**Benefits of AsyncStream:**
+- **No Combine Dependency**: Merchants don't need to import Combine
+- **Modern Swift Concurrency**: Uses async/await patterns
+- **Simple Integration**: Works seamlessly with SwiftUI's `.task` modifier
+- **Consistent API**: All reactive streams use the same pattern
 
 ## Usage Patterns
 
@@ -302,6 +322,7 @@ health.printReport()
 - ✅ **Android API Alignment**: Complete scope-based architecture matching Android
 - ✅ **Dynamic Field Visibility**: Fields shown/hidden based on backend configuration
 - ✅ **GetRequiredFieldsInteractor**: Determines required fields dynamically
+- ✅ **AsyncStream Migration**: All public APIs use AsyncStream instead of Combine
 
 ### In Progress
 - 🔄 **Navigation System**: CheckoutCoordinator and sheet presentation
@@ -322,5 +343,7 @@ health.printReport()
 - Validation system provides real-time field validation
 - **Android-aligned architecture**: No static API, no wrappers, scope-only access
 - **Dynamic configuration**: Field requirements determined by backend
+- **AsyncStream for Reactive State**: All public APIs use AsyncStream instead of Combine
+- **No External Dependencies**: Public API requires only SwiftUI, no Combine import needed
 
 When contributing, ensure your changes align with the established scope-based patterns and maintain the module's architectural integrity.

@@ -220,8 +220,8 @@ class PrimerCheckoutViewModel: ObservableObject, PrimerCheckoutScope, LogReporte
     // MARK: - PrimerCheckoutScope Implementation
 
     /// The current state of the checkout process
-    var state: AnyPublisher<CheckoutState, Never> {
-        $_checkoutState.eraseToAnyPublisher()
+    func state() -> AsyncStream<CheckoutState> {
+        asyncStream(for: \._checkoutState)
     }
 
     /// Returns an AsyncStream of available payment methods.

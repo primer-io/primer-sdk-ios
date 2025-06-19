@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Combine
 
 /// Card form scope that provides access to card input state and validation.
 /// This matches Android's CardFormScope interface exactly.
@@ -14,7 +13,7 @@ import Combine
 public protocol CardFormScope: ObservableObject {
 
     /// Reactive state stream for card form
-    var state: AnyPublisher<CardFormState, Never> { get }
+    func state() -> AsyncStream<CardFormState>
 
     // MARK: - Update Methods (match Android exactly)
 
@@ -305,8 +304,8 @@ internal class DefaultCardFormScope: CardFormScope, LogReporter {
 
     @Published private var _state: CardFormState = .initial
 
-    public var state: AnyPublisher<CardFormState, Never> {
-        $_state.eraseToAnyPublisher()
+    public func state() -> AsyncStream<CardFormState> {
+        PublishedAsyncStream.create(from: self, keyPath: \._state)
     }
 
     // MARK: - Field Updates
@@ -474,9 +473,11 @@ private struct StatefulInputField: View {
         )
         .applyPrimerModifier(modifier)
         .withPrimerEnvironment()
-        .onReceive(scope.state) { state in
-            if let fieldValue = state.inputFields[elementType] {
-                value = fieldValue
+        .task {
+            for await state in scope.state() {
+                if let fieldValue = state.inputFields[elementType] {
+                    value = fieldValue
+                }
             }
         }
     }
@@ -542,9 +543,11 @@ private struct CardDetailsComposite: View {
                 AnyView(scope.PrimerCardholderNameInput())
             }
         }
-        .onReceive(scope.state) { state in
-            // Update visible fields based on state
-            visibleFields = Set(state.cardFields)
+        .task {
+            for await state in scope.state() {
+                // Update visible fields based on state
+                visibleFields = Set(state.cardFields)
+            }
         }
         .applyPrimerModifier(modifier)
     }
@@ -592,9 +595,11 @@ private struct BillingAddressComposite: View {
                 }
             }
         }
-        .onReceive(scope.state) { state in
-            // Update visible fields based on state
-            visibleFields = Set(state.billingFields)
+        .task {
+            for await state in scope.state() {
+                // Update visible fields based on state
+                visibleFields = Set(state.billingFields)
+            }
         }
         .applyPrimerModifier(modifier)
     }
@@ -616,9 +621,11 @@ private struct CVVInputWithNetwork: View {
                 scope.updateCvv(newValue)
             }
         )
-        .onReceive(scope.state) { state in
-            if let network = state.cardNetwork {
-                cardNetwork = network
+        .task {
+            for await state in scope.state() {
+                if let network = state.cardNetwork {
+                    cardNetwork = network
+                }
             }
         }
         .applyPrimerModifier(modifier)

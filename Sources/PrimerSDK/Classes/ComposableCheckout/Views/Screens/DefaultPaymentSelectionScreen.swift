@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Combine
 
 /// Default payment method selection screen with scope integration
 @available(iOS 15.0, *)
@@ -22,7 +21,7 @@ internal struct DefaultPaymentSelectionScreen: View, LogReporter {
     @State private var currency: ComposableCurrency?
     @State private var isLoading = true
     @State private var errorMessage: String?
-    @State private var cancellables = Set<AnyCancellable>()
+    @State private var stateTask: Task<Void, Never>?
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Body
@@ -44,6 +43,9 @@ internal struct DefaultPaymentSelectionScreen: View, LogReporter {
         }
         .onAppear {
             setupStateBinding()
+        }
+        .onDisappear {
+            stateTask?.cancel()
         }
     }
 
@@ -134,12 +136,11 @@ internal struct DefaultPaymentSelectionScreen: View, LogReporter {
     private func setupStateBinding() {
         logger.debug(message: "🔗 [DefaultPaymentSelectionScreen] Setting up state binding")
 
-        scope.state
-            .receive(on: DispatchQueue.main)
-            .sink { state in
+        stateTask = Task { @MainActor in
+            for await state in scope.state() {
                 handleStateChange(state)
             }
-            .store(in: &cancellables)
+        }
     }
 
     private func handleStateChange(_ state: PaymentMethodSelectionState) {
@@ -277,8 +278,8 @@ private class MockPaymentMethodSelectionScope: PaymentMethodSelectionScope, Obse
         currency: ComposableCurrency(code: "USD", symbol: "$")
     )
 
-    var state: AnyPublisher<PaymentMethodSelectionState, Never> {
-        $_state.eraseToAnyPublisher()
+    func state() -> AsyncStream<PaymentMethodSelectionState> {
+        PublishedAsyncStream.create(from: self, keyPath: \._state)
     }
 
     func onPaymentMethodSelected(_ paymentMethod: PrimerComposablePaymentMethod) {
