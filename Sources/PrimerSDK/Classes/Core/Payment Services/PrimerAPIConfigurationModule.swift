@@ -385,4 +385,14 @@ final class PrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol, 
         PrimerSettings.current.clientSessionCachingEnabled
     }
 }
+
+extension PrimerAPIConfigurationModule {
+    static var shippingMethodOptions: Response.Body.Configuration.CheckoutModule.ShippingMethodOptions? {
+        apiConfiguration?
+            .checkoutModules?
+            .first(where: { $0.type == "SHIPPING" })?
+            .options as? Response.Body.Configuration.CheckoutModule.ShippingMethodOptions
+    }
+}
+
 // swiftlint:enable type_body_length

@@ -38,6 +38,10 @@ final class PrimerUIManager: PrimerUIManaging {
     var primerRootViewController: PrimerRootViewController?
     var apiConfigurationModule: PrimerAPIConfigurationModuleProtocol?
 
+    static func showLoadingScreenIfNeeded(_ imageView: UIImageView?) {
+        primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView, message: nil)
+    }
+
     func preparePresentation(clientToken: String) -> Promise<Void> {
         return Promise { seal in
             firstly {
