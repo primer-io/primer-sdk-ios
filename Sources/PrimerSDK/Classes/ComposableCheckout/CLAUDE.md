@@ -117,9 +117,67 @@ public protocol CardFormScope: ObservableObject {
 - **Simple Integration**: Works seamlessly with SwiftUI's `.task` modifier
 - **Consistent API**: All reactive streams use the same pattern
 
+## Public API - ComposablePrimer
+
+### New UIKit-Friendly API
+
+ComposableCheckout now provides a `ComposablePrimer` class that follows the same pattern as the main SDK's `Primer` class:
+
+```swift
+// Simple presentation
+ComposablePrimer.presentCheckout(with: clientToken)
+
+// Present from specific view controller
+ComposablePrimer.presentCheckout(with: clientToken, from: viewController)
+
+// Present with custom content
+ComposablePrimer.presentCheckout(with: clientToken, from: viewController) { scope in
+    // Custom SwiftUI content
+}
+
+// Dismiss
+ComposablePrimer.dismiss()
+
+// Check state
+if ComposablePrimer.isPresenting {
+    // Checkout is currently being presented
+}
+
+// Reset state (for error recovery)
+ComposablePrimer.resetPresentationState()
+```
+
+### Integration with Legacy SDK
+
+The module now includes bridge services that connect to the existing SDK infrastructure:
+
+- **LegacyConfigurationBridge**: Connects to PrimerAPIConfigurationModule for session setup
+- **LegacyTokenizationBridge**: Maintains PCI compliance through existing TokenizationService
+- **CheckoutNavigator**: Integrates with PrimerDelegateProxy for callbacks
+
 ## Usage Patterns
 
-### Creating Custom Checkout Experience
+### Using ComposablePrimer (Recommended)
+
+```swift
+// In your view controller
+ComposablePrimer.delegate = self
+ComposablePrimer.presentCheckout(with: clientToken, from: self)
+
+// Implement PrimerDelegate
+extension ViewController: PrimerDelegate {
+    func primerDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
+        // Handle success
+    }
+    
+    func primerDidFailWithError(_ error: Error, data: PrimerCheckoutData?, decisionHandler: @escaping (PrimerErrorDecision) -> Void) {
+        // Handle error
+        decisionHandler(.fail(withErrorMessage: error.localizedDescription))
+    }
+}
+```
+
+### Direct SwiftUI Integration
 
 ```swift
 PrimerCheckout(clientToken: "your_token") { scope in
@@ -314,6 +372,7 @@ health.printReport()
 ### Completed Features
 - ✅ **Core Architecture**: DI container with actor-based thread safety
 - ✅ **PrimerCheckout**: Main entry point with async setup and error handling
+- ✅ **ComposablePrimer API**: UIKit-friendly wrapper following Primer.shared pattern
 - ✅ **Scope-based API**: PaymentMethodProtocol with associated types
 - ✅ **Card Payment**: Complete implementation with validation system
 - ✅ **Payment Methods List**: Selection UI and view model
@@ -323,6 +382,8 @@ health.printReport()
 - ✅ **Dynamic Field Visibility**: Fields shown/hidden based on backend configuration
 - ✅ **GetRequiredFieldsInteractor**: Determines required fields dynamically
 - ✅ **AsyncStream Migration**: All public APIs use AsyncStream instead of Combine
+- ✅ **Legacy SDK Integration**: Bridge services for configuration and tokenization
+- ✅ **Presentation State Management**: Robust handling of presentation lifecycle
 
 ### In Progress
 - 🔄 **Navigation System**: CheckoutCoordinator and sheet presentation

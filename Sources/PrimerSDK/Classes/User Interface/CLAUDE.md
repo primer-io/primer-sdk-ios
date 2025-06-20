@@ -175,6 +175,23 @@ Central coordinator for UI operations:
 - Theme application and updates
 - Keyboard handling coordination
 - Loading state management
+- **NEW**: ComposableCheckout integration via `presentComposableCheckout()`
+- Checkout style selection (`.dropIn`, `.composable`, `.automatic`)
+
+#### ComposableCheckout Integration
+PrimerUIManager now supports presenting the modern SwiftUI-based checkout:
+```swift
+// Present with automatic style selection
+PrimerUIManager.shared.presentPaymentUI(checkoutStyle: .automatic)
+
+// Force ComposableCheckout (iOS 15+)
+PrimerUIManager.shared.presentPaymentUI(checkoutStyle: .composable)
+
+// Force traditional Drop-in
+PrimerUIManager.shared.presentPaymentUI(checkoutStyle: .dropIn)
+```
+
+The integration uses `ComposablePrimer.presentCheckout()` internally and maintains compatibility with existing delegate patterns.
 
 #### UI Utilities (`UIUtils.swift`)
 Helper functions for common UI operations:

@@ -26,10 +26,12 @@ The main iOS SDK implementation with three integration approaches:
 
 ### ComposableCheckout/ - Modern SwiftUI Implementation
 **MODERN**: SwiftUI-based scope architecture (iOS 15+)
-- **Entry Point**: `ComposableCheckout/Core/PrimerCheckout/PrimerCheckout.swift`
+- **Main Entry Point**: `ComposableCheckout/ComposablePrimer.swift` - UIKit-friendly API
+- **SwiftUI Entry**: `ComposableCheckout/Core/PrimerCheckout/PrimerCheckout.swift`
 - **Pattern**: Scope-based component architecture with async/await DI
 - **Key Features**: PaymentMethodProtocol with associated types, AsyncStream reactive patterns
 - **Public API**: Similar to Android Compose scopes with SwiftUI integration
+- **Bridge Services**: LegacyConfigurationBridge and LegacyTokenizationBridge for SDK integration
 - **Architecture**: See `ComposableCheckout/CLAUDE.md` for complete details
 
 ### Data Models/ - Domain Objects

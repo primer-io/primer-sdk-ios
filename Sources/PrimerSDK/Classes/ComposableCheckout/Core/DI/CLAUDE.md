@@ -229,4 +229,8 @@ class PaymentFlowScope: DependencyScope {
 
 ## Current Status
 
-The DI framework is being actively developed on the `bn/feature/stepByStepDI` branch. The main integration point is through `CompositionRoot.swift` which sets up all dependencies when `PrimerCheckout` initializes.
+The DI framework is complete and integrated into the ComposableCheckout module. The main integration points are:
+- **CompositionRoot.swift**: Sets up all dependencies when `PrimerCheckout` or `ComposablePrimer` initializes
+- **Bridge Services**: LegacyConfigurationBridge and LegacyTokenizationBridge registered for SDK integration
+- **Payment Methods**: Dynamic resolution based on backend configuration
+- **Health Checks**: Container diagnostics run on initialization to detect issues early

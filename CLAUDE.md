@@ -153,7 +153,21 @@ The SDK uses two DI systems:
 
 The ComposableCheckout module provides a modern, scope-based API similar to Android's Compose pattern:
 
-**Main Entry Point:**
+**Main Entry Point (New Approach):**
+```swift
+// Present checkout with automatic view controller detection
+ComposablePrimer.presentCheckout(with: clientToken)
+
+// Present from specific view controller
+ComposablePrimer.presentCheckout(with: clientToken, from: viewController)
+
+// Present with custom SwiftUI content
+ComposablePrimer.presentCheckout(with: clientToken, from: viewController) { scope in
+    // Custom UI using scope
+}
+```
+
+**Direct SwiftUI Usage:**
 ```swift
 PrimerCheckout(clientToken: String)
 ```
@@ -164,10 +178,12 @@ PrimerCheckout(clientToken: String)
 - Each scope provides both default UI components and customization hooks
 
 **Key Design Patterns:**
+- **ComposablePrimer API**: UIKit-friendly wrapper following Primer.shared pattern
 - **Scope Functions**: Extension functions on scopes for UI components
 - **StateFlow Equivalent**: AsyncStream for reactive state management
 - **Modifier Pattern**: SwiftUI modifiers for styling and behavior
 - **Environment Integration**: DI container and design tokens via SwiftUI environment
+- **Bridge Services**: LegacyConfigurationBridge and LegacyTokenizationBridge connect to existing SDK
 
 ### Important Notes
 
