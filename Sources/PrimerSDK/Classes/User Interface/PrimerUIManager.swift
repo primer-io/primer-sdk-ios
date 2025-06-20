@@ -8,6 +8,17 @@
 // swiftlint:disable function_body_length
 
 import UIKit
+import SwiftUI
+
+/// Defines the checkout presentation style for the Primer SDK.
+public enum CheckoutStyle {
+    /// Traditional UIKit-based Drop-in checkout system
+    case dropIn
+    /// Modern SwiftUI-based ComposableCheckout system (iOS 15+ required)
+    case composable
+    /// Automatically choose based on iOS version and availability
+    case automatic
+}
 
 protocol PrimerUIManaging {
     var primerWindow: UIWindow? { get }
@@ -66,11 +77,29 @@ final class PrimerUIManager: PrimerUIManaging {
     }
 
     func presentPaymentUI() {
+        presentPaymentUI(checkoutStyle: .composable)
+    }
+
+    func presentPaymentUI(checkoutStyle: CheckoutStyle) {
         if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
             PrimerUIManager.presentPaymentMethod(type: paymentMethodType)
         } else if PrimerInternal.shared.intent == .checkout {
-            let pucvc = PrimerUniversalCheckoutViewController()
-            PrimerUIManager.primerRootViewController?.show(viewController: pucvc)
+            let resolvedStyle = resolveCheckoutStyle(checkoutStyle)
+
+            switch resolvedStyle {
+            case .composable:
+                if #available(iOS 15.0, *) {
+                    presentComposableCheckout()
+                } else {
+                    // Fallback to Drop-in if iOS 15+ not available
+                    presentDropInCheckout()
+                }
+            case .dropIn:
+                presentDropInCheckout()
+            case .automatic:
+                // This case should not occur as resolveCheckoutStyle handles it
+                presentDropInCheckout()
+            }
         } else if PrimerInternal.shared.intent == .vault {
             let pvmvc = PrimerVaultManagerViewController()
             PrimerUIManager.primerRootViewController?.show(viewController: pvmvc)
@@ -81,6 +110,87 @@ final class PrimerUIManager: PrimerUIManaging {
                                                diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)
             PrimerUIManager.handleErrorBasedOnSDKSettings(err)
+        }
+    }
+
+    private func resolveCheckoutStyle(_ style: CheckoutStyle) -> CheckoutStyle {
+        switch style {
+        case .automatic:
+            // Choose ComposableCheckout for iOS 15+, otherwise Drop-in
+            if #available(iOS 15.0, *) {
+                return .composable
+            } else {
+                return .dropIn
+            }
+        case .composable, .dropIn:
+            return style
+        }
+    }
+
+    private func presentDropInCheckout() {
+        let pucvc = PrimerUniversalCheckoutViewController()
+        PrimerUIManager.primerRootViewController?.show(viewController: pucvc)
+    }
+
+    @available(iOS 15.0, *)
+    private func presentComposableCheckout() {
+        // Get client token from the current app state
+        let state: AppStateProtocol = DependencyContainer.resolve()
+        guard let clientToken = state.clientToken else {
+            let error = PrimerError.invalidClientToken(
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: error)
+            PrimerUIManager.handleErrorBasedOnSDKSettings(error)
+            return
+        }
+
+        // Get the presenting view controller
+        guard let presentingViewController = PrimerUIManager.primerRootViewController else {
+            let error = PrimerError.unableToPresentPaymentMethod(
+                paymentMethodType: "ComposableCheckout",
+                userInfo: .errorUserInfoDictionary(
+                    additionalInfo: ["message": "No presenting view controller found"]
+                ),
+                diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: error)
+            PrimerUIManager.handleErrorBasedOnSDKSettings(error)
+            return
+        }
+
+        // Use the new ComposablePrimer API
+        ComposablePrimer.presentCheckout(
+            with: clientToken,
+            from: presentingViewController
+        ) {
+            // Presentation completed
+        }
+    }
+    
+    @available(iOS 15.0, *)
+    private func handleSwiftUIHeightChange(_ height: CGFloat) {
+        // This can be used for additional height change handling if needed
+        // The bridge controller already updates preferredContentSize automatically
+    }
+
+    @available(iOS 15.0, *)
+    func handleSwiftUIHeightChange(_ newHeight: CGFloat, for hostController: UIViewController) {
+        guard let root = PrimerUIManager.primerRootViewController,
+              // Find the matching container for this host
+              let container = root.navController
+                .viewControllers
+                .compactMap({ $0 as? PrimerContainerViewController })
+                .first(where: { $0.childViewController === hostController })
+        else { return }
+
+        // Compute total sheet height (content + nav bar)
+        let navBarHeight = root.navController.navigationBar.bounds.height
+        let total = newHeight + navBarHeight
+
+        // Update the constraint and animate
+        container.childViewHeightConstraint?.constant = total
+        UIView.animate(withDuration: 0.3) {
+            root.view.layoutIfNeeded()
         }
     }
 
