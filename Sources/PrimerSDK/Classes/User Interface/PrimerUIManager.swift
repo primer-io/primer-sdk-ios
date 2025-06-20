@@ -146,7 +146,7 @@ final class PrimerUIManager: PrimerUIManaging {
         }
 
         // Get the presenting view controller
-        guard let presentingViewController = findPresentingViewController() else {
+        guard let presentingViewController = PrimerUIManager.primerRootViewController else {
             let error = PrimerError.unableToPresentPaymentMethod(
                 paymentMethodType: "ComposableCheckout",
                 userInfo: .errorUserInfoDictionary(
@@ -165,43 +165,6 @@ final class PrimerUIManager: PrimerUIManaging {
         ) {
             // Presentation completed
         }
-    }
-
-    private func findPresentingViewController() -> UIViewController? {
-        // Try to find the best view controller to present from
-        
-        // First, check if we have a primer root view controller
-        if let primerRoot = primerRootViewController {
-            return primerRoot
-        }
-        
-        // Otherwise, find the topmost view controller
-        guard let windowScene = UIApplication.shared.connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .first(where: { $0.activationState == .foregroundActive }),
-              let rootViewController = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController else {
-            return nil
-        }
-        
-        return findTopViewController(from: rootViewController)
-    }
-    
-    private func findTopViewController(from viewController: UIViewController) -> UIViewController {
-        if let presented = viewController.presentedViewController {
-            return findTopViewController(from: presented)
-        }
-        
-        if let navigation = viewController as? UINavigationController,
-           let top = navigation.topViewController {
-            return findTopViewController(from: top)
-        }
-        
-        if let tab = viewController as? UITabBarController,
-           let selected = tab.selectedViewController {
-            return findTopViewController(from: selected)
-        }
-        
-        return viewController
     }
     
     @available(iOS 15.0, *)

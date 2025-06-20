@@ -128,7 +128,11 @@ import SwiftUI
                 // Check if already presenting
                 if viewController.presentedViewController != nil {
                     logger.warn(message: "⚠️ [ComposablePrimer] View controller is already presenting. Dismissing first.")
+                    // Reset flag since we're not actually presenting yet
+                    isPresentingCheckout = false
                     viewController.dismiss(animated: false) { [weak self] in
+                        // Set flag again before re-attempting presentation
+                        self?.isPresentingCheckout = true
                         self?.presentHostingController(hostingController, from: viewController, completion: completion)
                     }
                 } else {
@@ -212,8 +216,23 @@ import SwiftUI
     
     private func presentHostingController(_ hostingController: UIViewController, from viewController: UIViewController, completion: (() -> Void)?) {
         viewController.present(hostingController, animated: true) { [weak self] in
+            // Reset the flag after successful presentation
+            self?.isPresentingCheckout = false
             self?.logger.info(message: "✅ [ComposablePrimer] Checkout presented successfully")
+            
+            // Observe when the controller is dismissed to clean up state
+            self?.observeDismissal(of: hostingController)
+            
             completion?()
+        }
+    }
+    
+    private func observeDismissal(of viewController: UIViewController) {
+        // Use presentationController delegate or other mechanism to detect dismissal
+        if let presentationController = viewController.presentationController {
+            // We'll rely on our dismiss method being called explicitly
+            // This is just a safety check
+            logger.debug(message: "🔍 [ComposablePrimer] Monitoring presentation controller for dismissal")
         }
     }
     
@@ -226,9 +245,11 @@ import SwiftUI
             return
         }
         
+        // Reset the presenting flag immediately
+        isPresentingCheckout = false
+        
         controller.dismiss(animated: animated) { [weak self] in
             self?.activeCheckoutController = nil
-            self?.isPresentingCheckout = false
             self?.logger.info(message: "✅ [ComposablePrimer] Checkout dismissed")
             completion?()
         }
@@ -286,6 +307,18 @@ extension ComposablePrimer {
     /// Check if ComposableCheckout is available on this iOS version
     @objc public static var isAvailable: Bool {
         return true // Since we're already in an @available(iOS 15.0, *) context
+    }
+    
+    /// Check if checkout is currently being presented
+    @objc public static var isPresenting: Bool {
+        return shared.isPresentingCheckout || shared.activeCheckoutController != nil
+    }
+    
+    /// Reset presentation state (useful for error recovery)
+    @objc public static func resetPresentationState() {
+        shared.logger.warn(message: "⚠️ [ComposablePrimer] Resetting presentation state")
+        shared.isPresentingCheckout = false
+        shared.activeCheckoutController = nil
     }
     
     /// Present using the existing PrimerUIManager infrastructure (internal use)

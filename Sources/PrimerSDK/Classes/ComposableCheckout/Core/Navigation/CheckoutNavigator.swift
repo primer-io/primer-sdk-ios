@@ -86,6 +86,8 @@ public class CheckoutNavigator: ObservableObject {
         // Also dismiss via ComposablePrimer if it was used to present
         if #available(iOS 15.0, *) {
             ComposablePrimer.dismiss(animated: true)
+            // Reset state in case of any issues
+            ComposablePrimer.resetPresentationState()
         }
     }
 
@@ -115,6 +117,8 @@ public class CheckoutNavigator: ObservableObject {
                 // Dismiss via ComposablePrimer if it was used to present
                 if #available(iOS 15.0, *) {
                     ComposablePrimer.dismiss(animated: true)
+                    // Reset state in case of any issues
+                    ComposablePrimer.resetPresentationState()
                 }
             }
         }
