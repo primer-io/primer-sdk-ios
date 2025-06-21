@@ -464,19 +464,18 @@ Make sure you call the decision handler otherwise the SDK will hang."
                 }
             }
 
-            return try await withCheckedThrowingContinuation { continuation in
-                PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData, decisionHandler: { paymentCreationDecision in
-                    decisionHandlerHasBeenCalled = true
-                    switch paymentCreationDecision.type {
-                    case .abort(let errorMessage):
-                        let error = PrimerError.merchantError(message: errorMessage ?? "",
-                                                              userInfo: .errorUserInfoDictionary(),
-                                                              diagnosticsId: UUID().uuidString)
-                        continuation.resume(throwing: error)
-                    case .continue:
-                        continuation.resume()
-                    }
-                })
+            let paymentCreationDecision = try await PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData)
+            decisionHandlerHasBeenCalled = true
+
+            switch paymentCreationDecision.type {
+            case .abort(let errorMessage):
+                let error = PrimerError.merchantError(message: errorMessage ?? "",
+                                                      userInfo: .errorUserInfoDictionary(),
+                                                      diagnosticsId: UUID().uuidString)
+                throw error
+
+            case .continue:
+                return
             }
         }
 
@@ -703,7 +702,9 @@ Make sure you call the decision handler otherwise the SDK will hang."
             }
         }
 
-        private func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> DecodedJWTToken? {
+        private func startPaymentFlowAndFetchDecodedClientToken(
+            withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
+        ) async throws -> DecodedJWTToken? {
             if PrimerSettings.current.paymentHandling == .manual {
                 return try await startManualPaymentFlowAndFetchToken(paymentMethodTokenData: paymentMethodTokenData)
             } else {
@@ -711,7 +712,9 @@ Make sure you call the decision handler otherwise the SDK will hang."
             }
         }
 
-        private func startManualPaymentFlowAndFetchToken(paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> DecodedJWTToken? {
+        private func startManualPaymentFlowAndFetchToken(
+            paymentMethodTokenData: PrimerPaymentMethodTokenData
+        ) async throws -> DecodedJWTToken? {
             let resumeDecision = try await PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData)
 
             if let resumeType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
@@ -760,13 +763,16 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     return nil
                 }
             } else {
-                precondition(false)
+                preconditionFailure()
+
                 // TODO: REVIEW_CHECK - What should we return here?
                 return nil
             }
         }
 
-        private func startAutomaticPaymentFlowAndFetchToken(paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> DecodedJWTToken? {
+        private func startAutomaticPaymentFlowAndFetchToken(
+            paymentMethodTokenData: PrimerPaymentMethodTokenData
+        ) async throws -> DecodedJWTToken? {
             guard let token = paymentMethodTokenData.token else {
                 let err = PrimerError.invalidClientToken(
                     userInfo: .errorUserInfoDictionary(),
@@ -1317,7 +1323,8 @@ Make sure you call the decision handler otherwise the SDK will hang."
                     return self.paymentCheckoutData
                 }
             } else {
-                precondition(false)
+                preconditionFailure()
+
                 // TODO: REVIEW_CHECK - What should we return here?
                 return nil
             }
