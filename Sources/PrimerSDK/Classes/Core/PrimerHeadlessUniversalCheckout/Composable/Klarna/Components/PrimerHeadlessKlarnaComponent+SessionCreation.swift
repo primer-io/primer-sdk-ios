@@ -42,6 +42,7 @@ extension PrimerHeadlessKlarnaComponent {
      * - Failure: It handles the creation of a payment session error
      */
     func startSession() {
+        // TODO: FINAL_MIGRATION
         firstly {
             handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: PrimerPaymentMethodType.klarna.rawValue))
         }
@@ -192,22 +193,18 @@ extension PrimerHeadlessKlarnaComponent: LogReporter {
             }
         }
 
-        return try await withCheckedThrowingContinuation { continuation in
-            PrimerDelegateProxy.primerWillCreatePaymentWithData(
-                checkoutPaymentMethodData,
-                decisionHandler: { paymentCreationDecision in
-                    decisionHandlerHasBeenCalled = true
-                    switch paymentCreationDecision.type {
-                    case .abort(let errorMessage):
-                        let error = PrimerError.merchantError(message: errorMessage ?? "",
-                                                              userInfo: .errorUserInfoDictionary(),
-                                                              diagnosticsId: UUID().uuidString)
-                        continuation.resume(throwing: error)
-                    case .continue:
-                        continuation.resume()
-                    }
-                }
-            )
+        let paymentCreationDecision = try await PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData)
+        decisionHandlerHasBeenCalled = true
+
+        switch paymentCreationDecision.type {
+        case .abort(let errorMessage):
+            let error = PrimerError.merchantError(message: errorMessage ?? "",
+                                                  userInfo: .errorUserInfoDictionary(),
+                                                  diagnosticsId: UUID().uuidString)
+            throw error
+            
+        case .continue:
+            return
         }
     }
 }
