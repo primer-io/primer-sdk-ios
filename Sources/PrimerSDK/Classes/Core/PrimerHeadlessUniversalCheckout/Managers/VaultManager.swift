@@ -163,7 +163,7 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
 
-        // TODO: FINAL MIGRATION
+        // TODO: FINAL_MIGRATION
         public func startPaymentFlow(vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData? = nil) {
             guard let vaultedPaymentMethod = self.vaultedPaymentMethods?
                     .first(where: { $0.id == vaultedPaymentMethodId })
@@ -505,15 +505,20 @@ extension PrimerHeadlessUniversalCheckout {
             }
         }
 
-        private func startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> (DecodedJWTToken, PrimerPaymentMethodTokenData)? {
+        private func startPaymentFlowAndFetchDecodedClientToken(
+            withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
+        ) async throws
+            -> (DecodedJWTToken, PrimerPaymentMethodTokenData)? {
             if PrimerSettings.current.paymentHandling == .manual {
                 return try await startManualPaymentFlowAndFetchToken(paymentMethodTokenData: paymentMethodTokenData)
             } else {
                 return try await startAutomaticPaymentFlowAndFetchToken(paymentMethodTokenData: paymentMethodTokenData)
             }
         }
-        
-        private func startManualPaymentFlowAndFetchToken(paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> (DecodedJWTToken, PrimerPaymentMethodTokenData)? {
+
+        private func startManualPaymentFlowAndFetchToken(
+            paymentMethodTokenData: PrimerPaymentMethodTokenData
+        ) async throws -> (DecodedJWTToken, PrimerPaymentMethodTokenData)? {
             let resumeDecision = try await PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData)
 
             if let resumeType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
@@ -567,11 +572,16 @@ extension PrimerHeadlessUniversalCheckout {
                 }
 
             } else {
-                precondition(false)
+                preconditionFailure()
+
+                // TODO: REVIEW_CHECK - What should we return here?
+                return nil
             }
         }
 
-        private func startAutomaticPaymentFlowAndFetchToken(paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> (DecodedJWTToken, PrimerPaymentMethodTokenData)? {
+        private func startAutomaticPaymentFlowAndFetchToken(
+            paymentMethodTokenData: PrimerPaymentMethodTokenData
+        ) async throws -> (DecodedJWTToken, PrimerPaymentMethodTokenData)? {
             guard let token = paymentMethodTokenData.token else {
                 let err = PrimerError.invalidClientToken(
                     userInfo: .errorUserInfoDictionary(),
@@ -1018,7 +1028,7 @@ extension PrimerHeadlessUniversalCheckout {
 
         private func handleManualResumeStepsBasedOnSDKSettings(resumeToken: String) async throws -> PrimerCheckoutData? {
             let resumeDecision = try await PrimerDelegateProxy.primerDidResumeWith(resumeToken)
-            
+
             if let resumeDecisionType = resumeDecision.type as? PrimerResumeDecision.DecisionType {
                 switch resumeDecisionType {
                 case .fail(let message):
