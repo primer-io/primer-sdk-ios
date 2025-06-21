@@ -514,7 +514,8 @@ Make sure you call the decision handler otherwise the SDK will hang."
             return requestBody
         }
 
-        private func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<PrimerCheckoutData?> {
+        private func startPaymentFlow(withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData)
+        -> Promise<PrimerCheckoutData?> {
             return Promise { seal in
                 firstly {
                     self.startPaymentFlowAndFetchDecodedClientToken(withPaymentMethodTokenData: paymentMethodTokenData)
