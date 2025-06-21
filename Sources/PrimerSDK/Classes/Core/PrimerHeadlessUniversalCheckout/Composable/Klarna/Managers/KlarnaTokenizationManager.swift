@@ -75,7 +75,7 @@ class KlarnaTokenizationManager: KlarnaTokenizationManagerProtocol {
             offSessionAuthorizationId: offSessionAuthorizationId
         )
         let paymentMethodTokenData = try await tokenizationService.tokenize(requestBody: requestBody)
-        let checkoutData = try await startPaymentFlow(with: paymentMethodTokenData)
+        let checkoutData = try await startPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
         return checkoutData
     }
 
@@ -150,34 +150,49 @@ extension KlarnaTokenizationManager {
     }
 
     func startPaymentFlow(
-        with paymentMethodTokenData: PrimerPaymentMethodTokenData
+        withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
     ) async throws -> PrimerCheckoutData {
         if PrimerSettings.current.paymentHandling == .manual {
-            return try await withCheckedThrowingContinuation { continuation in
-                PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { resumeDecision in
-                    if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
-                        switch resumeDecisionType {
-                        case .continueWithNewClientToken:
-                            break
-
-                        case .complete:
-                            let checkoutData = PrimerCheckoutData(payment: nil)
-                            continuation.resume(returning: checkoutData)
-                        }
-
-                    } else {
-                        continuation.resume(throwing: KlarnaHelpers.getPaymentFailedError())
-                    }
-                }
-            }
+            return try await startManualPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
         } else {
-            guard let token = paymentMethodTokenData.token else {
-                throw KlarnaHelpers.getInvalidTokenError()
-            }
-            let paymentResponse = try await createPaymentEvent(token)
-            let paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
-            return paymentCheckoutData
+            return try await startAutomaticPaymentFlow(withPaymentMethodTokenData: paymentMethodTokenData)
         }
+    }
+
+    func startManualPaymentFlow(
+        withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> PrimerCheckoutData {
+        let resumeDecision = try await PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData)
+
+        if let resumeDecisionType = resumeDecision.type as? PrimerHeadlessUniversalCheckoutResumeDecision.DecisionType {
+            switch resumeDecisionType {
+            case .continueWithNewClientToken:
+                break
+
+            case .complete:
+                let checkoutData = PrimerCheckoutData(payment: nil)
+                return checkoutData
+            }
+
+        } else {
+            throw KlarnaHelpers.getPaymentFailedError()
+        }
+
+        preconditionFailure()
+
+        // TODO: REVIEW_CHECK - What should we return here?
+//        return nil
+    }
+
+    func startAutomaticPaymentFlow(
+        withPaymentMethodTokenData paymentMethodTokenData: PrimerPaymentMethodTokenData
+    ) async throws -> PrimerCheckoutData {
+        guard let token = paymentMethodTokenData.token else {
+            throw KlarnaHelpers.getInvalidTokenError()
+        }
+        let paymentResponse = try await createPaymentEvent(token)
+        let paymentCheckoutData = PrimerCheckoutData(payment: PrimerCheckoutDataPayment(from: paymentResponse))
+        return paymentCheckoutData
     }
 
     // Create payment with Payment method token
