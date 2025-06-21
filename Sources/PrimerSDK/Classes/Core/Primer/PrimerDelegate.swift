@@ -56,6 +56,14 @@ final class PrimerDelegateProxy: LogReporter {
         }
     }
 
+    static func primerDidTokenizePaymentMethod(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> PrimerResumeDecisionProtocol {
+        return try await withCheckedThrowingContinuation { continuation in
+            PrimerDelegateProxy.primerDidTokenizePaymentMethod(paymentMethodTokenData) { resumeDecision in
+                continuation.resume(returning: resumeDecision)
+            }
+        }
+    }
+
     static func primerDidResumeWith(_ resumeToken: String, decisionHandler: @escaping (PrimerResumeDecisionProtocol) -> Void) {
         DispatchQueue.main.async {
             if PrimerInternal.shared.sdkIntegrationType == .headless,
@@ -65,6 +73,14 @@ final class PrimerDelegateProxy: LogReporter {
             } else if PrimerInternal.shared.sdkIntegrationType == .dropIn,
                       (decisionHandler as ((PrimerResumeDecision) -> Void)?) != nil {
                 Primer.shared.delegate?.primerDidResumeWith?(resumeToken, decisionHandler: decisionHandler)
+            }
+        }
+    }
+
+    static func primerDidResumeWith(_ resumeToken: String) async throws -> PrimerResumeDecisionProtocol {
+        return try await withCheckedThrowingContinuation { continuation in
+            PrimerDelegateProxy.primerDidResumeWith(resumeToken) { resumeDecision in
+                continuation.resume(returning: resumeDecision)
             }
         }
     }
