@@ -106,6 +106,14 @@ final class PrimerDelegateProxy: LogReporter {
         }
     }
 
+    static func primerWillCreatePaymentWithData(_ data: PrimerCheckoutPaymentMethodData) async throws -> PrimerPaymentCreationDecision {
+        return try await withCheckedThrowingContinuation { continuation in
+            PrimerDelegateProxy.primerWillCreatePaymentWithData(data, decisionHandler: { paymentCreationDecision in
+                continuation.resume(returning: paymentCreationDecision)
+            })
+        }
+    }
+
     static func primerDidDismiss(paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory]) {
         DispatchQueue.main.async {
             if PrimerInternal.shared.sdkIntegrationType == .dropIn {
