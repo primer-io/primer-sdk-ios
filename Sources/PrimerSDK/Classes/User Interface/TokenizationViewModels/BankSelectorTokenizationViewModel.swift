@@ -3,6 +3,7 @@
 import SafariServices
 import UIKit
 
+// MARK: MIGRATE
 final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizationViewModel {
 
     internal private(set) var banks: [AdyenBank] = []
@@ -246,6 +247,34 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
         }
     }
 
+    private func fetchBanks() async throws -> [AdyenBank] {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+
+            var paymentMethodRequestValue: String = ""
+            switch self.config.type {
+            case PrimerPaymentMethodType.adyenDotPay.rawValue:
+                paymentMethodRequestValue = "dotpay"
+            case PrimerPaymentMethodType.adyenIDeal.rawValue:
+                paymentMethodRequestValue = "ideal"
+            default:
+                break
+            }
+
+            let request = Request.Body.Adyen.BanksList(
+                paymentMethodConfigId: config.id!,
+                parameters: BankTokenizationSessionRequestParameters(paymentMethod: paymentMethodRequestValue))
+
+
+        let banks = try await self.apiClient.listAdyenBanks(clientToken: decodedJWTToken, request: request)
+        return banks.result
+    }
+
     override func tokenize() -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             self.tokenize(bank: self.selectedBank!) { paymentMethodTokenData, err in
@@ -253,6 +282,20 @@ final class BankSelectorTokenizationViewModel: WebRedirectPaymentMethodTokenizat
                     seal.reject(err)
                 } else if let paymentMethodTokenData = paymentMethodTokenData {
                     seal.fulfill(paymentMethodTokenData)
+                } else {
+                    assert(true, "Should always receive a payment method or an error")
+                }
+            }
+        }
+    }
+
+    override func tokenize() async throws -> PrimerPaymentMethodTokenData {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.tokenize(bank: self.selectedBank!) { paymentMethodTokenData, err in
+                if let err = err {
+                    continuation.resume(throwing: err)
+                } else if let paymentMethodTokenData = paymentMethodTokenData {
+                    continuation.resume(returning: paymentMethodTokenData)
                 } else {
                     assert(true, "Should always receive a payment method or an error")
                 }
@@ -361,6 +404,14 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
             }
         }
     }
+
+    func retrieveListOfBanks() async throws -> [AdyenBank] {
+        try self.validate()
+        let banks = try await self.fetchBanks()
+        self.banks = banks
+        return banks
+    }
+
     func filterBanks(query: String) -> [AdyenBank] {
         guard !query.isEmpty else {
             return banks
@@ -372,6 +423,7 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
                             .folding(options: .diacriticInsensitive, locale: nil))
         }
     }
+
     func tokenize(bankId: String) -> Promise<Void> {
         self.selectedBank = banks.first(where: { $0.id == bankId })
         return performTokenizationStep()
@@ -383,10 +435,21 @@ extension BankSelectorTokenizationViewModel: BankSelectorTokenizationProviding {
             }
     }
 
+    func tokenize(bankId: String) async throws {
+        self.selectedBank = banks.first(where: { $0.id == bankId })
+        try await performTokenizationStep()
+        try await performPostTokenizationSteps()
+        try await handlePaymentMethodTokenData()
+    }
+
     func handlePaymentMethodTokenData() -> Promise<Void> {
         return Promise { _ in
             processPaymentMethodTokenData()
         }
+    }
+
+    func handlePaymentMethodTokenData() async throws {
+        processPaymentMethodTokenData()
     }
 }
 

@@ -1147,13 +1147,17 @@ extension BanksTokenizationComponent: BankSelectorTokenizationProviding {
         selectedBank = banks.first(where: { $0.id == bankId })
         try await performTokenizationStep()
         try await performPostTokenizationSteps()
-        processPaymentMethodTokenData()
+        try await handlePaymentMethodTokenData()
     }
 
     func handlePaymentMethodTokenData() -> Promise<Void> {
         return Promise { _ in
             processPaymentMethodTokenData()
         }
+    }
+    
+    func handlePaymentMethodTokenData() async throws {
+        processPaymentMethodTokenData()
     }
     
     func cleanup() {

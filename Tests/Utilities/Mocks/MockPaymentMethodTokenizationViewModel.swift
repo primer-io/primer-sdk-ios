@@ -156,7 +156,7 @@ class MockPaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizatio
     }
 
     func performPreTokenizationSteps() async throws {
-        try await validateReturningPromise()
+        try validate()
         try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: config.type))
     }
 
