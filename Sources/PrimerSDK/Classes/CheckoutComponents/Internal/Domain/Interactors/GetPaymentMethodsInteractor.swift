@@ -15,16 +15,16 @@ internal protocol GetPaymentMethodsInteractor {
 
 /// Default implementation of GetPaymentMethodsInteractor.
 internal final class GetPaymentMethodsInteractorImpl: GetPaymentMethodsInteractor, LogReporter {
-    
+
     private let repository: HeadlessRepository
-    
+
     init(repository: HeadlessRepository) {
         self.repository = repository
     }
-    
+
     func execute() async throws -> [InternalPaymentMethod] {
         logger.info(message: "Fetching available payment methods")
-        
+
         do {
             let paymentMethods = try await repository.getPaymentMethods()
             logger.info(message: "Retrieved \(paymentMethods.count) payment methods")

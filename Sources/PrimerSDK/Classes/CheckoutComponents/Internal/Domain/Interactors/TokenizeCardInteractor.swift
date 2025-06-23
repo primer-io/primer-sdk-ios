@@ -21,7 +21,7 @@ internal struct TokenizationResult {
     let tokenId: String
     let expiresAt: Date?
     let cardDetails: CardDetails?
-    
+
     struct CardDetails {
         let last4: String
         let network: String
@@ -32,16 +32,16 @@ internal struct TokenizationResult {
 
 /// Default implementation of TokenizeCardInteractor.
 internal final class TokenizeCardInteractorImpl: TokenizeCardInteractor, LogReporter {
-    
+
     private let repository: HeadlessRepository
-    
+
     init(repository: HeadlessRepository) {
         self.repository = repository
     }
-    
+
     func execute(cardData: CardPaymentData) async throws -> TokenizationResult {
         logger.info(message: "Tokenizing card data")
-        
+
         do {
             let result = try await repository.tokenizeCard(
                 cardNumber: cardData.cardNumber,
@@ -51,10 +51,10 @@ internal final class TokenizeCardInteractorImpl: TokenizeCardInteractor, LogRepo
                 cardholderName: cardData.cardholderName,
                 selectedNetwork: cardData.selectedNetwork
             )
-            
+
             logger.info(message: "Card tokenized successfully: \(result.tokenId)")
             return result
-            
+
         } catch {
             logger.error(message: "Card tokenization failed: \(error)")
             throw error

@@ -20,7 +20,7 @@ internal struct BillingAddressConfiguration {
     let showState: Bool
     let showPostalCode: Bool
     let showCountry: Bool
-    
+
     static let full = BillingAddressConfiguration(
         showFirstName: true,
         showLastName: true,
@@ -33,7 +33,7 @@ internal struct BillingAddressConfiguration {
         showPostalCode: true,
         showCountry: true
     )
-    
+
     static let minimal = BillingAddressConfiguration(
         showFirstName: false,
         showLastName: false,
@@ -52,26 +52,26 @@ internal struct BillingAddressConfiguration {
 @available(iOS 15.0, *)
 internal struct BillingAddressView: View {
     // MARK: - Properties
-    
+
     /// The card form scope for handling updates
     let cardFormScope: PrimerCardFormScope
-    
+
     /// Configuration for which fields to show
     let configuration: BillingAddressConfiguration
-    
+
     /// Currently selected country code
     @State private var selectedCountryCode: String = ""
-    
+
     /// Show country selector
     @State private var showCountrySelector = false
-    
+
     /// Validation states
     @State private var fieldValidationStates: [PrimerInputElementType: Bool] = [:]
-    
+
     @Environment(\.designTokens) private var tokens
-    
+
     // MARK: - Body
-    
+
     var body: some View {
         VStack(spacing: 16) {
             // Name fields (horizontal layout)
@@ -90,7 +90,7 @@ internal struct BillingAddressView: View {
                             }
                         )
                     }
-                    
+
                     if configuration.showLastName {
                         NameInputField(
                             label: "Last Name",
@@ -106,7 +106,7 @@ internal struct BillingAddressView: View {
                     }
                 }
             }
-            
+
             // Email
             if configuration.showEmail {
                 EmailInputField(
@@ -120,7 +120,7 @@ internal struct BillingAddressView: View {
                     }
                 )
             }
-            
+
             // Phone Number
             if configuration.showPhoneNumber {
                 PhoneNumberInputField(
@@ -134,7 +134,7 @@ internal struct BillingAddressView: View {
                     }
                 )
             }
-            
+
             // Address Line 1
             if configuration.showAddressLine1 {
                 AddressLineInputField(
@@ -150,7 +150,7 @@ internal struct BillingAddressView: View {
                     }
                 )
             }
-            
+
             // Address Line 2
             if configuration.showAddressLine2 {
                 AddressLineInputField(
@@ -166,7 +166,7 @@ internal struct BillingAddressView: View {
                     }
                 )
             }
-            
+
             // City and State (horizontal layout)
             if configuration.showCity || configuration.showState {
                 HStack(spacing: 16) {
@@ -182,7 +182,7 @@ internal struct BillingAddressView: View {
                             }
                         )
                     }
-                    
+
                     if configuration.showState {
                         StateInputField(
                             label: "State",
@@ -198,7 +198,7 @@ internal struct BillingAddressView: View {
                     }
                 }
             }
-            
+
             // Postal Code and Country (horizontal layout)
             if configuration.showPostalCode || configuration.showCountry {
                 HStack(spacing: 16) {
@@ -216,7 +216,7 @@ internal struct BillingAddressView: View {
                         )
                         .frame(maxWidth: 150)
                     }
-                    
+
                     if configuration.showCountry {
                         CountryInputField(
                             label: "Country",
@@ -246,7 +246,7 @@ internal struct BillingAddressView: View {
                 .padding()
         }
     }
-    
+
     private var postalCodePlaceholder: String {
         switch selectedCountryCode {
         case "US":
@@ -259,11 +259,11 @@ internal struct BillingAddressView: View {
             return "Postal Code"
         }
     }
-    
+
     /// Returns whether all visible fields are valid
     var isValid: Bool {
         var requiredFields: [PrimerInputElementType] = []
-        
+
         if configuration.showFirstName { requiredFields.append(.firstName) }
         if configuration.showLastName { requiredFields.append(.lastName) }
         if configuration.showEmail { requiredFields.append(.email) }
@@ -274,7 +274,7 @@ internal struct BillingAddressView: View {
         if configuration.showState { requiredFields.append(.state) }
         if configuration.showPostalCode { requiredFields.append(.postalCode) }
         if configuration.showCountry { requiredFields.append(.countryCode) }
-        
+
         return requiredFields.allSatisfy { field in
             fieldValidationStates[field] ?? false
         }
@@ -288,19 +288,19 @@ private struct PhoneNumberInputField: View {
     let placeholder: String
     let onPhoneNumberChange: ((String) -> Void)?
     let onValidationChange: ((Bool) -> Void)?
-    
+
     @State private var phoneNumber = ""
     @Environment(\.diContainer) private var container
     @State private var validationService: ValidationService?
     @State private var errorMessage: String?
     @Environment(\.designTokens) private var tokens
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label)
                 .font(.caption)
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-            
+
             TextField(placeholder, text: $phoneNumber)
                 .textFieldStyle(.roundedBorder)
                 .keyboardType(.phonePad)
@@ -311,7 +311,7 @@ private struct PhoneNumberInputField: View {
                     onPhoneNumberChange?(newValue)
                     validatePhoneNumber()
                 }
-            
+
             if let errorMessage = errorMessage {
                 Text(errorMessage)
                     .font(.caption)
@@ -323,7 +323,7 @@ private struct PhoneNumberInputField: View {
             setupValidationService()
         }
     }
-    
+
     private func setupValidationService() {
         guard let container = container else { return }
         do {
@@ -332,7 +332,7 @@ private struct PhoneNumberInputField: View {
             // Handle error
         }
     }
-    
+
     private func validatePhoneNumber() {
         guard let validationService = validationService else { return }
         let result = validationService.validate(value: phoneNumber, for: .phoneNumber)

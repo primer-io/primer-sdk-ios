@@ -33,25 +33,25 @@ import SwiftUI
 /// ```
 @MainActor
 public struct PrimerCheckout: View {
-    
+
     /// The client token for initializing the checkout session.
     private let clientToken: String
-    
+
     /// Configuration settings for the checkout experience.
     private let settings: PrimerSettings
-    
+
     /// Optional scope configuration closure for customizing UI components.
     private let scope: ((PrimerCheckoutScope) -> Void)?
-    
+
     /// Optional custom content builder for complete UI replacement
     private let customContent: ((PrimerCheckoutScope) -> AnyView)?
-    
+
     /// DI container (internal use only)
     internal let diContainer: DIContainer
-    
+
     /// Navigator (internal use only)
     internal let navigator: CheckoutNavigator
-    
+
     /// Creates a new PrimerCheckout view.
     /// - Parameters:
     ///   - clientToken: The client token obtained from your backend.
@@ -69,7 +69,7 @@ public struct PrimerCheckout: View {
         self.diContainer = DIContainer()
         self.navigator = CheckoutNavigator()
     }
-    
+
     /// Internal initializer with custom content
     internal init(
         clientToken: String,
@@ -85,7 +85,7 @@ public struct PrimerCheckout: View {
         self.diContainer = diContainer
         self.navigator = navigator
     }
-    
+
     /// Internal initializer with DI container and navigator
     internal init(
         clientToken: String,
@@ -100,7 +100,7 @@ public struct PrimerCheckout: View {
         self.diContainer = diContainer
         self.navigator = navigator
     }
-    
+
     public var body: some View {
         // The internal implementation will be created in Phase 5
         // For now, return a placeholder that will be replaced
@@ -126,9 +126,9 @@ internal struct InternalCheckout: View {
     let navigator: CheckoutNavigator
     let scope: ((PrimerCheckoutScope) -> Void)?
     let customContent: ((PrimerCheckoutScope) -> AnyView)?
-    
+
     @StateObject private var checkoutScope: DefaultCheckoutScope
-    
+
     init(
         clientToken: String,
         settings: PrimerSettings,
@@ -143,7 +143,7 @@ internal struct InternalCheckout: View {
         self.navigator = navigator
         self.scope = scope
         self.customContent = customContent
-        
+
         // Create the checkout scope
         let defaultScope = DefaultCheckoutScope(
             clientToken: clientToken,
@@ -153,7 +153,7 @@ internal struct InternalCheckout: View {
         )
         self._checkoutScope = StateObject(wrappedValue: defaultScope)
     }
-    
+
     var body: some View {
         NavigationView {
             ZStack {
@@ -165,7 +165,7 @@ internal struct InternalCheckout: View {
                     } else {
                         LoadingScreen()
                     }
-                    
+
                 case .paymentMethodSelection:
                     if let customPaymentSelection = checkoutScope.paymentMethodSelectionScreen {
                         customPaymentSelection(checkoutScope.paymentMethodSelection)
@@ -175,7 +175,7 @@ internal struct InternalCheckout: View {
                             onDismiss: checkoutScope.onDismiss
                         )
                     }
-                    
+
                 case .cardForm:
                     if let customCardForm = checkoutScope.cardFormScreen {
                         customCardForm(checkoutScope.cardForm)
@@ -185,7 +185,7 @@ internal struct InternalCheckout: View {
                             onDismiss: checkoutScope.onDismiss
                         )
                     }
-                    
+
                 case .success(let result):
                     if let customSuccess = checkoutScope.successScreen {
                         customSuccess()
@@ -195,7 +195,7 @@ internal struct InternalCheckout: View {
                             onDismiss: checkoutScope.onDismiss
                         )
                     }
-                    
+
                 case .error(let error):
                     if let customError = checkoutScope.errorScreen {
                         customError(error.localizedDescription)
@@ -209,7 +209,7 @@ internal struct InternalCheckout: View {
                         )
                     }
                 }
-                
+
                 // Custom content overlay if provided
                 if let customContent = customContent {
                     customContent(checkoutScope)

@@ -45,7 +45,7 @@ public class CheckoutNavigator: ObservableObject {
     public func navigateToSplash() {
         navigationSubject.send(.navigateToSplash)
     }
-    
+
     /// Navigate to loading screen
     @MainActor
     public func navigateToLoading() {
@@ -75,7 +75,7 @@ public class CheckoutNavigator: ObservableObject {
     public func navigateToPayPal() {
         navigationSubject.send(.navigateToPayPal)
     }
-    
+
     /// Navigate to country selection
     @MainActor
     public func navigateToCountrySelection() {
@@ -103,7 +103,7 @@ public class CheckoutNavigator: ObservableObject {
         // Call the legacy delegate to maintain compatibility
         // The delegate proxy already handles UI dismissal
         PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
-        
+
         // Also dismiss via ComposablePrimer if it was used to present
         if #available(iOS 15.0, *) {
             ComposablePrimer.dismiss(animated: true)

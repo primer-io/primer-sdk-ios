@@ -15,7 +15,7 @@ internal struct PaymentResult {
     let redirectUrl: String?
     let errorMessage: String?
     let metadata: [String: Any]?
-    
+
     init(
         paymentId: String,
         status: PaymentStatus,

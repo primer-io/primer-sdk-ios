@@ -13,57 +13,57 @@ import UIKit
 @available(iOS 15.0, *)
 internal struct ExpiryDateInputField: View, LogReporter {
     // MARK: - Public Properties
-    
+
     /// The label text shown above the field
     let label: String
-    
+
     /// Placeholder text for the input field
     let placeholder: String
-    
+
     /// Callback when the expiry date changes
     let onExpiryDateChange: ((String) -> Void)?
-    
+
     /// Callback when the validation state changes
     let onValidationChange: ((Bool) -> Void)?
-    
+
     /// Callback when month value changes
     let onMonthChange: ((String) -> Void)?
-    
+
     /// Callback when year value changes
     let onYearChange: ((String) -> Void)?
-    
+
     // MARK: - Private Properties
-    
+
     /// The validation service resolved from DI environment
     @Environment(\.diContainer) private var container
     @State private var validationService: ValidationService?
-    
+
     /// The expiry date entered by the user
     @State private var expiryDate: String = ""
-    
+
     /// The extracted month value (MM)
     @State private var month: String = ""
-    
+
     /// The extracted year value (YY)
     @State private var year: String = ""
-    
+
     /// The validation state of the expiry date
     @State private var isValid: Bool?
-    
+
     /// Error message if validation fails
     @State private var errorMessage: String?
-    
+
     @Environment(\.designTokens) private var tokens
-    
+
     // MARK: - Body
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             // Label
             Text(label)
                 .font(.caption)
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-            
+
             // Expiry date input field
             if let validationService = validationService {
                 ExpiryDateTextField(
@@ -91,7 +91,7 @@ internal struct ExpiryDateInputField: View, LogReporter {
                     .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
                     .cornerRadius(8)
             }
-            
+
             // Error message
             if let errorMessage = errorMessage {
                 Text(errorMessage)
@@ -104,13 +104,13 @@ internal struct ExpiryDateInputField: View, LogReporter {
             setupValidationService()
         }
     }
-    
+
     private func setupValidationService() {
         guard let container = container else {
             logger.error(message: "DIContainer not available for ExpiryDateInputField")
             return
         }
-        
+
         do {
             validationService = try container.resolveSync(ValidationService.self)
         } catch {
@@ -133,7 +133,7 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
     let onMonthChange: ((String) -> Void)?
     let onYearChange: ((String) -> Void)?
     let onValidationChange: ((Bool) -> Void)?
-    
+
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
         textField.delegate = context.coordinator
@@ -142,7 +142,7 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
         textField.borderStyle = .none
         textField.font = UIFont.preferredFont(forTextStyle: .body)
         textField.textContentType = .none // Prevent autofill
-        
+
         // Add a "Done" button to the keyboard
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
@@ -150,16 +150,16 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: context.coordinator, action: #selector(Coordinator.doneButtonTapped))
         toolbar.items = [flexSpace, doneButton]
         textField.inputAccessoryView = toolbar
-        
+
         return textField
     }
-    
+
     func updateUIView(_ textField: UITextField, context: Context) {
         if textField.text != expiryDate {
             textField.text = expiryDate
         }
     }
-    
+
     func makeCoordinator() -> Coordinator {
         Coordinator(
             validationService: validationService,
@@ -174,7 +174,7 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             onValidationChange: onValidationChange
         )
     }
-    
+
     class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
         private let validationService: ValidationService
         @Binding private var expiryDate: String
@@ -186,7 +186,7 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
         private let onMonthChange: ((String) -> Void)?
         private let onYearChange: ((String) -> Void)?
         private let onValidationChange: ((Bool) -> Void)?
-        
+
         init(
             validationService: ValidationService,
             expiryDate: Binding<String>,
@@ -210,47 +210,47 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             self.onYearChange = onYearChange
             self.onValidationChange = onValidationChange
         }
-        
+
         @objc func doneButtonTapped() {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
-        
+
         func textFieldDidBeginEditing(_ textField: UITextField) {
             errorMessage = nil
         }
-        
+
         func textFieldDidEndEditing(_ textField: UITextField) {
             validateExpiryDate()
         }
-        
+
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             // Get current text
             let currentText = expiryDate
-            
+
             // Handle return key
             if string == "\n" {
                 textField.resignFirstResponder()
                 return false
             }
-            
+
             // Only allow numbers and return for non-numeric input except deletion
             if !string.isEmpty && !CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string)) {
                 return false
             }
-            
+
             // Process the input
             let newText = processInput(currentText: currentText, range: range, string: string)
-            
+
             // Update the text field
             expiryDate = newText
             textField.text = newText
-            
+
             // Extract month and year
             extractMonthAndYear(from: newText)
-            
+
             // Notify changes
             onExpiryDateChange?(newText)
-            
+
             // Validate if complete
             if newText.count == 5 { // MM/YY format
                 validateExpiryDate()
@@ -258,10 +258,10 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
                 isValid = nil
                 errorMessage = nil
             }
-            
+
             return false
         }
-        
+
         private func processInput(currentText: String, range: NSRange, string: String) -> String {
             // Handle deletion
             if string.isEmpty {
@@ -270,24 +270,24 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
                     currentText[currentText.index(currentText.startIndex, offsetBy: 2)] == "/" {
                     return String(currentText.prefix(1))
                 }
-                
+
                 // Normal deletion
                 if let textRange = Range(range, in: currentText) {
                     return currentText.replacingCharacters(in: textRange, with: "")
                 }
                 return currentText
             }
-            
+
             // Handle additions
             // Remove the / character temporarily for easier processing
             let sanitizedText = currentText.replacingOccurrences(of: "/", with: "")
-            
+
             // Calculate where to insert the new text
             var sanitizedLocation = range.location
             if range.location > 2 && currentText.count >= 3 && currentText.contains("/") {
                 sanitizedLocation -= 1
             }
-            
+
             // Insert the new digits
             var newSanitizedText = sanitizedText
             if sanitizedLocation <= sanitizedText.count {
@@ -296,10 +296,10 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
             } else {
                 newSanitizedText += string
             }
-            
+
             // Limit to 4 digits total (MMYY format)
             newSanitizedText = String(newSanitizedText.prefix(4))
-            
+
             // Format with separator
             if newSanitizedText.count > 2 {
                 return "\(newSanitizedText.prefix(2))/\(newSanitizedText.dropFirst(2))"
@@ -307,26 +307,26 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
                 return newSanitizedText
             }
         }
-        
+
         private func extractMonthAndYear(from text: String) {
             let parts = text.components(separatedBy: "/")
-            
+
             month = parts.count > 0 ? parts[0] : ""
             year = parts.count > 1 ? parts[1] : ""
-            
+
             onMonthChange?(month)
             onYearChange?(year)
         }
-        
+
         private func validateExpiryDate() {
             // Remove separator for validation
             let cleanedValue = expiryDate.replacingOccurrences(of: "/", with: "")
-            
+
             let result = validationService.validate(
                 value: cleanedValue,
                 for: .expiryDate
             )
-            
+
             isValid = result.isValid
             errorMessage = result.errors.first?.message
             onValidationChange?(result.isValid)

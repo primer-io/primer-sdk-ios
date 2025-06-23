@@ -12,11 +12,11 @@ import SwiftUI
 internal struct SelectCountryScreen: View {
     let scope: PrimerSelectCountryScope
     let onDismiss: (() -> Void)?
-    
+
     @Environment(\.designTokens) private var tokens
     @State private var countryState: PrimerSelectCountryScope.State = .init()
     @State private var searchText = ""
-    
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -29,13 +29,13 @@ internal struct SelectCountryScreen: View {
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                        
+
                         TextField("Search countries...", text: $searchText)
                             .textFieldStyle(PlainTextFieldStyle())
                             .onChange(of: searchText) { newValue in
                                 scope.searchCountries(newValue)
                             }
-                        
+
                         if !searchText.isEmpty {
                             Button(action: {
                                 searchText = ""
@@ -52,7 +52,7 @@ internal struct SelectCountryScreen: View {
                     .cornerRadius(8)
                     .padding()
                 }
-                
+
                 // Country list
                 if countryState.filteredCountries.isEmpty {
                     // Empty state
@@ -63,7 +63,7 @@ internal struct SelectCountryScreen: View {
                             Image(systemName: "globe")
                                 .font(.system(size: 48))
                                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                            
+
                             Text("No countries found")
                                 .font(.body)
                                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
@@ -104,12 +104,12 @@ internal struct SelectCountryScreen: View {
             observeState()
         }
     }
-    
+
     private func selectCountry(_ country: PrimerCountry) {
         scope.selectCountry(country)
         onDismiss?()
     }
-    
+
     private func observeState() {
         Task {
             for await state in scope.state {
@@ -127,9 +127,9 @@ private struct CountryItemView: View {
     let country: PrimerCountry
     let isSelected: Bool
     let onTap: () -> Void
-    
+
     @Environment(\.designTokens) private var tokens
-    
+
     var body: some View {
         Button(action: onTap) {
             HStack {
@@ -138,13 +138,13 @@ private struct CountryItemView: View {
                     Text(flag)
                         .font(.title2)
                 }
-                
+
                 // Country name
                 VStack(alignment: .leading, spacing: 2) {
                     Text(country.name)
                         .font(.body)
                         .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-                    
+
                     if let dialCode = country.dialCode {
                         Text("\\(country.code) • \\(dialCode)")
                             .font(.caption)
@@ -155,9 +155,9 @@ private struct CountryItemView: View {
                             .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
                     }
                 }
-                
+
                 Spacer()
-                
+
                 // Selection indicator
                 if isSelected {
                     Image(systemName: "checkmark")

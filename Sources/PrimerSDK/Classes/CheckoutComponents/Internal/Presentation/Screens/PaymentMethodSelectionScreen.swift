@@ -11,11 +11,11 @@ import SwiftUI
 @available(iOS 15.0, *)
 internal struct PaymentMethodSelectionScreen: View {
     let scope: PrimerPaymentMethodSelectionScope
-    
+
     @Environment(\.designTokens) private var tokens
     @State private var selectionState: PrimerPaymentMethodSelectionScope.State = .init()
     @State private var searchText = ""
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Title
@@ -25,7 +25,7 @@ internal struct PaymentMethodSelectionScreen: View {
                 .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding()
-            
+
             // Search bar
             if selectionState.paymentMethods.count > 5 { // Only show search if many methods
                 if let customSearchBar = scope.searchBar {
@@ -36,13 +36,13 @@ internal struct PaymentMethodSelectionScreen: View {
                     HStack {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                        
+
                         TextField("Search payment methods...", text: $searchText)
                             .textFieldStyle(PlainTextFieldStyle())
                             .onChange(of: searchText) { newValue in
                                 scope.searchPaymentMethods(newValue)
                             }
-                        
+
                         if !searchText.isEmpty {
                             Button(action: {
                                 searchText = ""
@@ -61,7 +61,7 @@ internal struct PaymentMethodSelectionScreen: View {
                     .padding(.bottom)
                 }
             }
-            
+
             // Payment methods list
             ScrollView {
                 if selectionState.categorizedPaymentMethods.isEmpty {
@@ -73,7 +73,7 @@ internal struct PaymentMethodSelectionScreen: View {
                             Image(systemName: "creditcard.slash")
                                 .font(.system(size: 48))
                                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                            
+
                             Text(searchText.isEmpty ? "No payment methods available" : "No results found")
                                 .font(.body)
                                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
@@ -96,7 +96,7 @@ internal struct PaymentMethodSelectionScreen: View {
                                         .textCase(.uppercase)
                                         .padding(.horizontal)
                                 }
-                                
+
                                 // Payment methods in category
                                 VStack(spacing: 8) {
                                     ForEach(categoryData.methods) { method in
@@ -123,7 +123,7 @@ internal struct PaymentMethodSelectionScreen: View {
                     .padding(.vertical)
                 }
             }
-            
+
             // Error message
             if let error = selectionState.error {
                 Text(error)
@@ -137,7 +137,7 @@ internal struct PaymentMethodSelectionScreen: View {
             observeState()
         }
     }
-    
+
     private func observeState() {
         Task {
             for await state in scope.state {
@@ -155,9 +155,9 @@ private struct PaymentMethodItemView: View {
     let method: PrimerComposablePaymentMethod
     let isSelected: Bool
     let onTap: () -> Void
-    
+
     @Environment(\.designTokens) private var tokens
-    
+
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 16) {
@@ -170,14 +170,14 @@ private struct PaymentMethodItemView: View {
                             .font(.caption2)
                             .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
                     )
-                
+
                 // Name
                 Text(method.displayName)
                     .font(.body)
                     .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-                
+
                 Spacer()
-                
+
                 // Selection indicator
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")

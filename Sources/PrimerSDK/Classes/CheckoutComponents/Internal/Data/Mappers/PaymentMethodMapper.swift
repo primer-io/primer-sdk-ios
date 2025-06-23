@@ -11,14 +11,14 @@ import Foundation
 internal protocol PaymentMethodMapper {
     /// Maps an internal payment method to the public representation.
     func mapToPublic(_ internal: InternalPaymentMethod) -> PrimerComposablePaymentMethod
-    
+
     /// Maps multiple internal payment methods to public representations.
     func mapToPublic(_ internal: [InternalPaymentMethod]) -> [PrimerComposablePaymentMethod]
 }
 
 /// Default implementation of PaymentMethodMapper.
 internal final class PaymentMethodMapperImpl: PaymentMethodMapper {
-    
+
     func mapToPublic(_ internal: InternalPaymentMethod) -> PrimerComposablePaymentMethod {
         PrimerComposablePaymentMethod(
             id: internal.id,
@@ -28,7 +28,7 @@ internal final class PaymentMethodMapperImpl: PaymentMethodMapper {
             metadata: internal.metadata
         )
     }
-    
+
     func mapToPublic(_ internal: [InternalPaymentMethod]) -> [PrimerComposablePaymentMethod] {
         internal.map { mapToPublic($0) }
     }

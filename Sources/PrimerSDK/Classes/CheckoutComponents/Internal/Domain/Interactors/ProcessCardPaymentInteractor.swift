@@ -41,23 +41,23 @@ internal protocol ProcessCardPaymentInteractor {
 
 /// Default implementation using RawDataManager internally.
 internal final class ProcessCardPaymentInteractorImpl: ProcessCardPaymentInteractor, LogReporter {
-    
+
     private let repository: HeadlessRepository
-    
+
     init(repository: HeadlessRepository) {
         self.repository = repository
     }
-    
+
     func execute(cardData: CardPaymentData) async throws -> PaymentResult {
         logger.info(message: "Processing card payment")
-        
+
         do {
             // First, send billing address if provided
             if let billingAddress = cardData.billingAddress {
                 logger.debug(message: "Sending billing address")
                 try await repository.setBillingAddress(billingAddress)
             }
-            
+
             // Then process the card payment
             logger.debug(message: "Processing card tokenization and payment")
             let result = try await repository.processCardPayment(
@@ -68,10 +68,10 @@ internal final class ProcessCardPaymentInteractorImpl: ProcessCardPaymentInterac
                 cardholderName: cardData.cardholderName,
                 selectedNetwork: cardData.selectedNetwork
             )
-            
+
             logger.info(message: "Card payment processed successfully: \(result.paymentId)")
             return result
-            
+
         } catch {
             logger.error(message: "Card payment processing failed: \(error)")
             throw error

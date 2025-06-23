@@ -11,23 +11,23 @@ import SwiftUI
 @available(iOS 15.0, *)
 internal struct CardDetailsView: View {
     // MARK: - Properties
-    
+
     /// The card form scope for handling updates
     let cardFormScope: PrimerCardFormScope
-    
+
     /// Currently detected card network
     @State private var cardNetwork: CardNetwork = .unknown
-    
+
     /// Validation states for each field
     @State private var isCardNumberValid = false
     @State private var isCVVValid = false
     @State private var isExpiryValid = false
     @State private var isCardholderNameValid = false
-    
+
     @Environment(\.designTokens) private var tokens
-    
+
     // MARK: - Body
-    
+
     var body: some View {
         VStack(spacing: 16) {
             // Card Number
@@ -44,7 +44,7 @@ internal struct CardDetailsView: View {
                     isCardNumberValid = isValid
                 }
             )
-            
+
             // Card number and CVV in horizontal layout
             HStack(spacing: 16) {
                 // Expiry Date
@@ -64,7 +64,7 @@ internal struct CardDetailsView: View {
                         isExpiryValid = isValid
                     }
                 )
-                
+
                 // CVV
                 CVVInputField(
                     label: "CVV",
@@ -79,7 +79,7 @@ internal struct CardDetailsView: View {
                 )
                 .frame(maxWidth: 120)
             }
-            
+
             // Cardholder Name
             CardholderNameInputField(
                 label: "Cardholder Name",
@@ -93,7 +93,7 @@ internal struct CardDetailsView: View {
             )
         }
     }
-    
+
     /// Returns whether all card fields are valid
     var isValid: Bool {
         isCardNumberValid && isCVVValid && isExpiryValid && isCardholderNameValid

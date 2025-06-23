@@ -12,10 +12,10 @@ import SwiftUI
 internal struct SuccessScreen: View {
     let paymentResult: PaymentResult
     let onDismiss: (() -> Void)?
-    
+
     @Environment(\.designTokens) private var tokens
     @State private var showCheckmark = false
-    
+
     var body: some View {
         VStack(spacing: 24) {
             // Success animation
@@ -25,7 +25,7 @@ internal struct SuccessScreen: View {
                     .frame(width: 80, height: 80)
                     .scaleEffect(showCheckmark ? 1.0 : 0.5)
                     .opacity(showCheckmark ? 1.0 : 0.0)
-                
+
                 Image(systemName: "checkmark")
                     .font(.system(size: 40, weight: .bold))
                     .foregroundColor(.white)
@@ -37,13 +37,13 @@ internal struct SuccessScreen: View {
                     showCheckmark = true
                 }
             }
-            
+
             // Success title
             Text("Payment Successful")
                 .font(.title2)
                 .fontWeight(.semibold)
                 .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-            
+
             // Payment details
             VStack(spacing: 8) {
                 if let orderId = paymentResult.orderId {
@@ -57,7 +57,7 @@ internal struct SuccessScreen: View {
                             .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
                     }
                 }
-                
+
                 HStack {
                     Text("Payment ID:")
                         .font(.caption)
@@ -69,7 +69,7 @@ internal struct SuccessScreen: View {
                 }
             }
             .padding(.horizontal, 32)
-            
+
             // Dismiss button
             if let onDismiss = onDismiss {
                 Button(action: onDismiss) {

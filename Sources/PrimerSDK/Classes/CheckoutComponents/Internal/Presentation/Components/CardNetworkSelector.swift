@@ -11,21 +11,21 @@ import SwiftUI
 @available(iOS 15.0, *)
 internal struct CardNetworkSelector: View {
     // MARK: - Properties
-    
+
     /// Available card networks to choose from
     let availableNetworks: [CardNetwork]
-    
+
     /// Currently selected network
     @Binding var selectedNetwork: CardNetwork
-    
+
     /// Callback when network is selected
     let onNetworkSelected: ((CardNetwork) -> Void)?
-    
+
     @State private var isExpanded = false
     @Environment(\.designTokens) private var tokens
-    
+
     // MARK: - Body
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Selected network button
@@ -41,13 +41,13 @@ internal struct CardNetworkSelector: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(height: 24)
                     }
-                    
+
                     Text(selectedNetwork.displayName)
                         .font(.body)
                         .foregroundColor(.primary)
-                    
+
                     Spacer()
-                    
+
                     Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                         .foregroundColor(.secondary)
                         .font(.caption)
@@ -57,7 +57,7 @@ internal struct CardNetworkSelector: View {
                 .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
                 .cornerRadius(8)
             }
-            
+
             // Dropdown list
             if isExpanded {
                 VStack(spacing: 0) {
@@ -77,11 +77,11 @@ internal struct CardNetworkSelector: View {
                                             .aspectRatio(contentMode: .fit)
                                             .frame(height: 24)
                                     }
-                                    
+
                                     Text(network.displayName)
                                         .font(.body)
                                         .foregroundColor(.primary)
-                                    
+
                                     Spacer()
                                 }
                                 .padding(.horizontal, 12)
@@ -89,7 +89,7 @@ internal struct CardNetworkSelector: View {
                                 .background(Color.clear)
                             }
                             .buttonStyle(PlainButtonStyle())
-                            
+
                             if network != availableNetworks.last {
                                 Divider()
                                     .padding(.horizontal, 12)

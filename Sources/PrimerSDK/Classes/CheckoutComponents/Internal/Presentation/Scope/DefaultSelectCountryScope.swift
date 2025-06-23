@@ -12,10 +12,10 @@ import SwiftUI
 @MainActor
 internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, ObservableObject, LogReporter {
     // MARK: - Properties
-    
+
     /// The current country selection state
     @Published private var internalState = PrimerSelectCountryScope.State()
-    
+
     /// State stream for external observation
     public var state: AsyncStream<PrimerSelectCountryScope.State> {
         AsyncStream { continuation in
@@ -25,30 +25,30 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, Observ
                 }
                 continuation.finish()
             }
-            
+
             continuation.onTermination = { _ in
                 task.cancel()
             }
         }
     }
-    
+
     // MARK: - UI Customization Properties
-    
+
     public var container: (@ViewBuilder (_ content: @escaping () -> any View) -> any View)?
     public var searchBar: (@ViewBuilder (_ searchText: @escaping (String) -> Void) -> any View)?
     public var countryItem: (@ViewBuilder (_ country: PrimerCountry) -> any View)?
     public var emptyStateView: (@ViewBuilder () -> any View)?
-    
+
     // MARK: - Private Properties
-    
+
     private var onCountrySelected: ((PrimerCountry) -> Void)?
     private let allCountries: [PrimerCountry]
-    
+
     // MARK: - Initialization
-    
+
     init(onCountrySelected: ((PrimerCountry) -> Void)? = nil) {
         self.onCountrySelected = onCountrySelected
-        
+
         // Load all countries
         self.allCountries = CountryCode.allCases.map { countryCode in
             PrimerCountry(
@@ -58,34 +58,34 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, Observ
                 dialCode: countryCode.dialCode
             )
         }.sorted { $0.name < $1.name }
-        
+
         // Set initial state
         internalState.countries = allCountries
         internalState.filteredCountries = allCountries
     }
-    
+
     // MARK: - Public Methods
-    
+
     public func searchCountries(_ query: String) {
         log(logLevel: .debug, message: "Searching countries with query: \\(query)")
-        
+
         internalState.searchQuery = query
-        
+
         if query.isEmpty {
             internalState.filteredCountries = allCountries
         } else {
             let lowercasedQuery = query.lowercased()
             internalState.filteredCountries = allCountries.filter { country in
                 country.name.lowercased().contains(lowercasedQuery) ||
-                country.code.lowercased().contains(lowercasedQuery) ||
-                (country.dialCode?.contains(query) ?? false)
+                    country.code.lowercased().contains(lowercasedQuery) ||
+                    (country.dialCode?.contains(query) ?? false)
             }
         }
     }
-    
+
     public func selectCountry(_ country: PrimerCountry) {
         log(logLevel: .debug, message: "Country selected: \\(country.code) - \\(country.name)")
-        
+
         internalState.selectedCountry = country
         onCountrySelected?(country)
     }
@@ -101,7 +101,7 @@ public struct PrimerCountry: Identifiable {
     public let name: String
     public let flag: String?
     public let dialCode: String?
-    
+
     public init(code: String, name: String, flag: String? = nil, dialCode: String? = nil) {
         self.id = code
         self.code = code
@@ -118,7 +118,7 @@ extension CountryCode {
         let locale = Locale.current
         return locale.localizedString(forRegionCode: self.rawValue) ?? self.rawValue
     }
-    
+
     var flag: String {
         // Convert country code to flag emoji
         let base: UInt32 = 127397
@@ -130,7 +130,7 @@ extension CountryCode {
         }
         return flag
     }
-    
+
     var dialCode: String? {
         // This would need a proper mapping of country codes to dial codes
         // For now, return some common ones

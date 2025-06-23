@@ -12,7 +12,7 @@ import SwiftUI
 @MainActor
 internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject, LogReporter {
     // MARK: - Internal Navigation State
-    
+
     internal enum NavigationState {
         case loading
         case paymentMethodSelection
@@ -20,15 +20,15 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         case success(PaymentResult)
         case error(PrimerError)
     }
-    
+
     // MARK: - Properties
-    
+
     /// The current checkout state
     @Published private var internalState = PrimerCheckoutScope.State.initializing
-    
+
     /// The current navigation state
     @Published internal var navigationState = NavigationState.loading
-    
+
     /// State stream for external observation
     public var state: AsyncStream<PrimerCheckoutScope.State> {
         AsyncStream { continuation in
@@ -38,15 +38,15 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 }
                 continuation.finish()
             }
-            
+
             continuation.onTermination = { _ in
                 task.cancel()
             }
         }
     }
-    
+
     // MARK: - UI Customization Properties
-    
+
     public var container: (@ViewBuilder (_ content: @escaping () -> any View) -> any View)?
     public var splashScreen: (@ViewBuilder () -> any View)?
     public var loadingScreen: (@ViewBuilder () -> any View)?
@@ -54,9 +54,9 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     public var errorScreen: (@ViewBuilder (_ error: PrimerError) -> any View)?
     public var paymentMethodSelectionScreen: (@ViewBuilder (_ scope: PrimerPaymentMethodSelectionScope) -> any View)?
     public var cardFormScreen: (@ViewBuilder (_ scope: PrimerCardFormScope) -> any View)?
-    
+
     // MARK: - Child Scopes
-    
+
     private var _cardForm: PrimerCardFormScope?
     public var cardForm: PrimerCardFormScope {
         if let existing = _cardForm {
@@ -66,7 +66,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         _cardForm = scope
         return scope
     }
-    
+
     private var _paymentMethodSelection: PrimerPaymentMethodSelectionScope?
     public var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
         if let existing = _paymentMethodSelection {
@@ -76,35 +76,35 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         _paymentMethodSelection = scope
         return scope
     }
-    
+
     // MARK: - Services
-    
+
     private let diContainer: DIContainer
     private let navigator: CheckoutNavigator
     private var getPaymentMethodsInteractor: GetPaymentMethodsInteractor?
-    
+
     // MARK: - Other Properties
-    
+
     private let clientToken: String
     private let settings: PrimerSettings
     private var availablePaymentMethods: [InternalPaymentMethod] = []
-    
+
     // MARK: - Initialization
-    
+
     init(clientToken: String, settings: PrimerSettings, diContainer: DIContainer, navigator: CheckoutNavigator) {
         self.clientToken = clientToken
         self.settings = settings
         self.diContainer = diContainer
         self.navigator = navigator
-        
+
         Task {
             await setupInteractors()
             await loadPaymentMethods()
         }
     }
-    
+
     // MARK: - Setup
-    
+
     private func setupInteractors() async {
         do {
             getPaymentMethodsInteractor = try await diContainer.resolve(GetPaymentMethodsInteractor.self)
@@ -118,10 +118,10 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
             updateState(.error(primerError))
         }
     }
-    
+
     private func loadPaymentMethods() async {
         updateNavigationState(.loading)
-        
+
         do {
             guard let interactor = getPaymentMethodsInteractor else {
                 throw PrimerError.failedToLoadAvailablePaymentMethods(
@@ -129,9 +129,9 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                     diagnosticsId: UUID().uuidString
                 )
             }
-            
+
             availablePaymentMethods = try await interactor.execute()
-            
+
             if availablePaymentMethods.isEmpty {
                 let error = PrimerError.failedToLoadAvailablePaymentMethods(
                     userInfo: .errorUserInfoDictionary(),
@@ -141,9 +141,9 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 updateState(.error(error))
             } else {
                 updateState(.ready)
-                
+
                 // Check if we have only card payment method
-                if availablePaymentMethods.count == 1, 
+                if availablePaymentMethods.count == 1,
                    availablePaymentMethods.first?.type == "PAYMENT_CARD" {
                     // Go directly to card form
                     updateNavigationState(.cardForm)
@@ -162,18 +162,18 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
             updateState(.error(primerError))
         }
     }
-    
+
     // MARK: - State Management
-    
+
     private func updateState(_ newState: PrimerCheckoutScope.State) {
         log(logLevel: .debug, message: "Checkout state updating to: \\(newState)")
         internalState = newState
     }
-    
+
     private func updateNavigationState(_ newState: NavigationState) {
         log(logLevel: .debug, message: "Navigation state updating to: \\(newState)")
         navigationState = newState
-        
+
         // Update navigation based on state
         switch newState {
         case .loading:
@@ -188,24 +188,24 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
             navigator.navigateToError(error.localizedDescription)
         }
     }
-    
+
     // MARK: - Public Methods
-    
+
     public func onDismiss() {
         log(logLevel: .debug, message: "Checkout dismissed")
         // Clean up any resources
         _cardForm = nil
         _paymentMethodSelection = nil
-        
+
         // Notify parent
         // This would be handled by the parent view controller
     }
-    
+
     // MARK: - Internal Methods
-    
+
     internal func handlePaymentMethodSelection(_ method: InternalPaymentMethod) {
         log(logLevel: .debug, message: "Payment method selected: \\(method.type)")
-        
+
         switch method.type {
         case "PAYMENT_CARD":
             updateNavigationState(.cardForm)
@@ -214,12 +214,12 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
             log(logLevel: .warning, message: "Unsupported payment method: \\(method.type)")
         }
     }
-    
+
     internal func handlePaymentSuccess(_ result: PaymentResult) {
         log(logLevel: .debug, message: "Payment successful")
         updateNavigationState(.success(result))
     }
-    
+
     internal func handlePaymentError(_ error: PrimerError) {
         log(logLevel: .error, message: "Payment error: \\(error)")
         updateNavigationState(.error(error))

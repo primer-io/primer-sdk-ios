@@ -12,29 +12,29 @@ import SwiftUI
 internal struct ErrorScreen: View {
     let error: PrimerError
     let onRetry: (() -> Void)?
-    
+
     @Environment(\.designTokens) private var tokens
-    
+
     var body: some View {
         VStack(spacing: 24) {
             // Error icon
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 48))
                 .foregroundColor(tokens?.primerColorError ?? .red)
-            
+
             // Error title
             Text("Something went wrong")
                 .font(.title2)
                 .fontWeight(.semibold)
                 .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-            
+
             // Error message
             Text(error.errorDescription ?? "An unexpected error occurred. Please try again.")
                 .font(.body)
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
-            
+
             // Retry button
             if let onRetry = onRetry {
                 Button(action: onRetry) {

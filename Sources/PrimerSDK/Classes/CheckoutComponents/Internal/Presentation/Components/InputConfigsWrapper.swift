@@ -15,7 +15,7 @@ internal struct CardInputConfiguration {
     let showExpiryDate: Bool
     let showCardholderName: Bool
     let requireCardholderName: Bool
-    
+
     static let `default` = CardInputConfiguration(
         showCardNumber: true,
         showCVV: true,
@@ -30,20 +30,20 @@ internal struct CardInputConfiguration {
 internal struct InputConfigsWrapper {
     let cardInputConfig: CardInputConfiguration
     let billingAddressConfig: BillingAddressConfiguration
-    
+
     /// Creates input configs from backend payment method configuration
     init(paymentMethodConfig: InternalPaymentMethod?) {
         // Map backend config to field visibility
         // This is where we'd read the backend configuration
         // For now, using defaults
-        
+
         self.cardInputConfig = .default
-        
+
         // Determine billing address requirements from backend
         // For now, using minimal config
         self.billingAddressConfig = .minimal
     }
-    
+
     /// Creates default input configs
     static let `default` = InputConfigsWrapper(
         cardInputConfig: .default,

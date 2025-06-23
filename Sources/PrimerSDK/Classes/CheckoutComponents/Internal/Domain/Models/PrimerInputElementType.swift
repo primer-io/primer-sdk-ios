@@ -16,7 +16,7 @@ internal enum PrimerInputElementType: String, CaseIterable {
     case cvv
     case expiryDate
     case cardholderName
-    
+
     // Billing address fields
     case firstName
     case lastName
@@ -26,7 +26,7 @@ internal enum PrimerInputElementType: String, CaseIterable {
     case state
     case postalCode
     case countryCode
-    
+
     // Additional fields
     case phoneNumber
     case email
@@ -38,7 +38,7 @@ internal enum PrimerInputElementType: String, CaseIterable {
 // MARK: - Input Configuration
 
 extension PrimerInputElementType {
-    
+
     /// Returns the validation rule for this input type.
     var validationRule: ValidationRule? {
         switch self {
@@ -74,7 +74,7 @@ extension PrimerInputElementType {
             return BirthDateRule()
         }
     }
-    
+
     /// Returns the keyboard type for this input field.
     var keyboardType: UIKeyboardType {
         switch self {
@@ -92,7 +92,7 @@ extension PrimerInputElementType {
             return .default
         }
     }
-    
+
     /// Returns the placeholder text for this input field.
     var placeholder: String {
         switch self {
@@ -132,7 +132,7 @@ extension PrimerInputElementType {
             return "DD/MM/YYYY"
         }
     }
-    
+
     /// Returns the label text for this input field.
     var label: String {
         switch self {
@@ -172,7 +172,7 @@ extension PrimerInputElementType {
             return "Date of birth"
         }
     }
-    
+
     /// Returns whether this field is typically required.
     /// Note: Actual requirement may depend on backend configuration.
     var isTypicallyRequired: Bool {

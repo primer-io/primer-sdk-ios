@@ -11,12 +11,12 @@ import SwiftUI
 @available(iOS 15.0, *)
 internal struct CardFormScreen: View {
     let scope: PrimerCardFormScope
-    
+
     @Environment(\.designTokens) private var tokens
     @State private var cardFormState: PrimerCardFormScope.State = .init()
     @State private var showBillingAddress = false
     @State private var selectedCardNetwork: CardNetwork = .unknown
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
@@ -27,7 +27,7 @@ internal struct CardFormScreen: View {
                     .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal)
-                
+
                 // Card details section
                 VStack(spacing: 16) {
                     // Card number input
@@ -37,7 +37,7 @@ internal struct CardFormScreen: View {
                         CardDetailsView(cardFormScope: scope)
                             .padding(.horizontal)
                     }
-                    
+
                     // Co-badged cards selector
                     if cardFormState.availableCardNetworks.count > 1 {
                         if let customCobadgedCardsView = scope.cobadgedCardsView {
@@ -58,7 +58,7 @@ internal struct CardFormScreen: View {
                         }
                     }
                 }
-                
+
                 // Billing address toggle
                 Button(action: {
                     withAnimation {
@@ -69,9 +69,9 @@ internal struct CardFormScreen: View {
                         Text("Billing Address")
                             .font(.body)
                             .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-                        
+
                         Spacer()
-                        
+
                         Image(systemName: showBillingAddress ? "chevron.up" : "chevron.down")
                             .font(.caption)
                             .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
@@ -81,7 +81,7 @@ internal struct CardFormScreen: View {
                     .cornerRadius(8)
                 }
                 .padding(.horizontal)
-                
+
                 // Billing address fields
                 if showBillingAddress {
                     BillingAddressView(
@@ -91,7 +91,7 @@ internal struct CardFormScreen: View {
                     .padding(.horizontal)
                     .transition(.opacity.combined(with: .move(edge: .top)))
                 }
-                
+
                 // Error message
                 if let error = cardFormState.error {
                     if let customErrorView = scope.errorView {
@@ -103,7 +103,7 @@ internal struct CardFormScreen: View {
                             .padding(.horizontal)
                     }
                 }
-                
+
                 // Submit button
                 Button(action: {
                     Task {
@@ -142,13 +142,13 @@ internal struct CardFormScreen: View {
             observeState()
         }
     }
-    
+
     private func observeState() {
         Task {
             for await state in scope.state {
                 await MainActor.run {
                     self.cardFormState = state
-                    
+
                     // Update selected network if changed
                     if let selectedNetwork = state.selectedCardNetwork,
                        let network = CardNetwork(rawValue: selectedNetwork) {

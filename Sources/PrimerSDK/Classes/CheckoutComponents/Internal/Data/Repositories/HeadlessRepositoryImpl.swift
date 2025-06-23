@@ -10,34 +10,34 @@ import Foundation
 /// Implementation of HeadlessRepository using PrimerHeadlessUniversalCheckout.
 /// This wraps the existing headless SDK with async/await patterns.
 internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
-    
+
     // Reference to headless SDK will be injected or accessed here
     // For now, using placeholders to show the implementation pattern
-    
+
     private var clientToken: String?
     private var paymentMethods: [InternalPaymentMethod] = []
-    
+
     init() {
         logger.debug(message: "HeadlessRepositoryImpl initialized")
     }
-    
+
     func initialize(clientToken: String) async throws {
         logger.info(message: "Initializing headless checkout")
         self.clientToken = clientToken
-        
+
         // TODO: Initialize PrimerHeadlessUniversalCheckout.current with clientToken
         // This will be implemented when integrating with the actual SDK
-        
+
         // For now, simulate success
         logger.info(message: "Headless checkout initialized successfully")
     }
-    
+
     func getPaymentMethods() async throws -> [InternalPaymentMethod] {
         logger.info(message: "Fetching payment methods from headless SDK")
-        
+
         // TODO: Call PrimerHeadlessUniversalCheckout.current.start()
         // and map the returned payment methods
-        
+
         // For now, return card payment method as example
         let cardMethod = InternalPaymentMethod(
             id: "card",
@@ -54,11 +54,11 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                 .cardholderName
             ]
         )
-        
+
         paymentMethods = [cardMethod]
         return paymentMethods
     }
-    
+
     func processCardPayment(
         cardNumber: String,
         cvv: String,
@@ -68,14 +68,14 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         selectedNetwork: CardNetwork?
     ) async throws -> PaymentResult {
         logger.info(message: "Processing card payment via RawDataManager")
-        
+
         // TODO: Implementation pattern:
         // 1. Create PrimerCardData with the provided information
         // 2. Create RawDataManager for "PAYMENT_CARD" type
         // 3. Set delegate to capture callbacks
         // 4. Set rawData and call submit()
         // 5. Convert delegate callbacks to async/await using continuation
-        
+
         // Placeholder implementation
         return PaymentResult(
             paymentId: UUID().uuidString,
@@ -83,7 +83,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             token: "placeholder_token"
         )
     }
-    
+
     func tokenizeCard(
         cardNumber: String,
         cvv: String,
@@ -93,9 +93,9 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         selectedNetwork: CardNetwork?
     ) async throws -> TokenizationResult {
         logger.info(message: "Tokenizing card data")
-        
+
         // TODO: Similar to processCardPayment but with tokenization intent
-        
+
         // Placeholder implementation
         return TokenizationResult(
             token: "tok_\(UUID().uuidString)",
@@ -109,22 +109,22 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             )
         )
     }
-    
+
     func setBillingAddress(_ billingAddress: BillingAddress) async throws {
         logger.info(message: "Setting billing address via Client Session Actions")
-        
+
         // TODO: Call Client Session Actions API to set billing address
         // This is separate from card tokenization
-        
+
         logger.debug(message: "Billing address set successfully")
     }
-    
+
     func detectCardNetworks(for cardNumber: String) async -> [CardNetwork]? {
         logger.debug(message: "Detecting card networks for number")
-        
+
         // TODO: Use card number validation to detect co-badged cards
         // Check if multiple networks are available (e.g., Cartes Bancaires + Visa)
-        
+
         // Example for co-badged card
         if cardNumber.starts(with: "4") && cardNumber.count >= 6 {
             // Check for French card that might be co-badged
@@ -136,10 +136,10 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                 ]
             }
         }
-        
+
         return nil
     }
-    
+
     private func isFrenchhCardBIN(_ bin: String) -> Bool {
         // Simplified check - in real implementation would check against BIN database
         let frenchBINs = ["497010", "497011", "497012"] // Example BINs

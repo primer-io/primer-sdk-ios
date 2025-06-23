@@ -14,53 +14,53 @@ import SwiftUI
 @available(iOS 15.0, *)
 struct PrimerInputField: View {
     // MARK: - Properties
-    
+
     /// The input text to be shown in the text field
     let value: String
-    
+
     /// The callback that is triggered when the input service updates the text
     let onValueChange: (String) -> Void
-    
+
     /// The optional label to be displayed inside the text field container
     let labelText: String?
-    
+
     /// The optional placeholder to be displayed when the text field is in focus and the input text is empty
     let placeholderText: String?
-    
+
     /// The optional leading icon to be displayed at the beginning of the text field container
     let leadingIcon: Image?
-    
+
     /// The optional trailing icon to be displayed at the end of the text field container
     let trailingIcon: Image?
-    
+
     /// The supporting text to be displayed below the text field
     let supportingText: String?
-    
+
     /// Indicates if the text field's current value is in error
     let isError: Bool
-    
+
     /// Error message to display if isError is true
     let validationError: String?
-    
+
     /// Controls the enabled state of this text field
     let enabled: Bool
-    
+
     /// Controls the read-only state of the text field
     let readOnly: Bool
-    
+
     /// The keyboard type
     let keyboardType: UIKeyboardType
-    
+
     /// The return key type
     let keyboardReturnKey: UIReturnKeyType
-    
+
     // MARK: - Private State
-    
+
     @State private var isFocused: Bool = false
     @Environment(\.designTokens) private var tokens
-    
+
     // MARK: - Initialization
-    
+
     init(
         value: String,
         onValueChange: @escaping (String) -> Void,
@@ -90,14 +90,14 @@ struct PrimerInputField: View {
         self.keyboardType = keyboardType
         self.keyboardReturnKey = keyboardReturnKey
     }
-    
+
     // MARK: - Computed Properties
-    
+
     /// Determines the label color based on error state.
     private var labelColor: Color {
         isError ? (tokens?.primerColorBorderOutlinedError ?? .red) : (tokens?.primerColorTextSecondary ?? .secondary)
     }
-    
+
     /// Determines the label font using design tokens.
     private var labelFont: Font {
         if let fontName = tokens?.primerTypographyBodyMediumFont,
@@ -108,17 +108,17 @@ struct PrimerInputField: View {
         }
         return .caption
     }
-    
+
     /// Determines the color for the leading icon.
     private var leadingIconColor: Color {
         isError ? (tokens?.primerColorBorderOutlinedError ?? .red) : (tokens?.primerColorIconPrimary ?? .gray)
     }
-    
+
     /// Determines the color for the trailing icon.
     private var trailingIconColor: Color {
         isError ? (tokens?.primerColorBorderOutlinedError ?? .red) : (tokens?.primerColorIconPrimary ?? .gray)
     }
-    
+
     /// Determines the border color based on error and focus state.
     private var borderColor: Color {
         if isError {
@@ -129,19 +129,19 @@ struct PrimerInputField: View {
             return tokens?.primerColorTextPrimary ?? Color(.systemGray4)
         }
     }
-    
+
     /// Determines the border width based on focus and error.
     private var borderWidth: CGFloat {
         (isFocused || isError) ? 2 : 1
     }
-    
+
     /// Determines the background color for the input field.
     private var backgroundColor: Color {
         tokens?.primerColorTextSecondary ?? Color(.systemBackground)
     }
-    
+
     // MARK: - Body
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             // Label (if provided)
@@ -150,7 +150,7 @@ struct PrimerInputField: View {
                     .font(labelFont)
                     .foregroundColor(labelColor)
             }
-            
+
             // Input field container
             HStack(spacing: 8) {
                 // Leading icon (if provided)
@@ -158,7 +158,7 @@ struct PrimerInputField: View {
                     leadingIcon
                         .foregroundColor(leadingIconColor)
                 }
-                
+
                 // TextField container with placeholder support
                 ZStack(alignment: .leading) {
                     // Show placeholder when field is empty and not focused
@@ -166,7 +166,7 @@ struct PrimerInputField: View {
                         Text(placeholderText ?? "")
                             .foregroundColor(tokens?.primerColorTextSecondary ?? .gray)
                     }
-                    
+
                     // The actual text field with basic configuration
                     TextField("", text: Binding(
                         get: { value },
@@ -190,7 +190,7 @@ struct PrimerInputField: View {
                         }
                     }
                 }
-                
+
                 // Trailing icon (if provided)
                 if let trailingIcon = trailingIcon {
                     trailingIcon
@@ -211,7 +211,7 @@ struct PrimerInputField: View {
             .scaleEffect(isFocused ? 1.02 : 1.0)
             .animation(.easeInOut(duration: 0.2), value: isFocused)
             .animation(.easeInOut(duration: 0.3), value: isError)
-            
+
             // Error text or supporting text below the input field
             if isError, let validationError = validationError {
                 Text(validationError)
@@ -229,9 +229,9 @@ struct PrimerInputField: View {
             }
         }
     }
-    
+
     // MARK: - Helper Functions
-    
+
     /// Maps CGFloat font weight values to SwiftUI Font.Weight enum cases
     private func mapCGFloatToFontWeight(_ weight: CGFloat) -> Font.Weight {
         switch weight {
@@ -263,7 +263,7 @@ struct PrimerInputField_Previews: PreviewProvider {
                 supportingText: "We'll never share your email with anyone else.",
                 keyboardType: .emailAddress
             )
-            
+
             PrimerInputField(
                 value: "John",
                 onValueChange: { _ in },
@@ -271,7 +271,7 @@ struct PrimerInputField_Previews: PreviewProvider {
                 placeholderText: "Enter your first name",
                 leadingIcon: Image(systemName: "person")
             )
-            
+
             PrimerInputField(
                 value: "johndoe@example",
                 onValueChange: { _ in },
@@ -282,7 +282,7 @@ struct PrimerInputField_Previews: PreviewProvider {
                 validationError: "Please enter a valid email address.",
                 keyboardType: .emailAddress
             )
-            
+
             PrimerInputField(
                 value: "Disabled Field",
                 onValueChange: { _ in },

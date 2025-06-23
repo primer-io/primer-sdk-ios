@@ -12,7 +12,7 @@ import SwiftUI
 internal struct SplashScreen: View {
     @Environment(\.designTokens) private var tokens
     @State private var animateGradient = false
-    
+
     var body: some View {
         ZStack {
             // Background gradient
@@ -26,7 +26,7 @@ internal struct SplashScreen: View {
             )
             .ignoresSafeArea()
             .animation(.easeInOut(duration: 3.0).repeatForever(autoreverses: true), value: animateGradient)
-            
+
             // Logo or brand
             VStack(spacing: 24) {
                 // Placeholder for logo
@@ -40,12 +40,12 @@ internal struct SplashScreen: View {
                     )
                     .scaleEffect(animateGradient ? 1.1 : 1.0)
                     .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: animateGradient)
-                
+
                 Text("Primer")
                     .font(.title)
                     .fontWeight(.bold)
                     .foregroundColor(.white)
-                
+
                 Text("Secure Checkout")
                     .font(.body)
                     .foregroundColor(.white.opacity(0.8))

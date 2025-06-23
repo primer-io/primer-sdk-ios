@@ -20,7 +20,7 @@ internal struct InternalPaymentMethod: Equatable {
     let supportedCurrencies: [String]?
     let requiredInputElements: [PrimerInputElementType]
     let metadata: [String: Any]?
-    
+
     init(
         id: String,
         type: String,
@@ -42,11 +42,11 @@ internal struct InternalPaymentMethod: Equatable {
         self.requiredInputElements = requiredInputElements
         self.metadata = metadata
     }
-    
+
     static func == (lhs: InternalPaymentMethod, rhs: InternalPaymentMethod) -> Bool {
         lhs.id == rhs.id &&
-        lhs.type == rhs.type &&
-        lhs.name == rhs.name &&
-        lhs.isEnabled == rhs.isEnabled
+            lhs.type == rhs.type &&
+            lhs.name == rhs.name &&
+            lhs.isEnabled == rhs.isEnabled
     }
 }
