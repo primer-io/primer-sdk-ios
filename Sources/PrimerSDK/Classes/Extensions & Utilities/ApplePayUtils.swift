@@ -10,7 +10,7 @@ enum ApplePayUtils {
         .jcb: .JCB,
         .masterCard: .masterCard,
         .maestro: .maestro,
-        .mir: ._mir,
+        .mir: .pkMir,
         .unionpay: .chinaUnionPay,
         .visa: .visa
     ]
@@ -21,7 +21,7 @@ enum ApplePayUtils {
 }
 
 private extension PKPaymentNetwork {
-    static var _mir: PKPaymentNetwork? {
+    static var pkMir: PKPaymentNetwork? {
         guard #available(iOS 14.5, *) else { return nil }
         return .mir
     }
