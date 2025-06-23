@@ -16,11 +16,11 @@ internal struct LoadingScreen: View {
         VStack(spacing: 24) {
             ProgressView()
                 .scaleEffect(1.5)
-                .progressViewStyle(CircularProgressViewStyle(tint: tokens?.primerColorPrimary ?? .blue))
+                .progressViewStyle(CircularProgressViewStyle(tint: .blue))
 
             Text("Loading payment methods...")
                 .font(.body)
-                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                .foregroundColor(.secondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(tokens?.primerColorBackground ?? Color(.systemBackground))

@@ -106,12 +106,12 @@ internal struct AddressLineInputField: View, LogReporter {
         }
 
         let result = validationService.validate(
-            value: addressLine,
-            for: inputType
+            input: addressLine,
+            with: AddressRule()
         )
 
         isValid = result.isValid
-        errorMessage = result.errors.first?.message
+        errorMessage = result.errorMessage
         onValidationChange?(result.isValid)
     }
 }

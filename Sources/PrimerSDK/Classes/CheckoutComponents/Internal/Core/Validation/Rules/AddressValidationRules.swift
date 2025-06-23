@@ -14,26 +14,20 @@ internal class NameRule: ValidationRule {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmedValue.isEmpty {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "name", message: "Name is required")
-            ])
+            return .invalid(code: "invalid-name", message: "Name is required")
         }
 
         if trimmedValue.count < 2 {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "name", message: "Name is too short")
-            ])
+            return .invalid(code: "invalid-name-length", message: "Name is too short")
         }
 
         // Allow letters, spaces, hyphens, apostrophes
         let allowedCharacters = CharacterSet.letters.union(.whitespaces).union(CharacterSet(charactersIn: "-'"))
         if !trimmedValue.unicodeScalars.allSatisfy({ allowedCharacters.contains($0) }) {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "name", message: "Name contains invalid characters")
-            ])
+            return .invalid(code: "invalid-name-format", message: "Name contains invalid characters")
         }
 
-        return ValidationResult(isValid: true, errors: [])
+        return .valid
     }
 }
 
@@ -45,22 +39,18 @@ internal class AddressRule: ValidationRule {
 
         // Address line 2 is optional, so empty is valid
         if trimmedValue.isEmpty {
-            return ValidationResult(isValid: true, errors: [])
+            return .valid
         }
 
         if trimmedValue.count < 3 {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "address", message: "Address is too short")
-            ])
+            return .invalid(code: "invalid-address-length", message: "Address is too short")
         }
 
         if trimmedValue.count > 100 {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "address", message: "Address is too long")
-            ])
+            return .invalid(code: "invalid-address-length", message: "Address is too long")
         }
 
-        return ValidationResult(isValid: true, errors: [])
+        return .valid
     }
 }
 
@@ -71,26 +61,20 @@ internal class CityRule: ValidationRule {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmedValue.isEmpty {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "city", message: "City is required")
-            ])
+            return .invalid(code: "invalid-city", message: "City is required")
         }
 
         if trimmedValue.count < 2 {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "city", message: "City name is too short")
-            ])
+            return .invalid(code: "invalid-city-length", message: "City name is too short")
         }
 
         // Allow letters, spaces, hyphens, periods
         let allowedCharacters = CharacterSet.letters.union(.whitespaces).union(CharacterSet(charactersIn: "-."))
         if !trimmedValue.unicodeScalars.allSatisfy({ allowedCharacters.contains($0) }) {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "city", message: "City contains invalid characters")
-            ])
+            return .invalid(code: "invalid-city-format", message: "City contains invalid characters")
         }
 
-        return ValidationResult(isValid: true, errors: [])
+        return .valid
     }
 }
 
@@ -101,19 +85,15 @@ internal class StateRule: ValidationRule {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmedValue.isEmpty {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "state", message: "State is required")
-            ])
+            return .invalid(code: "invalid-state", message: "State is required")
         }
 
         // State can be abbreviation (2 chars) or full name
         if trimmedValue.count < 2 {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "state", message: "State is too short")
-            ])
+            return .invalid(code: "invalid-state-length", message: "State is too short")
         }
 
-        return ValidationResult(isValid: true, errors: [])
+        return .valid
     }
 }
 
@@ -130,9 +110,7 @@ internal class PostalCodeRule: ValidationRule {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmedValue.isEmpty {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "postalCode", message: "Postal code is required")
-            ])
+            return .invalid(code: "invalid-postal-code", message: "Postal code is required")
         }
 
         // Country-specific validation
@@ -140,39 +118,31 @@ internal class PostalCodeRule: ValidationRule {
         case "US":
             // US ZIP code: 5 digits or 5+4 format
             let usPattern = "^\\d{5}(-\\d{4})?$"
-            if !trimmedValue.range(of: usPattern, options: .regularExpression) != nil {
-                return ValidationResult(isValid: false, errors: [
-                    ValidationError(field: "postalCode", message: "Invalid ZIP code format")
-                ])
+            if trimmedValue.range(of: usPattern, options: .regularExpression) == nil {
+                return .invalid(code: "invalid-postal-code-format", message: "Invalid ZIP code format")
             }
 
         case "GB":
             // UK postcode format
             if trimmedValue.count < 5 || trimmedValue.count > 8 {
-                return ValidationResult(isValid: false, errors: [
-                    ValidationError(field: "postalCode", message: "Invalid postcode format")
-                ])
+                return .invalid(code: "invalid-postal-code-format", message: "Invalid postcode format")
             }
 
         case "CA":
             // Canadian postal code
             let caPattern = "^[A-Za-z]\\d[A-Za-z] ?\\d[A-Za-z]\\d$"
-            if !trimmedValue.range(of: caPattern, options: .regularExpression) != nil {
-                return ValidationResult(isValid: false, errors: [
-                    ValidationError(field: "postalCode", message: "Invalid postal code format")
-                ])
+            if trimmedValue.range(of: caPattern, options: .regularExpression) == nil {
+                return .invalid(code: "invalid-postal-code-format", message: "Invalid postal code format")
             }
 
         default:
             // Generic validation - allow alphanumeric and spaces
             if trimmedValue.count < 3 || trimmedValue.count > 10 {
-                return ValidationResult(isValid: false, errors: [
-                    ValidationError(field: "postalCode", message: "Invalid postal code length")
-                ])
+                return .invalid(code: "invalid-postal-code-length", message: "Invalid postal code length")
             }
         }
 
-        return ValidationResult(isValid: true, errors: [])
+        return .valid
     }
 }
 
@@ -183,18 +153,14 @@ internal class CountryCodeRule: ValidationRule {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmedValue.isEmpty {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "countryCode", message: "Country is required")
-            ])
+            return .invalid(code: "invalid-country-code", message: "Country is required")
         }
 
         // Should be 2-letter ISO code
         if trimmedValue.count != 2 {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "countryCode", message: "Invalid country code")
-            ])
+            return .invalid(code: "invalid-country-code-format", message: "Invalid country code")
         }
 
-        return ValidationResult(isValid: true, errors: [])
+        return .valid
     }
 }

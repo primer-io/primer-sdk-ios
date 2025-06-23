@@ -97,7 +97,7 @@ internal struct CardNetworkSelector: View {
                         }
                     }
                 }
-                .background(tokens?.primerColorGray50 ?? Color(.systemGray5))
+                .background(tokens?.primerColorGray100 ?? Color(.systemGray5))
                 .cornerRadius(8)
                 .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
                 .padding(.top, 4)

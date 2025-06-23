@@ -6,30 +6,31 @@
 //
 
 import Foundation
+import UIKit
 
 /// Protocol for mapping between internal and public payment method representations.
 internal protocol PaymentMethodMapper {
     /// Maps an internal payment method to the public representation.
-    func mapToPublic(_ internal: InternalPaymentMethod) -> PrimerComposablePaymentMethod
+    func mapToPublic(_ internalMethod: InternalPaymentMethod) -> PrimerComposablePaymentMethod
 
     /// Maps multiple internal payment methods to public representations.
-    func mapToPublic(_ internal: [InternalPaymentMethod]) -> [PrimerComposablePaymentMethod]
+    func mapToPublic(_ internalMethods: [InternalPaymentMethod]) -> [PrimerComposablePaymentMethod]
 }
 
 /// Default implementation of PaymentMethodMapper.
 internal final class PaymentMethodMapperImpl: PaymentMethodMapper {
 
-    func mapToPublic(_ internal: InternalPaymentMethod) -> PrimerComposablePaymentMethod {
-        PrimerComposablePaymentMethod(
-            id: internal.id,
-            type: internal.type,
-            name: internal.name,
-            icon: internal.icon,
-            metadata: internal.metadata
+    func mapToPublic(_ internalMethod: InternalPaymentMethod) -> PrimerComposablePaymentMethod {
+        return PrimerComposablePaymentMethod(
+            id: internalMethod.id,
+            type: internalMethod.type,
+            name: internalMethod.name,
+            icon: internalMethod.icon,
+            metadata: internalMethod.metadata
         )
     }
 
-    func mapToPublic(_ internal: [InternalPaymentMethod]) -> [PrimerComposablePaymentMethod] {
-        internal.map { mapToPublic($0) }
+    func mapToPublic(_ internalMethods: [InternalPaymentMethod]) -> [PrimerComposablePaymentMethod] {
+        return internalMethods.map { mapToPublic($0) }
     }
 }

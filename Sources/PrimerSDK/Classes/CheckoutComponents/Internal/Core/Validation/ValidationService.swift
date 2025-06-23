@@ -72,11 +72,11 @@ import Foundation
  * New validation rules can be added by:
  * - Implementing ValidationRule protocol
  * - Adding factory method to RulesFactory
- * - Extending ComposableInputElementType enum if needed
+ * - Extending PrimerInputElementType enum if needed
  *
  * ### 2. Custom Field Types
  * New field types can be supported by:
- * - Adding case to ComposableInputElementType
+ * - Adding case to PrimerInputElementType
  * - Implementing validation logic in validateField method
  * - Creating appropriate validation rules
  *
@@ -104,7 +104,7 @@ public protocol ValidationService {
     func validateCardholderName(_ name: String) -> ValidationResult
 
     /// Validates any field type with the provided value
-    func validateField(type: ComposableInputElementType, value: String?) -> ValidationResult
+    func validateField(type: PrimerInputElementType, value: String?) -> ValidationResult
 
     /// Validates a field using a specific validation rule
     func validate<T, R: ValidationRule>(input: T, with rule: R) -> ValidationResult where R.Input == T
@@ -234,7 +234,7 @@ public class DefaultValidationService: ValidationService {
 
     // MARK: - Initialization
 
-    public init(rulesFactory: RulesFactory) {
+    internal init(rulesFactory: RulesFactory = DefaultRulesFactory()) {
         self.rulesFactory = rulesFactory
     }
 
@@ -261,7 +261,7 @@ public class DefaultValidationService: ValidationService {
         }
 
         // Test all field types
-        let allFieldTypes: [ComposableInputElementType] = [
+        let allFieldTypes: [PrimerInputElementType] = [
             .cardNumber, .expiryDate, .cvv, .cardholderName,
             .postalCode, .countryCode, .firstName, .lastName,
             .addressLine1, .city, .state
@@ -415,7 +415,7 @@ extension DefaultValidationService {
     }
 
     // swiftlint:disable all
-    public func validateField(type: ComposableInputElementType, value: String?) -> ValidationResult {
+    public func validateField(type: PrimerInputElementType, value: String?) -> ValidationResult {
         switch type {
         case .cardNumber:
             guard let value = value else {
@@ -437,7 +437,7 @@ extension DefaultValidationService {
                 return .invalid(code: "invalid-cvv", message: "CVV is required")
             }
             // Using a default network of .visa when none is provided
-            return validateCVV(value, cardNetwork: .visa)
+            return validateCVV(value, cardNetwork: CardNetwork.visa)
 
         case .cardholderName:
             guard let value = value else {
@@ -485,21 +485,6 @@ extension DefaultValidationService {
             )
             return numericRule.validate(value)
 
-        case .retailOutlet:
-            return validate(input: value, with: RequiredFieldRule(fieldName: "Retail outlet", errorCode: "invalid-retail-outlet"))
-
-        case .otpCode:
-            guard let value = value else {
-                return .invalid(code: "invalid-otp-code", message: "OTP code is required")
-            }
-            // Validate OTP code is numeric
-            let numericRule = CharacterSetRule(
-                fieldName: "OTP Code",
-                allowedCharacterSet: CharacterSet(charactersIn: "0123456789"),
-                errorCode: "invalid-otp-code-format"
-            )
-            return numericRule.validate(value)
-
         case .retailer, .all:
             // These types don't need validation
             return .valid
@@ -507,6 +492,11 @@ extension DefaultValidationService {
         case .unknown:
             // Unknown type always fails validation
             return .invalid(code: "invalid-unknown-field", message: "Unknown field type")
+        case .email:
+            guard let value = value else {
+                return .invalid(code: "invalid-email", message: "Email is required")
+            }
+            return validate(input: value, with: EmailRule())
         }
     }
     // swiftlint:enable all

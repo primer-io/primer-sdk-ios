@@ -290,9 +290,9 @@ import SwiftUI
     // MARK: - Setup
 
     private func setupDependencies() async -> DIContainer {
-        let container = DIContainer()
-        let composableContainer = ComposableContainer(container: container)
-        await composableContainer.configure()
+        let container = DIContainer.shared
+        // let composableContainer = ComposableContainer()
+        // await composableContainer.configure()
         return container
     }
 }

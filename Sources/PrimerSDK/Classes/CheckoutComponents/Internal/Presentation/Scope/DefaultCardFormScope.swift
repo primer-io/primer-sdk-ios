@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 /// Default implementation of PrimerCardFormScope
 @available(iOS 15.0, *)
@@ -14,10 +15,10 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
     // MARK: - Properties
 
     /// The current card form state
-    @Published private var internalState = PrimerCardFormScope.State()
+    @Published private var internalState = PrimerCardFormState()
 
     /// State stream for external observation
-    public var state: AsyncStream<PrimerCardFormScope.State> {
+    public var state: AsyncStream<PrimerCardFormState> {
         AsyncStream { continuation in
             let task = Task { @MainActor in
                 for await value in $internalState.values {
@@ -34,30 +35,30 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
 
     // MARK: - UI Customization Properties
 
-    public var cardNumberInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)?
-    public var cvvInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)?
-    public var expiryDateInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)?
-    public var cardholderNameInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)?
-    public var firstNameInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)?
-    public var lastNameInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)?
-    public var emailInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)?
-    public var phoneNumberInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)?
-    public var addressLine1Input: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)?
-    public var addressLine2Input: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)?
-    public var cityInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)?
-    public var stateInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)?
-    public var postalCodeInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)?
-    public var countryInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)?
-    public var otpCodeInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)?
-    public var container: (@ViewBuilder (_ content: @escaping () -> any View) -> any View)?
-    public var errorView: (@ViewBuilder (_ error: String) -> any View)?
-    public var cobadgedCardsView: (@ViewBuilder (_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> any View)?
+    public var cardNumberInput: ((_ modifier: PrimerModifier) -> AnyView)?
+    public var cvvInput: ((_ modifier: PrimerModifier) -> AnyView)?
+    public var expiryDateInput: ((_ modifier: PrimerModifier) -> AnyView)?
+    public var cardholderNameInput: ((_ modifier: PrimerModifier) -> AnyView)?
+    public var firstNameInput: ((_ modifier: PrimerModifier) -> AnyView)?
+    public var lastNameInput: ((_ modifier: PrimerModifier) -> AnyView)?
+    public var emailInput: ((_ modifier: PrimerModifier) -> AnyView)?
+    public var phoneNumberInput: ((_ modifier: PrimerModifier) -> AnyView)?
+    public var addressLine1Input: ((_ modifier: PrimerModifier) -> AnyView)?
+    public var addressLine2Input: ((_ modifier: PrimerModifier) -> AnyView)?
+    public var cityInput: ((_ modifier: PrimerModifier) -> AnyView)?
+    public var stateInput: ((_ modifier: PrimerModifier) -> AnyView)?
+    public var postalCodeInput: ((_ modifier: PrimerModifier) -> AnyView)?
+    public var countryInput: ((_ modifier: PrimerModifier) -> AnyView)?
+    public var otpCodeInput: ((_ modifier: PrimerModifier) -> AnyView)?
+    public var container: ((_ content: @escaping () -> AnyView) -> AnyView)?
+    public var errorView: ((_ error: String) -> AnyView)?
+    public var cobadgedCardsView: ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> AnyView)?
 
     // MARK: - Private Properties
 
     private weak var checkoutScope: DefaultCheckoutScope?
     private let diContainer: DIContainer
-    private var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager?
+    private var tokenizeCardInteractor: TokenizeCardInteractor?
     private var processCardPaymentInteractor: ProcessCardPaymentInteractor?
     private var validateInputInteractor: ValidateInputInteractor?
 
@@ -74,11 +75,10 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
 
     init(checkoutScope: DefaultCheckoutScope) {
         self.checkoutScope = checkoutScope
-        self.diContainer = DIContainer.global
+        self.diContainer = DIContainer.shared
 
         Task {
             await setupInteractors()
-            await initializeRawDataManager()
         }
     }
 
@@ -86,36 +86,25 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
 
     private func setupInteractors() async {
         do {
-            processCardPaymentInteractor = try await diContainer.resolve(ProcessCardPaymentInteractor.self)
-            validateInputInteractor = try await diContainer.resolve(ValidateInputInteractor.self)
+            guard let container = await DIContainer.current else {
+                throw ContainerError.containerUnavailable
+            }
+            do {
+                // processCardPaymentInteractor = try await container.resolve(ProcessCardPaymentInteractor.self)
+                // tokenizeCardInteractor = try await container.resolve(TokenizeCardInteractor.self)
+                // validateInputInteractor = try await container.resolve(ValidateInputInteractor.self)
+            } catch {
+                logger.error(message: "Failed to resolve dependencies: \\(error)")
+            }
         } catch {
-            log(logLevel: .error, message: "Failed to setup interactors: \\(error)")
-        }
-    }
-
-    private func initializeRawDataManager() async {
-        do {
-            // Initialize RawDataManager for payment card
-            rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
-                paymentMethodType: PrimerPaymentMethodType.paymentCard.rawValue,
-                delegate: self,
-                isUsedInDropIn: false
-            )
-
-            log(logLevel: .debug, message: "RawDataManager initialized for payment card")
-        } catch {
-            log(logLevel: .error, message: "Failed to initialize RawDataManager: \\(error)")
-            checkoutScope?.handlePaymentError(error as? PrimerError ?? PrimerError.failedToLoadAvailablePaymentMethods(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString
-            ))
+            logger.error(message: "Failed to setup interactors: \\(error)")
         }
     }
 
     // MARK: - Update Methods
 
     public func updateCardNumber(_ cardNumber: String) {
-        log(logLevel: .debug, message: "Updating card number")
+        logger.debug(message: "Updating card number")
         internalState.cardNumber = cardNumber
         updateCardData()
 
@@ -124,13 +113,13 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
     }
 
     public func updateCvv(_ cvv: String) {
-        log(logLevel: .debug, message: "Updating CVV")
+        logger.debug(message: "Updating CVV")
         internalState.cvv = cvv
         updateCardData()
     }
 
     public func updateExpiryDate(_ expiryDate: String) {
-        log(logLevel: .debug, message: "Updating expiry date: \\(expiryDate)")
+        logger.debug(message: "Updating expiry date: \\(expiryDate)")
         internalState.expiryDate = expiryDate
 
         // Parse month and year from the expiry date
@@ -144,85 +133,130 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
     }
 
     public func updateExpiryMonth(_ month: String) {
-        log(logLevel: .debug, message: "Updating expiry month: \\(month)")
+        logger.debug(message: "Updating expiry month: \\(month)")
         internalState.expiryMonth = month
         updateExpiryDateFromComponents()
         updateCardData()
     }
 
     public func updateExpiryYear(_ year: String) {
-        log(logLevel: .debug, message: "Updating expiry year: \\(year)")
+        logger.debug(message: "Updating expiry year: \\(year)")
         internalState.expiryYear = year
         updateExpiryDateFromComponents()
         updateCardData()
     }
 
     public func updateCardholderName(_ name: String) {
-        log(logLevel: .debug, message: "Updating cardholder name")
+        logger.debug(message: "Updating cardholder name")
         internalState.cardholderName = name
         updateCardData()
     }
 
     public func updateFirstName(_ firstName: String) {
-        log(logLevel: .debug, message: "Updating first name")
+        logger.debug(message: "Updating first name")
         internalState.firstName = firstName
     }
 
     public func updateLastName(_ lastName: String) {
-        log(logLevel: .debug, message: "Updating last name")
+        logger.debug(message: "Updating last name")
         internalState.lastName = lastName
     }
 
     public func updateEmail(_ email: String) {
-        log(logLevel: .debug, message: "Updating email")
+        logger.debug(message: "Updating email")
         internalState.email = email
     }
 
     public func updatePhoneNumber(_ phoneNumber: String) {
-        log(logLevel: .debug, message: "Updating phone number")
+        logger.debug(message: "Updating phone number")
         internalState.phoneNumber = phoneNumber
     }
 
     public func updateAddressLine1(_ addressLine1: String) {
-        log(logLevel: .debug, message: "Updating address line 1")
+        logger.debug(message: "Updating address line 1")
         internalState.addressLine1 = addressLine1
     }
 
     public func updateAddressLine2(_ addressLine2: String) {
-        log(logLevel: .debug, message: "Updating address line 2")
+        logger.debug(message: "Updating address line 2")
         internalState.addressLine2 = addressLine2
     }
 
     public func updateCity(_ city: String) {
-        log(logLevel: .debug, message: "Updating city")
+        logger.debug(message: "Updating city")
         internalState.city = city
     }
 
     public func updateState(_ state: String) {
-        log(logLevel: .debug, message: "Updating state")
+        logger.debug(message: "Updating state")
         internalState.state = state
     }
 
     public func updatePostalCode(_ postalCode: String) {
-        log(logLevel: .debug, message: "Updating postal code")
+        logger.debug(message: "Updating postal code")
         internalState.postalCode = postalCode
     }
 
     public func updateCountryCode(_ countryCode: String) {
-        log(logLevel: .debug, message: "Updating country code: \\(countryCode)")
+        logger.debug(message: "Updating country code: \\(countryCode)")
         internalState.countryCode = countryCode
     }
 
     public func updateOtpCode(_ otpCode: String) {
-        log(logLevel: .debug, message: "Updating OTP code")
+        logger.debug(message: "Updating OTP code")
         internalState.otpCode = otpCode
     }
 
     public func updateSelectedCardNetwork(_ network: String) {
-        log(logLevel: .debug, message: "Updating selected card network: \\(network)")
+        logger.debug(message: "Updating selected card network: \\(network)")
         internalState.selectedCardNetwork = network
         updateCardData()
     }
+
+    public func updateRetailOutlet(_ retailOutlet: String) {
+        logger.debug(message: "Updating retail outlet")
+        internalState.retailOutlet = retailOutlet
+    }
+
+    // MARK: - Navigation Methods
+
+    public func onSubmit() {
+        Task {
+            await submit()
+        }
+    }
+
+    public func onBack() {
+        // Navigate back implementation would go here
+        logger.debug(message: "Card form back navigation")
+    }
+
+    public func onCancel() {
+        // Cancel implementation would go here
+        logger.debug(message: "Card form cancelled")
+    }
+
+    public func navigateToCountrySelection() {
+        // Country selection navigation would go here
+        logger.debug(message: "Navigate to country selection")
+    }
+
+    // MARK: - Nested Scope
+
+    public var selectCountry: PrimerSelectCountryScope {
+        // This would return a proper country selection scope implementation
+        // For now returning a placeholder
+        return DefaultSelectCountryScope()
+    }
+
+    // MARK: - Screen Customization
+
+    public var screen: ((_ scope: PrimerCardFormScope) -> AnyView)?
+    public var submitButton: ((_ modifier: PrimerModifier, _ text: String) -> AnyView)?
+    public var cardDetails: ((_ modifier: PrimerModifier) -> AnyView)?
+    public var billingAddress: ((_ modifier: PrimerModifier) -> AnyView)?
+    public var countryCodeInput: ((_ modifier: PrimerModifier) -> AnyView)?
+    public var retailOutletInput: ((_ modifier: PrimerModifier) -> AnyView)?
 
     // MARK: - Private Methods
 
@@ -236,8 +270,6 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
     }
 
     private func updateCardData() {
-        guard let rawDataManager = rawDataManager else { return }
-
         // Create PrimerCardData
         let cardData = PrimerCardData(
             cardNumber: internalState.cardNumber.replacingOccurrences(of: " ", with: ""),
@@ -253,7 +285,46 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
         }
 
         currentCardData = cardData
-        rawDataManager.rawData = cardData
+
+        // Validate card data using validation service
+        validateCardData(cardData)
+    }
+
+    private func validateCardData(_ cardData: PrimerCardData) {
+        // Use validation service to validate card data
+        Task {
+            if let validationInteractor = validateInputInteractor {
+                // Validate each field individually
+                let cardNumberResult = await validationInteractor.validate(
+                    value: cardData.cardNumber,
+                    type: .cardNumber
+                )
+                let cvvResult = await validationInteractor.validate(
+                    value: cardData.cvv,
+                    type: .cvv
+                )
+                let expiryResult = await validationInteractor.validate(
+                    value: cardData.expiryDate,
+                    type: .expiryDate
+                )
+
+                // Update validation state
+                await MainActor.run {
+                    internalState.isValid = cardNumberResult.isValid && cvvResult.isValid && expiryResult.isValid
+
+                    // Show first error found
+                    if !cardNumberResult.isValid {
+                        internalState.error = cardNumberResult.errorMessage
+                    } else if !cvvResult.isValid {
+                        internalState.error = cvvResult.errorMessage
+                    } else if !expiryResult.isValid {
+                        internalState.error = expiryResult.errorMessage
+                    } else {
+                        internalState.error = nil
+                    }
+                }
+            }
+        }
     }
 
     private func detectAvailableNetworks(from cardNumber: String) {
@@ -300,16 +371,33 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
             addressLine1: internalState.addressLine1.isEmpty ? nil : internalState.addressLine1,
             addressLine2: internalState.addressLine2.isEmpty ? nil : internalState.addressLine2,
             city: internalState.city.isEmpty ? nil : internalState.city,
-            state: internalState.state.isEmpty ? nil : internalState.state,
             postalCode: internalState.postalCode,
-            countryCode: internalState.countryCode.isEmpty ? nil : internalState.countryCode
+            state: internalState.state.isEmpty ? nil : internalState.state,
+            countryCode: internalState.countryCode.isEmpty ? nil : CountryCode(rawValue: internalState.countryCode)
+        )
+    }
+
+    private func createInteractorBillingAddress() -> BillingAddress? {
+        // Only create address if we have required fields
+        guard !internalState.postalCode.isEmpty else { return nil }
+
+        return BillingAddress(
+            firstName: internalState.firstName.isEmpty ? nil : internalState.firstName,
+            lastName: internalState.lastName.isEmpty ? nil : internalState.lastName,
+            addressLine1: internalState.addressLine1.isEmpty ? nil : internalState.addressLine1,
+            addressLine2: internalState.addressLine2.isEmpty ? nil : internalState.addressLine2,
+            city: internalState.city.isEmpty ? nil : internalState.city,
+            state: internalState.state.isEmpty ? nil : internalState.state,
+            postalCode: internalState.postalCode.isEmpty ? nil : internalState.postalCode,
+            countryCode: internalState.countryCode.isEmpty ? nil : internalState.countryCode,
+            phoneNumber: nil // Not currently collected in this form
         )
     }
 
     // MARK: - Public Submit Method
 
     func submit() async {
-        log(logLevel: .debug, message: "Card form submit initiated")
+        logger.debug(message: "Card form submit initiated")
 
         // Update state to submitting
         internalState.isSubmitting = true
@@ -317,7 +405,7 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
         do {
             // Send billing address first if needed
             if !billingAddressSent, let billingAddress = createBillingAddress() {
-                log(logLevel: .debug, message: "Sending billing address via Client Session Actions")
+                logger.debug(message: "Sending billing address via Client Session Actions")
 
                 await withCheckedContinuation { continuation in
                     ClientSessionActionsModule.updateBillingAddressViaClientSessionActionWithAddressIfNeeded(billingAddress)
@@ -326,108 +414,56 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                             continuation.resume()
                         }
                         .catch { _ in
-                            self.log(logLevel: .error, message: "Failed to send billing address: \\(error)")
+                            self.logger.error(message: "Failed to send billing address: \\(error)")
                             continuation.resume()
                         }
                 }
             }
 
-            // Submit card data via RawDataManager
-            guard let rawDataManager = rawDataManager else {
+            // Submit card data via interactor
+            guard let processCardInteractor = processCardPaymentInteractor else {
                 throw PrimerError.invalidValue(
-                    key: "rawDataManager",
+                    key: "processCardPaymentInteractor",
                     value: nil,
-                    userInfo: .errorUserInfoDictionary(),
+                    userInfo: nil,
                     diagnosticsId: UUID().uuidString
                 )
             }
 
-            // RawDataManager submit is synchronous and uses delegates
-            rawDataManager.submit()
+            // Create billing address if available
+            let billingAddress = createInteractorBillingAddress()
+
+            // Create card payment data
+            let cardPaymentData = CardPaymentData(
+                cardNumber: internalState.cardNumber,
+                cvv: internalState.cvv,
+                expiryMonth: internalState.expiryMonth,
+                expiryYear: internalState.expiryYear,
+                cardholderName: internalState.cardholderName,
+                selectedNetwork: CardNetwork(rawValue: internalState.selectedCardNetwork ?? ""),
+                billingAddress: billingAddress
+            )
+
+            // Use interactor to process payment through HeadlessRepository
+            let result = try await processCardInteractor.execute(cardData: cardPaymentData)
+
+            // Handle successful payment
+            await handlePaymentSuccess(result)
 
         } catch {
-            log(logLevel: .error, message: "Card form submission failed: \\(error)")
+            logger.error(message: "Card form submission failed: \\(error)")
             internalState.isSubmitting = false
-            checkoutScope?.handlePaymentError(error as? PrimerError ?? PrimerError.unknown(
-                userInfo: .errorUserInfoDictionary(),
+            let primerError = error as? PrimerError ?? PrimerError.unknown(
+                userInfo: nil,
                 diagnosticsId: UUID().uuidString
-            ))
-        }
-    }
-}
-
-// MARK: - RawDataManager Delegate
-
-@available(iOS 15.0, *)
-extension DefaultCardFormScope: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
-
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              dataIsValid isValid: Bool,
-                              errors: [Error]?) {
-        log(logLevel: .debug, message: "Card data validation result: \\(isValid)")
-
-        internalState.isValid = isValid
-
-        if let errors = errors {
-            let errorMessages = errors.compactMap { ($0 as? PrimerError)?.errorDescription }
-            internalState.error = errorMessages.first
-        } else {
-            internalState.error = nil
+            )
+            checkoutScope?.handlePaymentError(primerError)
         }
     }
 
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              willFetchMetadataForState state: PrimerValidationState) {
-        log(logLevel: .debug, message: "Will fetch metadata for state: \\(state)")
-    }
-
-    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
-                              didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
-                              forState state: PrimerValidationState) {
-        log(logLevel: .debug, message: "Received metadata for state: \\(state)")
-
-        // Handle card network metadata for co-badged cards
-        if let cardMetadata = metadata as? PrimerCardNumberEntryMetadata {
-            if let networks = cardMetadata.cardNetworks, networks.count > 1 {
-                // Multiple networks available - co-badged card
-                availableCardNetworks = networks
-                internalState.availableCardNetworks = networks.map { $0.rawValue }
-
-                // Auto-select first network if none selected
-                if internalState.selectedCardNetwork == nil {
-                    internalState.selectedCardNetwork = networks.first?.rawValue
-                }
-            }
-        }
-    }
-}
-
-// MARK: - PrimerHeadlessUniversalCheckoutDelegate
-
-@available(iOS 15.0, *)
-extension DefaultCardFormScope: PrimerHeadlessUniversalCheckoutDelegate {
-
-    func primerHeadlessUniversalCheckoutDidCompleteCheckout(with data: PrimerCheckoutData) {
-        log(logLevel: .debug, message: "Checkout completed successfully")
+    private func handlePaymentSuccess(_ result: PaymentResult) async {
+        logger.info(message: "Payment processed successfully: \\(result.paymentId)")
         internalState.isSubmitting = false
-
-        // Create payment result
-        let paymentResult = PaymentResult(
-            id: data.payment?.id ?? UUID().uuidString,
-            orderId: data.payment?.orderId,
-            status: "SUCCESS"
-        )
-
-        checkoutScope?.handlePaymentSuccess(paymentResult)
-    }
-
-    func primerHeadlessUniversalCheckoutDidFail(withError error: any Error, checkoutData: PrimerCheckoutData?) {
-        log(logLevel: .error, message: "Checkout failed: \\(error)")
-        internalState.isSubmitting = false
-
-        checkoutScope?.handlePaymentError(error as? PrimerError ?? PrimerError.unknown(
-            userInfo: .errorUserInfoDictionary(),
-            diagnosticsId: UUID().uuidString
-        ))
+        checkoutScope?.handlePaymentSuccess(result)
     }
 }

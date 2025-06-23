@@ -64,16 +64,3 @@ internal protocol HeadlessRepository {
     /// - Returns: Array of available card networks, or nil if not co-badged.
     func detectCardNetworks(for cardNumber: String) async -> [CardNetwork]?
 }
-
-/// Represents a card network.
-internal struct CardNetwork: Equatable {
-    let type: String
-    let displayName: String
-    let iconName: String?
-
-    init(type: String, displayName: String, iconName: String? = nil) {
-        self.type = type
-        self.displayName = displayName
-        self.iconName = iconName
-    }
-}

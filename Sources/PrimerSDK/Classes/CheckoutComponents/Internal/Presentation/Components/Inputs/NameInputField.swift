@@ -57,9 +57,9 @@ internal struct NameInputField: View, LogReporter {
             TextField(placeholder, text: $name)
                 .textFieldStyle(.roundedBorder)
                 .autocapitalization(.words)
-                .autocorrectionType(.no)
+                .disableAutocorrection(true)
                 .padding()
-                .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
+                .background(Color(.systemGray6))
                 .cornerRadius(8)
                 .onChange(of: name) { newValue in
                     onNameChange?(newValue)
@@ -96,12 +96,12 @@ internal struct NameInputField: View, LogReporter {
         guard let validationService = validationService else { return }
 
         let result = validationService.validate(
-            value: name,
-            for: inputType
+            input: name,
+            with: NameRule()
         )
 
         isValid = result.isValid
-        errorMessage = result.errors.first?.message
+        errorMessage = result.errorMessage
         onValidationChange?(result.isValid)
     }
 }

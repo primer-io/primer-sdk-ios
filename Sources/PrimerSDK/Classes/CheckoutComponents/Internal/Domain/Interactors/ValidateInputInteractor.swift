@@ -32,17 +32,12 @@ internal final class ValidateInputInteractorImpl: ValidateInputInteractor, LogRe
     }
 
     func validate(value: String, type: PrimerInputElementType) async -> ValidationResult {
-        logger.debug(message: "Validating \(type.rawValue) field")
+        logger.debug(message: "Validating \(type.stringValue) field")
 
-        guard let rule = type.validationRule else {
-            logger.warn(message: "No validation rule for \(type.rawValue)")
-            return ValidationResult(isValid: true, errors: [])
-        }
-
-        let result = await validationService.validate(value: value, using: rule)
+        let result = validationService.validateField(type: type, value: value)
 
         if !result.isValid {
-            logger.debug(message: "Validation failed for \(type.rawValue): \(result.errors)")
+            logger.debug(message: "Validation failed for \(type.stringValue): \(result.errorMessage ?? "Unknown error")")
         }
 
         return result

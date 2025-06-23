@@ -9,7 +9,23 @@
       "Bash(git push:*)",
       "Bash(xcodebuild:*)",
       "Bash(rm:*)",
-      "mcp__sequential-thinking__sequentialthinking"
+      "mcp__sequential-thinking__sequentialthinking",
+      "mcp__xcode-server__find_projects",
+      "mcp__xcode-server__list_directory",
+      "mcp__xcode-server__set_project_path",
+      "mcp__xcode-server__list_available_schemes",
+      "mcp__xcode-server__list_available_destinations",
+      "mcp__xcode-server__build_project",
+      "mcp__xcode-server__get_project_configuration",
+      "mcp__xcode-server__boot_simulator",
+      "mcp__xcode-server__run_xcrun",
+      "Bash(swift build)",
+      "mcp__xcode-server__change_directory",
+      "mcp__xcode-server__pod_install",
+      "mcp__xcode-server__write_file",
+      "mcp__xcode-server__list_booted_simulators",
+      "Bash(swift build:*)",
+      "mcp__xcode-server__read_file"
     ],
     "deny": []
   }

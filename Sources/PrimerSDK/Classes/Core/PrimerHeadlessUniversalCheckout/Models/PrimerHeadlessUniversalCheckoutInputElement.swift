@@ -19,6 +19,7 @@ public enum PrimerInputElementType: Int {
     case addressLine2
     case city
     case state
+    case email
     case all // General case for "all fields"
 
     public var stringValue: String {
@@ -57,6 +58,8 @@ public enum PrimerInputElementType: Int {
             return "CITY"
         case .state:
             return "STATE"
+        case .email:
+            return "EMAIL"
         case .all:
             return "ALL"
         }
@@ -100,7 +103,9 @@ public enum PrimerInputElementType: Int {
         case .firstName, .lastName:
             return text.isValidNonDecimalString
         case .addressLine1, .addressLine2, .city, .state:
-            return !text.isEmpty
+            return !text.isEmpty  
+        case .email:
+            return text.contains("@") && text.contains(".")
         default:
             // In case additional cases are added later.
             return false
@@ -186,6 +191,8 @@ public enum PrimerInputElementType: Int {
             return UIKeyboardType.numberPad
         case .cardholderName, .firstName, .lastName, .city, .state:
             return UIKeyboardType.alphabet
+        case .email:
+            return UIKeyboardType.emailAddress
         case .addressLine1, .addressLine2, .countryCode, .retailer, .unknown, .all:
             return UIKeyboardType.default
         }

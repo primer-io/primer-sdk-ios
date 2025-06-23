@@ -46,7 +46,6 @@ internal struct InputConfigsWrapper {
 
     /// Creates default input configs
     static let `default` = InputConfigsWrapper(
-        cardInputConfig: .default,
-        billingAddressConfig: .minimal
+        paymentMethodConfig: nil
     )
 }

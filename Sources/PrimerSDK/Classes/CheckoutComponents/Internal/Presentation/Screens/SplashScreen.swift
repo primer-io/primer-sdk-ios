@@ -18,8 +18,8 @@ internal struct SplashScreen: View {
             // Background gradient
             LinearGradient(
                 gradient: Gradient(colors: [
-                    tokens?.primerColorPrimary ?? .blue,
-                    (tokens?.primerColorPrimary ?? .blue).opacity(0.7)
+                    tokens?.primerColorTextPrimary ?? .blue,
+                    (tokens?.primerColorTextPrimary ?? .blue).opacity(0.7)
                 ]),
                 startPoint: animateGradient ? .topLeading : .bottomTrailing,
                 endPoint: animateGradient ? .bottomTrailing : .topLeading
@@ -36,7 +36,7 @@ internal struct SplashScreen: View {
                     .overlay(
                         Text("P")
                             .font(.system(size: 48, weight: .bold, design: .rounded))
-                            .foregroundColor(tokens?.primerColorPrimary ?? .blue)
+                            .foregroundColor(tokens?.primerColorTextPrimary ?? .blue)
                     )
                     .scaleEffect(animateGradient ? 1.1 : 1.0)
                     .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: animateGradient)

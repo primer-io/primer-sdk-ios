@@ -114,12 +114,12 @@ internal struct CountryInputField: View, LogReporter {
         guard let validationService = validationService else { return }
 
         let result = validationService.validate(
-            value: countryCode,
-            for: .countryCode
+            input: countryCode,
+            with: CountryCodeRule()
         )
 
         isValid = result.isValid
-        errorMessage = result.errors.first?.message
+        errorMessage = result.errorMessage
         onValidationChange?(result.isValid)
     }
 }

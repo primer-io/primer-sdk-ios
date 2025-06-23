@@ -14,99 +14,125 @@ internal struct SelectCountryScreen: View {
     let onDismiss: (() -> Void)?
 
     @Environment(\.designTokens) private var tokens
-    @State private var countryState: PrimerSelectCountryScope.State = .init()
+    @State private var countryState: PrimerSelectCountryState = .init()
     @State private var searchText = ""
 
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                // Search bar
-                if let customSearchBar = scope.searchBar {
-                    customSearchBar { query in
-                        scope.searchCountries(query)
-                    }
-                } else {
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-
-                        TextField("Search countries...", text: $searchText)
-                            .textFieldStyle(PlainTextFieldStyle())
-                            .onChange(of: searchText) { newValue in
-                                scope.searchCountries(newValue)
-                            }
-
-                        if !searchText.isEmpty {
-                            Button(action: {
-                                searchText = ""
-                                scope.searchCountries("")
-                            }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-                    .cornerRadius(8)
-                    .padding()
-                }
-
-                // Country list
-                if countryState.filteredCountries.isEmpty {
-                    // Empty state
-                    if let customEmptyState = scope.emptyStateView {
-                        customEmptyState()
-                    } else {
-                        VStack(spacing: 16) {
-                            Image(systemName: "globe")
-                                .font(.system(size: 48))
-                                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-
-                            Text("No countries found")
-                                .font(.body)
-                                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    }
-                } else {
-                    List(countryState.filteredCountries) { country in
-                        if let customCountryItem = scope.countryItem {
-                            customCountryItem(country)
-                                .onTapGesture {
-                                    selectCountry(country)
-                                }
-                        } else {
-                            CountryItemView(
-                                country: country,
-                                isSelected: countryState.selectedCountry?.code == country.code,
-                                onTap: {
-                                    selectCountry(country)
-                                }
-                            )
-                        }
-                    }
-                    .listStyle(PlainListStyle())
-                }
-            }
-            .background(tokens?.primerColorBackground ?? Color(.systemBackground))
-            .navigationTitle("Select Country")
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarItems(
-                trailing: Button("Cancel") {
-                    onDismiss?()
-                }
-                .foregroundColor(tokens?.primerColorPrimary ?? .blue)
-            )
+            mainContent
         }
         .onAppear {
             observeState()
         }
     }
 
+    private var mainContent: some View {
+        VStack(spacing: 0) {
+            searchBarSection
+            countryListSection
+        }
+        .background(tokens?.primerColorBackground ?? Color(.systemBackground))
+        .navigationTitle("Select Country")
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarItems(
+            trailing: Button("Cancel") {
+                onDismiss?()
+            }
+            .foregroundColor(.blue)
+        )
+    }
+
+    private var searchBarSection: some View {
+        Group {
+            if let customSearchBar = scope.searchBar {
+                customSearchBar(searchText, { query in
+                    scope.onSearch(query: query)
+                }, "Search countries...")
+            } else {
+                defaultSearchBar
+            }
+        }
+    }
+
+    private var defaultSearchBar: some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+
+            TextField("Search countries...", text: $searchText)
+                .textFieldStyle(PlainTextFieldStyle())
+                .onChange(of: searchText) { newValue in
+                    scope.onSearch(query: newValue)
+                }
+
+            if !searchText.isEmpty {
+                Button(action: {
+                    searchText = ""
+                    scope.onSearch(query: "")
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                }
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
+        .cornerRadius(8)
+        .padding()
+    }
+
+    private var countryListSection: some View {
+        Group {
+            if countryState.filteredCountries.isEmpty {
+                emptyStateView
+            } else {
+                countryListView
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var emptyStateView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "globe")
+                .font(.system(size: 48))
+                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+
+            Text("No countries found")
+                .font(.body)
+                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var countryListView: some View {
+        List {
+            ForEach(countryState.filteredCountries, id: \.code) { country in
+                Group {
+                    if let customCountryItem = scope.countryItem {
+                        customCountryItem(country) {
+                            selectCountry(country)
+                        }
+                    } else {
+                        AnyView(
+                            CountryItemView(
+                                country: country,
+                                isSelected: false, // No selection state in current scope
+                                onTap: {
+                                    selectCountry(country)
+                                }
+                            )
+                        )
+                    }
+                }
+            }
+        }
+        .listStyle(PlainListStyle())
+    }
+
     private func selectCountry(_ country: PrimerCountry) {
-        scope.selectCountry(country)
+        scope.onCountrySelected(countryCode: country.code, countryName: country.name)
         onDismiss?()
     }
 
@@ -161,7 +187,7 @@ private struct CountryItemView: View {
                 // Selection indicator
                 if isSelected {
                     Image(systemName: "checkmark")
-                        .foregroundColor(tokens?.primerColorPrimary ?? .blue)
+                        .foregroundColor(.blue)
                 }
             }
             .padding(.vertical, 8)

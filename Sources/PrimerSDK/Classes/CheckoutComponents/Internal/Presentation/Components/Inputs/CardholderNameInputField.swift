@@ -224,12 +224,12 @@ private struct CardholderNameTextField: UIViewRepresentable, LogReporter {
 
         private func validateCardholderName() {
             let result = validationService.validate(
-                value: cardholderName,
-                for: .cardholderName
+                input: cardholderName,
+                with: CardholderNameRule()
             )
 
             isValid = result.isValid
-            errorMessage = result.errors.first?.message
+            errorMessage = result.errorMessage
             onValidationChange?(result.isValid)
         }
     }

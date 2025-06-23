@@ -104,7 +104,7 @@ internal struct OTPCodeInputField: View, LogReporter {
         let result = otpRule.validate(otpCode)
 
         isValid = result.isValid
-        errorMessage = result.errors.first?.message
+        errorMessage = result.errorMessage
         onValidationChange?(result.isValid)
     }
 }

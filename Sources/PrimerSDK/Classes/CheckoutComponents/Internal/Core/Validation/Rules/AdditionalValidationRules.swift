@@ -18,26 +18,20 @@ internal class PhoneNumberRule: ValidationRule {
             .replacingOccurrences(of: "+", with: "")
 
         if cleanedValue.isEmpty {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "phoneNumber", message: "Phone number is required")
-            ])
+            return .invalid(code: "invalid-phone-number", message: "Phone number is required")
         }
 
         // Check if all digits after cleaning
         if !cleanedValue.allSatisfy({ $0.isNumber }) {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "phoneNumber", message: "Phone number contains invalid characters")
-            ])
+            return .invalid(code: "invalid-phone-number-format", message: "Phone number contains invalid characters")
         }
 
         // Check length (between 7 and 15 digits for international)
         if cleanedValue.count < 7 || cleanedValue.count > 15 {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "phoneNumber", message: "Invalid phone number length")
-            ])
+            return .invalid(code: "invalid-phone-number-length", message: "Invalid phone number length")
         }
 
-        return ValidationResult(isValid: true, errors: [])
+        return .valid
     }
 }
 
@@ -48,20 +42,16 @@ internal class EmailRule: ValidationRule {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmedValue.isEmpty {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "email", message: "Email is required")
-            ])
+            return .invalid(code: "invalid-email", message: "Email is required")
         }
 
         // Basic email validation pattern
         let emailPattern = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
         if trimmedValue.range(of: emailPattern, options: .regularExpression) == nil {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "email", message: "Invalid email format")
-            ])
+            return .invalid(code: "invalid-email-format", message: "Invalid email format")
         }
 
-        return ValidationResult(isValid: true, errors: [])
+        return .valid
     }
 }
 
@@ -72,12 +62,10 @@ internal class RetailOutletRule: ValidationRule {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmedValue.isEmpty {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "retailOutlet", message: "Retail outlet is required")
-            ])
+            return .invalid(code: "invalid-retail-outlet", message: "Retail outlet is required")
         }
 
-        return ValidationResult(isValid: true, errors: [])
+        return .valid
     }
 }
 
@@ -92,26 +80,20 @@ internal class OTPCodeRule: ValidationRule {
 
     func validate(_ value: String) -> ValidationResult {
         if value.isEmpty {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "otpCode", message: "OTP code is required")
-            ])
+            return .invalid(code: "invalid-otp-code", message: "OTP code is required")
         }
 
         // Check if all digits
         if !value.allSatisfy({ $0.isNumber }) {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "otpCode", message: "OTP must contain only digits")
-            ])
+            return .invalid(code: "invalid-otp-code-format", message: "OTP must contain only digits")
         }
 
         // Check length
         if value.count != expectedLength {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "otpCode", message: "OTP must be \(expectedLength) digits")
-            ])
+            return .invalid(code: "invalid-otp-code-length", message: "OTP must be \(expectedLength) digits")
         }
 
-        return ValidationResult(isValid: true, errors: [])
+        return .valid
     }
 }
 
@@ -122,9 +104,7 @@ internal class BirthDateRule: ValidationRule {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmedValue.isEmpty {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "birthDate", message: "Birth date is required")
-            ])
+            return .invalid(code: "invalid-birth-date", message: "Birth date is required")
         }
 
         // Try to parse date (DD/MM/YYYY format)
@@ -133,27 +113,21 @@ internal class BirthDateRule: ValidationRule {
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
 
         guard let birthDate = dateFormatter.date(from: trimmedValue) else {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "birthDate", message: "Invalid date format (DD/MM/YYYY)")
-            ])
+            return .invalid(code: "invalid-birth-date-format", message: "Invalid date format (DD/MM/YYYY)")
         }
 
         // Check if date is in the past
         if birthDate > Date() {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "birthDate", message: "Birth date cannot be in the future")
-            ])
+            return .invalid(code: "invalid-birth-date-future", message: "Birth date cannot be in the future")
         }
 
         // Check minimum age (e.g., 18 years)
         let calendar = Calendar.current
         let ageComponents = calendar.dateComponents([.year], from: birthDate, to: Date())
         if let age = ageComponents.year, age < 18 {
-            return ValidationResult(isValid: false, errors: [
-                ValidationError(field: "birthDate", message: "Must be at least 18 years old")
-            ])
+            return .invalid(code: "invalid-birth-date-age", message: "Must be at least 18 years old")
         }
 
-        return ValidationResult(isValid: true, errors: [])
+        return .valid
     }
 }

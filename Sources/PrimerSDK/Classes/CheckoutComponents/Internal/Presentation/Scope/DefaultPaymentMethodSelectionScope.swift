@@ -14,10 +14,10 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
     // MARK: - Properties
 
     /// The current payment method selection state
-    @Published private var internalState = PrimerPaymentMethodSelectionScope.State()
+    @Published private var internalState = PrimerPaymentMethodSelectionState()
 
     /// State stream for external observation
-    public var state: AsyncStream<PrimerPaymentMethodSelectionScope.State> {
+    public var state: AsyncStream<PrimerPaymentMethodSelectionState> {
         AsyncStream { continuation in
             let task = Task { @MainActor in
                 for await value in $internalState.values {
@@ -34,11 +34,12 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
 
     // MARK: - UI Customization Properties
 
-    public var container: (@ViewBuilder (_ content: @escaping () -> any View) -> any View)?
-    public var paymentMethodItem: (@ViewBuilder (_ paymentMethod: PrimerComposablePaymentMethod) -> any View)?
-    public var searchBar: (@ViewBuilder (_ searchText: @escaping (String) -> Void) -> any View)?
-    public var categoryHeader: (@ViewBuilder (_ category: String) -> any View)?
-    public var emptyStateView: (@ViewBuilder () -> any View)?
+    public var screen: (() -> AnyView)?
+    public var paymentMethodCard: ((_ modifier: PrimerModifier, _ onPaymentMethodSelected: @escaping () -> Void) -> AnyView)?
+    public var container: ((_ content: @escaping () -> AnyView) -> AnyView)?
+    public var paymentMethodItem: ((_ paymentMethod: PrimerComposablePaymentMethod) -> AnyView)?
+    public var categoryHeader: ((_ category: String) -> AnyView)?
+    public var emptyStateView: (() -> AnyView)?
 
     // MARK: - Private Properties
 
@@ -50,7 +51,7 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
 
     init(checkoutScope: DefaultCheckoutScope) {
         self.checkoutScope = checkoutScope
-        self.diContainer = DIContainer.global
+        self.diContainer = checkoutScope.diContainer
 
         Task {
             await setupInteractors()
@@ -62,17 +63,20 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
 
     private func setupInteractors() async {
         do {
-            getPaymentMethodsInteractor = try await diContainer.resolve(GetPaymentMethodsInteractor.self)
+            guard let container = await DIContainer.current else {
+                throw ContainerError.containerUnavailable
+            }
+            // getPaymentMethodsInteractor = try await container.resolve(GetPaymentMethodsInteractor.self)
         } catch {
-            log(logLevel: .error, message: "Failed to setup interactors: \\(error)")
+            logger.error(message: "Failed to setup interactors: \\(error)")
         }
     }
 
     private func loadPaymentMethods() async {
         do {
             guard let interactor = getPaymentMethodsInteractor else {
-                throw PrimerError.failedToLoadAvailablePaymentMethods(
-                    userInfo: .errorUserInfoDictionary(),
+                throw PrimerError.unknown(
+                    userInfo: nil,
                     diagnosticsId: UUID().uuidString
                 )
             }
@@ -85,9 +89,8 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
                     id: method.id,
                     type: method.type,
                     name: method.name,
-                    displayName: method.displayName,
-                    logo: method.logo,
-                    isEnabled: method.isEnabled
+                    icon: method.icon,
+                    metadata: nil
                 )
             }
 
@@ -97,15 +100,15 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
             updateCategories()
 
         } catch {
-            log(logLevel: .error, message: "Failed to load payment methods: \\(error)")
+            logger.error(message: "Failed to load payment methods: \\(error)")
             internalState.error = error.localizedDescription
         }
     }
 
     // MARK: - Public Methods
 
-    public func onPaymentMethodSelected(_ paymentMethod: PrimerComposablePaymentMethod) {
-        log(logLevel: .debug, message: "Payment method selected: \\(paymentMethod.type)")
+    public func onPaymentMethodSelected(paymentMethod: PrimerComposablePaymentMethod) {
+        logger.debug(message: "Payment method selected: \\(paymentMethod.type)")
 
         internalState.selectedPaymentMethod = paymentMethod
 
@@ -114,16 +117,20 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
             id: paymentMethod.id,
             type: paymentMethod.type,
             name: paymentMethod.name,
-            displayName: paymentMethod.displayName,
-            logo: paymentMethod.logo,
-            config: nil
+            icon: paymentMethod.icon
         )
 
         checkoutScope?.handlePaymentMethodSelection(internalMethod)
     }
 
+    public func onCancel() {
+        logger.debug(message: "Payment method selection cancelled")
+        // Navigate back or dismiss
+        checkoutScope?.onDismiss()
+    }
+
     public func searchPaymentMethods(_ query: String) {
-        log(logLevel: .debug, message: "Searching payment methods with query: \\(query)")
+        logger.debug(message: "Searching payment methods with query: \\(query)")
 
         internalState.searchQuery = query
 
@@ -132,7 +139,7 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
         } else {
             let lowercasedQuery = query.lowercased()
             internalState.filteredPaymentMethods = internalState.paymentMethods.filter { method in
-                method.displayName.lowercased().contains(lowercasedQuery) ||
+                method.name.lowercased().contains(lowercasedQuery) ||
                     method.type.lowercased().contains(lowercasedQuery)
             }
         }

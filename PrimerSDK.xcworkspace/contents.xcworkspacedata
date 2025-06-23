@@ -171,9 +171,6 @@
                         <FileRef
                            location = "group:InternalPaymentMethod.swift">
                         </FileRef>
-                        <FileRef
-                           location = "group:PrimerInputElementType.swift">
-                        </FileRef>
                      </Group>
                      <Group
                         location = "group:Interactors"
@@ -356,13 +353,7 @@
                   location = "group:README.md">
                </FileRef>
                <FileRef
-                  location = "group:IMPLEMENTATION_TASKS.md">
-               </FileRef>
-               <FileRef
                   location = "group:PrimerCheckout.swift">
-               </FileRef>
-               <FileRef
-                  location = "group:IMPLEMENTATION_PLAN.md">
                </FileRef>
                <Group
                   location = "group:DesignScreenshots"

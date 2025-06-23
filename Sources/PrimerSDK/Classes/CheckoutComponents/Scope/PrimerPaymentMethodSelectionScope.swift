@@ -6,14 +6,16 @@
 //
 
 import SwiftUI
+import UIKit
 
 /// Scope interface for payment method selection screen interactions and customization.
 /// This protocol matches the Android Composable API exactly.
+@available(iOS 15.0, *)
 @MainActor
 public protocol PrimerPaymentMethodSelectionScope: AnyObject {
 
     /// The current state of the payment method selection as an async stream.
-    var state: AsyncStream<State> { get }
+    var state: AsyncStream<PrimerPaymentMethodSelectionState> { get }
 
     // MARK: - Navigation Methods
 
@@ -28,29 +30,80 @@ public protocol PrimerPaymentMethodSelectionScope: AnyObject {
 
     /// The entire payment method selection screen.
     /// Default implementation provides standard payment method grid/list.
-    var screen: (@ViewBuilder () -> any View)? { get set }
+    var screen: (() -> AnyView)? { get set }
 
     /// Individual payment method card/tile component.
     /// Default implementation shows payment method icon and name.
-    var paymentMethodCard: (@ViewBuilder (_ modifier: PrimerModifier, _ onPaymentMethodSelected: @escaping () -> Void) -> any View)? { get set }
+    var paymentMethodCard: ((_ modifier: PrimerModifier, _ onPaymentMethodSelected: @escaping () -> Void) -> AnyView)? { get set }
+
+    /// Individual payment method item component.
+    /// Default implementation shows payment method with selection state.
+    var paymentMethodItem: ((_ paymentMethod: PrimerComposablePaymentMethod) -> AnyView)? { get set }
+
+    /// Category header component for grouping payment methods.
+    /// Default implementation shows category name in uppercase.
+    var categoryHeader: ((_ category: String) -> AnyView)? { get set }
+
+    /// Empty state view when no payment methods are available.
+    /// Default implementation shows icon and message.
+    var emptyStateView: (() -> AnyView)? { get set }
 
     // MARK: - State Definition
 
-    /// Represents the current state of available payment methods and loading status.
-    struct State: Equatable {
-        /// List of available payment methods.
-        public var paymentMethods: [PrimerComposablePaymentMethod] = []
+}
 
-        /// Indicates if payment methods are being loaded.
-        public var isLoading: Bool = false
+/// Represents the current state of available payment methods and loading status.
+public struct PrimerPaymentMethodSelectionState: Equatable {
+    /// List of available payment methods.
+    public var paymentMethods: [PrimerComposablePaymentMethod] = []
 
-        public init(
-            paymentMethods: [PrimerComposablePaymentMethod] = [],
-            isLoading: Bool = false
-        ) {
-            self.paymentMethods = paymentMethods
-            self.isLoading = isLoading
-        }
+    /// Indicates if payment methods are being loaded.
+    public var isLoading: Bool = false
+
+    /// The currently selected payment method.
+    public var selectedPaymentMethod: PrimerComposablePaymentMethod?
+
+    /// Current search query for filtering payment methods.
+    public var searchQuery: String = ""
+
+    /// Filtered payment methods based on search query.
+    public var filteredPaymentMethods: [PrimerComposablePaymentMethod] = []
+
+    /// Payment methods organized by category.
+    public var categorizedPaymentMethods: [(category: String, methods: [PrimerComposablePaymentMethod])] = []
+
+    /// Error message if any operation fails.
+    public var error: String?
+
+    public init(
+        paymentMethods: [PrimerComposablePaymentMethod] = [],
+        isLoading: Bool = false,
+        selectedPaymentMethod: PrimerComposablePaymentMethod? = nil,
+        searchQuery: String = "",
+        filteredPaymentMethods: [PrimerComposablePaymentMethod] = [],
+        categorizedPaymentMethods: [(category: String, methods: [PrimerComposablePaymentMethod])] = [],
+        error: String? = nil
+    ) {
+        self.paymentMethods = paymentMethods
+        self.isLoading = isLoading
+        self.selectedPaymentMethod = selectedPaymentMethod
+        self.searchQuery = searchQuery
+        self.filteredPaymentMethods = filteredPaymentMethods
+        self.categorizedPaymentMethods = categorizedPaymentMethods
+        self.error = error
+    }
+
+    public static func == (lhs: PrimerPaymentMethodSelectionState, rhs: PrimerPaymentMethodSelectionState) -> Bool {
+        return lhs.paymentMethods == rhs.paymentMethods &&
+            lhs.isLoading == rhs.isLoading &&
+            lhs.selectedPaymentMethod == rhs.selectedPaymentMethod &&
+            lhs.searchQuery == rhs.searchQuery &&
+            lhs.filteredPaymentMethods == rhs.filteredPaymentMethods &&
+            lhs.error == rhs.error &&
+            lhs.categorizedPaymentMethods.count == rhs.categorizedPaymentMethods.count &&
+            zip(lhs.categorizedPaymentMethods, rhs.categorizedPaymentMethods).allSatisfy { left, right in
+                left.category == right.category && left.methods == right.methods
+            }
     }
 }
 

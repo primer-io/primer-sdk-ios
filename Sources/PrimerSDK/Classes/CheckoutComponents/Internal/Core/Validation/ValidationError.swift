@@ -16,4 +16,15 @@ import Foundation
 public struct ValidationError: Equatable, Hashable, Codable {
     let code: String
     let message: String
+
+    public init(code: String, message: String) {
+        self.code = code
+        self.message = message
+    }
+
+    // Legacy initializer for compatibility
+    internal init(field: String, message: String) {
+        self.code = "invalid-\(field)"
+        self.message = message
+    }
 }

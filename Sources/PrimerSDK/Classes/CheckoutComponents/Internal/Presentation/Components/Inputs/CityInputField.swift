@@ -92,12 +92,12 @@ internal struct CityInputField: View, LogReporter {
         guard let validationService = validationService else { return }
 
         let result = validationService.validate(
-            value: city,
-            for: .city
+            input: city,
+            with: CityRule()
         )
 
         isValid = result.isValid
-        errorMessage = result.errors.first?.message
+        errorMessage = result.errorMessage
         onValidationChange?(result.isValid)
     }
 }

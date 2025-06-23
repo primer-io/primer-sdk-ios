@@ -239,7 +239,7 @@ private struct CVVTextField: UIViewRepresentable, LogReporter {
             let result = cvvRule.validate(cvv)
 
             isValid = result.isValid
-            errorMessage = result.errors.first?.message
+            errorMessage = result.errorMessage
             onValidationChange?(result.isValid)
         }
     }

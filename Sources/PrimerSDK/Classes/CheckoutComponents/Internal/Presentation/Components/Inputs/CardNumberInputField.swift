@@ -301,13 +301,13 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
         }
 
         private func validateCardNumber() {
-            let result = validationService.validate(
-                value: cardNumber,
-                for: .cardNumber
+            let result = validationService.validateField(
+                type: .cardNumber,
+                value: cardNumber
             )
 
             isValid = result.isValid
-            errorMessage = result.errors.first?.message
+            errorMessage = result.errorMessage
             onValidationChange?(result.isValid)
         }
     }

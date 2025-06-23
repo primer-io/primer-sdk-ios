@@ -335,8 +335,8 @@ private struct PhoneNumberInputField: View {
 
     private func validatePhoneNumber() {
         guard let validationService = validationService else { return }
-        let result = validationService.validate(value: phoneNumber, for: .phoneNumber)
-        errorMessage = result.errors.first?.message
+        let result = validationService.validate(input: phoneNumber, with: PhoneNumberRule())
+        errorMessage = result.errorMessage
         onValidationChange?(result.isValid)
     }
 }

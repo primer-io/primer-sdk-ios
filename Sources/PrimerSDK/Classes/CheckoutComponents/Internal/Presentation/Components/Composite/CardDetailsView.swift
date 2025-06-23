@@ -54,21 +54,21 @@ internal struct CardDetailsView: View {
                     onExpiryDateChange: { _ in
                         // Already handled by month/year callbacks
                     },
+                    onValidationChange: { isValid in
+                        isExpiryValid = isValid
+                    },
                     onMonthChange: { month in
                         cardFormScope.updateExpiryMonth(month)
                     },
                     onYearChange: { year in
                         cardFormScope.updateExpiryYear(year)
-                    },
-                    onValidationChange: { isValid in
-                        isExpiryValid = isValid
                     }
                 )
 
                 // CVV
                 CVVInputField(
                     label: "CVV",
-                    placeholder: cardNetwork.validation?.code.placeholder ?? "123",
+                    placeholder: cardNetwork.validation?.code.name ?? "CVV",
                     cardNetwork: cardNetwork,
                     onCvvChange: { cvv in
                         cardFormScope.updateCvv(cvv)

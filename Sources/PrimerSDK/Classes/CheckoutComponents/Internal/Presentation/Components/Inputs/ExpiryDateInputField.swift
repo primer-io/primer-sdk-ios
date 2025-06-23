@@ -319,16 +319,27 @@ private struct ExpiryDateTextField: UIViewRepresentable, LogReporter {
         }
 
         private func validateExpiryDate() {
-            // Remove separator for validation
-            let cleanedValue = expiryDate.replacingOccurrences(of: "/", with: "")
+            // Parse MM/YY format
+            let components = expiryDate.components(separatedBy: "/")
 
+            guard components.count == 2 else {
+                isValid = false
+                errorMessage = "Invalid expiry date format"
+                onValidationChange?(false)
+                return
+            }
+
+            let month = components[0].trimmingCharacters(in: .whitespacesAndNewlines)
+            let year = components[1].trimmingCharacters(in: .whitespacesAndNewlines)
+
+            let expiryInput = ExpiryDateInput(month: month, year: year)
             let result = validationService.validate(
-                value: cleanedValue,
-                for: .expiryDate
+                input: expiryInput,
+                with: ExpiryDateRule()
             )
 
             isValid = result.isValid
-            errorMessage = result.errors.first?.message
+            errorMessage = result.errorMessage
             onValidationChange?(result.isValid)
         }
     }

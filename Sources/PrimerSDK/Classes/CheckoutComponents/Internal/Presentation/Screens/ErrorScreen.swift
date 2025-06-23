@@ -20,7 +20,7 @@ internal struct ErrorScreen: View {
             // Error icon
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 48))
-                .foregroundColor(tokens?.primerColorError ?? .red)
+                .foregroundColor(tokens?.primerColorBorderOutlinedError ?? .red)
 
             // Error title
             Text("Something went wrong")
@@ -44,7 +44,7 @@ internal struct ErrorScreen: View {
                         .foregroundColor(.white)
                         .padding(.horizontal, 32)
                         .padding(.vertical, 12)
-                        .background(tokens?.primerColorPrimary ?? .blue)
+                        .background(tokens?.primerColorTextPrimary ?? .blue)
                         .cornerRadius(8)
                 }
                 .padding(.top, 16)

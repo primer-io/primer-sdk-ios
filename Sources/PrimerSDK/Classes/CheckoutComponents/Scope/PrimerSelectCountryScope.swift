@@ -13,7 +13,7 @@ import SwiftUI
 public protocol PrimerSelectCountryScope: AnyObject {
 
     /// The current state of the country selection as an async stream.
-    var state: AsyncStream<State> { get }
+    var state: AsyncStream<PrimerSelectCountryState> { get }
 
     // MARK: - Navigation Methods
 
@@ -34,43 +34,44 @@ public protocol PrimerSelectCountryScope: AnyObject {
 
     /// The entire country selection screen.
     /// Default implementation provides searchable country list.
-    var screen: (@ViewBuilder (_ scope: PrimerSelectCountryScope) -> any View)? { get set }
+    var screen: ((_ scope: PrimerSelectCountryScope) -> AnyView)? { get set }
 
     /// Search bar component for filtering countries.
     /// Default implementation provides standard search input.
-    var searchBar: (@ViewBuilder (_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) -> any View)? { get set }
+    var searchBar: ((_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) -> AnyView)? { get set }
 
     /// Individual country row/item component.
     /// Default implementation shows flag and country name.
-    var countryItem: (@ViewBuilder (_ country: PrimerCountry, _ onSelect: @escaping () -> Void) -> any View)? { get set }
+    var countryItem: ((_ country: PrimerCountry, _ onSelect: @escaping () -> Void) -> AnyView)? { get set }
 
-    // MARK: - State Definition
+}
 
-    /// Represents the current state of countries and search functionality.
-    struct State: Equatable {
-        /// Complete list of all available countries.
-        public var countries: [PrimerCountry] = []
+// MARK: - State Definition
 
-        /// Filtered list based on current search query.
-        public var filteredCountries: [PrimerCountry] = []
+/// Represents the current state of countries and search functionality.
+public struct PrimerSelectCountryState: Equatable {
+    /// Complete list of all available countries.
+    public var countries: [PrimerCountry] = []
 
-        /// Current search query text.
-        public var searchQuery: String = ""
+    /// Filtered list based on current search query.
+    public var filteredCountries: [PrimerCountry] = []
 
-        /// Indicates if countries are being loaded.
-        public var isLoading: Bool = false
+    /// Current search query text.
+    public var searchQuery: String = ""
 
-        public init(
-            countries: [PrimerCountry] = [],
-            filteredCountries: [PrimerCountry] = [],
-            searchQuery: String = "",
-            isLoading: Bool = false
-        ) {
-            self.countries = countries
-            self.filteredCountries = filteredCountries
-            self.searchQuery = searchQuery
-            self.isLoading = isLoading
-        }
+    /// Indicates if countries are being loaded.
+    public var isLoading: Bool = false
+
+    public init(
+        countries: [PrimerCountry] = [],
+        filteredCountries: [PrimerCountry] = [],
+        searchQuery: String = "",
+        isLoading: Bool = false
+    ) {
+        self.countries = countries
+        self.filteredCountries = filteredCountries
+        self.searchQuery = searchQuery
+        self.isLoading = isLoading
     }
 }
 

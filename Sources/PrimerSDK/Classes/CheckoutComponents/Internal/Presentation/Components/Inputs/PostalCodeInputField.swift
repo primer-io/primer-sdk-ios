@@ -109,7 +109,7 @@ internal struct PostalCodeInputField: View, LogReporter {
         let result = postalCodeRule.validate(postalCode)
 
         isValid = result.isValid
-        errorMessage = result.errors.first?.message
+        errorMessage = result.errorMessage
         onValidationChange?(result.isValid)
     }
 }

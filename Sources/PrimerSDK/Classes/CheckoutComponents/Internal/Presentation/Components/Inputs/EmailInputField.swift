@@ -54,10 +54,10 @@ internal struct EmailInputField: View, LogReporter {
             TextField(placeholder, text: $email)
                 .keyboardType(.emailAddress)
                 .autocapitalization(.none)
-                .autocorrectionType(.no)
+                .disableAutocorrection(true)
                 .textContentType(.emailAddress)
                 .padding()
-                .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
+                .background(Color(.systemGray6))
                 .cornerRadius(8)
                 .onChange(of: email) { newValue in
                     onEmailChange?(newValue)
@@ -94,12 +94,12 @@ internal struct EmailInputField: View, LogReporter {
         guard let validationService = validationService else { return }
 
         let result = validationService.validate(
-            value: email,
-            for: .email
+            input: email,
+            with: EmailRule()
         )
 
         isValid = result.isValid
-        errorMessage = result.errors.first?.message
+        errorMessage = result.errorMessage
         onValidationChange?(result.isValid)
     }
 }

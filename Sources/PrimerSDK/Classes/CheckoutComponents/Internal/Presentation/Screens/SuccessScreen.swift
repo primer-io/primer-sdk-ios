@@ -21,7 +21,7 @@ internal struct SuccessScreen: View {
             // Success animation
             ZStack {
                 Circle()
-                    .fill(tokens?.primerColorSuccess ?? .green)
+                    .fill(tokens?.primerColorIconPositive ?? .green)
                     .frame(width: 80, height: 80)
                     .scaleEffect(showCheckmark ? 1.0 : 0.5)
                     .opacity(showCheckmark ? 1.0 : 0.0)
@@ -46,23 +46,11 @@ internal struct SuccessScreen: View {
 
             // Payment details
             VStack(spacing: 8) {
-                if let orderId = paymentResult.orderId {
-                    HStack {
-                        Text("Order ID:")
-                            .font(.caption)
-                            .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                        Text(orderId)
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-                    }
-                }
-
                 HStack {
                     Text("Payment ID:")
                         .font(.caption)
                         .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                    Text(paymentResult.id)
+                    Text(paymentResult.paymentId)
                         .font(.caption)
                         .fontWeight(.medium)
                         .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
@@ -79,7 +67,7 @@ internal struct SuccessScreen: View {
                         .foregroundColor(.white)
                         .padding(.horizontal, 32)
                         .padding(.vertical, 12)
-                        .background(tokens?.primerColorPrimary ?? .blue)
+                        .background(tokens?.primerColorTextPrimary ?? .blue)
                         .cornerRadius(8)
                 }
                 .padding(.top, 16)

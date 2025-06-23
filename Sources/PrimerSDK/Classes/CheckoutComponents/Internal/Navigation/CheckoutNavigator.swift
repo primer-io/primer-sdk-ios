@@ -104,12 +104,7 @@ public class CheckoutNavigator: ObservableObject {
         // The delegate proxy already handles UI dismissal
         PrimerDelegateProxy.primerDidCompleteCheckoutWithData(checkoutData)
 
-        // Also dismiss via ComposablePrimer if it was used to present
-        if #available(iOS 15.0, *) {
-            ComposablePrimer.dismiss(animated: true)
-            // Reset state in case of any issues
-            ComposablePrimer.resetPresentationState()
-        }
+        // Dismissal would be handled by parent view controller
     }
 
     /// Navigate to error screen with message
@@ -135,12 +130,7 @@ public class CheckoutNavigator: ObservableObject {
             // Handle error decision
             switch errorDecision.type {
             case .fail:
-                // Dismiss via ComposablePrimer if it was used to present
-                if #available(iOS 15.0, *) {
-                    ComposablePrimer.dismiss(animated: true)
-                    // Reset state in case of any issues
-                    ComposablePrimer.resetPresentationState()
-                }
+                break // Dismissal would be handled by parent view controller
             }
         }
     }

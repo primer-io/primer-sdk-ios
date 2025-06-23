@@ -14,7 +14,7 @@ import SwiftUI
 public enum CheckoutStyle {
     /// Traditional UIKit-based Drop-in checkout system
     case dropIn
-    /// Modern SwiftUI-based ComposableCheckout system (iOS 15+ required)
+    /// Modern SwiftUI-based CheckoutComponents system (iOS 15+ required)
     case composable
     /// Automatically choose based on iOS version and availability
     case automatic
@@ -116,7 +116,7 @@ final class PrimerUIManager: PrimerUIManaging {
     private func resolveCheckoutStyle(_ style: CheckoutStyle) -> CheckoutStyle {
         switch style {
         case .automatic:
-            // Choose ComposableCheckout for iOS 15+, otherwise Drop-in
+            // Choose CheckoutComponents for iOS 15+, otherwise Drop-in
             if #available(iOS 15.0, *) {
                 return .composable
             } else {
@@ -148,7 +148,7 @@ final class PrimerUIManager: PrimerUIManaging {
         // Get the presenting view controller
         guard let presentingViewController = PrimerUIManager.primerRootViewController else {
             let error = PrimerError.unableToPresentPaymentMethod(
-                paymentMethodType: "ComposableCheckout",
+                paymentMethodType: "CheckoutComponents",
                 userInfo: .errorUserInfoDictionary(
                     additionalInfo: ["message": "No presenting view controller found"]
                 ),
@@ -158,8 +158,8 @@ final class PrimerUIManager: PrimerUIManaging {
             return
         }
 
-        // Use the new ComposablePrimer API
-        ComposablePrimer.presentCheckout(
+        // Use the new CheckoutComponentsPrimer API
+        CheckoutComponentsPrimer.presentCheckout(
             with: clientToken,
             from: presentingViewController
         ) {

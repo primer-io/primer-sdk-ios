@@ -137,6 +137,8 @@ class MerchantHeadlessCheckoutRawDataViewController: UIViewController {
                     break
                 case .all:
                     break
+                case .email:
+                    break
                 }
             }
 

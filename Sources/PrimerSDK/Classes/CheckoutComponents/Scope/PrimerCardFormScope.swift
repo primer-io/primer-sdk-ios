@@ -6,14 +6,16 @@
 //
 
 import SwiftUI
+import UIKit
 
 /// Scope interface for card form interactions, state management, and UI customization.
 /// This protocol matches the Android Composable API exactly with all 15 update methods.
+@available(iOS 15.0, *)
 @MainActor
 public protocol PrimerCardFormScope: AnyObject {
 
     /// The current state of the card form as an async stream.
-    var state: AsyncStream<State> { get }
+    var state: AsyncStream<PrimerCardFormState> { get }
 
     // MARK: - Navigation Methods
 
@@ -76,6 +78,18 @@ public protocol PrimerCardFormScope: AnyObject {
     /// Updates the email field.
     func updateEmail(_ email: String)
 
+    /// Updates the expiry month field.
+    func updateExpiryMonth(_ month: String)
+
+    /// Updates the expiry year field.
+    func updateExpiryYear(_ year: String)
+
+    /// Updates the selected card network field (for co-badged cards).
+    func updateSelectedCardNetwork(_ network: String)
+
+    /// Updates the country code field.
+    func updateCountryCode(_ countryCode: String)
+
     // MARK: - Nested Scope
 
     /// Scope for country selection functionality.
@@ -85,61 +99,69 @@ public protocol PrimerCardFormScope: AnyObject {
 
     /// The entire card form screen.
     /// Default implementation provides standard card form layout.
-    var screen: (@ViewBuilder (_ scope: PrimerCardFormScope) -> any View)? { get set }
+    var screen: ((_ scope: PrimerCardFormScope) -> AnyView)? { get set }
 
     /// Submit button component.
-    var submitButton: (@ViewBuilder (_ modifier: PrimerModifier, _ text: String) -> any View)? { get set }
+    var submitButton: ((_ modifier: PrimerModifier, _ text: String) -> AnyView)? { get set }
 
     /// Card number input field.
-    var cardNumberInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)? { get set }
+    var cardNumberInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
 
     /// CVV/CVC input field.
-    var cvvInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)? { get set }
+    var cvvInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
 
     /// Expiry date input field.
-    var expiryDateInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)? { get set }
+    var expiryDateInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
 
     /// Cardholder name input field.
-    var cardholderNameInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)? { get set }
+    var cardholderNameInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
 
     /// Postal code input field.
-    var postalCodeInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)? { get set }
+    var postalCodeInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
 
     /// Country code input field with selection.
-    var countryCodeInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)? { get set }
+    var countryCodeInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
 
     /// City input field.
-    var cityInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)? { get set }
+    var cityInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
 
     /// State/province input field.
-    var stateInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)? { get set }
+    var stateInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
 
     /// First address line input field.
-    var addressLine1Input: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)? { get set }
+    var addressLine1Input: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
 
     /// Second address line input field.
-    var addressLine2Input: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)? { get set }
+    var addressLine2Input: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
 
     /// Phone number input field.
-    var phoneNumberInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)? { get set }
+    var phoneNumberInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
 
     /// First name input field.
-    var firstNameInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)? { get set }
+    var firstNameInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
 
     /// Last name input field.
-    var lastNameInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)? { get set }
+    var lastNameInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
 
     /// Retail outlet input field (region specific).
-    var retailOutletInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)? { get set }
+    var retailOutletInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
 
     /// OTP code input field.
-    var otpCodeInput: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)? { get set }
+    var otpCodeInput: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
 
     /// Composite component for card details section.
-    var cardDetails: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)? { get set }
+    var cardDetails: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
 
     /// Composite component for billing address section.
-    var billingAddress: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)? { get set }
+    var billingAddress: ((_ modifier: PrimerModifier) -> AnyView)? { get set }
+
+    /// Co-badged cards selection view for dual-network cards.
+    /// Shown when a card supports multiple networks (e.g., Visa/Mastercard).
+    var cobadgedCardsView: ((_ availableNetworks: [String], _ selectNetwork: @escaping (String) -> Void) -> AnyView)? { get set }
+
+    /// Error message display component.
+    /// Default implementation shows error text in red.
+    var errorView: ((_ error: String) -> AnyView)? { get set }
 
     // MARK: - Future Features (Vaulting Support)
 
@@ -160,64 +182,84 @@ public protocol PrimerCardFormScope: AnyObject {
     /// Select a saved card (Future feature).
     // func selectSavedCard(_ cardId: String)
 
-    // MARK: - State Definition
+}
 
-    /// Represents the current state of all form fields and submission status.
-    struct State: Equatable {
-        public var cardNumber: String = ""
-        public var cvv: String = ""
-        public var expiryDate: String = ""
-        public var cardholderName: String = ""
-        public var postalCode: String = ""
-        public var countryCode: String = ""
-        public var city: String = ""
-        public var state: String = ""
-        public var addressLine1: String = ""
-        public var addressLine2: String = ""
-        public var phoneNumber: String = ""
-        public var firstName: String = ""
-        public var lastName: String = ""
-        public var retailOutlet: String = ""
-        public var otpCode: String = ""
-        public var email: String = ""
-        public var isSubmitting: Bool = false
+// MARK: - State Definition
 
-        public init(
-            cardNumber: String = "",
-            cvv: String = "",
-            expiryDate: String = "",
-            cardholderName: String = "",
-            postalCode: String = "",
-            countryCode: String = "",
-            city: String = "",
-            state: String = "",
-            addressLine1: String = "",
-            addressLine2: String = "",
-            phoneNumber: String = "",
-            firstName: String = "",
-            lastName: String = "",
-            retailOutlet: String = "",
-            otpCode: String = "",
-            email: String = "",
-            isSubmitting: Bool = false
-        ) {
-            self.cardNumber = cardNumber
-            self.cvv = cvv
-            self.expiryDate = expiryDate
-            self.cardholderName = cardholderName
-            self.postalCode = postalCode
-            self.countryCode = countryCode
-            self.city = city
-            self.state = state
-            self.addressLine1 = addressLine1
-            self.addressLine2 = addressLine2
-            self.phoneNumber = phoneNumber
-            self.firstName = firstName
-            self.lastName = lastName
-            self.retailOutlet = retailOutlet
-            self.otpCode = otpCode
-            self.email = email
-            self.isSubmitting = isSubmitting
-        }
+/// Represents the current state of all form fields and submission status for PrimerCardFormScope.
+@available(iOS 15.0, *)
+public struct PrimerCardFormState: Equatable {
+    public var cardNumber: String = ""
+    public var cvv: String = ""
+    public var expiryDate: String = ""
+    public var cardholderName: String = ""
+    public var postalCode: String = ""
+    public var countryCode: String = ""
+    public var city: String = ""
+    public var state: String = ""
+    public var addressLine1: String = ""
+    public var addressLine2: String = ""
+    public var phoneNumber: String = ""
+    public var firstName: String = ""
+    public var lastName: String = ""
+    public var retailOutlet: String = ""
+    public var otpCode: String = ""
+    public var email: String = ""
+    public var isSubmitting: Bool = false
+    public var isValid: Bool = false
+    public var error: String?
+    public var expiryMonth: String = ""
+    public var expiryYear: String = ""
+    public var selectedCardNetwork: String?
+    public var availableCardNetworks: [String] = []
+
+    public init(
+        cardNumber: String = "",
+        cvv: String = "",
+        expiryDate: String = "",
+        cardholderName: String = "",
+        postalCode: String = "",
+        countryCode: String = "",
+        city: String = "",
+        state: String = "",
+        addressLine1: String = "",
+        addressLine2: String = "",
+        phoneNumber: String = "",
+        firstName: String = "",
+        lastName: String = "",
+        retailOutlet: String = "",
+        otpCode: String = "",
+        email: String = "",
+        isSubmitting: Bool = false,
+        isValid: Bool = false,
+        error: String? = nil,
+        expiryMonth: String = "",
+        expiryYear: String = "",
+        selectedCardNetwork: String? = nil,
+        availableCardNetworks: [String] = []
+    ) {
+        self.cardNumber = cardNumber
+        self.cvv = cvv
+        self.expiryDate = expiryDate
+        self.cardholderName = cardholderName
+        self.postalCode = postalCode
+        self.countryCode = countryCode
+        self.city = city
+        self.state = state
+        self.addressLine1 = addressLine1
+        self.addressLine2 = addressLine2
+        self.phoneNumber = phoneNumber
+        self.firstName = firstName
+        self.lastName = lastName
+        self.retailOutlet = retailOutlet
+        self.otpCode = otpCode
+        self.email = email
+        self.isSubmitting = isSubmitting
+        self.isValid = isValid
+        self.error = error
+        self.expiryMonth = expiryMonth
+        self.expiryYear = expiryYear
+        self.selectedCardNetwork = selectedCardNetwork
+        self.availableCardNetworks = availableCardNetworks
     }
 }

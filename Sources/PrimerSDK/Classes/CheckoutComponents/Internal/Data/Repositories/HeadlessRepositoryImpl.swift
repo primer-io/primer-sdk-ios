@@ -103,7 +103,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             expiresAt: Date().addingTimeInterval(3600),
             cardDetails: TokenizationResult.CardDetails(
                 last4: String(cardNumber.suffix(4)),
-                network: selectedNetwork?.type ?? "VISA",
+                network: selectedNetwork?.rawValue ?? "VISA",
                 expiryMonth: Int(expiryMonth) ?? 1,
                 expiryYear: Int(expiryYear) ?? 2025
             )
@@ -131,8 +131,8 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             let firstSix = String(cardNumber.prefix(6))
             if isFrenchhCardBIN(firstSix) {
                 return [
-                    CardNetwork(type: "CARTES_BANCAIRES", displayName: "Cartes Bancaires", iconName: "cartes_bancaires"),
-                    CardNetwork(type: "VISA", displayName: "Visa", iconName: "visa")
+                    .cartesBancaires,
+                    .visa
                 ]
             }
         }

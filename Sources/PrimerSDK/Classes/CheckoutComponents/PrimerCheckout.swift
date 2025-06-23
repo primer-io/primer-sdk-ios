@@ -31,6 +31,7 @@ import SwiftUI
 ///     }
 /// )
 /// ```
+@available(iOS 15.0, *)
 @MainActor
 public struct PrimerCheckout: View {
 
@@ -66,7 +67,7 @@ public struct PrimerCheckout: View {
         self.settings = settings
         self.scope = scope
         self.customContent = nil
-        self.diContainer = DIContainer()
+        self.diContainer = DIContainer.shared
         self.navigator = CheckoutNavigator()
     }
 
@@ -118,6 +119,7 @@ public struct PrimerCheckout: View {
 // MARK: - Internal Implementation
 
 /// Internal checkout implementation that manages the full checkout flow.
+@available(iOS 15.0, *)
 @MainActor
 internal struct InternalCheckout: View {
     let clientToken: String
@@ -161,52 +163,49 @@ internal struct InternalCheckout: View {
                 switch checkoutScope.navigationState {
                 case .loading:
                     if let customLoading = checkoutScope.loadingScreen {
-                        customLoading()
+                        AnyView(customLoading())
                     } else {
-                        LoadingScreen()
+                        AnyView(LoadingScreen())
                     }
 
                 case .paymentMethodSelection:
                     if let customPaymentSelection = checkoutScope.paymentMethodSelectionScreen {
-                        customPaymentSelection(checkoutScope.paymentMethodSelection)
+                        AnyView(customPaymentSelection(checkoutScope.paymentMethodSelection))
                     } else {
-                        PaymentMethodSelectionScreen(
-                            scope: checkoutScope.paymentMethodSelection,
-                            onDismiss: checkoutScope.onDismiss
-                        )
+                        AnyView(PaymentMethodSelectionScreen(
+                            scope: checkoutScope.paymentMethodSelection
+                        ))
                     }
 
                 case .cardForm:
                     if let customCardForm = checkoutScope.cardFormScreen {
-                        customCardForm(checkoutScope.cardForm)
+                        AnyView(customCardForm(checkoutScope.cardForm))
                     } else {
-                        CardFormScreen(
-                            scope: checkoutScope.cardForm,
-                            onDismiss: checkoutScope.onDismiss
-                        )
+                        AnyView(CardFormScreen(
+                            scope: checkoutScope.cardForm
+                        ))
                     }
 
                 case .success(let result):
                     if let customSuccess = checkoutScope.successScreen {
-                        customSuccess()
+                        AnyView(customSuccess())
                     } else {
-                        SuccessScreen(
-                            result: result,
+                        AnyView(SuccessScreen(
+                            paymentResult: result,
                             onDismiss: checkoutScope.onDismiss
-                        )
+                        ))
                     }
 
                 case .error(let error):
                     if let customError = checkoutScope.errorScreen {
-                        customError(error.localizedDescription)
+                        AnyView(customError(error.localizedDescription))
                     } else {
-                        ErrorScreen(
+                        AnyView(ErrorScreen(
                             error: error,
                             onRetry: {
                                 // Retry logic would go here
-                            },
-                            onDismiss: checkoutScope.onDismiss
-                        )
+                            }
+                        ))
                     }
                 }
 
@@ -216,8 +215,7 @@ internal struct InternalCheckout: View {
                 }
             }
             .environmentObject(checkoutScope)
-            .environment(\.diContainer, diContainer)
-            .environment(\.checkoutNavigator, navigator)
+            .environment(\.diContainer, DIContainer.currentSync)
         }
         .onAppear {
             // Apply any scope customizations
