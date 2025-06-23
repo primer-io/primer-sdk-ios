@@ -141,6 +141,25 @@ public protocol PrimerCardFormScope: AnyObject {
     /// Composite component for billing address section.
     var billingAddress: (@ViewBuilder (_ modifier: PrimerModifier) -> any View)? { get set }
     
+    // MARK: - Future Features (Vaulting Support)
+    
+    // The following features are placeholders for future vaulting functionality.
+    // They are commented out to indicate planned support but are not yet implemented.
+    
+    /// Save card toggle for vaulting (Future feature).
+    /// When enabled, allows users to save their card for future payments.
+    // var saveCardToggle: (@ViewBuilder (_ isOn: Binding<Bool>, _ modifier: PrimerModifier) -> any View)? { get set }
+    
+    /// Saved cards selector (Future feature).
+    /// When enabled, shows previously saved cards for selection.
+    // var savedCardsSelector: (@ViewBuilder (_ savedCards: [SavedCard], _ onSelect: @escaping (SavedCard) -> Void) -> any View)? { get set }
+    
+    /// Update method for save card preference (Future feature).
+    // func updateSaveCard(_ save: Bool)
+    
+    /// Select a saved card (Future feature).
+    // func selectSavedCard(_ cardId: String)
+    
     // MARK: - State Definition
     
     /// Represents the current state of all form fields and submission status.

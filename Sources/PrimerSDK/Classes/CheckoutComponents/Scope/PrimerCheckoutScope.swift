@@ -45,6 +45,26 @@ public protocol PrimerCheckoutScope: AnyObject {
     /// Scope for payment method selection screen.
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope { get }
     
+    // MARK: - Future Payment Method Scopes
+    
+    // The following payment method scopes are placeholders for future functionality.
+    // They are commented out to indicate planned support but are not yet implemented.
+    
+    /// Apple Pay scope (Future feature).
+    // var applePay: PrimerApplePayScope { get }
+    
+    /// PayPal scope (Future feature).
+    // var payPal: PrimerPayPalScope { get }
+    
+    /// Google Pay scope (Future feature).
+    // var googlePay: PrimerGooglePayScope { get }
+    
+    /// Bank transfer scope (Future feature).
+    // var bankTransfer: PrimerBankTransferScope { get }
+    
+    /// Klarna scope (Future feature).
+    // var klarna: PrimerKlarnaScope { get }
+    
     // MARK: - Navigation
     
     /// Dismisses the checkout flow.
