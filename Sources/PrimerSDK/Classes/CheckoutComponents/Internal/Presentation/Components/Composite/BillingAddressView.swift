@@ -79,8 +79,8 @@ internal struct BillingAddressView: View {
                 HStack(spacing: 16) {
                     if configuration.showFirstName {
                         NameInputField(
-                            label: "First Name",
-                            placeholder: "John",
+                            label: CheckoutComponentsStrings.firstNameLabel,
+                            placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
                             inputType: .firstName,
                             onNameChange: { name in
                                 cardFormScope.updateFirstName(name)
@@ -93,8 +93,8 @@ internal struct BillingAddressView: View {
 
                     if configuration.showLastName {
                         NameInputField(
-                            label: "Last Name",
-                            placeholder: "Doe",
+                            label: CheckoutComponentsStrings.lastNameLabel,
+                            placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
                             inputType: .lastName,
                             onNameChange: { name in
                                 cardFormScope.updateLastName(name)
@@ -110,8 +110,8 @@ internal struct BillingAddressView: View {
             // Email
             if configuration.showEmail {
                 EmailInputField(
-                    label: "Email",
-                    placeholder: "john.doe@example.com",
+                    label: CheckoutComponentsStrings.emailLabel,
+                    placeholder: CheckoutComponentsStrings.emailPlaceholder,
                     onEmailChange: { email in
                         cardFormScope.updateEmail(email)
                     },
@@ -124,8 +124,8 @@ internal struct BillingAddressView: View {
             // Phone Number
             if configuration.showPhoneNumber {
                 PhoneNumberInputField(
-                    label: "Phone Number",
-                    placeholder: "+1 (555) 123-4567",
+                    label: CheckoutComponentsStrings.phoneNumberLabel,
+                    placeholder: CheckoutComponentsStrings.phoneNumberPlaceholder,
                     onPhoneNumberChange: { phone in
                         cardFormScope.updatePhoneNumber(phone)
                     },
@@ -138,8 +138,8 @@ internal struct BillingAddressView: View {
             // Address Line 1
             if configuration.showAddressLine1 {
                 AddressLineInputField(
-                    label: "Address Line 1",
-                    placeholder: "123 Main Street",
+                    label: CheckoutComponentsStrings.addressLine1Label,
+                    placeholder: CheckoutComponentsStrings.addressLine1Placeholder,
                     isRequired: true,
                     inputType: .addressLine1,
                     onAddressChange: { address in
@@ -154,8 +154,8 @@ internal struct BillingAddressView: View {
             // Address Line 2
             if configuration.showAddressLine2 {
                 AddressLineInputField(
-                    label: "Address Line 2 (Optional)",
-                    placeholder: "Apartment, suite, etc.",
+                    label: CheckoutComponentsStrings.addressLine2Label,
+                    placeholder: CheckoutComponentsStrings.addressLine2Placeholder,
                     isRequired: false,
                     inputType: .addressLine2,
                     onAddressChange: { address in
@@ -172,8 +172,8 @@ internal struct BillingAddressView: View {
                 HStack(spacing: 16) {
                     if configuration.showCity {
                         CityInputField(
-                            label: "City",
-                            placeholder: "New York",
+                            label: CheckoutComponentsStrings.cityLabel,
+                            placeholder: CheckoutComponentsStrings.cityPlaceholder,
                             onCityChange: { city in
                                 cardFormScope.updateCity(city)
                             },
@@ -185,8 +185,8 @@ internal struct BillingAddressView: View {
 
                     if configuration.showState {
                         StateInputField(
-                            label: "State",
-                            placeholder: "NY",
+                            label: CheckoutComponentsStrings.stateLabel,
+                            placeholder: CheckoutComponentsStrings.statePlaceholder,
                             onStateChange: { state in
                                 cardFormScope.updateState(state)
                             },
@@ -204,7 +204,7 @@ internal struct BillingAddressView: View {
                 HStack(spacing: 16) {
                     if configuration.showPostalCode {
                         PostalCodeInputField(
-                            label: "Postal Code",
+                            label: CheckoutComponentsStrings.postalCodeLabel,
                             placeholder: postalCodePlaceholder,
                             countryCode: selectedCountryCode,
                             onPostalCodeChange: { postalCode in
@@ -219,8 +219,8 @@ internal struct BillingAddressView: View {
 
                     if configuration.showCountry {
                         CountryInputField(
-                            label: "Country",
-                            placeholder: "Select Country",
+                            label: CheckoutComponentsStrings.countryLabel,
+                            placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
                             onCountryChange: { _ in
                                 // Country name handled by code callback
                             },
@@ -242,7 +242,7 @@ internal struct BillingAddressView: View {
         .sheet(isPresented: $showCountrySelector) {
             // Country selector would go here
             // For now, just a placeholder
-            Text("Country Selector")
+            Text(CheckoutComponentsStrings.countrySelectorPlaceholder)
                 .padding()
         }
     }

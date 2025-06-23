@@ -226,6 +226,8 @@ The SDK supports multiple Package.swift files for different features:
 - Default implementations: `DefaultCardFormScope.swift`, `DefaultCheckoutScope.swift`
 - Validation system: `ValidationService.swift`, `RulesFactory.swift`
 - Input components: `CardNumberInputField.swift`, `ExpiryDateInputField.swift`, etc.
+- Navigation system: `CheckoutNavigator.swift`, `CheckoutCoordinator.swift`, `CheckoutRoute.swift`
+- Navigation utilities: `PaymentMethodConverter.swift`, `NavigationAnimationConfig.swift`
 
 ### Security Considerations
 
@@ -285,6 +287,9 @@ The CheckoutComponents framework has been fully implemented with:
 - **Validation Rules**: Complete validation system with EmailRule, ExpiryDateRule, etc.
 - **Input Components**: All form fields with proper validation and formatting
 - **Error Handling**: Comprehensive error display and state management
+- **Navigation System**: Complete state-driven navigation with 6 navigation files, NO Combine usage
+- **AsyncStream Navigation**: Navigation events via AsyncStream instead of Combine publishers
+- **Cross-Scope Integration**: Proper navigation integration between all scopes and screens
 
 ### Architecture Patterns Used ✅
 - **Scope Protocol Pattern**: Each scope defines its interface and customization points
@@ -292,6 +297,9 @@ The CheckoutComponents framework has been fully implemented with:
 - **Repository Pattern**: HeadlessRepositoryImpl handles SDK integration
 - **Interactor Pattern**: Business logic separation from presentation
 - **Reactive State Management**: AsyncStream for state updates
+- **Navigation Coordinator Pattern**: State-driven navigation with CheckoutCoordinator and CheckoutNavigator
+- **Route-Based Navigation**: NavigationRoute protocol with enum-based route definitions
+- **Environment-Based Navigation**: SwiftUI Environment integration for navigation dependency injection
 
 ### Build Status ✅
 - All compilation errors resolved

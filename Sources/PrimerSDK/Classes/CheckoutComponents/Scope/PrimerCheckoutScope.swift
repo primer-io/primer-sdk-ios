@@ -86,7 +86,7 @@ public enum PrimerCheckoutState: Equatable {
     case dismissed
 
     /// An error occurred during checkout.
-    case error(PrimerError)
+    case failure(PrimerError)
 
     public static func == (lhs: PrimerCheckoutState, rhs: PrimerCheckoutState) -> Bool {
         switch (lhs, rhs) {
@@ -94,7 +94,7 @@ public enum PrimerCheckoutState: Equatable {
              (.ready, .ready),
              (.dismissed, .dismissed):
             return true
-        case let (.error(lhsError), .error(rhsError)):
+        case let (.failure(lhsError), .failure(rhsError)):
             return lhsError.errorId == rhsError.errorId
         default:
             return false

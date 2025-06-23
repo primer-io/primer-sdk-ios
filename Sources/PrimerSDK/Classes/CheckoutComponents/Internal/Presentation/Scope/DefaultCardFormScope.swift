@@ -227,26 +227,30 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
     }
 
     public func onBack() {
-        // Navigate back implementation would go here
         logger.debug(message: "Card form back navigation")
+        checkoutScope?.checkoutNavigator.navigateBack()
     }
 
     public func onCancel() {
-        // Cancel implementation would go here
         logger.debug(message: "Card form cancelled")
+        checkoutScope?.checkoutNavigator.navigateToPaymentSelection()
     }
 
     public func navigateToCountrySelection() {
-        // Country selection navigation would go here
         logger.debug(message: "Navigate to country selection")
+        checkoutScope?.checkoutNavigator.navigateToCountrySelection()
     }
 
     // MARK: - Nested Scope
 
+    private var _selectCountry: DefaultSelectCountryScope?
     public var selectCountry: PrimerSelectCountryScope {
-        // This would return a proper country selection scope implementation
-        // For now returning a placeholder
-        return DefaultSelectCountryScope()
+        if let existing = _selectCountry {
+            return existing
+        }
+        let scope = DefaultSelectCountryScope(cardFormScope: self, checkoutScope: checkoutScope)
+        _selectCountry = scope
+        return scope
     }
 
     // MARK: - Screen Customization

@@ -40,7 +40,7 @@ internal struct CardFormScreen: View {
     }
 
     private var titleSection: some View {
-        Text("Card Payment")
+        Text(CheckoutComponentsStrings.cardPaymentTitle)
             .font(.title2)
             .fontWeight(.semibold)
             .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
@@ -102,7 +102,7 @@ internal struct CardFormScreen: View {
 
     private var billingAddressToggleContent: some View {
         HStack {
-            Text("Billing Address")
+            Text(CheckoutComponentsStrings.billingAddressTitle)
                 .font(.body)
                 .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
 
@@ -159,7 +159,7 @@ internal struct CardFormScreen: View {
                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                     .scaleEffect(0.8)
             } else {
-                Text("Pay")
+                Text(CheckoutComponentsStrings.payButton)
             }
         }
         .font(.body)

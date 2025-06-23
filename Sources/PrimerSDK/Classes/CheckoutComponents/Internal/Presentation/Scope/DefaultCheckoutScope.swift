@@ -18,7 +18,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         case paymentMethodSelection
         case cardForm
         case success(PaymentResult)
-        case error(PrimerError)
+        case failure(PrimerError)
     }
 
     // MARK: - Properties
@@ -83,6 +83,13 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     private let navigator: CheckoutNavigator
     private var getPaymentMethodsInteractor: GetPaymentMethodsInteractor?
 
+    // MARK: - Internal Access
+
+    /// Provides access to the navigator for child scopes
+    internal var checkoutNavigator: CheckoutNavigator {
+        navigator
+    }
+
     // MARK: - Other Properties
 
     private let clientToken: String
@@ -117,8 +124,8 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 userInfo: nil,
                 diagnosticsId: UUID().uuidString
             )
-            updateNavigationState(.error(primerError))
-            updateState(.error(primerError))
+            updateNavigationState(.failure(primerError))
+            updateState(.failure(primerError))
         }
     }
 
@@ -140,8 +147,8 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                     userInfo: nil,
                     diagnosticsId: UUID().uuidString
                 )
-                updateNavigationState(.error(error))
-                updateState(.error(error))
+                updateNavigationState(.failure(error))
+                updateState(.failure(error))
             } else {
                 updateState(.ready)
 
@@ -161,8 +168,8 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 userInfo: nil,
                 diagnosticsId: UUID().uuidString
             )
-            updateNavigationState(.error(primerError))
-            updateState(.error(primerError))
+            updateNavigationState(.failure(primerError))
+            updateState(.failure(primerError))
         }
     }
 
@@ -187,7 +194,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
             navigator.navigateToCardForm()
         case .success:
             navigator.navigateToSuccess()
-        case .error(let error):
+        case .failure(let error):
             navigator.navigateToError(error.localizedDescription)
         }
     }
@@ -225,7 +232,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
 
     internal func handlePaymentError(_ error: PrimerError) {
         logger.error(message: "Payment error: \\(error)")
-        updateNavigationState(.error(error))
-        updateState(.error(error))
+        updateNavigationState(.failure(error))
+        updateState(.failure(error))
     }
 }

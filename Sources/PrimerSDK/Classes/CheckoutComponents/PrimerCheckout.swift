@@ -196,7 +196,7 @@ internal struct InternalCheckout: View {
                         ))
                     }
 
-                case .error(let error):
+                case .failure(let error):
                     if let customError = checkoutScope.errorScreen {
                         AnyView(customError(error.localizedDescription))
                     } else {

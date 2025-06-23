@@ -23,13 +23,13 @@ internal struct ErrorScreen: View {
                 .foregroundColor(tokens?.primerColorBorderOutlinedError ?? .red)
 
             // Error title
-            Text("Something went wrong")
+            Text(CheckoutComponentsStrings.somethingWentWrong)
                 .font(.title2)
                 .fontWeight(.semibold)
                 .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
 
             // Error message
-            Text(error.errorDescription ?? "An unexpected error occurred. Please try again.")
+            Text(error.errorDescription ?? CheckoutComponentsStrings.unexpectedError)
                 .font(.body)
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
                 .multilineTextAlignment(.center)
@@ -38,7 +38,7 @@ internal struct ErrorScreen: View {
             // Retry button
             if let onRetry = onRetry {
                 Button(action: onRetry) {
-                    Text("Try Again")
+                    Text(CheckoutComponentsStrings.tryAgainButton)
                         .font(.body)
                         .fontWeight(.medium)
                         .foregroundColor(.white)
