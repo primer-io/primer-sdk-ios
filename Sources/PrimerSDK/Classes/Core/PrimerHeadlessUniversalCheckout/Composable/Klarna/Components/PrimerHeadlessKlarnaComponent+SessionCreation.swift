@@ -42,6 +42,7 @@ extension PrimerHeadlessKlarnaComponent {
      * - Failure: It handles the creation of a payment session error
      */
     func startSession() {
+        // TODO: FINAL_MIGRATION
         firstly {
             handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: PrimerPaymentMethodType.klarna.rawValue))
         }
@@ -168,6 +169,42 @@ extension PrimerHeadlessKlarnaComponent: LogReporter {
                     }
                 }
             }
+        }
+    }
+
+    func handlePrimerWillCreatePaymentEvent(_ paymentMethodData: PrimerPaymentMethodData) async throws {
+        if PrimerInternal.shared.intent == .vault {
+            return
+        }
+
+        let checkoutPaymentMethodType = PrimerCheckoutPaymentMethodType(type: paymentMethodData.type)
+        let checkoutPaymentMethodData = PrimerCheckoutPaymentMethodData(type: checkoutPaymentMethodType)
+
+        var decisionHandlerHasBeenCalled = false
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+            if !decisionHandlerHasBeenCalled {
+                let message =
+                    """
+                    The 'decisionHandler' of 'primerHeadlessUniversalCheckoutWillCreatePaymentWithData' hasn't been called. \
+                    Make sure you call the decision handler otherwise the SDK will hang.
+                    """
+                self?.logger.warn(message: message)
+            }
+        }
+
+        let paymentCreationDecision = try await PrimerDelegateProxy.primerWillCreatePaymentWithData(checkoutPaymentMethodData)
+        decisionHandlerHasBeenCalled = true
+
+        switch paymentCreationDecision.type {
+        case .abort(let errorMessage):
+            let error = PrimerError.merchantError(message: errorMessage ?? "",
+                                                  userInfo: .errorUserInfoDictionary(),
+                                                  diagnosticsId: UUID().uuidString)
+            throw error
+            
+        case .continue:
+            return
         }
     }
 }

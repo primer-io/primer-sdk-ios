@@ -561,6 +561,35 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         }
     }
 
+    override func performPreTokenizationSteps() async throws {
+        let event = Analytics.Event.ui(
+            action: .click,
+            context: Analytics.Event.Property.Context(
+                issuerId: nil,
+                paymentMethodType: self.config.type,
+                url: nil
+            ),
+            extra: nil,
+            objectType: .button,
+            objectId: .select,
+            objectClass: "\(Self.self)",
+            place: .cardForm
+        )
+        try await Analytics.Service.record(event: event)
+
+        let imageView = self.uiModule.makeIconImageView(withDimension: 24.0)
+        await self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView,
+                                                                                 message: nil)
+
+        try validate()
+
+        let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+        try await clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
+        try await presentPaymentMethodUserInterface()
+        try await evaluatePaymentMethodNeedingFurtherUserActions()
+        try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
+    }
+
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
@@ -584,11 +613,22 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         }
     }
 
+    override func performTokenizationStep() async throws {
+        PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
+
+        try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
+        let paymentMethodTokenData = try await tokenize()
+        self.paymentMethodTokenData = paymentMethodTokenData
+        try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
+    }
+
     override func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
         }
     }
+
+    override func performPostTokenizationSteps() async throws {}
 
     override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken, paymentMethodTokenData: PrimerPaymentMethodTokenData) -> Promise<String?> {
         return Promise { seal in
@@ -672,6 +712,85 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         }
     }
 
+    override func handleDecodedClientTokenIfNeeded(_ decodedJWTToken: DecodedJWTToken,
+                                                   paymentMethodTokenData: PrimerPaymentMethodTokenData) async throws -> String? {
+        if decodedJWTToken.intent?.contains("_REDIRECTION") == true {
+            return try await handleRedirectionForDecodedClientToken(decodedJWTToken)
+        } else if decodedJWTToken.intent == RequiredActionName.paymentMethodVoucher.rawValue {
+            return try await handlePaymentMethodVoucherForDecodedClientToken(decodedJWTToken)
+        } else {
+            // TODO: REVIEW_CHECK - What should we return here?
+            return nil
+        }
+    }
+
+    private func handleRedirectionForDecodedClientToken(_ decodedJWTToken: DecodedJWTToken) async throws -> String? {
+        guard let statusUrlStr = decodedJWTToken.statusUrl,
+              let statusUrl = URL(string: statusUrlStr),
+              decodedJWTToken.intent != nil else {
+            throw PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                 diagnosticsId: UUID().uuidString)
+        }
+
+        let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type)
+        let isPaymentMethodNeedingExternalCompletion = (needingExternalCompletionPaymentMethodDictionary
+            .first { $0.key == paymentMethodType } != nil) == true
+
+        try await self.presentPaymentMethodAppropriateViewController(shouldCompletePaymentExternally: isPaymentMethodNeedingExternalCompletion)
+
+        let pollingModule = PollingModule(url: statusUrl)
+        self.didCancel = {
+            let err = PrimerError.cancelled(paymentMethodType: self.config.type,
+                                            userInfo: .errorUserInfoDictionary(),
+                                            diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            pollingModule.cancel(withError: err)
+        }
+
+        // MARK: REVIEW_CHECK - Same logic as PromiseKit's ensure
+
+        defer {
+            self.didCancel = nil
+        }
+
+        return try await pollingModule.start()
+    }
+
+    private func handlePaymentMethodVoucherForDecodedClientToken(_ decodedJWTToken: DecodedJWTToken) async throws -> String? {
+        let isManualPaymentHandling = PrimerSettings.current.paymentHandling == .manual
+        var additionalInfo: PrimerCheckoutAdditionalInfo?
+
+        switch self.config.type {
+        case PrimerPaymentMethodType.adyenMultibanco.rawValue:
+            let formatter = DateFormatter().withExpirationDisplayDateFormat()
+
+            var expiresAtAdditionalInfo: String?
+            if let unwrappedExpiresAt = decodedJWTToken.expiresAt {
+                expiresAtAdditionalInfo = formatter.string(from: unwrappedExpiresAt)
+            }
+
+            additionalInfo = MultibancoCheckoutAdditionalInfo(expiresAt: expiresAtAdditionalInfo,
+                                                              entity: decodedJWTToken.entity,
+                                                              reference: decodedJWTToken.reference)
+
+            if self.paymentCheckoutData == nil {
+                self.paymentCheckoutData = PrimerCheckoutData(payment: nil, additionalInfo: additionalInfo)
+            } else {
+                self.paymentCheckoutData?.additionalInfo = additionalInfo
+            }
+
+        default:
+            logger.info(message: "UNHANDLED PAYMENT METHOD RESULT")
+            logger.info(message: self.config.type)
+        }
+
+        if isManualPaymentHandling {
+            PrimerDelegateProxy.primerDidEnterResumePendingWithPaymentAdditionalInfo(additionalInfo)
+        }
+
+        return nil
+    }
+
     private func evaluatePaymentMethodNeedingFurtherUserActions() -> Promise<Void> {
 
         guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
@@ -682,6 +801,17 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         }
 
         return self.awaitUserInput()
+    }
+
+    private func evaluatePaymentMethodNeedingFurtherUserActions() async throws {
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
+              inputPaymentMethodTypes.contains(paymentMethodType) ||
+              voucherPaymentMethodTypes.contains(paymentMethodType)
+        else {
+            return
+        }
+
+        try await self.awaitUserInput()
     }
 
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
@@ -696,10 +826,30 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         return self.presentPaymentMethodAppropriateViewController()
     }
 
+    override func presentPaymentMethodUserInterface() async throws {
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type),
+              inputPaymentMethodTypes.contains(paymentMethodType) ||
+              voucherPaymentMethodTypes.contains(paymentMethodType)
+        else {
+            return
+        }
+
+        try await self.presentPaymentMethodAppropriateViewController()
+    }
+
     override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             self.userInputCompletion = {
                 seal.fulfill()
+            }
+            PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
+        }
+    }
+
+    override func awaitUserInput() async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.userInputCompletion = {
+                continuation.resume()
             }
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: self.config.type)
         }
@@ -868,6 +1018,111 @@ final class FormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVie
         default:
             fatalError("Payment method card should never end here.")
         }
+    }
+
+    override func tokenize() async throws -> PrimerPaymentMethodTokenData {
+        guard let configId = config.id else {
+            let err = PrimerError.invalidValue(key: "configuration.id",
+                                               value: config.id,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        switch config.type {
+        case PrimerPaymentMethodType.adyenBlik.rawValue:
+            return try await handleAdyenBlikTokenization(configId: configId)
+        case PrimerPaymentMethodType.rapydFast.rawValue:
+            return try await handleRapydFastTokenization(configId: configId)
+        case PrimerPaymentMethodType.adyenMBWay.rawValue:
+            return try await handleAdyenMBWayTokenization(configId: configId)
+        case PrimerPaymentMethodType.adyenMultibanco.rawValue:
+            return try await handleAdyenMultibancoTokenization(configId: configId)
+        default:
+            fatalError("Payment method card should never end here.")
+        }
+    }
+
+    private func handleAdyenBlikTokenization(configId: String) async throws -> PrimerPaymentMethodTokenData {
+        guard let blikCode = inputs.first?.text else {
+            let err = PrimerError.invalidValue(key: "blikCode",
+                                               value: nil,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        let sessionInfo = BlikSessionInfo(
+            blikCode: blikCode,
+            locale: PrimerSettings.current.localeData.localeCode
+        )
+
+        let paymentInstrument = OffSessionPaymentInstrument(
+            paymentMethodConfigId: configId,
+            paymentMethodType: config.type,
+            sessionInfo: sessionInfo
+        )
+
+        let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
+
+        return try await tokenizationService.tokenize(requestBody: requestBody)
+    }
+
+    private func handleRapydFastTokenization(configId: String) async throws -> PrimerPaymentMethodTokenData {
+        let sessionInfo = WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
+
+        let paymentInstrument = OffSessionPaymentInstrument(
+            paymentMethodConfigId: configId,
+            paymentMethodType: config.type,
+            sessionInfo: sessionInfo
+        )
+
+        let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
+        let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+
+        return try await tokenizationService.tokenize(requestBody: requestBody)
+    }
+
+    private func handleAdyenMBWayTokenization(configId: String) async throws -> PrimerPaymentMethodTokenData {
+        guard let phoneNumber = inputs.first?.text else {
+            let err = PrimerError.invalidValue(key: "phoneNumber",
+                                               value: nil,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        let fullPhoneNumber = "\(FormPaymentMethodTokenizationViewModel.countryDialCode)\(phoneNumber)"
+        let sessionInfo = InputPhonenumberSessionInfo(phoneNumber: fullPhoneNumber)
+
+        let paymentInstrument = OffSessionPaymentInstrument(
+            paymentMethodConfigId: configId,
+            paymentMethodType: config.type,
+            sessionInfo: sessionInfo
+        )
+
+        let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+        let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
+
+        return try await tokenizationService.tokenize(requestBody: requestBody)
+    }
+
+    private func handleAdyenMultibancoTokenization(configId: String) async throws -> PrimerPaymentMethodTokenData {
+        let sessionInfo = WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
+
+        let paymentInstrument = OffSessionPaymentInstrument(
+            paymentMethodConfigId: configId,
+            paymentMethodType: config.type,
+            sessionInfo: sessionInfo
+        )
+
+        let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
+        let tokenizationService: TokenizationServiceProtocol = TokenizationService()
+
+        return try await tokenizationService.tokenize(requestBody: requestBody)
     }
 
     override func handleSuccessfulFlow() {

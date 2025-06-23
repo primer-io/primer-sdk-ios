@@ -39,6 +39,18 @@ final class ACHTokenizationServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
 
+    func test_tokenizeHeadless_success_async() async {
+        prepareConfigurations()
+        mockApiClient.tokenizePaymentMethodResult = (ACHMocks.primerPaymentMethodTokenData, nil)
+
+        do {
+            let tokenData = try await achTokenizationService.tokenize()
+            XCTAssertNotNil(tokenData, "Result should not be nil")
+        } catch {
+            XCTFail("Result should not fail")
+        }
+    }
+
     func test_tokenizeHeadless_failure() {
         prepareConfigurations()
         let error = getInvalidTokenError()
@@ -58,6 +70,19 @@ final class ACHTokenizationServiceTests: XCTestCase {
         }
 
         wait(for: [expectation], timeout: 10.0)
+    }
+
+    func test_tokenizeHeadless_failure_async() async {
+        prepareConfigurations()
+        let error = getInvalidTokenError()
+        mockApiClient.tokenizePaymentMethodResult = (nil, error)
+
+        do {
+            _ = try await achTokenizationService.tokenize()
+            XCTFail("Result should fail")
+        } catch {
+            XCTAssertNotNil(error, "Error should not be nil")
+        }
     }
 
     func test_tokenization_validation_success() {

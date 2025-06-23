@@ -27,6 +27,17 @@ extension PrimerAPIClient {
         }
     }
 
+    func begin3DSAuth(
+        clientToken: DecodedJWTToken,
+        paymentMethodTokenData: PrimerPaymentMethodTokenData,
+        threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest
+    ) async throws -> ThreeDS.BeginAuthResponse {
+        let endpoint = PrimerAPI.begin3DSRemoteAuth(clientToken: clientToken,
+                                                    paymentMethodTokenData: paymentMethodTokenData,
+                                                    threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest)
+        return try await networkService.request(endpoint)
+    }
+
     func continue3DSAuth(
         clientToken: DecodedJWTToken,
         threeDSTokenId: String,
@@ -45,5 +56,16 @@ extension PrimerAPIClient {
                 completion(.failure(err))
             }
         }
+    }
+
+    func continue3DSAuth(
+        clientToken: DecodedJWTToken,
+        threeDSTokenId: String,
+        continueInfo: ThreeDS.ContinueInfo
+    ) async throws -> ThreeDS.PostAuthResponse {
+        let endpoint = PrimerAPI.continue3DSRemoteAuth(clientToken: clientToken,
+                                                       threeDSTokenId: threeDSTokenId,
+                                                       continueInfo: continueInfo)
+        return try await networkService.request(endpoint)
     }
 }

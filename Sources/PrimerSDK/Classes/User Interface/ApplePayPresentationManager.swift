@@ -13,6 +13,8 @@ protocol ApplePayPresenting {
     var errorForDisplay: Error { get }
     func present(withRequest applePayRequest: ApplePayRequest,
                  delegate: PKPaymentAuthorizationControllerDelegate) -> Promise<Void>
+    func present(withRequest applePayRequest: ApplePayRequest,
+                 delegate: PKPaymentAuthorizationControllerDelegate) async throws
 }
 
 final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
@@ -51,6 +53,30 @@ final class ApplePayPresentationManager: ApplePayPresenting, LogReporter {
                 } else {
                     PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: PrimerPaymentMethodType.applePay.rawValue)
                     seal.fulfill()
+                }
+            }
+        }
+    }
+
+    func present(withRequest applePayRequest: ApplePayRequest,
+                 delegate: PKPaymentAuthorizationControllerDelegate) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            let request = createRequest(for: applePayRequest)
+
+            let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
+            paymentController.delegate = delegate
+
+            paymentController.present { success in
+                if success == false {
+                    let err = PrimerError.unableToPresentApplePay(userInfo: .errorUserInfoDictionary(),
+                                                                  diagnosticsId: UUID().uuidString)
+                    ErrorHandler.handle(error: err)
+                    self.logger.error(message: "APPLE PAY")
+                    self.logger.error(message: err.recoverySuggestion ?? "")
+                    continuation.resume(throwing: err)
+                } else {
+                    PrimerDelegateProxy.primerHeadlessUniversalCheckoutUIDidShowPaymentMethod(for: PrimerPaymentMethodType.applePay.rawValue)
+                    continuation.resume()
                 }
             }
         }

@@ -256,6 +256,9 @@ private class MockBankSelectorTokenizationModel: BankSelectorTokenizationProvidi
             seal.fulfill()
         }
     }
+
+    func validate() async throws {}
+ 
     func retrieveListOfBanks() -> Promise<[AdyenBank]> {
         return Promise { seal in
             firstly {
@@ -272,15 +275,28 @@ private class MockBankSelectorTokenizationModel: BankSelectorTokenizationProvidi
             }
         }
     }
+
+    func retrieveListOfBanks() async throws -> [AdyenBank] {
+        try await validate()
+        let banks = try await fetchBanks()
+        return banks
+    }
+    
     private func fetchBanks() -> Promise<[AdyenBank]> {
         return Promise { seal in
             seal.fulfill(mockBanks)
         }
     }
+
+    func fetchBanks() async throws -> [AdyenBank] {
+        return mockBanks
+    }
+    
     func filterBanks(query: String) -> [AdyenBank] {
         didCallFilter = true
         return [mockBanks[2]]
     }
+    
     func tokenize(bankId: String) -> Promise<Void> {
         return Promise { seal in
             useSuccess ? seal.fulfill() : seal.reject(PrimerError.failedToCreatePayment(
@@ -291,14 +307,31 @@ private class MockBankSelectorTokenizationModel: BankSelectorTokenizationProvidi
             ))
         }
     }
+
+    func tokenize(bankId: String) async throws {
+        guard useSuccess else {
+            throw PrimerError.failedToCreatePayment(
+                paymentMethodType: paymentMethodType.rawValue,
+                description: "payment_failed",
+                userInfo: nil,
+                diagnosticsId: UUID().uuidString
+            )
+        }
+    }
+    
     func handlePaymentMethodTokenData() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
         }
     }
+    
+    func handlePaymentMethodTokenData() async throws {}
+
     func setupNotificationObservers() {}
+    
     func cancel() {
         didCallCancel = true
     }
+    
     func cleanup() {}
 }

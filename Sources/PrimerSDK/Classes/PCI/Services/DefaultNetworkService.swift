@@ -81,10 +81,28 @@ final class DefaultNetworkService: NetworkService, LogReporter {
         }
     }
 
+    func request<T: Decodable>(_ endpoint: Endpoint) async throws -> T {
+        try await awaitResult { completion in
+            self.request(
+                endpoint,
+                completion: completion
+            )
+        }
+    }
+
     @discardableResult
     func request<T: Decodable>(_ endpoint: Endpoint,
                                completion: @escaping ResponseCompletionWithHeaders<T>) -> PrimerCancellable? {
         return request(endpoint, retryConfig: nil, completion: completion)
+    }
+
+    func request<T: Decodable>(_ endpoint: Endpoint) async throws -> (T, [String: String]?) {
+        try await awaitResult { completion in
+            self.request(
+                endpoint,
+                completion: completion
+            )
+        }
     }
 
     @discardableResult
@@ -108,6 +126,16 @@ final class DefaultNetworkService: NetworkService, LogReporter {
             ErrorHandler.handle(error: error)
             completion(.failure(error), nil)
             return nil
+        }
+    }
+
+    func request<T: Decodable>(_ endpoint: Endpoint, retryConfig: RetryConfig?) async throws -> (T, [String: String]?) {
+        try await awaitResult { completion in
+            self.request(
+                endpoint,
+                retryConfig: retryConfig,
+                completion: completion
+            )
         }
     }
 
