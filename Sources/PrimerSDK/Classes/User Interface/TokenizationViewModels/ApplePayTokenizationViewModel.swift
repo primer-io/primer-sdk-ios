@@ -159,6 +159,42 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
+    override func performPreTokenizationSteps() async throws {
+        let event = Analytics.Event.ui(
+            action: .click,
+            context: Analytics.Event.Property.Context(
+                issuerId: nil,
+                paymentMethodType: self.config.type,
+                url: nil),
+            extra: nil,
+            objectType: .button,
+            objectId: .select,
+            objectClass: "\(Self.self)",
+            place: .paymentMethodPopup
+        )
+        try await Analytics.Service.record(event: event)
+
+        let imageView = self.uiModule.makeIconImageView(withDimension: 24.0)
+        await PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView,
+                                                                                  message: nil)
+
+        try validate()
+
+        let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+        try await clientSessionActionsModule.selectPaymentMethodIfNeeded(self.config.type, cardNetwork: nil)
+        try await handlePrimerWillCreatePaymentEvent(PrimerPaymentMethodData(type: self.config.type))
+        try await presentPaymentMethodUserInterface()
+        try await awaitUserInput()
+
+        let billingAddress = self.applePayPaymentResponse.billingAddress
+        try await ClientSessionActionsModule.updateBillingAddressViaClientSessionActionWithAddressIfNeeded(billingAddress)
+        try await ClientSessionActionsModule.updateShippingDetailsViaClientSessionActionIfNeeded(
+            address: self.applePayPaymentResponse.shippingAddress,
+            mobileNumber: self.applePayPaymentResponse.mobileNumber,
+            emailAddress: self.applePayPaymentResponse.emailAddress
+        )
+    }
+
     override func performTokenizationStep() -> Promise<Void> {
         return Promise { seal in
             PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
@@ -182,11 +218,22 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
+    override func performTokenizationStep() async throws {
+        PrimerDelegateProxy.primerHeadlessUniversalCheckoutDidStartTokenization(for: self.config.type)
+
+        try await checkoutEventsNotifierModule.fireDidStartTokenizationEvent()
+        let paymentMethodTokenData = try await tokenize()
+        self.paymentMethodTokenData = paymentMethodTokenData
+        try await checkoutEventsNotifierModule.fireDidFinishTokenizationEvent()
+    }
+
     override func performPostTokenizationSteps() -> Promise<Void> {
         return Promise { seal in
             seal.fulfill()
         }
     }
+
+    override func performPostTokenizationSteps() async throws {}
 
     override func presentPaymentMethodUserInterface() -> Promise<Void> {
         return Promise { seal in
@@ -284,6 +331,87 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
         }
     }
 
+    @MainActor
+    override func presentPaymentMethodUserInterface() async throws {
+        guard PrimerInternal.shared.intent != .vault else {
+            let err = PrimerError.unsupportedIntent(intent: .vault,
+                                                    userInfo: .errorUserInfoDictionary(),
+                                                    diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        guard PrimerAPIConfigurationModule.decodedJWTToken != nil
+        else {
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        guard let countryCode = PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.countryCode else {
+            let err = PrimerError.invalidClientSessionValue(name: "order.countryCode",
+                                                            value: "nil",
+                                                            allowedValue: "",
+                                                            userInfo: .errorUserInfoDictionary(),
+                                                            diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        guard let merchantIdentifier = PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantIdentifier else {
+            let err = PrimerError.invalidMerchantIdentifier(merchantIdentifier: "nil",
+                                                            userInfo: .errorUserInfoDictionary(),
+                                                            diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        guard let currency = AppState.current.currency else {
+            let err = PrimerError.invalidValue(key: "Currency",
+                                               value: nil,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        let shippingMethodsInfo = self.getShippingMethodsInfo()
+
+        let orderItems: [ApplePayOrderItem]
+
+        do {
+            let session = AppState.current.apiConfiguration!.clientSession!
+
+            orderItems = try self.createOrderItemsFromClientSession(
+                session,
+                applePayOptions: self.getApplePayOptions(),
+                selectedShippingItem: shippingMethodsInfo.selectedShippingMethodOrderItem
+            )
+
+        } catch {
+            throw error
+        }
+
+        let applePayRequest = ApplePayRequest(
+            currency: currency,
+            merchantIdentifier: merchantIdentifier,
+            countryCode: countryCode,
+            items: orderItems,
+            shippingMethods: shippingMethodsInfo.shippingMethods
+        )
+
+        if self.applePayPresentationManager.isPresentable {
+            self.willPresentPaymentMethodUI?()
+            self.isCancelled = true
+
+            try await self.applePayPresentationManager.present(withRequest: applePayRequest, delegate: self)
+            self.didPresentPaymentMethodUI?()
+        } else {
+            ErrorHandler.handle(error: self.applePayPresentationManager.errorForDisplay)
+        }
+    }
+
     override func awaitUserInput() -> Promise<Void> {
         return Promise { seal in
             self.applePayReceiveDataCompletion = { result in
@@ -294,6 +422,21 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
 
                 case .failure(let err):
                     seal.reject(err)
+                }
+            }
+        }
+    }
+
+    override func awaitUserInput() async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            self.applePayReceiveDataCompletion = { result in
+                switch result {
+                case .success(let applePayPaymentResponse):
+                    self.applePayPaymentResponse = applePayPaymentResponse
+                    continuation.resume()
+
+                case .failure(let err):
+                    continuation.resume(throwing: err)
                 }
             }
         }
@@ -349,6 +492,46 @@ final class ApplePayTokenizationViewModel: PaymentMethodTokenizationViewModel {
                 seal.reject(err)
             }
         }
+    }
+
+    override func tokenize() async throws -> PrimerPaymentMethodTokenData {
+        guard let applePayConfigId = self.config.id else {
+            let err = PrimerError.invalidValue(key: "configuration.id",
+                                               value: self.config.id,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        guard PrimerAPIConfigurationModule.decodedJWTToken != nil else {
+            let err = PrimerError.invalidClientToken(userInfo: .errorUserInfoDictionary(),
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        guard let merchantIdentifier =
+            PrimerSettings.current.paymentMethodOptions.applePayOptions?.merchantIdentifier
+        else {
+            let key = "settings.paymentMethodOptions.applePayOptions?.merchantIdentifier"
+            let err = PrimerError.invalidValue(key: key,
+                                               value: self.config.id,
+                                               userInfo: .errorUserInfoDictionary(),
+                                               diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        let paymentInstrument = ApplePayPaymentInstrument(
+            paymentMethodConfigId: applePayConfigId,
+            sourceConfig: ApplePayPaymentInstrument.SourceConfig(source: "IN_APP", merchantId: merchantIdentifier),
+            token: self.applePayPaymentResponse.token
+        )
+
+        let requestBody = Request.Body.Tokenization(paymentInstrument: paymentInstrument)
+
+        return try await tokenizationService.tokenize(requestBody: requestBody)
     }
 
     func getShippingMethodsInfo() -> ShippingMethodsInfo {
