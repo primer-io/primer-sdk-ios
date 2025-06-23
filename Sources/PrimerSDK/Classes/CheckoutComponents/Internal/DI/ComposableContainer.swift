@@ -90,23 +90,53 @@ private extension ComposableContainer {
     func registerDomain() async {
         logger.debug(message: "🎯 [ComposableContainer] Registering domain layer...")
         
-        // Interactors will be registered here in Phase 3
-        // Examples:
-        // - GetPaymentMethodsInteractor
-        // - ProcessCardPaymentInteractor
-        // - TokenizeCardInteractor
-        // - ValidateInputInteractor
+        // Register interactors
+        _ = try? await container.register(GetPaymentMethodsInteractor.self)
+            .asTransient()
+            .with { resolver in
+                GetPaymentMethodsInteractorImpl(
+                    repository: try await resolver.resolve(HeadlessRepository.self)
+                )
+            }
+        
+        _ = try? await container.register(ProcessCardPaymentInteractor.self)
+            .asTransient()
+            .with { resolver in
+                ProcessCardPaymentInteractorImpl(
+                    repository: try await resolver.resolve(HeadlessRepository.self)
+                )
+            }
+        
+        _ = try? await container.register(TokenizeCardInteractor.self)
+            .asTransient()
+            .with { resolver in
+                TokenizeCardInteractorImpl(
+                    repository: try await resolver.resolve(HeadlessRepository.self)
+                )
+            }
+        
+        _ = try? await container.register(ValidateInputInteractor.self)
+            .asTransient()
+            .with { resolver in
+                ValidateInputInteractorImpl(
+                    validationService: try await resolver.resolve(ValidationService.self)
+                )
+            }
     }
     
     /// Register data layer (repositories, mappers).
     func registerData() async {
         logger.debug(message: "📚 [ComposableContainer] Registering data layer...")
         
-        // Repositories will be registered here in Phase 3
-        // Example:
-        // _ = try? await container.register(HeadlessRepository.self)
-        //     .asSingleton()
-        //     .with { _ in HeadlessRepositoryImpl() }
+        // Register repository
+        _ = try? await container.register(HeadlessRepository.self)
+            .asSingleton()
+            .with { _ in HeadlessRepositoryImpl() }
+        
+        // Register mapper
+        _ = try? await container.register(PaymentMethodMapper.self)
+            .asSingleton()
+            .with { _ in PaymentMethodMapperImpl() }
     }
     
     /// Register presentation layer (scopes, view models).
