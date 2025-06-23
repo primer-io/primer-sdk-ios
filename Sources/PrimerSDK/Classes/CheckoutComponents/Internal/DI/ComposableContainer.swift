@@ -73,10 +73,9 @@ private extension ComposableContainer {
         logger.debug(message: "✅ [ComposableContainer] Registering validation...")
 
         // Rules factory
-        // Skip RulesFactory for now
-        // _ = try? await container.register(RulesFactory.self)
-        //     .asSingleton()
-        //     .with { _ in RulesFactory() }
+        _ = try? await container.register(RulesFactory.self)
+            .asSingleton()
+            .with { _ in DefaultRulesFactory() }
 
         // Validation service
         _ = try? await container.register(ValidationService.self)

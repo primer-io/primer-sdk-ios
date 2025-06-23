@@ -29,18 +29,27 @@ internal struct PaymentMethodSelectionScreen: View {
     }
 
     private var titleSection: some View {
-        Text("Select Payment Method")
-            .font(.title2)
-            .fontWeight(.semibold)
-            .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
+        HStack {
+            Text("Select Payment Method")
+                .font(.title2)
+                .fontWeight(.semibold)
+                .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
+            
+            Spacer()
+            
+            Button("Cancel") {
+                scope.onCancel()
+            }
+            .font(.body)
+            .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+        }
+        .padding()
     }
 
     private var paymentMethodsList: some View {
         VStack(spacing: 0) {
             ScrollView {
-                if selectionState.categorizedPaymentMethods.isEmpty {
+                if selectionState.paymentMethods.isEmpty {
                     emptyStateView
                 } else {
                     paymentMethodsContent
@@ -72,59 +81,31 @@ internal struct PaymentMethodSelectionScreen: View {
     }
 
     private var paymentMethodsContent: some View {
-        VStack(spacing: 24) {
-            ForEach(selectionState.categorizedPaymentMethods, id: \.category) { categoryData in
-                categorySection(categoryData)
+        VStack(spacing: 16) {
+            ForEach(selectionState.paymentMethods) { method in
+                modernPaymentMethodCard(method)
             }
         }
-        .padding(.vertical)
-    }
-
-    private func categorySection(_ categoryData: (category: String, methods: [PrimerComposablePaymentMethod])) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            categoryHeader(categoryData.category)
-            categoryMethods(categoryData.methods)
-        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 24)
     }
 
     @ViewBuilder
-    private func categoryHeader(_ category: String) -> some View {
-        if let customCategoryHeader = scope.categoryHeader {
-            customCategoryHeader(category)
-        } else {
-            Text(category)
-                .font(.caption)
-                .fontWeight(.semibold)
-                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-                .textCase(.uppercase)
-                .padding(.horizontal)
-        }
-    }
-
-    private func categoryMethods(_ methods: [PrimerComposablePaymentMethod]) -> some View {
-        VStack(spacing: 8) {
-            ForEach(methods) { method in
-                methodItem(method)
+    private func modernPaymentMethodCard(_ method: PrimerComposablePaymentMethod) -> some View {
+        if let customPaymentMethodCard = scope.paymentMethodCard {
+            let modifier = PrimerModifier()
+            customPaymentMethodCard(modifier) {
+                scope.onPaymentMethodSelected(paymentMethod: method)
             }
-        }
-    }
-
-    @ViewBuilder
-    private func methodItem(_ method: PrimerComposablePaymentMethod) -> some View {
-        if let customPaymentMethodItem = scope.paymentMethodItem {
-            customPaymentMethodItem(method)
-                .onTapGesture {
-                    scope.onPaymentMethodSelected(paymentMethod: method)
-                }
         } else {
-            PaymentMethodItemView(
+            ModernPaymentMethodCardView(
                 method: method,
-                isSelected: selectionState.selectedPaymentMethod?.id == method.id,
                 onTap: {
-                    scope.onPaymentMethodSelected(paymentMethod: method)
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        scope.onPaymentMethodSelected(paymentMethod: method)
+                    }
                 }
             )
-            .padding(.horizontal)
         }
     }
 
@@ -149,11 +130,10 @@ internal struct PaymentMethodSelectionScreen: View {
     }
 }
 
-/// Payment method item view
+/// Modern payment method card view matching Image #2 design
 @available(iOS 15.0, *)
-private struct PaymentMethodItemView: View {
+private struct ModernPaymentMethodCardView: View {
     let method: PrimerComposablePaymentMethod
-    let isSelected: Bool
     let onTap: () -> Void
 
     @Environment(\.designTokens) private var tokens
@@ -162,58 +142,137 @@ private struct PaymentMethodItemView: View {
         Button(action: onTap) {
             contentView
         }
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(ModernCardButtonStyle())
     }
 
     private var contentView: some View {
         HStack(spacing: 16) {
-            logoPlaceholder
-            nameText
+            paymentMethodLogo
+            methodNameText
             Spacer()
-            selectionIndicator
         }
-        .padding()
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(backgroundView)
     }
 
-    private var logoPlaceholder: some View {
-        RoundedRectangle(cornerRadius: 4)
+    @ViewBuilder
+    private var paymentMethodLogo: some View {
+        if let icon = method.icon {
+            Image(uiImage: icon)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 32, height: 24)
+        } else {
+            paymentMethodLogoPlaceholder
+        }
+    }
+    
+    private var paymentMethodLogoPlaceholder: some View {
+        // Create logo based on payment method type
+        Group {
+            switch method.type {
+            case "APPLE_PAY":
+                applePayLogo
+            case "GOOGLE_PAY":
+                googlePayLogo
+            case "PAYPAL":
+                paypalLogo
+            case "PAYMENT_CARD":
+                cardLogo
+            case "KLARNA":
+                klarnaLogo
+            case "ADYEN_IDEAL":
+                idealLogo
+            default:
+                genericLogo
+            }
+        }
+        .frame(width: 32, height: 24)
+    }
+    
+    private var applePayLogo: some View {
+        HStack(spacing: 2) {
+            Image(systemName: "applelogo")
+                .font(.system(size: 12, weight: .medium))
+            Text("Pay")
+                .font(.system(size: 12, weight: .medium))
+        }
+        .foregroundColor(.black)
+    }
+    
+    private var googlePayLogo: some View {
+        HStack(spacing: 2) {
+            Text("G")
+                .font(.system(size: 12, weight: .bold))
+                .foregroundColor(.blue)
+            Text("Pay")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(.gray)
+        }
+    }
+    
+    private var paypalLogo: some View {
+        Text("PayPal")
+            .font(.system(size: 10, weight: .bold))
+            .foregroundColor(.blue)
+    }
+    
+    private var cardLogo: some View {
+        Image(systemName: "creditcard")
+            .font(.system(size: 14))
+            .foregroundColor(.gray)
+    }
+    
+    private var klarnaLogo: some View {
+        Text("Klarna")
+            .font(.system(size: 10, weight: .bold))
+            .foregroundColor(.pink)
+    }
+    
+    private var idealLogo: some View {
+        Text("iDeal")
+            .font(.system(size: 10, weight: .bold))
+            .foregroundColor(.orange)
+    }
+    
+    private var genericLogo: some View {
+        RoundedRectangle(cornerRadius: 2)
             .fill(tokens?.primerColorGray200 ?? Color(.systemGray4))
-            .frame(width: 40, height: 24)
-            .overlay(logoText)
+            .overlay(
+                Text(String(method.type.prefix(2)))
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            )
     }
 
-    private var logoText: some View {
-        Text(method.type.prefix(2))
-            .font(.caption2)
-            .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-    }
-
-    private var nameText: some View {
+    private var methodNameText: some View {
         Text(method.name)
-            .font(.body)
+            .font(.system(size: 16, weight: .medium))
             .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
     }
 
-    @ViewBuilder
-    private var selectionIndicator: some View {
-        if isSelected {
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(tokens?.primerColorTextPrimary ?? .blue)
-        }
-    }
-
     private var backgroundView: some View {
-        RoundedRectangle(cornerRadius: 8)
-            .fill(tokens?.primerColorGray100 ?? Color(.systemGray6))
+        RoundedRectangle(cornerRadius: 12)
+            .fill(Color.white)
+            .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
             .overlay(borderOverlay)
     }
 
     private var borderOverlay: some View {
-        RoundedRectangle(cornerRadius: 8)
-            .stroke(
-                isSelected ? (tokens?.primerColorTextPrimary ?? .blue) : Color.clear,
-                lineWidth: 2
-            )
+        RoundedRectangle(cornerRadius: 12)
+            .stroke(Color(.systemGray5), lineWidth: 1)
+    }
+}
+
+/// Modern button style with subtle press animation
+@available(iOS 15.0, *)
+private struct ModernCardButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+            .opacity(configuration.isPressed ? 0.9 : 1.0)
+            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
     }
 }
