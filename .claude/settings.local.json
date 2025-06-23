@@ -8,7 +8,8 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(xcodebuild:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "mcp__sequential-thinking__sequentialthinking"
     ],
     "deny": []
   }
