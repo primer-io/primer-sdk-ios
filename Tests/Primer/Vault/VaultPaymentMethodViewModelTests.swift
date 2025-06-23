@@ -5,11 +5,10 @@
 //  Created by Jack Newcombe on 24/05/2024.
 //
 
-import XCTest
 @testable import PrimerSDK
+import XCTest
 
 final class VaultPaymentMethodViewModelTests: XCTestCase {
-
     fileprivate var apiClient: MockPrimerAPIClientVault!
 
     var vaultService: VaultService!
@@ -36,7 +35,7 @@ final class VaultPaymentMethodViewModelTests: XCTestCase {
 
         XCTAssertEqual(AppState.current.paymentMethods.count, 0)
 
-        let expectReloadVault = self.expectation(description: "Vault is reloaded")
+        let expectReloadVault = expectation(description: "Vault is reloaded")
         sut.reloadVault { error in
             XCTAssertNotNil(error)
             XCTAssertTrue(error!.localizedDescription.hasPrefix("[invalid-client-token] Client token is not valid"))
@@ -52,7 +51,7 @@ final class VaultPaymentMethodViewModelTests: XCTestCase {
 
         XCTAssertEqual(AppState.current.paymentMethods.count, 0)
 
-        let expectReloadVault = self.expectation(description: "Vault is reloaded")
+        let expectReloadVault = expectation(description: "Vault is reloaded")
         try SDKSessionHelper.test {
             sut.reloadVault { error in
                 XCTAssertNil(error)
@@ -125,7 +124,7 @@ final class VaultPaymentMethodViewModelTests: XCTestCase {
 
     func setupAPIClientWithVaultedPaymentMethod() {
         apiClient.onFetchVaultedPaymentMethods = { _ in
-            return .init(data: [
+            .init(data: [
                 .init(analyticsId: "analytics_id",
                       id: "id",
                       isVaulted: true,
@@ -140,30 +139,4 @@ final class VaultPaymentMethodViewModelTests: XCTestCase {
             ])
         }
     }
-
-}
-
-private class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
-
-    var onFetchVaultedPaymentMethods: ((DecodedJWTToken) -> Response.Body.VaultedPaymentMethods)?
-
-    func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken, completion: @escaping APICompletion<Response.Body.VaultedPaymentMethods>) {
-        if let result = onFetchVaultedPaymentMethods?(clientToken) {
-            completion(.success(result))
-        } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
-        }
-    }
-
-    var onDeleteVaultedPaymentMethods: ((DecodedJWTToken, String) -> Void)?
-
-    func deleteVaultedPaymentMethod(clientToken: DecodedJWTToken, id: String, completion: @escaping APICompletion<Void>) {
-        if let onDeleteVaultedPaymentMethods = onDeleteVaultedPaymentMethods {
-            onDeleteVaultedPaymentMethods(clientToken, id)
-            completion(.success(()))
-        } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
-        }
-    }
-
 }

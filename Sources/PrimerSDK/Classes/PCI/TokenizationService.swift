@@ -5,7 +5,13 @@ import Foundation
 internal protocol TokenizationServiceProtocol {
     var paymentMethodTokenData: PrimerPaymentMethodTokenData? { get set }
     func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData>
-    func exchangePaymentMethodToken(_ paymentMethodTokenId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?) -> Promise<PrimerPaymentMethodTokenData>
+    func tokenize(requestBody: Request.Body.Tokenization) async throws -> PrimerPaymentMethodTokenData
+    func exchangePaymentMethodToken(_ paymentMethodTokenId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?)
+    -> Promise<PrimerPaymentMethodTokenData>
+    func exchangePaymentMethodToken(
+        _ paymentMethodTokenId: String,
+        vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?
+    ) async throws -> PrimerPaymentMethodTokenData
 }
 
 final class TokenizationService: TokenizationServiceProtocol, LogReporter {
@@ -53,7 +59,7 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
                 return
             }
             self.logger.debug(message: "URL: \(url)")
-            self.apiClient.tokenizePaymentMethod(clientToken: decodedJWTToken, tokenizationRequestBody: requestBody) { (result) in
+            self.apiClient.tokenizePaymentMethod(clientToken: decodedJWTToken, tokenizationRequestBody: requestBody) { result in
                 switch result {
                 case .failure(let err):
                     seal.reject(err)
@@ -64,12 +70,61 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
             }
         }
     }
-    func exchangePaymentMethodToken( _ vaultedPaymentMethodId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?) -> Promise<PrimerPaymentMethodTokenData> {
+
+    func tokenize(requestBody: Request.Body.Tokenization) async throws -> PrimerPaymentMethodTokenData {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+            let err = PrimerError.invalidClientToken(
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+        logger.debug(message: "Client Token: \(decodedJWTToken)")
+
+        guard let pciURL = decodedJWTToken.pciUrl else {
+            let err = PrimerError.invalidValue(
+                key: "decodedClientToken.pciUrl",
+                value: decodedJWTToken.pciUrl,
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+        logger.debug(message: "PCI URL: \(pciURL)")
+
+        guard let url = URL(string: "\(pciURL)/payment-instruments") else {
+            let err = PrimerError.invalidValue(
+                key: "decodedClientToken.pciUrl",
+                value: decodedJWTToken.pciUrl,
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        logger.debug(message: "URL: \(url)")
+
+        let paymentMethodTokenData = try await apiClient.tokenizePaymentMethod(
+            clientToken: decodedJWTToken,
+            tokenizationRequestBody: requestBody
+        )
+        self.paymentMethodTokenData = paymentMethodTokenData
+        return paymentMethodTokenData
+    }
+
+    func exchangePaymentMethodToken(
+        _ vaultedPaymentMethodId: String,
+        vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?
+    ) -> Promise<PrimerPaymentMethodTokenData> {
         return Promise { seal in
             guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
                 let err = PrimerError.invalidClientToken(
                     userInfo: .errorUserInfoDictionary(),
-                    diagnosticsId: UUID().uuidString)
+                    diagnosticsId: UUID().uuidString
+                )
                 ErrorHandler.handle(error: err)
                 seal.reject(err)
                 return
@@ -77,7 +132,8 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
             self.apiClient.exchangePaymentMethodToken(
                 clientToken: decodedJWTToken,
                 vaultedPaymentMethodId: vaultedPaymentMethodId,
-                vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData) { result in
+                vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData
+            ) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let singleUsePaymentMethod):
@@ -89,5 +145,28 @@ final class TokenizationService: TokenizationServiceProtocol, LogReporter {
             }
         }
     }
+
+    @MainActor
+    func exchangePaymentMethodToken(
+        _ paymentMethodTokenId: String,
+        vaultedPaymentMethodAdditionalData: (any PrimerVaultedPaymentMethodAdditionalData)?
+    ) async throws -> PrimerPaymentMethodTokenData {
+        guard let decodedJWTToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+            let err = PrimerError.invalidClientToken(
+                userInfo: .errorUserInfoDictionary(),
+                diagnosticsId: UUID().uuidString
+            )
+            ErrorHandler.handle(error: err)
+            throw err
+        }
+
+        let singleUsePaymentMethod = try await apiClient.exchangePaymentMethodToken(
+            clientToken: decodedJWTToken,
+            vaultedPaymentMethodId: paymentMethodTokenId,
+            vaultedPaymentMethodAdditionalData: vaultedPaymentMethodAdditionalData
+        )
+        return singleUsePaymentMethod
+    }
 }
+
 // swiftlint:enable function_body_length

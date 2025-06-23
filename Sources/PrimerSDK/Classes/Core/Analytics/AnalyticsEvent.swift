@@ -9,7 +9,7 @@ import Foundation
 
 // swiftlint:disable all
 extension Analytics {
-    struct Event: Codable, Equatable {
+    struct Event: Codable, Equatable, @unchecked Sendable {
 
         static func == (lhs: Analytics.Event, rhs: Analytics.Event) -> Bool {
             return lhs.localId == rhs.localId
