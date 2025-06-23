@@ -119,10 +119,14 @@ let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
 - Added co-badged cards network selector UI
 - Created InputConfigsWrapper for dynamic field configuration
 
-### Phase 5: Scope Implementation
-- Implement all scope classes
-- Create screens
-- Setup navigation flow
+### Phase 5: Scope Implementation ✅
+- Implemented DefaultCheckoutScope with AsyncStream state publishing
+- Created DefaultCardFormScope with RawDataManager integration
+- Implemented DefaultPaymentMethodSelectionScope with search and categorization
+- Created DefaultSelectCountryScope with country search
+- Created all screens (Loading, Error, Success, CardForm, PaymentMethodSelection, SelectCountry)
+- Setup CheckoutNavigator with state-driven navigation
+- Integrated 3DS handling via RawDataManager delegate
 
 ### Phase 6: Integration
 - Add to PrimerUIManager

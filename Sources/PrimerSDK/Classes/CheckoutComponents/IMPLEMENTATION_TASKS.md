@@ -52,14 +52,14 @@ This file tracks the implementation progress of the CheckoutComponents framework
 - 🟦 Commit - feat: Add UI components and input fields
 
 ## Phase 5: Presentation Scopes & Screens
-- ⬜ Implement DefaultCheckoutScope with AsyncStream state
-- ⬜ Implement DefaultCardFormScope with RawDataManager and billing address
-- ⬜ Implement DefaultPaymentMethodSelectionScope
-- ⬜ Implement DefaultSelectCountryScope with search
-- ⬜ Create all screens (Splash, Loading, Success, Error, CardForm, etc)
-- ⬜ Setup CheckoutNavigator with state-driven navigation
-- ⬜ Integrate 3DS handling via SafariViewController
-- ⬜ Commit - feat: Implement scope classes and screens
+- ✅ Implement DefaultCheckoutScope with AsyncStream state
+- ✅ Implement DefaultCardFormScope with RawDataManager and billing address
+- ✅ Implement DefaultPaymentMethodSelectionScope
+- ✅ Implement DefaultSelectCountryScope with search
+- ✅ Create all screens (Splash, Loading, Success, Error, CardForm, etc)
+- ✅ Setup CheckoutNavigator with state-driven navigation
+- ✅ Integrate 3DS handling via SafariViewController
+- 🟦 Commit - feat: Implement scope classes and screens
 
 ## Phase 6: Integration
 - ⬜ Add checkoutComponents case to CheckoutStyle enum
@@ -93,8 +93,8 @@ This file tracks the implementation progress of the CheckoutComponents framework
 
 ## Progress Tracking
 Last Updated: 2025-06-23
-Current Phase: Phase 4 completed
-Next Action: Commit Phase 4 then Phase 5 (Presentation Scopes & Screens)
+Current Phase: Phase 5 completed
+Next Action: Commit Phase 5 then Phase 6 (Integration)
 
 Completed Phases:
 1. ✅ Phase 1: Foundation & Public API - All scope protocols defined
@@ -130,3 +130,12 @@ Completed Phases:
 - Built composite views (CardDetailsView, BillingAddressView)
 - Added co-badged cards network selector
 - Created input configuration wrapper for dynamic field visibility
+
+### Phase 5 Summary (Completed)
+- Implemented DefaultCheckoutScope with navigation state management
+- Created DefaultCardFormScope with full RawDataManager integration
+- Added billing address support via Client Session Actions API
+- Implemented co-badged card network detection and selection
+- Created all required screens (Loading, Error, Success, CardForm, PaymentMethodSelection, SelectCountry)
+- Updated CheckoutNavigator with all navigation states
+- 3DS handling integrated automatically via RawDataManager/SafariViewController

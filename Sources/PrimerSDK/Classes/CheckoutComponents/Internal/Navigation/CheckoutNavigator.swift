@@ -11,12 +11,15 @@ import Combine
 /// Navigation events for the checkout flow
 @available(iOS 15.0, *)
 public enum NavigationEvent {
+    case navigateToSplash
+    case navigateToLoading
     case navigateToPaymentSelection
     case navigateToCardForm
     case navigateToApplePay
     case navigateToPayPal
     case navigateToSuccess
     case navigateToError(String)
+    case navigateToCountrySelection
     case navigateBack
 }
 
@@ -36,6 +39,18 @@ public class CheckoutNavigator: ObservableObject {
     }
 
     // MARK: - Navigation Methods
+
+    /// Navigate to splash screen
+    @MainActor
+    public func navigateToSplash() {
+        navigationSubject.send(.navigateToSplash)
+    }
+    
+    /// Navigate to loading screen
+    @MainActor
+    public func navigateToLoading() {
+        navigationSubject.send(.navigateToLoading)
+    }
 
     /// Navigate to payment selection screen
     @MainActor
@@ -59,6 +74,12 @@ public class CheckoutNavigator: ObservableObject {
     @MainActor
     public func navigateToPayPal() {
         navigationSubject.send(.navigateToPayPal)
+    }
+    
+    /// Navigate to country selection
+    @MainActor
+    public func navigateToCountrySelection() {
+        navigationSubject.send(.navigateToCountrySelection)
     }
 
     /// Navigate to success screen and handle final checkout completion
