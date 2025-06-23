@@ -29,21 +29,12 @@ internal struct PaymentMethodSelectionScreen: View {
     }
 
     private var titleSection: some View {
-        HStack {
-            Text("Select Payment Method")
-                .font(.title2)
-                .fontWeight(.semibold)
-                .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-            
-            Spacer()
-            
-            Button("Cancel") {
-                scope.onCancel()
-            }
-            .font(.body)
-            .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-        }
-        .padding()
+        Text("Select Payment Method")
+            .font(.title2)
+            .fontWeight(.semibold)
+            .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
     }
 
     private var paymentMethodsList: some View {

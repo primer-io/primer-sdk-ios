@@ -158,9 +158,17 @@ internal struct InternalCheckout: View {
 
     var body: some View {
         NavigationView {
-            ZStack {
+            VStack(spacing: 0) {
+                // Global navigation bar
+                CheckoutNavigationBar(
+                    onCancel: {
+                        checkoutScope.onDismiss()
+                    }
+                )
+                
                 // Navigation state driven UI
-                switch checkoutScope.navigationState {
+                ZStack {
+                    switch checkoutScope.navigationState {
                 case .loading:
                     if let customLoading = checkoutScope.loadingScreen {
                         AnyView(customLoading())
@@ -207,11 +215,12 @@ internal struct InternalCheckout: View {
                             }
                         ))
                     }
-                }
+                    }
 
-                // Custom content overlay if provided
-                if let customContent = customContent {
-                    customContent(checkoutScope)
+                    // Custom content overlay if provided
+                    if let customContent = customContent {
+                        customContent(checkoutScope)
+                    }
                 }
             }
             .environmentObject(checkoutScope)
@@ -221,5 +230,42 @@ internal struct InternalCheckout: View {
             // Apply any scope customizations
             scope?(checkoutScope)
         }
+        .task {
+            // Observe checkout state for dismissal
+            for await state in checkoutScope.state {
+                if case .dismissed = state {
+                    // Trigger dismissal of the checkout
+                    // This will be handled by the hosting controller
+                    break
+                }
+            }
+        }
+    }
+}
+
+/// Global navigation bar for all checkout screens
+@available(iOS 15.0, *)
+private struct CheckoutNavigationBar: View {
+    let onCancel: () -> Void
+    
+    @Environment(\.designTokens) private var tokens
+    
+    var body: some View {
+        HStack {
+            Spacer()
+            
+            Button("Cancel") {
+                onCancel()
+            }
+            .font(.body)
+            .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(
+            Rectangle()
+                .fill(tokens?.primerColorBackground ?? Color(.systemBackground))
+                .shadow(color: Color.black.opacity(0.05), radius: 1, y: 1)
+        )
     }
 }

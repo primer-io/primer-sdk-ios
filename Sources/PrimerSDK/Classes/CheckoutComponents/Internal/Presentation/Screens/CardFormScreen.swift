@@ -40,34 +40,12 @@ internal struct CardFormScreen: View {
     }
 
     private var titleSection: some View {
-        HStack {
-            Button(action: {
-                scope.onBack()
-            }) {
-                HStack(spacing: 4) {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 16, weight: .medium))
-                    Text("Back")
-                        .font(.body)
-                }
-                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-            }
-            
-            Spacer()
-            
-            Text(CheckoutComponentsStrings.cardPaymentTitle)
-                .font(.title2)
-                .fontWeight(.semibold)
-                .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-            
-            Spacer()
-            
-            // Hidden spacer to center the title
-            Button("") { }
-                .opacity(0)
-                .disabled(true)
-        }
-        .padding(.horizontal)
+        Text(CheckoutComponentsStrings.cardPaymentTitle)
+            .font(.title2)
+            .fontWeight(.semibold)
+            .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal)
     }
 
     private var cardDetailsSection: some View {

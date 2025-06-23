@@ -230,12 +230,16 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
 
     public func onDismiss() {
         logger.debug(message: "Checkout dismissed")
+        
+        // Update state to dismissed
+        updateState(.dismissed)
+        
         // Clean up any resources
         _cardForm = nil
         _paymentMethodSelection = nil
 
-        // Notify parent
-        // This would be handled by the parent view controller
+        // Navigate to dismiss the checkout
+        navigator.dismiss()
     }
 
     // MARK: - Internal Methods

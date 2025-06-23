@@ -110,6 +110,12 @@ internal class VaultCoordinator: NavigationCoordinator, LogReporter {
     func resetToRoot() {
         navigate(to: .vaultList)
     }
+    
+    func dismiss() {
+        // Clear vault navigation and trigger dismissal
+        navigationStack = []
+        logger.debug(message: "🔐 [VaultCoordinator] Vault dismissed")
+    }
 
     // Vault-specific navigation methods
     func addPaymentMethod() {

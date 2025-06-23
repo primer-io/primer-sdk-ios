@@ -125,6 +125,11 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
     func resetToRoot() {
         coordinator.resetToRoot()
     }
+    
+    /// Dismiss the entire checkout flow
+    func dismiss() {
+        coordinator.dismiss()
+    }
 
     // MARK: - Coordinator Access
 
