@@ -97,10 +97,13 @@ let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
 - Created PrimerCheckout entry point
 - Exact Android API parity achieved
 
-### Phase 2: Core Infrastructure (Next)
-- Copy DI, Validation, Design Tokens from ComposableCheckout
-- Setup navigation system
-- Create container registrations
+### Phase 2: Core Infrastructure ✅
+- Copied complete DI framework (actor-based, async/await)
+- Copied validation framework with rules and validators
+- Copied design tokens system (DesignTokensManager)
+- Copied navigation system (CheckoutNavigator)
+- Created ComposableContainer for dependency registration
+- All infrastructure ready for domain implementation
 
 ### Phase 3: Domain & Data Layers
 - Create interactors for payment processing
@@ -185,6 +188,18 @@ Task {
 2. Implement in Internal/Presentation/Components
 3. Register in DI container if needed
 4. Follow existing validation patterns
+
+### Working with DI Container
+1. Register dependencies in ComposableContainer
+2. Use async/await for resolution
+3. Prefer singleton for services, transient for ViewModels
+4. Use factory pattern for parameterized creation
+
+### Validation System
+1. Create rule classes extending ValidationRule
+2. Register validators in container
+3. Use ValidationService for field validation
+4. Follow existing patterns from copied framework
 
 ### State Updates
 - All state changes go through scope methods

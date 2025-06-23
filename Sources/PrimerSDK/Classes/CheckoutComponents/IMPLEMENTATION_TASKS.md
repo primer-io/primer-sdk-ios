@@ -19,13 +19,13 @@ This file tracks the implementation progress of the CheckoutComponents framework
 - 🟦 Commit - feat: Add CheckoutComponents foundation and public API
 
 ## Phase 2: Core Infrastructure
-- ⬜ Copy DI framework from ComposableCheckout to Internal/DI/
-- ⬜ Copy Validation framework to Internal/Core/Validation/
-- ⬜ Copy Design tokens to Internal/Tokens/
-- ⬜ Copy Navigation system to Internal/Navigation/
-- ⬜ Create ComposableContainer with DI registrations
-- ⬜ Update all imports for new CheckoutComponents paths
-- ⬜ Commit - feat: Add core infrastructure (DI, validation, design tokens)
+- ✅ Copy DI framework from ComposableCheckout to Internal/DI/
+- ✅ Copy Validation framework to Internal/Core/Validation/
+- ✅ Copy Design tokens to Internal/Tokens/
+- ✅ Copy Navigation system to Internal/Navigation/
+- ✅ Create ComposableContainer with DI registrations
+- ✅ Update all imports for new CheckoutComponents paths (no updates needed - framework is generic)
+- 🟦 Commit - feat: Add core infrastructure (DI, validation, design tokens)
 
 ## Phase 3: Domain & Data Layers
 - ⬜ Create domain models (PrimerComposablePaymentMethod, PrimerInputElementType)
@@ -93,12 +93,20 @@ This file tracks the implementation progress of the CheckoutComponents framework
 
 ## Progress Tracking
 Last Updated: 2025-06-23
-Current Phase: Phase 1 - Ready to commit
-Next Action: Commit Phase 1 and start Phase 2 (Core Infrastructure)
+Current Phase: Phase 2 - Ready to commit
+Next Action: Commit Phase 2 and start Phase 3 (Domain & Data Layers)
 
-### Phase 1 Summary
+### Phase 1 Summary (Completed)
 - Created complete directory structure
 - Defined all 4 public scope protocols with exact Android API match
 - Created PrimerCheckout.swift entry point
 - Added comprehensive CLAUDE.md documentation
 - All public APIs match Android exactly (methods, properties, nested scopes)
+
+### Phase 2 Summary
+- Copied complete DI framework (actor-based, async/await)
+- Copied validation framework with rules and validators
+- Copied design tokens and manager
+- Copied navigation system (CheckoutNavigator)
+- Created simplified ComposableContainer for CheckoutComponents
+- Removed CompositionRoot.swift (had too many non-existent dependencies)
