@@ -45,7 +45,6 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
 
     private weak var checkoutScope: DefaultCheckoutScope?
     private let diContainer: DIContainer
-    private var getPaymentMethodsInteractor: GetPaymentMethodsInteractor?
 
     // MARK: - Initialization
 
@@ -54,54 +53,53 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
         self.diContainer = checkoutScope.diContainer
 
         Task {
-            await setupInteractors()
             await loadPaymentMethods()
         }
     }
 
     // MARK: - Setup
 
-    private func setupInteractors() async {
-        do {
-            guard let container = await DIContainer.current else {
-                throw ContainerError.containerUnavailable
-            }
-            // getPaymentMethodsInteractor = try await container.resolve(GetPaymentMethodsInteractor.self)
-        } catch {
-            logger.error(message: "Failed to setup interactors: \\(error)")
-        }
-    }
-
     private func loadPaymentMethods() async {
-        do {
-            guard let interactor = getPaymentMethodsInteractor else {
-                throw PrimerError.unknown(
-                    userInfo: nil,
-                    diagnosticsId: UUID().uuidString
-                )
+        logger.info(message: "🔄 [PaymentMethodSelection] Loading payment methods from checkout scope...")
+
+        // Get payment methods from the checkout scope instead of loading them again
+        guard let checkoutScope = checkoutScope else {
+            logger.error(message: "❌ [PaymentMethodSelection] Checkout scope not available")
+            internalState.error = "Checkout scope not available"
+            return
+        }
+
+        // Wait for the checkout scope to have loaded payment methods
+        for await checkoutState in checkoutScope.state {
+            if case .ready = checkoutState {
+                // Get payment methods directly from the checkout scope
+                let paymentMethods = checkoutScope.availablePaymentMethods
+                logger.info(message: "✅ [PaymentMethodSelection] Retrieved \(paymentMethods.count) payment methods from checkout scope")
+
+                // Convert internal payment methods to composable payment methods
+                let composablePaymentMethods = paymentMethods.map { method in
+                    PrimerComposablePaymentMethod(
+                        id: method.id,
+                        type: method.type,
+                        name: method.name,
+                        icon: method.icon,
+                        metadata: nil
+                    )
+                }
+
+                internalState.paymentMethods = composablePaymentMethods
+                internalState.filteredPaymentMethods = composablePaymentMethods
+
+                // Group by category if needed
+                updateCategories()
+
+                logger.info(message: "🎯 [PaymentMethodSelection] Payment methods loaded and categorized successfully")
+                break
+            } else if case .failure(let error) = checkoutState {
+                logger.error(message: "❌ [PaymentMethodSelection] Checkout scope has error: \(error)")
+                internalState.error = error.localizedDescription
+                break
             }
-
-            let paymentMethods = try await interactor.execute()
-
-            // Convert internal payment methods to composable payment methods
-            let composablePaymentMethods = paymentMethods.map { method in
-                PrimerComposablePaymentMethod(
-                    id: method.id,
-                    type: method.type,
-                    name: method.name,
-                    icon: method.icon,
-                    metadata: nil
-                )
-            }
-
-            internalState.paymentMethods = composablePaymentMethods
-
-            // Group by category if needed
-            updateCategories()
-
-        } catch {
-            logger.error(message: "Failed to load payment methods: \\(error)")
-            internalState.error = error.localizedDescription
         }
     }
 

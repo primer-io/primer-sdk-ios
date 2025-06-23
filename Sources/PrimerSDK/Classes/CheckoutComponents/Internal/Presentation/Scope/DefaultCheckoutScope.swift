@@ -94,7 +94,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
 
     private let clientToken: String
     private let settings: PrimerSettings
-    private var availablePaymentMethods: [InternalPaymentMethod] = []
+    internal var availablePaymentMethods: [InternalPaymentMethod] = []
 
     // MARK: - Initialization
 
@@ -113,15 +113,26 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     // MARK: - Setup
 
     private func setupInteractors() async {
+        logger.info(message: "🔧 [CheckoutComponents] Setting up interactors...")
         do {
+            logger.debug(message: "🔍 [CheckoutComponents] Checking DI container availability...")
             guard let container = await DIContainer.current else {
+                logger.error(message: "❌ [CheckoutComponents] DI Container is not available")
                 throw ContainerError.containerUnavailable
             }
-            // getPaymentMethodsInteractor = try await container.resolve(GetPaymentMethodsInteractor.self)
+            logger.info(message: "✅ [CheckoutComponents] DI Container found")
+
+            // TODO: Implement proper interactor resolution when available
+            // For now, create a bridge to existing SDK payment methods
+            logger.info(message: "🌉 [CheckoutComponents] Creating bridge to existing SDK payment methods")
+            getPaymentMethodsInteractor = CheckoutComponentsPaymentMethodsBridge()
+
+            logger.info(message: "✅ [CheckoutComponents] Interactor setup completed with bridge")
         } catch {
-            logger.error(message: "Failed to setup interactors: \\(error)")
+            logger.error(message: "❌ [CheckoutComponents] Failed to setup interactors: \(error)")
+            logger.error(message: "❌ [CheckoutComponents] Error type: \(type(of: error))")
             let primerError = PrimerError.unknown(
-                userInfo: nil,
+                userInfo: ["setupError": error.localizedDescription],
                 diagnosticsId: UUID().uuidString
             )
             updateNavigationState(.failure(primerError))
@@ -130,42 +141,58 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     }
 
     private func loadPaymentMethods() async {
+        logger.info(message: "🔄 [CheckoutComponents] Starting payment methods loading...")
         updateNavigationState(.loading)
 
         do {
+            logger.debug(message: "🔍 [CheckoutComponents] Checking payment methods interactor...")
             guard let interactor = getPaymentMethodsInteractor else {
+                logger.error(message: "❌ [CheckoutComponents] GetPaymentMethodsInteractor is nil - DI resolution failed")
                 throw PrimerError.unknown(
-                    userInfo: nil,
+                    userInfo: ["error": "GetPaymentMethodsInteractor not resolved"],
                     diagnosticsId: UUID().uuidString
                 )
             }
 
+            logger.info(message: "✅ [CheckoutComponents] Payment methods interactor found, executing...")
             availablePaymentMethods = try await interactor.execute()
 
+            logger.info(message: "📊 [CheckoutComponents] Retrieved \(availablePaymentMethods.count) payment methods")
+
+            // Log each payment method for debugging
+            for (index, method) in availablePaymentMethods.enumerated() {
+                logger.debug(message: "💳 [CheckoutComponents] Payment Method \(index + 1): \(method.type ?? "unknown") - \(method.name ?? "unnamed")")
+            }
+
             if availablePaymentMethods.isEmpty {
+                logger.error(message: "❌ [CheckoutComponents] No payment methods available")
                 let error = PrimerError.unknown(
-                    userInfo: nil,
+                    userInfo: ["error": "No payment methods available"],
                     diagnosticsId: UUID().uuidString
                 )
                 updateNavigationState(.failure(error))
                 updateState(.failure(error))
             } else {
+                logger.info(message: "✅ [CheckoutComponents] Payment methods loaded successfully")
                 updateState(.ready)
 
                 // Check if we have only card payment method
                 if availablePaymentMethods.count == 1,
                    availablePaymentMethods.first?.type == "PAYMENT_CARD" {
-                    // Go directly to card form
+                    logger.info(message: "🎯 [CheckoutComponents] Single card payment method detected, navigating to card form")
                     updateNavigationState(.cardForm)
                 } else {
-                    // Show payment method selection
+                    logger.info(message: "🎯 [CheckoutComponents] Multiple payment methods available, showing selection screen")
                     updateNavigationState(.paymentMethodSelection)
                 }
             }
         } catch {
-            logger.error(message: "Failed to load payment methods: \\(error)")
+            logger.error(message: "❌ [CheckoutComponents] Failed to load payment methods: \(error)")
+            logger.error(message: "❌ [CheckoutComponents] Error type: \(type(of: error))")
+            logger.error(message: "❌ [CheckoutComponents] Error description: \(error.localizedDescription)")
+
             let primerError = error as? PrimerError ?? PrimerError.unknown(
-                userInfo: nil,
+                userInfo: ["originalError": error.localizedDescription],
                 diagnosticsId: UUID().uuidString
             )
             updateNavigationState(.failure(primerError))
@@ -176,12 +203,12 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     // MARK: - State Management
 
     private func updateState(_ newState: PrimerCheckoutState) {
-        logger.debug(message: "Checkout state updating to: \\(newState)")
+        logger.debug(message: "Checkout state updating to: \(newState)")
         internalState = newState
     }
 
     private func updateNavigationState(_ newState: NavigationState) {
-        logger.debug(message: "Navigation state updating to: \\(newState)")
+        logger.debug(message: "Navigation state updating to: \(newState)")
         navigationState = newState
 
         // Update navigation based on state

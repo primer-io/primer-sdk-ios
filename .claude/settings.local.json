@@ -25,7 +25,8 @@
       "mcp__xcode-server__write_file",
       "mcp__xcode-server__list_booted_simulators",
       "Bash(swift build:*)",
-      "mcp__xcode-server__read_file"
+      "mcp__xcode-server__read_file",
+      "Bash(rg:*)"
     ],
     "deny": []
   }
