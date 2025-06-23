@@ -112,10 +112,12 @@ let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
 - Created PaymentMethodMapper for data transformation
 - Added comprehensive validation rules for all input types
 
-### Phase 4: Presentation Components
-- Reuse existing card input fields
-- Convert billing address fields to SwiftUI
-- Create composite components
+### Phase 4: Presentation Components ✅
+- Adapted card input fields from ComposableCheckout (simplified versions)
+- Created billing address SwiftUI components (all fields)
+- Created composite components (CardDetailsView, BillingAddressView)
+- Added co-badged cards network selector UI
+- Created InputConfigsWrapper for dynamic field configuration
 
 ### Phase 5: Scope Implementation
 - Implement all scope classes

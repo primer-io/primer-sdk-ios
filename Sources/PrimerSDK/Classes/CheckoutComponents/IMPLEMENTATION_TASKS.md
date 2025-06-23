@@ -39,17 +39,17 @@ This file tracks the implementation progress of the CheckoutComponents framework
 - 🟦 Commit - feat: Add domain layer and data repositories
 
 ## Phase 4: Presentation Components
-- ⬜ Copy and adapt CardNumberInput from ComposableCheckout
-- ⬜ Copy and adapt CVVInput
-- ⬜ Copy and adapt ExpiryDateInput
-- ⬜ Copy and adapt CardholderNameInput
-- ⬜ Convert billing address UIKit views to SwiftUI components
-- ⬜ Create EmailInput and OTPCodeInput components
-- ⬜ Create CardDetails composite component
-- ⬜ Create BillingAddress composite with dynamic layout
-- ⬜ Create InputConfigs wrapper for field configuration
-- ⬜ Add co-badged cards network selector UI
-- ⬜ Commit - feat: Add UI components and input fields
+- ✅ Copy and adapt CardNumberInput from ComposableCheckout
+- ✅ Copy and adapt CVVInput
+- ✅ Copy and adapt ExpiryDateInput
+- ✅ Copy and adapt CardholderNameInput
+- ✅ Convert billing address UIKit views to SwiftUI components
+- ✅ Create EmailInput and OTPCodeInput components
+- ✅ Create CardDetails composite component
+- ✅ Create BillingAddress composite with dynamic layout
+- ✅ Create InputConfigs wrapper for field configuration
+- ✅ Add co-badged cards network selector UI
+- 🟦 Commit - feat: Add UI components and input fields
 
 ## Phase 5: Presentation Scopes & Screens
 - ⬜ Implement DefaultCheckoutScope with AsyncStream state
@@ -93,8 +93,13 @@ This file tracks the implementation progress of the CheckoutComponents framework
 
 ## Progress Tracking
 Last Updated: 2025-06-23
-Current Phase: Phase 2 - Ready to commit
-Next Action: Commit Phase 2 and start Phase 3 (Domain & Data Layers)
+Current Phase: Phase 4 completed
+Next Action: Commit Phase 4 then Phase 5 (Presentation Scopes & Screens)
+
+Completed Phases:
+1. ✅ Phase 1: Foundation & Public API - All scope protocols defined
+2. ✅ Phase 2: Core Infrastructure - DI, validation, design tokens copied
+3. ✅ Phase 3: Domain & Data Layers - Interactors, repository, validation rules created
 
 ### Phase 1 Summary (Completed)
 - Created complete directory structure
@@ -111,10 +116,17 @@ Next Action: Commit Phase 2 and start Phase 3 (Domain & Data Layers)
 - Created simplified ComposableContainer for CheckoutComponents
 - Removed CompositionRoot.swift (had too many non-existent dependencies)
 
-### Phase 3 Summary
+### Phase 3 Summary (Completed)
 - Created domain models for payment methods and input types
 - Implemented all interactors following SOLID principles
 - Created HeadlessRepository abstraction for SDK integration
 - Added PaymentMethodMapper for data transformation
 - Implemented comprehensive validation rules for all 17 input types
 - Updated DI container with all registrations
+
+### Phase 4 Summary (Completed)
+- Adapted all card input fields from ComposableCheckout
+- Created billing address SwiftUI components (all fields)
+- Built composite views (CardDetailsView, BillingAddressView)
+- Added co-badged cards network selector
+- Created input configuration wrapper for dynamic field visibility
