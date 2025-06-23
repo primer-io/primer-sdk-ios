@@ -17,6 +17,34 @@ internal struct CardFormScreen: View {
     @State private var showBillingAddress = false
     @State private var selectedCardNetwork: CardNetwork = .unknown
 
+    /// Check if billing address fields are required based on API configuration
+    private var isShowingBillingAddressFieldsRequired: Bool {
+        let billingAddressModuleOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
+            .first { $0.type == "BILLING_ADDRESS" }?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions
+        return billingAddressModuleOptions != nil
+    }
+
+    /// Get billing address configuration from API configuration
+    private var billingAddressConfiguration: BillingAddressConfiguration {
+        guard let billingAddressModuleOptions = PrimerAPIConfigurationModule.apiConfiguration?.checkoutModules?
+                .first { $0.type == "BILLING_ADDRESS" }?.options as? PrimerAPIConfiguration.CheckoutModule.PostalCodeOptions else {
+            return BillingAddressConfiguration.none
+        }
+
+        return BillingAddressConfiguration(
+            showFirstName: billingAddressModuleOptions.firstName != false,
+            showLastName: billingAddressModuleOptions.lastName != false,
+            showEmail: false, // Email is typically not part of billing address module
+            showPhoneNumber: billingAddressModuleOptions.phoneNumber != false,
+            showAddressLine1: billingAddressModuleOptions.addressLine1 != false,
+            showAddressLine2: billingAddressModuleOptions.addressLine2 != false,
+            showCity: billingAddressModuleOptions.city != false,
+            showState: billingAddressModuleOptions.state != false,
+            showPostalCode: billingAddressModuleOptions.postalCode != false,
+            showCountry: billingAddressModuleOptions.countryCode != false
+        )
+    }
+
     var body: some View {
         mainContent
     }
@@ -26,8 +54,10 @@ internal struct CardFormScreen: View {
             VStack(spacing: 24) {
                 titleSection
                 cardDetailsSection
-                billingAddressToggle
-                billingAddressSection
+                if isShowingBillingAddressFieldsRequired {
+                    billingAddressToggle
+                    billingAddressSection
+                }
                 errorSection
                 submitButtonSection
             }
@@ -122,7 +152,7 @@ internal struct CardFormScreen: View {
         if showBillingAddress {
             BillingAddressView(
                 cardFormScope: scope,
-                configuration: .full
+                configuration: billingAddressConfiguration
             )
             .padding(.horizontal)
             .transition(.opacity.combined(with: .move(edge: .top)))

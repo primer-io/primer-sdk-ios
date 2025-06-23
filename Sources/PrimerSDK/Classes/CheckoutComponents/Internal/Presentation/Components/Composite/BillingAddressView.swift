@@ -46,6 +46,19 @@ internal struct BillingAddressConfiguration {
         showPostalCode: true,
         showCountry: true
     )
+
+    static let none = BillingAddressConfiguration(
+        showFirstName: false,
+        showLastName: false,
+        showEmail: false,
+        showPhoneNumber: false,
+        showAddressLine1: false,
+        showAddressLine2: false,
+        showCity: false,
+        showState: false,
+        showPostalCode: false,
+        showCountry: false
+    )
 }
 
 /// A composite SwiftUI view containing billing address fields with dynamic layout

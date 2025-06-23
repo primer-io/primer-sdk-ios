@@ -297,24 +297,36 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
     private func validateCardData(_ cardData: PrimerCardData) {
         // Use validation service to validate card data
         Task {
-            if let validationInteractor = validateInputInteractor {
-                // Validate each field individually
-                let cardNumberResult = await validationInteractor.validate(
-                    value: cardData.cardNumber,
-                    type: .cardNumber
-                )
-                let cvvResult = await validationInteractor.validate(
-                    value: cardData.cvv,
-                    type: .cvv
-                )
-                let expiryResult = await validationInteractor.validate(
-                    value: cardData.expiryDate,
-                    type: .expiryDate
-                )
+            do {
+                guard let container = await DIContainer.current else {
+                    throw ContainerError.containerUnavailable
+                }
+
+                let validationService = try await container.resolve(ValidationService.self)
+
+                // Validate each field individually using the specific validation methods
+                let cardNumberResult = validationService.validateCardNumber(cardData.cardNumber)
+
+                // For CVV validation, we need to detect the card network first
+                let cardNetwork = CardNetwork(cardNumber: cardData.cardNumber)
+                let cvvResult = validationService.validateCVV(cardData.cvv, cardNetwork: cardNetwork)
+
+                // For expiry validation, parse the month and year
+                let expiryComponents = cardData.expiryDate.components(separatedBy: "/")
+                let expiryResult: ValidationResult
+                if expiryComponents.count == 2 {
+                    let month = expiryComponents[0]
+                    let year = expiryComponents[1]
+                    expiryResult = validationService.validateExpiry(month: month, year: year)
+                } else {
+                    expiryResult = .invalid(code: "invalid-expiry-format", message: "Invalid expiry date format")
+                }
 
                 // Update validation state
                 await MainActor.run {
                     internalState.isValid = cardNumberResult.isValid && cvvResult.isValid && expiryResult.isValid
+
+                    logger.debug(message: "🔍 [CardForm] Validation results - Card: \(cardNumberResult.isValid), CVV: \(cvvResult.isValid), Expiry: \(expiryResult.isValid), Overall: \(internalState.isValid)")
 
                     // Show first error found
                     if !cardNumberResult.isValid {
@@ -326,6 +338,19 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                     } else {
                         internalState.error = nil
                     }
+                }
+            } catch {
+                logger.error(message: "Failed to resolve ValidationService: \(error)")
+                // Fallback to basic validation
+                await MainActor.run {
+                    let hasCardNumber = !cardData.cardNumber.isEmpty && cardData.cardNumber.count >= 13
+                    let hasCvv = !cardData.cvv.isEmpty && cardData.cvv.count >= 3
+                    let hasExpiry = !cardData.expiryDate.isEmpty && cardData.expiryDate.count >= 5
+
+                    internalState.isValid = hasCardNumber && hasCvv && hasExpiry
+                    internalState.error = nil
+
+                    logger.debug(message: "🔍 [CardForm] Fallback validation - Card: \(hasCardNumber), CVV: \(hasCvv), Expiry: \(hasExpiry), Overall: \(internalState.isValid)")
                 }
             }
         }

@@ -230,10 +230,10 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
 
     public func onDismiss() {
         logger.debug(message: "Checkout dismissed")
-        
+
         // Update state to dismissed
         updateState(.dismissed)
-        
+
         // Clean up any resources
         _cardForm = nil
         _paymentMethodSelection = nil

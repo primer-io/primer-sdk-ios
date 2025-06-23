@@ -159,7 +159,7 @@ private struct ModernPaymentMethodCardView: View {
             paymentMethodLogoPlaceholder
         }
     }
-    
+
     private var paymentMethodLogoPlaceholder: some View {
         // Create logo based on payment method type
         Group {
@@ -182,7 +182,7 @@ private struct ModernPaymentMethodCardView: View {
         }
         .frame(width: 32, height: 24)
     }
-    
+
     private var applePayLogo: some View {
         HStack(spacing: 2) {
             Image(systemName: "applelogo")
@@ -192,7 +192,7 @@ private struct ModernPaymentMethodCardView: View {
         }
         .foregroundColor(.black)
     }
-    
+
     private var googlePayLogo: some View {
         HStack(spacing: 2) {
             Text("G")
@@ -203,31 +203,31 @@ private struct ModernPaymentMethodCardView: View {
                 .foregroundColor(.gray)
         }
     }
-    
+
     private var paypalLogo: some View {
         Text("PayPal")
             .font(.system(size: 10, weight: .bold))
             .foregroundColor(.blue)
     }
-    
+
     private var cardLogo: some View {
         Image(systemName: "creditcard")
             .font(.system(size: 14))
             .foregroundColor(.gray)
     }
-    
+
     private var klarnaLogo: some View {
         Text("Klarna")
             .font(.system(size: 10, weight: .bold))
             .foregroundColor(.pink)
     }
-    
+
     private var idealLogo: some View {
         Text("iDeal")
             .font(.system(size: 10, weight: .bold))
             .foregroundColor(.orange)
     }
-    
+
     private var genericLogo: some View {
         RoundedRectangle(cornerRadius: 2)
             .fill(tokens?.primerColorGray200 ?? Color(.systemGray4))

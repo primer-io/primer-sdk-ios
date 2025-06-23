@@ -78,12 +78,12 @@ internal final class CheckoutCoordinator: NavigationCoordinator, LogReporter {
     func resetToRoot() {
         navigationStack = []
     }
-    
+
     func dismiss() {
         // Clear navigation stack and trigger dismissal
         navigationStack = []
         logEvent("navigation_dismissed")
-        
+
         // The actual dismissal will be handled by the presenting view controller
         // This just signals the intent to dismiss
     }

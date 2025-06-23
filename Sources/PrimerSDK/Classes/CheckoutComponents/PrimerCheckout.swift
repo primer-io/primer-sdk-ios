@@ -165,56 +165,56 @@ internal struct InternalCheckout: View {
                         checkoutScope.onDismiss()
                     }
                 )
-                
+
                 // Navigation state driven UI
                 ZStack {
                     switch checkoutScope.navigationState {
-                case .loading:
-                    if let customLoading = checkoutScope.loadingScreen {
-                        AnyView(customLoading())
-                    } else {
-                        AnyView(LoadingScreen())
-                    }
+                    case .loading:
+                        if let customLoading = checkoutScope.loadingScreen {
+                            AnyView(customLoading())
+                        } else {
+                            AnyView(LoadingScreen())
+                        }
 
-                case .paymentMethodSelection:
-                    if let customPaymentSelection = checkoutScope.paymentMethodSelectionScreen {
-                        AnyView(customPaymentSelection(checkoutScope.paymentMethodSelection))
-                    } else {
-                        AnyView(PaymentMethodSelectionScreen(
-                            scope: checkoutScope.paymentMethodSelection
-                        ))
-                    }
+                    case .paymentMethodSelection:
+                        if let customPaymentSelection = checkoutScope.paymentMethodSelectionScreen {
+                            AnyView(customPaymentSelection(checkoutScope.paymentMethodSelection))
+                        } else {
+                            AnyView(PaymentMethodSelectionScreen(
+                                scope: checkoutScope.paymentMethodSelection
+                            ))
+                        }
 
-                case .cardForm:
-                    if let customCardForm = checkoutScope.cardFormScreen {
-                        AnyView(customCardForm(checkoutScope.cardForm))
-                    } else {
-                        AnyView(CardFormScreen(
-                            scope: checkoutScope.cardForm
-                        ))
-                    }
+                    case .cardForm:
+                        if let customCardForm = checkoutScope.cardFormScreen {
+                            AnyView(customCardForm(checkoutScope.cardForm))
+                        } else {
+                            AnyView(CardFormScreen(
+                                scope: checkoutScope.cardForm
+                            ))
+                        }
 
-                case .success(let result):
-                    if let customSuccess = checkoutScope.successScreen {
-                        AnyView(customSuccess())
-                    } else {
-                        AnyView(SuccessScreen(
-                            paymentResult: result,
-                            onDismiss: checkoutScope.onDismiss
-                        ))
-                    }
+                    case .success(let result):
+                        if let customSuccess = checkoutScope.successScreen {
+                            AnyView(customSuccess())
+                        } else {
+                            AnyView(SuccessScreen(
+                                paymentResult: result,
+                                onDismiss: checkoutScope.onDismiss
+                            ))
+                        }
 
-                case .failure(let error):
-                    if let customError = checkoutScope.errorScreen {
-                        AnyView(customError(error.localizedDescription))
-                    } else {
-                        AnyView(ErrorScreen(
-                            error: error,
-                            onRetry: {
-                                // Retry logic would go here
-                            }
-                        ))
-                    }
+                    case .failure(let error):
+                        if let customError = checkoutScope.errorScreen {
+                            AnyView(customError(error.localizedDescription))
+                        } else {
+                            AnyView(ErrorScreen(
+                                error: error,
+                                onRetry: {
+                                    // Retry logic would go here
+                                }
+                            ))
+                        }
                     }
 
                     // Custom content overlay if provided
@@ -247,13 +247,13 @@ internal struct InternalCheckout: View {
 @available(iOS 15.0, *)
 private struct CheckoutNavigationBar: View {
     let onCancel: () -> Void
-    
+
     @Environment(\.designTokens) private var tokens
-    
+
     var body: some View {
         HStack {
             Spacer()
-            
+
             Button("Cancel") {
                 onCancel()
             }
