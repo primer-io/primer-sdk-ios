@@ -1,3 +1,0 @@
-- Never use print statements in the code; always use the LogReporter protocol that provides a logger.debug(message) out of the box.
-- Don't add an extensive summary at the end of a task, only critical details
-- No need to think or plan any kind of migrations since we are still in the development phase of ComposableCheckout, always behave as if no one is using this framework yet.

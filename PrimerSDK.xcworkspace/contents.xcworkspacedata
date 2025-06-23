@@ -19,10 +19,374 @@
          <Group
             location = "group:Classes"
             name = "Classes">
-            <FileSystemSynchronizedGroup
-               location = "group:ComposableCheckout"
-               name = "ComposableCheckout">
-            </FileSystemSynchronizedGroup>
+            <Group
+               location = "group:CheckoutComponents"
+               name = "CheckoutComponents">
+               <FileRef
+                  location = "group:CheckoutComponentsPrimer.swift">
+               </FileRef>
+               <Group
+                  location = "group:Internal"
+                  name = "Internal">
+                  <Group
+                     location = "group:DI"
+                     name = "DI">
+                     <Group
+                        location = "group:Framework"
+                        name = "Framework">
+                        <FileRef
+                           location = "group:TypeKey.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ContainerError.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:RetentionStrategy.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DIContainter+SwiftUI.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:SwiftUI+DI.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:Container.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ContainerRetainPolicy.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:README.md">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ContainerProtocol.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DependencyScope.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DIContainer.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ContainerDiagnostics.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:Factory.swift">
+                        </FileRef>
+                     </Group>
+                     <FileRef
+                        location = "group:ComposableContainer.swift">
+                     </FileRef>
+                     <Group
+                        location = "group:Implementation"
+                        name = "Implementation">
+                     </Group>
+                     <FileRef
+                        location = "group:CLAUDE.md">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Core"
+                     name = "Core">
+                     <Group
+                        location = "group:Validation"
+                        name = "Validation">
+                        <FileRef
+                           location = "group:FormValidator.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ValidationService.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:BaseInputFieldValidator.swift">
+                        </FileRef>
+                        <Group
+                           location = "group:Rules"
+                           name = "Rules">
+                           <FileRef
+                              location = "group:AdditionalValidationRules.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:AddressValidationRules.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:CardValidationRules.swift">
+                           </FileRef>
+                        </Group>
+                        <FileRef
+                           location = "group:ValidationError.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ValidationCoordinator.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ValidationRule.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ValidationResult.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:Navigation"
+                     name = "Navigation">
+                     <FileRef
+                        location = "group:CheckoutNavigator.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Data"
+                     name = "Data">
+                     <Group
+                        location = "group:Repositories"
+                        name = "Repositories">
+                        <FileRef
+                           location = "group:HeadlessRepositoryImpl.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Mappers"
+                        name = "Mappers">
+                        <FileRef
+                           location = "group:PaymentMethodMapper.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:Domain"
+                     name = "Domain">
+                     <Group
+                        location = "group:Repositories"
+                        name = "Repositories">
+                        <FileRef
+                           location = "group:HeadlessRepository.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Models"
+                        name = "Models">
+                        <FileRef
+                           location = "group:PaymentResult.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:InternalPaymentMethod.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PrimerInputElementType.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Interactors"
+                        name = "Interactors">
+                        <FileRef
+                           location = "group:ProcessCardPaymentInteractor.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:TokenizeCardInteractor.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:GetPaymentMethodsInteractor.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:ValidateInputInteractor.swift">
+                        </FileRef>
+                     </Group>
+                  </Group>
+                  <Group
+                     location = "group:Tokens"
+                     name = "Tokens">
+                     <FileRef
+                        location = "group:DesignTokensDark.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:DesignTokensKey.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:DesignTokensManager.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:PrimerModifier.swift">
+                     </FileRef>
+                     <FileRef
+                        location = "group:DesignTokens.swift">
+                     </FileRef>
+                  </Group>
+                  <Group
+                     location = "group:Presentation"
+                     name = "Presentation">
+                     <Group
+                        location = "group:Scope"
+                        name = "Scope">
+                        <FileRef
+                           location = "group:DefaultSelectCountryScope.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DefaultCardFormScope.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DefaultPaymentMethodSelectionScope.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:DefaultCheckoutScope.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Checkout"
+                        name = "Checkout">
+                     </Group>
+                     <Group
+                        location = "group:Screens"
+                        name = "Screens">
+                        <FileRef
+                           location = "group:ErrorScreen.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:SelectCountryScreen.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:SplashScreen.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:PaymentMethodSelectionScreen.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:LoadingScreen.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:SuccessScreen.swift">
+                        </FileRef>
+                        <FileRef
+                           location = "group:CardFormScreen.swift">
+                        </FileRef>
+                     </Group>
+                     <Group
+                        location = "group:Components"
+                        name = "Components">
+                        <FileRef
+                           location = "group:CardNetworkSelector.swift">
+                        </FileRef>
+                        <Group
+                           location = "group:Input"
+                           name = "Input">
+                           <FileRef
+                              location = "group:PrimerInputField.swift">
+                           </FileRef>
+                        </Group>
+                        <Group
+                           location = "group:Composite"
+                           name = "Composite">
+                           <FileRef
+                              location = "group:CardDetailsView.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:BillingAddressView.swift">
+                           </FileRef>
+                        </Group>
+                        <Group
+                           location = "group:Common"
+                           name = "Common">
+                        </Group>
+                        <FileRef
+                           location = "group:InputConfigsWrapper.swift">
+                        </FileRef>
+                        <Group
+                           location = "group:Inputs"
+                           name = "Inputs">
+                           <FileRef
+                              location = "group:CardholderNameInputField.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:NameInputField.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:OTPCodeInputField.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:AddressLineInputField.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:PostalCodeInputField.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:CityInputField.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:ExpiryDateInputField.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:StateInputField.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:EmailInputField.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:CVVInputField.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:CountryInputField.swift">
+                           </FileRef>
+                           <FileRef
+                              location = "group:CardNumberInputField.swift">
+                           </FileRef>
+                        </Group>
+                     </Group>
+                     <Group
+                        location = "group:Theme"
+                        name = "Theme">
+                     </Group>
+                  </Group>
+               </Group>
+               <Group
+                  location = "group:Scope"
+                  name = "Scope">
+                  <FileRef
+                     location = "group:PrimerSelectCountryScope.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerCheckoutScope.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerCardFormScope.swift">
+                  </FileRef>
+                  <FileRef
+                     location = "group:PrimerPaymentMethodSelectionScope.swift">
+                  </FileRef>
+               </Group>
+               <FileRef
+                  location = "group:README.md">
+               </FileRef>
+               <FileRef
+                  location = "group:IMPLEMENTATION_TASKS.md">
+               </FileRef>
+               <FileRef
+                  location = "group:PrimerCheckout.swift">
+               </FileRef>
+               <FileRef
+                  location = "group:IMPLEMENTATION_PLAN.md">
+               </FileRef>
+               <Group
+                  location = "group:DesignScreenshots"
+                  name = "DesignScreenshots">
+                  <FileRef
+                     location = "group:03_card_form_filled.png">
+                  </FileRef>
+                  <FileRef
+                     location = "group:05_card_form_all_errors.png">
+                  </FileRef>
+                  <FileRef
+                     location = "group:04_card_form_cvv_error.png">
+                  </FileRef>
+                  <FileRef
+                     location = "group:02_card_form_empty.png">
+                  </FileRef>
+                  <FileRef
+                     location = "group:06_payment_success.png">
+                  </FileRef>
+                  <FileRef
+                     location = "group:01_payment_method_selection.png">
+                  </FileRef>
+               </Group>
+            </Group>
             <Group
                location = "group:PCI"
                name = "PCI">

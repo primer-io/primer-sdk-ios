@@ -4,191 +4,242 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is the Primer iOS SDK, a payment integration SDK that provides:
-- Universal Checkout UI (Drop-in solution)
-- Headless Checkout (API-driven solution)
-- ComposableCheckout (SwiftUI component-based solution, iOS 15+)
-
-The SDK supports iOS 13.1+ and can be integrated via CocoaPods or Swift Package Manager.
+Primer iOS SDK - A comprehensive payment integration SDK providing multiple integration approaches:
+- **Drop-in**: Universal Checkout UI (traditional UIKit, iOS 13.1+)
+- **Headless**: API-driven solution without UI
+- **ComposableCheckout**: SwiftUI component-based solution (iOS 15+)
+- **CheckoutComponents**: Newest scope-based API with exact Android parity (iOS 15+)
 
 ## Build and Development Commands
 
-### Building the SDK
+### Initial Setup
 
-**CocoaPods Integration:**
 ```bash
+# CocoaPods setup
 bundle install
 cd Debug\ App
 bundle exec pod install
 # Open PrimerSDK.xcworkspace in Xcode
-```
 
-**Swift Package Manager:**
-```bash
-# Open Package.swift in Xcode or use the SPM scheme
+# Swift Package Manager
+# Open Package.swift directly in Xcode
 ```
 
 ### Running Tests
 
-**Unit Tests (SPM):**
 ```bash
+# Unit tests via SPM
 bundle exec fastlane test_sdk
-# Or in Xcode: Product > Test with scheme "PrimerSDKTests"
-```
 
-**Unit Tests (CocoaPods):**
-```bash
+# Unit tests via CocoaPods
 bundle exec fastlane tests
-# Or in Xcode: Product > Test with scheme "PrimerSDKTests" in workspace
-```
 
-**Debug App Tests:**
-```bash
+# Debug app tests
 bundle exec fastlane test_debug_app
+
+# Run specific test in Xcode
+# Select test in navigator, then Cmd+U
 ```
 
 ### Linting
 
-SwiftLint is configured and runs automatically during Xcode builds. Configuration is in `Debug App/.swiftlint.yml`.
-
 ```bash
-# Run SwiftLint manually from Debug App directory:
+# Manual SwiftLint (from Debug App directory)
 cd "Debug App"
 swiftlint
-# Or use Xcode's build phase which runs SwiftLint automatically
+
+# Auto-fix SwiftLint issues
+swiftlint --fix --format
+
+# SwiftLint runs automatically during Xcode builds
 ```
 
-**SwiftLint Configuration:**
-- **Line Length**: Warning at 150 characters (ignores function declarations, comments, interpolated strings, URLs)
-- **Included**: `../Sources` directory
-- **Excluded**: Third-party code (`../Sources/PrimerSDK/Classes/Third Party/PromiseKit`)
-- **Type Names**: 3-40 characters (excludes generic type "T")
-- **Identifier Names**: 3-40 characters (excludes "i" for loops and "id")
-- **Disabled Rules**: `superfluous_disable_command`, `type_body_length`
+**SwiftLint Key Rules:**
+- Line length: 150 chars (warnings)
+- Identifier names: 3-40 chars (exceptions: "i", "id", "T")
+- No force unwrapping (`!`) or force casting (`as!`)
+- Excluded: `Third Party/PromiseKit`
 
-**Common Violations to Avoid:**
-- Lines longer than 150 characters - break into multiple lines
-- Force try (`try!`) and force cast (`as!`) - use safe alternatives with guard statements
-- Short identifier names (< 3 characters) except for allowed exceptions
-
-### Building Debug App
+### Building
 
 ```bash
-# Build for simulator with CocoaPods
+# Debug app with CocoaPods
 bundle exec fastlane build_cocoapods
 
-# Build with SPM
+# Debug app with SPM
 bundle exec fastlane build_spm
 ```
 
-## Architecture
+## Architecture Overview
 
-### SDK Structure
+### Integration Approaches
 
-The SDK has three main integration approaches:
+1. **Drop-in** (`Classes/Core/Primer/`)
+   - Entry: `Primer.swift` → `Primer.shared.showUniversalCheckout()`
+   - Delegate: `PrimerDelegate`
+   - Full UI provided, minimal customization
 
-1. **Drop-in (Traditional)**: `Sources/PrimerSDK/Classes/Core/Primer/`
-   - Entry point: `Primer.swift`
-   - Uses UIKit-based views
-   - Delegate pattern: `PrimerDelegate`
+2. **Headless** (`Classes/Core/PrimerHeadlessUniversalCheckout/`)
+   - Entry: `PrimerHeadlessUniversalCheckout.swift`
+   - Delegate: `PrimerHeadlessUniversalCheckoutDelegate`
+   - No UI, complete control
+   - RawDataManager for direct payment processing
 
-2. **Headless**: `Sources/PrimerSDK/Classes/Core/PrimerHeadlessUniversalCheckout/`
-   - Entry point: `PrimerHeadlessUniversalCheckout.swift`
-   - API-driven, no UI
-   - Delegate pattern: `PrimerHeadlessUniversalCheckoutDelegate`
+3. **ComposableCheckout** (`Classes/ComposableCheckout/`)
+   - Entry: `ComposablePrimer.presentCheckout()` (UIKit) or `PrimerCheckout()` (SwiftUI)
+   - Scope-based architecture with `PaymentMethodProtocol`
+   - Component customization via `@ViewBuilder`
+   - Modern DI with actor-based container
 
-3. **ComposableCheckout (Modern)**: `Sources/PrimerSDK/Classes/ComposableCheckout/`
-   - Entry point: `PrimerCheckout.swift` (SwiftUI view)
-   - Component-based architecture with scoped interfaces
-   - Uses modern async/await DI container system
-   - Implements scope-based API design pattern similar to Android Compose
-   - iOS 15+ required for modern Swift concurrency features
+4. **CheckoutComponents** (`Classes/CheckoutComponents/`)
+   - Entry: `CheckoutComponentsPrimer.presentCheckout()` (UIKit) or `PrimerCheckout()` (SwiftUI)
+   - Exact Android API parity
+   - Scopes: `PrimerCheckoutScope`, `PrimerCardFormScope`, etc.
+   - AsyncStream state management
+   - Full UI customization per component
 
-### Dependency Injection
+### Dependency Injection Systems
 
-The SDK uses two DI systems:
-
-1. **Legacy DI**: `DependencyContainer` in `DependencyInjection.swift`
-   - Used by Drop-in and Headless approaches
-   - Simple property wrapper based system
-
-2. **Modern DI**: `DIContainer` in `ComposableCheckout/Core/DI/`
-   - Used by ComposableCheckout
-   - Actor-based thread-safe design
-   - Async/await based with health checks and diagnostics
-   - SwiftUI environment integration via `@Environment(\.diContainer)`
-   - Three retention policies: transient, singleton, weak
-   - Circular dependency detection with O(1) performance
-
-### Key Components
-
-- **Analytics**: Event tracking system in `Core/Analytics/`
-- **Networking**: API client in `Services/Network/PrimerAPIClient.swift`
-- **Payment Services**: Various payment method integrations
-- **Tokenization**: PCI-compliant card data handling in `PCI/`
-- **3DS**: 3D Secure handling via external dependency
-
-### Payment Method Architecture
-
-**Legacy Payment Methods** (Drop-in/Headless):
-- Tokenization components handle the payment flow
-- View models manage UI state
-- Managers coordinate between components
-- Each payment method can have headless and/or UI implementations
-
-**ComposableCheckout Payment Methods**:
-- **PaymentMethodProtocol**: Common interface with scope-based architecture
-- **Scope Pattern**: Each payment method exposes a scope (e.g., `CardPaymentMethodScope`) for state and behavior
-- **Component-Based**: SwiftUI components with `@ViewBuilder` customization
-- **Validation System**: Comprehensive input validation with `ValidationService` and field-specific validators
-- **DI Integration**: Payment methods resolved from modern DI container
-
-### Testing
-
-- Unit tests are in `Tests/` directory
-- Tests use mocks extensively (see `Tests/Utilities/Mocks/`)
-- Test utilities include JWT factory, SDK session helpers
-
-### ComposableCheckout Public API
-
-The ComposableCheckout module provides a modern, scope-based API similar to Android's Compose pattern:
-
-**Main Entry Point (New Approach):**
+**Legacy DI** (Drop-in/Headless):
 ```swift
-// Present checkout with automatic view controller detection
-ComposablePrimer.presentCheckout(with: clientToken)
+@Dependency private var apiClient: PrimerAPIClientProtocol
+```
 
-// Present from specific view controller
-ComposablePrimer.presentCheckout(with: clientToken, from: viewController)
+**Modern DI** (ComposableCheckout/CheckoutComponents):
+```swift
+// Actor-based async container
+let service = try await diContainer.resolve(ServiceType.self)
 
-// Present with custom SwiftUI content
-ComposablePrimer.presentCheckout(with: clientToken, from: viewController) { scope in
-    // Custom UI using scope
+// Registration with retention policies
+await container.register(ServiceType.self, .singleton) { 
+    ServiceImplementation() 
 }
 ```
 
-**Direct SwiftUI Usage:**
-```swift
-PrimerCheckout(clientToken: String)
+### Payment Method Implementation Patterns
+
+**Legacy Pattern:**
+```
+PrimerPaymentMethod → Manager → TokenizationComponent → ViewModel → Completion
 ```
 
-**Scope-Based Customization:**
-- `PrimerCheckoutScope`: Access to payment methods and selection state
-- Payment method specific scopes (e.g., `CardFormScope` for card payments)
-- Each scope provides both default UI components and customization hooks
+**Modern Pattern:**
+```
+PaymentMethodProtocol → Scope Protocol → ViewModel (Scope Implementation) → SwiftUI View
+```
 
-**Key Design Patterns:**
-- **ComposablePrimer API**: UIKit-friendly wrapper following Primer.shared pattern
-- **Scope Functions**: Extension functions on scopes for UI components
-- **StateFlow Equivalent**: AsyncStream for reactive state management
-- **Modifier Pattern**: SwiftUI modifiers for styling and behavior
-- **Environment Integration**: DI container and design tokens via SwiftUI environment
-- **Bridge Services**: LegacyConfigurationBridge and LegacyTokenizationBridge connect to existing SDK
+### Key Services
 
-### Important Notes
+- **PrimerAPIClient**: Network layer with retry logic
+- **AnalyticsService**: Event tracking (privacy-first)
+- **PrimerHeadlessUniversalCheckout.RawDataManager**: Direct card tokenization
+- **TokenizationService**: PCI-compliant payment processing
+- **ClientSessionService**: Session management and caching
 
-- Always check for existing payment method implementations before creating new ones
-- The SDK supports multiple Package.swift variants for different feature sets (3DS, Klarna, NolPay, Stripe)
-- Design tokens are managed separately in the `DesignTokens/` directory
-- ComposableCheckout is under active development - current focus on scope-based API alignment with Android
-- When adding ComposableCheckout files, run `pod install` to update project references
+### Data Flow
+
+1. **Client Token**: Backend creates, passed to SDK
+2. **Configuration**: Fetched using client token
+3. **Payment Methods**: Loaded based on configuration
+4. **Selection**: User picks payment method
+5. **Data Collection**: SDK collects payment details
+6. **Tokenization**: Convert to payment token
+7. **Completion**: Token returned via delegate/completion
+
+## Common Development Tasks
+
+### Adding a New Payment Method
+
+**For Legacy (Drop-in/Headless):**
+1. Create in `Core/PrimerHeadlessUniversalCheckout/Payment Methods/`
+2. Implement `PrimerHeadlessUniversalCheckoutPaymentMethodTokenizationDelegate`
+3. Add UI in `User Interface/TokenizationViewControllers/` if needed
+4. Register in `PaymentMethodTokenizationFactory`
+5. Add to `PrimerPaymentMethodType` enum
+
+**For Modern (ComposableCheckout/CheckoutComponents):**
+1. Create directory structure: `PaymentMethods/NewMethod/`
+2. Define scope protocol extending base scope
+3. Implement `PaymentMethodProtocol` with associated scope type
+4. Create ViewModel implementing the scope
+5. Build SwiftUI views with customization points
+6. Register in DI container
+7. Add validation rules if needed
+
+### Working with Different SDK Variants
+
+The SDK supports multiple Package.swift files for different features:
+- `Package.swift` - Standard with 3DS
+- `Package.Klarna.swift` - Includes Klarna
+- `Package.NolPay.swift` - Includes NolPay
+- `Package.Stripe.swift` - Includes Stripe
+
+### Debugging
+
+1. Enable verbose logging:
+   ```swift
+   PrimerSettings.debugOptions.logger = PrimerLogging.shared.logger
+   ```
+
+2. Check analytics events:
+   ```swift
+   // Events logged to console when debugging enabled
+   ```
+
+3. Use Charles Proxy for network inspection
+
+4. Common issues:
+   - Missing client token → Check backend integration
+   - Payment fails → Check payment method configuration
+   - UI not showing → Verify view controller presentation
+   - 3DS issues → Ensure URL schemes configured
+
+### Testing Approach
+
+- Unit tests: Extensive mocking with protocols
+- Integration tests: Use test client tokens
+- UI tests: Manual testing via Debug App
+- Payment method tests: Mock tokenization responses
+
+### Important Files
+
+- `PrimerSettings.swift`: Global configuration
+- `PrimerError.swift`: Error definitions
+- `PrimerTheme.swift`: UI customization
+- `PrimerPaymentMethodType.swift`: Supported payment methods
+- `Debug App/`: Test application for development
+
+### Security Considerations
+
+- Never log sensitive payment data
+- All card data must go through PCI-compliant components
+- Use `PrimerCardNumberFieldView` for card input
+- Client tokens are short-lived and safe to expose
+- Payment tokens are one-time use
+
+### Platform Requirements
+
+- iOS 13.1+ (Drop-in, Headless)
+- iOS 15.0+ (ComposableCheckout, CheckoutComponents)
+- Xcode 13.0+
+- Swift 5.3+
+- CocoaPods 1.10+ or Swift Package Manager
+
+## Key Architectural Decisions
+
+1. **Multiple Integration Approaches**: Flexibility for different merchant needs
+2. **Scope-Based API**: Matches Android for cross-platform consistency
+3. **Actor-Based DI**: Thread-safe dependency management for SwiftUI
+4. **AsyncStream State**: Reactive programming without Combine dependency
+5. **Protocol-Oriented**: Extensive use of protocols for testability
+6. **Modular Payment Methods**: Each payment method is self-contained
+
+## Development Workflow
+
+1. Create feature branch from `master`
+2. Implement changes following existing patterns
+3. Run SwiftLint: `swiftlint --fix --format`
+4. Run tests: `bundle exec fastlane test_sdk`
+5. Test in Debug App with real payment flows
+6. Update CLAUDE.md if architecture changes
+7. Create PR with detailed description
