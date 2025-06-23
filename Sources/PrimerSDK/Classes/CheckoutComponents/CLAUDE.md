@@ -128,9 +128,13 @@ let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
 - Setup CheckoutNavigator with state-driven navigation
 - Integrated 3DS handling via RawDataManager delegate
 
-### Phase 6: Integration
-- Add to PrimerUIManager
-- Bridge configuration
+### Phase 6: Integration ✅
+- Created CheckoutComponentsPrimer as main entry point (follows Primer.shared pattern)
+- Integrated with existing PrimerDelegate and PrimerSettings infrastructure
+- Uses PrimerDelegateProxy for delegate callbacks
+- Automatic view controller detection with manual override
+- Support for custom SwiftUI content
+- Proper DI container initialization and cleanup
 
 ## Key Features
 
@@ -154,7 +158,22 @@ Automatic 3D Secure flow:
 
 ## Usage Examples
 
-### Basic Integration
+### Basic UIKit Integration
+```swift
+// Present with automatic view controller detection
+CheckoutComponentsPrimer.presentCheckout(with: clientToken)
+
+// Present from specific view controller
+CheckoutComponentsPrimer.presentCheckout(
+    with: clientToken,
+    from: viewController
+)
+
+// Dismiss
+CheckoutComponentsPrimer.dismiss()
+```
+
+### SwiftUI Integration
 ```swift
 struct CheckoutView: View {
     var body: some View {
@@ -166,14 +185,38 @@ struct CheckoutView: View {
 }
 ```
 
-### Custom Card Input
+### Custom Components
+```swift
+CheckoutComponentsPrimer.presentCheckout(
+    with: clientToken,
+    from: viewController
+) { scope in
+    VStack {
+        // Custom header
+        Text("Custom Checkout")
+        
+        // Use scope to access card form
+        if let cardForm = scope.cardFormScreen {
+            cardForm(scope.cardForm)
+        }
+    }
+}
+```
+
+### Scope Customization
 ```swift
 PrimerCheckout(
     clientToken: token,
     settings: settings,
     scope: { scope in
+        // Customize card number input
         scope.cardForm.cardNumberInput = { _ in
             CustomCardNumberField()
+        }
+        
+        // Customize loading screen
+        scope.loadingScreen = {
+            CustomLoadingView()
         }
     }
 )

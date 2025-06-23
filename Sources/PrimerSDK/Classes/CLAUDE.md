@@ -34,6 +34,15 @@ The main iOS SDK implementation with three integration approaches:
 - **Bridge Services**: LegacyConfigurationBridge and LegacyTokenizationBridge for SDK integration
 - **Architecture**: See `ComposableCheckout/CLAUDE.md` for complete details
 
+### CheckoutComponents/ - Scope-Based SwiftUI Framework
+**NEWEST**: Type-safe scope-based API matching Android exactly (iOS 15+)
+- **Main Entry Point**: `CheckoutComponents/CheckoutComponentsPrimer.swift` - UIKit-friendly API
+- **SwiftUI Entry**: `CheckoutComponents/PrimerCheckout.swift`
+- **Pattern**: Exact Android API parity with scope-based customization
+- **Key Features**: AsyncStream state management, full UI customization, co-badged cards
+- **Scopes**: PrimerCheckoutScope, PrimerCardFormScope, PrimerPaymentMethodSelectionScope
+- **Architecture**: See `CheckoutComponents/CLAUDE.md` for complete details
+
 ### Data Models/ - Domain Objects
 Core business entities and API models:
 - **API/**: Network request/response models
