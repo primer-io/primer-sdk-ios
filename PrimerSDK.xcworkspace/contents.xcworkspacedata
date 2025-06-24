@@ -1833,6 +1833,9 @@
                      location = "group:PrimerRootViewController.swift">
                   </FileRef>
                   <FileRef
+                     location = "group:PrimerSwiftUIBridgeViewController.swift">
+                  </FileRef>
+                  <FileRef
                      location = "group:PrimerInputViewController.swift">
                   </FileRef>
                   <Group

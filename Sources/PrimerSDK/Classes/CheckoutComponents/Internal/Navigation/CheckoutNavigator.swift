@@ -89,7 +89,7 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
     /// Navigate to success screen (handled by CheckoutComponentsPrimer delegate)
     func navigateToSuccess() {
         logger.info(message: "Success navigation - handled by CheckoutComponentsPrimer delegate")
-        
+
         // Success handling is now managed by CheckoutComponentsPrimer delegate
         // which will call PrimerUIManager.dismissOrShowResultScreen() appropriately
     }

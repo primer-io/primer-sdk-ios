@@ -94,7 +94,7 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                 let repository = HeadlessRepositoryImpl()
                 processCardPaymentInteractor = ProcessCardPaymentInteractorImpl(repository: repository)
                 logger.debug(message: "ProcessCardPaymentInteractor initialized successfully")
-                
+
                 // tokenizeCardInteractor = try await container.resolve(TokenizeCardInteractor.self)
                 // validateInputInteractor = try await container.resolve(ValidateInputInteractor.self)
             } catch {
@@ -519,7 +519,7 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
     private func handlePaymentSuccess(_ result: PaymentResult) async {
         logger.info(message: "Payment processed successfully: \(result.paymentId)")
         internalState.isSubmitting = false
-        
+
         // Notify CheckoutComponentsPrimer about the success
         // This will propagate to PrimerUIManager to show the result screen
         await MainActor.run {

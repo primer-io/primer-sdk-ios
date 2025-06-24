@@ -13,10 +13,10 @@ import SwiftUI
 public protocol CheckoutComponentsDelegate: AnyObject {
     /// Called when payment is successful
     func checkoutComponentsDidCompleteWithSuccess()
-    
+
     /// Called when payment fails
     func checkoutComponentsDidFailWithError(_ error: PrimerError)
-    
+
     /// Called when checkout is dismissed without completion
     func checkoutComponentsDidDismiss()
 }
@@ -108,10 +108,11 @@ public protocol CheckoutComponentsDelegate: AnyObject {
     }
 
     /// Internal dismiss method that doesn't call delegate (to avoid circular calls)
+    /// Used by PrimerUIManager to prevent circular delegate calls
     internal func dismissWithoutDelegate(animated: Bool = true, completion: (() -> Void)? = nil) {
-        logger.info(message: "🚪 [CheckoutComponentsPrimer] Dismissing checkout (without delegate)")
+        logger.info(message: "🚪 [CheckoutComponentsPrimer] Dismissing checkout (without delegate) through traditional UI")
 
-        guard let controller = activeCheckoutController else {
+        guard activeCheckoutController != nil else {
             logger.warn(message: "⚠️ [CheckoutComponentsPrimer] No active checkout to dismiss")
             completion?()
             return
@@ -120,20 +121,22 @@ public protocol CheckoutComponentsDelegate: AnyObject {
         // Reset the presenting flag immediately
         isPresentingCheckout = false
 
-        controller.dismiss(animated: animated) { [weak self] in
-            self?.activeCheckoutController = nil
-            self?.diContainer = nil
-            self?.navigator = nil
-            self?.logger.info(message: "✅ [CheckoutComponentsPrimer] Checkout dismissed (without delegate)")
-            completion?()
-        }
+        // For traditional UI integration, the dismissal is handled by PrimerUIManager
+        // We just need to clean up our references
+        activeCheckoutController = nil
+        diContainer = nil
+        navigator = nil
+
+        logger.info(message: "✅ [CheckoutComponentsPrimer] Checkout dismissed (without delegate)")
+        completion?()
     }
 
     // MARK: - Instance Methods
 
     /// Internal method for dismissing checkout (used by CheckoutCoordinator)
     internal func dismissCheckout() {
-        dismiss(animated: true, completion: nil)
+        // For traditional UI integration, use the traditional dismiss mechanism
+        dismissThroughTraditionalUI()
     }
 
     /// Internal method for handling payment success
@@ -159,7 +162,7 @@ public protocol CheckoutComponentsDelegate: AnyObject {
         from viewController: UIViewController,
         completion: (() -> Void)?
     ) {
-        logger.info(message: "📱 [CheckoutComponentsPrimer] Presenting checkout with default UI")
+        logger.info(message: "📱 [CheckoutComponentsPrimer] Presenting checkout through traditional UI system")
 
         // Check if already presenting
         guard !isPresentingCheckout else {
@@ -172,6 +175,22 @@ public protocol CheckoutComponentsDelegate: AnyObject {
 
         Task { @MainActor in
             do {
+                // Ensure traditional Primer UI system is initialized
+                logger.info(message: "🌉 [CheckoutComponentsPrimer] Initializing traditional UI system...")
+                try await withCheckedThrowingContinuation { continuation in
+                    firstly {
+                        PrimerUIManager.prepareRootViewController()
+                    }
+                    .done {
+                        continuation.resume()
+                    }
+                    .catch { error in
+                        continuation.resume(throwing: error)
+                    }
+                }
+
+                logger.info(message: "✅ [CheckoutComponentsPrimer] Traditional UI system ready")
+
                 // Initialize the DI container and navigator
                 let container = await setupDependencies()
                 let nav = CheckoutNavigator()
@@ -183,41 +202,26 @@ public protocol CheckoutComponentsDelegate: AnyObject {
                 // Get settings from main Primer or use default
                 let settings = PrimerSettings.current
 
-                // Create the checkout view
-                let checkoutView = PrimerCheckout(
+                // Create the bridge controller that embeds SwiftUI in traditional system
+                let bridgeController = PrimerSwiftUIBridgeViewController.createForCheckoutComponents(
                     clientToken: clientToken,
                     settings: settings,
                     diContainer: container,
                     navigator: nav
                 )
 
-                // Create the hosting controller
-                let hostingController = UIHostingController(rootView: checkoutView)
-                hostingController.modalPresentationStyle = .pageSheet
+                // Store reference to bridge controller
+                activeCheckoutController = bridgeController
 
-                if let sheet = hostingController.sheetPresentationController {
-                    sheet.detents = [.medium(), .large()]
-                    sheet.prefersGrabberVisible = true
-                    sheet.prefersScrollingExpandsWhenScrolledToEdge = false
-                }
+                // Present through traditional Primer UI system
+                logger.info(message: "🌉 [CheckoutComponentsPrimer] Presenting through PrimerRootViewController.show()")
+                PrimerUIManager.primerRootViewController?.show(viewController: bridgeController, animated: true)
 
-                // Store reference
-                activeCheckoutController = hostingController
+                // Reset presenting flag after successful integration
+                isPresentingCheckout = false
 
-                // Check if already presenting
-                if viewController.presentedViewController != nil {
-                    logger.warn(message: "⚠️ [CheckoutComponentsPrimer] View controller is already presenting. Dismissing first.")
-                    // Reset flag since we're not actually presenting yet
-                    isPresentingCheckout = false
-                    viewController.dismiss(animated: false) { [weak self] in
-                        // Set flag again before re-attempting presentation
-                        self?.isPresentingCheckout = true
-                        self?.presentHostingController(hostingController, from: viewController, completion: completion)
-                    }
-                } else {
-                    // Present directly
-                    presentHostingController(hostingController, from: viewController, completion: completion)
-                }
+                logger.info(message: "✅ [CheckoutComponentsPrimer] Checkout integrated with traditional UI system")
+                completion?()
 
             } catch {
                 logger.error(message: "❌ [CheckoutComponentsPrimer] Failed to present checkout: \(error)")
@@ -245,10 +249,24 @@ public protocol CheckoutComponentsDelegate: AnyObject {
         @ViewBuilder customContent: @escaping (PrimerCheckoutScope) -> Content,
         completion: (() -> Void)?
     ) {
-        logger.info(message: "📱 [CheckoutComponentsPrimer] Presenting checkout with custom content")
+        logger.info(message: "📱 [CheckoutComponentsPrimer] Presenting checkout with custom content through traditional UI")
 
         Task { @MainActor in
             do {
+                // Ensure traditional Primer UI system is initialized
+                logger.info(message: "🌉 [CheckoutComponentsPrimer] Initializing traditional UI system for custom content...")
+                try await withCheckedThrowingContinuation { continuation in
+                    firstly {
+                        PrimerUIManager.prepareRootViewController()
+                    }
+                    .done {
+                        continuation.resume()
+                    }
+                    .catch { error in
+                        continuation.resume(throwing: error)
+                    }
+                }
+
                 // Initialize the DI container and navigator
                 let container = await setupDependencies()
                 let nav = CheckoutNavigator()
@@ -260,33 +278,29 @@ public protocol CheckoutComponentsDelegate: AnyObject {
                 // Get settings from main Primer or use default
                 let settings = PrimerSettings.current
 
-                // Create the checkout view with custom content
-                let checkoutView = PrimerCheckout(
-                    clientToken: clientToken,
-                    settings: settings,
-                    diContainer: container,
-                    navigator: nav
-                ) { scope in
+                // Create custom content wrapper
+                let customContentWrapper: (PrimerCheckoutScope) -> AnyView = { scope in
                     AnyView(customContent(scope))
                 }
 
-                // Create the hosting controller
-                let hostingController = UIHostingController(rootView: checkoutView)
-                hostingController.modalPresentationStyle = .pageSheet
-
-                if let sheet = hostingController.sheetPresentationController {
-                    sheet.detents = [.medium(), .large()]
-                    sheet.prefersGrabberVisible = true
-                    sheet.prefersScrollingExpandsWhenScrolledToEdge = false
-                }
+                // Create the bridge controller with custom content
+                let bridgeController = PrimerSwiftUIBridgeViewController.createForCheckoutComponents(
+                    clientToken: clientToken,
+                    settings: settings,
+                    diContainer: container,
+                    navigator: nav,
+                    customContent: customContentWrapper
+                )
 
                 // Store reference
-                activeCheckoutController = hostingController
+                activeCheckoutController = bridgeController
 
-                // Present
-                viewController.present(hostingController, animated: true, completion: completion)
+                // Present through traditional Primer UI system
+                logger.info(message: "🌉 [CheckoutComponentsPrimer] Presenting custom content through PrimerRootViewController.show()")
+                PrimerUIManager.primerRootViewController?.show(viewController: bridgeController, animated: true)
 
-                logger.info(message: "✅ [CheckoutComponentsPrimer] Custom checkout presented successfully")
+                logger.info(message: "✅ [CheckoutComponentsPrimer] Custom checkout integrated with traditional UI system")
+                completion?()
 
             } catch {
                 logger.error(message: "❌ [CheckoutComponentsPrimer] Failed to present custom checkout: \(error)")
@@ -305,32 +319,21 @@ public protocol CheckoutComponentsDelegate: AnyObject {
         }
     }
 
-    private func presentHostingController(_ hostingController: UIViewController, from viewController: UIViewController, completion: (() -> Void)?) {
-        viewController.present(hostingController, animated: true) { [weak self] in
-            // Reset the flag after successful presentation
-            self?.isPresentingCheckout = false
-            self?.logger.info(message: "✅ [CheckoutComponentsPrimer] Checkout presented successfully")
+    // MARK: - Traditional UI Integration
 
-            // Observe when the controller is dismissed to clean up state
-            self?.observeDismissal(of: hostingController)
+    /// Internal method for dismissing checkout through traditional UI system
+    internal func dismissThroughTraditionalUI() {
+        logger.info(message: "🌉 [CheckoutComponentsPrimer] Dismissing through traditional UI system")
 
-            completion?()
-        }
-    }
-
-    private func observeDismissal(of viewController: UIViewController) {
-        // Use presentationController delegate or other mechanism to detect dismissal
-        if let presentationController = viewController.presentationController {
-            // We'll rely on our dismiss method being called explicitly
-            // This is just a safety check
-            logger.debug(message: "🔍 [CheckoutComponentsPrimer] Monitoring presentation controller for dismissal")
-        }
+        // The traditional UI system (PrimerUIManager) will handle dismissal
+        // This includes showing result screens if needed
+        PrimerInternal.shared.dismiss()
     }
 
     private func dismiss(animated: Bool, completion: (() -> Void)?) {
-        logger.info(message: "🚪 [CheckoutComponentsPrimer] Dismissing checkout")
+        logger.info(message: "🚪 [CheckoutComponentsPrimer] Dismissing checkout through traditional UI")
 
-        guard let controller = activeCheckoutController else {
+        guard activeCheckoutController != nil else {
             logger.warn(message: "⚠️ [CheckoutComponentsPrimer] No active checkout to dismiss")
             completion?()
             return
@@ -339,17 +342,21 @@ public protocol CheckoutComponentsDelegate: AnyObject {
         // Reset the presenting flag immediately
         isPresentingCheckout = false
 
-        controller.dismiss(animated: animated) { [weak self] in
-            self?.activeCheckoutController = nil
-            self?.diContainer = nil
-            self?.navigator = nil
-            self?.logger.info(message: "✅ [CheckoutComponentsPrimer] Checkout dismissed")
-            
-            // Notify delegate about dismissal
-            self?.handleCheckoutDismiss()
-            
-            completion?()
-        }
+        // For traditional UI integration, dismiss through the traditional system
+        // This ensures proper cleanup and result screen handling
+        dismissThroughTraditionalUI()
+
+        // Clean up references
+        activeCheckoutController = nil
+        diContainer = nil
+        navigator = nil
+
+        logger.info(message: "✅ [CheckoutComponentsPrimer] Checkout dismissed through traditional UI")
+
+        // Notify delegate about dismissal
+        handleCheckoutDismiss()
+
+        completion?()
     }
 
     // MARK: - Setup

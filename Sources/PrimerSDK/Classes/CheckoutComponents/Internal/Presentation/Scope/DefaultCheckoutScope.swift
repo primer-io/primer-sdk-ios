@@ -255,7 +255,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
 
     internal func handlePaymentSuccess(_ result: PaymentResult) {
         logger.debug(message: "Payment successful")
-        
+
         // Notify CheckoutComponentsPrimer about the success
         // This will propagate to PrimerUIManager to show the result screen
         logger.info(message: "Notifying CheckoutComponentsPrimer about payment success")
@@ -264,12 +264,12 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
 
     internal func handlePaymentError(_ error: PrimerError) {
         logger.error(message: "Payment error: \\(error)")
-        
+
         // Notify CheckoutComponentsPrimer about the failure
         // This will propagate to PrimerUIManager to show the error screen
         logger.info(message: "Notifying CheckoutComponentsPrimer about payment failure")
         CheckoutComponentsPrimer.shared.handlePaymentFailure(error)
-        
+
         updateNavigationState(.failure(error))
         updateState(.failure(error))
     }

@@ -29,7 +29,8 @@
       "Bash(rg:*)",
       "mcp__xcode-server__get_current_directory",
       "mcp__xcode-server__find_files",
-      "mcp__xcode-server__search_in_files"
+      "mcp__xcode-server__search_in_files",
+      "Bash(mkdir:*)"
     ],
     "deny": []
   }

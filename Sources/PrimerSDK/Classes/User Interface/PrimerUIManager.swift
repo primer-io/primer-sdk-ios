@@ -145,28 +145,13 @@ final class PrimerUIManager: PrimerUIManaging {
             return
         }
 
-        // Get the presenting view controller
-        guard let presentingViewController = PrimerUIManager.primerRootViewController else {
-            let error = PrimerError.unableToPresentPaymentMethod(
-                paymentMethodType: "CheckoutComponents",
-                userInfo: .errorUserInfoDictionary(
-                    additionalInfo: ["message": "No presenting view controller found"]
-                ),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: error)
-            PrimerUIManager.handleErrorBasedOnSDKSettings(error)
-            return
-        }
-
         // Set PrimerUIManager as the delegate to handle success/failure results
         CheckoutComponentsPrimer.shared.delegate = self
         
-        // Use the new CheckoutComponentsPrimer API
-        CheckoutComponentsPrimer.presentCheckout(
-            with: clientToken,
-            from: presentingViewController
-        ) {
-            // Presentation completed
+        // CheckoutComponentsPrimer now handles traditional UI integration internally
+        // It will initialize PrimerRootViewController and present through the traditional system
+        CheckoutComponentsPrimer.presentCheckout(with: clientToken) {
+            // Presentation completed through traditional UI system
         }
     }
     
@@ -474,27 +459,23 @@ extension PrimerUIManager {
 extension PrimerUIManager: CheckoutComponentsDelegate {
     
     func checkoutComponentsDidCompleteWithSuccess() {
-        // First dismiss the CheckoutComponents UI, then show result screen
-        CheckoutComponentsPrimer.shared.dismissWithoutDelegate(animated: true) { [weak self] in
-            // Use the same pattern as Drop-in and Headless implementations
-            self?.dismissOrShowResultScreen(
-                type: .success,
-                paymentMethodManagerCategories: [],
-                withMessage: "Payment successful"
-            )
-        }
+        // CheckoutComponents is now integrated with traditional UI system
+        // Result screens are handled automatically through traditional dismissOrShowResultScreen
+        dismissOrShowResultScreen(
+            type: .success,
+            paymentMethodManagerCategories: [],
+            withMessage: "Payment successful"
+        )
     }
     
     func checkoutComponentsDidFailWithError(_ error: PrimerError) {
-        // First dismiss the CheckoutComponents UI, then show error screen
-        CheckoutComponentsPrimer.shared.dismissWithoutDelegate(animated: true) { [weak self] in
-            // Use the same pattern as Drop-in and Headless implementations
-            self?.dismissOrShowResultScreen(
-                type: .failure,
-                paymentMethodManagerCategories: [],
-                withMessage: error.localizedDescription
-            )
-        }
+        // CheckoutComponents is now integrated with traditional UI system
+        // Result screens are handled automatically through traditional dismissOrShowResultScreen
+        dismissOrShowResultScreen(
+            type: .failure,
+            paymentMethodManagerCategories: [],
+            withMessage: error.localizedDescription
+        )
     }
     
     func checkoutComponentsDidDismiss() {
