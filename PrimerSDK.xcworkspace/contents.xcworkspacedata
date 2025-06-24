@@ -2556,7 +2556,7 @@
                   location = "group:MockPrimerUIManager.swift">
                </FileRef>
                <FileRef
-                  location = "group:TokenizationService.swift">
+                  location = "group:MockTokenizationService.swift">
                </FileRef>
             </Group>
             <Group
