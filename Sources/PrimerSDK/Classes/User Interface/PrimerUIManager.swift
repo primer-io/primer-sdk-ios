@@ -363,11 +363,18 @@ final class PrimerUIManager: PrimerUIManaging {
     func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType,
                                    paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
                                    withMessage message: String? = nil) {
+        print("🔍 [PrimerUIManager] dismissOrShowResultScreen called with type: \(type)")
+        print("🔍 [PrimerUIManager] isSuccessScreenEnabled: \(PrimerSettings.current.uiOptions.isSuccessScreenEnabled)")
+        print("🔍 [PrimerUIManager] isErrorScreenEnabled: \(PrimerSettings.current.uiOptions.isErrorScreenEnabled)")
+        
         if PrimerSettings.current.uiOptions.isSuccessScreenEnabled && type == .success {
+            print("✅ [PrimerUIManager] Showing success result screen")
             showResultScreenForResultType(type: .success, message: message)
         } else if PrimerSettings.current.uiOptions.isErrorScreenEnabled && type == .failure {
+            print("❌ [PrimerUIManager] Showing failure result screen")
             showResultScreenForResultType(type: .failure, message: message)
         } else {
+            print("🚪 [PrimerUIManager] Dismissing without result screen")
             PrimerInternal.shared.dismiss(
                 paymentMethodManagerCategories: paymentMethodManagerCategories
             )
@@ -391,10 +398,18 @@ final class PrimerUIManager: PrimerUIManaging {
     }
 
     fileprivate func showResultScreenForResultType(type: PrimerResultViewController.ScreenType, message: String? = nil) {
+        print("📺 [PrimerUIManager] showResultScreenForResultType called with type: \(type), message: \(message ?? "nil")")
+        
         let resultViewController = PrimerResultViewController(screenType: type, message: message)
         resultViewController.view.translatesAutoresizingMaskIntoConstraints = false
         resultViewController.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-        PrimerUIManager.primerRootViewController?.show(viewController: resultViewController)
+        
+        if let rootViewController = PrimerUIManager.primerRootViewController {
+            print("📺 [PrimerUIManager] Found primerRootViewController, showing result screen")
+            rootViewController.show(viewController: resultViewController)
+        } else {
+            print("❌ [PrimerUIManager] primerRootViewController is nil - cannot show result screen")
+        }
     }
 }
 
