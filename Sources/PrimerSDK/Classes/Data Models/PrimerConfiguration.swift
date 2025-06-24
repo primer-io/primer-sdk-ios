@@ -271,7 +271,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
                             for network in networks {
                                 guard network["type"] is String,
                                       network["surcharge"] is Int,
-                                    let surchargeValue = network["surcharge"] as? Int
+                                      let surchargeValue = network["surcharge"] as? Int
                                 else { continue }
                                 hasCardSurcharge = surchargeValue > 0
                             }

@@ -15,7 +15,7 @@ import UIKit
 
 // swiftlint:disable:next type_name
 final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizationViewModel,
-                                                  SearchableItemsPaymentMethodTokenizationViewModelProtocol {
+                                                        SearchableItemsPaymentMethodTokenizationViewModelProtocol {
 
     // MARK: - Properties
 
@@ -347,9 +347,9 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         let surchargeAmount = alternativelySelectedCardNetwork?.surcharge ?? defaultCardNetwork?.surcharge
         let isMerchantAmountNil
             = PrimerAPIConfigurationModule.apiConfiguration?
-                  .clientSession?
-                  .order?
-                  .merchantAmount == nil
+            .clientSession?
+            .order?
+            .merchantAmount == nil
         let currencyExists = AppState.current.currency != nil
 
         let shouldShowSurcharge
@@ -716,8 +716,8 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
 
     func configureAmountLabels(cardNetwork: CardNetwork?) {
         if let surcharge = alternativelySelectedCardNetwork?.surcharge ?? cardNetwork?.surcharge,
-        PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
-        let currency = AppState.current.currency {
+           PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
+           let currency = AppState.current.currency {
             configureSurchargeLabel(surchargeAmount: surcharge, currency: currency)
         } else {
             hideSurchargeLabel()
@@ -1193,7 +1193,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
             } else {
                 // Remember if we had any selection
                 let hadSelection = (self.alternativelySelectedCardNetwork != nil)
-                                 || (self.defaultCardNetwork != nil)
+                    || (self.defaultCardNetwork != nil)
 
                 // Clear all state & UI
                 self.alternativelySelectedCardNetwork = nil

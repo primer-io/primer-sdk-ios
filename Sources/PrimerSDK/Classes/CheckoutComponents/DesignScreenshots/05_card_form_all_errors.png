@@ -1,8 +1,0 @@
-Note: This is a placeholder file. The actual screenshot shows:
-- Card payment form with all fields showing errors
-- All fields highlighted in red with error icons
-- Error messages:
-  - "Enter a valid card number"
-  - "Enter a valid expiry date"
-  - "Enter a valid CVV"
-  - "Enter a valid name"

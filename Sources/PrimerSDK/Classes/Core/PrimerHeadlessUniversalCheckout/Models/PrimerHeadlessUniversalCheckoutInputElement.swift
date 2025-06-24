@@ -103,7 +103,7 @@ public enum PrimerInputElementType: Int {
         case .firstName, .lastName:
             return text.isValidNonDecimalString
         case .addressLine1, .addressLine2, .city, .state:
-            return !text.isEmpty  
+            return !text.isEmpty
         case .email:
             return text.contains("@") && text.contains(".")
         default:

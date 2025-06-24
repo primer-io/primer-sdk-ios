@@ -15,7 +15,7 @@ public enum CheckoutStyle {
     /// Traditional UIKit-based Drop-in checkout system
     case dropIn
     /// Modern SwiftUI-based CheckoutComponents system (iOS 15+ required)
-    case composable
+    case components
     /// Automatically choose based on iOS version and availability
     case automatic
 }
@@ -77,17 +77,16 @@ final class PrimerUIManager: PrimerUIManaging {
     }
 
     func presentPaymentUI() {
-        presentPaymentUI(checkoutStyle: .composable)
+        presentPaymentUI(checkoutStyle: .components)
     }
 
     func presentPaymentUI(checkoutStyle: CheckoutStyle) {
         if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
             PrimerUIManager.presentPaymentMethod(type: paymentMethodType)
         } else if PrimerInternal.shared.intent == .checkout {
-            let resolvedStyle = resolveCheckoutStyle(checkoutStyle)
 
-            switch resolvedStyle {
-            case .composable:
+            switch checkoutStyle {
+            case .components:
                 if #available(iOS 15.0, *) {
                     presentComposableCheckout()
                 } else {
@@ -113,20 +112,6 @@ final class PrimerUIManager: PrimerUIManaging {
         }
     }
 
-    private func resolveCheckoutStyle(_ style: CheckoutStyle) -> CheckoutStyle {
-        switch style {
-        case .automatic:
-            // Choose CheckoutComponents for iOS 15+, otherwise Drop-in
-            if #available(iOS 15.0, *) {
-                return .composable
-            } else {
-                return .dropIn
-            }
-        case .composable, .dropIn:
-            return style
-        }
-    }
-
     private func presentDropInCheckout() {
         let pucvc = PrimerUniversalCheckoutViewController()
         PrimerUIManager.primerRootViewController?.show(viewController: pucvc)
@@ -146,17 +131,15 @@ final class PrimerUIManager: PrimerUIManaging {
         }
 
         // Set PrimerUIManager as the delegate to handle success/failure results
-        print("🔗 [PrimerUIManager] Setting self as CheckoutComponentsPrimer delegate")
         CheckoutComponentsPrimer.shared.delegate = self
-        print("🔗 [PrimerUIManager] Delegate set successfully")
-        
+
         // CheckoutComponentsPrimer now handles traditional UI integration internally
         // It will initialize PrimerRootViewController and present through the traditional system
         CheckoutComponentsPrimer.presentCheckout(with: clientToken) {
-            // Presentation completed through traditional UI system
+            // Presentation completed
         }
     }
-    
+
     @available(iOS 15.0, *)
     private func handleSwiftUIHeightChange(_ height: CGFloat) {
         // This can be used for additional height change handling if needed
@@ -363,18 +346,12 @@ final class PrimerUIManager: PrimerUIManaging {
     func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType,
                                    paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
                                    withMessage message: String? = nil) {
-        print("🔍 [PrimerUIManager] dismissOrShowResultScreen called with type: \(type)")
-        print("🔍 [PrimerUIManager] isSuccessScreenEnabled: \(PrimerSettings.current.uiOptions.isSuccessScreenEnabled)")
-        print("🔍 [PrimerUIManager] isErrorScreenEnabled: \(PrimerSettings.current.uiOptions.isErrorScreenEnabled)")
-        
         if PrimerSettings.current.uiOptions.isSuccessScreenEnabled && type == .success {
-            print("✅ [PrimerUIManager] Showing success result screen")
+
             showResultScreenForResultType(type: .success, message: message)
         } else if PrimerSettings.current.uiOptions.isErrorScreenEnabled && type == .failure {
-            print("❌ [PrimerUIManager] Showing failure result screen")
             showResultScreenForResultType(type: .failure, message: message)
         } else {
-            print("🚪 [PrimerUIManager] Dismissing without result screen")
             PrimerInternal.shared.dismiss(
                 paymentMethodManagerCategories: paymentMethodManagerCategories
             )
@@ -398,17 +375,13 @@ final class PrimerUIManager: PrimerUIManaging {
     }
 
     fileprivate func showResultScreenForResultType(type: PrimerResultViewController.ScreenType, message: String? = nil) {
-        print("📺 [PrimerUIManager] showResultScreenForResultType called with type: \(type), message: \(message ?? "nil")")
-        
+
         let resultViewController = PrimerResultViewController(screenType: type, message: message)
         resultViewController.view.translatesAutoresizingMaskIntoConstraints = false
         resultViewController.view.heightAnchor.constraint(equalToConstant: 300).isActive = true
-        
+
         if let rootViewController = PrimerUIManager.primerRootViewController {
-            print("📺 [PrimerUIManager] Found primerRootViewController, showing result screen")
             rootViewController.show(viewController: resultViewController)
-        } else {
-            print("❌ [PrimerUIManager] primerRootViewController is nil - cannot show result screen")
         }
     }
 }
@@ -474,28 +447,53 @@ extension PrimerUIManager {
 
 @available(iOS 15.0, *)
 extension PrimerUIManager: CheckoutComponentsDelegate {
-    
+
     func checkoutComponentsDidCompleteWithSuccess() {
-        // CheckoutComponents is now integrated with traditional UI system
-        // Result screens are handled automatically through traditional dismissOrShowResultScreen
-        print("🎉 [PrimerUIManager] checkoutComponentsDidCompleteWithSuccess called - showing result screen")
-        dismissOrShowResultScreen(
-            type: .success,
-            paymentMethodManagerCategories: [],
-            withMessage: "Payment successful"
-        )
+
+        // For modal presentation, we need to ensure PrimerRootViewController exists before showing result screen
+        CheckoutComponentsPrimer.shared.dismissWithoutDelegate(animated: true) { [weak self] in
+
+            // Re-initialize traditional UI system for result screen presentation
+            firstly {
+                PrimerUIManager.prepareRootViewController()
+            }
+            .done {
+                self?.dismissOrShowResultScreen(
+                    type: .success,
+                    paymentMethodManagerCategories: [],
+                    withMessage: "Payment successful"
+                )
+            }
+            .catch { error in
+                // Fallback: just dismiss without result screen
+                PrimerInternal.shared.dismiss(paymentMethodManagerCategories: [])
+            }
+        }
     }
-    
+
     func checkoutComponentsDidFailWithError(_ error: PrimerError) {
-        // CheckoutComponents is now integrated with traditional UI system
-        // Result screens are handled automatically through traditional dismissOrShowResultScreen
-        dismissOrShowResultScreen(
-            type: .failure,
-            paymentMethodManagerCategories: [],
-            withMessage: error.localizedDescription
-        )
+
+        // For modal presentation, we need to ensure PrimerRootViewController exists before showing error screen
+        CheckoutComponentsPrimer.shared.dismissWithoutDelegate(animated: true) { [weak self] in
+
+            // Re-initialize traditional UI system for error screen presentation
+            firstly {
+                PrimerUIManager.prepareRootViewController()
+            }
+            .done {
+                self?.dismissOrShowResultScreen(
+                    type: .failure,
+                    paymentMethodManagerCategories: [],
+                    withMessage: error.localizedDescription
+                )
+            }
+            .catch { prepareError in
+                // Fallback: just dismiss without error screen
+                PrimerInternal.shared.dismiss(paymentMethodManagerCategories: [])
+            }
+        }
     }
-    
+
     func checkoutComponentsDidDismiss() {
         // Handle dismissal - this is called when checkout is dismissed without completion
         // Use the existing dismissal mechanism

@@ -121,14 +121,23 @@ public protocol CheckoutComponentsDelegate: AnyObject {
         // Reset the presenting flag immediately
         isPresentingCheckout = false
 
-        // For traditional UI integration, the dismissal is handled by PrimerUIManager
-        // We just need to clean up our references
-        activeCheckoutController = nil
-        diContainer = nil
-        navigator = nil
-
-        logger.info(message: "✅ [CheckoutComponentsPrimer] Checkout dismissed (without delegate)")
-        completion?()
+        // Dismiss the modal presentation
+        if let controller = activeCheckoutController {
+            controller.dismiss(animated: animated) { [weak self] in
+                self?.activeCheckoutController = nil
+                self?.diContainer = nil
+                self?.navigator = nil
+                self?.logger.info(message: "✅ [CheckoutComponentsPrimer] Modal checkout dismissed (without delegate)")
+                completion?()
+            }
+        } else {
+            // Clean up references if controller is nil
+            activeCheckoutController = nil
+            diContainer = nil
+            navigator = nil
+            logger.info(message: "✅ [CheckoutComponentsPrimer] Checkout dismissed (without delegate)")
+            completion?()
+        }
     }
 
     // MARK: - Instance Methods
@@ -142,7 +151,7 @@ public protocol CheckoutComponentsDelegate: AnyObject {
     /// Internal method for handling payment success
     internal func handlePaymentSuccess() {
         logger.info(message: "✅ [CheckoutComponentsPrimer] Payment completed successfully")
-        
+
         if let delegate = delegate {
             logger.info(message: "📞 [CheckoutComponentsPrimer] Calling delegate checkoutComponentsDidCompleteWithSuccess")
             delegate.checkoutComponentsDidCompleteWithSuccess()
@@ -219,9 +228,19 @@ public protocol CheckoutComponentsDelegate: AnyObject {
                 // Store reference to bridge controller
                 activeCheckoutController = bridgeController
 
-                // Present through traditional Primer UI system
-                logger.info(message: "🌉 [CheckoutComponentsPrimer] Presenting through PrimerRootViewController.show()")
-                PrimerUIManager.primerRootViewController?.show(viewController: bridgeController, animated: true)
+                // Present CheckoutComponents modally to keep separate from traditional navigation stack
+                logger.info(message: "🌉 [CheckoutComponentsPrimer] Presenting CheckoutComponents modally")
+
+                // Create modal presentation
+                bridgeController.modalPresentationStyle = .pageSheet
+                if let sheet = bridgeController.sheetPresentationController {
+                    sheet.detents = [.medium(), .large()]
+                    sheet.prefersGrabberVisible = true
+                    sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+                }
+
+                // Present modally from the root view controller
+                PrimerUIManager.primerRootViewController?.present(bridgeController, animated: true)
 
                 // Reset presenting flag after successful integration
                 isPresentingCheckout = false

@@ -74,7 +74,7 @@ extension Analytics {
                     var combinedEvents: [Analytics.Event] = eventsToAppend.sorted(by: { $0.createdAt > $1.createdAt })
                     combinedEvents.append(contentsOf: storedEvents)
 
-//                    self.logger.debug(message: "📚 Analytics: Recording \(events.count) events (new total: \(combinedEvents.count))")
+                    //                    self.logger.debug(message: "📚 Analytics: Recording \(events.count) events (new total: \(combinedEvents.count))")
 
                     do {
                         try self.storage.save(combinedEvents)
@@ -84,7 +84,7 @@ extension Analytics {
                             let sizeString = batchSizeExceeded ? "exceeded" : "reached"
                             let count = combinedEvents.count
                             let message = "📚 Analytics: Minimum batch size of \(self.batchSize) \(sizeString) (\(count) events present). Attempting sync ..."
-//                            self.logger.debug(message: message)
+                            //                            self.logger.debug(message: message)
                             _ = self.sync(events: combinedEvents).ensure {
                                 seal.fulfill()
                             }
@@ -116,13 +116,13 @@ extension Analytics {
         private func sync(events: [Analytics.Event], isFlush: Bool = false) -> Promise<Void> {
             let syncType = isFlush ? "flush" : "sync"
             guard events.count > 0 else {
-//                self.logger.warn(message: "📚 Analytics: Attempted to \(syncType) but had no events")
+                //                self.logger.warn(message: "📚 Analytics: Attempted to \(syncType) but had no events")
                 return Promise<Void> { $0.fulfill() }
             }
 
             if !isFlush {
                 guard !isSyncing else {
-//                    self.logger.debug(message: "📚 Analytics: Attempted to sync while already syncing. Skipping ...")
+                    //                    self.logger.debug(message: "📚 Analytics: Attempted to sync while already syncing. Skipping ...")
                     return Promise<Void> { $0.fulfill() }
                 }
                 isSyncing = true
@@ -134,7 +134,7 @@ extension Analytics {
 
                     let events = isFlush ? events : Array(events.prefix(Int(self.batchSize)))
 
-//                    self.logger.debug(message: "📚 Analytics: \(syncType.capitalized)ing \(events.count) events ...")
+                    //                    self.logger.debug(message: "📚 Analytics: \(syncType.capitalized)ing \(events.count) events ...")
 
                     let promises: [Promise<Void>] = [
                         self.sendSdkLogEvents(events: events),
@@ -144,7 +144,7 @@ extension Analytics {
                     when(fulfilled: promises)
                         .done { _ in
                             let remainingEvents = self.storage.loadEvents()
-//                            self.logger.debug(message: "📚 Analytics: \(syncType.capitalized) completed. \(remainingEvents.count) events remain")
+                            //                            self.logger.debug(message: "📚 Analytics: \(syncType.capitalized) completed. \(remainingEvents.count) events remain")
                             self.isSyncing = false
                             if remainingEvents.count >= self.batchSize {
                                 _ = self.sync(events: remainingEvents).ensure {
@@ -157,7 +157,7 @@ extension Analytics {
                         .catch { err in
                             let errorMessage = err.localizedDescription
                             let message = "📚 Analytics: Failed to \(syncType) events with error \(errorMessage)"
-//                            self.logger.error(message: message)
+                            //                            self.logger.error(message: message)
                             self.isSyncing = false
                             seal.reject(err)
                         }
@@ -246,7 +246,7 @@ extension Analytics {
 
             let decodedJWTToken = PrimerAPIConfigurationModule.clientToken?.decodedJWTToken
 
-//            logger.debug(message: "📚 Analytics: Sending \(events.count) events to \(url.absoluteString)")
+            //            logger.debug(message: "📚 Analytics: Sending \(events.count) events to \(url.absoluteString)")
 
             self.apiClient.sendAnalyticsEvents(
                 clientToken: decodedJWTToken,
@@ -259,7 +259,7 @@ extension Analytics {
                         let urlString = url.absoluteString
                         self.storage.delete(events)
                         let message = "📚 Analytics: Finished sending \(events.count) events on URL: \(urlString). Deleted \(events.count) sent events from store"
-//                        self.logger.debug(message: message)
+                        //                        self.logger.debug(message: message)
                         completion(nil)
                     }
                 case .failure(let err):
@@ -268,7 +268,7 @@ extension Analytics {
                         let urlString = url.absoluteString
                         let count = events.count
                         let message = "📚 Analytics: Failed to send \(count) events on URL \(urlString) with error \(err)"
-//                        self.logger.error(message: message)
+                        //                        self.logger.error(message: message)
 
                         // Handle error
                         ErrorHandler.handle(error: err)
@@ -282,7 +282,7 @@ extension Analytics {
         private func handleFailedEvents(forUrl url: URL) {
             self.eventSendFailureCount += 1
             if eventSendFailureCount >= 3 {
-//                logger.error(message: "Failed to send events three or more times. Deleting analytics file ...")
+                //                logger.error(message: "Failed to send events three or more times. Deleting analytics file ...")
                 storage.deleteAnalyticsFile()
                 eventSendFailureCount = 0
             } else {

@@ -230,7 +230,7 @@ class PrimerRootViewController: PrimerViewController {
     internal func show(viewController: UIViewController, animated: Bool = false) {
         print("🎬 [PrimerRootViewController] show() called with viewController: \(type(of: viewController))")
         print("🎬 [PrimerRootViewController] Current navigation stack count: \(self.navController.viewControllers.count)")
-        
+
         viewController.view.translatesAutoresizingMaskIntoConstraints = false
         viewController.view.widthAnchor.constraint(equalToConstant: self.childView.frame.width).isActive = true
         viewController.view.layoutIfNeeded()
