@@ -2538,6 +2538,9 @@
                location = "group:Services"
                name = "Services">
                <FileRef
+                  location = "group:MockPrimerAPIClientVault.swift">
+               </FileRef>
+               <FileRef
                   location = "group:MockCreateResumePaymentService.swift">
                </FileRef>
                <FileRef
