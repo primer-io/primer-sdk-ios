@@ -198,12 +198,7 @@ internal struct InternalCheckout: View {
                         if let customError = checkoutScope.errorScreen {
                             AnyView(customError(error.localizedDescription))
                         } else {
-                            AnyView(ErrorScreen(
-                                error: error,
-                                onRetry: {
-                                    // Retry logic would go here
-                                }
-                            ))
+                            AnyView(ErrorScreen(error: error))
                         }
                     }
 

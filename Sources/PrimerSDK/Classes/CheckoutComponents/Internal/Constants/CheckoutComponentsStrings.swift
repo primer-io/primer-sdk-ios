@@ -35,12 +35,6 @@ internal struct CheckoutComponentsStrings {
         comment: "Pay button text"
     )
 
-    static let tryAgainButton = NSLocalizedString(
-        "checkout-components-try-again-button",
-        bundle: Bundle.primerResources,
-        value: "Try Again",
-        comment: "Try Again button text"
-    )
 
     // MARK: - Error Messages
 
@@ -54,7 +48,7 @@ internal struct CheckoutComponentsStrings {
     static let unexpectedError = NSLocalizedString(
         "checkout-components-unexpected-error",
         bundle: Bundle.primerResources,
-        value: "An unexpected error occurred. Please try again.",
+        value: "An unexpected error occurred.",
         comment: "Unexpected error message"
     )
 

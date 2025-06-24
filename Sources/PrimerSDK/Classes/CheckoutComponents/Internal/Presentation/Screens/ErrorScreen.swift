@@ -11,7 +11,6 @@ import SwiftUI
 @available(iOS 15.0, *)
 internal struct ErrorScreen: View {
     let error: PrimerError
-    let onRetry: (() -> Void)?
 
     @Environment(\.designTokens) private var tokens
 
@@ -34,21 +33,6 @@ internal struct ErrorScreen: View {
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
-
-            // Retry button
-            if let onRetry = onRetry {
-                Button(action: onRetry) {
-                    Text(CheckoutComponentsStrings.tryAgainButton)
-                        .font(.body)
-                        .fontWeight(.medium)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 32)
-                        .padding(.vertical, 12)
-                        .background(tokens?.primerColorTextPrimary ?? .blue)
-                        .cornerRadius(8)
-                }
-                .padding(.top, 16)
-            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(tokens?.primerColorBackground ?? Color(.systemBackground))
