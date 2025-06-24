@@ -76,16 +76,36 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
                 let paymentMethods = checkoutScope.availablePaymentMethods
                 logger.info(message: "✅ [PaymentMethodSelection] Retrieved \(paymentMethods.count) payment methods from checkout scope")
 
-                // Convert internal payment methods to composable payment methods
-                let composablePaymentMethods = paymentMethods.map { method in
-                    PrimerComposablePaymentMethod(
-                        id: method.id,
-                        type: method.type,
-                        name: method.name,
-                        icon: method.icon,
-                        metadata: nil
-                    )
+                // Convert internal payment methods to composable payment methods using PaymentMethodMapper
+                let mapper: PaymentMethodMapper
+                do {
+                    guard let container = await DIContainer.current else {
+                        throw NSError(domain: "DIContainer", code: 1, userInfo: [NSLocalizedDescriptionKey: "DIContainer.current is nil"])
+                    }
+                    mapper = try await container.resolve(PaymentMethodMapper.self)
+                    logger.debug(message: "💰🪲 [PaymentMethodSelection] PaymentMethodMapper resolved from DI container")
+                } catch {
+                    logger.error(message: "❌ [PaymentMethodSelection] Failed to resolve PaymentMethodMapper: \(error)")
+                    // Fallback to manual creation without surcharge data
+                    let composablePaymentMethods = paymentMethods.map { method in
+                        PrimerComposablePaymentMethod(
+                            id: method.id,
+                            type: method.type,
+                            name: method.name,
+                            icon: method.icon,
+                            metadata: nil
+                        )
+                    }
+                    internalState.paymentMethods = composablePaymentMethods
+                    internalState.filteredPaymentMethods = composablePaymentMethods
+                    updateCategories()
+                    logger.info(message: "🎯 [PaymentMethodSelection] Payment methods loaded and categorized successfully (without surcharge)")
+                    break
                 }
+
+                // Use PaymentMethodMapper to properly format surcharge data
+                let composablePaymentMethods = mapper.mapToPublic(paymentMethods)
+                logger.debug(message: "💰🪲 [PaymentMethodSelection] PaymentMethodMapper.mapToPublic() completed for \(composablePaymentMethods.count) methods")
 
                 internalState.paymentMethods = composablePaymentMethods
                 internalState.filteredPaymentMethods = composablePaymentMethods
@@ -93,7 +113,7 @@ internal final class DefaultPaymentMethodSelectionScope: PrimerPaymentMethodSele
                 // Group by category if needed
                 updateCategories()
 
-                logger.info(message: "🎯 [PaymentMethodSelection] Payment methods loaded and categorized successfully")
+                logger.info(message: "🎯 [PaymentMethodSelection] Payment methods loaded and categorized successfully with surcharge data")
                 break
             } else if case .failure(let error) = checkoutState {
                 logger.error(message: "❌ [PaymentMethodSelection] Checkout scope has error: \(error)")

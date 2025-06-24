@@ -85,23 +85,23 @@ internal final class PrimerSwiftUIBridgeViewController: PrimerViewController {
 
         logger.debug(message: "🌉 [SwiftUIBridge] SwiftUI content embedded successfully")
     }
-    
+
     private func setupSizeObservation() {
         // Add observer for SwiftUI view size changes
         hostingController.view.addObserver(self, forKeyPath: "bounds", options: [.new, .old], context: nil)
-        
+
         logger.debug(message: "🌉 [SwiftUIBridge] Size observation setup completed")
     }
-    
+
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "bounds", let newBounds = change?[NSKeyValueChangeKey.newKey] as? NSValue {
             let newRect = newBounds.cgRectValue
-            
+
             // Prevent infinite loops - don't update if we're already updating or size hasn't meaningfully changed
             guard !isUpdatingSize else { return }
             guard abs(newRect.height - lastRecordedSize.height) > 10.0 else { return } // Increased threshold
             guard abs(newRect.width - lastRecordedSize.width) > 10.0 else { return }
-            
+
             logger.debug(message: "🌉 [SwiftUIBridge] SwiftUI bounds changed significantly: \(lastRecordedSize) -> \(newRect.size)")
             lastRecordedSize = newRect.size
             updateContentSize()
@@ -109,7 +109,7 @@ internal final class PrimerSwiftUIBridgeViewController: PrimerViewController {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
         }
     }
-    
+
     deinit {
         // Clean up observer
         hostingController.view.removeObserver(self, forKeyPath: "bounds")
@@ -119,9 +119,9 @@ internal final class PrimerSwiftUIBridgeViewController: PrimerViewController {
         // Prevent recursive calls
         guard !isUpdatingSize else { return }
         isUpdatingSize = true
-        
+
         defer { isUpdatingSize = false }
-        
+
         // Get the intrinsic content size from SwiftUI
         let targetSize = CGSize(width: view.bounds.width, height: UIView.layoutFittingCompressedSize.height)
         let fittingSize = hostingController.view.systemLayoutSizeFitting(targetSize)
@@ -129,11 +129,11 @@ internal final class PrimerSwiftUIBridgeViewController: PrimerViewController {
         // Calculate the actual content height without hardcoded minimum
         let contentHeight = max(fittingSize.height, 200) // Much smaller minimum than 400
         let newSize = CGSize(width: view.bounds.width, height: contentHeight)
-        
+
         // Only update if size actually changed significantly
         let heightDifference = abs(newSize.height - preferredContentSize.height)
         guard heightDifference > 5.0 else { return }
-        
+
         // Update preferred content size for proper height calculation
         preferredContentSize = newSize
 
@@ -172,18 +172,18 @@ extension PrimerSwiftUIBridgeViewController {
             if super.preferredContentSize.height > 0 {
                 return super.preferredContentSize
             }
-            
+
             // Calculate based on SwiftUI content size
             let width = view.bounds.width > 0 ? view.bounds.width : UIScreen.main.bounds.width
             let targetSize = CGSize(width: width, height: UIView.layoutFittingCompressedSize.height)
             let fittingSize = hostingController.view.systemLayoutSizeFitting(targetSize)
-            
+
             let dynamicHeight = max(fittingSize.height, 200)
             return CGSize(width: width, height: dynamicHeight)
         }
         set {
             super.preferredContentSize = newValue
-            
+
             // Trigger layout update when size changes
             DispatchQueue.main.async { [weak self] in
                 self?.view.setNeedsLayout()

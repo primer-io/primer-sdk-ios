@@ -65,7 +65,6 @@ final class PrimerUIManager: PrimerUIManaging {
         }
     }
 
-
     func presentPaymentUI() {
         if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
             PrimerUIManager.presentPaymentMethod(type: paymentMethodType)
@@ -88,8 +87,6 @@ final class PrimerUIManager: PrimerUIManaging {
         let pucvc = PrimerUniversalCheckoutViewController()
         PrimerUIManager.primerRootViewController?.show(viewController: pucvc)
     }
-
-
 
     func presentPaymentMethod(type: String) {
         let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first
@@ -366,4 +363,3 @@ extension PrimerUIManager {
     }
 }
 // swiftlint:enable function_body_length
-

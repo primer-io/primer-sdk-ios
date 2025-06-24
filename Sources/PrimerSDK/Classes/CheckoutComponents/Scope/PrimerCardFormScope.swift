@@ -212,6 +212,7 @@ public struct PrimerCardFormState: Equatable {
     public var expiryYear: String = ""
     public var selectedCardNetwork: String?
     public var availableCardNetworks: [String] = []
+    public var surchargeAmount: String?
 
     public init(
         cardNumber: String = "",
@@ -236,7 +237,8 @@ public struct PrimerCardFormState: Equatable {
         expiryMonth: String = "",
         expiryYear: String = "",
         selectedCardNetwork: String? = nil,
-        availableCardNetworks: [String] = []
+        availableCardNetworks: [String] = [],
+        surchargeAmount: String? = nil
     ) {
         self.cardNumber = cardNumber
         self.cvv = cvv
@@ -261,5 +263,6 @@ public struct PrimerCardFormState: Equatable {
         self.expiryYear = expiryYear
         self.selectedCardNetwork = selectedCardNetwork
         self.availableCardNetworks = availableCardNetworks
+        self.surchargeAmount = surchargeAmount
     }
 }

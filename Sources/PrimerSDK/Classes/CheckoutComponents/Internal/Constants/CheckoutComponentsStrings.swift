@@ -35,6 +35,38 @@ internal struct CheckoutComponentsStrings {
         comment: "Pay button text"
     )
 
+    static let cancelButton = NSLocalizedString(
+        "checkout-components-cancel-button",
+        bundle: Bundle.primerResources,
+        value: "Cancel",
+        comment: "Cancel button text"
+    )
+
+    // MARK: - Payment Method Selection
+
+    static let choosePaymentMethod = NSLocalizedString(
+        "checkout-components-choose-payment-method",
+        bundle: Bundle.primerResources,
+        value: "Choose payment method",
+        comment: "Payment method selection screen subtitle"
+    )
+
+    static let surchargeFeeSectionTitle = NSLocalizedString(
+        "checkout-components-surcharge-fee",
+        bundle: Bundle.primerResources,
+        value: "Surcharge fee",
+        comment: "Surcharge fee section title"
+    )
+
+    static func paymentAmountTitle(_ amount: String) -> String {
+        let format = NSLocalizedString(
+            "checkout-components-pay-amount",
+            bundle: Bundle.primerResources,
+            value: "Pay %@",
+            comment: "Payment amount title with formatted amount"
+        )
+        return String(format: format, amount)
+    }
 
     // MARK: - Error Messages
 
@@ -50,6 +82,147 @@ internal struct CheckoutComponentsStrings {
         bundle: Bundle.primerResources,
         value: "An unexpected error occurred.",
         comment: "Unexpected error message"
+    )
+
+    // MARK: - Android Parity: Form Validation Errors
+
+    /// Form validation error with field name placeholder (matches Android pattern)
+    static let formErrorRequired = NSLocalizedString(
+        "checkout-components-form-error-required",
+        bundle: Bundle.primerResources,
+        value: "%@ is required",
+        comment: "Field required validation error"
+    )
+
+    /// Form validation error for invalid field values
+    static let formErrorInvalid = NSLocalizedString(
+        "checkout-components-form-error-invalid",
+        bundle: Bundle.primerResources,
+        value: "%@ is invalid",
+        comment: "Field invalid validation error"
+    )
+
+    /// Card type not supported error
+    static let formErrorCardTypeNotSupported = NSLocalizedString(
+        "checkout-components-form-error-card-type-not-supported",
+        bundle: Bundle.primerResources,
+        value: "Unsupported card type",
+        comment: "Card type not supported error"
+    )
+
+    /// Card holder name length validation error
+    static let formErrorCardHolderNameLength = NSLocalizedString(
+        "checkout-components-form-error-card-holder-name-length",
+        bundle: Bundle.primerResources,
+        value: "Name must have between 2 and 45 characters",
+        comment: "Card holder name length validation error"
+    )
+
+    // MARK: - Android Parity: Field Names for Error Messages
+
+    /// Field names used in error message formatting
+    static let cardNumberFieldName = NSLocalizedString(
+        "checkout-components-card-number-field",
+        bundle: Bundle.primerResources,
+        value: "Card number",
+        comment: "Card number field name for error messages"
+    )
+
+    static let cvvFieldName = NSLocalizedString(
+        "checkout-components-cvv-field",
+        bundle: Bundle.primerResources,
+        value: "CVV",
+        comment: "CVV field name for error messages"
+    )
+
+    static let expiryDateFieldName = NSLocalizedString(
+        "checkout-components-expiry-date-field",
+        bundle: Bundle.primerResources,
+        value: "Expiry date",
+        comment: "Expiry date field name for error messages"
+    )
+
+    static let cardholderNameFieldName = NSLocalizedString(
+        "checkout-components-cardholder-name-field",
+        bundle: Bundle.primerResources,
+        value: "Cardholder name",
+        comment: "Cardholder name field name for error messages"
+    )
+
+    static let firstNameFieldName = NSLocalizedString(
+        "checkout-components-first-name-field",
+        bundle: Bundle.primerResources,
+        value: "First name",
+        comment: "First name field name for error messages"
+    )
+
+    static let lastNameFieldName = NSLocalizedString(
+        "checkout-components-last-name-field",
+        bundle: Bundle.primerResources,
+        value: "Last name",
+        comment: "Last name field name for error messages"
+    )
+
+    static let emailFieldName = NSLocalizedString(
+        "checkout-components-email-field",
+        bundle: Bundle.primerResources,
+        value: "Email",
+        comment: "Email field name for error messages"
+    )
+
+    static let phoneNumberFieldName = NSLocalizedString(
+        "checkout-components-phone-number-field",
+        bundle: Bundle.primerResources,
+        value: "Phone number",
+        comment: "Phone number field name for error messages"
+    )
+
+    static let countryFieldName = NSLocalizedString(
+        "checkout-components-country-field",
+        bundle: Bundle.primerResources,
+        value: "Country",
+        comment: "Country field name for error messages"
+    )
+
+    // MARK: - Android Parity: Result Screen Messages
+
+    static let paymentSuccessful = NSLocalizedString(
+        "checkout-components-payment-successful",
+        bundle: Bundle.primerResources,
+        value: "Payment Successful",
+        comment: "Success screen title"
+    )
+
+    static let paymentFailed = NSLocalizedString(
+        "checkout-components-payment-failed",
+        bundle: Bundle.primerResources,
+        value: "Payment Failed",
+        comment: "Error screen title for payment failures"
+    )
+
+    // MARK: - Surcharge Display Messages
+
+    static let noAdditionalFee = NSLocalizedString(
+        "checkout-components-no-additional-fee",
+        bundle: Bundle.primerResources,
+        value: "No additional fee",
+        comment: "Message shown when no surcharge applies"
+    )
+
+    static let feeMayApply = NSLocalizedString(
+        "checkout-components-fee-may-apply",
+        bundle: Bundle.primerResources,
+        value: "Fee may apply",
+        comment: "Message shown when surcharge amount is unknown"
+    )
+
+    // MARK: - Empty State Messages
+
+    static let noPaymentMethodsAvailable = NSLocalizedString(
+        "checkout-components-no-payment-methods",
+        bundle: Bundle.primerResources,
+        value: "No payment methods available",
+        comment: "Empty state message when no payment methods are available"
     )
 
     // MARK: - Form Labels

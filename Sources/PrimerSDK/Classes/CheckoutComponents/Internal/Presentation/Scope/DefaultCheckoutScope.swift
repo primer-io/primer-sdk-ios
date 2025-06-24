@@ -150,7 +150,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
             // Add a small delay to ensure SDK configuration is fully loaded
             logger.debug(message: "⏳ [CheckoutComponents] Waiting for SDK configuration to be ready...")
             try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
-            
+
             logger.debug(message: "🔍 [CheckoutComponents] Checking payment methods interactor...")
             guard let interactor = getPaymentMethodsInteractor else {
                 logger.error(message: "❌ [CheckoutComponents] GetPaymentMethodsInteractor is nil - DI resolution failed")
@@ -266,10 +266,10 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         // For CheckoutComponents, notify CheckoutComponentsPrimer to handle success and dismissal
         // This matches the expected flow: CheckoutComponents dismisses → delegate presents result screen
         logger.info(message: "Payment successful, notifying CheckoutComponentsPrimer to handle success and dismissal")
-        
+
         // Update state to success for any listeners
         updateState(.success(result))
-        
+
         // Notify CheckoutComponentsPrimer about success with the actual payment result
         CheckoutComponentsPrimer.shared.handlePaymentSuccess(result)
     }

@@ -20,6 +20,11 @@ internal struct InternalPaymentMethod: Equatable {
     let supportedCurrencies: [String]?
     let requiredInputElements: [PrimerInputElementType]
     let metadata: [String: Any]?
+    // Android parity: Surcharge support
+    let surcharge: Int?                    // Raw amount in minor currency units
+    let hasUnknownSurcharge: Bool          // "Fee may apply" flag
+    let networkSurcharges: [String: Int]?  // Card network-specific surcharges
+    let backgroundColor: UIColor?          // Dynamic background color from server
 
     init(
         id: String,
@@ -30,7 +35,11 @@ internal struct InternalPaymentMethod: Equatable {
         isEnabled: Bool = true,
         supportedCurrencies: [String]? = nil,
         requiredInputElements: [PrimerInputElementType] = [],
-        metadata: [String: Any]? = nil
+        metadata: [String: Any]? = nil,
+        surcharge: Int? = nil,
+        hasUnknownSurcharge: Bool = false,
+        networkSurcharges: [String: Int]? = nil,
+        backgroundColor: UIColor? = nil
     ) {
         self.id = id
         self.type = type
@@ -41,12 +50,19 @@ internal struct InternalPaymentMethod: Equatable {
         self.supportedCurrencies = supportedCurrencies
         self.requiredInputElements = requiredInputElements
         self.metadata = metadata
+        self.surcharge = surcharge
+        self.hasUnknownSurcharge = hasUnknownSurcharge
+        self.networkSurcharges = networkSurcharges
+        self.backgroundColor = backgroundColor
     }
 
     static func == (lhs: InternalPaymentMethod, rhs: InternalPaymentMethod) -> Bool {
         lhs.id == rhs.id &&
             lhs.type == rhs.type &&
             lhs.name == rhs.name &&
-            lhs.isEnabled == rhs.isEnabled
+            lhs.isEnabled == rhs.isEnabled &&
+            lhs.surcharge == rhs.surcharge &&
+            lhs.hasUnknownSurcharge == rhs.hasUnknownSurcharge &&
+            lhs.backgroundColor == rhs.backgroundColor
     }
 }

@@ -50,6 +50,9 @@ internal struct CardNumberInputField: View, LogReporter {
     /// Error message if validation fails
     @State private var errorMessage: String?
 
+    /// Surcharge amount for the detected network
+    @State private var surchargeAmount: String?
+
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Body
@@ -61,7 +64,7 @@ internal struct CardNumberInputField: View, LogReporter {
                 .font(.caption)
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
 
-            // Card input field with network icon
+            // Card input field with network icon and surcharge
             HStack(spacing: 8) {
                 if let validationService = validationService {
                     CardNumberTextField(
@@ -72,7 +75,10 @@ internal struct CardNumberInputField: View, LogReporter {
                         placeholder: placeholder,
                         validationService: validationService,
                         onCardNumberChange: onCardNumberChange,
-                        onCardNetworkChange: onCardNetworkChange,
+                        onCardNetworkChange: { network in
+                            onCardNetworkChange?(network)
+                            updateSurchargeAmount(for: network)
+                        },
                         onValidationChange: onValidationChange,
                         onNetworksDetected: onNetworksDetected
                     )
@@ -88,13 +94,26 @@ internal struct CardNumberInputField: View, LogReporter {
                         .cornerRadius(8)
                 }
 
-                // Card network icon if detected
+                // Card network icon and surcharge display
                 if cardNetwork != .unknown {
-                    if let icon = cardNetwork.icon {
-                        Image(uiImage: icon)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 36, height: 24)
+                    HStack(spacing: 4) {
+                        if let icon = cardNetwork.icon {
+                            Image(uiImage: icon)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 36, height: 24)
+                        }
+
+                        // Surcharge amount display (similar to Drop-in design)
+                        if let surchargeAmount = surchargeAmount {
+                            Text(surchargeAmount)
+                                .font(.caption)
+                                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(tokens?.primerColorGray200 ?? Color(.systemGray5))
+                                .cornerRadius(4)
+                        }
                     }
                 }
             }
@@ -123,6 +142,19 @@ internal struct CardNumberInputField: View, LogReporter {
         } catch {
             logger.error(message: "Failed to resolve ValidationService: \(error)")
         }
+    }
+
+    private func updateSurchargeAmount(for network: CardNetwork) {
+        // Check if surcharge should be displayed (similar to Drop-in logic)
+        guard let surcharge = network.surcharge,
+              PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
+              let currency = AppState.current.currency else {
+            surchargeAmount = nil
+            return
+        }
+
+        // Format surcharge amount similar to Drop-in implementation
+        surchargeAmount = "+ \(surcharge.toCurrencyString(currency: currency))"
     }
 }
 
@@ -505,7 +537,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
 
         private func detectNetworksForCardNumber(_ cardNumber: String) {
             logger.debug(message: "🌐 [CardNumber] Detecting networks for: ***\(String(cardNumber.suffix(4)))")
-            
+
             // This would be connected to HeadlessRepository in the scope
             // For now, we'll trigger the callback to let the parent handle it
             onNetworksDetected?([])

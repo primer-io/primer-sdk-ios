@@ -30,7 +30,8 @@
       "mcp__xcode-server__get_current_directory",
       "mcp__xcode-server__find_files",
       "mcp__xcode-server__search_in_files",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(/Applications/Xcode-16.3.0.app/Contents/Developer/usr/bin/swift -frontend -typecheck \"/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/CheckoutComponents/Internal/Presentation/Screens/PaymentMethodSelectionScreen.swift\" -module-name PrimerSDK)"
     ],
     "deny": []
   }

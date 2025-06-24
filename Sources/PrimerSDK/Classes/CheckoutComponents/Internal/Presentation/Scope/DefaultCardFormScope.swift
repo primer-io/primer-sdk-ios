@@ -115,23 +115,28 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
     /// Setup network detection stream for co-badged cards
     private func setupNetworkDetectionStream() {
         guard let repository = headlessRepository else { return }
-        
+
         Task {
             for await networks in repository.getNetworkDetectionStream() {
                 await MainActor.run {
                     logger.info(message: "🌐 [CardForm] Received networks from stream: \(networks.map { $0.displayName })")
                     self.availableCardNetworks = networks
                     self.internalState.availableCardNetworks = networks.map { $0.rawValue }
-                    
+
                     // If multiple networks detected, clear any automatic selection
                     if networks.count > 1 {
                         self.internalState.selectedCardNetwork = nil
+                        self.updateSurchargeAmount(for: nil)
                         logger.debug(message: "🌐 [CardForm] Multiple networks detected, clearing selection")
                     } else if networks.count == 1 {
                         // Single network - auto-select it
                         let network = networks[0]
                         self.internalState.selectedCardNetwork = network.rawValue
+                        self.updateSurchargeAmount(for: network)
                         logger.debug(message: "🌐 [CardForm] Single network detected, auto-selecting: \(network.displayName)")
+                    } else {
+                        // No networks detected - clear surcharge
+                        self.updateSurchargeAmount(for: nil)
                     }
                 }
             }
@@ -154,7 +159,7 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
     /// Trigger network detection for the given card number
     private func triggerNetworkDetection(for cardNumber: String) async {
         guard let repository = headlessRepository, cardNumber.count >= 6 else { return }
-        
+
         logger.debug(message: "🌐 [CardForm] Triggering network detection for: ***\(String(cardNumber.suffix(4)))")
         await repository.updateCardNumberInRawDataManager(cardNumber)
     }
@@ -257,8 +262,14 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
     public func updateSelectedCardNetwork(_ network: String) {
         logger.info(message: "🌐 [CardForm] User selected card network: \(network)")
         internalState.selectedCardNetwork = network
+
+        // Update surcharge for selected network
+        if let cardNetwork = CardNetwork(rawValue: network) {
+            updateSurchargeAmount(for: cardNetwork)
+        }
+
         updateCardData()
-        
+
         // Notify HeadlessRepository about the selection
         Task {
             await handleNetworkSelection(network)
@@ -269,7 +280,7 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
     private func handleNetworkSelection(_ networkString: String) async {
         guard let repository = headlessRepository,
               let cardNetwork = CardNetwork(rawValue: networkString) else { return }
-        
+
         logger.info(message: "🌐 [CardForm] Handling network selection: \(cardNetwork.displayName)")
         await repository.selectCardNetwork(cardNetwork)
     }
@@ -558,5 +569,30 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
             logger.info(message: "Notifying CheckoutComponentsPrimer about payment success")
             CheckoutComponentsPrimer.shared.handlePaymentSuccess(result)
         }
+    }
+
+    // MARK: - Surcharge Management
+
+    /// Updates the surcharge amount based on the selected card network
+    private func updateSurchargeAmount(for network: CardNetwork?) {
+        guard let network = network else {
+            internalState.surchargeAmount = nil
+            logger.debug(message: "💰 [CardForm] Clearing surcharge (no network)")
+            return
+        }
+
+        // Check if surcharge should be displayed (same logic as Drop-in)
+        guard let surcharge = network.surcharge,
+              PrimerAPIConfigurationModule.apiConfiguration?.clientSession?.order?.merchantAmount == nil,
+              let currency = AppState.current.currency else {
+            internalState.surchargeAmount = nil
+            logger.debug(message: "💰 [CardForm] No surcharge for network: \(network.displayName)")
+            return
+        }
+
+        // Format surcharge amount similar to Drop-in implementation
+        let formattedSurcharge = "+ \(surcharge.toCurrencyString(currency: currency))"
+        internalState.surchargeAmount = formattedSurcharge
+        logger.info(message: "💰 [CardForm] Updated surcharge for \(network.displayName): \(formattedSurcharge)")
     }
 }

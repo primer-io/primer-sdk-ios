@@ -127,23 +127,48 @@ public struct PrimerComposablePaymentMethod: Equatable, Identifiable {
     /// Additional metadata about the payment method.
     public let metadata: [String: Any]?
 
+    // Android parity: Surcharge support
+    /// Raw surcharge amount in minor currency units (e.g., 500 for $5.00).
+    public let surcharge: Int?
+
+    /// Indicates if surcharge amount is unknown ("Fee may apply").
+    public let hasUnknownSurcharge: Bool
+
+    /// Pre-formatted surcharge display string (e.g., "+$5.00", "No additional fee").
+    public let formattedSurcharge: String?
+
+    /// Dynamic background color from server configuration.
+    public let backgroundColor: UIColor?
+
     public init(
         id: String,
         type: String,
         name: String,
         icon: UIImage? = nil,
-        metadata: [String: Any]? = nil
+        metadata: [String: Any]? = nil,
+        surcharge: Int? = nil,
+        hasUnknownSurcharge: Bool = false,
+        formattedSurcharge: String? = nil,
+        backgroundColor: UIColor? = nil
     ) {
         self.id = id
         self.type = type
         self.name = name
         self.icon = icon
         self.metadata = metadata
+        self.surcharge = surcharge
+        self.hasUnknownSurcharge = hasUnknownSurcharge
+        self.formattedSurcharge = formattedSurcharge
+        self.backgroundColor = backgroundColor
     }
 
     public static func == (lhs: PrimerComposablePaymentMethod, rhs: PrimerComposablePaymentMethod) -> Bool {
         lhs.id == rhs.id &&
             lhs.type == rhs.type &&
-            lhs.name == rhs.name
+            lhs.name == rhs.name &&
+            lhs.surcharge == rhs.surcharge &&
+            lhs.hasUnknownSurcharge == rhs.hasUnknownSurcharge &&
+            lhs.formattedSurcharge == rhs.formattedSurcharge &&
+            lhs.backgroundColor == rhs.backgroundColor
     }
 }

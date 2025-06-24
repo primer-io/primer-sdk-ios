@@ -50,10 +50,10 @@ public protocol CheckoutComponentsDelegate: AnyObject {
 
     /// Delegate for handling checkout results
     public weak var delegate: CheckoutComponentsDelegate?
-    
+
     /// Store the latest payment result for delegate callbacks
     private var lastPaymentResult: PaymentResult?
-    
+
     /// API configuration module for SDK initialization
     private let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
 
@@ -164,7 +164,7 @@ public protocol CheckoutComponentsDelegate: AnyObject {
 
         // Dismiss CheckoutComponents first, then call delegate
         dismissDirectly()
-        
+
         // Call delegate after dismissal with a small delay to ensure modal is fully dismissed
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
             if let delegate = self?.delegate, let paymentResult = self?.lastPaymentResult {
@@ -175,7 +175,7 @@ public protocol CheckoutComponentsDelegate: AnyObject {
             }
         }
     }
-    
+
     /// Internal method for handling payment success (legacy method without result)
     internal func handlePaymentSuccess() {
         logger.info(message: "✅ [CheckoutComponentsPrimer] Payment completed successfully (legacy)")
@@ -188,7 +188,7 @@ public protocol CheckoutComponentsDelegate: AnyObject {
 
         // Dismiss CheckoutComponents first, then call delegate (same pattern as success)
         dismissDirectly()
-        
+
         // Call delegate after dismissal with a small delay to ensure modal is fully dismissed
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
             if let delegate = self?.delegate {
@@ -226,16 +226,16 @@ public protocol CheckoutComponentsDelegate: AnyObject {
             do {
                 // Initialize SDK configuration directly using proper SDK modules
                 logger.info(message: "🔧 [CheckoutComponentsPrimer] Initializing SDK configuration...")
-                
+
                 // Set up SDK integration type and intent
                 PrimerInternal.shared.sdkIntegrationType = .checkoutComponents
                 PrimerInternal.shared.intent = .checkout
                 PrimerInternal.shared.checkoutSessionId = UUID().uuidString
-                
+
                 // Use settings as configured by the calling application (Debug App)
                 // This preserves all 3DS, debug, and payment method configurations
                 let settings = PrimerSettings.current
-                
+
                 // IMPORTANT: For CheckoutComponents, ensure 3DS sanity check matches Drop-in behavior
                 // Drop-in uses is3DSSanityCheckEnabled: false for debug/simulator environments
                 // If settings have default values, apply the same debug-friendly configuration
@@ -258,10 +258,10 @@ public protocol CheckoutComponentsDelegate: AnyObject {
                     finalSettings = settings
                     logger.info(message: "🔧 [CheckoutComponentsPrimer] Using pre-configured 3DS sanity check: \(settings.debugOptions.is3DSSanityCheckEnabled)")
                 }
-                
+
                 // Register final settings in dependency container
                 DependencyContainer.register(finalSettings as PrimerSettingsProtocol)
-                
+
                 // Initialize SDK session using configuration module
                 try await withCheckedThrowingContinuation { continuation in
                     firstly {
@@ -279,7 +279,7 @@ public protocol CheckoutComponentsDelegate: AnyObject {
                         continuation.resume(throwing: error)
                     }
                 }
-                
+
                 logger.info(message: "✅ [CheckoutComponentsPrimer] SDK configuration ready")
 
                 // Initialize the DI container and navigator
@@ -368,16 +368,16 @@ public protocol CheckoutComponentsDelegate: AnyObject {
             do {
                 // Initialize SDK configuration directly using proper SDK modules
                 logger.info(message: "🔧 [CheckoutComponentsPrimer] Initializing SDK configuration for custom content...")
-                
+
                 // Set up SDK integration type and intent
                 PrimerInternal.shared.sdkIntegrationType = .checkoutComponents
                 PrimerInternal.shared.intent = .checkout
                 PrimerInternal.shared.checkoutSessionId = UUID().uuidString
-                
+
                 // Use settings as configured by the calling application (Debug App)
                 // This preserves all 3DS, debug, and payment method configurations
                 let settings = PrimerSettings.current
-                
+
                 // IMPORTANT: For CheckoutComponents, ensure 3DS sanity check matches Drop-in behavior
                 // Drop-in uses is3DSSanityCheckEnabled: false for debug/simulator environments
                 // If settings have default values, apply the same debug-friendly configuration
@@ -400,10 +400,10 @@ public protocol CheckoutComponentsDelegate: AnyObject {
                     finalSettings = settings
                     logger.info(message: "🔧 [CheckoutComponentsPrimer] Using pre-configured 3DS sanity check: \(settings.debugOptions.is3DSSanityCheckEnabled)")
                 }
-                
+
                 // Register final settings in dependency container
                 DependencyContainer.register(finalSettings as PrimerSettingsProtocol)
-                
+
                 // Initialize SDK session using configuration module
                 try await withCheckedThrowingContinuation { continuation in
                     firstly {

@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+/// Data structure for grouping payment methods by surcharge status
+private struct PaymentMethodGroup {
+    let group: String
+    let methods: [PrimerComposablePaymentMethod]
+}
+
 /// Default payment method selection screen for CheckoutComponents
 @available(iOS 15.0, *)
 internal struct PaymentMethodSelectionScreen: View {
@@ -20,21 +26,63 @@ internal struct PaymentMethodSelectionScreen: View {
 
     private var mainContent: some View {
         VStack(spacing: 0) {
-            titleSection
-            paymentMethodsList
+            headerSection
+            contentContainer
         }
         .onAppear {
             observeState()
         }
     }
 
+    private var headerSection: some View {
+        VStack(spacing: tokens?.primerSpaceSmall ?? 8) {
+            paymentAmountHeader
+            titleSection
+        }
+        .padding(.horizontal, tokens?.primerSpaceLarge ?? 16)
+        .padding(.top, tokens?.primerSpaceLarge ?? 16)
+    }
+
+    private var paymentAmountHeader: some View {
+        HStack {
+            // Get payment amount from app state or default
+            let amount = AppState.current.amount ?? 9900 // Default to $99.00 if not available
+            let currency = AppState.current.currency ?? Currency(code: "USD", decimalDigits: 2)
+            let formattedAmount = amount.toCurrencyString(currency: currency)
+
+            // Break up complex font expression to avoid compiler timeout
+            let fontSize = tokens?.primerTypographyTitleXlargeSize ?? 24
+            let fontWeight: Font.Weight = .semibold  // Use design system semantic weight
+
+            Text(CheckoutComponentsStrings.paymentAmountTitle(formattedAmount))
+                .font(.system(size: fontSize, weight: fontWeight))
+                .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
+
+            Spacer()
+
+            Button(CheckoutComponentsStrings.cancelButton) {
+                scope.onCancel()
+            }
+            .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+        }
+    }
+
+    private var contentContainer: some View {
+        VStack(spacing: 0) {
+            paymentMethodsList
+        }
+    }
+
     private var titleSection: some View {
-        Text("Select Payment Method")
-            .font(.title2)
-            .fontWeight(.semibold)
+        // Break up complex font expression to avoid compiler timeout
+        let fontSize = tokens?.primerTypographyTitleLargeSize ?? 16
+        let fontWeight: Font.Weight = .medium  // Use design system semantic weight
+
+        return Text(CheckoutComponentsStrings.choosePaymentMethod)
+            .font(.system(size: fontSize, weight: fontWeight))
             .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
+            .padding(.bottom, tokens?.primerSpaceSmall ?? 8)
     }
 
     private var paymentMethodsList: some View {
@@ -62,7 +110,7 @@ internal struct PaymentMethodSelectionScreen: View {
                     .font(.system(size: 48))
                     .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
 
-                Text("No payment methods available")
+                Text(CheckoutComponentsStrings.noPaymentMethodsAvailable)
                     .font(.body)
                     .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
             }
@@ -72,13 +120,115 @@ internal struct PaymentMethodSelectionScreen: View {
     }
 
     private var paymentMethodsContent: some View {
-        VStack(spacing: 16) {
-            ForEach(selectionState.paymentMethods) { method in
-                modernPaymentMethodCard(method)
+        LazyVStack(spacing: tokens?.primerSpaceLarge ?? 16) {
+            ForEach(groupedPaymentMethods, id: \.group) { group in
+                paymentMethodGroup(group)
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 24)
+        .padding(.horizontal, tokens?.primerSpaceLarge ?? 16)
+        .padding(.bottom, tokens?.primerSpaceXlarge ?? 20)
+    }
+
+    /// Groups payment methods by surcharge status for better UX
+    private var groupedPaymentMethods: [PaymentMethodGroup] {
+        var groups: [PaymentMethodGroup] = []
+        let methods = selectionState.paymentMethods
+
+        // Group 1: Methods with positive surcharges
+        let surchargeMethods = methods.filter { method in
+            if let surcharge = method.surcharge, surcharge > 0 {
+                return true
+            }
+            return false
+        }
+
+        if !surchargeMethods.isEmpty {
+            let highestSurcharge = surchargeMethods.compactMap { $0.surcharge }.max() ?? 0
+            let currency = AppState.current.currency ?? Currency(code: "EUR", decimalDigits: 2)
+            let formattedSurcharge = "+\(highestSurcharge.toCurrencyString(currency: currency))"
+
+            groups.append(PaymentMethodGroup(
+                group: formattedSurcharge,
+                methods: surchargeMethods
+            ))
+        }
+
+        // Group 2: Methods with no additional fees
+        let noFeeMethods = methods.filter { method in
+            // Include methods with:
+            // - surcharge == 0 (explicit no fee)
+            // - surcharge == nil AND hasUnknownSurcharge == false (no fee configured)
+            if let surcharge = method.surcharge {
+                return surcharge == 0
+            } else {
+                return !method.hasUnknownSurcharge
+            }
+        }
+
+        if !noFeeMethods.isEmpty {
+            groups.append(PaymentMethodGroup(
+                group: CheckoutComponentsStrings.noAdditionalFee,
+                methods: noFeeMethods
+            ))
+        }
+
+        // Group 3: Methods with unknown surcharges
+        let unknownFeeMethods = methods.filter { method in
+            return method.hasUnknownSurcharge
+        }
+
+        if !unknownFeeMethods.isEmpty {
+            groups.append(PaymentMethodGroup(
+                group: CheckoutComponentsStrings.feeMayApply,
+                methods: unknownFeeMethods
+            ))
+        }
+
+        return groups
+    }
+
+    @ViewBuilder
+    private func paymentMethodGroup(_ group: PaymentMethodGroup) -> some View {
+        VStack(spacing: tokens?.primerSpaceSmall ?? 8) {
+            // Group header with surcharge info
+            HStack {
+                let headerFontSize = tokens?.primerTypographyBodyMediumSize ?? 14
+                let headerFontWeight: Font.Weight = .medium
+
+                Text(group.group)
+                    .font(.system(size: headerFontSize, weight: headerFontWeight))
+                    .foregroundColor(dynamicGroupHeaderColor(for: group.group))
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+            }
+            .padding(.horizontal, tokens?.primerSpaceSmall ?? 8)
+
+            // Gray rounded container for payment methods group
+            VStack(spacing: tokens?.primerSpaceSmall ?? 8) {
+                ForEach(group.methods, id: \.id) { method in
+                    modernPaymentMethodCard(method)
+                        .frame(height: 44) // Figma spec: 44pt height
+                }
+            }
+            .padding(tokens?.primerSpaceMedium ?? 12) // Padding inside gray container
+            .background(
+                RoundedRectangle(cornerRadius: tokens?.primerRadiusLarge ?? 12)
+                    .fill(tokens?.primerColorGray100 ?? Color(.systemGray6))
+            )
+        }
+    }
+
+    /// Get appropriate color for group header using design tokens
+    private func dynamicGroupHeaderColor(for groupName: String) -> Color {
+        if groupName.hasPrefix("+") {
+            // Positive surcharge - use positive color
+            return tokens?.primerColorIconPositive ?? Color(.systemGreen)
+        } else if groupName == CheckoutComponentsStrings.feeMayApply {
+            // Unknown surcharge - use warning color
+            return tokens?.primerColorTextSecondary ?? Color(.secondaryLabel)
+        } else {
+            // No additional fee - use muted color
+            return tokens?.primerColorTextPlaceholder ?? Color(.tertiaryLabel)
+        }
     }
 
     @ViewBuilder
@@ -137,14 +287,13 @@ private struct ModernPaymentMethodCardView: View {
     }
 
     private var contentView: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: tokens?.primerSpaceLarge ?? 16) {
             paymentMethodLogo
-            methodNameText
-            Spacer()
+            methodNameAndSurcharge
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 16)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, tokens?.primerSpaceLarge ?? 16)
+        .padding(.vertical, tokens?.primerSpaceMedium ?? 12)
         .background(backgroundView)
     }
 
@@ -190,42 +339,42 @@ private struct ModernPaymentMethodCardView: View {
             Text("Pay")
                 .font(.system(size: 12, weight: .medium))
         }
-        .foregroundColor(.black)
+        .foregroundColor(tokens?.primerColorIconPrimary ?? .primary)
     }
 
     private var googlePayLogo: some View {
         HStack(spacing: 2) {
             Text("G")
                 .font(.system(size: 12, weight: .bold))
-                .foregroundColor(.blue)
+                .foregroundColor(tokens?.primerColorBrand ?? .blue)
             Text("Pay")
                 .font(.system(size: 12, weight: .medium))
-                .foregroundColor(.gray)
+                .foregroundColor(tokens?.primerColorIconPrimary ?? .primary)
         }
     }
 
     private var paypalLogo: some View {
         Text("PayPal")
             .font(.system(size: 10, weight: .bold))
-            .foregroundColor(.blue)
+            .foregroundColor(tokens?.primerColorBlue500 ?? .blue)
     }
 
     private var cardLogo: some View {
         Image(systemName: "creditcard")
             .font(.system(size: 14))
-            .foregroundColor(.gray)
+            .foregroundColor(tokens?.primerColorIconPrimary ?? .secondary)
     }
 
     private var klarnaLogo: some View {
         Text("Klarna")
             .font(.system(size: 10, weight: .bold))
-            .foregroundColor(.pink)
+            .foregroundColor(tokens?.primerColorIconPrimary ?? .primary)
     }
 
     private var idealLogo: some View {
         Text("iDeal")
             .font(.system(size: 10, weight: .bold))
-            .foregroundColor(.orange)
+            .foregroundColor(tokens?.primerColorIconPrimary ?? .orange)
     }
 
     private var genericLogo: some View {
@@ -234,26 +383,40 @@ private struct ModernPaymentMethodCardView: View {
             .overlay(
                 Text(String(method.type.prefix(2)))
                     .font(.caption2)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
             )
     }
 
-    private var methodNameText: some View {
-        Text(method.name)
-            .font(.system(size: 16, weight: .medium))
-            .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
+    private var methodNameAndSurcharge: some View {
+        // Break up complex font expression to avoid compiler timeout
+        let methodNameFontSize = tokens?.primerTypographyBodyLargeSize ?? 16
+        let methodNameFontWeight: Font.Weight = .medium  // Use design system semantic weight
+
+        return Text(method.name)
+            .font(.system(size: methodNameFontSize, weight: methodNameFontWeight))
+            .foregroundColor(textColorForPaymentMethod)
     }
 
     private var backgroundView: some View {
-        RoundedRectangle(cornerRadius: 12)
-            .fill(Color.white)
-            .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
-            .overlay(borderOverlay)
+        RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
+            .fill(backgroundColorForPaymentMethod)
     }
 
-    private var borderOverlay: some View {
-        RoundedRectangle(cornerRadius: 12)
-            .stroke(Color(.systemGray5), lineWidth: 1)
+    /// Dynamic background color from server or fallback to design tokens
+    private var backgroundColorForPaymentMethod: Color {
+        // Priority: Server-provided dynamic color > Design tokens fallback
+        if let serverColor = method.backgroundColor {
+            return Color(serverColor)
+        }
+
+        // Fallback to design tokens for consistent styling
+        return tokens?.primerColorBackground ?? Color(.systemBackground)
+    }
+
+    /// Dynamic text color using design tokens for consistent styling
+    private var textColorForPaymentMethod: Color {
+        // Use design tokens for consistent styling
+        return tokens?.primerColorTextPrimary ?? Color(.label)
     }
 }
 

@@ -94,13 +94,13 @@ final class JSONNetworkResponseFactory: NetworkResponseFactory, LogReporter {
         } ?? ["No headers found"]
         let body = String(data: data, encoding: .utf8) ?? "N/A"
 
-//        logger.debug(message: """
-//
-//🌎 [Response] 👉 \(url)
-//Headers:
-//\(headersDescription.joined(separator: "\n"))
-//Body:
-//\(body)
-//""")
+        //        logger.debug(message: """
+        //
+        // 🌎 [Response] 👉 \(url)
+        // Headers:
+        // \(headersDescription.joined(separator: "\n"))
+        // Body:
+        // \(body)
+        // """)
     }
 }
