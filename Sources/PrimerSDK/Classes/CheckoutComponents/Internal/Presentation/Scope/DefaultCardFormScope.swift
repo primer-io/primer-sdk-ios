@@ -69,7 +69,10 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
     private var currentCardData: PrimerCardData?
 
     /// Available card networks for co-badged cards
-    private var availableCardNetworks: [CardNetwork] = []
+    @Published private var availableCardNetworks: [CardNetwork] = []
+
+    /// HeadlessRepository for network detection
+    private var headlessRepository: HeadlessRepository?
 
     // MARK: - Initialization
 
@@ -92,8 +95,12 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
             do {
                 // Setup interactors (proper layered architecture)
                 let repository = HeadlessRepositoryImpl()
+                headlessRepository = repository
                 processCardPaymentInteractor = ProcessCardPaymentInteractorImpl(repository: repository)
                 logger.debug(message: "ProcessCardPaymentInteractor initialized successfully")
+
+                // Setup network detection stream
+                setupNetworkDetectionStream()
 
                 // tokenizeCardInteractor = try await container.resolve(TokenizeCardInteractor.self)
                 // validateInputInteractor = try await container.resolve(ValidateInputInteractor.self)
@@ -105,6 +112,32 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
         }
     }
 
+    /// Setup network detection stream for co-badged cards
+    private func setupNetworkDetectionStream() {
+        guard let repository = headlessRepository else { return }
+        
+        Task {
+            for await networks in repository.getNetworkDetectionStream() {
+                await MainActor.run {
+                    logger.info(message: "🌐 [CardForm] Received networks from stream: \(networks.map { $0.displayName })")
+                    self.availableCardNetworks = networks
+                    self.internalState.availableCardNetworks = networks.map { $0.rawValue }
+                    
+                    // If multiple networks detected, clear any automatic selection
+                    if networks.count > 1 {
+                        self.internalState.selectedCardNetwork = nil
+                        logger.debug(message: "🌐 [CardForm] Multiple networks detected, clearing selection")
+                    } else if networks.count == 1 {
+                        // Single network - auto-select it
+                        let network = networks[0]
+                        self.internalState.selectedCardNetwork = network.rawValue
+                        logger.debug(message: "🌐 [CardForm] Single network detected, auto-selecting: \(network.displayName)")
+                    }
+                }
+            }
+        }
+    }
+
     // MARK: - Update Methods
 
     public func updateCardNumber(_ cardNumber: String) {
@@ -112,8 +145,18 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
         internalState.cardNumber = cardNumber
         updateCardData()
 
-        // Check for co-badged cards
-        detectAvailableNetworks(from: cardNumber)
+        // Trigger network detection via HeadlessRepository
+        Task {
+            await triggerNetworkDetection(for: cardNumber)
+        }
+    }
+
+    /// Trigger network detection for the given card number
+    private func triggerNetworkDetection(for cardNumber: String) async {
+        guard let repository = headlessRepository, cardNumber.count >= 6 else { return }
+        
+        logger.debug(message: "🌐 [CardForm] Triggering network detection for: ***\(String(cardNumber.suffix(4)))")
+        await repository.updateCardNumberInRawDataManager(cardNumber)
     }
 
     public func updateCvv(_ cvv: String) {
@@ -212,9 +255,30 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
     }
 
     public func updateSelectedCardNetwork(_ network: String) {
-        logger.debug(message: "Updating selected card network: \(network)")
+        logger.info(message: "🌐 [CardForm] User selected card network: \(network)")
         internalState.selectedCardNetwork = network
         updateCardData()
+        
+        // Notify HeadlessRepository about the selection
+        Task {
+            await handleNetworkSelection(network)
+        }
+    }
+
+    /// Handle user selection of a card network for co-badged cards
+    private func handleNetworkSelection(_ networkString: String) async {
+        guard let repository = headlessRepository,
+              let cardNetwork = CardNetwork(rawValue: networkString) else { return }
+        
+        logger.info(message: "🌐 [CardForm] Handling network selection: \(cardNetwork.displayName)")
+        await repository.selectCardNetwork(cardNetwork)
+    }
+
+    /// Handle detected networks from CardDetailsView
+    func handleDetectedNetworks(_ networks: [CardNetwork]) {
+        logger.debug(message: "🌐 [CardForm] CardDetailsView detected networks: \(networks.map { $0.displayName })")
+        // The actual network detection is handled via the stream in setupNetworkDetectionStream
+        // This method is kept for compatibility but the real work happens in the stream
     }
 
     public func updateRetailOutlet(_ retailOutlet: String) {
@@ -358,39 +422,8 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
         }
     }
 
-    private func detectAvailableNetworks(from cardNumber: String) {
-        // This would normally use BIN detection to find available networks
-        // For now, just detect single network from card number pattern
-        let cleanNumber = cardNumber.replacingOccurrences(of: " ", with: "")
-
-        if cleanNumber.count >= 6 {
-            // Check for co-badged cards (e.g., Cartes Bancaires + Visa)
-            // This is simplified - real implementation would use BIN database
-            if cleanNumber.hasPrefix("4") {
-                // Could be Visa or co-badged with Cartes Bancaires
-                if isCartesBancairesBIN(cleanNumber) {
-                    availableCardNetworks = [.visa, .cartesBancaires]
-                    internalState.availableCardNetworks = ["VISA", "CARTES_BANCAIRES"]
-                } else {
-                    availableCardNetworks = [.visa]
-                    internalState.availableCardNetworks = ["VISA"]
-                }
-            } else if cleanNumber.hasPrefix("5") {
-                availableCardNetworks = [.masterCard]
-                internalState.availableCardNetworks = ["MASTERCARD"]
-            } else {
-                availableCardNetworks = []
-                internalState.availableCardNetworks = []
-            }
-        }
-    }
-
-    private func isCartesBancairesBIN(_ cardNumber: String) -> Bool {
-        // Simplified check - real implementation would use proper BIN database
-        // French card BINs that support co-badging
-        let cbBINs = ["497010", "497011", "497012"] // Example BINs
-        return cbBINs.contains { cardNumber.hasPrefix($0) }
-    }
+    // Network detection is now handled by HeadlessRepository and RawDataManager
+    // Old detectAvailableNetworks and isCartesBancairesBIN methods removed
 
     private func createBillingAddress() -> ClientSession.Address? {
         // Only create address if we have required fields

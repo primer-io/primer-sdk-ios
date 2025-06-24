@@ -63,4 +63,16 @@ internal protocol HeadlessRepository {
     /// - Parameter cardNumber: The card number to check.
     /// - Returns: Array of available card networks, or nil if not co-badged.
     func detectCardNetworks(for cardNumber: String) async -> [CardNetwork]?
+
+    /// Gets a stream for real-time network detection events.
+    /// - Returns: AsyncStream that emits detected card networks.
+    func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]>
+
+    /// Updates card number in RawDataManager to trigger network detection.
+    /// - Parameter cardNumber: The card number to update.
+    func updateCardNumberInRawDataManager(_ cardNumber: String) async
+
+    /// Handles user selection of a specific card network for co-badged cards.
+    /// - Parameter cardNetwork: The selected card network.
+    func selectCardNetwork(_ cardNetwork: CardNetwork) async
 }

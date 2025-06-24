@@ -94,6 +94,27 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     private var clientToken: String?
     private var paymentMethods: [InternalPaymentMethod] = []
 
+    // MARK: - Co-Badged Cards Support
+
+    /// RawDataManager for co-badged cards detection (follows traditional SDK pattern)
+    private lazy var rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager? = {
+        let manager = try? PrimerHeadlessUniversalCheckout.RawDataManager(
+            paymentMethodType: "PAYMENT_CARD",
+            delegate: self,
+            isUsedInDropIn: false
+        )
+        return manager
+    }()
+
+    /// Current card data for RawDataManager
+    private var rawCardData = PrimerCardData(cardNumber: "", expiryDate: "", cvv: "", cardholderName: "")
+
+    /// Stream for network detection events
+    private let (networkDetectionStream, networkDetectionContinuation) = AsyncStream<[CardNetwork]>.makeStream()
+
+    /// Last detected networks to avoid duplicate notifications
+    private var lastDetectedNetworks: [CardNetwork] = []
+
     init() {
         logger.debug(message: "HeadlessRepositoryImpl initialized")
     }
@@ -276,36 +297,147 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     }
 
     func detectCardNetworks(for cardNumber: String) async -> [CardNetwork]? {
-        logger.debug(message: "Detecting card networks for number")
+        logger.debug(message: "Detecting card networks for card number: ***\(String(cardNumber.suffix(4)))")
 
-        // TODO: Use card number validation to detect co-badged cards
-        // Check if multiple networks are available (e.g., Cartes Bancaires + Visa)
+        // Use RawDataManager for real network detection
+        await updateCardNumberInRawDataManager(cardNumber)
+        
+        // Return stream for real-time updates
+        return await withTimeout(seconds: 2.0) {
+            for await networks in self.networkDetectionStream {
+                if !networks.isEmpty {
+                    return networks
+                }
+            }
+            return nil
+        }
+    }
 
-        // Example for co-badged card
-        if cardNumber.starts(with: "4") && cardNumber.count >= 6 {
-            // Check for French card that might be co-badged
-            let firstSix = String(cardNumber.prefix(6))
-            if isFrenchhCardBIN(firstSix) {
-                return [
-                    .cartesBancaires,
-                    .visa
-                ]
+    /// Get network detection stream for real-time updates
+    func getNetworkDetectionStream() -> AsyncStream<[CardNetwork]> {
+        return self.networkDetectionStream
+    }
+
+    /// Update card number in RawDataManager to trigger network detection
+    @MainActor
+    func updateCardNumberInRawDataManager(_ cardNumber: String) async {
+        logger.debug(message: "Updating card number in RawDataManager")
+        
+        // Configure RawDataManager if needed
+        rawDataManager?.configure { [weak self] _, error in
+            if let error = error {
+                self?.logger.error(message: "RawDataManager configuration failed: \(error)")
+            } else {
+                self?.logger.debug(message: "RawDataManager configured successfully")
             }
         }
 
-        return nil
+        // Update card data
+        rawCardData.cardNumber = cardNumber.replacingOccurrences(of: " ", with: "")
+        
+        // Trigger network detection by setting raw data
+        rawDataManager?.rawData = rawCardData
+        
+        logger.debug(message: "Updated RawDataManager with card number: ***\(String(cardNumber.suffix(4)))")
     }
 
-    private func isFrenchhCardBIN(_ bin: String) -> Bool {
-        // Simplified check - in real implementation would check against BIN database
-        let frenchBINs = ["497010", "497011", "497012"] // Example BINs
-        return frenchBINs.contains(bin)
+    /// Handle user selection of a specific card network (for co-badged cards)
+    func selectCardNetwork(_ cardNetwork: CardNetwork) async {
+        logger.info(message: "User selected card network: \(cardNetwork.displayName)")
+        
+        // Update the raw card data with selected network
+        rawCardData.cardNetwork = cardNetwork
+        rawDataManager?.rawData = rawCardData
+        
+        // Use Client Session Actions to select payment method based on network
+        let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+        clientSessionActionsModule
+            .selectPaymentMethodIfNeeded("PAYMENT_CARD", cardNetwork: cardNetwork.rawValue)
+            .cauterize()
+    }
+
+    /// Helper function for timeout on async operations
+    private func withTimeout<T>(seconds: TimeInterval, operation: @escaping () async -> T?) async -> T? {
+        return await withTaskGroup(of: T?.self) { group in
+            group.addTask {
+                return await operation()
+            }
+            
+            group.addTask {
+                try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+                return nil
+            }
+            
+            return await group.first { _ in true } ?? nil
+        }
     }
 }
 
 // MARK: - RawDataManager Delegate Extension
 
-// This extension will handle the delegate callbacks when implementing with real SDK
-// extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
-//     // Implement delegate methods and convert to async/await using continuations
-// }
+extension HeadlessRepositoryImpl: PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
+    
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              dataIsValid isValid: Bool,
+                              errors: [Error]?) {
+        let errorsDescription = errors?.map { $0.localizedDescription }.joined(separator: ", ")
+        logger.debug(message: "RawDataManager dataIsValid: \(isValid), errors: \(errorsDescription ?? "none")")
+    }
+
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              metadataDidChange metadata: [String: Any]?) {
+        logger.debug(message: "RawDataManager metadataDidChange: \(metadata ?? [:])")
+    }
+
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              willFetchMetadataForState cardState: PrimerValidationState) {
+        guard let state = cardState as? PrimerCardNumberEntryState else {
+            logger.error(message: "Received non-card metadata. Ignoring ...")
+            return
+        }
+        logger.debug(message: "RawDataManager willFetchMetadataForState: ***\(String(state.cardNumber.suffix(4)))")
+    }
+
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
+                              forState cardState: PrimerValidationState) {
+        guard let metadataModel = metadata as? PrimerCardNumberEntryMetadata,
+              let stateModel = cardState as? PrimerCardNumberEntryState else {
+            logger.error(message: "Received non-card metadata. Ignoring ...")
+            return
+        }
+
+        let metadataDescription = metadataModel.selectableCardNetworks?.items
+            .map { $0.displayName }
+            .joined(separator: ", ") ?? "n/a"
+        logger.debug(message: "RawDataManager didReceiveMetadata: (selectable ->) \(metadataDescription), cardState: ***\(String(stateModel.cardNumber.suffix(4)))")
+
+        // Extract networks following traditional SDK pattern
+        var primerNetworks: [PrimerCardNetwork]
+        if metadataModel.source == .remote,
+           let selectable = metadataModel.selectableCardNetworks?.items,
+           !selectable.isEmpty {
+            primerNetworks = selectable
+        } else if let preferred = metadataModel.detectedCardNetworks.preferred {
+            primerNetworks = [preferred]
+        } else if let first = metadataModel.detectedCardNetworks.items.first {
+            primerNetworks = [first]
+        } else {
+            primerNetworks = []
+        }
+
+        let filteredNetworks = primerNetworks.filter { $0.displayName != "Unknown" }
+        
+        // Convert PrimerCardNetwork to CardNetwork
+        let cardNetworks = filteredNetworks.compactMap { CardNetwork(rawValue: $0.network.rawValue) }
+        
+        // Only emit if networks changed to avoid duplicate notifications
+        if cardNetworks != lastDetectedNetworks {
+            lastDetectedNetworks = cardNetworks
+            logger.info(message: "Co-badged networks detected: \(cardNetworks.map { $0.displayName })")
+            
+            // Emit networks via AsyncStream for SwiftUI consumption
+            networkDetectionContinuation.yield(cardNetworks)
+        }
+    }
+}

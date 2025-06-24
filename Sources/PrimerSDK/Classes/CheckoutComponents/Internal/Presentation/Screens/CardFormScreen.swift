@@ -118,6 +118,7 @@ internal struct CardFormScreen: View {
                 customCobadgedCardsView(cardFormState.availableCardNetworks) { network in
                     scope.updateSelectedCardNetwork(network)
                 }
+                .padding(.horizontal)
             } else {
                 defaultCobadgedCardsView
             }
@@ -125,14 +126,22 @@ internal struct CardFormScreen: View {
     }
 
     private var defaultCobadgedCardsView: some View {
-        CardNetworkSelector(
-            availableNetworks: cardFormState.availableCardNetworks.compactMap { CardNetwork(rawValue: $0) },
-            selectedNetwork: $selectedCardNetwork,
-            onNetworkSelected: { network in
-                scope.updateSelectedCardNetwork(network.rawValue)
-            }
-        )
-        .padding(.horizontal)
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Select Network")
+                .font(.caption)
+                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                .padding(.horizontal)
+            
+            CardNetworkSelector(
+                availableNetworks: cardFormState.availableCardNetworks.compactMap { CardNetwork(rawValue: $0) },
+                selectedNetwork: $selectedCardNetwork,
+                onNetworkSelected: { network in
+                    selectedCardNetwork = network
+                    scope.updateSelectedCardNetwork(network.rawValue)
+                }
+            )
+            .padding(.horizontal)
+        }
     }
 
     private var billingAddressToggle: some View {
@@ -238,6 +247,18 @@ internal struct CardFormScreen: View {
                     if let selectedNetwork = state.selectedCardNetwork,
                        let network = CardNetwork(rawValue: selectedNetwork) {
                         self.selectedCardNetwork = network
+                    } else if state.availableCardNetworks.count == 1,
+                              let firstNetwork = state.availableCardNetworks.first,
+                              let network = CardNetwork(rawValue: firstNetwork) {
+                        // Auto-select if only one network available
+                        self.selectedCardNetwork = network
+                    } else if state.availableCardNetworks.count > 1 {
+                        // Multiple networks available - use first as default if none selected
+                        if let firstNetwork = state.availableCardNetworks.first,
+                           let network = CardNetwork(rawValue: firstNetwork),
+                           self.selectedCardNetwork == .unknown {
+                            self.selectedCardNetwork = network
+                        }
                     }
                 }
             }

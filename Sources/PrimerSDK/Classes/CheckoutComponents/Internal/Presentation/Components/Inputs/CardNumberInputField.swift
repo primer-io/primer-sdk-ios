@@ -29,6 +29,9 @@ internal struct CardNumberInputField: View, LogReporter {
     /// Callback when the validation state changes
     let onValidationChange: ((Bool) -> Void)?
 
+    /// Callback when available networks are detected for co-badged cards
+    let onNetworksDetected: (([CardNetwork]) -> Void)?
+
     // MARK: - Private Properties
 
     /// The validation service resolved from DI environment
@@ -70,7 +73,8 @@ internal struct CardNumberInputField: View, LogReporter {
                         validationService: validationService,
                         onCardNumberChange: onCardNumberChange,
                         onCardNetworkChange: onCardNetworkChange,
-                        onValidationChange: onValidationChange
+                        onValidationChange: onValidationChange,
+                        onNetworksDetected: onNetworksDetected
                     )
                     .padding()
                     .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
@@ -134,6 +138,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
     let onCardNumberChange: ((String) -> Void)?
     let onCardNetworkChange: ((CardNetwork) -> Void)?
     let onValidationChange: ((Bool) -> Void)?
+    let onNetworksDetected: (([CardNetwork]) -> Void)?
 
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
@@ -170,7 +175,8 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             errorMessage: $errorMessage,
             onCardNumberChange: onCardNumberChange,
             onCardNetworkChange: onCardNetworkChange,
-            onValidationChange: onValidationChange
+            onValidationChange: onValidationChange,
+            onNetworksDetected: onNetworksDetected
         )
     }
 
@@ -197,9 +203,13 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
         private let onCardNumberChange: ((String) -> Void)?
         private let onCardNetworkChange: ((CardNetwork) -> Void)?
         private let onValidationChange: ((Bool) -> Void)?
+        private let onNetworksDetected: (([CardNetwork]) -> Void)?
 
         // Track cursor position for restoration after formatting
         private var savedCursorPosition: Int = 0
+
+        // Timer for debounced network detection
+        private var networkDetectionTimer: Timer?
 
         init(
             validationService: ValidationService,
@@ -209,7 +219,8 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             errorMessage: Binding<String?>,
             onCardNumberChange: ((String) -> Void)?,
             onCardNetworkChange: ((CardNetwork) -> Void)?,
-            onValidationChange: ((Bool) -> Void)?
+            onValidationChange: ((Bool) -> Void)?,
+            onNetworksDetected: (([CardNetwork]) -> Void)?
         ) {
             self.validationService = validationService
             self._cardNumber = cardNumber
@@ -219,6 +230,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             self.onCardNumberChange = onCardNumberChange
             self.onCardNetworkChange = onCardNetworkChange
             self.onValidationChange = onValidationChange
+            self.onNetworksDetected = onNetworksDetected
         }
 
         @objc func doneButtonTapped() {
@@ -336,6 +348,11 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
 
             // Notify changes
             onCardNumberChange?(newCardNumber)
+
+            // Trigger network detection for co-badged cards (minimum 6 digits for BIN detection)
+            if newCardNumber.count >= 6 {
+                debouncedNetworkDetection(newCardNumber)
+            }
 
             // Validate if we have enough digits (use debounced validation during typing)
             if newCardNumber.count >= 13 {
@@ -475,6 +492,25 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             }
         }
 
+        private func debouncedNetworkDetection(_ number: String) {
+            // Cancel any existing network detection timer
+            networkDetectionTimer?.invalidate()
+
+            // Schedule network detection after a short delay to avoid excessive API calls
+            networkDetectionTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
+                guard let self = self else { return }
+                self.detectNetworksForCardNumber(number)
+            }
+        }
+
+        private func detectNetworksForCardNumber(_ cardNumber: String) {
+            logger.debug(message: "🌐 [CardNumber] Detecting networks for: ***\(String(cardNumber.suffix(4)))")
+            
+            // This would be connected to HeadlessRepository in the scope
+            // For now, we'll trigger the callback to let the parent handle it
+            onNetworksDetected?([])
+        }
+
         // Validation while typing - more lenient for better UX
         private func validateCardNumberWhileTyping(_ number: String) {
             logger.debug(message: "🔍 [CardNumber] Validating while typing: '\(number)' (length: \(number.count))")
@@ -535,6 +571,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
 
         deinit {
             validationTimer?.invalidate()
+            networkDetectionTimer?.invalidate()
         }
     }
 }

@@ -18,6 +18,9 @@ internal struct CardDetailsView: View {
     /// Currently detected card network
     @State private var cardNetwork: CardNetwork = .unknown
 
+    /// Available networks for co-badged cards
+    @State private var availableNetworks: [CardNetwork] = []
+
     /// Validation states for each field
     @State private var isCardNumberValid = false
     @State private var isCVVValid = false
@@ -42,6 +45,13 @@ internal struct CardDetailsView: View {
                 },
                 onValidationChange: { isValid in
                     isCardNumberValid = isValid
+                },
+                onNetworksDetected: { networks in
+                    availableNetworks = networks
+                    // Notify scope about detected networks
+                    if let scope = cardFormScope as? DefaultCardFormScope {
+                        scope.handleDetectedNetworks(networks)
+                    }
                 }
             )
 
