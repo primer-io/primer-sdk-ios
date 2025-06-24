@@ -86,9 +86,21 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
         coordinator.navigate(to: .selectCountry)
     }
 
-    /// Navigate to success screen (handled by CheckoutComponentsPrimer delegate)
+    /// Navigate to success screen with payment result
+    func navigateToSuccess(_ result: PaymentResult) {
+        logger.info(message: "Navigating to success screen for payment: \(result.paymentId)")
+        
+        let checkoutResult = CheckoutPaymentResult(
+            paymentId: result.paymentId,
+            amount: result.amount?.description ?? "N/A",
+            method: result.paymentMethodType ?? "Card"
+        )
+        coordinator.navigate(to: .success(checkoutResult))
+    }
+    
+    /// Navigate to success screen (legacy method for backward compatibility)
     func navigateToSuccess() {
-        logger.info(message: "Success navigation - handled by CheckoutComponentsPrimer delegate")
+        logger.info(message: "Legacy success navigation - handled by CheckoutComponentsPrimer delegate")
 
         // Success handling is now managed by CheckoutComponentsPrimer delegate
         // which will call PrimerUIManager.dismissOrShowResultScreen() appropriately

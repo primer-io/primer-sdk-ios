@@ -30,9 +30,8 @@ public protocol PrimerCheckoutScope: AnyObject {
     /// Default implementation shows activity indicator.
     var loadingScreen: (() -> AnyView)? { get set }
 
-    /// Success screen shown after successful payment.
-    /// Default implementation shows checkmark and success message.
-    var successScreen: (() -> AnyView)? { get set }
+    // Note: Success screen removed - CheckoutComponents dismisses immediately on success
+    // The delegate handles presenting the result screen via PrimerResultViewController
 
     /// Error screen shown when an error occurs.
     /// Default implementation shows error icon and message.
@@ -82,6 +81,9 @@ public enum PrimerCheckoutState: Equatable {
     /// Ready state with payment methods loaded.
     case ready
 
+    /// Payment completed successfully.
+    case success(PaymentResult)
+
     /// Checkout has been dismissed by user or merchant.
     case dismissed
 
@@ -94,6 +96,8 @@ public enum PrimerCheckoutState: Equatable {
              (.ready, .ready),
              (.dismissed, .dismissed):
             return true
+        case let (.success(lhsResult), .success(rhsResult)):
+            return lhsResult.paymentId == rhsResult.paymentId
         case let (.failure(lhsError), .failure(rhsError)):
             return lhsError.errorId == rhsError.errorId
         default:

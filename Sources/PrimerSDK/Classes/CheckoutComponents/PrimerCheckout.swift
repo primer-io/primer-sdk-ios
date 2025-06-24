@@ -194,6 +194,9 @@ internal struct InternalCheckout: View {
                             ))
                         }
 
+                    // Note: Success case removed - CheckoutComponents dismisses immediately on success
+                    // The delegate handles presenting the result screen via PrimerResultViewController
+
                     case .failure(let error):
                         if let customError = checkoutScope.errorScreen {
                             AnyView(customError(error.localizedDescription))

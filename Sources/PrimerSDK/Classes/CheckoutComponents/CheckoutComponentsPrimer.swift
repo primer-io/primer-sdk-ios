@@ -12,7 +12,8 @@ import SwiftUI
 @available(iOS 15.0, *)
 public protocol CheckoutComponentsDelegate: AnyObject {
     /// Called when payment is successful
-    func checkoutComponentsDidCompleteWithSuccess()
+    /// - Parameter result: The payment result containing payment ID, status, and other details
+    func checkoutComponentsDidCompleteWithSuccess(_ result: PaymentResult)
 
     /// Called when payment fails
     func checkoutComponentsDidFailWithError(_ error: PrimerError)
@@ -49,6 +50,9 @@ public protocol CheckoutComponentsDelegate: AnyObject {
 
     /// Delegate for handling checkout results
     public weak var delegate: CheckoutComponentsDelegate?
+    
+    /// Store the latest payment result for delegate callbacks
+    private var lastPaymentResult: PaymentResult?
     
     /// API configuration module for SDK initialization
     private let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
@@ -152,21 +156,48 @@ public protocol CheckoutComponentsDelegate: AnyObject {
     }
 
     /// Internal method for handling payment success
-    internal func handlePaymentSuccess() {
-        logger.info(message: "✅ [CheckoutComponentsPrimer] Payment completed successfully")
+    internal func handlePaymentSuccess(_ result: PaymentResult) {
+        logger.info(message: "✅ [CheckoutComponentsPrimer] Payment completed successfully: \(result.paymentId)")
 
-        if let delegate = delegate {
-            logger.info(message: "📞 [CheckoutComponentsPrimer] Calling delegate checkoutComponentsDidCompleteWithSuccess")
-            delegate.checkoutComponentsDidCompleteWithSuccess()
-        } else {
-            logger.error(message: "❌ [CheckoutComponentsPrimer] No delegate set - cannot handle payment success")
+        // Store the payment result for delegate callback
+        lastPaymentResult = result
+
+        // Dismiss CheckoutComponents first, then call delegate
+        dismissDirectly()
+        
+        // Call delegate after dismissal with a small delay to ensure modal is fully dismissed
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            if let delegate = self?.delegate, let paymentResult = self?.lastPaymentResult {
+                self?.logger.info(message: "📞 [CheckoutComponentsPrimer] Calling delegate checkoutComponentsDidCompleteWithSuccess with result: \(paymentResult.paymentId)")
+                delegate.checkoutComponentsDidCompleteWithSuccess(paymentResult)
+            } else {
+                self?.logger.error(message: "❌ [CheckoutComponentsPrimer] No delegate set or payment result missing - cannot handle payment success")
+            }
         }
+    }
+    
+    /// Internal method for handling payment success (legacy method without result)
+    internal func handlePaymentSuccess() {
+        logger.info(message: "✅ [CheckoutComponentsPrimer] Payment completed successfully (legacy)")
+        handlePaymentSuccess(PaymentResult(paymentId: "unknown", status: .success))
     }
 
     /// Internal method for handling payment failure
     internal func handlePaymentFailure(_ error: PrimerError) {
         logger.error(message: "❌ [CheckoutComponentsPrimer] Payment failed: \(error)")
-        delegate?.checkoutComponentsDidFailWithError(error)
+
+        // Dismiss CheckoutComponents first, then call delegate (same pattern as success)
+        dismissDirectly()
+        
+        // Call delegate after dismissal with a small delay to ensure modal is fully dismissed
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            if let delegate = self?.delegate {
+                self?.logger.info(message: "📞 [CheckoutComponentsPrimer] Calling delegate checkoutComponentsDidFailWithError after dismissal")
+                delegate.checkoutComponentsDidFailWithError(error)
+            } else {
+                self?.logger.error(message: "❌ [CheckoutComponentsPrimer] No delegate set - cannot handle payment failure")
+            }
+        }
     }
 
     /// Internal method for handling checkout dismissal
@@ -205,11 +236,31 @@ public protocol CheckoutComponentsDelegate: AnyObject {
                 // This preserves all 3DS, debug, and payment method configurations
                 let settings = PrimerSettings.current
                 
-                // Log the current 3DS configuration for debugging
-                logger.info(message: "🔧 [CheckoutComponentsPrimer] Using 3DS sanity check: \(settings.debugOptions.is3DSSanityCheckEnabled)")
+                // IMPORTANT: For CheckoutComponents, ensure 3DS sanity check matches Drop-in behavior
+                // Drop-in uses is3DSSanityCheckEnabled: false for debug/simulator environments
+                // If settings have default values, apply the same debug-friendly configuration
+                let finalSettings: PrimerSettings
+                if settings.debugOptions.is3DSSanityCheckEnabled {
+                    // Default settings detected - apply debug-friendly configuration to match Drop-in
+                    let debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: false)
+                    finalSettings = PrimerSettings(
+                        paymentHandling: settings.paymentHandling,
+                        localeData: settings.localeData,
+                        paymentMethodOptions: settings.paymentMethodOptions,
+                        uiOptions: settings.uiOptions,
+                        debugOptions: debugOptions,
+                        clientSessionCachingEnabled: settings.clientSessionCachingEnabled,
+                        apiVersion: settings.apiVersion
+                    )
+                    logger.info(message: "🔧 [CheckoutComponentsPrimer] Applied debug-friendly 3DS configuration: false (matching Drop-in behavior)")
+                } else {
+                    // Pre-configured settings - use as-is
+                    finalSettings = settings
+                    logger.info(message: "🔧 [CheckoutComponentsPrimer] Using pre-configured 3DS sanity check: \(settings.debugOptions.is3DSSanityCheckEnabled)")
+                }
                 
-                // Register settings in dependency container
-                DependencyContainer.register(settings as PrimerSettingsProtocol)
+                // Register final settings in dependency container
+                DependencyContainer.register(finalSettings as PrimerSettingsProtocol)
                 
                 // Initialize SDK session using configuration module
                 try await withCheckedThrowingContinuation { continuation in
@@ -242,7 +293,7 @@ public protocol CheckoutComponentsDelegate: AnyObject {
                 // Create the bridge controller that embeds SwiftUI in traditional system
                 let bridgeController = PrimerSwiftUIBridgeViewController.createForCheckoutComponents(
                     clientToken: clientToken,
-                    settings: settings,
+                    settings: finalSettings,
                     diContainer: container,
                     navigator: nav
                 )
@@ -327,11 +378,31 @@ public protocol CheckoutComponentsDelegate: AnyObject {
                 // This preserves all 3DS, debug, and payment method configurations
                 let settings = PrimerSettings.current
                 
-                // Log the current 3DS configuration for debugging
-                logger.info(message: "🔧 [CheckoutComponentsPrimer] Using 3DS sanity check: \(settings.debugOptions.is3DSSanityCheckEnabled)")
+                // IMPORTANT: For CheckoutComponents, ensure 3DS sanity check matches Drop-in behavior
+                // Drop-in uses is3DSSanityCheckEnabled: false for debug/simulator environments
+                // If settings have default values, apply the same debug-friendly configuration
+                let finalSettings: PrimerSettings
+                if settings.debugOptions.is3DSSanityCheckEnabled {
+                    // Default settings detected - apply debug-friendly configuration to match Drop-in
+                    let debugOptions = PrimerDebugOptions(is3DSSanityCheckEnabled: false)
+                    finalSettings = PrimerSettings(
+                        paymentHandling: settings.paymentHandling,
+                        localeData: settings.localeData,
+                        paymentMethodOptions: settings.paymentMethodOptions,
+                        uiOptions: settings.uiOptions,
+                        debugOptions: debugOptions,
+                        clientSessionCachingEnabled: settings.clientSessionCachingEnabled,
+                        apiVersion: settings.apiVersion
+                    )
+                    logger.info(message: "🔧 [CheckoutComponentsPrimer] Applied debug-friendly 3DS configuration: false (matching Drop-in behavior)")
+                } else {
+                    // Pre-configured settings - use as-is
+                    finalSettings = settings
+                    logger.info(message: "🔧 [CheckoutComponentsPrimer] Using pre-configured 3DS sanity check: \(settings.debugOptions.is3DSSanityCheckEnabled)")
+                }
                 
-                // Register settings in dependency container
-                DependencyContainer.register(settings as PrimerSettingsProtocol)
+                // Register final settings in dependency container
+                DependencyContainer.register(finalSettings as PrimerSettingsProtocol)
                 
                 // Initialize SDK session using configuration module
                 try await withCheckedThrowingContinuation { continuation in
@@ -367,7 +438,7 @@ public protocol CheckoutComponentsDelegate: AnyObject {
                 // Create the bridge controller with custom content
                 let bridgeController = PrimerSwiftUIBridgeViewController.createForCheckoutComponents(
                     clientToken: clientToken,
-                    settings: settings,
+                    settings: finalSettings,
                     diContainer: container,
                     navigator: nav,
                     customContent: customContentWrapper

@@ -143,6 +143,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     // CheckoutComponents buttons (added programmatically)
     var checkoutComponentsUIKitButton: UIButton!
     var checkoutComponentsSwiftUIButton: UIButton!
+    
+    // CheckoutComponents delegate (stored as property to prevent deallocation)
+    private var checkoutComponentsDelegate: AnyObject?
 
     @IBOutlet weak var deepLinkStackView: UIStackView!
     @IBOutlet weak var dlClientTokenDisplay: UILabel!
@@ -1030,9 +1033,13 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
         let settings = populateSettingsFromUI(dropIn: false)
         
+        // Configure Primer with settings (following Drop-in pattern) to ensure CheckoutComponents inherits them
+        Primer.shared.configure(settings: settings, delegate: nil)
+        
         // Set up CheckoutComponents delegate before presenting
         if #available(iOS 15.0, *) {
             let delegate = DebugAppCheckoutComponentsDelegate()
+            checkoutComponentsDelegate = delegate
             CheckoutComponentsPrimer.shared.delegate = delegate
         }
         
@@ -1107,9 +1114,13 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
         let settings = populateSettingsFromUI(dropIn: false)
         
+        // Configure Primer with settings (following Drop-in pattern) to ensure CheckoutComponents inherits them
+        Primer.shared.configure(settings: settings, delegate: nil)
+        
         // Set up CheckoutComponents delegate before presenting
         if #available(iOS 15.0, *) {
             let delegate = DebugAppCheckoutComponentsDelegate()
+            checkoutComponentsDelegate = delegate
             CheckoutComponentsPrimer.shared.delegate = delegate
         }
         
@@ -1244,6 +1255,9 @@ struct InlineSwiftUICheckoutTestView: View {
     @State private var checkoutResult: String = ""
     @State private var lastError: String = ""
     
+    // Store CheckoutComponents delegate to prevent deallocation
+    @State private var checkoutComponentsDelegate: AnyObject?
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -1353,7 +1367,7 @@ struct InlineSwiftUICheckoutTestView: View {
             topViewController = presentedViewController
         }
         
-        // Set up CheckoutComponents delegate
+        // Set up CheckoutComponents delegate (store strongly to prevent deallocation)
         let delegate = InlineTestCheckoutComponentsDelegate { [self] result in
             DispatchQueue.main.async {
                 switch result {
@@ -1367,6 +1381,8 @@ struct InlineSwiftUICheckoutTestView: View {
             }
         }
         
+        // Store delegate strongly to prevent deallocation (same as UIKit example)
+        checkoutComponentsDelegate = delegate
         CheckoutComponentsPrimer.shared.delegate = delegate
         
         // Present CheckoutComponents
@@ -1380,22 +1396,65 @@ struct InlineSwiftUICheckoutTestView: View {
 @available(iOS 15.0, *)
 private class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
     
-    func checkoutComponentsDidCompleteWithSuccess() {
-        print("✅ [Debug App] CheckoutComponents payment completed successfully!")
+    func checkoutComponentsDidCompleteWithSuccess(_ result: PaymentResult) {
+        print("✅ [Debug App] CheckoutComponents payment completed successfully! Payment ID: \(result.paymentId)")
         
         DispatchQueue.main.async {
-            // Find the topmost view controller to present the alert
+            // Push the Debug App's result screen to navigation stack (following Drop-in pattern)
+            // This is called after CheckoutComponents modal has been dismissed
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                let window = windowScene.windows.first,
-               let topController = Self.findTopViewController(from: window.rootViewController) {
+               let rootController = window.rootViewController {
                 
-                let alert = UIAlertController(
-                    title: "Payment Successful",
-                    message: "CheckoutComponents payment completed successfully!",
-                    preferredStyle: .alert
+                // Find the navigation controller in the main app (not the modal)
+                var navController: UINavigationController?
+                
+                if let nav = rootController as? UINavigationController {
+                    navController = nav
+                } else if let tabBar = rootController as? UITabBarController,
+                          let nav = tabBar.selectedViewController as? UINavigationController {
+                    navController = nav
+                } else if let nav = rootController.children.first as? UINavigationController {
+                    navController = nav
+                }
+                
+                guard let navigationController = navController else {
+                    print("❌ [Debug App] Could not find navigation controller to push result screen")
+                    return
+                }
+                
+                // Create success checkout data using the real payment result
+                // Note: CheckoutComponents doesn't have access to order ID like Drop-in does
+                let successPayment = PrimerCheckoutDataPayment(
+                    id: result.paymentId,
+                    orderId: "checkout-components-order", // CheckoutComponents doesn't track order ID
+                    paymentFailureReason: nil
                 )
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                topController.present(alert, animated: true)
+                let successData = PrimerCheckoutData(payment: successPayment)
+                
+                // Create realistic logs for CheckoutComponents success
+                var logs = ["checkoutComponentsDidCompleteWithSuccess"]
+                logs.append("Payment ID: \(result.paymentId)")
+                logs.append("Status: \(result.status)")
+                if let token = result.token {
+                    logs.append("Token: \(token)")
+                }
+                if let amount = result.amount {
+                    logs.append("Amount: \(amount)")
+                }
+                if let paymentMethodType = result.paymentMethodType {
+                    logs.append("Payment Method: \(paymentMethodType)")
+                }
+                
+                // Push the Debug App's result screen to the navigation stack
+                let resultVC = MerchantResultViewController.instantiate(
+                    checkoutData: successData,
+                    error: nil,
+                    logs: logs
+                )
+                
+                navigationController.pushViewController(resultVC, animated: true)
+                print("✅ [Debug App] Pushed result screen to navigation stack with real payment data")
             }
         }
     }
@@ -1404,18 +1463,55 @@ private class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
         print("❌ [Debug App] CheckoutComponents payment failed: \(error.localizedDescription)")
         
         DispatchQueue.main.async {
-            // Find the topmost view controller to present the alert
+            // Push the Debug App's error result screen to navigation stack (following Drop-in pattern)
+            // This is called after CheckoutComponents modal has been dismissed
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                let window = windowScene.windows.first,
-               let topController = Self.findTopViewController(from: window.rootViewController) {
+               let rootController = window.rootViewController {
                 
-                let alert = UIAlertController(
-                    title: "Payment Failed",
-                    message: "CheckoutComponents payment failed: \(error.localizedDescription)",
-                    preferredStyle: .alert
+                // Find the navigation controller in the main app (not the modal)
+                var navController: UINavigationController?
+                
+                if let nav = rootController as? UINavigationController {
+                    navController = nav
+                } else if let tabBar = rootController as? UITabBarController,
+                          let nav = tabBar.selectedViewController as? UINavigationController {
+                    navController = nav
+                } else if let nav = rootController.children.first as? UINavigationController {
+                    navController = nav
+                }
+                
+                guard let navigationController = navController else {
+                    print("❌ [Debug App] Could not find navigation controller to push error result screen")
+                    return
+                }
+                
+                // Create failure checkout data using the error information (matching Drop-in pattern)
+                let failurePayment = PrimerCheckoutDataPayment(
+                    id: error.diagnosticsId, // Use diagnostics ID as payment ID for errors
+                    orderId: "checkout-components-error-order",
+                    paymentFailureReason: nil // Will be shown in error details
                 )
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                topController.present(alert, animated: true)
+                let failureData = PrimerCheckoutData(payment: failurePayment)
+                
+                // Create realistic logs for CheckoutComponents failure (matching Drop-in pattern)
+                var logs = ["checkoutComponentsDidFailWithError"]
+                logs.append("Error ID: \(error.errorId)")
+                logs.append("Diagnostics ID: \(error.diagnosticsId)")
+                logs.append("Description: \(error.localizedDescription)")
+                if let recoverySuggestion = error.recoverySuggestion {
+                    logs.append("Recovery: \(recoverySuggestion)")
+                }
+                
+                // Push the Debug App's result screen with error details
+                let resultVC = MerchantResultViewController.instantiate(
+                    checkoutData: failureData,
+                    error: error, // Pass the actual PrimerError
+                    logs: logs
+                )
+                
+                navigationController.pushViewController(resultVC, animated: true)
+                print("✅ [Debug App] Pushed error result screen to navigation stack with real error data")
             }
         }
     }
@@ -1476,12 +1572,12 @@ private class InlineTestCheckoutComponentsDelegate: CheckoutComponentsDelegate {
         self.onResult = onResult
     }
     
-    func checkoutComponentsDidCompleteWithSuccess() {
-        onResult(.success("Payment completed successfully! ✅"))
+    func checkoutComponentsDidCompleteWithSuccess(_ result: PaymentResult) {
+        onResult(.success("Payment completed successfully! ✅ Payment ID: \(result.paymentId)"))
     }
     
     func checkoutComponentsDidFailWithError(_ error: PrimerError) {
-        onResult(.failure("Payment failed: \(error.localizedDescription)"))
+        onResult(.failure("Payment failed: \(error.errorId) - \(error.localizedDescription)"))
     }
     
     func checkoutComponentsDidDismiss() {

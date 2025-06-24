@@ -18,6 +18,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         case paymentMethodSelection
         case cardForm
         case failure(PrimerError)
+        // Note: Success case removed - CheckoutComponents dismisses immediately on success
     }
 
     // MARK: - Properties
@@ -49,10 +50,12 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     public var container: ((_ content: @escaping () -> AnyView) -> AnyView)?
     public var splashScreen: (() -> AnyView)?
     public var loadingScreen: (() -> AnyView)?
-    public var successScreen: (() -> AnyView)?
     public var errorScreen: ((_ message: String) -> AnyView)?
     public var paymentMethodSelectionScreen: ((_ scope: PrimerPaymentMethodSelectionScope) -> AnyView)?
     public var cardFormScreen: ((_ scope: PrimerCardFormScope) -> AnyView)?
+
+    // MARK: - State Management
+    // Note: Success result is no longer stored - delegate is called immediately on success
 
     // MARK: - Child Scopes
 
@@ -258,12 +261,17 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     }
 
     internal func handlePaymentSuccess(_ result: PaymentResult) {
-        logger.debug(message: "Payment successful")
+        logger.info(message: "Payment successful: \(result.paymentId)")
 
-        // Notify CheckoutComponentsPrimer about the success
-        // This will propagate to PrimerUIManager to show the result screen
-        logger.info(message: "Notifying CheckoutComponentsPrimer about payment success")
-        CheckoutComponentsPrimer.shared.handlePaymentSuccess()
+        // For CheckoutComponents, notify CheckoutComponentsPrimer to handle success and dismissal
+        // This matches the expected flow: CheckoutComponents dismisses → delegate presents result screen
+        logger.info(message: "Payment successful, notifying CheckoutComponentsPrimer to handle success and dismissal")
+        
+        // Update state to success for any listeners
+        updateState(.success(result))
+        
+        // Notify CheckoutComponentsPrimer about success with the actual payment result
+        CheckoutComponentsPrimer.shared.handlePaymentSuccess(result)
     }
 
     internal func handlePaymentError(_ error: PrimerError) {

@@ -553,11 +553,10 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
         logger.info(message: "Payment processed successfully: \(result.paymentId)")
         internalState.isSubmitting = false
 
-        // Notify CheckoutComponentsPrimer about the success
-        // This will propagate to PrimerUIManager to show the result screen
+        // Notify CheckoutComponentsPrimer about the success with the payment result
         await MainActor.run {
             logger.info(message: "Notifying CheckoutComponentsPrimer about payment success")
-            CheckoutComponentsPrimer.shared.handlePaymentSuccess()
+            CheckoutComponentsPrimer.shared.handlePaymentSuccess(result)
         }
     }
 }

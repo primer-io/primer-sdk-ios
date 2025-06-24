@@ -35,7 +35,9 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
         let result = PaymentResult(
             paymentId: data.payment?.id ?? UUID().uuidString,
             status: .success,
-            token: "payment_completed_successfully"
+            token: data.payment?.id, // Use payment ID as token for CheckoutComponents
+            amount: nil, // Amount not available in PrimerCheckoutDataPayment
+            paymentMethodType: "PAYMENT_CARD" // Default to card for CheckoutComponents
         )
         completion(.success(result))
     }

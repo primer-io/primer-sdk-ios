@@ -9,7 +9,6 @@
 
 import UIKit
 
-
 protocol PrimerUIManaging {
     var primerWindow: UIWindow? { get }
     var primerRootViewController: PrimerRootViewController? { get }

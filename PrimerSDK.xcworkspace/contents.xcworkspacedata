@@ -81,9 +81,6 @@
                         location = "group:Implementation"
                         name = "Implementation">
                      </Group>
-                     <FileRef
-                        location = "group:CLAUDE.md">
-                     </FileRef>
                   </Group>
                   <Group
                      location = "group:Core"
