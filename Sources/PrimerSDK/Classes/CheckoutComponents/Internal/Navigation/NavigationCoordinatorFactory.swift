@@ -3,7 +3,7 @@
 //  PrimerSDK - CheckoutComponents
 //
 //  Factory for creating navigation coordinators in CheckoutComponents
-//  Adapted from ComposableCheckout for CheckoutComponents architecture
+//  Factory pattern for CheckoutComponents navigation coordinators
 //
 
 import Foundation

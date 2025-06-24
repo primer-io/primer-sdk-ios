@@ -193,8 +193,8 @@ NFC-based payment system:
 
 ## Migration Notes
 
-### To ComposableCheckout
-When migrating payment methods to the modern ComposableCheckout:
+### To CheckoutComponents
+When migrating payment methods to the modern CheckoutComponents:
 1. Extract business logic from view controllers
 2. Convert UIKit components to SwiftUI
 3. Migrate to modern DI container
@@ -203,6 +203,6 @@ When migrating payment methods to the modern ComposableCheckout:
 
 ### Deprecation Strategy
 - Legacy components remain supported
-- New features prioritize ComposableCheckout
+- New features prioritize CheckoutComponents
 - Clear migration path provided for each component
 - Documentation updated to reflect modern approach

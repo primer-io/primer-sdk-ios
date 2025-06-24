@@ -175,23 +175,23 @@ Central coordinator for UI operations:
 - Theme application and updates
 - Keyboard handling coordination
 - Loading state management
-- **NEW**: ComposableCheckout integration via `presentComposableCheckout()`
-- Checkout style selection (`.dropIn`, `.composable`, `.automatic`)
+- **NEW**: CheckoutComponents integration via `presentCheckoutComponents()`
+- Checkout style selection (`.dropIn`, `.checkoutComponents`, `.automatic`)
 
-#### ComposableCheckout Integration
+#### CheckoutComponents Integration
 PrimerUIManager now supports presenting the modern SwiftUI-based checkout:
 ```swift
 // Present with automatic style selection
 PrimerUIManager.shared.presentPaymentUI(checkoutStyle: .automatic)
 
-// Force ComposableCheckout (iOS 15+)
-PrimerUIManager.shared.presentPaymentUI(checkoutStyle: .composable)
+// Force CheckoutComponents (iOS 15+)
+PrimerUIManager.shared.presentPaymentUI(checkoutStyle: .checkoutComponents)
 
 // Force traditional Drop-in
 PrimerUIManager.shared.presentPaymentUI(checkoutStyle: .dropIn)
 ```
 
-The integration uses `ComposablePrimer.presentCheckout()` internally and maintains compatibility with existing delegate patterns.
+The integration uses `CheckoutComponentsPrimer.presentCheckout()` internally and maintains compatibility with existing delegate patterns.
 
 #### UI Utilities (`UIUtils.swift`)
 Helper functions for common UI operations:
@@ -294,8 +294,8 @@ Primer.configure(with: settings)
 
 ## Migration Strategy
 
-### To ComposableCheckout
-When migrating to the modern SwiftUI-based ComposableCheckout:
+### To CheckoutComponents
+When migrating to the modern SwiftUI-based CheckoutComponents:
 
 1. **Extract Business Logic**: Move view model logic to shared services
 2. **Create SwiftUI Equivalents**: Convert UIKit views to SwiftUI
@@ -305,7 +305,7 @@ When migrating to the modern SwiftUI-based ComposableCheckout:
 
 ### Backward Compatibility
 - Legacy UI components remain supported
-- New features prioritize ComposableCheckout
+- New features prioritize CheckoutComponents
 - Clear deprecation timeline for legacy components
 - Migration tools and documentation provided
 
@@ -323,4 +323,4 @@ When migrating to the modern SwiftUI-based ComposableCheckout:
 3. **Performance Monitoring**: Memory and CPU usage tracking
 4. **Accessibility Auditing**: VoiceOver and accessibility testing
 
-This legacy UI system provides a robust, tested foundation for payment experiences while the SDK transitions to modern SwiftUI patterns in ComposableCheckout.
+This legacy UI system provides a robust, tested foundation for payment experiences while the SDK transitions to modern SwiftUI patterns in CheckoutComponents.

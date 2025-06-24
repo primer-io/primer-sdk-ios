@@ -3,7 +3,7 @@
 //  PrimerSDK - CheckoutComponents
 //
 //  Animation configuration for CheckoutComponents navigation
-//  Adapted from ComposableCheckout with CheckoutComponents routes
+//  Animation configuration system for CheckoutComponents navigation
 //
 
 import SwiftUI

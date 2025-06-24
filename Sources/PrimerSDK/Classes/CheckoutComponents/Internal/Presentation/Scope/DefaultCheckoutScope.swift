@@ -144,6 +144,10 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         updateNavigationState(.loading)
 
         do {
+            // Add a small delay to ensure SDK configuration is fully loaded
+            logger.debug(message: "⏳ [CheckoutComponents] Waiting for SDK configuration to be ready...")
+            try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+            
             logger.debug(message: "🔍 [CheckoutComponents] Checking payment methods interactor...")
             guard let interactor = getPaymentMethodsInteractor else {
                 logger.error(message: "❌ [CheckoutComponents] GetPaymentMethodsInteractor is nil - DI resolution failed")

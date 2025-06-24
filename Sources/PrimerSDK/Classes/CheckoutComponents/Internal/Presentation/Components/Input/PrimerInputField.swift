@@ -2,7 +2,7 @@
 //  PrimerInputField.swift
 //  CheckoutComponents
 //
-//  Adapted from ComposableCheckout's PrimerInputField
+//  Modern CheckoutComponents input field with validation
 //
 
 import SwiftUI

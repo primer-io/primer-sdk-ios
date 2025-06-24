@@ -4,7 +4,7 @@ This directory contains the core data models and domain objects that represent t
 
 ## Overview
 
-The Data Models directory provides the foundational data structures used across all SDK integrations (Drop-in, Headless, and ComposableCheckout). These models ensure type safety, data integrity, and consistent API contracts.
+The Data Models directory provides the foundational data structures used across all SDK integrations (Drop-in, Headless, and CheckoutComponents). These models ensure type safety, data integrity, and consistent API contracts.
 
 ## Architecture
 

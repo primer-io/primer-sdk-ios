@@ -58,7 +58,7 @@ internal struct PaymentMethodSelectionScreen: View {
             customEmptyState()
         } else {
             VStack(spacing: 16) {
-                Image(systemName: "creditcard.slash")
+                Image(systemName: "creditcard.and.123")
                     .font(.system(size: 48))
                     .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
 

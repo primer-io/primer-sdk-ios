@@ -1,11 +1,11 @@
 # CLAUDE.md - Payment Methods
 
-This directory would contain various payment method implementations. Currently focused on ComposableCheckout payment methods with modern SwiftUI architecture.
+This directory would contain various payment method implementations. Currently focused on CheckoutComponents payment methods with modern SwiftUI architecture.
 
 ## Current Structure
 
 ### Card Payments (`Card/`)
-Modern card payment implementation using the ComposableCheckout architecture:
+Modern card payment implementation using the CheckoutComponents architecture:
 
 **Core Components**:
 - `CardPaymentMethod.swift`: Implements `PaymentMethodProtocol`
@@ -26,11 +26,11 @@ Modern card payment implementation using the ComposableCheckout architecture:
 
 ### Apple Pay (`ApplePay/`)
 **Status**: Placeholder for Apple Pay implementation
-**TODO**: Implement using ComposableCheckout patterns
+**TODO**: Implement using CheckoutComponents patterns
 
 ### PayPal (`PayPal/`)
 **Status**: Placeholder for PayPal implementation
-**TODO**: Implement using ComposableCheckout patterns
+**TODO**: Implement using CheckoutComponents patterns
 
 ## Architecture Patterns
 
@@ -251,7 +251,7 @@ _ = try await container.register(PaymentService.self)
    - Reusable input fields
    - Consistent user experience
 
-5. **Register in CompositionRoot**:
+5. **Register in ComposableContainer**:
    ```swift
    _ = try? await container.register((any PaymentMethodProtocol).self)
        .named("new_method")

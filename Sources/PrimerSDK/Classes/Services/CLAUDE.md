@@ -67,7 +67,7 @@ DependencyContainer.register(PrimerAPIClientProtocol.self) { resolver in
     PrimerAPIClient(networkService: resolver.resolve(NetworkService.self))
 }
 
-// Modern DI registration (ComposableCheckout)
+// Modern DI registration (CheckoutComponents)
 _ = try await container.register(PrimerAPIClientProtocol.self)
     .asSingleton()
     .with { resolver in
@@ -203,7 +203,7 @@ class PaymentService {
 }
 ```
 
-#### In ComposableCheckout (Modern)
+#### In CheckoutComponents (Modern)
 ```swift
 @MainActor
 class PaymentService {

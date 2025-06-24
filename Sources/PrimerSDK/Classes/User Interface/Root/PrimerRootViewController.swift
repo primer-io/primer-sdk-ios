@@ -228,9 +228,6 @@ class PrimerRootViewController: PrimerViewController {
     }
 
     internal func show(viewController: UIViewController, animated: Bool = false) {
-        print("🎬 [PrimerRootViewController] show() called with viewController: \(type(of: viewController))")
-        print("🎬 [PrimerRootViewController] Current navigation stack count: \(self.navController.viewControllers.count)")
-
         viewController.view.translatesAutoresizingMaskIntoConstraints = false
         viewController.view.widthAnchor.constraint(equalToConstant: self.childView.frame.width).isActive = true
         viewController.view.layoutIfNeeded()
@@ -242,7 +239,6 @@ class PrimerRootViewController: PrimerViewController {
 
         // We can now set the childView's height and bottom constraint
         let isPresented: Bool = self.navController.viewControllers.isEmpty
-        print("🎬 [PrimerRootViewController] isPresented (empty stack): \(isPresented)")
 
         let cvc = PrimerContainerViewController(childViewController: viewController)
         cvc.view.backgroundColor = self.theme.view.backgroundColor
@@ -263,7 +259,6 @@ class PrimerRootViewController: PrimerViewController {
         }
 
         if isPresented {
-            print("🎬 [PrimerRootViewController] Taking setViewControllers path (first presentation)")
             self.navController.setViewControllers([cvc], animated: animated)
 
             let container = PrimerViewController()
@@ -282,7 +277,6 @@ class PrimerRootViewController: PrimerViewController {
             container.view.bottomAnchor.constraint(equalTo: self.childView.bottomAnchor, constant: 0).isActive = true
             container.didMove(toParent: self)
         } else {
-            print("🎬 [PrimerRootViewController] Taking pushViewController path (stack not empty)")
             self.navController.pushViewController(viewController: cvc, animated: animated) {
                 var viewControllers = self.navController.viewControllers
                 for (index, viewController) in viewControllers.enumerated().reversed() {

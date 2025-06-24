@@ -49,6 +49,9 @@ public protocol CheckoutComponentsDelegate: AnyObject {
 
     /// Delegate for handling checkout results
     public weak var delegate: CheckoutComponentsDelegate?
+    
+    /// API configuration module for SDK initialization
+    private let apiConfigurationModule: PrimerAPIConfigurationModuleProtocol = PrimerAPIConfigurationModule()
 
     // MARK: - Private Init
 
@@ -144,8 +147,8 @@ public protocol CheckoutComponentsDelegate: AnyObject {
 
     /// Internal method for dismissing checkout (used by CheckoutCoordinator)
     internal func dismissCheckout() {
-        // For traditional UI integration, use the traditional dismiss mechanism
-        dismissThroughTraditionalUI()
+        // Dismiss CheckoutComponents directly
+        dismissDirectly()
     }
 
     /// Internal method for handling payment success
@@ -190,11 +193,33 @@ public protocol CheckoutComponentsDelegate: AnyObject {
 
         Task { @MainActor in
             do {
-                // Ensure traditional Primer UI system is initialized
-                logger.info(message: "🌉 [CheckoutComponentsPrimer] Initializing traditional UI system...")
+                // Initialize SDK configuration directly using proper SDK modules
+                logger.info(message: "🔧 [CheckoutComponentsPrimer] Initializing SDK configuration...")
+                
+                // Set up SDK integration type and intent
+                PrimerInternal.shared.sdkIntegrationType = .checkoutComponents
+                PrimerInternal.shared.intent = .checkout
+                PrimerInternal.shared.checkoutSessionId = UUID().uuidString
+                
+                // Use settings as configured by the calling application (Debug App)
+                // This preserves all 3DS, debug, and payment method configurations
+                let settings = PrimerSettings.current
+                
+                // Log the current 3DS configuration for debugging
+                logger.info(message: "🔧 [CheckoutComponentsPrimer] Using 3DS sanity check: \(settings.debugOptions.is3DSSanityCheckEnabled)")
+                
+                // Register settings in dependency container
+                DependencyContainer.register(settings as PrimerSettingsProtocol)
+                
+                // Initialize SDK session using configuration module
                 try await withCheckedThrowingContinuation { continuation in
                     firstly {
-                        PrimerUIManager.prepareRootViewController()
+                        apiConfigurationModule.setupSession(
+                            forClientToken: clientToken,
+                            requestDisplayMetadata: true,
+                            requestClientTokenValidation: false,
+                            requestVaultedPaymentMethods: false
+                        )
                     }
                     .done {
                         continuation.resume()
@@ -203,8 +228,8 @@ public protocol CheckoutComponentsDelegate: AnyObject {
                         continuation.resume(throwing: error)
                     }
                 }
-
-                logger.info(message: "✅ [CheckoutComponentsPrimer] Traditional UI system ready")
+                
+                logger.info(message: "✅ [CheckoutComponentsPrimer] SDK configuration ready")
 
                 // Initialize the DI container and navigator
                 let container = await setupDependencies()
@@ -213,9 +238,6 @@ public protocol CheckoutComponentsDelegate: AnyObject {
                 // Store references
                 diContainer = container
                 navigator = nav
-
-                // Get settings from main Primer or use default
-                let settings = PrimerSettings.current
 
                 // Create the bridge controller that embeds SwiftUI in traditional system
                 let bridgeController = PrimerSwiftUIBridgeViewController.createForCheckoutComponents(
@@ -254,13 +276,13 @@ public protocol CheckoutComponentsDelegate: AnyObject {
                     sheet.largestUndimmedDetentIdentifier = .medium
                 }
 
-                // Present modally from the root view controller
-                PrimerUIManager.primerRootViewController?.present(bridgeController, animated: true)
+                // Present modally from the provided view controller
+                viewController.present(bridgeController, animated: true)
 
                 // Reset presenting flag after successful integration
                 isPresentingCheckout = false
 
-                logger.info(message: "✅ [CheckoutComponentsPrimer] Checkout integrated with traditional UI system")
+                logger.info(message: "✅ [CheckoutComponentsPrimer] CheckoutComponents presented successfully")
                 completion?()
 
             } catch {
@@ -293,11 +315,33 @@ public protocol CheckoutComponentsDelegate: AnyObject {
 
         Task { @MainActor in
             do {
-                // Ensure traditional Primer UI system is initialized
-                logger.info(message: "🌉 [CheckoutComponentsPrimer] Initializing traditional UI system for custom content...")
+                // Initialize SDK configuration directly using proper SDK modules
+                logger.info(message: "🔧 [CheckoutComponentsPrimer] Initializing SDK configuration for custom content...")
+                
+                // Set up SDK integration type and intent
+                PrimerInternal.shared.sdkIntegrationType = .checkoutComponents
+                PrimerInternal.shared.intent = .checkout
+                PrimerInternal.shared.checkoutSessionId = UUID().uuidString
+                
+                // Use settings as configured by the calling application (Debug App)
+                // This preserves all 3DS, debug, and payment method configurations
+                let settings = PrimerSettings.current
+                
+                // Log the current 3DS configuration for debugging
+                logger.info(message: "🔧 [CheckoutComponentsPrimer] Using 3DS sanity check: \(settings.debugOptions.is3DSSanityCheckEnabled)")
+                
+                // Register settings in dependency container
+                DependencyContainer.register(settings as PrimerSettingsProtocol)
+                
+                // Initialize SDK session using configuration module
                 try await withCheckedThrowingContinuation { continuation in
                     firstly {
-                        PrimerUIManager.prepareRootViewController()
+                        apiConfigurationModule.setupSession(
+                            forClientToken: clientToken,
+                            requestDisplayMetadata: true,
+                            requestClientTokenValidation: false,
+                            requestVaultedPaymentMethods: false
+                        )
                     }
                     .done {
                         continuation.resume()
@@ -314,9 +358,6 @@ public protocol CheckoutComponentsDelegate: AnyObject {
                 // Store references
                 diContainer = container
                 navigator = nav
-
-                // Get settings from main Primer or use default
-                let settings = PrimerSettings.current
 
                 // Create custom content wrapper
                 let customContentWrapper: (PrimerCheckoutScope) -> AnyView = { scope in
@@ -335,11 +376,11 @@ public protocol CheckoutComponentsDelegate: AnyObject {
                 // Store reference
                 activeCheckoutController = bridgeController
 
-                // Present through traditional Primer UI system
-                logger.info(message: "🌉 [CheckoutComponentsPrimer] Presenting custom content through PrimerRootViewController.show()")
-                PrimerUIManager.primerRootViewController?.show(viewController: bridgeController, animated: true)
+                // Present modally from the provided view controller
+                logger.info(message: "📱 [CheckoutComponentsPrimer] Presenting custom content modally")
+                viewController.present(bridgeController, animated: true)
 
-                logger.info(message: "✅ [CheckoutComponentsPrimer] Custom checkout integrated with traditional UI system")
+                logger.info(message: "✅ [CheckoutComponentsPrimer] Custom CheckoutComponents presented successfully")
                 completion?()
 
             } catch {
@@ -359,15 +400,21 @@ public protocol CheckoutComponentsDelegate: AnyObject {
         }
     }
 
-    // MARK: - Traditional UI Integration
+    // MARK: - Direct Dismissal
 
-    /// Internal method for dismissing checkout through traditional UI system
-    internal func dismissThroughTraditionalUI() {
-        logger.info(message: "🌉 [CheckoutComponentsPrimer] Dismissing through traditional UI system")
+    /// Internal method for dismissing checkout directly
+    internal func dismissDirectly() {
+        logger.info(message: "🚪 [CheckoutComponentsPrimer] Dismissing CheckoutComponents directly")
 
-        // The traditional UI system (PrimerUIManager) will handle dismissal
-        // This includes showing result screens if needed
-        PrimerInternal.shared.dismiss()
+        // Dismiss the modal directly
+        if let controller = activeCheckoutController {
+            controller.dismiss(animated: true) { [weak self] in
+                self?.activeCheckoutController = nil
+                self?.diContainer = nil
+                self?.navigator = nil
+                self?.logger.info(message: "✅ [CheckoutComponentsPrimer] CheckoutComponents dismissed")
+            }
+        }
     }
 
     private func dismiss(animated: Bool, completion: (() -> Void)?) {
@@ -382,16 +429,15 @@ public protocol CheckoutComponentsDelegate: AnyObject {
         // Reset the presenting flag immediately
         isPresentingCheckout = false
 
-        // For traditional UI integration, dismiss through the traditional system
-        // This ensures proper cleanup and result screen handling
-        dismissThroughTraditionalUI()
+        // Dismiss CheckoutComponents directly
+        dismissDirectly()
 
         // Clean up references
         activeCheckoutController = nil
         diContainer = nil
         navigator = nil
 
-        logger.info(message: "✅ [CheckoutComponentsPrimer] Checkout dismissed through traditional UI")
+        logger.info(message: "✅ [CheckoutComponentsPrimer] CheckoutComponents dismissed")
 
         // Notify delegate about dismissal
         handleCheckoutDismiss()

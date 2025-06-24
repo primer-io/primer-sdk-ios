@@ -3,7 +3,7 @@
 //  PrimerSDK - CheckoutComponents
 //
 //  Navigation routes for CheckoutComponents
-//  Adapted from ComposableCheckout for CheckoutComponents architecture
+//  Modern navigation route system for CheckoutComponents architecture
 //
 
 import Foundation

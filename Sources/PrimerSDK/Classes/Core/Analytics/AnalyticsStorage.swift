@@ -49,7 +49,7 @@ extension Analytics {
                 return sortedEvents
 
             } catch {
-                logger.error(message: "📚 Analytics: Failed to load analytics file. Deleting file")
+//                logger.error(message: "📚 Analytics: Failed to load analytics file. Deleting file")
                 deleteAnalyticsFile()
                 return []
             }
@@ -61,29 +61,29 @@ extension Analytics {
                 try FileManager.default.createDirectory(at: fileURL.deletingLastPathComponent(), withIntermediateDirectories: true)
                 try eventsData.write(to: fileURL)
             } catch {
-                logger.error(message: "📚 Analytics: Failed to save file \(error.localizedDescription)")
+//                logger.error(message: "📚 Analytics: Failed to save file \(error.localizedDescription)")
                 throw error
             }
         }
 
         func delete(_ events: [Analytics.Event]) {
             guard events.count > 0 else {
-                logger.warn(message: "📚 Analytics: tried to delete events but array was empty ...")
+//                logger.warn(message: "📚 Analytics: tried to delete events but array was empty ...")
                 return
             }
 
-            logger.debug(message: "📚 Analytics: Deleting \(events.count) events")
+//            logger.debug(message: "📚 Analytics: Deleting \(events.count) events")
 
             do {
                 let storedEvents = loadEvents()
                 let eventsLocalIds = events.compactMap({ $0.localId })
                 let remainingEvents = storedEvents.filter({ !eventsLocalIds.contains($0.localId )})
 
-                logger.debug(message: "📚 Analytics: Deleted \(eventsLocalIds.count) events, saving remaining \(remainingEvents.count)")
+//                logger.debug(message: "📚 Analytics: Deleted \(eventsLocalIds.count) events, saving remaining \(remainingEvents.count)")
 
                 try save(remainingEvents)
             } catch {
-                logger.error(message: "📚 Analytics: Failed to save partial events before deleting file. Deleting file anyway.")
+//                logger.error(message: "📚 Analytics: Failed to save partial events before deleting file. Deleting file anyway.")
                 deleteAnalyticsFile()
             }
         }
@@ -94,7 +94,7 @@ extension Analytics {
         }
 
         func deleteAnalyticsFile() {
-            logger.debug(message: "📚 Analytics: Deleting analytics file at \(fileURL.absoluteString)")
+//            logger.debug(message: "📚 Analytics: Deleting analytics file at \(fileURL.absoluteString)")
 
             if FileManager.default.fileExists(atPath: fileURL.path) {
                 do {

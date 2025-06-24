@@ -353,15 +353,15 @@ CheckoutComponentsPrimer.presentCheckout(with: token) { scope in
 }
 ```
 
-### From ComposableCheckout
+### From Legacy CheckoutComponents Prototypes
 
 ```swift
-// Before (ComposableCheckout)
-ComposablePrimer.presentCheckout(with: token)
+// Before (Early CheckoutComponents prototypes)
+// Legacy prototype APIs
 
-// After (CheckoutComponents)
+// After (Production CheckoutComponents)
 CheckoutComponentsPrimer.presentCheckout(with: token)
-// Similar API, but with exact Android parity
+// Production-ready with exact Android parity
 ```
 
 ## Best Practices

@@ -1030,6 +1030,12 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
         let settings = populateSettingsFromUI(dropIn: false)
         
+        // Set up CheckoutComponents delegate before presenting
+        if #available(iOS 15.0, *) {
+            let delegate = DebugAppCheckoutComponentsDelegate()
+            CheckoutComponentsPrimer.shared.delegate = delegate
+        }
+        
         switch renderMode {
         case .createClientSession, .testScenario:
             configureClientSession()
@@ -1100,6 +1106,12 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         // Set up API key and settings following the same pattern as existing buttons
         customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
         let settings = populateSettingsFromUI(dropIn: false)
+        
+        // Set up CheckoutComponents delegate before presenting
+        if #available(iOS 15.0, *) {
+            let delegate = DebugAppCheckoutComponentsDelegate()
+            CheckoutComponentsPrimer.shared.delegate = delegate
+        }
         
         switch renderMode {
         case .createClientSession, .testScenario:
@@ -1361,6 +1373,91 @@ struct InlineSwiftUICheckoutTestView: View {
         CheckoutComponentsPrimer.presentCheckout(with: clientToken, from: topViewController) {
             print("CheckoutComponents presentation completed from SwiftUI")
         }
+    }
+}
+
+/// Debug App delegate for CheckoutComponents that logs results and shows alerts
+@available(iOS 15.0, *)
+private class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
+    
+    func checkoutComponentsDidCompleteWithSuccess() {
+        print("✅ [Debug App] CheckoutComponents payment completed successfully!")
+        
+        DispatchQueue.main.async {
+            // Find the topmost view controller to present the alert
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first,
+               let topController = Self.findTopViewController(from: window.rootViewController) {
+                
+                let alert = UIAlertController(
+                    title: "Payment Successful",
+                    message: "CheckoutComponents payment completed successfully!",
+                    preferredStyle: .alert
+                )
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                topController.present(alert, animated: true)
+            }
+        }
+    }
+    
+    func checkoutComponentsDidFailWithError(_ error: PrimerError) {
+        print("❌ [Debug App] CheckoutComponents payment failed: \(error.localizedDescription)")
+        
+        DispatchQueue.main.async {
+            // Find the topmost view controller to present the alert
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first,
+               let topController = Self.findTopViewController(from: window.rootViewController) {
+                
+                let alert = UIAlertController(
+                    title: "Payment Failed",
+                    message: "CheckoutComponents payment failed: \(error.localizedDescription)",
+                    preferredStyle: .alert
+                )
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                topController.present(alert, animated: true)
+            }
+        }
+    }
+    
+    func checkoutComponentsDidDismiss() {
+        print("🚪 [Debug App] CheckoutComponents was dismissed by user")
+        
+        DispatchQueue.main.async {
+            // Find the topmost view controller to present the alert
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first,
+               let topController = Self.findTopViewController(from: window.rootViewController) {
+                
+                let alert = UIAlertController(
+                    title: "Checkout Dismissed",
+                    message: "CheckoutComponents was dismissed by user",
+                    preferredStyle: .alert
+                )
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                topController.present(alert, animated: true)
+            }
+        }
+    }
+    
+    private static func findTopViewController(from viewController: UIViewController?) -> UIViewController? {
+        guard let viewController = viewController else { return nil }
+        
+        if let presented = viewController.presentedViewController {
+            return findTopViewController(from: presented)
+        }
+        
+        if let navigation = viewController as? UINavigationController,
+           let top = navigation.topViewController {
+            return findTopViewController(from: top)
+        }
+        
+        if let tab = viewController as? UITabBarController,
+           let selected = tab.selectedViewController {
+            return findTopViewController(from: selected)
+        }
+        
+        return viewController
     }
 }
 

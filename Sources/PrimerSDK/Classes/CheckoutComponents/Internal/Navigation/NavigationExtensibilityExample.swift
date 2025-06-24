@@ -4,7 +4,7 @@
 //
 //  Examples of how to extend the navigation system in CheckoutComponents
 //  Demonstrates Open/Closed Principle and protocol-based extensibility
-//  Adapted from ComposableCheckout for CheckoutComponents architecture
+//  Example extensibility patterns for CheckoutComponents navigation
 //
 
 import Foundation

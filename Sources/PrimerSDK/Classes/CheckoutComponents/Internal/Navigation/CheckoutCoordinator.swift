@@ -3,7 +3,7 @@
 //  PrimerSDK - CheckoutComponents
 //
 //  Navigation coordinator for CheckoutComponents using state-driven navigation
-//  Adapted from ComposableCheckout, updated to remove Combine and follow AsyncStream patterns
+//  Modern CheckoutComponents navigation, updated to remove Combine and follow AsyncStream patterns
 //
 
 import SwiftUI

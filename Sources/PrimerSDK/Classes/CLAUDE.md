@@ -24,15 +24,15 @@ The main iOS SDK implementation with three integration approaches:
 - **PayPalService**: PayPal-specific integrations
 - **VaultService**: Stored payment methods
 
-### ComposableCheckout/ - Modern SwiftUI Implementation
-**MODERN**: SwiftUI-based scope architecture (iOS 15+)
-- **Main Entry Point**: `ComposableCheckout/ComposablePrimer.swift` - UIKit-friendly API
-- **SwiftUI Entry**: `ComposableCheckout/Core/PrimerCheckout/PrimerCheckout.swift`
-- **Pattern**: Scope-based component architecture with async/await DI
-- **Key Features**: PaymentMethodProtocol with associated types, AsyncStream reactive patterns
-- **Public API**: Similar to Android Compose scopes with SwiftUI integration
-- **Bridge Services**: LegacyConfigurationBridge and LegacyTokenizationBridge for SDK integration
-- **Architecture**: See `ComposableCheckout/CLAUDE.md` for complete details
+### CheckoutComponents/ - Scope-Based SwiftUI Framework
+**NEWEST**: Type-safe scope-based API matching Android exactly (iOS 15+)
+- **Main Entry Point**: `CheckoutComponents/CheckoutComponentsPrimer.swift` - UIKit-friendly API
+- **SwiftUI Entry**: `CheckoutComponents/PrimerCheckout.swift`
+- **Pattern**: Exact Android API parity with scope-based customization
+- **Key Features**: AsyncStream state management, full UI customization, co-badged cards
+- **Scopes**: PrimerCheckoutScope, PrimerCardFormScope, PrimerPaymentMethodSelectionScope
+- **Bridge Services**: CheckoutComponentsPaymentMethodsBridge and HeadlessRepositoryImpl for SDK integration
+- **Architecture**: Production-ready with comprehensive documentation
 
 ### CheckoutComponents/ - Scope-Based SwiftUI Framework
 **NEWEST**: Type-safe scope-based API matching Android exactly (iOS 15+)
@@ -71,7 +71,7 @@ Payment Card Industry compliant secure data processing:
 ### 1. Dependency Injection
 Two DI systems coexist:
 - **Legacy**: `DependencyInjection.swift` - Property wrapper based
-- **Modern**: `ComposableCheckout/Core/DI/` - Actor-based async DI
+- **Modern**: `CheckoutComponents/Internal/DI/` - Actor-based async DI
 
 ### 2. Payment Method Integration
 
@@ -80,7 +80,7 @@ Two DI systems coexist:
 Entry Point → Manager → Component → Tokenization → Result
 ```
 
-**Modern Pattern** (ComposableCheckout):
+**Modern Pattern** (CheckoutComponents):
 ```
 PaymentMethodProtocol → Scope (Protocol) → ViewModel (Implementation) → View → DI Resolution
 ```
@@ -114,7 +114,7 @@ Comprehensive event tracking:
 - Follow UIKit patterns for UI components
 - Implement delegate protocols for callbacks
 
-### For Modern Integrations (ComposableCheckout)
+### For Modern Integrations (CheckoutComponents)
 - Use SwiftUI with scope-based architecture
 - Follow PaymentMethodProtocol pattern with associated types
 - Leverage async/await DI container for dependency resolution
@@ -139,7 +139,7 @@ Comprehensive event tracking:
 5. Add analytics events
 6. Create comprehensive tests
 
-**For ComposableCheckout:**
+**For CheckoutComponents:**
 1. Create payment method following Card pattern in `PaymentMethods/NewMethod/`
 2. Implement `PaymentMethodProtocol` with associated `ScopeType`
 3. Create scope protocol (e.g., `NewMethodScope`)

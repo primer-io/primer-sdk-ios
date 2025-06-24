@@ -23,9 +23,6 @@
                location = "group:CheckoutComponents"
                name = "CheckoutComponents">
                <FileRef
-                  location = "group:IMPLEMENTATION_PLAN.md">
-               </FileRef>
-               <FileRef
                   location = "group:CheckoutComponentsPrimer.swift">
                </FileRef>
                <Group
@@ -346,28 +343,6 @@
                <FileRef
                   location = "group:PrimerCheckout.swift">
                </FileRef>
-               <Group
-                  location = "group:DesignScreenshots"
-                  name = "DesignScreenshots">
-                  <FileRef
-                     location = "group:03_card_form_filled.png">
-                  </FileRef>
-                  <FileRef
-                     location = "group:05_card_form_all_errors.png">
-                  </FileRef>
-                  <FileRef
-                     location = "group:04_card_form_cvv_error.png">
-                  </FileRef>
-                  <FileRef
-                     location = "group:02_card_form_empty.png">
-                  </FileRef>
-                  <FileRef
-                     location = "group:06_payment_success.png">
-                  </FileRef>
-                  <FileRef
-                     location = "group:01_payment_method_selection.png">
-                  </FileRef>
-               </Group>
             </Group>
             <Group
                location = "group:PCI"

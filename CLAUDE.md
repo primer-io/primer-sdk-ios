@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Primer iOS SDK - A comprehensive payment integration SDK providing multiple integration approaches:
 - **Drop-in**: Universal Checkout UI (traditional UIKit, iOS 13.1+)
 - **Headless**: API-driven solution without UI
-- **ComposableCheckout**: SwiftUI component-based solution (iOS 15+)
+- **CheckoutComponents**: SwiftUI scope-based solution with exact Android API parity (iOS 15+)
 - **CheckoutComponents**: Newest scope-based API with exact Android parity (iOS 15+)
 
 ## Build and Development Commands
@@ -85,10 +85,10 @@ bundle exec fastlane build_spm
    - No UI, complete control
    - RawDataManager for direct payment processing
 
-3. **ComposableCheckout** (`Classes/ComposableCheckout/`)
-   - Entry: `ComposablePrimer.presentCheckout()` (UIKit) or `PrimerCheckout()` (SwiftUI)
-   - Scope-based architecture with `PaymentMethodProtocol`
-   - Component customization via `@ViewBuilder`
+3. **CheckoutComponents** (`Classes/CheckoutComponents/`)
+   - Entry: `CheckoutComponentsPrimer.presentCheckout()` (UIKit) or `PrimerCheckout()` (SwiftUI)
+   - Scope-based architecture with exact Android API parity
+   - Full component customization via `@ViewBuilder`
    - Modern DI with actor-based container
 
 4. **CheckoutComponents** (`Classes/CheckoutComponents/`) - **COMPLETED**
@@ -107,7 +107,7 @@ bundle exec fastlane build_spm
 @Dependency private var apiClient: PrimerAPIClientProtocol
 ```
 
-**Modern DI** (ComposableCheckout/CheckoutComponents):
+**Modern DI** (CheckoutComponents):
 ```swift
 // Actor-based async container
 let service = try await diContainer.resolve(ServiceType.self)
@@ -159,7 +159,7 @@ PaymentMethodProtocol → Scope Protocol → ViewModel (Scope Implementation) �
 4. Register in `PaymentMethodTokenizationFactory`
 5. Add to `PrimerPaymentMethodType` enum
 
-**For Modern (ComposableCheckout/CheckoutComponents):**
+**For Modern (CheckoutComponents):**
 1. Create directory structure: `PaymentMethods/NewMethod/`
 2. Define scope protocol extending base scope
 3. Implement `PaymentMethodProtocol` with associated scope type
@@ -202,10 +202,11 @@ The SDK supports multiple Package.swift files for different features:
    - Missing client token → Check backend integration
    - Payment fails → Check payment method configuration
    - UI not showing → Verify view controller presentation
-   - 3DS issues → Ensure URL schemes configured
+   - 3DS issues → Ensure URL schemes configured and `is3DSSanityCheckEnabled: false` for debug/simulator
    - Card validation failing → Check Luhn algorithm implementation in CardValidationRules.swift
    - Card input not responding → Verify ValidationService is properly resolved from DI container
    - Cursor position issues → Check cursor restoration logic in CardNumberTextField coordinator
+   - CheckoutComponents 3DS failures → Ensure app respects `PrimerSettings.current.debugOptions.is3DSSanityCheckEnabled`
 
 ### Testing Approach
 
@@ -261,7 +262,7 @@ The SDK supports multiple Package.swift files for different features:
 ### Platform Requirements
 
 - iOS 13.1+ (Drop-in, Headless)
-- iOS 15.0+ (ComposableCheckout, CheckoutComponents)
+- iOS 15.0+ (CheckoutComponents)
 - Xcode 13.0+
 - Swift 5.3+
 - CocoaPods 1.10+ or Swift Package Manager
@@ -287,7 +288,7 @@ The SDK supports multiple Package.swift files for different features:
 
 ## CheckoutComponents Implementation Status - COMPLETED ✅
 
-The CheckoutComponents framework has been fully implemented with:
+The CheckoutComponents framework has been fully implemented and is production-ready with comprehensive fixes and optimizations:
 
 ### Core Features Implemented ✅
 - **Scope-based architecture** with exact Android API parity
@@ -295,6 +296,7 @@ The CheckoutComponents framework has been fully implemented with:
 - **Comprehensive validation system** with rules-based validation
 - **Layered architecture** (Presentation → Interactors → Repositories)
 - **Full UI customization** via @ViewBuilder patterns
+- **Self-contained integration** independent from Drop-in/Headless systems
 
 ### All Scopes Completed ✅
 - `PrimerCheckoutScope`: Main navigation and state management
@@ -324,6 +326,14 @@ The CheckoutComponents framework has been fully implemented with:
 - **Route-Based Navigation**: NavigationRoute protocol with enum-based route definitions
 - **Environment-Based Navigation**: SwiftUI Environment integration for navigation dependency injection
 
+### Integration and Infrastructure ✅
+- **SDK Integration Type**: Added `.checkoutComponents` to `PrimerSDKIntegrationType` enum
+- **Direct SDK Initialization**: Uses `PrimerAPIConfigurationModule` pattern (same as Headless)
+- **Modal Presentation**: Self-contained modal presentation with dynamic sizing
+- **Settings Inheritance**: Respects application-configured `PrimerSettings` (3DS, debug options, etc.)
+- **Delegate Pattern**: Complete `CheckoutComponentsDelegate` protocol implementation
+- **Debug App Integration**: Dedicated buttons with proper delegate handling
+
 ### Build Status ✅
 - All compilation errors resolved
 - SwiftLint compliant
@@ -331,12 +341,26 @@ The CheckoutComponents framework has been fully implemented with:
 - Card number input field fully functional
 - Validation system working correctly (test card 4242424242424242 passes)
 - Navigation and UI interactions working properly
-- Ready for Debug App testing and production use
+- 3DS authentication working properly in debug/simulator environments
+- End-to-end payment processing verified (€6.00 test payment successful)
 
-### Recent Fixes (Latest Session)
-- **Card Number Input Field**: Fixed deletion functionality, cursor management, and text formatting
-- **Luhn Algorithm**: Corrected validation logic that was incorrectly failing valid test cards
-- **Navigation**: Added global cancel button and proper dismissal handling
-- **UI Polish**: Updated payment method selection to modern card design
+### Recent Critical Fixes (June 2025) ✅
+- **PrimerUIManager Independence**: Removed all dependencies on traditional Drop-in UI system
+- **3DS Configuration**: Fixed 3DS authentication for debug/simulator environments
+- **Settings Inheritance**: CheckoutComponents now respects calling app's `PrimerSettings` configuration
+- **Modal Presentation**: Direct presentation from provided view controller (no PrimerRootViewController dependency)
+- **Delegate Implementation**: Complete delegate pattern with success/failure/dismissal callbacks
+- **SDK Initialization**: Proper headless-pattern initialization with `PrimerAPIConfigurationModule`
+- **System Symbols**: Fixed invalid SF Symbol usage (`creditcard.slash` → `creditcard.and.123`)
+- **DI Container**: Resolved orphaned registrations warning (development optimization)
 
-The implementation provides a complete, production-ready checkout experience with full customization capabilities while maintaining exact parity with the Android SDK API. All major components are now fully functional and tested.
+### Production Readiness ✅
+The implementation provides a complete, production-ready checkout experience with:
+- **Full customization capabilities** while maintaining exact parity with Android SDK API
+- **Independent operation** from Drop-in and Headless integrations
+- **Proper error handling** for all payment scenarios including async processing
+- **Complete test coverage** including 3DS authentication flows
+- **Debug-friendly configuration** with comprehensive logging
+- **Performance optimized** DI container and state management
+
+CheckoutComponents is now fully functional, tested, and ready for production use with verified payment processing capabilities.

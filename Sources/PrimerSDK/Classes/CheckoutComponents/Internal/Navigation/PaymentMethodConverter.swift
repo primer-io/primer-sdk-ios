@@ -3,7 +3,7 @@
 //  PrimerSDK - CheckoutComponents
 //
 //  Converter for payment method types in CheckoutComponents navigation
-//  Adapted from ComposableCheckout for CheckoutComponents architecture
+//  Payment method conversion utilities for CheckoutComponents
 //
 
 import Foundation
