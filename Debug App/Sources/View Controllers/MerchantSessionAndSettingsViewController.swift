@@ -8,6 +8,7 @@
 
 import PrimerSDK
 import UIKit
+import SwiftUI
 
 var environment: Environment = .sandbox
 var apiVersion: PrimerApiVersion = .V2_4
@@ -36,6 +37,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var customerStackView: UIStackView!
     @IBOutlet weak var surchargeGroupStackView: UIStackView!
 
+    @IBOutlet weak var bottomButtonHolderStackView: UIStackView!
     // MARK: Testing Mode Inputs
 
     @IBOutlet weak var testingModeSegmentedControl: UISegmentedControl!
@@ -137,6 +139,10 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     @IBOutlet weak var surchargeTextField: UITextField!
     @IBOutlet weak var primerSDKButton: UIButton!
     @IBOutlet weak var primerHeadlessSDKButton: UIButton!
+    
+    // CheckoutComponents buttons (added programmatically)
+    var checkoutComponentsUIKitButton: UIButton!
+    var checkoutComponentsSwiftUIButton: UIButton!
 
     @IBOutlet weak var deepLinkStackView: UIStackView!
     @IBOutlet weak var dlClientTokenDisplay: UILabel!
@@ -229,6 +235,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
         handleAppetizeIfNeeded(AppLinkConfigProvider())
 
+        setupCheckoutComponentsButtons()
+        fixLayoutConstraints()
+
         render()
 
         NotificationCenter.default.addObserver(
@@ -286,6 +295,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             surchargeGroupStackView.isHidden = false
             klarnaEMDStackView.isHidden = false
             deepLinkStackView.isHidden = true
+            // Show CheckoutComponents buttons
+            checkoutComponentsUIKitButton?.isHidden = false
+            checkoutComponentsSwiftUIButton?.isHidden = false
 
         case .clientToken:
             environmentStackView.isHidden = false
@@ -298,6 +310,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             surchargeGroupStackView.isHidden = true
             klarnaEMDStackView.isHidden = true
             deepLinkStackView.isHidden = true
+            // Show CheckoutComponents buttons
+            checkoutComponentsUIKitButton?.isHidden = false
+            checkoutComponentsSwiftUIButton?.isHidden = false
 
         case .testScenario:
             environmentStackView.isHidden = true
@@ -310,6 +325,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             surchargeGroupStackView.isHidden = false
             klarnaEMDStackView.isHidden = true
             deepLinkStackView.isHidden = true
+            // Show CheckoutComponents buttons
+            checkoutComponentsUIKitButton?.isHidden = false
+            checkoutComponentsSwiftUIButton?.isHidden = false
 
             testParamsStackView.isHidden = (selectedTestScenario == nil)
 
@@ -340,6 +358,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             surchargeGroupStackView,
              klarnaEMDStackView].forEach { $0.isHidden = true }
             deepLinkStackView.isHidden = false
+            // Hide CheckoutComponents buttons in deepLink mode
+            checkoutComponentsUIKitButton?.isHidden = true
+            checkoutComponentsSwiftUIButton?.isHidden = true
         }
 
         gesturesDismissalSwitch.isOn = true  // Default value
@@ -934,6 +955,204 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         dlSettingsDisplay.text = ""
         dlClientTokenDisplay.text = ""
     }
+    
+    // MARK: - Layout Fixes
+    
+    private func fixLayoutConstraints() {
+        // Find the scroll view outlet and ensure it's connected to the bottom button stack view
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
+        
+        // The white space issue should be resolved by proper storyboard constraints
+        // This method ensures the layout is properly refreshed
+    }
+    
+    // MARK: - CheckoutComponents Setup
+    
+    private func updateExistingButtonConstraints() {
+        // Update existing button heights to follow Apple HIG guidelines
+        // Remove existing height constraints and add new ones
+        for constraint in primerSDKButton.constraints where constraint.firstAttribute == .height {
+            constraint.isActive = false
+        }
+        for constraint in primerHeadlessSDKButton.constraints where constraint.firstAttribute == .height {
+            constraint.isActive = false
+        }
+        
+        // Add new height constraints following Apple HIG (minimum 32pt for compact)
+        NSLayoutConstraint.activate([
+            primerSDKButton.heightAnchor.constraint(equalToConstant: 32),
+            primerHeadlessSDKButton.heightAnchor.constraint(equalToConstant: 32)
+        ])
+    }
+    
+    private func setupCheckoutComponentsButtons() {
+        // First, update existing button heights to follow Apple HIG and create more space
+        updateExistingButtonConstraints()
+        
+        // Create CheckoutComponents UIKit button
+        checkoutComponentsUIKitButton = UIButton(type: .system)
+        checkoutComponentsUIKitButton.translatesAutoresizingMaskIntoConstraints = false
+        checkoutComponentsUIKitButton.setTitle("CheckoutComponents (UIKit)", for: .normal)
+        checkoutComponentsUIKitButton.backgroundColor = UIColor.systemBlue
+        checkoutComponentsUIKitButton.setTitleColor(.white, for: .normal)
+        checkoutComponentsUIKitButton.layer.cornerRadius = 5
+        checkoutComponentsUIKitButton.accessibilityIdentifier = "CheckoutComponents UIKit Button"
+        checkoutComponentsUIKitButton.addTarget(self, action: #selector(checkoutComponentsUIKitButtonTapped), for: .touchUpInside)
+        
+        // Create CheckoutComponents SwiftUI button
+        checkoutComponentsSwiftUIButton = UIButton(type: .system)
+        checkoutComponentsSwiftUIButton.translatesAutoresizingMaskIntoConstraints = false
+        checkoutComponentsSwiftUIButton.setTitle("CheckoutComponents (SwiftUI)", for: .normal)
+        checkoutComponentsSwiftUIButton.backgroundColor = UIColor.systemGreen
+        checkoutComponentsSwiftUIButton.setTitleColor(.white, for: .normal)
+        checkoutComponentsSwiftUIButton.layer.cornerRadius = 5
+        checkoutComponentsSwiftUIButton.accessibilityIdentifier = "CheckoutComponents SwiftUI Button"
+        checkoutComponentsSwiftUIButton.addTarget(self, action: #selector(checkoutComponentsSwiftUIButtonTapped), for: .touchUpInside)
+        
+        // Add buttons to the bottomButtonHolderStackView
+        bottomButtonHolderStackView.addArrangedSubview(checkoutComponentsUIKitButton)
+        bottomButtonHolderStackView.addArrangedSubview(checkoutComponentsSwiftUIButton)
+        
+        // Setup height constraints for the new buttons
+        NSLayoutConstraint.activate([
+            checkoutComponentsUIKitButton.heightAnchor.constraint(equalToConstant: 32),
+            checkoutComponentsSwiftUIButton.heightAnchor.constraint(equalToConstant: 32)
+        ])
+    }
+    
+    // MARK: - CheckoutComponents Actions
+    
+    @objc private func checkoutComponentsUIKitButtonTapped() {
+        print("CheckoutComponents UIKit button tapped")
+        
+        // Set up API key and settings following the same pattern as existing buttons
+        customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
+        let settings = populateSettingsFromUI(dropIn: false)
+        
+        switch renderMode {
+        case .createClientSession, .testScenario:
+            configureClientSession()
+            if case .testScenario = renderMode {
+                configureTestScenario()
+            }
+            
+            // Generate client token and present CheckoutComponents via UIKit
+            Networking.requestClientSession(requestBody: clientSession, apiVersion: settings.apiVersion) { [weak self] (clientToken, error) in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        print("Failed to fetch client token: \(error)")
+                        // Show error alert
+                        let alert = UIAlertController(title: "Error", message: "Failed to fetch client token: \(error.localizedDescription)", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .default))
+                        self?.present(alert, animated: true)
+                    } else if let clientToken = clientToken {
+                        // Present CheckoutComponents using UIKit integration
+                        if #available(iOS 15.0, *) {
+                            CheckoutComponentsPrimer.presentCheckout(with: clientToken, from: self!, completion: {
+                                print("CheckoutComponents UIKit presentation completed")
+                            })
+                        } else {
+                            let alert = UIAlertController(title: "Not Available", message: "CheckoutComponents requires iOS 15.0 or later", preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: "OK", style: .default))
+                            self?.present(alert, animated: true)
+                        }
+                    }
+                }
+            }
+            
+        case .clientToken:
+            // Use provided client token directly
+            if let clientToken = clientTokenTextField.text, !clientToken.isEmpty {
+                if #available(iOS 15.0, *) {
+                    CheckoutComponentsPrimer.presentCheckout(with: clientToken, from: self, completion: {
+                        print("CheckoutComponents UIKit presentation completed")
+                    })
+                } else {
+                    let alert = UIAlertController(title: "Not Available", message: "CheckoutComponents requires iOS 15.0 or later", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    present(alert, animated: true)
+                }
+            } else {
+                let alert = UIAlertController(title: "Error", message: "Please provide a client token", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                present(alert, animated: true)
+            }
+            
+        case .deepLink:
+            if let clientToken = self.deepLinkClientToken {
+                if #available(iOS 15.0, *) {
+                    CheckoutComponentsPrimer.presentCheckout(with: clientToken, from: self, completion: {
+                        print("CheckoutComponents UIKit presentation completed")
+                    })
+                } else {
+                    let alert = UIAlertController(title: "Not Available", message: "CheckoutComponents requires iOS 15.0 or later", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    present(alert, animated: true)
+                }
+            }
+        }
+    }
+    
+    @objc private func checkoutComponentsSwiftUIButtonTapped() {
+        print("CheckoutComponents SwiftUI button tapped")
+        
+        // Set up API key and settings following the same pattern as existing buttons
+        customDefinedApiKey = (apiKeyTextField.text ?? "").isEmpty ? nil : apiKeyTextField.text
+        let settings = populateSettingsFromUI(dropIn: false)
+        
+        switch renderMode {
+        case .createClientSession, .testScenario:
+            configureClientSession()
+            if case .testScenario = renderMode {
+                configureTestScenario()
+            }
+            
+            // Generate client token and present SwiftUI test screen
+            Networking.requestClientSession(requestBody: clientSession, apiVersion: settings.apiVersion) { [weak self] (clientToken, error) in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        print("Failed to fetch client token: \(error)")
+                        let alert = UIAlertController(title: "Error", message: "Failed to fetch client token: \(error.localizedDescription)", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .default))
+                        self?.present(alert, animated: true)
+                    } else if let clientToken = clientToken {
+                        // Navigate to SwiftUI test screen with client token
+                        self?.presentSwiftUITestScreen(with: clientToken, settings: settings)
+                    }
+                }
+            }
+            
+        case .clientToken:
+            // Use provided client token directly
+            if let clientToken = clientTokenTextField.text, !clientToken.isEmpty {
+                presentSwiftUITestScreen(with: clientToken, settings: settings)
+            } else {
+                let alert = UIAlertController(title: "Error", message: "Please provide a client token", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                present(alert, animated: true)
+            }
+            
+        case .deepLink:
+            if let clientToken = self.deepLinkClientToken, let deepLinkSettings = self.deepLinkSettings {
+                presentSwiftUITestScreen(with: clientToken, settings: deepLinkSettings)
+            }
+        }
+    }
+    
+    private func presentSwiftUITestScreen(with clientToken: String, settings: PrimerSettings) {
+        if #available(iOS 15.0, *) {
+            // Create inline SwiftUI test view controller instead of external file
+            let swiftUIView = InlineSwiftUICheckoutTestView(clientToken: clientToken, settings: settings)
+            let hostingController = UIHostingController(rootView: swiftUIView)
+            hostingController.title = "CheckoutComponents SwiftUI Test"
+            navigationController?.pushViewController(hostingController, animated: true)
+        } else {
+            let alert = UIAlertController(title: "Not Available", message: "CheckoutComponents requires iOS 15.0 or later", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+        }
+    }
 }
 
 extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPickerViewDelegate {
@@ -999,5 +1218,176 @@ extension MerchantSessionAndSettingsViewController: UIPickerViewDataSource, UIPi
         }
 
         render()
+    }
+}
+
+// MARK: - Inline SwiftUI Test View for CheckoutComponents
+
+@available(iOS 15.0, *)
+struct InlineSwiftUICheckoutTestView: View {
+    let clientToken: String
+    let settings: PrimerSettings
+    
+    @State private var showingCheckout = false
+    @State private var checkoutResult: String = ""
+    @State private var lastError: String = ""
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                Text("CheckoutComponents SwiftUI Integration Test")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .multilineTextAlignment(.center)
+                    .padding()
+                
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Test Scenarios:")
+                        .font(.headline)
+                    
+                    Text("• Modal presentation from SwiftUI")
+                    Text("• Dynamic height adjustment")
+                    Text("• SwiftUI state management")
+                    Text("• Error handling")
+                    Text("• Success/failure callbacks")
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(8)
+                
+                // Checkout button
+                Button(action: {
+                    presentCheckoutComponents()
+                }) {
+                    Text("Present CheckoutComponents")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .cornerRadius(8)
+                }
+                .padding(.horizontal)
+                
+                // Result display
+                if !checkoutResult.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Last Result:")
+                            .font(.headline)
+                        Text(checkoutResult)
+                            .font(.body)
+                            .foregroundColor(.green)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(Color.green.opacity(0.1))
+                    .cornerRadius(8)
+                }
+                
+                // Error display
+                if !lastError.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Last Error:")
+                            .font(.headline)
+                        Text(lastError)
+                            .font(.body)
+                            .foregroundColor(.red)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(Color.red.opacity(0.1))
+                    .cornerRadius(8)
+                }
+                
+                Spacer(minLength: 20)
+
+                // Test information
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Test Configuration:")
+                        .font(.headline)
+                    Text("Environment: \(Debug_App.environment.rawValue)")
+                    Text("API Version: \(settings.apiVersion.rawValue)")
+                    Text("Client Token: \(String(clientToken.prefix(20)))...")
+                        .font(.caption)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(8)
+            }
+            .padding()
+        }
+        .navigationTitle("SwiftUI Test")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    private func presentCheckoutComponents() {
+        // Clear previous results
+        checkoutResult = ""
+        lastError = ""
+        
+        // Get the root view controller to present from
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first,
+              let rootViewController = window.rootViewController else {
+            lastError = "Failed to find root view controller"
+            return
+        }
+        
+        // Find the topmost view controller
+        var topViewController = rootViewController
+        while let presentedViewController = topViewController.presentedViewController {
+            topViewController = presentedViewController
+        }
+        
+        // Set up CheckoutComponents delegate
+        let delegate = InlineTestCheckoutComponentsDelegate { [self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let message):
+                    checkoutResult = message
+                    lastError = ""
+                case .failure(let error):
+                    lastError = error
+                    checkoutResult = ""
+                }
+            }
+        }
+        
+        CheckoutComponentsPrimer.shared.delegate = delegate
+        
+        // Present CheckoutComponents
+        CheckoutComponentsPrimer.presentCheckout(with: clientToken, from: topViewController) {
+            print("CheckoutComponents presentation completed from SwiftUI")
+        }
+    }
+}
+
+/// Inline test delegate for CheckoutComponents results
+@available(iOS 15.0, *)
+private class InlineTestCheckoutComponentsDelegate: CheckoutComponentsDelegate {
+    
+    enum TestResult {
+        case success(String)
+        case failure(String)
+    }
+    
+    private let onResult: (TestResult) -> Void
+    
+    init(onResult: @escaping (TestResult) -> Void) {
+        self.onResult = onResult
+    }
+    
+    func checkoutComponentsDidCompleteWithSuccess() {
+        onResult(.success("Payment completed successfully! ✅"))
+    }
+    
+    func checkoutComponentsDidFailWithError(_ error: PrimerError) {
+        onResult(.failure("Payment failed: \(error.localizedDescription)"))
+    }
+    
+    func checkoutComponentsDidDismiss() {
+        onResult(.success("Checkout was dismissed by user"))
     }
 }

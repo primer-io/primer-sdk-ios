@@ -231,12 +231,27 @@ public protocol CheckoutComponentsDelegate: AnyObject {
                 // Present CheckoutComponents modally to keep separate from traditional navigation stack
                 logger.info(message: "🌉 [CheckoutComponentsPrimer] Presenting CheckoutComponents modally")
 
-                // Create modal presentation
+                // Create modal presentation with dynamic sizing
                 bridgeController.modalPresentationStyle = .pageSheet
                 if let sheet = bridgeController.sheetPresentationController {
-                    sheet.detents = [.medium(), .large()]
+                    // Use custom detent for dynamic sizing based on content
+                    if #available(iOS 16.0, *) {
+                        let customDetent = UISheetPresentationController.Detent.custom { [weak bridgeController] context in
+                            guard let bridgeController = bridgeController else { return context.maximumDetentValue }
+                            let contentHeight = bridgeController.preferredContentSize.height
+                            let maxHeight = context.maximumDetentValue
+                            // Allow content to determine height, but cap at maximum
+                            return min(max(contentHeight, 200), maxHeight * 0.9)
+                        }
+                        sheet.detents = [customDetent, .large()]
+                        sheet.selectedDetentIdentifier = customDetent.identifier
+                    } else {
+                        // Fallback for iOS 15: use standard detents
+                        sheet.detents = [.medium(), .large()]
+                    }
                     sheet.prefersGrabberVisible = true
                     sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+                    sheet.largestUndimmedDetentIdentifier = .medium
                 }
 
                 // Present modally from the root view controller

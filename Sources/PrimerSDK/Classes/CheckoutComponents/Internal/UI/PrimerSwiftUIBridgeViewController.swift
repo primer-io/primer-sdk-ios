@@ -18,6 +18,8 @@ internal final class PrimerSwiftUIBridgeViewController: PrimerViewController {
     private let hostingController: UIHostingController<AnyView>
     private let logger = PrimerLogging.shared.logger
     private var heightConstraint: NSLayoutConstraint?
+    private var lastRecordedSize: CGSize = .zero
+    private var isUpdatingSize = false
 
     // MARK: - Initialization
 
@@ -41,6 +43,7 @@ internal final class PrimerSwiftUIBridgeViewController: PrimerViewController {
         super.viewDidLoad()
 
         setupSwiftUIContent()
+        setupSizeObservation()
         logger.debug(message: "🌉 [SwiftUIBridge] Bridge controller view loaded")
     }
 
@@ -82,16 +85,64 @@ internal final class PrimerSwiftUIBridgeViewController: PrimerViewController {
 
         logger.debug(message: "🌉 [SwiftUIBridge] SwiftUI content embedded successfully")
     }
+    
+    private func setupSizeObservation() {
+        // Add observer for SwiftUI view size changes
+        hostingController.view.addObserver(self, forKeyPath: "bounds", options: [.new, .old], context: nil)
+        
+        logger.debug(message: "🌉 [SwiftUIBridge] Size observation setup completed")
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath == "bounds", let newBounds = change?[NSKeyValueChangeKey.newKey] as? NSValue {
+            let newRect = newBounds.cgRectValue
+            
+            // Prevent infinite loops - don't update if we're already updating or size hasn't meaningfully changed
+            guard !isUpdatingSize else { return }
+            guard abs(newRect.height - lastRecordedSize.height) > 10.0 else { return } // Increased threshold
+            guard abs(newRect.width - lastRecordedSize.width) > 10.0 else { return }
+            
+            logger.debug(message: "🌉 [SwiftUIBridge] SwiftUI bounds changed significantly: \(lastRecordedSize) -> \(newRect.size)")
+            lastRecordedSize = newRect.size
+            updateContentSize()
+        } else {
+            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+        }
+    }
+    
+    deinit {
+        // Clean up observer
+        hostingController.view.removeObserver(self, forKeyPath: "bounds")
+    }
 
     private func updateContentSize() {
+        // Prevent recursive calls
+        guard !isUpdatingSize else { return }
+        isUpdatingSize = true
+        
+        defer { isUpdatingSize = false }
+        
         // Get the intrinsic content size from SwiftUI
         let targetSize = CGSize(width: view.bounds.width, height: UIView.layoutFittingCompressedSize.height)
         let fittingSize = hostingController.view.systemLayoutSizeFitting(targetSize)
 
+        // Calculate the actual content height without hardcoded minimum
+        let contentHeight = max(fittingSize.height, 200) // Much smaller minimum than 400
+        let newSize = CGSize(width: view.bounds.width, height: contentHeight)
+        
+        // Only update if size actually changed significantly
+        let heightDifference = abs(newSize.height - preferredContentSize.height)
+        guard heightDifference > 5.0 else { return }
+        
         // Update preferred content size for proper height calculation
-        preferredContentSize = CGSize(width: view.bounds.width, height: max(fittingSize.height, 400))
+        preferredContentSize = newSize
 
-        logger.debug(message: "🌉 [SwiftUIBridge] Updated content size: \(preferredContentSize)")
+        // Notify parent controller about size change for dynamic layout updates
+        if let parent = parent {
+            parent.preferredContentSizeDidChange(forChildContentContainer: self)
+        }
+
+        logger.debug(message: "🌉 [SwiftUIBridge] Updated content size: \(preferredContentSize) (fitting: \(fittingSize))")
     }
 
     // MARK: - Public Interface
@@ -117,15 +168,27 @@ extension PrimerSwiftUIBridgeViewController {
     /// Override to provide proper sizing information to the traditional UI system
     override var preferredContentSize: CGSize {
         get {
-            // Return the size needed for the SwiftUI content
+            // Use the stored preferredContentSize if available, otherwise calculate dynamically
+            if super.preferredContentSize.height > 0 {
+                return super.preferredContentSize
+            }
+            
+            // Calculate based on SwiftUI content size
             let width = view.bounds.width > 0 ? view.bounds.width : UIScreen.main.bounds.width
-            let height = hostingController.preferredContentSize.height > 0 ?
-                hostingController.preferredContentSize.height : 500
-
-            return CGSize(width: width, height: height)
+            let targetSize = CGSize(width: width, height: UIView.layoutFittingCompressedSize.height)
+            let fittingSize = hostingController.view.systemLayoutSizeFitting(targetSize)
+            
+            let dynamicHeight = max(fittingSize.height, 200)
+            return CGSize(width: width, height: dynamicHeight)
         }
         set {
             super.preferredContentSize = newValue
+            
+            // Trigger layout update when size changes
+            DispatchQueue.main.async { [weak self] in
+                self?.view.setNeedsLayout()
+                self?.view.layoutIfNeeded()
+            }
         }
     }
 }

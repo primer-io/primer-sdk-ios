@@ -8,17 +8,7 @@
 // swiftlint:disable function_body_length
 
 import UIKit
-import SwiftUI
 
-/// Defines the checkout presentation style for the Primer SDK.
-public enum CheckoutStyle {
-    /// Traditional UIKit-based Drop-in checkout system
-    case dropIn
-    /// Modern SwiftUI-based CheckoutComponents system (iOS 15+ required)
-    case components
-    /// Automatically choose based on iOS version and availability
-    case automatic
-}
 
 protocol PrimerUIManaging {
     var primerWindow: UIWindow? { get }
@@ -76,29 +66,12 @@ final class PrimerUIManager: PrimerUIManaging {
         }
     }
 
-    func presentPaymentUI() {
-        presentPaymentUI(checkoutStyle: .components)
-    }
 
-    func presentPaymentUI(checkoutStyle: CheckoutStyle) {
+    func presentPaymentUI() {
         if let paymentMethodType = PrimerInternal.shared.selectedPaymentMethodType {
             PrimerUIManager.presentPaymentMethod(type: paymentMethodType)
         } else if PrimerInternal.shared.intent == .checkout {
-
-            switch checkoutStyle {
-            case .components:
-                if #available(iOS 15.0, *) {
-                    presentComposableCheckout()
-                } else {
-                    // Fallback to Drop-in if iOS 15+ not available
-                    presentDropInCheckout()
-                }
-            case .dropIn:
-                presentDropInCheckout()
-            case .automatic:
-                // This case should not occur as resolveCheckoutStyle handles it
-                presentDropInCheckout()
-            }
+            presentDropInCheckout()
         } else if PrimerInternal.shared.intent == .vault {
             let pvmvc = PrimerVaultManagerViewController()
             PrimerUIManager.primerRootViewController?.show(viewController: pvmvc)
@@ -117,55 +90,7 @@ final class PrimerUIManager: PrimerUIManaging {
         PrimerUIManager.primerRootViewController?.show(viewController: pucvc)
     }
 
-    @available(iOS 15.0, *)
-    private func presentComposableCheckout() {
-        // Get client token from the current app state
-        let state: AppStateProtocol = DependencyContainer.resolve()
-        guard let clientToken = state.clientToken else {
-            let error = PrimerError.invalidClientToken(
-                userInfo: .errorUserInfoDictionary(),
-                diagnosticsId: UUID().uuidString)
-            ErrorHandler.handle(error: error)
-            PrimerUIManager.handleErrorBasedOnSDKSettings(error)
-            return
-        }
 
-        // Set PrimerUIManager as the delegate to handle success/failure results
-        CheckoutComponentsPrimer.shared.delegate = self
-
-        // CheckoutComponentsPrimer now handles traditional UI integration internally
-        // It will initialize PrimerRootViewController and present through the traditional system
-        CheckoutComponentsPrimer.presentCheckout(with: clientToken) {
-            // Presentation completed
-        }
-    }
-
-    @available(iOS 15.0, *)
-    private func handleSwiftUIHeightChange(_ height: CGFloat) {
-        // This can be used for additional height change handling if needed
-        // The bridge controller already updates preferredContentSize automatically
-    }
-
-    @available(iOS 15.0, *)
-    func handleSwiftUIHeightChange(_ newHeight: CGFloat, for hostController: UIViewController) {
-        guard let root = PrimerUIManager.primerRootViewController,
-              // Find the matching container for this host
-              let container = root.navController
-                .viewControllers
-                .compactMap({ $0 as? PrimerContainerViewController })
-                .first(where: { $0.childViewController === hostController })
-        else { return }
-
-        // Compute total sheet height (content + nav bar)
-        let navBarHeight = root.navController.navigationBar.bounds.height
-        let total = newHeight + navBarHeight
-
-        // Update the constraint and animate
-        container.childViewHeightConstraint?.constant = total
-        UIView.animate(withDuration: 0.3) {
-            root.view.layoutIfNeeded()
-        }
-    }
 
     func presentPaymentMethod(type: String) {
         let paymentMethodTokenizationViewModel = PrimerAPIConfiguration.paymentMethodConfigViewModels.filter({ $0.config.type == type }).first
@@ -443,60 +368,3 @@ extension PrimerUIManager {
 }
 // swiftlint:enable function_body_length
 
-// MARK: - CheckoutComponentsDelegate Implementation
-
-@available(iOS 15.0, *)
-extension PrimerUIManager: CheckoutComponentsDelegate {
-
-    func checkoutComponentsDidCompleteWithSuccess() {
-
-        // For modal presentation, we need to ensure PrimerRootViewController exists before showing result screen
-        CheckoutComponentsPrimer.shared.dismissWithoutDelegate(animated: true) { [weak self] in
-
-            // Re-initialize traditional UI system for result screen presentation
-            firstly {
-                PrimerUIManager.prepareRootViewController()
-            }
-            .done {
-                self?.dismissOrShowResultScreen(
-                    type: .success,
-                    paymentMethodManagerCategories: [],
-                    withMessage: "Payment successful"
-                )
-            }
-            .catch { error in
-                // Fallback: just dismiss without result screen
-                PrimerInternal.shared.dismiss(paymentMethodManagerCategories: [])
-            }
-        }
-    }
-
-    func checkoutComponentsDidFailWithError(_ error: PrimerError) {
-
-        // For modal presentation, we need to ensure PrimerRootViewController exists before showing error screen
-        CheckoutComponentsPrimer.shared.dismissWithoutDelegate(animated: true) { [weak self] in
-
-            // Re-initialize traditional UI system for error screen presentation
-            firstly {
-                PrimerUIManager.prepareRootViewController()
-            }
-            .done {
-                self?.dismissOrShowResultScreen(
-                    type: .failure,
-                    paymentMethodManagerCategories: [],
-                    withMessage: error.localizedDescription
-                )
-            }
-            .catch { prepareError in
-                // Fallback: just dismiss without error screen
-                PrimerInternal.shared.dismiss(paymentMethodManagerCategories: [])
-            }
-        }
-    }
-
-    func checkoutComponentsDidDismiss() {
-        // Handle dismissal - this is called when checkout is dismissed without completion
-        // Use the existing dismissal mechanism
-        PrimerInternal.shared.dismiss(paymentMethodManagerCategories: [])
-    }
-}
