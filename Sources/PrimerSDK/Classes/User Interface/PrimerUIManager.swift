@@ -146,7 +146,9 @@ final class PrimerUIManager: PrimerUIManaging {
         }
 
         // Set PrimerUIManager as the delegate to handle success/failure results
+        print("🔗 [PrimerUIManager] Setting self as CheckoutComponentsPrimer delegate")
         CheckoutComponentsPrimer.shared.delegate = self
+        print("🔗 [PrimerUIManager] Delegate set successfully")
         
         // CheckoutComponentsPrimer now handles traditional UI integration internally
         // It will initialize PrimerRootViewController and present through the traditional system
@@ -461,6 +463,7 @@ extension PrimerUIManager: CheckoutComponentsDelegate {
     func checkoutComponentsDidCompleteWithSuccess() {
         // CheckoutComponents is now integrated with traditional UI system
         // Result screens are handled automatically through traditional dismissOrShowResultScreen
+        print("🎉 [PrimerUIManager] checkoutComponentsDidCompleteWithSuccess called - showing result screen")
         dismissOrShowResultScreen(
             type: .success,
             paymentMethodManagerCategories: [],

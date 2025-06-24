@@ -142,7 +142,13 @@ public protocol CheckoutComponentsDelegate: AnyObject {
     /// Internal method for handling payment success
     internal func handlePaymentSuccess() {
         logger.info(message: "✅ [CheckoutComponentsPrimer] Payment completed successfully")
-        delegate?.checkoutComponentsDidCompleteWithSuccess()
+        
+        if let delegate = delegate {
+            logger.info(message: "📞 [CheckoutComponentsPrimer] Calling delegate checkoutComponentsDidCompleteWithSuccess")
+            delegate.checkoutComponentsDidCompleteWithSuccess()
+        } else {
+            logger.error(message: "❌ [CheckoutComponentsPrimer] No delegate set - cannot handle payment success")
+        }
     }
 
     /// Internal method for handling payment failure
