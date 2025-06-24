@@ -7,6 +7,83 @@
 
 import Foundation
 
+/// Payment completion handler that implements delegate callbacks for async payment processing
+@available(iOS 15.0, *)
+private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckoutDelegate, PrimerHeadlessUniversalCheckoutRawDataManagerDelegate {
+    
+    private let completion: (Result<PaymentResult, Error>) -> Void
+    private let logger = PrimerLogging.shared.logger
+    private var hasCompleted = false
+    
+    init(completion: @escaping (Result<PaymentResult, Error>) -> Void) {
+        self.completion = completion
+        super.init()
+    }
+    
+    // MARK: - PrimerHeadlessUniversalCheckoutDelegate (Payment Completion)
+    
+    func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerCheckoutData) {
+        // Prevent multiple completions
+        guard !hasCompleted else {
+            logger.warn(message: "Payment completion delegate called multiple times - ignoring duplicate")
+            return
+        }
+        hasCompleted = true
+        
+        logger.info(message: "Payment completed successfully via delegate")
+        
+        let result = PaymentResult(
+            paymentId: data.payment?.id ?? UUID().uuidString,
+            status: .success,
+            token: "payment_completed_successfully"
+        )
+        completion(.success(result))
+    }
+    
+    func primerHeadlessUniversalCheckoutDidFail(withError err: Error, checkoutData: PrimerCheckoutData?) {
+        // Prevent multiple completions
+        guard !hasCompleted else {
+            logger.warn(message: "Payment failure delegate called after completion - ignoring")
+            return
+        }
+        hasCompleted = true
+        
+        logger.error(message: "Payment failed via delegate: \(err.localizedDescription)")
+        completion(.failure(err))
+    }
+    
+    func primerHeadlessUniversalCheckoutWillCreatePaymentWithData(
+        _ data: PrimerCheckoutPaymentMethodData,
+        decisionHandler: @escaping (PrimerPaymentCreationDecision) -> Void
+    ) {
+        logger.debug(message: "Will create payment - allowing to proceed")
+        // Allow payment creation to proceed
+        decisionHandler(.continuePaymentCreation())
+    }
+    
+    // MARK: - PrimerHeadlessUniversalCheckoutRawDataManagerDelegate (Validation)
+    
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              dataIsValid isValid: Bool,
+                              errors: [Error]?) {
+        logger.debug(message: "RawDataManager validation state: \(isValid)")
+        
+        // Handle validation failures only if we haven't completed yet
+        if !isValid, let errors = errors, !errors.isEmpty, !hasCompleted {
+            hasCompleted = true
+            logger.error(message: "RawDataManager validation failed: \(errors)")
+            completion(.failure(errors.first!))
+        }
+    }
+    
+    func primerRawDataManager(_ rawDataManager: PrimerHeadlessUniversalCheckout.RawDataManager,
+                              didReceiveMetadata metadata: PrimerPaymentMethodMetadata,
+                              forState state: PrimerValidationState) {
+        logger.debug(message: "RawDataManager received metadata for state: \(state)")
+        // Handle card network detection and metadata updates if needed
+    }
+}
+
 /// Implementation of HeadlessRepository using PrimerHeadlessUniversalCheckout.
 /// This wraps the existing headless SDK with async/await patterns.
 internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
@@ -67,21 +144,100 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         cardholderName: String,
         selectedNetwork: CardNetwork?
     ) async throws -> PaymentResult {
-        logger.info(message: "Processing card payment via RawDataManager")
+        logger.info(message: "Processing card payment via RawDataManager with proper delegate handling")
 
-        // TODO: Implementation pattern:
-        // 1. Create PrimerCardData with the provided information
-        // 2. Create RawDataManager for "PAYMENT_CARD" type
-        // 3. Set delegate to capture callbacks
-        // 4. Set rawData and call submit()
-        // 5. Convert delegate callbacks to async/await using continuation
+        return try await withCheckedThrowingContinuation { continuation in
+            Task { @MainActor in
+                // Check iOS version availability for PaymentCompletionHandler
+                if #available(iOS 15.0, *) {
+                    do {
+                        // Create card data with proper expiry date format
+                    let formattedExpiryDate = "\(expiryMonth)/\(expiryYear)"
+                    let cardData = PrimerCardData(
+                        cardNumber: cardNumber.replacingOccurrences(of: " ", with: ""),
+                        expiryDate: formattedExpiryDate,
+                        cvv: cvv,
+                        cardholderName: cardholderName.isEmpty ? nil : cardholderName
+                    )
 
-        // Placeholder implementation
-        return PaymentResult(
-            paymentId: UUID().uuidString,
-            status: .success,
-            token: "placeholder_token"
-        )
+                    // Set card network if selected (for co-badged cards)
+                    if let selectedNetwork = selectedNetwork {
+                        cardData.cardNetwork = selectedNetwork
+                    }
+
+                    self.logger.debug(message: "Card data prepared: number=***\(String(cardData.cardNumber.suffix(4))), expiry=\(cardData.expiryDate), network=\(cardData.cardNetwork?.rawValue ?? "auto")")
+
+                    // Create payment completion handler
+                    let paymentHandler = PaymentCompletionHandler { result in
+                        continuation.resume(with: result)
+                    }
+
+                    // Set up headless checkout delegate to handle payment completion
+                    PrimerHeadlessUniversalCheckout.current.delegate = paymentHandler
+
+                    // Create and configure RawDataManager with delegate
+                    let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
+                        paymentMethodType: "PAYMENT_CARD",
+                        delegate: paymentHandler
+                    )
+
+                    self.logger.debug(message: "Created RawDataManager with delegate, configuring...")
+
+                    // Configure the RawDataManager
+                    rawDataManager.configure { _, error in
+                        if let error = error {
+                            self.logger.error(message: "RawDataManager configuration failed: \(error)")
+                            continuation.resume(throwing: error)
+                            return
+                        }
+
+                        self.logger.debug(message: "RawDataManager configured successfully")
+
+                        // Set the raw data (this triggers validation automatically)
+                        rawDataManager.rawData = cardData
+
+                        // Small delay to allow validation
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            self.logger.debug(message: "Checking validation status...")
+                            self.logger.debug(message: "RawDataManager isDataValid: \(rawDataManager.isDataValid)")
+
+                            // Verify data is valid before submitting
+                            if rawDataManager.isDataValid {
+                                self.logger.debug(message: "Raw data is valid, submitting payment...")
+                                // This will trigger async payment processing and delegate callbacks
+                                rawDataManager.submit()
+                                self.logger.info(message: "Card payment submitted - waiting for completion via delegate...")
+                            } else {
+                                self.logger.error(message: "Raw data validation failed")
+                                
+                                // Check required input types for debugging
+                                let requiredInputs = rawDataManager.requiredInputElementTypes
+                                self.logger.error(message: "Required input element types: \(requiredInputs)")
+
+                                let error = PrimerError.unknown(
+                                    userInfo: ["error": "Card data validation failed", "requiredInputs": requiredInputs.map { "\($0.rawValue)" }.joined(separator: ", ")],
+                                    diagnosticsId: UUID().uuidString
+                                )
+                                continuation.resume(throwing: error)
+                            }
+                        }
+                    }
+
+                    } catch {
+                        self.logger.error(message: "Failed to setup payment: \(error)")
+                        continuation.resume(throwing: error)
+                    }
+                } else {
+                    // iOS < 15.0 - fallback implementation
+                    self.logger.error(message: "CheckoutComponents requires iOS 15.0 or later")
+                    let error = PrimerError.unknown(
+                        userInfo: ["error": "CheckoutComponents requires iOS 15.0 or later"],
+                        diagnosticsId: UUID().uuidString
+                    )
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
     }
 
     func tokenizeCard(

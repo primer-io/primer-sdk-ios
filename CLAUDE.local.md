@@ -1,1 +1,2 @@
-- Do not commit, push, or run the project yourself; wait for instructions
+- Do not commit, push, or run/build the project yourself; wait for instructions
+- Do not run swiftlint after changes

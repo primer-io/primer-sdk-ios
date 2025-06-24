@@ -86,22 +86,15 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
         coordinator.navigate(to: .selectCountry)
     }
 
-    /// Navigate to success screen and handle final checkout completion
+    /// Navigate to success screen (handled by CheckoutComponentsPrimer delegate)
     func navigateToSuccess() {
-        let result = CheckoutPaymentResult(
-            paymentId: "payment_success",
-            amount: "Amount paid",
-            method: "Selected payment method"
-        )
-        coordinator.handlePaymentSuccess(result)
-
-        // Handle the checkout completion with existing delegate system
-        Task {
-            await handleCheckoutCompletion()
-        }
+        logger.info(message: "Success navigation - handled by CheckoutComponentsPrimer delegate")
+        
+        // Success handling is now managed by CheckoutComponentsPrimer delegate
+        // which will call PrimerUIManager.dismissOrShowResultScreen() appropriately
     }
 
-    /// Navigate to error screen with message
+    /// Navigate to error screen with message (handled by CheckoutComponentsPrimer delegate)
     func navigateToError(_ message: String) {
         let error = CheckoutPaymentError(
             code: "checkout_error",
@@ -110,10 +103,8 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
         )
         coordinator.handlePaymentFailure(error)
 
-        // Handle the error with existing delegate system
-        Task {
-            await handleCheckoutError(message)
-        }
+        // Error handling is now managed by CheckoutComponentsPrimer delegate
+        logger.info(message: "Error navigation - handled by CheckoutComponentsPrimer delegate")
     }
 
     /// Navigate back
@@ -129,6 +120,11 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
     /// Dismiss the entire checkout flow
     func dismiss() {
         coordinator.dismiss()
+    }
+
+    /// Complete the checkout with success delegate
+    func completeCheckout() async {
+        await handleCheckoutCompletion()
     }
 
     // MARK: - Coordinator Access

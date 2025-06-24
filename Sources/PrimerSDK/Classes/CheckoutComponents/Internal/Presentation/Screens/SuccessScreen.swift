@@ -32,11 +32,6 @@ internal struct SuccessScreen: View {
                     .scaleEffect(showCheckmark ? 1.0 : 0.5)
                     .opacity(showCheckmark ? 1.0 : 0.0)
             }
-            .onAppear {
-                withAnimation(.spring(response: 0.5, dampingFraction: 0.6)) {
-                    showCheckmark = true
-                }
-            }
 
             // Success title
             Text("Payment Successful")
@@ -58,7 +53,7 @@ internal struct SuccessScreen: View {
             }
             .padding(.horizontal, 32)
 
-            // Dismiss button
+            // Dismiss button (user-controlled only)
             if let onDismiss = onDismiss {
                 Button(action: onDismiss) {
                     Text("Done")
@@ -76,11 +71,9 @@ internal struct SuccessScreen: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(tokens?.primerColorBackground ?? Color(.systemBackground))
         .onAppear {
-            // Auto-dismiss after 3 seconds
-            if onDismiss != nil {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                    onDismiss?()
-                }
+            // Show checkmark animation
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.6)) {
+                showCheckmark = true
             }
         }
     }

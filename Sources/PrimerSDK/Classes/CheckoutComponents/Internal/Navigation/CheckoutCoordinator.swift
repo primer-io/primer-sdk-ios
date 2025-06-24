@@ -84,8 +84,10 @@ internal final class CheckoutCoordinator: NavigationCoordinator, LogReporter {
         navigationStack = []
         logEvent("navigation_dismissed")
 
-        // The actual dismissal will be handled by the presenting view controller
-        // This just signals the intent to dismiss
+        // Trigger actual dismissal through CheckoutComponentsPrimer
+        Task { @MainActor in
+            CheckoutComponentsPrimer.shared.dismissCheckout()
+        }
     }
 
     func handlePaymentMethodSelection(_ methodType: String) {

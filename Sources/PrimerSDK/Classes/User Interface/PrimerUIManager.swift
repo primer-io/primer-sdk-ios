@@ -158,6 +158,9 @@ final class PrimerUIManager: PrimerUIManaging {
             return
         }
 
+        // Set PrimerUIManager as the delegate to handle success/failure results
+        CheckoutComponentsPrimer.shared.delegate = self
+        
         // Use the new CheckoutComponentsPrimer API
         CheckoutComponentsPrimer.presentCheckout(
             with: clientToken,
@@ -464,3 +467,39 @@ extension PrimerUIManager {
     }
 }
 // swiftlint:enable function_body_length
+
+// MARK: - CheckoutComponentsDelegate Implementation
+
+@available(iOS 15.0, *)
+extension PrimerUIManager: CheckoutComponentsDelegate {
+    
+    func checkoutComponentsDidCompleteWithSuccess() {
+        // First dismiss the CheckoutComponents UI, then show result screen
+        CheckoutComponentsPrimer.shared.dismissWithoutDelegate(animated: true) { [weak self] in
+            // Use the same pattern as Drop-in and Headless implementations
+            self?.dismissOrShowResultScreen(
+                type: .success,
+                paymentMethodManagerCategories: [],
+                withMessage: "Payment successful"
+            )
+        }
+    }
+    
+    func checkoutComponentsDidFailWithError(_ error: PrimerError) {
+        // First dismiss the CheckoutComponents UI, then show error screen
+        CheckoutComponentsPrimer.shared.dismissWithoutDelegate(animated: true) { [weak self] in
+            // Use the same pattern as Drop-in and Headless implementations
+            self?.dismissOrShowResultScreen(
+                type: .failure,
+                paymentMethodManagerCategories: [],
+                withMessage: error.localizedDescription
+            )
+        }
+    }
+    
+    func checkoutComponentsDidDismiss() {
+        // Handle dismissal - this is called when checkout is dismissed without completion
+        // Use the existing dismissal mechanism
+        PrimerInternal.shared.dismiss(paymentMethodManagerCategories: [])
+    }
+}

@@ -17,7 +17,6 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         case loading
         case paymentMethodSelection
         case cardForm
-        case success(PaymentResult)
         case failure(PrimerError)
     }
 
@@ -219,8 +218,6 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
             navigator.navigateToPaymentSelection()
         case .cardForm:
             navigator.navigateToCardForm()
-        case .success:
-            navigator.navigateToSuccess()
         case .failure(let error):
             navigator.navigateToError(error.localizedDescription)
         }
@@ -258,11 +255,21 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
 
     internal func handlePaymentSuccess(_ result: PaymentResult) {
         logger.debug(message: "Payment successful")
-        updateNavigationState(.success(result))
+        
+        // Notify CheckoutComponentsPrimer about the success
+        // This will propagate to PrimerUIManager to show the result screen
+        logger.info(message: "Notifying CheckoutComponentsPrimer about payment success")
+        CheckoutComponentsPrimer.shared.handlePaymentSuccess()
     }
 
     internal func handlePaymentError(_ error: PrimerError) {
         logger.error(message: "Payment error: \\(error)")
+        
+        // Notify CheckoutComponentsPrimer about the failure
+        // This will propagate to PrimerUIManager to show the error screen
+        logger.info(message: "Notifying CheckoutComponentsPrimer about payment failure")
+        CheckoutComponentsPrimer.shared.handlePaymentFailure(error)
+        
         updateNavigationState(.failure(error))
         updateState(.failure(error))
     }

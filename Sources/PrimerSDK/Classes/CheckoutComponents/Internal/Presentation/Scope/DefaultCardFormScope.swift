@@ -90,7 +90,11 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                 throw ContainerError.containerUnavailable
             }
             do {
-                // processCardPaymentInteractor = try await container.resolve(ProcessCardPaymentInteractor.self)
+                // Setup interactors (proper layered architecture)
+                let repository = HeadlessRepositoryImpl()
+                processCardPaymentInteractor = ProcessCardPaymentInteractorImpl(repository: repository)
+                logger.debug(message: "ProcessCardPaymentInteractor initialized successfully")
+                
                 // tokenizeCardInteractor = try await container.resolve(TokenizeCardInteractor.self)
                 // validateInputInteractor = try await container.resolve(ValidateInputInteractor.self)
             } catch {
@@ -330,12 +334,16 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                     expiryResult = .invalid(code: "invalid-expiry-format", message: "Invalid expiry date format")
                 }
 
-                // Update validation state
-                internalState.isValid = cardNumberResult.isValid && cvvResult.isValid && expiryResult.isValid
+                // Validate cardholder name (required field)
+                let cardholderNameValid = !internalState.cardholderName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                logger.debug(message: "🔍 [CardForm] Cardholder name: '\(internalState.cardholderName)', valid: \(cardholderNameValid)")
 
-                logger.debug(message: "🔍 [CardForm] Validation results - Card: \(cardNumberResult.isValid), CVV: \(cvvResult.isValid), Expiry: \(expiryResult.isValid), Overall: \(internalState.isValid)")
+                // Update validation state (include cardholder name as required)
+                internalState.isValid = cardNumberResult.isValid && cvvResult.isValid && expiryResult.isValid && cardholderNameValid
 
-                // Show first error found
+                logger.debug(message: "🔍 [CardForm] Validation results - Card: \(cardNumberResult.isValid), CVV: \(cvvResult.isValid), Expiry: \(expiryResult.isValid), Cardholder: \(cardholderNameValid), Overall: \(internalState.isValid)")
+
+                // Show first error found, but don't show cardholder name error to avoid confusion
                 if !cardNumberResult.isValid {
                     internalState.error = cardNumberResult.errorMessage
                 } else if !cvvResult.isValid {
@@ -343,6 +351,7 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                 } else if !expiryResult.isValid {
                     internalState.error = expiryResult.errorMessage
                 } else {
+                    // Clear error when all card fields are valid (even if cardholder name is missing)
                     internalState.error = nil
                 }
             }
@@ -442,102 +451,59 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
                 }
             }
 
-            // Submit card data using existing SDK infrastructure
-            logger.debug(message: "Processing card payment using RawDataManager")
+            // Submit card data using interactor (proper layered architecture)
+            logger.debug(message: "Processing card payment using ProcessCardPaymentInteractor")
 
-            // Create card data for existing SDK
-            // Convert 2-digit year to 4-digit year for RawDataManager compatibility
-            let formattedExpiryDate: String = {
-                let components = internalState.expiryDate.components(separatedBy: "/")
-                if components.count == 2 {
-                    let month = components[0]
-                    let year = components[1]
-                    // Convert 2-digit year to 4-digit year
-                    let fullYear = year.count == 2 ? "20\(year)" : year
-                    return "\(month)/\(fullYear)"
-                }
-                return internalState.expiryDate
-            }()
-
-            let cardData = PrimerCardData(
-                cardNumber: internalState.cardNumber.replacingOccurrences(of: " ", with: ""),
-                expiryDate: formattedExpiryDate,
-                cvv: internalState.cvv,
-                cardholderName: internalState.cardholderName.isEmpty ? nil : internalState.cardholderName
-            )
-
-            // Set card network if selected (for co-badged cards)
-            if let selectedNetwork = internalState.selectedCardNetwork,
-               let cardNetwork = CardNetwork(rawValue: selectedNetwork) {
-                cardData.cardNetwork = cardNetwork
-            }
-
-            logger.debug(message: "Card data prepared: number=***\(String(cardData.cardNumber.suffix(4))), expiry=\(cardData.expiryDate) (formatted from \(internalState.expiryDate)), network=\(cardData.cardNetwork?.rawValue ?? "auto")")
-
-            // Use RawDataManager for tokenization like the legacy implementation
-            let rawDataManager = try PrimerHeadlessUniversalCheckout.RawDataManager(
-                paymentMethodType: "PAYMENT_CARD",
-                delegate: nil
-            )
-
-            logger.debug(message: "Created RawDataManager, configuring...")
-
-            // Configure the RawDataManager first (some payment methods require this)
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-                rawDataManager.configure { _, error in
-                    if let error = error {
-                        self.logger.error(message: "RawDataManager configuration failed: \(error)")
-                        continuation.resume(throwing: error)
-                    } else {
-                        self.logger.debug(message: "RawDataManager configured successfully")
-                        continuation.resume()
-                    }
-                }
-            }
-
-            logger.debug(message: "Setting card data and validating...")
-
-            // Set the raw data (this triggers validation automatically)
-            rawDataManager.rawData = cardData
-
-            // Add a small delay to allow async validation to complete
-            try await Task.sleep(nanoseconds: 100_000_000) // 0.1 second
-
-            logger.debug(message: "Checking validation status after delay...")
-            logger.debug(message: "RawDataManager isDataValid: \(rawDataManager.isDataValid)")
-
-            // Try to get more detailed validation information
-            if let paymentMethodTokenData = rawDataManager.paymentMethodTokenData {
-                logger.debug(message: "Payment method token data available: \(paymentMethodTokenData)")
-            } else {
-                logger.debug(message: "No payment method token data available yet")
-            }
-
-            // Verify data is valid before submitting
-            if rawDataManager.isDataValid {
-                logger.debug(message: "Raw data is valid, submitting payment...")
-                rawDataManager.submit()
-                logger.info(message: "Card payment submitted successfully")
-
-                // For now, assume success since we don't have delegate callbacks set up
-                // In a real implementation, you would need to implement the delegate methods
-                await handlePaymentSuccess(PaymentResult(
-                    paymentId: UUID().uuidString,
-                    status: .success,
-                    token: "checkout_components_token"
-                ))
-            } else {
-                logger.error(message: "Raw data validation failed")
-
-                // Check if there are specific required input types missing
-                let requiredInputs = rawDataManager.requiredInputElementTypes
-                logger.error(message: "Required input element types: \(requiredInputs)")
-
+            guard let interactor = processCardPaymentInteractor else {
                 throw PrimerError.unknown(
-                    userInfo: ["error": "Card data validation failed", "requiredInputs": requiredInputs.map { "\($0.rawValue)" }.joined(separator: ", ")],
+                    userInfo: ["error": "ProcessCardPaymentInteractor not initialized"],
                     diagnosticsId: UUID().uuidString
                 )
             }
+
+            // Parse expiry components
+            let expiryComponents = internalState.expiryDate.components(separatedBy: "/")
+            guard expiryComponents.count == 2 else {
+                throw PrimerError.unknown(
+                    userInfo: ["error": "Invalid expiry date format"],
+                    diagnosticsId: UUID().uuidString
+                )
+            }
+
+            let expiryMonth = expiryComponents[0]
+            let expiryYear = expiryComponents[1]
+            // Convert 2-digit year to 4-digit year if needed
+            let fullYear = expiryYear.count == 2 ? "20\(expiryYear)" : expiryYear
+
+            // Get selected network if any
+            let selectedNetwork: CardNetwork? = {
+                if let networkString = internalState.selectedCardNetwork {
+                    return CardNetwork(rawValue: networkString)
+                }
+                return nil
+            }()
+
+            logger.debug(message: "Processing payment: card=***\(String(internalState.cardNumber.suffix(4))), month=\(expiryMonth), year=\(fullYear), network=\(selectedNetwork?.rawValue ?? "auto")")
+
+            // Create billing address from current state (for interactor)
+            let billingAddress = createInteractorBillingAddress()
+
+            // Create card payment data for interactor
+            let cardData = CardPaymentData(
+                cardNumber: internalState.cardNumber,
+                cvv: internalState.cvv,
+                expiryMonth: expiryMonth,
+                expiryYear: fullYear,
+                cardholderName: internalState.cardholderName,
+                selectedNetwork: selectedNetwork,
+                billingAddress: billingAddress
+            )
+
+            // Process payment through interactor (follows proper architecture)
+            let result = try await interactor.execute(cardData: cardData)
+
+            logger.info(message: "Card payment processed successfully via interactor")
+            await handlePaymentSuccess(result)
 
         } catch {
             logger.error(message: "Card form submission failed: \(error)")
@@ -553,6 +519,12 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
     private func handlePaymentSuccess(_ result: PaymentResult) async {
         logger.info(message: "Payment processed successfully: \(result.paymentId)")
         internalState.isSubmitting = false
-        checkoutScope?.handlePaymentSuccess(result)
+        
+        // Notify CheckoutComponentsPrimer about the success
+        // This will propagate to PrimerUIManager to show the result screen
+        await MainActor.run {
+            logger.info(message: "Notifying CheckoutComponentsPrimer about payment success")
+            CheckoutComponentsPrimer.shared.handlePaymentSuccess()
+        }
     }
 }

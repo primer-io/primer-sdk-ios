@@ -47,6 +47,22 @@ internal struct CardFormScreen: View {
 
     var body: some View {
         mainContent
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        scope.onBack()
+                    }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left")
+                                .font(.body.weight(.medium))
+                            Text("Back")
+                        }
+                        .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
+                    }
+                }
+            }
     }
 
     private var mainContent: some View {
@@ -161,7 +177,7 @@ internal struct CardFormScreen: View {
 
     @ViewBuilder
     private var errorSection: some View {
-        if let error = cardFormState.error {
+        if let error = cardFormState.error, !error.isEmpty {
             if let customErrorView = scope.errorView {
                 customErrorView(error)
             } else {

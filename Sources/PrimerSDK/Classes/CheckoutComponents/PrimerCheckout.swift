@@ -194,16 +194,6 @@ internal struct InternalCheckout: View {
                             ))
                         }
 
-                    case .success(let result):
-                        if let customSuccess = checkoutScope.successScreen {
-                            AnyView(customSuccess())
-                        } else {
-                            AnyView(SuccessScreen(
-                                paymentResult: result,
-                                onDismiss: checkoutScope.onDismiss
-                            ))
-                        }
-
                     case .failure(let error):
                         if let customError = checkoutScope.errorScreen {
                             AnyView(customError(error.localizedDescription))

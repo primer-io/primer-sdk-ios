@@ -8,6 +8,19 @@
 import UIKit
 import SwiftUI
 
+/// Delegate protocol for CheckoutComponents result handling
+@available(iOS 15.0, *)
+public protocol CheckoutComponentsDelegate: AnyObject {
+    /// Called when payment is successful
+    func checkoutComponentsDidCompleteWithSuccess()
+    
+    /// Called when payment fails
+    func checkoutComponentsDidFailWithError(_ error: PrimerError)
+    
+    /// Called when checkout is dismissed without completion
+    func checkoutComponentsDidDismiss()
+}
+
 /// The main entry point for CheckoutComponents, providing a familiar API similar to the main Primer class
 @available(iOS 15.0, *)
 @objc public final class CheckoutComponentsPrimer: NSObject {
@@ -33,6 +46,9 @@ import SwiftUI
 
     /// The navigator
     private var navigator: CheckoutNavigator?
+
+    /// Delegate for handling checkout results
+    public weak var delegate: CheckoutComponentsDelegate?
 
     // MARK: - Private Init
 
@@ -91,7 +107,52 @@ import SwiftUI
         shared.dismiss(animated: animated, completion: completion)
     }
 
+    /// Internal dismiss method that doesn't call delegate (to avoid circular calls)
+    internal func dismissWithoutDelegate(animated: Bool = true, completion: (() -> Void)? = nil) {
+        logger.info(message: "🚪 [CheckoutComponentsPrimer] Dismissing checkout (without delegate)")
+
+        guard let controller = activeCheckoutController else {
+            logger.warn(message: "⚠️ [CheckoutComponentsPrimer] No active checkout to dismiss")
+            completion?()
+            return
+        }
+
+        // Reset the presenting flag immediately
+        isPresentingCheckout = false
+
+        controller.dismiss(animated: animated) { [weak self] in
+            self?.activeCheckoutController = nil
+            self?.diContainer = nil
+            self?.navigator = nil
+            self?.logger.info(message: "✅ [CheckoutComponentsPrimer] Checkout dismissed (without delegate)")
+            completion?()
+        }
+    }
+
     // MARK: - Instance Methods
+
+    /// Internal method for dismissing checkout (used by CheckoutCoordinator)
+    internal func dismissCheckout() {
+        dismiss(animated: true, completion: nil)
+    }
+
+    /// Internal method for handling payment success
+    internal func handlePaymentSuccess() {
+        logger.info(message: "✅ [CheckoutComponentsPrimer] Payment completed successfully")
+        delegate?.checkoutComponentsDidCompleteWithSuccess()
+    }
+
+    /// Internal method for handling payment failure
+    internal func handlePaymentFailure(_ error: PrimerError) {
+        logger.error(message: "❌ [CheckoutComponentsPrimer] Payment failed: \(error)")
+        delegate?.checkoutComponentsDidFailWithError(error)
+    }
+
+    /// Internal method for handling checkout dismissal
+    internal func handleCheckoutDismiss() {
+        logger.info(message: "🚪 [CheckoutComponentsPrimer] Checkout dismissed")
+        delegate?.checkoutComponentsDidDismiss()
+    }
 
     private func presentCheckout(
         with clientToken: String,
@@ -283,6 +344,10 @@ import SwiftUI
             self?.diContainer = nil
             self?.navigator = nil
             self?.logger.info(message: "✅ [CheckoutComponentsPrimer] Checkout dismissed")
+            
+            // Notify delegate about dismissal
+            self?.handleCheckoutDismiss()
+            
             completion?()
         }
     }

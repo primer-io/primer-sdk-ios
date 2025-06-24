@@ -231,10 +231,6 @@
                         </FileRef>
                      </Group>
                      <Group
-                        location = "group:Checkout"
-                        name = "Checkout">
-                     </Group>
-                     <Group
                         location = "group:Screens"
                         name = "Screens">
                         <FileRef
@@ -282,10 +278,6 @@
                               location = "group:BillingAddressView.swift">
                            </FileRef>
                         </Group>
-                        <Group
-                           location = "group:Common"
-                           name = "Common">
-                        </Group>
                         <FileRef
                            location = "group:InputConfigsWrapper.swift">
                         </FileRef>
@@ -329,10 +321,6 @@
                               location = "group:CardNumberInputField.swift">
                            </FileRef>
                         </Group>
-                     </Group>
-                     <Group
-                        location = "group:Theme"
-                        name = "Theme">
                      </Group>
                   </Group>
                </Group>
