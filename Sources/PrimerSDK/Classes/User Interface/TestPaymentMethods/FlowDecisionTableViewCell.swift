@@ -16,9 +16,9 @@ final class FlowDecisionTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        self.preservesSuperviewLayoutMargins = false
-        self.contentView.preservesSuperviewLayoutMargins = false
-        self.selectionStyle = .none
+        preservesSuperviewLayoutMargins = false
+        contentView.preservesSuperviewLayoutMargins = false
+        selectionStyle = .none
 
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         backgroundColor = theme.view.backgroundColor

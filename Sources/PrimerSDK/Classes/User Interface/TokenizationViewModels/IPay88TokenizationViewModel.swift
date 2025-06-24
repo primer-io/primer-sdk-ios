@@ -67,7 +67,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
 
         // Merchant info
 
-        if self.config.id == nil {
+        if config.id == nil {
             let err = PrimerError.invalidValue(
                 key: "configuration.id",
                 value: config.id,
@@ -77,7 +77,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             errors.append(err)
         }
 
-        if (self.config.options as? MerchantOptions)?.merchantId == nil {
+        if (config.options as? MerchantOptions)?.merchantId == nil {
             let err = PrimerError.invalidValue(
                 key: "configuration.merchantId",
                 value: config.id,
@@ -166,7 +166,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
 
         #if !canImport(PrimerIPay88MYSDK)
         let err = PrimerError.missingSDK(
-            paymentMethodType: self.config.type,
+            paymentMethodType: config.type,
             sdkName: "PrimerIPay88SDK",
             userInfo: .errorUserInfoDictionary(),
             diagnosticsId: UUID().uuidString)
@@ -188,7 +188,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     override func performPreTokenizationSteps() -> Promise<Void> {
-        let imageView = self.uiModule.makeIconImageView(withDimension: 24.0)
+        let imageView = uiModule.makeIconImageView(withDimension: 24.0)
         PrimerUIManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView, message: nil)
 
         return Promise { seal in
@@ -419,9 +419,9 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
         self.iPay88PaymentMethodId = iPay88PaymentMethodId
         self.iPay88ActionType = iPay88ActionType
 
-        let amountStr = self.iPay88NumberFormatter.string(from: NSNumber(value: Double(AppState.current.amount!)/100)) ?? ""
+        let amountStr = iPay88NumberFormatter.string(from: NSNumber(value: Double(AppState.current.amount!)/100)) ?? ""
 
-        guard let merchantOptions = self.config.options as? MerchantOptions
+        guard let merchantOptions = config.options as? MerchantOptions
         else {
             fatalError()
         }
@@ -439,7 +439,7 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
             remark: PrimerAPIConfiguration.current!.clientSession?.customer?.id,
             lang: "UTF-8",
             country: supportedCountry,
-            backendPostURL: self.backendCallbackUrl?.absoluteString ?? "",
+            backendPostURL: backendCallbackUrl?.absoluteString ?? "",
             appdeeplink: nil,
             actionType: iPay88ActionType,
             tokenId: nil,
@@ -606,9 +606,9 @@ final class IPay88TokenizationViewModel: PaymentMethodTokenizationViewModel {
     }
 
     func nullifyCallbacks() {
-        self.didCancel = nil
-        self.didComplete = nil
-        self.didFail = nil
+        didCancel = nil
+        didComplete = nil
+        didFail = nil
     }
     #endif
 }
@@ -623,7 +623,7 @@ extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
     func primerIPay88PaymentSessionCompleted(payment: PrimerIPay88MYSDK.PrimerIPay88Payment?,
                                              error: PrimerIPay88MYSDK.PrimerIPay88Error?) {
         if let payment = payment {
-            self.primerIPay88Payment = payment
+            primerIPay88Payment = payment
         }
 
         if let error = error {
@@ -631,23 +631,23 @@ extension IPay88TokenizationViewModel: PrimerIPay88ViewControllerDelegate {
             case .iPay88Error(let description, _):
                 let err = PrimerError.failedToCreatePayment(
                     paymentMethodType: PrimerPaymentMethodType.iPay88Card.rawValue,
-                    description: "iPay88 payment (transId: \(self.primerIPay88Payment.transId ?? "nil"), refNo: \(self.primerIPay88Payment.refNo ) failed with error '\(description)'",
+                    description: "iPay88 payment (transId: \(primerIPay88Payment.transId ?? "nil"), refNo: \(primerIPay88Payment.refNo ) failed with error '\(description)'",
                     userInfo: .errorUserInfoDictionary(),
                     diagnosticsId: UUID().uuidString)
                 ErrorHandler.handle(error: err)
-                self.didFail?(err)
-                self.nullifyCallbacks()
+                didFail?(err)
+                nullifyCallbacks()
             }
 
         } else {
-            self.didComplete?()
-            self.nullifyCallbacks()
+            didComplete?()
+            nullifyCallbacks()
         }
     }
 
     func primerIPay88PaymentCancelled(payment: PrimerIPay88MYSDK.PrimerIPay88Payment?, error: PrimerIPay88MYSDK.PrimerIPay88Error?) {
-        self.didCancel?()
-        self.nullifyCallbacks()
+        didCancel?()
+        nullifyCallbacks()
     }
 }
 #endif

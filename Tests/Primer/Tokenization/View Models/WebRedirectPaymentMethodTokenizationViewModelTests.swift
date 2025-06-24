@@ -52,7 +52,7 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
 
         sut.start()
 
-        let expectDidFail = self.expectation(description: "onDidFail called")
+        let expectDidFail = expectation(description: "onDidFail called")
         delegate.onDidFail = { error in
             switch error {
             case PrimerError.cancelled(let paymentMethodType, _, _):
@@ -74,14 +74,14 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
         let delegate = MockPrimerHeadlessUniversalCheckoutDelegate()
         PrimerHeadlessUniversalCheckout.current.delegate = delegate
 
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        let expectWillCreatePaymentData = expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, Mocks.Static.Strings.webRedirectPaymentMethodType)
             decision(.abortPaymentCreation())
             expectWillCreatePaymentData.fulfill()
         }
 
-        let expectWillAbort = self.expectation(description: "onDidAbort is called")
+        let expectWillAbort = expectation(description: "onDidAbort is called")
         delegate.onDidFail = { error in
             switch error {
             case PrimerError.merchantError:
@@ -114,20 +114,20 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
             (PollingResponse(status: .complete, id: "4321", source: "src"), nil)
         ]
 
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        let expectWillCreatePaymentData = expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, Mocks.Static.Strings.webRedirectPaymentMethodType)
             decision(.continuePaymentCreation())
             expectWillCreatePaymentData.fulfill()
         }
 
-        let expectDidStartTokenization = self.expectation(description: "onDidStartTokenization is called")
+        let expectDidStartTokenization = expectation(description: "onDidStartTokenization is called")
         delegate.onDidStartTokenization = { type in
             XCTAssertEqual(type, Mocks.Static.Strings.webRedirectPaymentMethodType)
             expectDidStartTokenization.fulfill()
         }
 
-        let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
+        let expectDidTokenize = expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
             return Promise.fulfilled(.init(analyticsId: "analytics_id",
@@ -143,7 +143,7 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
                                            vaultData: nil))
         }
 
-        let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
+        let expectDidCreatePayment = expectation(description: "didCreatePayment called")
         createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return .init(id: "id",
@@ -158,13 +158,13 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
                          status: .success)
         }
 
-        let expectDidShowPaymentMethod = self.expectation(description: "Payment method was shown in web view")
+        let expectDidShowPaymentMethod = expectation(description: "Payment method was shown in web view")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
             XCTAssertNotNil(self.sut.webViewController?.delegate)
             expectDidShowPaymentMethod.fulfill()
         }
 
-        let expectResumePayment = self.expectation(description: "Resumed payment")
+        let expectResumePayment = expectation(description: "Resumed payment")
         createResumePaymentService.onResumePayment = { paymentId, request in
             XCTAssertEqual(paymentId, "id")
             XCTAssertEqual(request.resumeToken, "4321")
@@ -178,7 +178,7 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
                          status: .success)
         }
 
-        let expectCheckoutDidCompletewithData = self.expectation(description: "")
+        let expectCheckoutDidCompletewithData = expectation(description: "")
         delegate.onDidCompleteCheckoutWithData = { data in
             XCTAssertEqual(data.payment?.id, "id")
             XCTAssertEqual(data.payment?.orderId, "order_id")

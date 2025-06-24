@@ -72,7 +72,7 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
         self.tokenizationService = tokenizationService
         self.createResumePaymentService = createResumePaymentService
         super.init()
-        self.uiModule = UserInterfaceModule(paymentMethodTokenizationViewModel: self)
+        uiModule = UserInterfaceModule(paymentMethodTokenizationViewModel: self)
     }
 
     deinit {
@@ -154,10 +154,10 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
 
     func handleSuccessfulFlow() {
         if config.internalPaymentMethodType != .stripeAch {
-            let categories = self.config.paymentMethodManagerCategories
+            let categories = config.paymentMethodManagerCategories
             PrimerUIManager.dismissOrShowResultScreen(type: .success,
                                                       paymentMethodManagerCategories: categories ?? [],
-                                                      withMessage: self.successMessage)
+                                                      withMessage: successMessage)
         }
     }
 
@@ -179,6 +179,6 @@ class PaymentMethodTokenizationViewModel: NSObject, PaymentMethodTokenizationVie
     }
 
     func cancel() {
-        self.didCancel?()
+        didCancel?()
     }
 }

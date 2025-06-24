@@ -68,24 +68,24 @@ final class VaultManagerTests: XCTestCase {
 
     func testFullPaymentFlow_auto() throws {
 
-        let expectDidFetchVaultedPaymentMethods = self.expectation(description: "Did fetch vaulted payment methods")
+        let expectDidFetchVaultedPaymentMethods = expectation(description: "Did fetch vaulted payment methods")
         sut.fetchVaultedPaymentMethods { _, _ in
             expectDidFetchVaultedPaymentMethods.fulfill()
         }
         waitForExpectations(timeout: 2.0)
 
-        let expectDidCompleteCheckout = self.expectation(description: "Headless checkout completed")
+        let expectDidCompleteCheckout = expectation(description: "Headless checkout completed")
         headlessCheckoutDelegate.onDidCompleteCheckoutWithData = { _ in
             expectDidCompleteCheckout.fulfill()
         }
 
-        let expectCreatePayment = self.expectation(description: "On create payment")
+        let expectCreatePayment = expectation(description: "On create payment")
         createResumePaymentService.onCreatePayment = { _ in
             expectCreatePayment.fulfill()
             return self.paymentResponseBody
         }
 
-        let expectExchangeTokenData = self.expectation(description: "Token data exchanged")
+        let expectExchangeTokenData = expectation(description: "Token data exchanged")
         tokenizationService.onExchangePaymentMethodToken = { _, _ in
             expectExchangeTokenData.fulfill()
             return Promise.fulfilled(Mocks.primerPaymentMethodTokenData)
@@ -116,26 +116,26 @@ final class VaultManagerTests: XCTestCase {
         let settings = PrimerSettings(paymentHandling: .manual)
         DependencyContainer.register(settings as PrimerSettingsProtocol)
 
-        let expectDidFetchVaultedPaymentMethods = self.expectation(description: "Did fetch vaulted payment methods")
+        let expectDidFetchVaultedPaymentMethods = expectation(description: "Did fetch vaulted payment methods")
         sut.fetchVaultedPaymentMethods { _, _ in
             expectDidFetchVaultedPaymentMethods.fulfill()
         }
         waitForExpectations(timeout: 2.0)
 
-        let expectDidResumeWith = self.expectation(description: "On did resume with token and decision")
+        let expectDidResumeWith = expectation(description: "On did resume with token and decision")
         headlessCheckoutDelegate.onDidResumeWith = { token, decisionHandler in
             XCTAssertEqual(token, "4321")
             decisionHandler(.complete())
             expectDidResumeWith.fulfill()
         }
 
-        let expectDidTokenize = self.expectation(description: "On did tokenize")
+        let expectDidTokenize = expectation(description: "On did tokenize")
         headlessCheckoutDelegate.onDidTokenizePaymentMethod = { _, decisionHandler in
             expectDidTokenize.fulfill()
             decisionHandler(.continueWithNewClientToken(MockAppState.mockResumeToken))
         }
 
-        let expectExchangeTokenData = self.expectation(description: "Token data exchanged")
+        let expectExchangeTokenData = expectation(description: "Token data exchanged")
         tokenizationService.onExchangePaymentMethodToken = { _, _ in
             expectExchangeTokenData.fulfill()
             return Promise.fulfilled(Mocks.primerPaymentMethodTokenData)
@@ -164,30 +164,30 @@ final class VaultManagerTests: XCTestCase {
         let settings = PrimerSettings(paymentHandling: .auto)
         DependencyContainer.register(settings as PrimerSettingsProtocol)
 
-        let expectDidFetchVaultedPaymentMethods = self.expectation(description: "Did fetch vaulted payment methods")
+        let expectDidFetchVaultedPaymentMethods = expectation(description: "Did fetch vaulted payment methods")
         sut.fetchVaultedPaymentMethods { _, _ in
             expectDidFetchVaultedPaymentMethods.fulfill()
         }
         waitForExpectations(timeout: 2.0)
 
-        let expectDidCompleteCheckout = self.expectation(description: "Headless checkout completed")
+        let expectDidCompleteCheckout = expectation(description: "Headless checkout completed")
         headlessCheckoutDelegate.onDidCompleteCheckoutWithData = { _ in
             expectDidCompleteCheckout.fulfill()
         }
 
-        let expectCreatePayment = self.expectation(description: "On create payment")
+        let expectCreatePayment = expectation(description: "On create payment")
         createResumePaymentService.onCreatePayment = { _ in
             expectCreatePayment.fulfill()
             return self.paymentResponseBodyWithRedirectAction
         }
 
-        let expectExchangeTokenData = self.expectation(description: "Token data exchanged")
+        let expectExchangeTokenData = expectation(description: "Token data exchanged")
         tokenizationService.onExchangePaymentMethodToken = { _, _ in
             expectExchangeTokenData.fulfill()
             return Promise.fulfilled(Mocks.primerPaymentMethodTokenData)
         }
 
-        let expectResumePayment = self.expectation(description: "On resume payment")
+        let expectResumePayment = expectation(description: "On resume payment")
         createResumePaymentService.onResumePayment = { paymentId, request in
             XCTAssertEqual(paymentId, "id")
             XCTAssertEqual(request.resumeToken, "4321")
@@ -211,26 +211,26 @@ final class VaultManagerTests: XCTestCase {
         apiClient.sdkCompleteUrlResult = (Response.Body.Complete(), nil)
         PrimerAPIConfigurationModule.apiClient = apiClient
 
-        let expectDidFetchVaultedPaymentMethods = self.expectation(description: "Did fetch vaulted payment methods")
+        let expectDidFetchVaultedPaymentMethods = expectation(description: "Did fetch vaulted payment methods")
         sut.fetchVaultedPaymentMethods { _, _ in
             expectDidFetchVaultedPaymentMethods.fulfill()
         }
 
         waitForExpectations(timeout: 2.0)
 
-        let expectExchangeTokenData = self.expectation(description: "Token data exchanged")
+        let expectExchangeTokenData = expectation(description: "Token data exchanged")
         tokenizationService.onExchangePaymentMethodToken = { _, _ in
             expectExchangeTokenData.fulfill()
             return Promise.fulfilled(self.primerPaymentMethodTokenData)
         }
 
-        let expectCreatePayment = self.expectation(description: "On create payment")
+        let expectCreatePayment = expectation(description: "On create payment")
         createResumePaymentService.onCreatePayment = { _ in
             expectCreatePayment.fulfill()
             return self.paymentACHResponseBody
         }
 
-        let expectDidCompleteCheckout = self.expectation(description: "Headless checkout completed")
+        let expectDidCompleteCheckout = expectation(description: "Headless checkout completed")
         headlessCheckoutDelegate.onDidCompleteCheckoutWithData = { _ in
             expectDidCompleteCheckout.fulfill()
         }

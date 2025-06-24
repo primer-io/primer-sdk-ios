@@ -145,10 +145,10 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
     var lineItems: [ClientSessionRequestBody.Order.LineItem] {
         get {
-            return self.clientSession.order?.lineItems ?? []
+            return clientSession.order?.lineItems ?? []
         }
         set {
-            self.clientSession.order?.lineItems = newValue
+            clientSession.order?.lineItems = newValue
         }
     }
 
@@ -180,9 +180,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     private var deepLinkClientToken: String?
 
     func setAccessibilityIds() {
-        self.view.accessibilityIdentifier = "Background View"
-        self.testingModeSegmentedControl.accessibilityIdentifier = "Testing Mode Segmented Control"
-        self.clientTokenTextField.accessibilityIdentifier = "Client Token Text Field"
+        view.accessibilityIdentifier = "Background View"
+        testingModeSegmentedControl.accessibilityIdentifier = "Testing Mode Segmented Control"
+        clientTokenTextField.accessibilityIdentifier = "Client Token Text Field"
     }
 
     // MARK: - VIEW LIFE-CYCLE
@@ -190,7 +190,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.setAccessibilityIds()
+        setAccessibilityIds()
         testScenarioPicker.dataSource = self
         testScenarioPicker.delegate = self
         testScenarioTextField.inputView = testScenarioPicker
@@ -216,7 +216,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             environmentSegmentedControl.selectedSegmentIndex = 1
         }
 
-        self.apiKeyTextField.text = customDefinedApiKey
+        apiKeyTextField.text = customDefinedApiKey
 
         let viewTap = UITapGestureRecognizer(target: self, action: #selector(viewTapped))
         view.addGestureRecognizer(viewTap)
@@ -244,14 +244,14 @@ class MerchantSessionAndSettingsViewController: UIViewController {
 
     private func handleAppetizeIfNeeded(_ configProvider: AppLinkConfigProvider) {
         if let settings = configProvider.fetchConfig() {
-            self.deepLinkSettings = settings
-            self.dlSettingsDisplay.text = prettyPrint(settings)
+            deepLinkSettings = settings
+            dlSettingsDisplay.text = prettyPrint(settings)
         }
         if let clientToken = configProvider.fetchClientToken() {
-            self.deepLinkClientToken = clientToken
+            deepLinkClientToken = clientToken
             clientTokenTextField.text = clientToken
-            self.dlClientTokenDisplay.text = clientToken
-            self.testingModeSegmentedControl.selectedSegmentIndex = RenderMode.deepLink.rawValue
+            dlClientTokenDisplay.text = clientToken
+            testingModeSegmentedControl.selectedSegmentIndex = RenderMode.deepLink.rawValue
             setRenderMode(.deepLink)
         }
     }
@@ -825,7 +825,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
             navigationController?.pushViewController(vc, animated: true)
 
         case .deepLink:
-            if let clientToken = self.deepLinkClientToken, let settings = self.deepLinkSettings {
+            if let clientToken = deepLinkClientToken, let settings = deepLinkSettings {
                 let vc = MerchantDropInUIViewController.instantiate(
                     settings: settings, clientSession: nil, clientToken: clientToken)
                 navigationController?.pushViewController(vc, animated: true)
@@ -856,7 +856,7 @@ class MerchantSessionAndSettingsViewController: UIViewController {
                 clientToken: clientTokenTextField.text)
             navigationController?.pushViewController(vc, animated: true)
         case .deepLink:
-            if let clientToken = self.deepLinkClientToken, let settings = self.deepLinkSettings {
+            if let clientToken = deepLinkClientToken, let settings = deepLinkSettings {
                 let vc = MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.instantiate(
                     settings: settings,
                     clientSession: nil,
@@ -927,9 +927,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
     }
 
     @IBAction func clearAppLinkButtonTapped(_ sender: Any) {
-        self.deepLinkClientToken = nil
-        self.deepLinkSettings = nil
-        self.testingModeSegmentedControl.selectedSegmentIndex = RenderMode.createClientSession.rawValue
+        deepLinkClientToken = nil
+        deepLinkSettings = nil
+        testingModeSegmentedControl.selectedSegmentIndex = RenderMode.createClientSession.rawValue
         setRenderMode(.createClientSession)
         dlSettingsDisplay.text = ""
         dlClientTokenDisplay.text = ""

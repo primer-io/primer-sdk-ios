@@ -255,7 +255,7 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
 
         var orderedExpectations: [XCTestExpectation] = []
 
-        let expectPreparationDidStart = self.expectation(description: "Expected UI delegate method: preparationDidStart")
+        let expectPreparationDidStart = expectation(description: "Expected UI delegate method: preparationDidStart")
         uiDelegate.onUIDidStartPreparation = { paymentMethodType in
             XCTAssertEqual(paymentMethodType, paymentMethod.type)
             expectPreparationDidStart.fulfill()
@@ -263,13 +263,13 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
         orderedExpectations.append(expectPreparationDidStart)
 
         if let surchargeAmount = surchargeAmount {
-            let expectClientSessionWillUpdate = self.expectation(description: "Expected delegate method: willUpdateClientSession")
+            let expectClientSessionWillUpdate = expectation(description: "Expected delegate method: willUpdateClientSession")
             delegate.onWillUpdateClientSession = {
                 expectClientSessionWillUpdate.fulfill()
             }
             orderedExpectations.append(expectClientSessionWillUpdate)
 
-            let expectClientSessionDidUpdate = self.expectation(description: "Expected delegate method: didUpdateClientSession")
+            let expectClientSessionDidUpdate = expectation(description: "Expected delegate method: didUpdateClientSession")
             delegate.onDidUpdateClientSession = { _ in
                 guard let _surchargeAmount = self.clientSession?.paymentMethod?.options?[0]["surcharge"] as? Int else {
                     XCTFail(); return
@@ -280,7 +280,7 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
             orderedExpectations.append(expectClientSessionDidUpdate)
         }
 
-        let expectWillCreatePaymentWithData = self.expectation(description: "Expected delegate method: willCreatePaymentWithData")
+        let expectWillCreatePaymentWithData = expectation(description: "Expected delegate method: willCreatePaymentWithData")
         delegate.onWillCreatePaymentWithData = { data, decisionHandler in
             XCTAssertEqual(data.paymentMethodType.type, paymentMethod.type)
             decisionHandler(shouldAbort ? .abortPaymentCreation() : .continuePaymentCreation())
@@ -289,7 +289,7 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
         orderedExpectations.append(expectWillCreatePaymentWithData)
 
         if shouldAbort {
-            let expectDidFail = self.expectation(description: "Expected delegate method: didFail")
+            let expectDidFail = expectation(description: "Expected delegate method: didFail")
             delegate.onDidFail = { err in
                 XCTAssertNotNil(err)
                 expectDidFail.fulfill()
@@ -297,7 +297,7 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
             orderedExpectations.append(expectDidFail)
 
             if handling == .auto, paymentMethod.internalPaymentMethodType != .paymentCard {
-                let expectOnDismiss = self.expectation(description: "Expected delegate method: onDimiss")
+                let expectOnDismiss = expectation(description: "Expected delegate method: onDimiss")
                 uiDelegate.onUIDidDismissPaymentMethod = {
                     expectOnDismiss.fulfill()
                 }
@@ -306,7 +306,7 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
             return orderedExpectations
         }
 
-        let expectDidStartTokenization = self.expectation(description: "Expected delegate method: didStartTokenization")
+        let expectDidStartTokenization = expectation(description: "Expected delegate method: didStartTokenization")
         delegate.onDidStartTokenization = { paymentMethodType in
             XCTAssertEqual(paymentMethodType, paymentMethod.type)
             expectDidStartTokenization.fulfill()
@@ -314,7 +314,7 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
         orderedExpectations.append(expectDidStartTokenization)
 
         if handling == .manual {
-            let expectDidTokenizePaymentMethod = self.expectation(description: "Expected delegate method: didTokenizePaymentMethod")
+            let expectDidTokenizePaymentMethod = expectation(description: "Expected delegate method: didTokenizePaymentMethod")
             delegate.onDidTokenizePaymentMethod = { _, decisionHandler in
                 // TODO: based on isImplementingPaymentMethodWithRequiredAction from HUC tests
                 if paymentMethod.internalPaymentMethodType == .paymentCard {
@@ -327,14 +327,14 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
             orderedExpectations.append(expectDidTokenizePaymentMethod)
 
             if paymentMethod.internalPaymentMethodType != .paymentCard {
-                let expectUIDidShowPaymentMethod = self.expectation(description: "Expected delegate method: UIDidShowPaymentMethod")
+                let expectUIDidShowPaymentMethod = expectation(description: "Expected delegate method: UIDidShowPaymentMethod")
                 uiDelegate.onUIDidShowPaymentMethod = { paymentMethodType in
                     XCTAssertEqual(paymentMethodType, paymentMethod.type)
                     expectUIDidShowPaymentMethod.fulfill()
                 }
                 orderedExpectations.append(expectUIDidShowPaymentMethod)
 
-                let expectDidResumeWith = self.expectation(description: "Expected delegate method: didResumeWith")
+                let expectDidResumeWith = expectation(description: "Expected delegate method: didResumeWith")
                 delegate.onDidResumeWith = { _, _ in
                     // TODO: decision handler?
                     expectDidResumeWith.fulfill()
@@ -342,7 +342,7 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
                 orderedExpectations.append(expectDidResumeWith)
             }
         } else {
-            let expectDidCompleteCheckoutWithData = self.expectation(description: "Expected delegate method: didCompleteCheckoutWithData")
+            let expectDidCompleteCheckoutWithData = expectation(description: "Expected delegate method: didCompleteCheckoutWithData")
             delegate.onDidCompleteCheckoutWithData = { data in
                 XCTAssertNotNil(data.payment)
                 XCTAssertNil(data.payment!.paymentFailureReason)
@@ -354,7 +354,7 @@ final class HeadlessUniversalCheckoutTests: XCTestCase {
         }
 
         if handling == .auto, paymentMethod.internalPaymentMethodType != .paymentCard {
-            let expectOnDismiss = self.expectation(description: "Expected delegate method: onDimiss")
+            let expectOnDismiss = expectation(description: "Expected delegate method: onDimiss")
             uiDelegate.onUIDidDismissPaymentMethod = {
                 expectOnDismiss.fulfill()
             }

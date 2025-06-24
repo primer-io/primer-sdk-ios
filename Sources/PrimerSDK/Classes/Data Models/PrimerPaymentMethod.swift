@@ -140,7 +140,7 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     }()
 
     var isCheckoutEnabled: Bool {
-        guard self.baseLogoImage != nil else {
+        guard baseLogoImage != nil else {
             return false
         }
 
@@ -158,15 +158,15 @@ final class PrimerPaymentMethod: Codable, LogReporter {
     }
 
     var isVaultingEnabled: Bool {
-        guard self.baseLogoImage != nil else {
+        guard baseLogoImage != nil else {
             return false
         }
 
-        if self.implementationType == .webRedirect || self.implementationType == .iPay88Sdk {
+        if implementationType == .webRedirect || implementationType == .iPay88Sdk {
             return false
         }
 
-        switch self.type {
+        switch type {
         case PrimerPaymentMethodType.applePay.rawValue,
              PrimerPaymentMethodType.goCardless.rawValue,
              PrimerPaymentMethodType.googlePay.rawValue,

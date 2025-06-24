@@ -26,7 +26,7 @@ internal extension CancellableCatchMixin {
      */
     @discardableResult
     func `catch`(on: Dispatcher = conf.D.return, policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(Error) -> Void) -> CancellableFinalizer {
-        return CancellableFinalizer(self.catchable.catch(on: on, policy: policy, body), cancel: self.cancelContext)
+        return CancellableFinalizer(catchable.catch(on: on, policy: policy, body), cancel: cancelContext)
     }
 
     /**
@@ -45,7 +45,7 @@ internal extension CancellableCatchMixin {
      - SeeAlso: [Cancellation](https://github.com/mxcl/PromiseKit/blob/master/Documentation/CommonPatterns.md#cancellation)
      */
     func `catch`<E: Swift.Error>(only: E, on: Dispatcher = conf.D.return, _ body: @escaping(E) -> Void) -> CancellableCascadingFinalizer where E: Equatable {
-        return CancellableCascadingFinalizer(self.catchable.catch(only: only, on: on, body), cancel: self.cancelContext)
+        return CancellableCascadingFinalizer(catchable.catch(only: only, on: on, body), cancel: cancelContext)
     }
 
     /**
@@ -63,7 +63,7 @@ internal extension CancellableCatchMixin {
      - SeeAlso: [Cancellation](https://github.com/mxcl/PromiseKit/blob/master/Documentation/CommonPatterns.md#cancellation)
      */
     func `catch`<E: Swift.Error>(only: E.Type, on: Dispatcher = conf.D.return, policy: CatchPolicy = conf.catchPolicy, _ body: @escaping(E) -> Void) -> CancellableCascadingFinalizer {
-        return CancellableCascadingFinalizer(self.catchable.catch(only: only, on: on, policy: policy, body), cancel: self.cancelContext)
+        return CancellableCascadingFinalizer(catchable.catch(only: only, on: on, policy: policy, body), cancel: cancelContext)
     }
 }
 
@@ -72,7 +72,7 @@ internal class CancelContextFinalizer {
     internal let cancelContext: CancelContext
 
     init(cancel: CancelContext) {
-        self.cancelContext = cancel
+        cancelContext = cancel
     }
 
     /**
@@ -234,11 +234,11 @@ internal extension CancellableCatchMixin {
             return rval.thenable
         }
 
-        let promise = self.catchable.recover(on: on, policy: policy, cancelBody)
+        let promise = catchable.recover(on: on, policy: policy, cancelBody)
         if thenable.result != nil && policy == .allErrors {
-            self.cancelContext.recover()
+            cancelContext.recover()
         }
-        return CancellablePromise(promise: promise, context: self.cancelContext, cancelItemList: cancelItemList)
+        return CancellablePromise(promise: promise, context: cancelContext, cancelItemList: cancelItemList)
     }
 
     /**
@@ -273,13 +273,13 @@ internal extension CancellableCatchMixin {
             return rval
         }
 
-        let promise = self.catchable.recover(on: on, policy: policy, cancelBody)
+        let promise = catchable.recover(on: on, policy: policy, cancelBody)
         if thenable.result != nil && policy == .allErrors {
-            self.cancelContext.recover()
+            cancelContext.recover()
         }
-        let cancellablePromise = CancellablePromise(promise: promise, context: self.cancelContext)
+        let cancellablePromise = CancellablePromise(promise: promise, context: cancelContext)
         if let cancellable = promise.cancellable {
-            self.cancelContext.append(cancellable: cancellable, reject: promise.rejectIfCancelled, thenable: cancellablePromise)
+            cancelContext.append(cancellable: cancellable, reject: promise.rejectIfCancelled, thenable: cancellablePromise)
         }
         return cancellablePromise
     }
@@ -315,11 +315,11 @@ internal extension CancellableCatchMixin {
             return rval.thenable
         }
 
-        let promise = self.catchable.recover(only: only, on: on, cancelBody)
+        let promise = catchable.recover(only: only, on: on, cancelBody)
         if thenable.result != nil && only.isCancelled {
-            self.cancelContext.recover()
+            cancelContext.recover()
         }
-        return CancellablePromise(promise: promise, context: self.cancelContext, cancelItemList: cancelItemList)
+        return CancellablePromise(promise: promise, context: cancelContext, cancelItemList: cancelItemList)
     }
 
     /**
@@ -350,10 +350,10 @@ internal extension CancellableCatchMixin {
             return rval
         }
 
-        let promise = self.catchable.recover(only: only, on: on, cancelBody)
-        let cancellablePromise = CancellablePromise(promise: promise, context: self.cancelContext)
+        let promise = catchable.recover(only: only, on: on, cancelBody)
+        let cancellablePromise = CancellablePromise(promise: promise, context: cancelContext)
         if let cancellable = promise.cancellable {
-            self.cancelContext.append(cancellable: cancellable, reject: promise.rejectIfCancelled, thenable: cancellablePromise)
+            cancelContext.append(cancellable: cancellable, reject: promise.rejectIfCancelled, thenable: cancellablePromise)
         }
         return cancellablePromise
     }
@@ -396,11 +396,11 @@ internal extension CancellableCatchMixin {
             return rval.thenable
         }
 
-        let promise = self.catchable.recover(only: only, on: on, policy: policy, cancelBody)
+        let promise = catchable.recover(only: only, on: on, policy: policy, cancelBody)
         if thenable.result != nil && policy == .allErrors {
-            self.cancelContext.recover()
+            cancelContext.recover()
         }
-        return CancellablePromise(promise: promise, context: self.cancelContext, cancelItemList: cancelItemList)
+        return CancellablePromise(promise: promise, context: cancelContext, cancelItemList: cancelItemList)
     }
 
     /**
@@ -437,13 +437,13 @@ internal extension CancellableCatchMixin {
             return rval
         }
 
-        let promise = self.catchable.recover(only: only, on: on, policy: policy, cancelBody)
+        let promise = catchable.recover(only: only, on: on, policy: policy, cancelBody)
         if thenable.result != nil && policy == .allErrors {
-            self.cancelContext.recover()
+            cancelContext.recover()
         }
-        let cancellablePromise = CancellablePromise(promise: promise, context: self.cancelContext)
+        let cancellablePromise = CancellablePromise(promise: promise, context: cancelContext)
         if let cancellable = promise.cancellable {
-            self.cancelContext.append(cancellable: cancellable, reject: promise.rejectIfCancelled, thenable: cancellablePromise)
+            cancelContext.append(cancellable: cancellable, reject: promise.rejectIfCancelled, thenable: cancellablePromise)
         }
         return cancellablePromise
     }
@@ -472,8 +472,8 @@ internal extension CancellableCatchMixin {
      */
     func ensure(on: Dispatcher = conf.D.return, _ body: @escaping () -> Void) -> CancellablePromise<C.T> {
         let rp = CancellablePromise<C.T>.pending()
-        rp.promise.cancelContext = self.cancelContext
-        self.catchable.pipe { result in
+        rp.promise.cancelContext = cancelContext
+        catchable.pipe { result in
             on.dispatch {
                 body()
                 switch result {
@@ -516,7 +516,7 @@ internal extension CancellableCatchMixin {
     func ensureThen(on: Dispatcher = conf.D.return, _ body: @escaping () -> CancellablePromise<Void>) -> CancellablePromise<C.T> {
         let rp = CancellablePromise<C.T>.pending()
         rp.promise.cancelContext = cancelContext
-        self.catchable.pipe { result in
+        catchable.pipe { result in
             on.dispatch {
                 let rv = body()
                 rp.promise.appendCancelContext(from: rv)
@@ -571,11 +571,11 @@ internal extension CancellableCatchMixin where C.T == Void {
             }
         }
 
-        let promise = self.catchable.recover(on: on, policy: policy, cancelBody)
+        let promise = catchable.recover(on: on, policy: policy, cancelBody)
         if thenable.result != nil && policy == .allErrors {
-            self.cancelContext.recover()
+            cancelContext.recover()
         }
-        return CancellablePromise(promise: promise, context: self.cancelContext)
+        return CancellablePromise(promise: promise, context: cancelContext)
     }
 
     /**
@@ -600,11 +600,11 @@ internal extension CancellableCatchMixin where C.T == Void {
             }
         }
 
-        let promise = self.catchable.recover(only: only, on: on, cancelBody)
+        let promise = catchable.recover(only: only, on: on, cancelBody)
         if thenable.result != nil && only.isCancelled {
-            self.cancelContext.recover()
+            cancelContext.recover()
         }
-        return CancellablePromise(promise: promise, context: self.cancelContext)
+        return CancellablePromise(promise: promise, context: cancelContext)
     }
 
     /**
@@ -627,10 +627,10 @@ internal extension CancellableCatchMixin where C.T == Void {
             }
         }
 
-        let promise = self.catchable.recover(only: only, on: on, policy: policy, cancelBody)
+        let promise = catchable.recover(only: only, on: on, policy: policy, cancelBody)
         if thenable.result != nil && policy == .allErrors {
-            self.cancelContext.recover()
+            cancelContext.recover()
         }
-        return CancellablePromise(promise: promise, context: self.cancelContext)
+        return CancellablePromise(promise: promise, context: cancelContext)
     }
 }

@@ -39,7 +39,7 @@ extension PrimerFormView {
         self.formViews = formViews
         self.verticalStackSpacing = verticalStackSpacing
         self.horizontalStackSpacing = horizontalStackSpacing
-        self.initialize()
+        initialize()
     }
 
 }

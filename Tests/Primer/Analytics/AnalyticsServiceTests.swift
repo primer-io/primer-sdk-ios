@@ -142,7 +142,7 @@ final class AnalyticsServiceTests: XCTestCase {
 
     func testFlush() throws {
 
-        let flushExpectation = self.expectation(description: "All events flushed")
+        let flushExpectation = expectation(description: "All events flushed")
         firstly {
             sendEvents(numberOfEvents: 4, after: 0.5)
         }.then {
@@ -195,7 +195,7 @@ final class AnalyticsServiceTests: XCTestCase {
         apiClient.shouldSucceed = false
 
         let expectation2 = self.expectation(description: "Full event purge triggered")
-        self.storage.onDeleteAnalyticsFile = {
+        storage.onDeleteAnalyticsFile = {
             expectation2.fulfill()
         }
 

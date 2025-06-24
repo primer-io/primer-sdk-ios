@@ -61,20 +61,20 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
         PrimerAPIConfigurationModule.apiClient = apiClient
         apiClient.fetchConfigurationWithActionsResult = (PrimerAPIConfiguration.current, nil)
 
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        let expectWillCreatePaymentData = expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, "PAYMENT_CARD")
             decision(.abortPaymentCreation())
             expectWillCreatePaymentData.fulfill()
         }
 
-        let expectWillShowPaymentMethod = self.expectation(description: "Did show payment method")
+        let expectWillShowPaymentMethod = expectation(description: "Did show payment method")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
             self.sut.userInputCompletion?()
             expectWillShowPaymentMethod.fulfill()
         }
 
-        let expectWillAbort = self.expectation(description: "onDidAbort is called")
+        let expectWillAbort = expectation(description: "onDidAbort is called")
         delegate.onDidFail = { error in
             switch error {
             case PrimerError.merchantError:
@@ -102,7 +102,7 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
 
         _ = PrimerUIManager.prepareRootViewController()
 
-        let expectWillCreatePaymentData = self.expectation(description: "onWillCreatePaymentData is called")
+        let expectWillCreatePaymentData = expectation(description: "onWillCreatePaymentData is called")
         delegate.onWillCreatePaymentWithData = { data, decision in
             XCTAssertEqual(data.paymentMethodType.type, "PAYMENT_CARD")
 
@@ -112,26 +112,26 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
             expectWillCreatePaymentData.fulfill()
         }
 
-        let expectCheckoutDidCompletewithData = self.expectation(description: "")
+        let expectCheckoutDidCompletewithData = expectation(description: "")
         delegate.onDidCompleteCheckoutWithData = { data in
             XCTAssertEqual(data.payment?.id, "id")
             XCTAssertEqual(data.payment?.orderId, "order_id")
             expectCheckoutDidCompletewithData.fulfill()
         }
 
-        let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
+        let expectOnTokenize = expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
             return Promise.fulfilled(self.tokenizationResponseBody)
         }
 
-        let expectWillShowPaymentMethod = self.expectation(description: "Did show payment method")
+        let expectWillShowPaymentMethod = expectation(description: "Did show payment method")
         uiDelegate.onUIDidShowPaymentMethod = { _ in
             self.sut.userInputCompletion?()
             expectWillShowPaymentMethod.fulfill()
         }
 
-        let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
+        let expectDidCreatePayment = expectation(description: "didCreatePayment called")
         createResumePaymentService.onCreatePayment = { _ in
             expectDidCreatePayment.fulfill()
             return self.paymentResponseBody
@@ -206,7 +206,7 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
             mockAppState.currency = Currency(code: "GBP", decimalDigits: 2)
         }
 
-        let expectWillShowPaymentMethod = self.expectation(description: "Did show payment method")
+        let expectWillShowPaymentMethod = expectation(description: "Did show payment method")
         uiDelegate.onUIDidShowPaymentMethod = { type in
             // Fill in fields with invalid data
             self.sut.cardNumberField.textField.internalText = "4111"  // Incomplete number
@@ -226,7 +226,7 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
 
         waitForExpectations(timeout: 10.0)
         
-        XCTAssertFalse(self.sut.uiModule.submitButton?.isEnabled == true)
+        XCTAssertFalse(sut.uiModule.submitButton?.isEnabled == true)
     }
 
     func testConfigurePayButton_defaultShowsPayAmount() throws {
@@ -299,21 +299,21 @@ final class CardFormPaymentMethodTokenizationViewModelTests: XCTestCase, Tokeniz
     }
 
     private func fillFormFields() {
-        self.sut.cardNumberField.textField.internalText = "4111 1111 1111 1111"
-        self.sut.expiryDateField.expiryYear = "30"
-        self.sut.expiryDateField.expiryMonth = "03"
-        self.sut.cvvField.textField.internalText = "123"
-        self.sut.cvvField.cardNetwork = .visa
+        sut.cardNumberField.textField.internalText = "4111 1111 1111 1111"
+        sut.expiryDateField.expiryYear = "30"
+        sut.expiryDateField.expiryMonth = "03"
+        sut.cvvField.textField.internalText = "123"
+        sut.cvvField.cardNetwork = .visa
 
-        self.sut.firstNameFieldView.textField.internalText = "John"
+        sut.firstNameFieldView.textField.internalText = "John"
 
-        self.sut.lastNameFieldView.textField.internalText = "Appleseed"
+        sut.lastNameFieldView.textField.internalText = "Appleseed"
 
-        self.sut.addressLine1FieldView.textField.internalText = "123 King Street"
-        self.sut.addressLine2FieldView.textField.internalText = "St Pauls"
-        self.sut.cityFieldView.textField.internalText = "London"
-        self.sut.postalCodeFieldView.textField.internalText = "EC4M 1AB"
-        self.sut.countryFieldView.textField.internalText = "GB"
+        sut.addressLine1FieldView.textField.internalText = "123 King Street"
+        sut.addressLine2FieldView.textField.internalText = "St Pauls"
+        sut.cityFieldView.textField.internalText = "London"
+        sut.postalCodeFieldView.textField.internalText = "EC4M 1AB"
+        sut.countryFieldView.textField.internalText = "GB"
     }
 
 }

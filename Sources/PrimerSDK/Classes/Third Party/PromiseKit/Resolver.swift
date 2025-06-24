@@ -68,6 +68,6 @@ extension Resolver where T == Void {
     /// Fulfills the promise
     /// - Note: underscore is present due to: https://github.com/mxcl/PromiseKit/issues/990
     internal func fulfill() {
-        self.fulfill(())
+        fulfill(())
     }
 }

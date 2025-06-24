@@ -180,7 +180,7 @@ class PayPalServiceTests: XCTestCase {
             return .init(orderId: "order_id", approvalUrl: "scheme://approve")
         }
 
-        let startOrderSessionExpectation = self.expectation(description: "Billing agreement started")
+        let startOrderSessionExpectation = expectation(description: "Billing agreement started")
         service.startOrderSession { result in
             switch result {
             case .success(let model):

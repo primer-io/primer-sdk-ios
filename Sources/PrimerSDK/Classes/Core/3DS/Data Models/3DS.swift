@@ -179,32 +179,32 @@ public final class ThreeDS {
 
         func encode(to encoder: Encoder) throws {
             // Only take into account address fields
-            if self.firstName == nil,
-               self.lastName == nil,
-               self.addressLine1 == nil,
-               self.addressLine2 == nil,
-               self.addressLine3 == nil,
-               self.city == nil,
-               self.state == nil,
-               self.countryCode == nil,
-               self.postalCode == nil {
+            if firstName == nil,
+               lastName == nil,
+               addressLine1 == nil,
+               addressLine2 == nil,
+               addressLine3 == nil,
+               city == nil,
+               state == nil,
+               countryCode == nil,
+               postalCode == nil {
                 var container = encoder.singleValueContainer()
                 try container.encodeNil()
 
             } else {
                 var container = encoder.container(keyedBy: ThreeDS.Address.CodingKeys.self)
-                try container.encodeIfPresent(self.title, forKey: ThreeDS.Address.CodingKeys.title)
-                try container.encodeIfPresent(self.firstName, forKey: ThreeDS.Address.CodingKeys.firstName)
-                try container.encodeIfPresent(self.lastName, forKey: ThreeDS.Address.CodingKeys.lastName)
-                try container.encodeIfPresent(self.email, forKey: ThreeDS.Address.CodingKeys.email)
-                try container.encodeIfPresent(self.phoneNumber, forKey: ThreeDS.Address.CodingKeys.phoneNumber)
-                try container.encodeIfPresent(self.addressLine1, forKey: ThreeDS.Address.CodingKeys.addressLine1)
-                try container.encodeIfPresent(self.addressLine2, forKey: ThreeDS.Address.CodingKeys.addressLine2)
-                try container.encodeIfPresent(self.addressLine3, forKey: ThreeDS.Address.CodingKeys.addressLine3)
-                try container.encodeIfPresent(self.city, forKey: ThreeDS.Address.CodingKeys.city)
-                try container.encodeIfPresent(self.state, forKey: ThreeDS.Address.CodingKeys.state)
-                try container.encodeIfPresent(self.countryCode, forKey: ThreeDS.Address.CodingKeys.countryCode)
-                try container.encodeIfPresent(self.postalCode, forKey: ThreeDS.Address.CodingKeys.postalCode)
+                try container.encodeIfPresent(title, forKey: ThreeDS.Address.CodingKeys.title)
+                try container.encodeIfPresent(firstName, forKey: ThreeDS.Address.CodingKeys.firstName)
+                try container.encodeIfPresent(lastName, forKey: ThreeDS.Address.CodingKeys.lastName)
+                try container.encodeIfPresent(email, forKey: ThreeDS.Address.CodingKeys.email)
+                try container.encodeIfPresent(phoneNumber, forKey: ThreeDS.Address.CodingKeys.phoneNumber)
+                try container.encodeIfPresent(addressLine1, forKey: ThreeDS.Address.CodingKeys.addressLine1)
+                try container.encodeIfPresent(addressLine2, forKey: ThreeDS.Address.CodingKeys.addressLine2)
+                try container.encodeIfPresent(addressLine3, forKey: ThreeDS.Address.CodingKeys.addressLine3)
+                try container.encodeIfPresent(city, forKey: ThreeDS.Address.CodingKeys.city)
+                try container.encodeIfPresent(state, forKey: ThreeDS.Address.CodingKeys.state)
+                try container.encodeIfPresent(countryCode, forKey: ThreeDS.Address.CodingKeys.countryCode)
+                try container.encodeIfPresent(postalCode, forKey: ThreeDS.Address.CodingKeys.postalCode)
             }
         }
     }
@@ -484,20 +484,20 @@ public final class ThreeDS {
             initProtocolVersion: String?,
             error: Primer3DSErrorContainer?
         ) {
-            self.platform = Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS"
+            platform = Primer.shared.integrationOptions?.reactNativeVersion == nil ? "IOS_NATIVE" : "RN_IOS"
             self.initProtocolVersion = initProtocolVersion
 
             #if canImport(Primer3DS)
-            self.threeDsWrapperSdkVersion = Primer3DS.version
-            self.threeDsSdkProvider = Primer3DS.threeDsSdkProvider
-            self.threeDsSdkVersion = Primer3DS.threeDsSdkVersion
+            threeDsWrapperSdkVersion = Primer3DS.version
+            threeDsSdkProvider = Primer3DS.threeDsSdkProvider
+            threeDsSdkVersion = Primer3DS.threeDsSdkVersion
             #endif
 
             if let primer3DSErr = error {
-                self.status = .failure
+                status = .failure
                 self.error = ThreeDS.ContinueInfo.Error(error: primer3DSErr)
             } else {
-                self.status = .success
+                status = .success
             }
         }
 
@@ -515,15 +515,15 @@ public final class ThreeDS {
             var protocolVersion: String?
 
             init(error: Primer3DSErrorContainer) {
-                self.reasonCode = error.errorId.uppercased().replacingOccurrences(of: "-", with: "_")
-                self.reasonText = error.plainDescription
-                self.recoverySuggestion = error.recoverySuggestion
-                self.threeDsErrorDescription = error.threeDsErrorDescription
-                self.threeDsErrorCode = error.threeDsErrorCode
-                self.threeDsErrorComponent = error.threeDsErrorComponent
-                self.threeDsErrorDetail = error.threeDsErrorDetail
-                self.threeDsSdkTranscationId = error.threeDsSdkTranscationId
-                self.protocolVersion = error.initProtocolVersion
+                reasonCode = error.errorId.uppercased().replacingOccurrences(of: "-", with: "_")
+                reasonText = error.plainDescription
+                recoverySuggestion = error.recoverySuggestion
+                threeDsErrorDescription = error.threeDsErrorDescription
+                threeDsErrorCode = error.threeDsErrorCode
+                threeDsErrorComponent = error.threeDsErrorComponent
+                threeDsErrorDetail = error.threeDsErrorDetail
+                threeDsSdkTranscationId = error.threeDsSdkTranscationId
+                protocolVersion = error.initProtocolVersion
             }
         }
     }

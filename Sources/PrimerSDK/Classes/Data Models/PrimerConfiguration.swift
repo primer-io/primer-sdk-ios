@@ -33,8 +33,8 @@ extension Request.URLParameters {
 
         required init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.skipPaymentMethodTypes = (try? container.decode([String]?.self, forKey: .skipPaymentMethodTypes)) ?? nil
-            self.requestDisplayMetadata = (try? container.decode(Bool?.self, forKey: .requestDisplayMetadata)) ?? nil
+            skipPaymentMethodTypes = (try? container.decode([String]?.self, forKey: .skipPaymentMethodTypes)) ?? nil
+            requestDisplayMetadata = (try? container.decode(Bool?.self, forKey: .requestDisplayMetadata)) ?? nil
 
             if skipPaymentMethodTypes == nil && requestDisplayMetadata == nil {
                 throw InternalError.failedToDecode(message: "All values are nil", userInfo: .errorUserInfoDictionary(),
@@ -249,17 +249,17 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
 
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
-            self.pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
-            self.binDataUrl = (try? container.decode(String?.self, forKey: .binDataUrl)) ?? nil
-            self.assetsUrl = (try? container.decode(String?.self, forKey: .assetsUrl)) ?? nil
-            self.clientSession = (try? container.decode(ClientSession.APIResponse?.self, forKey: .clientSession)) ?? nil
+            coreUrl = (try? container.decode(String?.self, forKey: .coreUrl)) ?? nil
+            pciUrl = (try? container.decode(String?.self, forKey: .pciUrl)) ?? nil
+            binDataUrl = (try? container.decode(String?.self, forKey: .binDataUrl)) ?? nil
+            assetsUrl = (try? container.decode(String?.self, forKey: .assetsUrl)) ?? nil
+            clientSession = (try? container.decode(ClientSession.APIResponse?.self, forKey: .clientSession)) ?? nil
             let throwables = try container.decode([Throwable<PrimerPaymentMethod>].self, forKey: .paymentMethods)
-            self.paymentMethods = throwables.compactMap({ $0.value })
-            self.primerAccountId = (try? container.decode(String?.self, forKey: .primerAccountId)) ?? nil
-            self.keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
+            paymentMethods = throwables.compactMap({ $0.value })
+            primerAccountId = (try? container.decode(String?.self, forKey: .primerAccountId)) ?? nil
+            keys = (try? container.decode(ThreeDS.Keys?.self, forKey: .keys)) ?? nil
             let moduleThrowables = try container.decode([Throwable<CheckoutModule>].self, forKey: .checkoutModules)
-            self.checkoutModules = moduleThrowables.compactMap({ $0.value })
+            checkoutModules = moduleThrowables.compactMap({ $0.value })
 
             var hasCardSurcharge = false
             var paymentMethodSurcharges: [String: Int] = [:]
@@ -284,14 +284,14 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
                     }
                 }
 
-                if let paymentMethod = self.paymentMethods?.filter({ $0.type == PrimerPaymentMethodType.paymentCard.rawValue }).first {
+                if let paymentMethod = paymentMethods?.filter({ $0.type == PrimerPaymentMethodType.paymentCard.rawValue }).first {
                     paymentMethod.hasUnknownSurcharge = hasCardSurcharge
                     paymentMethod.surcharge = nil
                 }
 
                 // Process other payment method surcharges
                 for (paymentMethodType, surchargeValue) in paymentMethodSurcharges {
-                    if let paymentMethod = self.paymentMethods?.first(where: { $0.type == paymentMethodType }) {
+                    if let paymentMethod = paymentMethods?.first(where: { $0.type == paymentMethodType }) {
                         paymentMethod.surcharge = surchargeValue
                     }
                 }
@@ -321,7 +321,7 @@ Add `PrimerIPay88SDK' in your project by adding \"pod 'PrimerIPay88SDK'\" in you
         }
 
         func getConfigId(for type: String) -> String? {
-            guard let method = self.paymentMethods?.filter({ $0.type == type }).first else { return nil }
+            guard let method = paymentMethods?.filter({ $0.type == type }).first else { return nil }
             return method.id
         }
 
@@ -357,10 +357,10 @@ extension Response.Body.Configuration {
 
             init(from decoder: Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
-                self.cardHolderName = (try? container.decode(Bool?.self, forKey: .cardHolderName)) ?? nil
-                self.saveCardCheckbox = (try? container.decode(Bool?.self, forKey: .saveCardCheckbox)) ?? nil
+                cardHolderName = (try? container.decode(Bool?.self, forKey: .cardHolderName)) ?? nil
+                saveCardCheckbox = (try? container.decode(Bool?.self, forKey: .saveCardCheckbox)) ?? nil
 
-                if self.cardHolderName == nil && self.saveCardCheckbox == nil {
+                if cardHolderName == nil && saveCardCheckbox == nil {
                     let err = InternalError.failedToDecode(message: "All fields are nil",
                                                            userInfo: .errorUserInfoDictionary(),
                                                            diagnosticsId: UUID().uuidString)
@@ -428,25 +428,25 @@ extension Response.Body.Configuration {
 
             init(from decoder: Decoder) throws {
                 let container = try decoder.container(keyedBy: CodingKeys.self)
-                self.firstName = (try? container.decode(Bool?.self, forKey: .firstName)) ?? nil
-                self.lastName = (try? container.decode(Bool?.self, forKey: .lastName)) ?? nil
-                self.city = (try? container.decode(Bool?.self, forKey: .city)) ?? nil
-                self.postalCode = (try? container.decode(Bool?.self, forKey: .postalCode)) ?? nil
-                self.addressLine1 = (try? container.decode(Bool?.self, forKey: .addressLine1)) ?? nil
-                self.addressLine2 = (try? container.decode(Bool?.self, forKey: .addressLine2)) ?? nil
-                self.countryCode = (try? container.decode(Bool?.self, forKey: .countryCode)) ?? nil
-                self.phoneNumber = (try? container.decode(Bool?.self, forKey: .phoneNumber)) ?? nil
-                self.state = (try? container.decode(Bool?.self, forKey: .state)) ?? nil
+                firstName = (try? container.decode(Bool?.self, forKey: .firstName)) ?? nil
+                lastName = (try? container.decode(Bool?.self, forKey: .lastName)) ?? nil
+                city = (try? container.decode(Bool?.self, forKey: .city)) ?? nil
+                postalCode = (try? container.decode(Bool?.self, forKey: .postalCode)) ?? nil
+                addressLine1 = (try? container.decode(Bool?.self, forKey: .addressLine1)) ?? nil
+                addressLine2 = (try? container.decode(Bool?.self, forKey: .addressLine2)) ?? nil
+                countryCode = (try? container.decode(Bool?.self, forKey: .countryCode)) ?? nil
+                phoneNumber = (try? container.decode(Bool?.self, forKey: .phoneNumber)) ?? nil
+                state = (try? container.decode(Bool?.self, forKey: .state)) ?? nil
 
-                if self.firstName == nil &&
-                    self.lastName == nil &&
-                    self.city == nil &&
-                    self.postalCode == nil &&
-                    self.addressLine1 == nil &&
-                    self.addressLine2 == nil &&
-                    self.countryCode == nil &&
-                    self.phoneNumber == nil &&
-                    self.state == nil {
+                if firstName == nil &&
+                    lastName == nil &&
+                    city == nil &&
+                    postalCode == nil &&
+                    addressLine1 == nil &&
+                    addressLine2 == nil &&
+                    countryCode == nil &&
+                    phoneNumber == nil &&
+                    state == nil {
                     let err = InternalError.failedToDecode(message: "All fields are nil",
                                                            userInfo: .errorUserInfoDictionary(),
                                                            diagnosticsId: UUID().uuidString)
@@ -464,8 +464,8 @@ extension Response.Body.Configuration {
 
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.type = try container.decode(String.self, forKey: .type)
-            self.requestUrlStr = (try? container.decode(String?.self, forKey: .requestUrlStr)) ?? nil
+            type = try container.decode(String.self, forKey: .type)
+            requestUrlStr = (try? container.decode(String?.self, forKey: .requestUrlStr)) ?? nil
 
             if let options = (try? container.decode(CardInformationOptions.self, forKey: .options)) {
                 self.options = options
@@ -474,7 +474,7 @@ extension Response.Body.Configuration {
             } else if let options = (try? container.decode(ShippingMethodOptions.self, forKey: .options)) {
                 self.options = options
             } else {
-                self.options = nil
+                options = nil
             }
         }
 

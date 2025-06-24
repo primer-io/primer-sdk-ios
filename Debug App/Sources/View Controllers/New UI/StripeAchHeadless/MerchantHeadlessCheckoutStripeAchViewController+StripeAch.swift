@@ -76,7 +76,7 @@ extension MerchantHeadlessCheckoutStripeAchViewController {
 extension MerchantHeadlessCheckoutStripeAchViewController: PrimerHeadlessUniversalCheckoutDelegate {
     func primerHeadlessUniversalCheckoutDidStartTokenization(for paymentMethodType: String) {
         print("\n\nMERCHANT APP\n\(#function)\npaymentMethodType: \(paymentMethodType)")
-        self.logs.append(#function)
+        logs.append(#function)
     }
 
     func primerHeadlessUniversalCheckoutDidCompleteCheckoutWithData(_ data: PrimerSDK.PrimerCheckoutData) {

@@ -21,9 +21,9 @@ final class BankTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        self.preservesSuperviewLayoutMargins = false
-        self.contentView.preservesSuperviewLayoutMargins = false
-        self.selectionStyle = .none
+        preservesSuperviewLayoutMargins = false
+        contentView.preservesSuperviewLayoutMargins = false
+        selectionStyle = .none
 
         let theme: PrimerThemeProtocol = DependencyContainer.resolve()
         backgroundColor = theme.view.backgroundColor
@@ -64,10 +64,10 @@ final class BankTableViewCell: UITableViewCell {
     }
 
     func configure(viewModel: AdyenBank) {
-        self.bank = viewModel
+        bank = viewModel
         nameLabel.text = viewModel.name
         logoImageView.image = nil
-        logoImageView.load(url: self.bank.iconUrl)
+        logoImageView.load(url: bank.iconUrl)
     }
 }
 
@@ -78,7 +78,7 @@ fileprivate extension UIImageView {
         if let data = URLCache.shared.cachedResponse(for: request)?.data, let image = UIImage(data: data) {
             self.image = image
         } else {
-            self.image = placeholder
+            image = placeholder
             URLSession.shared.dataTask(with: request, completionHandler: { (data, response, _) in
                 if let data = data,
                    let response = response, ((response as? HTTPURLResponse)?.statusCode ?? 500) < 300,

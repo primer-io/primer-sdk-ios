@@ -192,10 +192,10 @@ final class PayPalService: PayPalServiceProtocol {
             return
         }
 
-        guard let tokenId = self.paypalTokenId else {
+        guard let tokenId = paypalTokenId else {
             let err = PrimerError.invalidValue(
                 key: "paypalTokenId",
-                value: self.paypalTokenId,
+                value: paypalTokenId,
                 userInfo: .errorUserInfoDictionary(),
                 diagnosticsId: UUID().uuidString)
             ErrorHandler.handle(error: err)

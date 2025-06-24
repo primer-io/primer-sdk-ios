@@ -57,7 +57,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     private var webViewCompletion: ((_ authorizationToken: String?, _ error: Error?) -> Void)?
     private var paymentMethodsRequiringCVVInput: [PrimerPaymentMethodType] = [.paymentCard]
     private var isRequiringCVVInput: Bool {
-        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: self.config.type) else { return false }
+        guard let paymentMethodType = PrimerPaymentMethodType(rawValue: config.type) else { return false }
         return paymentMethodsRequiringCVVInput.contains(paymentMethodType)
     }
     var dataSource = CountryCode.allCases {
@@ -360,22 +360,22 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
             unselectPaymentMethodSilently()
         }
 
-        self.checkoutEventsNotifierModule.didStartTokenization = {
+        checkoutEventsNotifierModule.didStartTokenization = {
             self.uiModule.submitButton?.startAnimating()
             self.uiManager.primerRootViewController?.enableUserInteraction(false)
         }
 
-        self.checkoutEventsNotifierModule.didFinishTokenization = {
+        checkoutEventsNotifierModule.didFinishTokenization = {
             self.uiModule.submitButton?.stopAnimating()
             self.uiManager.primerRootViewController?.enableUserInteraction(true)
         }
 
-        self.didStartPayment = {
+        didStartPayment = {
             self.uiModule.submitButton?.startAnimating()
             self.uiManager.primerRootViewController?.enableUserInteraction(false)
         }
 
-        self.didFinishPayment = { _ in
+        didFinishPayment = { _ in
             self.uiModule.submitButton?.stopAnimating()
             self.uiManager.primerRootViewController?.enableUserInteraction(true)
 
@@ -482,7 +482,7 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: nil),
             extra: nil,
             objectType: .button,
@@ -757,12 +757,12 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
     }
 
     override func submitButtonTapped() {
-        self.uiModule.submitButton?.startAnimating()
+        uiModule.submitButton?.startAnimating()
         let viewEvent = Analytics.Event.ui(
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: nil),
             extra: nil,
             objectType: .button,
@@ -772,12 +772,12 @@ final class CardFormPaymentMethodTokenizationViewModel: PaymentMethodTokenizatio
         )
         Analytics.Service.record(event: viewEvent)
 
-        self.userInputCompletion?()
+        userInputCompletion?()
     }
 
     override func cancel() {
-        self.didCancel?()
-        self.didCancel = nil
+        didCancel?()
+        didCancel = nil
         super.cancel()
     }
 }
@@ -839,8 +839,8 @@ extension CardFormPaymentMethodTokenizationViewModel {
 extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsManagerDelegate {
 
     func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, onTokenizeSuccess paymentMethodToken: PrimerPaymentMethodTokenData) {
-        self.cardComponentsManagerTokenizationCompletion?(paymentMethodToken, nil)
-        self.cardComponentsManagerTokenizationCompletion = nil
+        cardComponentsManagerTokenizationCompletion?(paymentMethodToken, nil)
+        cardComponentsManagerTokenizationCompletion = nil
     }
 
     func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, clientTokenCallback completion: @escaping (String?, Error?) -> Void) {
@@ -859,17 +859,17 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
                                                userInfo: .errorUserInfoDictionary(),
                                                diagnosticsId: UUID().uuidString)
         ErrorHandler.handle(error: err)
-        self.cardComponentsManagerTokenizationCompletion?(nil, err)
-        self.cardComponentsManagerTokenizationCompletion = nil
+        cardComponentsManagerTokenizationCompletion?(nil, err)
+        cardComponentsManagerTokenizationCompletion = nil
     }
 
     func cardComponentsManager(_ cardComponentsManager: InternalCardComponentsManager, isLoading: Bool) {
         if isLoading {
-            self.uiModule.submitButton?.startAnimating()
+            uiModule.submitButton?.startAnimating()
         } else {
-            self.uiModule.submitButton?.stopAnimating()
+            uiModule.submitButton?.stopAnimating()
         }
-        self.uiManager.primerRootViewController?.enableUserInteraction(!isLoading)
+        uiManager.primerRootViewController?.enableUserInteraction(!isLoading)
     }
 
     // swiftlint:disable cyclomatic_complexity
@@ -969,11 +969,11 @@ extension CardFormPaymentMethodTokenizationViewModel: InternalCardComponentsMana
         if cardholderNameField != nil { validations.append(cardholderNameField!.isTextValid) }
 
         if validations.allSatisfy({ $0 == true }) {
-            self.uiModule.submitButton?.isEnabled = true
-            self.uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .enabled)
+            uiModule.submitButton?.isEnabled = true
+            uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .enabled)
         } else {
-            self.uiModule.submitButton?.isEnabled = false
-            self.uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .disabled)
+            uiModule.submitButton?.isEnabled = false
+            uiModule.submitButton?.backgroundColor = theme.mainButton.color(for: .disabled)
         }
     }
 }
@@ -1001,8 +1001,8 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerTextFieldViewDelegat
         guard alternativelySelectedCardNetwork == nil
         else { return }
 
-        self.rawCardData.cardNetwork = cardNetwork
-        self.rawDataManager?.rawData = self.rawCardData
+        rawCardData.cardNetwork = cardNetwork
+        rawDataManager?.rawData = rawCardData
 
         var network = cardNetwork?.rawValue.uppercased()
 
@@ -1061,12 +1061,12 @@ extension CardFormPaymentMethodTokenizationViewModel: UITableViewDataSource, UIT
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let country = self.dataSource[indexPath.row]
+        let country = dataSource[indexPath.row]
         countryFieldView.textField.text = "\(country.flag) \(country.country)"
         countryFieldView.countryCode = country
         countryFieldView.validation = .valid
         countryFieldView.textFieldDidEndEditing(countryFieldView.textField)
-        self.uiManager.primerRootViewController?.popViewController()
+        uiManager.primerRootViewController?.popViewController()
     }
 }
 
@@ -1216,8 +1216,7 @@ extension CardFormPaymentMethodTokenizationViewModel: PrimerHeadlessUniversalChe
 
 private extension String {
     func lowercasedAndFolded() -> String {
-        self
-            .lowercased()
+        lowercased()
             .folding(
                 options: .diacriticInsensitive,
                 locale: nil)

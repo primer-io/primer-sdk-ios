@@ -58,13 +58,13 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     override func receivedNotification(_ notification: Notification) {
         switch notification.name.rawValue {
         case Notification.Name.receivedUrlSchemeRedirect.rawValue:
-            self.webViewController?.dismiss(animated: true)
-            self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+            webViewController?.dismiss(animated: true)
+            uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
 
         case Notification.Name.receivedUrlSchemeCancellation.rawValue:
-            self.webViewController?.dismiss(animated: true)
-            self.didCancel?()
-            self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+            webViewController?.dismiss(animated: true)
+            didCancel?()
+            uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         default:
             super.receivedNotification(notification)
         }
@@ -80,7 +80,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     }
 
     override func start() {
-        self.didFinishPayment = { [weak self] _ in
+        didFinishPayment = { [weak self] _ in
             guard let self = self else { return }
             self.cleanup()
         }
@@ -92,18 +92,18 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
 
     func setupNotificationObservers() {
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.receivedNotification(_:)),
+                                               selector: #selector(receivedNotification(_:)),
                                                name: Notification.Name.receivedUrlSchemeRedirect,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.receivedNotification(_:)),
+                                               selector: #selector(receivedNotification(_:)),
                                                name: Notification.Name.receivedUrlSchemeCancellation,
                                                object: nil)
     }
 
     func cleanup() {
-        self.willDismissPaymentMethodUI?()
-        self.webViewController?.dismiss(animated: true, completion: {
+        willDismissPaymentMethodUI?()
+        webViewController?.dismiss(animated: true, completion: {
             self.didDismissPaymentMethodUI?()
         })
     }
@@ -118,7 +118,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
             action: .click,
             context: Analytics.Event.Property.Context(
                 issuerId: nil,
-                paymentMethodType: self.config.type,
+                paymentMethodType: config.type,
                 url: nil),
             extra: nil,
             objectType: .button,
@@ -128,8 +128,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         )
         Analytics.Service.record(event: event)
 
-        let imageView = self.uiModule.makeIconImageView(withDimension: 24.0)
-        self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView,
+        let imageView = uiModule.makeIconImageView(withDimension: 24.0)
+        uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: imageView,
                                                                            message: nil)
 
         return Promise { seal in
@@ -382,8 +382,8 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
     }
 
     override func cancel() {
-        self.didCancelPolling?()
-        self.didCancelPolling = nil
+        didCancelPolling?()
+        didCancelPolling = nil
         super.cancel()
     }
 
@@ -400,7 +400,7 @@ class WebRedirectPaymentMethodTokenizationViewModel: PaymentMethodTokenizationVi
         case PrimerPaymentMethodType.adyenVipps.rawValue:
             /// If the Vipps app is not installed, fall back to the Web flow.
             if let deepLinkUrl = URL(string: Self.adyenVippsDeeplinkUrl),
-               self.deeplinkAbilityProvider.canOpenURL(deepLinkUrl) == true {
+               deeplinkAbilityProvider.canOpenURL(deepLinkUrl) == true {
                 return WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode)
             } else {
                 return WebRedirectSessionInfo(locale: PrimerSettings.current.localeData.localeCode, platform: "WEB")
@@ -431,16 +431,16 @@ extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerD
         )
         Analytics.Service.record(events: [messageEvent])
 
-        self.cancel()
+        cancel()
     }
 
     func safariViewController(_ controller: SFSafariViewController, didCompleteInitialLoad didLoadSuccessfully: Bool) {
         if didLoadSuccessfully {
-            self.didPresentPaymentMethodUI?()
+            didPresentPaymentMethodUI?()
         }
 
-        if let redirectUrlRequestId = self.redirectUrlRequestId,
-           let redirectUrlComponents = self.redirectUrlComponents {
+        if let redirectUrlRequestId = redirectUrlRequestId,
+           let redirectUrlComponents = redirectUrlComponents {
             let networkEvent = Analytics.Event.networkCall(
                 callType: .requestEnd,
                 id: redirectUrlRequestId,
@@ -467,8 +467,8 @@ extension WebRedirectPaymentMethodTokenizationViewModel: SFSafariViewControllerD
         }
 
         if URL.absoluteString.hasSuffix("primer.io/static/loading.html") || URL.absoluteString.hasSuffix("primer.io/static/loading-spinner.html") {
-            self.webViewController?.dismiss(animated: true)
-            self.uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
+            webViewController?.dismiss(animated: true)
+            uiManager.primerRootViewController?.showLoadingScreenIfNeeded(imageView: nil, message: nil)
         }
     }
 }
@@ -503,9 +503,9 @@ struct PollingResponse: Decodable {
     init(from decoder: Decoder) throws {
         do {
             let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.status = try container.decode(PollingStatus.self, forKey: .status)
-            self.id = try container.decode(String.self, forKey: .id)
-            self.source = try container.decode(String.self, forKey: .source)
+            status = try container.decode(PollingStatus.self, forKey: .status)
+            id = try container.decode(String.self, forKey: .id)
+            source = try container.decode(String.self, forKey: .source)
         } catch {
             throw error
         }
