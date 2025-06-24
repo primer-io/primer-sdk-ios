@@ -15,4 +15,9 @@ protocol PrimerAPIClientXenditProtocol {
         clientToken: DecodedJWTToken,
         paymentMethodId: String,
         completion: @escaping APICompletion<RetailOutletsList>)
+
+    func listRetailOutlets(
+        clientToken: DecodedJWTToken,
+        paymentMethodId: String
+    ) async throws -> RetailOutletsList
 }

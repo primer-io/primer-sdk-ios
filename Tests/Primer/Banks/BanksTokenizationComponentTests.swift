@@ -8,21 +8,6 @@
 import XCTest
 @testable import PrimerSDK
 
-class MockBanksAPIClient: PrimerAPIClientBanksProtocol {
-
-    var result: BanksListSessionResponse?
-
-    var error: Error?
-
-    func listAdyenBanks(clientToken: PrimerSDK.DecodedJWTToken, request: Request.Body.Adyen.BanksList, completion: @escaping PrimerSDK.APICompletion<BanksListSessionResponse>) {
-        if let error = error {
-            completion(.failure(error))
-        } else if let result = result {
-            completion(.success(result))
-        }
-    }
-}
-
 final class BanksTokenizationComponentTests: XCTestCase {
 
     var apiClient: MockBanksAPIClient!

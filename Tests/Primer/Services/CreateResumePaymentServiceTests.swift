@@ -10,11 +10,11 @@ import XCTest
 
 final class CreateResumePaymentServiceTests: XCTestCase {
     var sut: CreateResumePaymentService!
-    private var apiClient: MockCreateResumeAPI!
+    private var apiClient: MockCreateResumeAPIClient!
 
     override func setUp() {
         super.setUp()
-        apiClient = MockCreateResumeAPI()
+        apiClient = MockCreateResumeAPIClient()
         sut = CreateResumePaymentService(paymentMethodType: "PAYMENT_CARD", apiClient: apiClient)
     }
 
@@ -675,54 +675,5 @@ private extension Response.Body.Payment {
               status: .pending,
               showSuccessCheckoutOnPendingPayment: true,
               checkoutOutcome: .determineFromPaymentStatus)
-    }
-}
-
-private final class MockCreateResumeAPI: PrimerAPIClientCreateResumePaymentProtocol {
-    var resumeResponse: APIResult<Response.Body.Payment>?
-    var createResponse: APIResult<Response.Body.Payment>?
-    var completeResponse: APIResult<Response.Body.Complete>?
-
-    init(resumeResponse: APIResult<Response.Body.Payment>? = nil,
-         createResponse: APIResult<Response.Body.Payment>? = nil,
-         completeResponse: APIResult<Response.Body.Complete>? = nil) {
-        self.resumeResponse = resumeResponse
-        self.createResponse = createResponse
-        self.completeResponse = completeResponse
-    }
-
-    func createPayment(
-        clientToken: DecodedJWTToken,
-        paymentRequestBody: Request.Body.Payment.Create,
-        completion: @escaping APICompletion<Response.Body.Payment>
-    ) {
-        guard let createResponse else {
-            XCTFail("No create response set")
-            return
-        }
-        completion(createResponse)
-    }
-
-    func resumePayment(
-        clientToken: DecodedJWTToken,
-        paymentId: String,
-        paymentResumeRequest: Request.Body.Payment.Resume,
-        completion: @escaping APICompletion<Response.Body.Payment>
-    ) {
-        guard let resumeResponse else {
-            XCTFail("No resume response set")
-            return
-        }
-        completion(resumeResponse)
-    }
-
-    func completePayment(clientToken: DecodedJWTToken,
-                         url: URL, paymentRequest: Request.Body.Payment.Complete,
-                         completion: @escaping APICompletion<Response.Body.Complete>) {
-        guard let completeResponse else {
-            XCTFail("No complete response set")
-            return
-        }
-        completion(completeResponse)
     }
 }
