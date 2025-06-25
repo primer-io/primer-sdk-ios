@@ -1,15 +1,7 @@
-//
-//  MockBINDataAPIClient.swift
-//  Debug App Tests
-//
-//  Created by Jack Newcombe on 31/10/2023.
-//  Copyright © 2023 Primer API Ltd. All rights reserved.
-//
-
 import Foundation
 @testable import PrimerSDK
 
-class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
+final class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
 
     class AnyCancellable: PrimerCancellable {
         let canceller: () -> Void
@@ -54,5 +46,15 @@ class MockBINDataAPIClient: PrimerAPIClientBINDataProtocol {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25, execute: workItem)
 
         return cancellable
+    }
+
+    func listCardNetworks(clientToken: PrimerSDK.DecodedJWTToken, bin: String) async throws -> PrimerSDK.Response.Body.Bin.Networks {
+        if let error = error {
+            throw error
+        } else if let result = results[bin] {
+            return result
+        } else {
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        }
     }
 }
