@@ -1,10 +1,3 @@
-//
-//  TokenizationServiceTests.swift
-//  PrimerSDKTests
-//
-//  Created by Onur Var on 18.06.2025.
-//
-
 @testable import PrimerSDK
 import XCTest
 
