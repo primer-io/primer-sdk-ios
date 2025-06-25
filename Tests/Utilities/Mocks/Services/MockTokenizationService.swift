@@ -13,10 +13,11 @@ class MockTokenizationService: TokenizationServiceProtocol {
     static var apiClient: (any PrimerSDK.PrimerAPIClientProtocol)?
 
     var paymentMethodTokenData: PrimerSDK.PrimerPaymentMethodTokenData?
+    var onTokenize: ((Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData>)?
+    var onExchangePaymentMethodToken: ((String, PrimerVaultedPaymentMethodAdditionalData?) -> Promise<PrimerPaymentMethodTokenData>)?
 
     // MARK: tokenize
 
-    var onTokenize: ((Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData>)?
 
     func tokenize(requestBody: Request.Body.Tokenization) -> Promise<PrimerPaymentMethodTokenData> {
         return onTokenize?(requestBody) ??
@@ -38,8 +39,6 @@ class MockTokenizationService: TokenizationServiceProtocol {
     }
 
     // MARK: exchangePaymentMethodToken
-
-    var onExchangePaymentMethodToken: ((String, PrimerVaultedPaymentMethodAdditionalData?) -> Promise<PrimerPaymentMethodTokenData>)?
 
     func exchangePaymentMethodToken(_ paymentMethodTokenId: String, vaultedPaymentMethodAdditionalData: PrimerVaultedPaymentMethodAdditionalData?) -> Promise<PrimerPaymentMethodTokenData> {
         return onExchangePaymentMethodToken?(paymentMethodTokenId, vaultedPaymentMethodAdditionalData) ??
