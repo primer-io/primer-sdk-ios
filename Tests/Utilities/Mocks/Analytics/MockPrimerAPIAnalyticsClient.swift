@@ -24,7 +24,8 @@ class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
 
     func sendAnalyticsEvents(clientToken: PrimerSDK.DecodedJWTToken?, url: URL, body: [PrimerSDK.Analytics.Event]?) async throws -> Analytics.Service.Response {
         guard let body = body else {
-            XCTFail(); throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+            XCTFail();
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         }
         batches.append(body)
         if shouldSucceed {

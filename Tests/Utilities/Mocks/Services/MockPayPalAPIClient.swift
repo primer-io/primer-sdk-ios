@@ -3,6 +3,9 @@
 final class MockPayPalAPIClient: PrimerAPIClientPayPalProtocol {
 
     var onCreateOrderSession: ((DecodedJWTToken, Request.Body.PayPal.CreateOrder) -> Response.Body.PayPal.CreateOrder)?
+    var onCreateBillingAgreementSession: ((DecodedJWTToken, Request.Body.PayPal.CreateBillingAgreement) -> Response.Body.PayPal.CreateBillingAgreement)?
+    var onConfirmBillingAgreement: ((DecodedJWTToken, Request.Body.PayPal.ConfirmBillingAgreement) -> Response.Body.PayPal.ConfirmBillingAgreement)?
+    var onFetchExternalPayerInfo: ((DecodedJWTToken, Request.Body.PayPal.PayerInfo) -> Response.Body.PayPal.PayerInfo)?
 
     func createPayPalOrderSession(clientToken: PrimerSDK.DecodedJWTToken,
                                   payPalCreateOrderRequest: Request.Body.PayPal.CreateOrder,
@@ -22,7 +25,6 @@ final class MockPayPalAPIClient: PrimerAPIClientPayPalProtocol {
         }
     }
 
-    var onCreateBillingAgreementSession: ((DecodedJWTToken, Request.Body.PayPal.CreateBillingAgreement) -> Response.Body.PayPal.CreateBillingAgreement)?
 
     func createPayPalBillingAgreementSession(clientToken: DecodedJWTToken,
                                              payPalCreateBillingAgreementRequest: Request.Body.PayPal.CreateBillingAgreement,
@@ -42,7 +44,6 @@ final class MockPayPalAPIClient: PrimerAPIClientPayPalProtocol {
         }
     }
 
-    var onConfirmBillingAgreement: ((DecodedJWTToken, Request.Body.PayPal.ConfirmBillingAgreement) -> Response.Body.PayPal.ConfirmBillingAgreement)?
 
     func confirmPayPalBillingAgreement(clientToken: DecodedJWTToken,
                                        payPalConfirmBillingAgreementRequest: Request.Body.PayPal.ConfirmBillingAgreement,
@@ -62,7 +63,6 @@ final class MockPayPalAPIClient: PrimerAPIClientPayPalProtocol {
         }
     }
 
-    var onFetchExternalPayerInfo: ((DecodedJWTToken, Request.Body.PayPal.PayerInfo) -> Response.Body.PayPal.PayerInfo)?
 
     func fetchPayPalExternalPayerInfo(clientToken: DecodedJWTToken,
                                       payPalExternalPayerInfoRequestBody: Request.Body.PayPal.PayerInfo,

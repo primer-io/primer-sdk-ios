@@ -9,12 +9,12 @@
 @testable import PrimerSDK
 import XCTest
 
-class MockNetworkService: NetworkServiceProtocol {
+final class MockNetworkService: NetworkServiceProtocol {
     var mockedResult: Decodable?
     var mockedError: Error?
     var mockedHeaders: [String: String]?
-    let mockedNetworkDelay: TimeInterval = Double.random(in: 0 ... 2)
     var onReceiveEndpoint: ((Endpoint) -> Void)?
+    private let mockedNetworkDelay: TimeInterval = Double.random(in: 0 ... 2)
 
     func request<T>(
         _ endpoint: PrimerSDK.Endpoint,

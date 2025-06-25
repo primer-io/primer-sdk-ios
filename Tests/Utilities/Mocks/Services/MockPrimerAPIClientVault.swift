@@ -3,6 +3,7 @@
 final class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
 
     var onFetchVaultedPaymentMethods: ((DecodedJWTToken) -> Response.Body.VaultedPaymentMethods)?
+    var onDeleteVaultedPaymentMethods: ((DecodedJWTToken, String) -> Void)?
 
     func fetchVaultedPaymentMethods(clientToken: DecodedJWTToken, completion: @escaping APICompletion<Response.Body.VaultedPaymentMethods>) {
         if let result = onFetchVaultedPaymentMethods?(clientToken) {
@@ -19,8 +20,6 @@ final class MockPrimerAPIClientVault: PrimerAPIClientVaultProtocol {
             throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         }
     }
-
-    var onDeleteVaultedPaymentMethods: ((DecodedJWTToken, String) -> Void)?
 
     func deleteVaultedPaymentMethod(clientToken: DecodedJWTToken, id: String, completion: @escaping APICompletion<Void>) {
         if let onDeleteVaultedPaymentMethods = onDeleteVaultedPaymentMethods {

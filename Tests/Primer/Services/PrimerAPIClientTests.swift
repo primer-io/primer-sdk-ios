@@ -22,8 +22,6 @@ final class PrimerAPIClientTests: XCTestCase {
         sut = PrimerAPIClient(networkService: networkService)
     }
 
-    override class func tearDown() {}
-
     func test_genericAPICall_shouldSuccess_whenValidResponse() {
         // Given
         let expectation = XCTestExpectation(description: "Callback called")

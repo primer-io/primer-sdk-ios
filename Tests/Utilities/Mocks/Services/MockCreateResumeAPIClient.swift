@@ -20,8 +20,7 @@ final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtoco
         completion: @escaping APICompletion<Response.Body.Payment>
     ) {
         guard let createResponse else {
-            XCTFail("No create response set")
-            return
+            return XCTFail("No create response set")
         }
         completion(createResponse)
     }
@@ -32,10 +31,8 @@ final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtoco
             throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         }
         switch createResponse {
-        case .success(let result):
-            return result
-        case .failure(let error):
-            throw error
+        case .success(let result): return result
+        case .failure(let error): throw error
         }
     }
 
@@ -46,8 +43,7 @@ final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtoco
         completion: @escaping APICompletion<Response.Body.Payment>
     ) {
         guard let resumeResponse else {
-            XCTFail("No resume response set")
-            return
+            return XCTFail("No resume response set")
         }
         completion(resumeResponse)
     }
@@ -58,10 +54,8 @@ final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtoco
             throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         }
         switch resumeResponse {
-        case .success(let result):
-            return result
-        case .failure(let error):
-            throw error
+        case .success(let result): return result
+        case .failure(let error): throw error
         }
     }
 
@@ -69,8 +63,7 @@ final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtoco
                          url: URL, paymentRequest: Request.Body.Payment.Complete,
                          completion: @escaping APICompletion<Response.Body.Complete>) {
         guard let completeResponse else {
-            XCTFail("No complete response set")
-            return
+            return XCTFail("No complete response set")
         }
         completion(completeResponse)
     }
@@ -82,10 +75,8 @@ final class MockCreateResumeAPIClient: PrimerAPIClientCreateResumePaymentProtoco
             throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         }
         switch completeResponse {
-        case .success(let result):
-            return result
-        case .failure(let error):
-            throw error
+        case .success(let result): return result
+        case .failure(let error): throw error
         }
     }
 }

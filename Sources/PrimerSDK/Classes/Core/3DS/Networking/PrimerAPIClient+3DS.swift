@@ -32,10 +32,13 @@ extension PrimerAPIClient {
         paymentMethodTokenData: PrimerPaymentMethodTokenData,
         threeDSecureBeginAuthRequest: ThreeDS.BeginAuthRequest
     ) async throws -> ThreeDS.BeginAuthResponse {
-        let endpoint = PrimerAPI.begin3DSRemoteAuth(clientToken: clientToken,
-                                                    paymentMethodTokenData: paymentMethodTokenData,
-                                                    threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest)
-        return try await networkService.request(endpoint)
+        return try await networkService.request(
+            PrimerAPI.begin3DSRemoteAuth(
+                clientToken: clientToken,
+                paymentMethodTokenData: paymentMethodTokenData,
+                threeDSecureBeginAuthRequest: threeDSecureBeginAuthRequest
+            )
+        )
     }
 
     func continue3DSAuth(
@@ -63,9 +66,10 @@ extension PrimerAPIClient {
         threeDSTokenId: String,
         continueInfo: ThreeDS.ContinueInfo
     ) async throws -> ThreeDS.PostAuthResponse {
-        let endpoint = PrimerAPI.continue3DSRemoteAuth(clientToken: clientToken,
-                                                       threeDSTokenId: threeDSTokenId,
-                                                       continueInfo: continueInfo)
-        return try await networkService.request(endpoint)
+        return try await networkService.request(
+            PrimerAPI.continue3DSRemoteAuth(clientToken: clientToken,
+                                            threeDSTokenId: threeDSTokenId,
+                                            continueInfo: continueInfo)
+        )
     }
 }

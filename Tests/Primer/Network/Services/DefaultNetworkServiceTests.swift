@@ -102,15 +102,17 @@ final class DefaultNetworkServiceTests: XCTestCase {
     }
 
     func testBasicRequest_jsonDecodingSuccess_async() async throws {
-        let responseModel = PrimerAPIConfiguration(coreUrl: "https://core_url",
-                                                   pciUrl: "https://pci_url",
-                                                   binDataUrl: "https://bin_data_url",
-                                                   assetsUrl: "https://assets_url",
-                                                   clientSession: nil,
-                                                   paymentMethods: [],
-                                                   primerAccountId: "primer_account_id",
-                                                   keys: nil,
-                                                   checkoutModules: [])
+        let responseModel = PrimerAPIConfiguration(
+            coreUrl: "https://core_url",
+            pciUrl: "https://pci_url",
+            binDataUrl: "https://bin_data_url",
+            assetsUrl: "https://assets_url",
+            clientSession: nil,
+            paymentMethods: [],
+            primerAccountId: "primer_account_id",
+            keys: nil,
+            checkoutModules: []
+        )
 
         let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
         let data = try JSONEncoder().encode(responseModel)
@@ -204,8 +206,7 @@ final class DefaultNetworkServiceTests: XCTestCase {
 
     func testRedirectRequest_successWithEmptyResponse_async() async throws {
         let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
-        let data = Data()
-        requestDispatcher.responseModel = DispatcherResponseModel(metadata: metadata, requestDuration: 1000, data: data, error: nil)
+        requestDispatcher.responseModel = DispatcherResponseModel(metadata: metadata, requestDuration: 1000, data: Data(), error: nil)
 
         let endpoint = PrimerAPI.redirect(clientToken: Mocks.decodedJWTToken, url: URL(string: metadata.responseUrl!)!)
         let (_, headers): (SuccessResponse, [String: String]?) = try await defaultNetworkService.request(endpoint)
@@ -314,15 +315,17 @@ final class DefaultNetworkServiceTests: XCTestCase {
     }
 
     func testRequest_withHeaders_success_async() async throws {
-        let responseModel = PrimerAPIConfiguration(coreUrl: "https://core_url",
-                                                   pciUrl: "https://pci_url",
-                                                   binDataUrl: "https://bin_data_url",
-                                                   assetsUrl: "https://assets_url",
-                                                   clientSession: nil,
-                                                   paymentMethods: [],
-                                                   primerAccountId: "primer_account_id",
-                                                   keys: nil,
-                                                   checkoutModules: [])
+        let responseModel = PrimerAPIConfiguration(
+            coreUrl: "https://core_url",
+            pciUrl: "https://pci_url",
+            binDataUrl: "https://bin_data_url",
+            assetsUrl: "https://assets_url",
+            clientSession: nil,
+            paymentMethods: [],
+            primerAccountId: "primer_account_id",
+            keys: nil,
+            checkoutModules: []
+        )
 
         let metadata = ResponseMetadataModel(responseUrl: "https://response_url", statusCode: 200, headers: ["X-Test-Key": "X-Test-Value"])
         let data = try! JSONEncoder().encode(responseModel)
