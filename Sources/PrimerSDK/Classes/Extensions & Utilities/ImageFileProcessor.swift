@@ -146,23 +146,13 @@ final class ImageFileProcessor {
                 $0.fileName.contains(paymentMethod.type.lowercased().replacingOccurrences(of: "_",
                                                                                           with: "-"))
             }
-            if paymentMethodImageFiles.isEmpty {
-                continue
-            }
+            if paymentMethodImageFiles.isEmpty { continue }
 
-            let coloredImageFile = paymentMethodImageFiles
-                .filter { $0.fileName.contains("dark") == false && $0.fileName.contains("light") == false }.first
-            let darkImageFile = paymentMethodImageFiles
-                .filter { $0.fileName.contains("dark") == true }.first
-            let lightImageFile = paymentMethodImageFiles
-                .filter { $0.fileName.contains("light") == true }.first
-
-            let baseImage = PrimerTheme.BaseImage(
-                colored: coloredImageFile?.image,
-                light: lightImageFile?.image,
-                dark: darkImageFile?.image
+            apiConfiguration.paymentMethods?[index].baseLogoImage = .init(
+                colored: paymentMethodImageFiles.first { !$0.fileName.contains("dark") && !$0.fileName.contains("light") }?.image,
+                light: paymentMethodImageFiles.first { $0.fileName.contains("light") }?.image,
+                dark: paymentMethodImageFiles.first { $0.fileName.contains("dark") }?.image
             )
-            apiConfiguration.paymentMethods?[index].baseLogoImage = baseImage
         }
     }
     
