@@ -88,7 +88,7 @@ final class VaultManagerTests: XCTestCase {
         let expectExchangeTokenData = self.expectation(description: "Token data exchanged")
         tokenizationService.onExchangePaymentMethodToken = { _, _ in
             expectExchangeTokenData.fulfill()
-            return Promise.fulfilled(Mocks.primerPaymentMethodTokenData)
+            return Mocks.primerPaymentMethodTokenData
         }
 
         headlessCheckoutDelegate.onDidFail = { error in
@@ -138,7 +138,7 @@ final class VaultManagerTests: XCTestCase {
         let expectExchangeTokenData = self.expectation(description: "Token data exchanged")
         tokenizationService.onExchangePaymentMethodToken = { _, _ in
             expectExchangeTokenData.fulfill()
-            return Promise.fulfilled(Mocks.primerPaymentMethodTokenData)
+            return Mocks.primerPaymentMethodTokenData
         }
 
         headlessCheckoutDelegate.onDidFail = { error in
@@ -184,7 +184,7 @@ final class VaultManagerTests: XCTestCase {
         let expectExchangeTokenData = self.expectation(description: "Token data exchanged")
         tokenizationService.onExchangePaymentMethodToken = { _, _ in
             expectExchangeTokenData.fulfill()
-            return Promise.fulfilled(Mocks.primerPaymentMethodTokenData)
+            return Mocks.primerPaymentMethodTokenData
         }
 
         let expectResumePayment = self.expectation(description: "On resume payment")
@@ -221,7 +221,7 @@ final class VaultManagerTests: XCTestCase {
         let expectExchangeTokenData = self.expectation(description: "Token data exchanged")
         tokenizationService.onExchangePaymentMethodToken = { _, _ in
             expectExchangeTokenData.fulfill()
-            return Promise.fulfilled(self.primerPaymentMethodTokenData)
+            return self.primerPaymentMethodTokenData
         }
 
         let expectCreatePayment = self.expectation(description: "On create payment")

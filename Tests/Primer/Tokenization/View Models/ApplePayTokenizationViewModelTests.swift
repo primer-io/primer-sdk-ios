@@ -177,7 +177,7 @@ final class ApplePayTokenizationViewModelTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return Promise.fulfilled(self.tokenizationResponseBody)
+            return self.tokenizationResponseBody
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")

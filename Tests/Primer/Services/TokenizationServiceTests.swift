@@ -1,14 +1,13 @@
 @testable import PrimerSDK
 import XCTest
 
-class TokenizationServiceTests: XCTestCase {
-    var tokenizationService: TokenizationService!
-    var mockApiClient: MockPrimerAPIClient!
+final class TokenizationServiceTests: XCTestCase {
+    var sut: TokenizationService!
+    private let mockApiClient = MockPrimerAPIClient()
 
     override func setUp() {
         super.setUp()
-        mockApiClient = MockPrimerAPIClient()
-        tokenizationService = TokenizationService(apiClient: mockApiClient)
+        sut = TokenizationService(apiClient: mockApiClient)
 
         AppState.current.clientToken = MockAppState.mockClientToken
         PrimerAPIConfigurationModule.apiClient = mockApiClient
@@ -16,7 +15,7 @@ class TokenizationServiceTests: XCTestCase {
     }
 
     override func tearDown() {
-        tokenizationService = nil
+        sut = nil
         super.tearDown()
     }
 
@@ -26,11 +25,10 @@ class TokenizationServiceTests: XCTestCase {
 
         // When
         do {
-            _ = try await tokenizationService.tokenize(requestBody: Mocks.tokenizationRequestBody)
+            _ = try await sut.tokenize(requestBody: Mocks.tokenizationRequestBody)
             XCTFail("Expected to throw an error but succeeded")
         } catch {
-            // Then
-            XCTAssertNotNil(error, "Expected an error but got nil")
+            // Then - error was thrown as expected
         }
     }
 
@@ -41,11 +39,10 @@ class TokenizationServiceTests: XCTestCase {
 
         // When
         do {
-            _ = try await tokenizationService.tokenize(requestBody: Mocks.tokenizationRequestBody)
+            _ = try await sut.tokenize(requestBody: Mocks.tokenizationRequestBody)
             XCTFail("Expected to throw an error but succeeded")
         } catch {
-            // Then
-            XCTAssertNotNil(error, "Expected an error but got nil")
+            // Then - error was thrown as expected
         }
     }
 
@@ -56,11 +53,10 @@ class TokenizationServiceTests: XCTestCase {
 
         // When
         do {
-            _ = try await tokenizationService.tokenize(requestBody: Mocks.tokenizationRequestBody)
+            _ = try await sut.tokenize(requestBody: Mocks.tokenizationRequestBody)
             XCTFail("Expected to throw an error but succeeded")
         } catch {
-            // Then
-            XCTAssertNotNil(error, "Expected an error but got nil")
+            // Then - error was thrown as expected
         }
     }
 
@@ -71,7 +67,7 @@ class TokenizationServiceTests: XCTestCase {
 
         // When
         do {
-            _ = try await tokenizationService.tokenize(requestBody: Mocks.tokenizationRequestBody)
+            _ = try await sut.tokenize(requestBody: Mocks.tokenizationRequestBody)
             XCTFail("Expected to throw an error but succeeded")
         } catch {
             // Then
@@ -86,7 +82,7 @@ class TokenizationServiceTests: XCTestCase {
 
         do {
             // When
-            let result = try await tokenizationService.tokenize(requestBody: Mocks.tokenizationRequestBody)
+            let result = try await sut.tokenize(requestBody: Mocks.tokenizationRequestBody)
 
             // Then
             XCTAssertEqual(result.id, expectedTokenData.id)
@@ -102,14 +98,13 @@ class TokenizationServiceTests: XCTestCase {
 
         // When
         do {
-            _ = try await tokenizationService.exchangePaymentMethodToken(
+            _ = try await sut.exchangePaymentMethodToken(
                 "MOCK_PAYMENT_METHOD",
                 vaultedPaymentMethodAdditionalData: nil
             )
             XCTFail("Expected to throw an error but succeeded")
         } catch {
-            // Then
-            XCTAssertNotNil(error, "Expected an error but got nil")
+            // Then - error was thrown as expected
         }
     }
 
@@ -120,7 +115,7 @@ class TokenizationServiceTests: XCTestCase {
 
         // When
         do {
-            _ = try await tokenizationService.exchangePaymentMethodToken(
+            _ = try await sut.exchangePaymentMethodToken(
                 "MOCK_PAYMENT_METHOD",
                 vaultedPaymentMethodAdditionalData: nil
             )
@@ -138,7 +133,7 @@ class TokenizationServiceTests: XCTestCase {
 
         // When
         do {
-            let result = try await tokenizationService.exchangePaymentMethodToken(
+            let result = try await sut.exchangePaymentMethodToken(
                 "MOCK_PAYMENT_METHOD",
                 vaultedPaymentMethodAdditionalData: nil
             )

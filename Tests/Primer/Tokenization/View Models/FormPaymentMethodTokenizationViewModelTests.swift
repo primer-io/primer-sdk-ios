@@ -130,7 +130,7 @@ final class FormPaymentMethodTokenizationViewModelTests: XCTestCase {
         let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
-            return Promise.fulfilled(self.tokenizationResponseBody)
+            return self.tokenizationResponseBody
         }
 
         //        let expectDidExchangeToken = self.expectation(description: "didExchangeToken called")

@@ -143,7 +143,7 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
         let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
-            return Promise.fulfilled(self.tokenizationResponseBody)
+            return self.tokenizationResponseBody
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
