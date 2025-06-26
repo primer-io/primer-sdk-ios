@@ -62,6 +62,13 @@ internal struct CardFormScreen: View {
                         .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
                     }
                 }
+
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(CheckoutComponentsStrings.cancelButton) {
+                        scope.onCancel()
+                    }
+                    .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                }
             }
     }
 
@@ -244,25 +251,25 @@ internal struct CardFormScreen: View {
         }
 
         let baseAmount = AppState.current.amount ?? 0
-        
+
         // Check if there's a surcharge from the detected card network
         if let surchargeAmountString = cardFormState.surchargeAmount,
            !surchargeAmountString.isEmpty,
            let selectedNetwork = cardFormState.selectedCardNetwork {
-            
+
             // Extract surcharge amount from the formatted string (e.g., "+ 1,23€" -> 123)
             // The surcharge is already calculated by DefaultCardFormScope.updateSurchargeAmount
             var cleanString = surchargeAmountString.replacingOccurrences(of: "+ ", with: "")
-            
+
             // Remove common currency symbols
             let currencySymbols = ["€", "$", "£", "¥", "₹", "¢"]
             for symbol in currencySymbols {
                 cleanString = cleanString.replacingOccurrences(of: symbol, with: "")
             }
-            
+
             // Handle different decimal separators (European "," vs US ".")
             cleanString = cleanString.replacingOccurrences(of: ",", with: ".")
-            
+
             if let surchargeAmount = Double(cleanString.trimmingCharacters(in: .whitespaces)) {
                 // Convert to cents for calculation (surcharge is in major currency units, need minor units)
                 let surchargeCents = Int(surchargeAmount * Double(currency.decimalDigits == 2 ? 100 : pow(10, Double(currency.decimalDigits))))
@@ -271,7 +278,7 @@ internal struct CardFormScreen: View {
                 return CheckoutComponentsStrings.paymentAmountTitle(formattedTotalAmount)
             }
         }
-        
+
         // No surcharge or parsing failed, use base amount
         let formattedBaseAmount = baseAmount.toCurrencyString(currency: currency)
         return CheckoutComponentsStrings.paymentAmountTitle(formattedBaseAmount)

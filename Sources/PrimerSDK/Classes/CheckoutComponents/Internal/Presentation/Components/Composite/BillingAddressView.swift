@@ -81,21 +81,31 @@ internal struct BillingAddressView: View {
     /// Validation states
     @State private var fieldValidationStates: [PrimerInputElementType: Bool] = [:]
 
+    /// Field values for PrimerInputField integration
+    @State private var firstName: String = ""
+    @State private var lastName: String = ""
+    @State private var email: String = ""
+    @State private var phoneNumber: String = ""
+    @State private var addressLine1: String = ""
+    @State private var addressLine2: String = ""
+    @State private var city: String = ""
+    @State private var state: String = ""
+    @State private var postalCode: String = ""
+
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Body
 
     var body: some View {
         VStack(spacing: 16) {
-            // Name fields (horizontal layout)
+            // Name fields (horizontal layout) - Using PrimerInputField with Android parity
             if configuration.showFirstName || configuration.showLastName {
                 HStack(spacing: 16) {
                     if configuration.showFirstName {
-                        NameInputField(
-                            label: CheckoutComponentsStrings.firstNameLabel,
-                            placeholder: CheckoutComponentsStrings.firstNamePlaceholder,
-                            inputType: .firstName,
-                            onNameChange: { name in
+                        PrimerInputField.firstName(
+                            value: firstName,
+                            onValueChange: { name in
+                                firstName = name
                                 cardFormScope.updateFirstName(name)
                             },
                             onValidationChange: { isValid in
@@ -105,11 +115,10 @@ internal struct BillingAddressView: View {
                     }
 
                     if configuration.showLastName {
-                        NameInputField(
-                            label: CheckoutComponentsStrings.lastNameLabel,
-                            placeholder: CheckoutComponentsStrings.lastNamePlaceholder,
-                            inputType: .lastName,
-                            onNameChange: { name in
+                        PrimerInputField.lastName(
+                            value: lastName,
+                            onValueChange: { name in
+                                lastName = name
                                 cardFormScope.updateLastName(name)
                             },
                             onValidationChange: { isValid in
@@ -120,13 +129,13 @@ internal struct BillingAddressView: View {
                 }
             }
 
-            // Email
+            // Email - Using PrimerInputField with Android parity
             if configuration.showEmail {
-                EmailInputField(
-                    label: CheckoutComponentsStrings.emailLabel,
-                    placeholder: CheckoutComponentsStrings.emailPlaceholder,
-                    onEmailChange: { email in
-                        cardFormScope.updateEmail(email)
+                PrimerInputField.email(
+                    value: email,
+                    onValueChange: { emailValue in
+                        email = emailValue
+                        cardFormScope.updateEmail(emailValue)
                     },
                     onValidationChange: { isValid in
                         fieldValidationStates[.email] = isValid
@@ -134,12 +143,12 @@ internal struct BillingAddressView: View {
                 )
             }
 
-            // Phone Number
+            // Phone Number - Using PrimerInputField with Android parity
             if configuration.showPhoneNumber {
-                PhoneNumberInputField(
-                    label: CheckoutComponentsStrings.phoneNumberLabel,
-                    placeholder: CheckoutComponentsStrings.phoneNumberPlaceholder,
-                    onPhoneNumberChange: { phone in
+                PrimerInputField.phoneNumber(
+                    value: phoneNumber,
+                    onValueChange: { phone in
+                        phoneNumber = phone
                         cardFormScope.updatePhoneNumber(phone)
                     },
                     onValidationChange: { isValid in
@@ -148,48 +157,56 @@ internal struct BillingAddressView: View {
                 )
             }
 
-            // Address Line 1
+            // Address Line 1 - Using PrimerInputField with Android parity
             if configuration.showAddressLine1 {
-                AddressLineInputField(
-                    label: CheckoutComponentsStrings.addressLine1Label,
-                    placeholder: CheckoutComponentsStrings.addressLine1Placeholder,
-                    isRequired: true,
-                    inputType: .addressLine1,
-                    onAddressChange: { address in
+                PrimerInputField.addressLine(
+                    value: addressLine1,
+                    onValueChange: { address in
+                        addressLine1 = address
                         cardFormScope.updateAddressLine1(address)
                     },
+                    labelText: CheckoutComponentsStrings.addressLine1Label,
+                    placeholderText: CheckoutComponentsStrings.addressLine1Placeholder,
+                    inputElementType: .addressLine1,
+                    isRequired: true,
                     onValidationChange: { isValid in
                         fieldValidationStates[.addressLine1] = isValid
                     }
                 )
             }
 
-            // Address Line 2
+            // Address Line 2 - Using PrimerInputField with Android parity (Optional)
             if configuration.showAddressLine2 {
-                AddressLineInputField(
-                    label: CheckoutComponentsStrings.addressLine2Label,
-                    placeholder: CheckoutComponentsStrings.addressLine2Placeholder,
-                    isRequired: false,
-                    inputType: .addressLine2,
-                    onAddressChange: { address in
+                PrimerInputField.addressLine(
+                    value: addressLine2,
+                    onValueChange: { address in
+                        addressLine2 = address
                         cardFormScope.updateAddressLine2(address)
                     },
+                    labelText: CheckoutComponentsStrings.addressLine2Label,
+                    placeholderText: CheckoutComponentsStrings.addressLine2Placeholder,
+                    inputElementType: .addressLine2,
+                    isRequired: false,
                     onValidationChange: { isValid in
                         fieldValidationStates[.addressLine2] = isValid
                     }
                 )
             }
 
-            // City and State (horizontal layout)
+            // City and State (horizontal layout) - Using PrimerInputField with Android parity
             if configuration.showCity || configuration.showState {
                 HStack(spacing: 16) {
                     if configuration.showCity {
-                        CityInputField(
-                            label: CheckoutComponentsStrings.cityLabel,
-                            placeholder: CheckoutComponentsStrings.cityPlaceholder,
-                            onCityChange: { city in
-                                cardFormScope.updateCity(city)
+                        PrimerInputField.addressLine(
+                            value: city,
+                            onValueChange: { cityValue in
+                                city = cityValue
+                                cardFormScope.updateCity(cityValue)
                             },
+                            labelText: CheckoutComponentsStrings.cityLabel,
+                            placeholderText: CheckoutComponentsStrings.cityPlaceholder,
+                            inputElementType: .city,
+                            isRequired: true,
                             onValidationChange: { isValid in
                                 fieldValidationStates[.city] = isValid
                             }
@@ -197,12 +214,16 @@ internal struct BillingAddressView: View {
                     }
 
                     if configuration.showState {
-                        StateInputField(
-                            label: CheckoutComponentsStrings.stateLabel,
-                            placeholder: CheckoutComponentsStrings.statePlaceholder,
-                            onStateChange: { state in
-                                cardFormScope.updateState(state)
+                        PrimerInputField.addressLine(
+                            value: state,
+                            onValueChange: { stateValue in
+                                state = stateValue
+                                cardFormScope.updateState(stateValue)
                             },
+                            labelText: CheckoutComponentsStrings.stateLabel,
+                            placeholderText: CheckoutComponentsStrings.statePlaceholder,
+                            inputElementType: .state,
+                            isRequired: true,
                             onValidationChange: { isValid in
                                 fieldValidationStates[.state] = isValid
                             }
@@ -216,13 +237,16 @@ internal struct BillingAddressView: View {
             if configuration.showPostalCode || configuration.showCountry {
                 HStack(spacing: 16) {
                     if configuration.showPostalCode {
-                        PostalCodeInputField(
-                            label: CheckoutComponentsStrings.postalCodeLabel,
-                            placeholder: postalCodePlaceholder,
-                            countryCode: selectedCountryCode,
-                            onPostalCodeChange: { postalCode in
-                                cardFormScope.updatePostalCode(postalCode)
+                        PrimerInputField.addressLine(
+                            value: postalCode,
+                            onValueChange: { postalCodeValue in
+                                postalCode = postalCodeValue
+                                cardFormScope.updatePostalCode(postalCodeValue)
                             },
+                            labelText: CheckoutComponentsStrings.postalCodeLabel,
+                            placeholderText: postalCodePlaceholder,
+                            inputElementType: .postalCode,
+                            isRequired: true,
                             onValidationChange: { isValid in
                                 fieldValidationStates[.postalCode] = isValid
                             }
@@ -291,65 +315,5 @@ internal struct BillingAddressView: View {
         return requiredFields.allSatisfy { field in
             fieldValidationStates[field] ?? false
         }
-    }
-}
-
-/// Phone number input field component
-@available(iOS 15.0, *)
-private struct PhoneNumberInputField: View {
-    let label: String
-    let placeholder: String
-    let onPhoneNumberChange: ((String) -> Void)?
-    let onValidationChange: ((Bool) -> Void)?
-
-    @State private var phoneNumber = ""
-    @Environment(\.diContainer) private var container
-    @State private var validationService: ValidationService?
-    @State private var errorMessage: String?
-    @Environment(\.designTokens) private var tokens
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(label)
-                .font(.caption)
-                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-
-            TextField(placeholder, text: $phoneNumber)
-                .textFieldStyle(.roundedBorder)
-                .keyboardType(.phonePad)
-                .padding()
-                .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-                .cornerRadius(8)
-                .onChange(of: phoneNumber) { newValue in
-                    onPhoneNumberChange?(newValue)
-                    validatePhoneNumber()
-                }
-
-            if let errorMessage = errorMessage {
-                Text(errorMessage)
-                    .font(.caption)
-                    .foregroundColor(.red)
-                    .padding(.top, 2)
-            }
-        }
-        .onAppear {
-            setupValidationService()
-        }
-    }
-
-    private func setupValidationService() {
-        guard let container = container else { return }
-        do {
-            validationService = try container.resolveSync(ValidationService.self)
-        } catch {
-            // Handle error
-        }
-    }
-
-    private func validatePhoneNumber() {
-        guard let validationService = validationService else { return }
-        let result = validationService.validate(input: phoneNumber, with: PhoneNumberRule())
-        errorMessage = result.errorMessage
-        onValidationChange?(result.isValid)
     }
 }

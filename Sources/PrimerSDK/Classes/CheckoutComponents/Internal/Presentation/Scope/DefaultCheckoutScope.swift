@@ -110,6 +110,9 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
             await setupInteractors()
             await loadPaymentMethods()
         }
+
+        // Observe navigation events for back navigation
+        observeNavigationEvents()
     }
 
     // MARK: - Setup
@@ -213,20 +216,79 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         internalState = newState
     }
 
-    private func updateNavigationState(_ newState: NavigationState) {
+    private func updateNavigationState(_ newState: NavigationState, syncToNavigator: Bool = true) {
         logger.debug(message: "Navigation state updating to: \(newState)")
         navigationState = newState
 
-        // Update navigation based on state
-        switch newState {
-        case .loading:
-            navigator.navigateToLoading()
-        case .paymentMethodSelection:
-            navigator.navigateToPaymentSelection()
-        case .cardForm:
-            navigator.navigateToCardForm()
-        case .failure(let error):
-            navigator.navigateToError(error.localizedDescription)
+        // Update navigation based on state (only if not syncing from navigator to avoid loops)
+        if syncToNavigator {
+            switch newState {
+            case .loading:
+                navigator.navigateToLoading()
+            case .paymentMethodSelection:
+                navigator.navigateToPaymentSelection()
+            case .cardForm:
+                navigator.navigateToCardForm()
+            case .failure(let error):
+                navigator.navigateToError(error.localizedDescription)
+            }
+        }
+    }
+
+    // MARK: - Navigation Events Observer
+
+    private func observeNavigationEvents() {
+        Task { @MainActor in
+            logger.debug(message: "🔍 [CheckoutComponents] Starting navigation events observer")
+            for await route in navigator.navigationEvents {
+                logger.debug(message: "🧭 [CheckoutComponents] Received navigation event: \(route)")
+
+                // Sync internal navigation state with the navigator's current route
+                let newNavigationState: NavigationState
+                switch route {
+                case .loading:
+                    newNavigationState = .loading
+                case .paymentMethodSelection:
+                    newNavigationState = .paymentMethodSelection
+                case .cardForm:
+                    newNavigationState = .cardForm
+                case .failure(let checkoutError):
+                    let primerError = PrimerError.unknown(
+                        userInfo: ["error": checkoutError.message, "code": checkoutError.code],
+                        diagnosticsId: UUID().uuidString
+                    )
+                    newNavigationState = .failure(primerError)
+                default:
+                    // For any other routes, keep current state
+                    continue
+                }
+
+                // Only update if the state has actually changed to avoid loops
+                if case let .failure(currentError) = navigationState,
+                   case let .failure(newError) = newNavigationState {
+                    // For error states, compare messages to avoid redundant updates
+                    if currentError.localizedDescription != newError.localizedDescription {
+                        logger.debug(message: "🔄 [CheckoutComponents] Navigation state synced from navigator: \(newNavigationState)")
+                        updateNavigationState(newNavigationState, syncToNavigator: false)
+                    }
+                } else if !navigationStateEquals(navigationState, newNavigationState) {
+                    logger.debug(message: "🔄 [CheckoutComponents] Navigation state synced from navigator: \(newNavigationState)")
+                    updateNavigationState(newNavigationState, syncToNavigator: false)
+                }
+            }
+        }
+    }
+
+    private func navigationStateEquals(_ lhs: NavigationState, _ rhs: NavigationState) -> Bool {
+        switch (lhs, rhs) {
+        case (.loading, .loading),
+             (.paymentMethodSelection, .paymentMethodSelection),
+             (.cardForm, .cardForm):
+            return true
+        case (.failure(let lhsError), .failure(let rhsError)):
+            return lhsError.localizedDescription == rhsError.localizedDescription
+        default:
+            return false
         }
     }
 

@@ -159,13 +159,6 @@ internal struct InternalCheckout: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                // Global navigation bar
-                CheckoutNavigationBar(
-                    onCancel: {
-                        checkoutScope.onDismiss()
-                    }
-                )
-
                 // Navigation state driven UI
                 ZStack {
                     switch checkoutScope.navigationState {
@@ -228,32 +221,5 @@ internal struct InternalCheckout: View {
                 }
             }
         }
-    }
-}
-
-/// Global navigation bar for all checkout screens
-@available(iOS 15.0, *)
-private struct CheckoutNavigationBar: View {
-    let onCancel: () -> Void
-
-    @Environment(\.designTokens) private var tokens
-
-    var body: some View {
-        HStack {
-            Spacer()
-
-            Button("Cancel") {
-                onCancel()
-            }
-            .font(.body)
-            .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(
-            Rectangle()
-                .fill(tokens?.primerColorBackground ?? Color(.systemBackground))
-                .shadow(color: Color.black.opacity(0.05), radius: 1, y: 1)
-        )
     }
 }
