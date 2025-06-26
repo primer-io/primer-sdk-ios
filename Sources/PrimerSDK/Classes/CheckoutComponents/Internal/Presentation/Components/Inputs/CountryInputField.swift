@@ -30,6 +30,12 @@ internal struct CountryInputField: View, LogReporter {
     /// Callback to open country selector
     let onOpenCountrySelector: (() -> Void)?
 
+    /// External country name for reactive updates
+    let selectedCountryName: String?
+    
+    /// External country code for reactive updates  
+    let selectedCountryCode: String?
+
     // MARK: - Private Properties
 
     /// The validation service resolved from DI environment
@@ -60,20 +66,22 @@ internal struct CountryInputField: View, LogReporter {
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
 
             // Country field with selector button
-            HStack {
-                Text(countryName.isEmpty ? placeholder : countryName)
-                    .foregroundColor(countryName.isEmpty ? .secondary : .primary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                Image(systemName: "chevron.down")
-                    .foregroundColor(.secondary)
-            }
-            .padding()
-            .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-            .cornerRadius(8)
-            .onTapGesture {
+            Button(action: {
                 onOpenCountrySelector?()
+            }) {
+                HStack {
+                    Text(countryName.isEmpty ? placeholder : countryName)
+                        .foregroundColor(countryName.isEmpty ? (tokens?.primerColorTextSecondary ?? .secondary) : (tokens?.primerColorTextPrimary ?? .primary))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    Image(systemName: "chevron.down")
+                        .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                }
+                .padding()
+                .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
+                .cornerRadius(8)
             }
+            .buttonStyle(PlainButtonStyle())
 
             // Error message
             if let errorMessage = errorMessage {
@@ -85,6 +93,13 @@ internal struct CountryInputField: View, LogReporter {
         }
         .onAppear {
             setupValidationService()
+            updateFromExternalState()
+        }
+        .onChange(of: selectedCountryName) { _ in
+            updateFromExternalState()
+        }
+        .onChange(of: selectedCountryCode) { _ in
+            updateFromExternalState()
         }
     }
 
@@ -98,6 +113,16 @@ internal struct CountryInputField: View, LogReporter {
             validationService = try container.resolveSync(ValidationService.self)
         } catch {
             logger.error(message: "Failed to resolve ValidationService: \(error)")
+        }
+    }
+    
+    /// Updates the field from external state changes
+    private func updateFromExternalState() {
+        if let selectedName = selectedCountryName, let selectedCode = selectedCountryCode {
+            logger.debug(message: "CountryInputField updating from external state: \(selectedName) (\(selectedCode))")
+            countryName = selectedName
+            countryCode = selectedCode
+            validateCountry()
         }
     }
 

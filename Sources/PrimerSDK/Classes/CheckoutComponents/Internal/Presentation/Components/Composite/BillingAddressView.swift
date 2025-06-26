@@ -74,6 +74,9 @@ internal struct BillingAddressView: View {
 
     /// Currently selected country code
     @State private var selectedCountryCode: String = ""
+    
+    /// Currently selected country name
+    @State private var selectedCountryName: String = ""
 
     /// Show country selector
     @State private var showCountrySelector = false
@@ -143,8 +146,8 @@ internal struct BillingAddressView: View {
                 CountryInputField(
                     label: CheckoutComponentsStrings.countryLabel,
                     placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
-                    onCountryChange: { _ in
-                        // Country name handled by code callback
+                    onCountryChange: { name in
+                        selectedCountryName = name
                     },
                     onCountryCodeChange: { code in
                         selectedCountryCode = code
@@ -155,7 +158,9 @@ internal struct BillingAddressView: View {
                     },
                     onOpenCountrySelector: {
                         showCountrySelector = true
-                    }
+                    },
+                    selectedCountryName: selectedCountryName.isEmpty ? nil : selectedCountryName,
+                    selectedCountryCode: selectedCountryCode.isEmpty ? nil : selectedCountryCode
                 )
             }
 
@@ -269,10 +274,15 @@ internal struct BillingAddressView: View {
         }
         .sheet(isPresented: $showCountrySelector) {
             if let defaultCardFormScope = cardFormScope as? DefaultCardFormScope {
-                // Access checkoutScope through reflection or create a new country scope
-                let countryScope = DefaultSelectCountryScope(
+                // Create a custom country scope that updates both code and name
+                let countryScope = BillingAddressCountryScope(
                     cardFormScope: defaultCardFormScope,
-                    checkoutScope: nil  // Will handle navigation differently
+                    onCountrySelected: { code, name in
+                        selectedCountryCode = code
+                        selectedCountryName = name
+                        cardFormScope.updateCountryCode(code)
+                        showCountrySelector = false
+                    }
                 )
                 
                 SelectCountryScreen(
@@ -403,5 +413,56 @@ internal struct BillingAddressView: View {
         Task {
             postalCodeError = await validateField(type: .postalCode, value: value)
         }
+    }
+}
+
+// MARK: - Custom Country Scope for Billing Address
+
+/// Custom country scope that handles country selection for billing address
+@available(iOS 15.0, *)
+@MainActor
+internal final class BillingAddressCountryScope: PrimerSelectCountryScope, LogReporter {
+    
+    private let cardFormScope: DefaultCardFormScope
+    private let onCountrySelectedCallback: (String, String) -> Void
+    private var defaultScope: DefaultSelectCountryScope
+    
+    init(cardFormScope: DefaultCardFormScope, onCountrySelected: @escaping (String, String) -> Void) {
+        self.cardFormScope = cardFormScope
+        self.onCountrySelectedCallback = onCountrySelected
+        self.defaultScope = DefaultSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: nil)
+    }
+    
+    var state: AsyncStream<PrimerSelectCountryState> {
+        defaultScope.state
+    }
+    
+    var screen: ((_ scope: PrimerSelectCountryScope) -> AnyView)? {
+        get { defaultScope.screen }
+        set { defaultScope.screen = newValue }
+    }
+    
+    var searchBar: ((_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) -> AnyView)? {
+        get { defaultScope.searchBar }
+        set { defaultScope.searchBar = newValue }
+    }
+    
+    var countryItem: ((_ country: PrimerCountry, _ onSelect: @escaping () -> Void) -> AnyView)? {
+        get { defaultScope.countryItem }
+        set { defaultScope.countryItem = newValue }
+    }
+    
+    func onCountrySelected(countryCode: String, countryName: String) {
+        logger.debug(message: "Billing address country selected: \(countryName) (\(countryCode))")
+        onCountrySelectedCallback(countryCode, countryName)
+    }
+    
+    func onCancel() {
+        logger.debug(message: "Billing address country selection cancelled")
+        // Sheet will be dismissed by onDismiss callback
+    }
+    
+    func onSearch(query: String) {
+        defaultScope.onSearch(query: query)
     }
 }

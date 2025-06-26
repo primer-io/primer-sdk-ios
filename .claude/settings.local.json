@@ -35,7 +35,8 @@
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:modelcontextprotocol.io)",
       "Bash(git worktree:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(mv:*)"
     ],
     "deny": []
   }
