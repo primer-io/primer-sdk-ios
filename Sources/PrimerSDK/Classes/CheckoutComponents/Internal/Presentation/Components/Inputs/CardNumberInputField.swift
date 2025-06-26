@@ -516,8 +516,8 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             // Cancel any existing validation timer
             validationTimer?.invalidate()
 
-            // Schedule validation after a short delay to avoid flickering during typing
-            validationTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
+            // Schedule validation after a longer delay to reduce flickering during typing
+            validationTimer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: false) { [weak self] _ in
                 guard let self = self else { return }
                 self.validateCardNumberWhileTyping(number)
             }
@@ -542,60 +542,79 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             onNetworksDetected?([])
         }
 
-        // Validation while typing - more lenient for better UX
+        // Validation while typing - minimal error display to prevent flickering
         private func validateCardNumberWhileTyping(_ number: String) {
             logger.debug(message: "🔍 [CardNumber] Validating while typing: '\(number)' (length: \(number.count))")
 
-            // Only validate complete card numbers during typing
+            // For short numbers, don't show errors - user is still typing
             if number.count < 13 {
-                logger.debug(message: "🔍 [CardNumber] Too short for validation, clearing state")
+                logger.debug(message: "🔍 [CardNumber] Too short for validation, maintaining neutral state")
                 isValid = nil
                 errorMessage = nil
                 onValidationChange?(false)
                 return
             }
 
-            // Use the validation service for card number validation
-            // For typing feedback, just use a basic check first
             let network = CardNetwork(cardNumber: number)
             logger.debug(message: "🔍 [CardNumber] Detected network: \(network.displayName)")
 
-            // For known networks, check expected length before full validation
+            // For known networks, only validate if we have a complete length
             if network != .unknown, let validation = network.validation, validation.lengths.contains(number.count) {
-                logger.debug(message: "🔍 [CardNumber] Running full validation for known network (expected lengths: \(validation.lengths))")
-                // Use validation service for the actual check
+                logger.debug(message: "🔍 [CardNumber] Running validation for complete known network card (expected lengths: \(validation.lengths))")
                 let validationResult = validationService.validateCardNumber(number)
                 logger.debug(message: "🔍 [CardNumber] Validation result: valid=\(validationResult.isValid), error='\(validationResult.errorMessage ?? "none")'")
-                isValid = validationResult.isValid
-                errorMessage = validationResult.isValid ? nil : validationResult.errorMessage
-                onValidationChange?(validationResult.isValid)
-            } else if number.count >= 13 && number.count <= 19 {
-                // For unknown networks or incomplete numbers, use ValidationService directly if length is plausible
-                logger.debug(message: "🔍 [CardNumber] Running validation for unknown network or incomplete number (length: \(number.count))")
+                
+                // Only show positive validation during typing, defer errors to focus loss
+                if validationResult.isValid {
+                    isValid = true
+                    errorMessage = nil
+                    onValidationChange?(true)
+                } else {
+                    // Don't show error during typing - defer to focus loss
+                    isValid = nil
+                    errorMessage = nil
+                    onValidationChange?(false)
+                }
+            } else if number.count >= 16 {
+                // For unknown networks, only validate longer numbers and be optimistic
+                logger.debug(message: "🔍 [CardNumber] Running validation for unknown network with sufficient length (length: \(number.count))")
                 let validationResult = validationService.validateCardNumber(number)
                 logger.debug(message: "🔍 [CardNumber] Validation result: valid=\(validationResult.isValid), error='\(validationResult.errorMessage ?? "none")'")
-                isValid = validationResult.isValid
-                errorMessage = validationResult.isValid ? nil : validationResult.errorMessage
-                onValidationChange?(validationResult.isValid)
+                
+                // Only show positive validation during typing, defer errors to focus loss
+                if validationResult.isValid {
+                    isValid = true
+                    errorMessage = nil
+                    onValidationChange?(true)
+                } else {
+                    // Don't show error during typing - defer to focus loss
+                    isValid = nil
+                    errorMessage = nil
+                    onValidationChange?(false)
+                }
             } else {
-                logger.debug(message: "🔍 [CardNumber] Length \(number.count) not valid for \(network.displayName), expected: \(network.validation?.lengths ?? [13, 14, 15, 16, 17, 18, 19])")
-                // Not a complete number yet
+                logger.debug(message: "🔍 [CardNumber] Number not ready for validation yet (length: \(number.count))")
+                // Not ready for validation yet - maintain neutral state
                 isValid = nil
                 errorMessage = nil
                 onValidationChange?(false)
             }
         }
 
-        // Full validation when field loses focus
+        // Full validation when field loses focus - shows all errors
         private func validateCardNumberFully(_ number: String) {
-            logger.debug(message: "🔍 [CardNumber] Full validation for: '\(number)'")
-            // Use the validation service for complete validation
+            logger.debug(message: "🔍 [CardNumber] Full validation for: '\(number)' (length: \(number.count))")
+            
+            // Clear any pending validation timer to avoid conflicts
+            validationTimer?.invalidate()
+            
+            // Always run full validation on focus loss, regardless of length or network
             let validationResult = validationService.validateCardNumber(number)
             logger.debug(message: "🔍 [CardNumber] Full validation result: valid=\(validationResult.isValid), error='\(validationResult.errorMessage ?? "none")'")
 
-            // Update the state based on validation result
+            // Show validation result including errors on focus loss
             isValid = validationResult.isValid
-            errorMessage = validationResult.errorMessage
+            errorMessage = validationResult.isValid ? nil : validationResult.errorMessage
             onValidationChange?(validationResult.isValid)
         }
 

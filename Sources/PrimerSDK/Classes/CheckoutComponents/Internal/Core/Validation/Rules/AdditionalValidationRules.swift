@@ -80,17 +80,20 @@ internal class OTPCodeRule: ValidationRule {
 
     func validate(_ value: String) -> ValidationResult {
         if value.isEmpty {
-            return .invalid(code: "invalid-otp-code", message: "OTP code is required")
+            let error = ErrorMessageResolver.createRequiredFieldError(for: .otpCode)
+            return .invalid(error: error)
         }
 
         // Check if all digits
         if !value.allSatisfy({ $0.isNumber }) {
-            return .invalid(code: "invalid-otp-code-format", message: "OTP must contain only digits")
+            let error = ErrorMessageResolver.createInvalidFieldError(for: .otpCode)
+            return .invalid(error: error)
         }
 
         // Check length
         if value.count != expectedLength {
-            return .invalid(code: "invalid-otp-code-length", message: "OTP must be \(expectedLength) digits")
+            let error = ErrorMessageResolver.createInvalidFieldError(for: .otpCode)
+            return .invalid(error: error)
         }
 
         return .valid

@@ -20,27 +20,40 @@ internal class ExpiryDateRule: ValidationRule {
         let month = input.month.trimmingCharacters(in: .whitespacesAndNewlines)
         let year = input.year.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        // Check if empty
+        // Check if empty - use Android-matching error structure with automatic message resolution
         if month.isEmpty || year.isEmpty {
-            return .invalid(code: "invalid-expiry-date", message: "Expiry date is required")
+            let error = ErrorMessageResolver.createRequiredFieldError(for: .expiryDate)
+            return .invalid(error: error)
         }
 
-        // Parse month and year
+        // Parse month and year - use Android-matching error structure with automatic message resolution
         guard let monthInt = Int(month), let yearInt = Int(year) else {
-            return .invalid(code: "invalid-expiry-format", message: "Invalid expiry date format")
+            let error = ErrorMessageResolver.createInvalidFieldError(for: .expiryDate)
+            return .invalid(error: error)
         }
 
-        // Validate month range
+        // Validate month range - use Android-matching error structure with automatic message resolution
         if monthInt < 1 || monthInt > 12 {
-            return .invalid(code: "invalid-month", message: "Invalid month")
+            let error = ErrorMessageResolver.createInvalidFieldError(for: .expiryDate)
+            return .invalid(error: error)
         }
 
-        // Check if expired
+        // Check if expired - use Android-matching error structure with automatic message resolution
         let currentYear = Calendar.current.component(.year, from: Date()) % 100
         let currentMonth = Calendar.current.component(.month, from: Date())
 
         if yearInt < currentYear || (yearInt == currentYear && monthInt < currentMonth) {
-            return .invalid(code: "card-expired", message: "Card has expired")
+            // Create specific expired card error
+            let error = ValidationError(
+                inputElementType: .expiryDate,
+                errorId: "card_expired",
+                fieldNameKey: "expiry_date_field",
+                errorMessageKey: "form_error_card_expired",
+                errorFormatKey: nil,
+                code: "card-expired",
+                message: "Card has expired"
+            )
+            return .invalid(error: error)
         }
 
         return .valid

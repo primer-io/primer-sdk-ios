@@ -117,6 +117,14 @@ internal struct CheckoutComponentsStrings {
         value: "Name must have between 2 and 45 characters",
         comment: "Card holder name length validation error"
     )
+    
+    /// Card expired validation error
+    static let formErrorCardExpired = NSLocalizedString(
+        "checkout-components-form-error-card-expired",
+        bundle: Bundle.primerResources,
+        value: "Card has expired",
+        comment: "Card expired validation error"
+    )
 
     // MARK: - Android Parity: Field Names for Error Messages
 
@@ -182,6 +190,48 @@ internal struct CheckoutComponentsStrings {
         bundle: Bundle.primerResources,
         value: "Country",
         comment: "Country field name for error messages"
+    )
+    
+    static let addressLine1FieldName = NSLocalizedString(
+        "checkout-components-address-line-1-field",
+        bundle: Bundle.primerResources,
+        value: "Address line 1",
+        comment: "Address line 1 field name for error messages"
+    )
+    
+    static let addressLine2FieldName = NSLocalizedString(
+        "checkout-components-address-line-2-field",
+        bundle: Bundle.primerResources,
+        value: "Address line 2",
+        comment: "Address line 2 field name for error messages"
+    )
+    
+    static let cityFieldName = NSLocalizedString(
+        "checkout-components-city-field",
+        bundle: Bundle.primerResources,
+        value: "City",
+        comment: "City field name for error messages"
+    )
+    
+    static let stateFieldName = NSLocalizedString(
+        "checkout-components-state-field",
+        bundle: Bundle.primerResources,
+        value: "State",
+        comment: "State field name for error messages"
+    )
+    
+    static let postalCodeFieldName = NSLocalizedString(
+        "checkout-components-postal-code-field",
+        bundle: Bundle.primerResources,
+        value: "Postal code",
+        comment: "Postal code field name for error messages"
+    )
+    
+    static let otpCodeFieldName = NSLocalizedString(
+        "checkout-components-otp-code-field",
+        bundle: Bundle.primerResources,
+        value: "OTP code",
+        comment: "OTP code field name for error messages"
     )
 
     // MARK: - Android Parity: Result Screen Messages

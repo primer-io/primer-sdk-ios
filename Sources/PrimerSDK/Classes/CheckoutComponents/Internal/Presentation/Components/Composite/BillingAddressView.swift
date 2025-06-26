@@ -138,31 +138,24 @@ internal struct BillingAddressView: View {
                 }
             }
 
-            // Email - Using PrimerInputField with Android parity
-            if configuration.showEmail {
-                PrimerInputField.email(
-                    value: email,
-                    onValueChange: { emailValue in
-                        email = emailValue
-                        cardFormScope.updateEmail(emailValue)
-                        validateEmail(emailValue)
+            // Country - Show first to match Drop-in layout
+            if configuration.showCountry {
+                CountryInputField(
+                    label: CheckoutComponentsStrings.countryLabel,
+                    placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
+                    onCountryChange: { _ in
+                        // Country name handled by code callback
                     },
-                    isError: emailError != nil,
-                    validationError: emailError
-                )
-            }
-
-            // Phone Number - Using PrimerInputField with Android parity
-            if configuration.showPhoneNumber {
-                PrimerInputField.phoneNumber(
-                    value: phoneNumber,
-                    onValueChange: { phone in
-                        phoneNumber = phone
-                        cardFormScope.updatePhoneNumber(phone)
-                        validatePhoneNumber(phone)
+                    onCountryCodeChange: { code in
+                        selectedCountryCode = code
+                        cardFormScope.updateCountryCode(code)
                     },
-                    isError: phoneNumberError != nil,
-                    validationError: phoneNumberError
+                    onValidationChange: { _ in
+                        // Handle country validation state
+                    },
+                    onOpenCountrySelector: {
+                        showCountrySelector = true
+                    }
                 )
             }
 
@@ -182,6 +175,38 @@ internal struct BillingAddressView: View {
                 )
             }
 
+            // Postal Code - Show before state to match Drop-in layout
+            if configuration.showPostalCode {
+                PrimerInputField.addressLine(
+                    value: postalCode,
+                    onValueChange: { postalCodeValue in
+                        postalCode = postalCodeValue
+                        cardFormScope.updatePostalCode(postalCodeValue)
+                        validatePostalCode(postalCodeValue)
+                    },
+                    labelText: CheckoutComponentsStrings.postalCodeLabel,
+                    placeholderText: postalCodePlaceholder,
+                    isError: postalCodeError != nil,
+                    validationError: postalCodeError
+                )
+            }
+
+            // State/Region - Show after postal code to match Drop-in layout
+            if configuration.showState {
+                PrimerInputField.addressLine(
+                    value: state,
+                    onValueChange: { stateValue in
+                        state = stateValue
+                        cardFormScope.updateState(stateValue)
+                        validateState(stateValue)
+                    },
+                    labelText: CheckoutComponentsStrings.stateLabel,
+                    placeholderText: CheckoutComponentsStrings.statePlaceholder,
+                    isError: stateError != nil,
+                    validationError: stateError
+                )
+            }
+
             // Address Line 2 - Using PrimerInputField with Android parity (Optional)
             if configuration.showAddressLine2 {
                 PrimerInputField.addressLine(
@@ -198,88 +223,69 @@ internal struct BillingAddressView: View {
                 )
             }
 
-            // City and State (horizontal layout) - Using PrimerInputField with Android parity
-            if configuration.showCity || configuration.showState {
-                HStack(spacing: 16) {
-                    if configuration.showCity {
-                        PrimerInputField.addressLine(
-                            value: city,
-                            onValueChange: { cityValue in
-                                city = cityValue
-                                cardFormScope.updateCity(cityValue)
-                                validateCity(cityValue)
-                            },
-                            labelText: CheckoutComponentsStrings.cityLabel,
-                            placeholderText: CheckoutComponentsStrings.cityPlaceholder,
-                            isError: cityError != nil,
-                            validationError: cityError
-                        )
-                    }
-
-                    if configuration.showState {
-                        PrimerInputField.addressLine(
-                            value: state,
-                            onValueChange: { stateValue in
-                                state = stateValue
-                                cardFormScope.updateState(stateValue)
-                                validateState(stateValue)
-                            },
-                            labelText: CheckoutComponentsStrings.stateLabel,
-                            placeholderText: CheckoutComponentsStrings.statePlaceholder,
-                            isError: stateError != nil,
-                            validationError: stateError
-                        )
-                        .frame(maxWidth: 100)
-                    }
-                }
+            // City - After address fields
+            if configuration.showCity {
+                PrimerInputField.addressLine(
+                    value: city,
+                    onValueChange: { cityValue in
+                        city = cityValue
+                        cardFormScope.updateCity(cityValue)
+                        validateCity(cityValue)
+                    },
+                    labelText: CheckoutComponentsStrings.cityLabel,
+                    placeholderText: CheckoutComponentsStrings.cityPlaceholder,
+                    isError: cityError != nil,
+                    validationError: cityError
+                )
             }
 
-            // Postal Code and Country (horizontal layout)
-            if configuration.showPostalCode || configuration.showCountry {
-                HStack(spacing: 16) {
-                    if configuration.showPostalCode {
-                        PrimerInputField.addressLine(
-                            value: postalCode,
-                            onValueChange: { postalCodeValue in
-                                postalCode = postalCodeValue
-                                cardFormScope.updatePostalCode(postalCodeValue)
-                                validatePostalCode(postalCodeValue)
-                            },
-                            labelText: CheckoutComponentsStrings.postalCodeLabel,
-                            placeholderText: postalCodePlaceholder,
-                            isError: postalCodeError != nil,
-                            validationError: postalCodeError
-                        )
-                        .frame(maxWidth: 150)
-                    }
+            // Email - Near the end
+            if configuration.showEmail {
+                PrimerInputField.email(
+                    value: email,
+                    onValueChange: { emailValue in
+                        email = emailValue
+                        cardFormScope.updateEmail(emailValue)
+                        validateEmail(emailValue)
+                    },
+                    isError: emailError != nil,
+                    validationError: emailError
+                )
+            }
 
-                    if configuration.showCountry {
-                        CountryInputField(
-                            label: CheckoutComponentsStrings.countryLabel,
-                            placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
-                            onCountryChange: { _ in
-                                // Country name handled by code callback
-                            },
-                            onCountryCodeChange: { code in
-                                selectedCountryCode = code
-                                cardFormScope.updateCountryCode(code)
-                            },
-                            onValidationChange: { _ in
-                                // Handle country validation state
-                            },
-                            onOpenCountrySelector: {
-                                showCountrySelector = true
-                            }
-                        )
-                    }
-                }
+            // Phone Number - Last field
+            if configuration.showPhoneNumber {
+                PrimerInputField.phoneNumber(
+                    value: phoneNumber,
+                    onValueChange: { phone in
+                        phoneNumber = phone
+                        cardFormScope.updatePhoneNumber(phone)
+                        validatePhoneNumber(phone)
+                    },
+                    isError: phoneNumberError != nil,
+                    validationError: phoneNumberError
+                )
             }
         }
         .sheet(isPresented: $showCountrySelector) {
-            // Country selector would go here
-            // For now, just a placeholder
-            Text(CheckoutComponentsStrings.countrySelectorPlaceholder)
-                .padding()
+            if let defaultCardFormScope = cardFormScope as? DefaultCardFormScope {
+                // Access checkoutScope through reflection or create a new country scope
+                let countryScope = DefaultSelectCountryScope(
+                    cardFormScope: defaultCardFormScope,
+                    checkoutScope: nil  // Will handle navigation differently
+                )
+                
+                SelectCountryScreen(
+                    scope: countryScope,
+                    onDismiss: {
+                        showCountrySelector = false
+                    }
+                )
+            } else {
+                // Fallback if scopes aren't available
+                Text(CheckoutComponentsStrings.countrySelectorPlaceholder)
+                    .padding()
+            }
         }
     }
 

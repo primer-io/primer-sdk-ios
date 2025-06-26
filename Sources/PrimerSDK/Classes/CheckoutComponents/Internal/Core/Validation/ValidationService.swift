@@ -419,13 +419,15 @@ extension DefaultValidationService {
         switch type {
         case .cardNumber:
             guard let value = value else {
-                return .invalid(code: "invalid-card-number", message: "Card number is required")
+                let error = ErrorMessageResolver.createRequiredFieldError(for: .cardNumber)
+                return .invalid(error: error)
             }
             return validateCardNumber(value)
 
         case .expiryDate:
             guard let value = value else {
-                return .invalid(code: "invalid-expiry-date", message: "Expiry date is required")
+                let error = ErrorMessageResolver.createRequiredFieldError(for: .expiryDate)
+                return .invalid(error: error)
             }
             let components = value.components(separatedBy: "/")
             let month = components.count > 0 ? components[0] : ""
@@ -434,14 +436,16 @@ extension DefaultValidationService {
 
         case .cvv:
             guard let value = value else {
-                return .invalid(code: "invalid-cvv", message: "CVV is required")
+                let error = ErrorMessageResolver.createRequiredFieldError(for: .cvv)
+                return .invalid(error: error)
             }
             // Using a default network of .visa when none is provided
             return validateCVV(value, cardNetwork: CardNetwork.visa)
 
         case .cardholderName:
             guard let value = value else {
-                return .invalid(code: "invalid-cardholder-name", message: "Cardholder name is required")
+                let error = ErrorMessageResolver.createRequiredFieldError(for: .cardholderName)
+                return .invalid(error: error)
             }
             return validateCardholderName(value)
 
@@ -484,7 +488,8 @@ extension DefaultValidationService {
 
         case .otp:
             guard let value = value else {
-                return .invalid(code: "invalid-otp", message: "OTP is required")
+                let error = ErrorMessageResolver.createRequiredFieldError(for: .otpCode)
+                return .invalid(error: error)
             }
             // Validate OTP is numeric
             let numericRule = CharacterSetRule(

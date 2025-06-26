@@ -14,7 +14,6 @@ internal struct CardFormScreen: View {
 
     @Environment(\.designTokens) private var tokens
     @State private var cardFormState: PrimerCardFormState = .init()
-    @State private var showBillingAddress = false
     @State private var selectedCardNetwork: CardNetwork = .unknown
 
     /// Check if billing address fields are required based on API configuration
@@ -87,7 +86,6 @@ internal struct CardFormScreen: View {
                 titleSection
                 cardDetailsSection
                 if isShowingBillingAddressFieldsRequired {
-                    billingAddressToggle
                     billingAddressSection
                 }
                 submitButtonSection
@@ -159,44 +157,13 @@ internal struct CardFormScreen: View {
         }
     }
 
-    private var billingAddressToggle: some View {
-        Button(action: {
-            withAnimation {
-                showBillingAddress.toggle()
-            }
-        }) {
-            billingAddressToggleContent
-        }
-        .padding(.horizontal)
-    }
 
-    private var billingAddressToggleContent: some View {
-        HStack {
-            Text(CheckoutComponentsStrings.billingAddressTitle)
-                .font(.body)
-                .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-
-            Spacer()
-
-            Image(systemName: showBillingAddress ? "chevron.up" : "chevron.down")
-                .font(.caption)
-                .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
-        }
-        .padding()
-        .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-        .cornerRadius(8)
-    }
-
-    @ViewBuilder
     private var billingAddressSection: some View {
-        if showBillingAddress {
-            BillingAddressView(
-                cardFormScope: scope,
-                configuration: billingAddressConfiguration
-            )
-            .padding(.horizontal)
-            .transition(.opacity.combined(with: .move(edge: .top)))
-        }
+        BillingAddressView(
+            cardFormScope: scope,
+            configuration: billingAddressConfiguration
+        )
+        .padding(.horizontal)
     }
 
 

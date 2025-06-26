@@ -45,6 +45,8 @@ internal final class ErrorMessageResolver {
             return CheckoutComponentsStrings.formErrorCardTypeNotSupported
         case "form_error_card_holder_name_length":
             return CheckoutComponentsStrings.formErrorCardHolderNameLength
+        case "form_error_card_expired":
+            return CheckoutComponentsStrings.formErrorCardExpired
 
         // Success/error screen messages
         case "payment_successful":
@@ -82,6 +84,18 @@ internal final class ErrorMessageResolver {
             return CheckoutComponentsStrings.phoneNumberFieldName
         case "country_field":
             return CheckoutComponentsStrings.countryFieldName
+        case "address_line_1_field":
+            return CheckoutComponentsStrings.addressLine1FieldName
+        case "address_line_2_field":
+            return CheckoutComponentsStrings.addressLine2FieldName
+        case "city_field":
+            return CheckoutComponentsStrings.cityFieldName
+        case "state_field":
+            return CheckoutComponentsStrings.stateFieldName
+        case "postal_code_field":
+            return CheckoutComponentsStrings.postalCodeFieldName
+        case "otp_code_field":
+            return CheckoutComponentsStrings.otpCodeFieldName
 
         // Generic fallback
         default:
@@ -147,6 +161,18 @@ extension ErrorMessageResolver {
             return "phone_number_field"
         case .countryCode:
             return "country_field"
+        case .addressLine1:
+            return "address_line_1_field"
+        case .addressLine2:
+            return "address_line_2_field"
+        case .city:
+            return "city_field"
+        case .state:
+            return "state_field"
+        case .postalCode:
+            return "postal_code_field"
+        case .otpCode:
+            return "otp_code_field"
         default:
             return "field"
         }

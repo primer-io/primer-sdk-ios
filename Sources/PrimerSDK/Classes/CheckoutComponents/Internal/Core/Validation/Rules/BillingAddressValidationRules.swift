@@ -13,19 +13,19 @@ internal class FirstNameRule: ValidationRule {
     func validate(_ value: String?) -> ValidationResult {
         guard let value = value else {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .firstName)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmed.isEmpty {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .firstName)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         if trimmed.count < 2 {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .firstName)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         return .valid
@@ -38,19 +38,19 @@ internal class LastNameRule: ValidationRule {
     func validate(_ value: String?) -> ValidationResult {
         guard let value = value else {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .lastName)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmed.isEmpty {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .lastName)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         if trimmed.count < 2 {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .lastName)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         return .valid
@@ -63,14 +63,14 @@ internal class EmailValidationRule: ValidationRule {
     func validate(_ value: String?) -> ValidationResult {
         guard let value = value else {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .email)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmed.isEmpty {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .email)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         // Basic email validation pattern
@@ -78,7 +78,7 @@ internal class EmailValidationRule: ValidationRule {
         let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
         if !emailPredicate.evaluate(with: trimmed) {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .email)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         return .valid
@@ -91,14 +91,14 @@ internal class PhoneNumberValidationRule: ValidationRule {
     func validate(_ value: String?) -> ValidationResult {
         guard let value = value else {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .phoneNumber)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmed.isEmpty {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .phoneNumber)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         // Basic phone number validation - digits, spaces, dashes, parentheses, plus
@@ -106,7 +106,7 @@ internal class PhoneNumberValidationRule: ValidationRule {
         let phonePredicate = NSPredicate(format: "SELF MATCHES %@", phoneRegex)
         if !phonePredicate.evaluate(with: trimmed) || trimmed.count < 8 {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .phoneNumber)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         return .valid
@@ -128,7 +128,7 @@ internal class AddressFieldRule: ValidationRule {
         guard let value = value else {
             if isRequired {
                 let error = ErrorMessageResolver.createRequiredFieldError(for: inputType)
-                return .invalid(code: error.code, message: error.message)
+                return .invalid(error: error)
             }
             return .valid
         }
@@ -137,7 +137,7 @@ internal class AddressFieldRule: ValidationRule {
 
         if isRequired && trimmed.isEmpty {
             let error = ErrorMessageResolver.createRequiredFieldError(for: inputType)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         // Optional fields can be empty
@@ -148,7 +148,7 @@ internal class AddressFieldRule: ValidationRule {
         // Basic length validation for non-empty fields
         if !trimmed.isEmpty && trimmed.count < 2 {
             let error = ErrorMessageResolver.createInvalidFieldError(for: inputType)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         return .valid
@@ -161,14 +161,14 @@ internal class BillingPostalCodeRule: ValidationRule {
     func validate(_ value: String?) -> ValidationResult {
         guard let value = value else {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .postalCode)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmed.isEmpty {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .postalCode)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         // Basic postal code validation - alphanumeric characters and spaces
@@ -176,7 +176,7 @@ internal class BillingPostalCodeRule: ValidationRule {
         let postalCodePredicate = NSPredicate(format: "SELF MATCHES %@", postalCodeRegex)
         if !postalCodePredicate.evaluate(with: trimmed) || trimmed.count < 3 {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .postalCode)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         return .valid
@@ -189,20 +189,20 @@ internal class BillingCountryCodeRule: ValidationRule {
     func validate(_ value: String?) -> ValidationResult {
         guard let value = value else {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .countryCode)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmed.isEmpty {
             let error = ErrorMessageResolver.createRequiredFieldError(for: .countryCode)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         // Country code should be 2-3 characters
         if trimmed.count < 2 || trimmed.count > 3 {
             let error = ErrorMessageResolver.createInvalidFieldError(for: .countryCode)
-            return .invalid(code: error.code, message: error.message)
+            return .invalid(error: error)
         }
 
         return .valid

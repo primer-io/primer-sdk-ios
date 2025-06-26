@@ -134,6 +134,16 @@ internal struct PaymentMethodSelectionScreen: View {
         var groups: [PaymentMethodGroup] = []
         let methods = selectionState.paymentMethods
 
+        // Check if any meaningful surcharge-related configuration exists
+        let hasSurchargeConfiguration = methods.contains { method in
+            (method.surcharge != nil && method.surcharge! > 0) || method.hasUnknownSurcharge
+        }
+
+        // If no surcharge configuration exists, return all methods in a single group without labels
+        guard hasSurchargeConfiguration else {
+            return [PaymentMethodGroup(group: "", methods: methods)]
+        }
+
         // Group 1: Methods with positive surcharges
         let surchargeMethods = methods.filter { method in
             if let surcharge = method.surcharge, surcharge > 0 {
@@ -190,17 +200,19 @@ internal struct PaymentMethodSelectionScreen: View {
     @ViewBuilder
     private func paymentMethodGroup(_ group: PaymentMethodGroup) -> some View {
         VStack(spacing: tokens?.primerSpaceSmall ?? 8) {
-            // Group header with surcharge info
-            HStack {
-                let headerFontSize = tokens?.primerTypographyBodyMediumSize ?? 14
-                let headerFontWeight: Font.Weight = .medium
+            // Group header with surcharge info (only show if group name is not empty)
+            if !group.group.isEmpty {
+                HStack {
+                    let headerFontSize = tokens?.primerTypographyBodyMediumSize ?? 14
+                    let headerFontWeight: Font.Weight = .medium
 
-                Text(group.group)
-                    .font(.system(size: headerFontSize, weight: headerFontWeight))
-                    .foregroundColor(dynamicGroupHeaderColor(for: group.group))
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    Text(group.group)
+                        .font(.system(size: headerFontSize, weight: headerFontWeight))
+                        .foregroundColor(dynamicGroupHeaderColor(for: group.group))
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+                .padding(.horizontal, tokens?.primerSpaceSmall ?? 8)
             }
-            .padding(.horizontal, tokens?.primerSpaceSmall ?? 8)
 
             // Gray rounded container for payment methods group
             VStack(spacing: tokens?.primerSpaceSmall ?? 8) {

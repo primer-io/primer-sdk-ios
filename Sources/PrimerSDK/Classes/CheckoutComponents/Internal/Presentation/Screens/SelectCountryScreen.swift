@@ -172,7 +172,7 @@ private struct CountryItemView: View {
                         .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
 
                     if let dialCode = country.dialCode {
-                        Text("\\(country.code) • \\(dialCode)")
+                        Text("\(country.code) • \(dialCode)")
                             .font(.caption)
                             .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
                     } else {

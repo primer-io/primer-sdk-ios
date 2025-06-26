@@ -57,12 +57,22 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogRep
         cardFormScope?.updateCountryCode(countryCode)
 
         // Navigate back to card form
-        checkoutScope?.checkoutNavigator.navigateBack()
+        if let checkoutScope = checkoutScope {
+            checkoutScope.checkoutNavigator.navigateBack()
+        } else {
+            // For sheet presentation, the sheet will be dismissed by the onDismiss callback
+            logger.debug(message: "Country selection completed - sheet will be dismissed externally")
+        }
     }
 
     public func onCancel() {
         logger.debug(message: "Country selection cancelled")
-        checkoutScope?.checkoutNavigator.navigateBack()
+        if let checkoutScope = checkoutScope {
+            checkoutScope.checkoutNavigator.navigateBack()
+        } else {
+            // For sheet presentation, the sheet will be dismissed by the onDismiss callback
+            logger.debug(message: "Country selection cancelled - sheet will be dismissed externally")
+        }
     }
 
     public func onSearch(query: String) {
@@ -74,30 +84,73 @@ internal final class DefaultSelectCountryScope: PrimerSelectCountryScope, LogRep
     // MARK: - Private Methods
 
     private func loadAvailableCountries() {
-        // Load available countries (this would normally come from configuration or a service)
-        let sampleCountries = [
-            PrimerCountry(code: "US", name: "United States", flag: "🇺🇸", dialCode: "+1"),
-            PrimerCountry(code: "GB", name: "United Kingdom", flag: "🇬🇧", dialCode: "+44"),
-            PrimerCountry(code: "DE", name: "Germany", flag: "🇩🇪", dialCode: "+49"),
-            PrimerCountry(code: "FR", name: "France", flag: "🇫🇷", dialCode: "+33"),
-            PrimerCountry(code: "ES", name: "Spain", flag: "🇪🇸", dialCode: "+34"),
-            PrimerCountry(code: "IT", name: "Italy", flag: "🇮🇹", dialCode: "+39"),
-            PrimerCountry(code: "CA", name: "Canada", flag: "🇨🇦", dialCode: "+1"),
-            PrimerCountry(code: "AU", name: "Australia", flag: "🇦🇺", dialCode: "+61")
-        ]
+        // Debug: Check if phone number country codes are loaded
+        logger.debug(message: "Phone number country codes available: \(CountryCode.phoneNumberCountryCodes.count)")
+        
+        // Load all available countries from CountryCode enum with localization and dial codes
+        let allCountries = CountryCode.allCases.compactMap { countryCode in
+            convertCountryCodeToPrimerCountry(countryCode)
+        }.sorted { $0.name < $1.name } // Sort alphabetically by localized name
 
-        internalState.countries = sampleCountries
-        internalState.filteredCountries = sampleCountries
+        logger.debug(message: "Loaded \(allCountries.count) countries for selection")
+        
+        // Debug: Show first few countries with their dial codes
+        let sampleCountries = allCountries.prefix(5)
+        for country in sampleCountries {
+            logger.debug(message: "Sample country: \(country.name) (\(country.code)) - \(country.dialCode ?? "no dial code")")
+        }
+        
+        internalState.countries = allCountries
+        internalState.filteredCountries = allCountries
+    }
+    
+    /// Converts a CountryCode enum value to PrimerCountry model
+    private func convertCountryCodeToPrimerCountry(_ countryCode: CountryCode) -> PrimerCountry? {
+        let code = countryCode.rawValue
+        let localizedName = countryCode.country
+        let flagEmoji = countryCode.flag
+        
+        // Find matching dial code from phone number country codes
+        let dialCode = CountryCode.phoneNumberCountryCodes
+            .first { $0.code.uppercased() == code.uppercased() }?
+            .dialCode
+        
+        // Debug logging for dial code matching
+        if dialCode == nil {
+            logger.debug(message: "No dial code found for country: \(code)")
+        }
+        
+        // Only include countries that have valid localized names
+        guard localizedName != "N/A" && !localizedName.isEmpty else {
+            return nil
+        }
+        
+        return PrimerCountry(
+            code: code,
+            name: localizedName,
+            flag: flagEmoji,
+            dialCode: dialCode
+        )
     }
 
     private func filterCountries(with query: String) {
         if query.isEmpty {
             internalState.filteredCountries = internalState.countries
         } else {
+            // Enhanced search with diacritic-insensitive and comprehensive filtering
+            let normalizedQuery = query.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+            
             internalState.filteredCountries = internalState.countries.filter { country in
-                country.name.localizedCaseInsensitiveContains(query) ||
-                    country.code.localizedCaseInsensitiveContains(query)
+                let normalizedCountryName = country.name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+                let normalizedCountryCode = country.code.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
+                
+                // Search by country name, country code, or dial code
+                return normalizedCountryName.contains(normalizedQuery) ||
+                       normalizedCountryCode.contains(normalizedQuery) ||
+                       (country.dialCode?.contains(query) ?? false)
             }
+            
+            logger.debug(message: "Filtered \(internalState.filteredCountries.count) countries for query: '\(query)'")
         }
     }
 }
