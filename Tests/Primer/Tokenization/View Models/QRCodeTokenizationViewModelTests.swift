@@ -114,7 +114,7 @@ final class QRCodeTokenizationViewModelTests: XCTestCase {
         let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
-            return self.tokenizationResponseBody
+            return Result.success(self.tokenizationResponseBody)
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
