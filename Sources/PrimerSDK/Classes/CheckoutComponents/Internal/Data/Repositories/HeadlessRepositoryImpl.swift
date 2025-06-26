@@ -14,8 +14,10 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
     private let completion: (Result<PaymentResult, Error>) -> Void
     private let logger = PrimerLogging.shared.logger
     private var hasCompleted = false
+    private weak var repository: HeadlessRepositoryImpl?
 
-    init(completion: @escaping (Result<PaymentResult, Error>) -> Void) {
+    init(repository: HeadlessRepositoryImpl, completion: @escaping (Result<PaymentResult, Error>) -> Void) {
+        self.repository = repository
         self.completion = completion
         super.init()
     }
@@ -61,6 +63,29 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
         logger.debug(message: "Will create payment - allowing to proceed")
         // Allow payment creation to proceed
         decisionHandler(.continuePaymentCreation())
+    }
+
+    // MARK: - 3DS Support
+
+    func primerHeadlessUniversalCheckoutDidTokenizePaymentMethod(
+        _ paymentMethodTokenData: PrimerPaymentMethodTokenData,
+        decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void
+    ) {
+        logger.info(message: "🔐🪲 [3DS] Payment method tokenized - proceeding to completion")
+        
+        // For CheckoutComponents, we simply complete the tokenization
+        // 3DS handling will be done at the payment creation level, not here
+        // This follows the pattern from MerchantHeadlessCheckoutAvailablePaymentMethodsViewController
+        logger.debug(message: "🔐🪲 [3DS] Completing tokenization, 3DS will be handled during payment creation")
+        decisionHandler(.complete())
+    }
+
+    func primerHeadlessUniversalCheckoutDidResumeWith(
+        _ resumeToken: String,
+        decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void
+    ) {
+        logger.info(message: "🔐🪲 [3DS] Payment resumed with token, proceeding to completion")
+        decisionHandler(.complete())
     }
 
     // MARK: - PrimerHeadlessUniversalCheckoutRawDataManagerDelegate (Validation)
@@ -317,7 +342,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                         self.logger.debug(message: "Card data prepared: number=***\(String(cardData.cardNumber.suffix(4))), expiry=\(cardData.expiryDate), network=\(cardData.cardNetwork?.rawValue ?? "auto")")
 
                         // Create payment completion handler
-                        let paymentHandler = PaymentCompletionHandler { result in
+                        let paymentHandler = PaymentCompletionHandler(repository: self) { result in
                             continuation.resume(with: result)
                         }
 
@@ -496,6 +521,137 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         clientSessionActionsModule
             .selectPaymentMethodIfNeeded("PAYMENT_CARD", cardNetwork: cardNetwork.rawValue)
             .cauterize()
+    }
+
+    // MARK: - 3DS Error Handling
+
+    /// Create user-friendly 3DS error using centralized strings
+    private func createUserFriendly3DSError(from error: Error) -> Error {
+        logger.debug(message: "🔐🪲 [3DS] Creating user-friendly error from: \(error)")
+        
+        // Check for specific 3DS error types
+        if let primer3DSError = error as? Primer3DSErrorContainer {
+            return createUserFriendly3DSError(from: primer3DSError)
+        }
+        
+        if let primerError = error as? PrimerError {
+            return createUserFriendly3DSError(from: primerError)
+        }
+        
+        // Check error message for common scenarios using centralized strings
+        let errorMessage = error.localizedDescription.lowercased()
+        
+        if errorMessage.contains("timeout") || errorMessage.contains("timed out") {
+            return PrimerError.unknown(
+                userInfo: [
+                    "error": CheckoutComponentsStrings.threeDSAuthenticationTimeout,
+                    "recovery": CheckoutComponentsStrings.threeDSCheckConnectionMessage
+                ],
+                diagnosticsId: UUID().uuidString
+            )
+        }
+        
+        if errorMessage.contains("cancelled") || errorMessage.contains("canceled") {
+            return PrimerError.unknown(
+                userInfo: [
+                    "error": CheckoutComponentsStrings.threeDSAuthenticationCancelled,
+                    "recovery": CheckoutComponentsStrings.threeDSCompleteAuthMessage
+                ],
+                diagnosticsId: UUID().uuidString
+            )
+        }
+        
+        if errorMessage.contains("network") || errorMessage.contains("connection") {
+            return PrimerError.unknown(
+                userInfo: [
+                    "error": CheckoutComponentsStrings.threeDSNetworkError,
+                    "recovery": CheckoutComponentsStrings.threeDSCheckConnectionMessage
+                ],
+                diagnosticsId: UUID().uuidString
+            )
+        }
+        
+        if errorMessage.contains("invalid") || errorMessage.contains("malformed") {
+            return PrimerError.unknown(
+                userInfo: [
+                    "error": CheckoutComponentsStrings.threeDSInvalidData,
+                    "recovery": CheckoutComponentsStrings.threeDSRetryMessage
+                ],
+                diagnosticsId: UUID().uuidString
+            )
+        }
+        
+        // Default enhanced error with centralized strings
+        return PrimerError.unknown(
+            userInfo: [
+                "error": CheckoutComponentsStrings.threeDSGenericError,
+                "recovery": CheckoutComponentsStrings.threeDSRetryMessage,
+                "originalError": error.localizedDescription
+            ],
+            diagnosticsId: UUID().uuidString
+        )
+    }
+    
+    /// Create user-friendly error from Primer3DSErrorContainer using centralized strings
+    private func createUserFriendly3DSError(from error: Primer3DSErrorContainer) -> PrimerError {
+        switch error {
+        case .missingSdkDependency:
+            return PrimerError.unknown(
+                userInfo: [
+                    "error": CheckoutComponentsStrings.threeDSNotAvailable,
+                    "recovery": CheckoutComponentsStrings.threeDSContactSupportMessage
+                ],
+                diagnosticsId: UUID().uuidString
+            )
+        case .missing3DSConfiguration:
+            return PrimerError.unknown(
+                userInfo: [
+                    "error": CheckoutComponentsStrings.threeDSConfigurationError,
+                    "recovery": CheckoutComponentsStrings.threeDSContactSupportMessage
+                ],
+                diagnosticsId: UUID().uuidString
+            )
+        case .invalid3DSSdkVersion:
+            return PrimerError.unknown(
+                userInfo: [
+                    "error": CheckoutComponentsStrings.threeDSNotAvailable,
+                    "recovery": CheckoutComponentsStrings.threeDSRetryMessage
+                ],
+                diagnosticsId: UUID().uuidString
+            )
+        default:
+            return PrimerError.unknown(
+                userInfo: [
+                    "error": CheckoutComponentsStrings.threeDSGenericError,
+                    "recovery": CheckoutComponentsStrings.threeDSRetryMessage
+                ],
+                diagnosticsId: UUID().uuidString
+            )
+        }
+    }
+    
+    /// Create user-friendly error from PrimerError using centralized strings
+    private func createUserFriendly3DSError(from error: PrimerError) -> PrimerError {
+        switch error {
+        case .invalidClientToken:
+            return PrimerError.invalidClientToken(
+                userInfo: [
+                    "error": CheckoutComponentsStrings.threeDSSessionExpired,
+                    "recovery": CheckoutComponentsStrings.threeDSRetryMessage
+                ],
+                diagnosticsId: UUID().uuidString
+            )
+        case .missingPrimerConfiguration:
+            return PrimerError.missingPrimerConfiguration(
+                userInfo: [
+                    "error": CheckoutComponentsStrings.threeDSConfigurationError,
+                    "recovery": CheckoutComponentsStrings.threeDSContactSupportMessage
+                ],
+                diagnosticsId: UUID().uuidString
+            )
+        default:
+            return error // Return original error if no specific enhancement needed
+        }
     }
 
     /// Update client session with payment method selection (matches Drop-in's dispatchActions)

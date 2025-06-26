@@ -372,4 +372,92 @@ internal struct CheckoutComponentsStrings {
         value: "Country Selector",
         comment: "Country selector placeholder"
     )
+
+    // MARK: - 3DS Error Messages
+
+    static let threeDSAuthenticationTimeout = NSLocalizedString(
+        "checkout-components-3ds-timeout",
+        bundle: Bundle.primerResources,
+        value: "3D Secure authentication timed out. Please try again.",
+        comment: "3DS authentication timeout error message"
+    )
+
+    static let threeDSAuthenticationCancelled = NSLocalizedString(
+        "checkout-components-3ds-cancelled",
+        bundle: Bundle.primerResources,
+        value: "3D Secure authentication was cancelled.",
+        comment: "3DS authentication cancelled error message"
+    )
+
+    static let threeDSNetworkError = NSLocalizedString(
+        "checkout-components-3ds-network-error",
+        bundle: Bundle.primerResources,
+        value: "Network error during 3D Secure authentication.",
+        comment: "3DS network error message"
+    )
+
+    static let threeDSConfigurationError = NSLocalizedString(
+        "checkout-components-3ds-configuration-error",
+        bundle: Bundle.primerResources,
+        value: "3D Secure authentication configuration is missing.",
+        comment: "3DS configuration error message"
+    )
+
+    static let threeDSNotAvailable = NSLocalizedString(
+        "checkout-components-3ds-not-available",
+        bundle: Bundle.primerResources,
+        value: "3D Secure authentication is not available.",
+        comment: "3DS not available error message"
+    )
+
+    static let threeDSInvalidData = NSLocalizedString(
+        "checkout-components-3ds-invalid-data",
+        bundle: Bundle.primerResources,
+        value: "Invalid payment data for 3D Secure authentication.",
+        comment: "3DS invalid data error message"
+    )
+
+    static let threeDSGenericError = NSLocalizedString(
+        "checkout-components-3ds-generic-error",
+        bundle: Bundle.primerResources,
+        value: "3D Secure authentication failed.",
+        comment: "3DS generic error message"
+    )
+
+    static let threeDSSessionExpired = NSLocalizedString(
+        "checkout-components-3ds-session-expired",
+        bundle: Bundle.primerResources,
+        value: "Session expired during 3D Secure authentication.",
+        comment: "3DS session expired error message"
+    )
+
+    // MARK: - 3DS Recovery Messages
+
+    static let threeDSRetryMessage = NSLocalizedString(
+        "checkout-components-3ds-retry",
+        bundle: Bundle.primerResources,
+        value: "Please try again or use a different payment method.",
+        comment: "3DS retry recovery message"
+    )
+
+    static let threeDSCheckConnectionMessage = NSLocalizedString(
+        "checkout-components-3ds-check-connection",
+        bundle: Bundle.primerResources,
+        value: "Please check your internet connection and try again.",
+        comment: "3DS check connection recovery message"
+    )
+
+    static let threeDSContactSupportMessage = NSLocalizedString(
+        "checkout-components-3ds-contact-support",
+        bundle: Bundle.primerResources,
+        value: "Please try again or contact support.",
+        comment: "3DS contact support recovery message"
+    )
+
+    static let threeDSCompleteAuthMessage = NSLocalizedString(
+        "checkout-components-3ds-complete-auth",
+        bundle: Bundle.primerResources,
+        value: "Please try again and complete the authentication process.",
+        comment: "3DS complete authentication recovery message"
+    )
 }

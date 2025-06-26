@@ -20,6 +20,42 @@ public protocol CheckoutComponentsDelegate: AnyObject {
 
     /// Called when checkout is dismissed without completion
     func checkoutComponentsDidDismiss()
+
+    // MARK: - 3DS Delegate Methods (Optional with default implementations)
+
+    /// Called when 3DS challenge is about to be presented
+    /// - Parameter paymentMethodTokenData: The payment method token data requiring 3DS
+    func checkoutComponentsWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData)
+
+    /// Called when 3DS challenge UI is dismissed
+    func checkoutComponentsDidDismiss3DSChallenge()
+
+    /// Called when 3DS challenge completes (success or failure)
+    /// - Parameters:
+    ///   - success: Whether 3DS challenge was successful
+    ///   - resumeToken: The resume token if successful, nil if failed
+    ///   - error: The error if failed, nil if successful
+    func checkoutComponentsDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?)
+}
+
+// MARK: - Optional 3DS Delegate Methods
+
+@available(iOS 15.0, *)
+public extension CheckoutComponentsDelegate {
+    /// Default implementation - override if you need 3DS challenge presentation callbacks
+    func checkoutComponentsWillPresent3DSChallenge(_ paymentMethodTokenData: PrimerPaymentMethodTokenData) {
+        // Default empty implementation
+    }
+
+    /// Default implementation - override if you need 3DS challenge dismissal callbacks
+    func checkoutComponentsDidDismiss3DSChallenge() {
+        // Default empty implementation
+    }
+
+    /// Default implementation - override if you need 3DS challenge completion callbacks
+    func checkoutComponentsDidComplete3DSChallenge(success: Bool, resumeToken: String?, error: Error?) {
+        // Default empty implementation
+    }
 }
 
 /// The main entry point for CheckoutComponents, providing a familiar API similar to the main Primer class
