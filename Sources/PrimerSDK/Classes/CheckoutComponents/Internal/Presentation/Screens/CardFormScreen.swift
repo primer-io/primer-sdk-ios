@@ -46,30 +46,39 @@ internal struct CardFormScreen: View {
     }
 
     var body: some View {
-        mainContent
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        scope.onBack()
-                    }) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "chevron.left")
-                                .font(.body.weight(.medium))
-                            Text("Back")
-                        }
-                        .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
-                    }
-                }
+        VStack(spacing: 0) {
+            customHeader
+            mainContent
+        }
+        .navigationBarHidden(true)
+    }
 
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(CheckoutComponentsStrings.cancelButton) {
-                        scope.onCancel()
-                    }
-                    .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+    private var customHeader: some View {
+        HStack {
+            Button(action: {
+                scope.onBack()
+            }) {
+                HStack(spacing: 4) {
+                    Image(systemName: "chevron.left")
+                        .font(.body.weight(.medium))
+                    Text("Back")
                 }
+                .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
             }
+            
+            Spacer()
+            
+            Button(CheckoutComponentsStrings.cancelButton) {
+                scope.onCancel()
+            }
+            .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(
+            Rectangle()
+                .fill(tokens?.primerColorBackground ?? Color(.systemBackground))
+        )
     }
 
     private var mainContent: some View {
@@ -81,7 +90,6 @@ internal struct CardFormScreen: View {
                     billingAddressToggle
                     billingAddressSection
                 }
-                errorSection
                 submitButtonSection
             }
             .padding(.top)
@@ -191,19 +199,6 @@ internal struct CardFormScreen: View {
         }
     }
 
-    @ViewBuilder
-    private var errorSection: some View {
-        if let error = cardFormState.error, !error.isEmpty {
-            if let customErrorView = scope.errorView {
-                customErrorView(error)
-            } else {
-                Text(error)
-                    .font(.caption)
-                    .foregroundColor(tokens?.primerColorBorderOutlinedError ?? .red)
-                    .padding(.horizontal)
-            }
-        }
-    }
 
     private var submitButtonSection: some View {
         Group {

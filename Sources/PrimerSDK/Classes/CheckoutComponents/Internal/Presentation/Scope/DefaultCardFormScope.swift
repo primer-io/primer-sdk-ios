@@ -369,69 +369,10 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
 
         currentCardData = cardData
 
-        // Validate card data using validation service
-        validateCardData(cardData)
+        // Note: Field-level validation is now handled by updateValidationState()
+        // called from CardDetailsView when each field updates its validation state
     }
 
-    private func validateCardData(_ cardData: PrimerCardData) {
-        // Use validation service to validate card data
-        Task {
-            await MainActor.run {
-                // Use validation rules directly to avoid DI circular dependency
-                logger.debug(message: "🔍 [CardForm] Raw card number: '\(cardData.cardNumber)'")
-                let cardNumberRule = CardNumberRule()
-                let cardNumberResult = cardNumberRule.validate(cardData.cardNumber)
-                logger.debug(message: "🔍 [CardForm] Card number validation result: \(cardNumberResult.isValid), message: '\(cardNumberResult.errorMessage ?? "none")'")
-
-                // For CVV validation, we need to detect the card network first
-                let cardNetwork = CardNetwork(cardNumber: cardData.cardNumber)
-                logger.debug(message: "🔍 [CardForm] Detected card network: \(cardNetwork.rawValue)")
-                logger.debug(message: "🔍 [CardForm] Raw CVV: '\(cardData.cvv)'")
-                let cvvRule = CVVRule(cardNetwork: cardNetwork)
-                let cvvResult = cvvRule.validate(cardData.cvv)
-                logger.debug(message: "🔍 [CardForm] CVV validation result: \(cvvResult.isValid), message: '\(cvvResult.errorMessage ?? "none")')")
-
-                // For expiry validation, parse the month and year
-                logger.debug(message: "🔍 [CardForm] Raw expiry date: '\(cardData.expiryDate)'")
-                let expiryComponents = cardData.expiryDate.components(separatedBy: "/")
-                logger.debug(message: "🔍 [CardForm] Expiry components: \(expiryComponents)")
-                let expiryResult: ValidationResult
-                if expiryComponents.count == 2 {
-                    let month = expiryComponents[0]
-                    let year = expiryComponents[1]
-                    logger.debug(message: "🔍 [CardForm] Parsed month: '\(month)', year: '\(year)'")
-                    let expiryRule = ExpiryDateRule()
-                    let expiryInput = ExpiryDateInput(month: month, year: year)
-                    expiryResult = expiryRule.validate(expiryInput)
-                    logger.debug(message: "🔍 [CardForm] Expiry validation result: \(expiryResult.isValid), message: '\(expiryResult.errorMessage ?? "none")'")
-                } else {
-                    logger.debug(message: "🔍 [CardForm] Invalid expiry format - expected 2 components, got \(expiryComponents.count)")
-                    expiryResult = .invalid(code: "invalid-expiry-format", message: "Invalid expiry date format")
-                }
-
-                // Validate cardholder name (required field)
-                let cardholderNameValid = !internalState.cardholderName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                logger.debug(message: "🔍 [CardForm] Cardholder name: '\(internalState.cardholderName)', valid: \(cardholderNameValid)")
-
-                // Update validation state (include cardholder name as required)
-                internalState.isValid = cardNumberResult.isValid && cvvResult.isValid && expiryResult.isValid && cardholderNameValid
-
-                logger.debug(message: "🔍 [CardForm] Validation results - Card: \(cardNumberResult.isValid), CVV: \(cvvResult.isValid), Expiry: \(expiryResult.isValid), Cardholder: \(cardholderNameValid), Overall: \(internalState.isValid)")
-
-                // Show first error found, but don't show cardholder name error to avoid confusion
-                if !cardNumberResult.isValid {
-                    internalState.error = cardNumberResult.errorMessage
-                } else if !cvvResult.isValid {
-                    internalState.error = cvvResult.errorMessage
-                } else if !expiryResult.isValid {
-                    internalState.error = expiryResult.errorMessage
-                } else {
-                    // Clear error when all card fields are valid (even if cardholder name is missing)
-                    internalState.error = nil
-                }
-            }
-        }
-    }
 
     // Network detection is now handled by HeadlessRepository and RawDataManager
     // Old detectAvailableNetworks and isCartesBancairesBIN methods removed
@@ -594,5 +535,23 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
         let formattedSurcharge = "+ \(surcharge.toCurrencyString(currency: currency))"
         internalState.surchargeAmount = formattedSurcharge
         logger.info(message: "💰 [CardForm] Updated surcharge for \(network.displayName): \(formattedSurcharge)")
+    }
+    
+    // MARK: - Field-Level Validation State Communication
+    
+    /// Updates the form validation state based on field-level validation results.
+    /// This method replaces the duplicate validation logic with direct validation states from the UI components.
+    public func updateValidationState(cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool) {
+        logger.debug(message: "🔍 [CardForm] Field validation states - Card: \(cardNumber), CVV: \(cvv), Expiry: \(expiry), Cardholder: \(cardholderName)")
+        
+        // Update the form validation state based on field-level validation
+        internalState.isValid = cardNumber && cvv && expiry && cardholderName
+        
+        logger.debug(message: "🔍 [CardForm] Form validation updated - Overall: \(internalState.isValid)")
+        
+        // Clear any previous error when all fields are valid
+        if internalState.isValid {
+            internalState.error = nil
+        }
     }
 }

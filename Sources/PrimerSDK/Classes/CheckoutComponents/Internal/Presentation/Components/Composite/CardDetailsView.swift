@@ -7,6 +7,14 @@
 
 import SwiftUI
 
+/// Validation state tracking structure
+private struct ValidationState: Equatable {
+    let cardNumber: Bool
+    let cvv: Bool
+    let expiry: Bool
+    let cardholderName: Bool
+}
+
 /// A composite SwiftUI view containing all card input fields
 @available(iOS 15.0, *)
 internal struct CardDetailsView: View {
@@ -27,6 +35,9 @@ internal struct CardDetailsView: View {
     @State private var isExpiryValid = false
     @State private var isCardholderNameValid = false
 
+    /// Previous validation states to detect changes
+    @State private var previousValidationState: ValidationState? = nil
+
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Body
@@ -45,6 +56,7 @@ internal struct CardDetailsView: View {
                 },
                 onValidationChange: { isValid in
                     isCardNumberValid = isValid
+                    updateValidationState()
                 },
                 onNetworksDetected: { networks in
                     availableNetworks = networks
@@ -66,6 +78,7 @@ internal struct CardDetailsView: View {
                     },
                     onValidationChange: { isValid in
                         isExpiryValid = isValid
+                        updateValidationState()
                     },
                     onMonthChange: { month in
                         cardFormScope.updateExpiryMonth(month)
@@ -85,6 +98,7 @@ internal struct CardDetailsView: View {
                     },
                     onValidationChange: { isValid in
                         isCVVValid = isValid
+                        updateValidationState()
                     }
                 )
                 .frame(maxWidth: 120)
@@ -99,6 +113,7 @@ internal struct CardDetailsView: View {
                 },
                 onValidationChange: { isValid in
                     isCardholderNameValid = isValid
+                    updateValidationState()
                 }
             )
         }
@@ -107,5 +122,28 @@ internal struct CardDetailsView: View {
     /// Returns whether all card fields are valid
     var isValid: Bool {
         isCardNumberValid && isCVVValid && isExpiryValid && isCardholderNameValid
+    }
+    
+    /// Updates the card form scope with the current validation state
+    private func updateValidationState() {
+        let currentState = ValidationState(
+            cardNumber: isCardNumberValid,
+            cvv: isCVVValid,
+            expiry: isExpiryValid,
+            cardholderName: isCardholderNameValid
+        )
+        
+        // Only notify if validation state has changed
+        if previousValidationState != currentState {
+            previousValidationState = currentState
+            
+            // Notify the scope of the field-level validation state
+            cardFormScope.updateValidationState(
+                cardNumber: isCardNumberValid,
+                cvv: isCVVValid,
+                expiry: isExpiryValid,
+                cardholderName: isCardholderNameValid
+            )
+        }
     }
 }

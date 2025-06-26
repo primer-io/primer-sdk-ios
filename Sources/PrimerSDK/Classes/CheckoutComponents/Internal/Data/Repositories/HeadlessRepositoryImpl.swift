@@ -72,7 +72,7 @@ private class PaymentCompletionHandler: NSObject, PrimerHeadlessUniversalCheckou
         decisionHandler: @escaping (PrimerHeadlessUniversalCheckoutResumeDecision) -> Void
     ) {
         logger.info(message: "🔐🪲 [3DS] Payment method tokenized - proceeding to completion")
-        
+
         // For CheckoutComponents, we simply complete the tokenization
         // 3DS handling will be done at the payment creation level, not here
         // This follows the pattern from MerchantHeadlessCheckoutAvailablePaymentMethodsViewController
@@ -528,19 +528,19 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
     /// Create user-friendly 3DS error using centralized strings
     private func createUserFriendly3DSError(from error: Error) -> Error {
         logger.debug(message: "🔐🪲 [3DS] Creating user-friendly error from: \(error)")
-        
+
         // Check for specific 3DS error types
         if let primer3DSError = error as? Primer3DSErrorContainer {
             return createUserFriendly3DSError(from: primer3DSError)
         }
-        
+
         if let primerError = error as? PrimerError {
             return createUserFriendly3DSError(from: primerError)
         }
-        
+
         // Check error message for common scenarios using centralized strings
         let errorMessage = error.localizedDescription.lowercased()
-        
+
         if errorMessage.contains("timeout") || errorMessage.contains("timed out") {
             return PrimerError.unknown(
                 userInfo: [
@@ -550,7 +550,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                 diagnosticsId: UUID().uuidString
             )
         }
-        
+
         if errorMessage.contains("cancelled") || errorMessage.contains("canceled") {
             return PrimerError.unknown(
                 userInfo: [
@@ -560,7 +560,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                 diagnosticsId: UUID().uuidString
             )
         }
-        
+
         if errorMessage.contains("network") || errorMessage.contains("connection") {
             return PrimerError.unknown(
                 userInfo: [
@@ -570,7 +570,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                 diagnosticsId: UUID().uuidString
             )
         }
-        
+
         if errorMessage.contains("invalid") || errorMessage.contains("malformed") {
             return PrimerError.unknown(
                 userInfo: [
@@ -580,7 +580,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
                 diagnosticsId: UUID().uuidString
             )
         }
-        
+
         // Default enhanced error with centralized strings
         return PrimerError.unknown(
             userInfo: [
@@ -591,7 +591,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             diagnosticsId: UUID().uuidString
         )
     }
-    
+
     /// Create user-friendly error from Primer3DSErrorContainer using centralized strings
     private func createUserFriendly3DSError(from error: Primer3DSErrorContainer) -> PrimerError {
         switch error {
@@ -629,7 +629,7 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
             )
         }
     }
-    
+
     /// Create user-friendly error from PrimerError using centralized strings
     private func createUserFriendly3DSError(from error: PrimerError) -> PrimerError {
         switch error {

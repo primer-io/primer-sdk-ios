@@ -181,6 +181,13 @@ public protocol PrimerCardFormScope: AnyObject {
 
     /// Select a saved card (Future feature).
     // func selectSavedCard(_ cardId: String)
+    
+    // MARK: - Validation State Communication
+    
+    /// Updates the validation state based on field-level validation results.
+    /// This method allows the UI components to communicate their validation state
+    /// to the scope, ensuring button state synchronization.
+    func updateValidationState(cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool)
 
 }
 

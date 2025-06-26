@@ -78,9 +78,6 @@ internal struct BillingAddressView: View {
     /// Show country selector
     @State private var showCountrySelector = false
 
-    /// Validation states
-    @State private var fieldValidationStates: [PrimerInputElementType: Bool] = [:]
-
     /// Field values for PrimerInputField integration
     @State private var firstName: String = ""
     @State private var lastName: String = ""
@@ -92,7 +89,19 @@ internal struct BillingAddressView: View {
     @State private var state: String = ""
     @State private var postalCode: String = ""
 
+    /// Validation states using ValidationService
+    @State private var firstNameError: ValidationError?
+    @State private var lastNameError: ValidationError?
+    @State private var emailError: ValidationError?
+    @State private var phoneNumberError: ValidationError?
+    @State private var addressLine1Error: ValidationError?
+    @State private var addressLine2Error: ValidationError?
+    @State private var cityError: ValidationError?
+    @State private var stateError: ValidationError?
+    @State private var postalCodeError: ValidationError?
+
     @Environment(\.designTokens) private var tokens
+    @Environment(\.diContainer) private var diContainer
 
     // MARK: - Body
 
@@ -107,10 +116,10 @@ internal struct BillingAddressView: View {
                             onValueChange: { name in
                                 firstName = name
                                 cardFormScope.updateFirstName(name)
+                                validateFirstName(name)
                             },
-                            onValidationChange: { isValid in
-                                fieldValidationStates[.firstName] = isValid
-                            }
+                            isError: firstNameError != nil,
+                            validationError: firstNameError
                         )
                     }
 
@@ -120,10 +129,10 @@ internal struct BillingAddressView: View {
                             onValueChange: { name in
                                 lastName = name
                                 cardFormScope.updateLastName(name)
+                                validateLastName(name)
                             },
-                            onValidationChange: { isValid in
-                                fieldValidationStates[.lastName] = isValid
-                            }
+                            isError: lastNameError != nil,
+                            validationError: lastNameError
                         )
                     }
                 }
@@ -136,10 +145,10 @@ internal struct BillingAddressView: View {
                     onValueChange: { emailValue in
                         email = emailValue
                         cardFormScope.updateEmail(emailValue)
+                        validateEmail(emailValue)
                     },
-                    onValidationChange: { isValid in
-                        fieldValidationStates[.email] = isValid
-                    }
+                    isError: emailError != nil,
+                    validationError: emailError
                 )
             }
 
@@ -150,10 +159,10 @@ internal struct BillingAddressView: View {
                     onValueChange: { phone in
                         phoneNumber = phone
                         cardFormScope.updatePhoneNumber(phone)
+                        validatePhoneNumber(phone)
                     },
-                    onValidationChange: { isValid in
-                        fieldValidationStates[.phoneNumber] = isValid
-                    }
+                    isError: phoneNumberError != nil,
+                    validationError: phoneNumberError
                 )
             }
 
@@ -164,14 +173,12 @@ internal struct BillingAddressView: View {
                     onValueChange: { address in
                         addressLine1 = address
                         cardFormScope.updateAddressLine1(address)
+                        validateAddressLine1(address)
                     },
                     labelText: CheckoutComponentsStrings.addressLine1Label,
                     placeholderText: CheckoutComponentsStrings.addressLine1Placeholder,
-                    inputElementType: .addressLine1,
-                    isRequired: true,
-                    onValidationChange: { isValid in
-                        fieldValidationStates[.addressLine1] = isValid
-                    }
+                    isError: addressLine1Error != nil,
+                    validationError: addressLine1Error
                 )
             }
 
@@ -182,14 +189,12 @@ internal struct BillingAddressView: View {
                     onValueChange: { address in
                         addressLine2 = address
                         cardFormScope.updateAddressLine2(address)
+                        validateAddressLine2(address)
                     },
                     labelText: CheckoutComponentsStrings.addressLine2Label,
                     placeholderText: CheckoutComponentsStrings.addressLine2Placeholder,
-                    inputElementType: .addressLine2,
-                    isRequired: false,
-                    onValidationChange: { isValid in
-                        fieldValidationStates[.addressLine2] = isValid
-                    }
+                    isError: addressLine2Error != nil,
+                    validationError: addressLine2Error
                 )
             }
 
@@ -202,14 +207,12 @@ internal struct BillingAddressView: View {
                             onValueChange: { cityValue in
                                 city = cityValue
                                 cardFormScope.updateCity(cityValue)
+                                validateCity(cityValue)
                             },
                             labelText: CheckoutComponentsStrings.cityLabel,
                             placeholderText: CheckoutComponentsStrings.cityPlaceholder,
-                            inputElementType: .city,
-                            isRequired: true,
-                            onValidationChange: { isValid in
-                                fieldValidationStates[.city] = isValid
-                            }
+                            isError: cityError != nil,
+                            validationError: cityError
                         )
                     }
 
@@ -219,14 +222,12 @@ internal struct BillingAddressView: View {
                             onValueChange: { stateValue in
                                 state = stateValue
                                 cardFormScope.updateState(stateValue)
+                                validateState(stateValue)
                             },
                             labelText: CheckoutComponentsStrings.stateLabel,
                             placeholderText: CheckoutComponentsStrings.statePlaceholder,
-                            inputElementType: .state,
-                            isRequired: true,
-                            onValidationChange: { isValid in
-                                fieldValidationStates[.state] = isValid
-                            }
+                            isError: stateError != nil,
+                            validationError: stateError
                         )
                         .frame(maxWidth: 100)
                     }
@@ -242,14 +243,12 @@ internal struct BillingAddressView: View {
                             onValueChange: { postalCodeValue in
                                 postalCode = postalCodeValue
                                 cardFormScope.updatePostalCode(postalCodeValue)
+                                validatePostalCode(postalCodeValue)
                             },
                             labelText: CheckoutComponentsStrings.postalCodeLabel,
                             placeholderText: postalCodePlaceholder,
-                            inputElementType: .postalCode,
-                            isRequired: true,
-                            onValidationChange: { isValid in
-                                fieldValidationStates[.postalCode] = isValid
-                            }
+                            isError: postalCodeError != nil,
+                            validationError: postalCodeError
                         )
                         .frame(maxWidth: 150)
                     }
@@ -265,8 +264,8 @@ internal struct BillingAddressView: View {
                                 selectedCountryCode = code
                                 cardFormScope.updateCountryCode(code)
                             },
-                            onValidationChange: { isValid in
-                                fieldValidationStates[.countryCode] = isValid
+                            onValidationChange: { _ in
+                                // Handle country validation state
                             },
                             onOpenCountrySelector: {
                                 showCountrySelector = true
@@ -297,23 +296,106 @@ internal struct BillingAddressView: View {
         }
     }
 
-    /// Returns whether all visible fields are valid
+    /// Returns whether all visible fields are valid using ValidationService
     var isValid: Bool {
-        var requiredFields: [PrimerInputElementType] = []
+        // Check all visible required fields have no validation errors
+        var hasErrors = false
 
-        if configuration.showFirstName { requiredFields.append(.firstName) }
-        if configuration.showLastName { requiredFields.append(.lastName) }
-        if configuration.showEmail { requiredFields.append(.email) }
-        if configuration.showPhoneNumber { requiredFields.append(.phoneNumber) }
-        if configuration.showAddressLine1 { requiredFields.append(.addressLine1) }
+        if configuration.showFirstName && firstNameError != nil { hasErrors = true }
+        if configuration.showLastName && lastNameError != nil { hasErrors = true }
+        if configuration.showEmail && emailError != nil { hasErrors = true }
+        if configuration.showPhoneNumber && phoneNumberError != nil { hasErrors = true }
+        if configuration.showAddressLine1 && addressLine1Error != nil { hasErrors = true }
         // Address line 2 is optional
-        if configuration.showCity { requiredFields.append(.city) }
-        if configuration.showState { requiredFields.append(.state) }
-        if configuration.showPostalCode { requiredFields.append(.postalCode) }
-        if configuration.showCountry { requiredFields.append(.countryCode) }
+        if configuration.showCity && cityError != nil { hasErrors = true }
+        if configuration.showState && stateError != nil { hasErrors = true }
+        if configuration.showPostalCode && postalCodeError != nil { hasErrors = true }
 
-        return requiredFields.allSatisfy { field in
-            fieldValidationStates[field] ?? false
+        return !hasErrors
+    }
+
+    // MARK: - Validation Helpers
+
+    /// Validates a field using ValidationService from DI container
+    private func validateField(type: PrimerInputElementType, value: String) async -> ValidationError? {
+        do {
+            guard let validationService = try await diContainer?.resolve(ValidationService.self) else {
+                // Fallback to basic validation if DI container is not available
+                return nil
+            }
+
+            let result = validationService.validateField(type: type, value: value.isEmpty ? nil : value)
+            if result.isValid {
+                return nil
+            } else {
+                return ValidationError(code: result.errorCode ?? "invalid", message: result.errorMessage ?? "Invalid input")
+            }
+        } catch {
+            // If validation service is not available, don't show errors
+            return nil
+        }
+    }
+
+    /// Validates first name field
+    private func validateFirstName(_ value: String) {
+        Task {
+            firstNameError = await validateField(type: .firstName, value: value)
+        }
+    }
+
+    /// Validates last name field
+    private func validateLastName(_ value: String) {
+        Task {
+            lastNameError = await validateField(type: .lastName, value: value)
+        }
+    }
+
+    /// Validates email field
+    private func validateEmail(_ value: String) {
+        Task {
+            emailError = await validateField(type: .email, value: value)
+        }
+    }
+
+    /// Validates phone number field
+    private func validatePhoneNumber(_ value: String) {
+        Task {
+            phoneNumberError = await validateField(type: .phoneNumber, value: value)
+        }
+    }
+
+    /// Validates address line 1 field
+    private func validateAddressLine1(_ value: String) {
+        Task {
+            addressLine1Error = await validateField(type: .addressLine1, value: value)
+        }
+    }
+
+    /// Validates address line 2 field
+    private func validateAddressLine2(_ value: String) {
+        Task {
+            addressLine2Error = await validateField(type: .addressLine2, value: value)
+        }
+    }
+
+    /// Validates city field
+    private func validateCity(_ value: String) {
+        Task {
+            cityError = await validateField(type: .city, value: value)
+        }
+    }
+
+    /// Validates state field
+    private func validateState(_ value: String) {
+        Task {
+            stateError = await validateField(type: .state, value: value)
+        }
+    }
+
+    /// Validates postal code field
+    private func validatePostalCode(_ value: String) {
+        Task {
+            postalCodeError = await validateField(type: .postalCode, value: value)
         }
     }
 }

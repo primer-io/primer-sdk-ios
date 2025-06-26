@@ -31,7 +31,11 @@
       "mcp__xcode-server__find_files",
       "mcp__xcode-server__search_in_files",
       "Bash(mkdir:*)",
-      "Bash(/Applications/Xcode-16.3.0.app/Contents/Developer/usr/bin/swift -frontend -typecheck \"/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/CheckoutComponents/Internal/Presentation/Screens/PaymentMethodSelectionScreen.swift\" -module-name PrimerSDK)"
+      "Bash(/Applications/Xcode-16.3.0.app/Contents/Developer/usr/bin/swift -frontend -typecheck \"/Users/boris/primer-sdk-ios/Sources/PrimerSDK/Classes/CheckoutComponents/Internal/Presentation/Screens/PaymentMethodSelectionScreen.swift\" -module-name PrimerSDK)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:modelcontextprotocol.io)",
+      "Bash(git worktree:*)",
+      "Bash(cp:*)"
     ],
     "deny": []
   }

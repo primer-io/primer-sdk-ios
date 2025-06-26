@@ -446,32 +446,41 @@ extension DefaultValidationService {
             return validateCardholderName(value)
 
         case .postalCode:
-            return validate(input: value, with: RequiredFieldRule(fieldName: "Postal code", errorCode: "invalid-postal-code"))
+            let rule = rulesFactory.createBillingPostalCodeRule()
+            return rule.validate(value)
 
         case .countryCode:
-            return validate(input: value, with: RequiredFieldRule(fieldName: "Country", errorCode: "invalid-country"))
+            let rule = rulesFactory.createBillingCountryCodeRule()
+            return rule.validate(value)
 
         case .firstName:
-            return validate(input: value, with: RequiredFieldRule(fieldName: "First name", errorCode: "invalid-first-name"))
+            let rule = rulesFactory.createFirstNameRule()
+            return rule.validate(value)
 
         case .lastName:
-            return validate(input: value, with: RequiredFieldRule(fieldName: "Last name", errorCode: "invalid-last-name"))
+            let rule = rulesFactory.createLastNameRule()
+            return rule.validate(value)
 
         case .addressLine1:
-            return validate(input: value, with: RequiredFieldRule(fieldName: "Address line 1", errorCode: "invalid-address"))
+            let rule = rulesFactory.createAddressFieldRule(inputType: .addressLine1, isRequired: true)
+            return rule.validate(value)
 
         case .addressLine2:
-            // AddressLine2 is typically optional, so no validation required
-            return .valid
+            // AddressLine2 is typically optional
+            let rule = rulesFactory.createAddressFieldRule(inputType: .addressLine2, isRequired: false)
+            return rule.validate(value)
 
         case .city:
-            return validate(input: value, with: RequiredFieldRule(fieldName: "City", errorCode: "invalid-city"))
+            let rule = rulesFactory.createAddressFieldRule(inputType: .city, isRequired: true)
+            return rule.validate(value)
 
         case .state:
-            return validate(input: value, with: RequiredFieldRule(fieldName: "State", errorCode: "invalid-state"))
+            let rule = rulesFactory.createAddressFieldRule(inputType: .state, isRequired: true)
+            return rule.validate(value)
 
         case .phoneNumber:
-            return validate(input: value, with: RequiredFieldRule(fieldName: "Phone number", errorCode: "invalid-phone-number"))
+            let rule = rulesFactory.createPhoneNumberValidationRule()
+            return rule.validate(value)
 
         case .otp:
             guard let value = value else {
@@ -493,10 +502,8 @@ extension DefaultValidationService {
             // Unknown type always fails validation
             return .invalid(code: "invalid-unknown-field", message: "Unknown field type")
         case .email:
-            guard let value = value else {
-                return .invalid(code: "invalid-email", message: "Email is required")
-            }
-            return validate(input: value, with: EmailRule())
+            let rule = rulesFactory.createEmailValidationRule()
+            return rule.validate(value)
         }
     }
     // swiftlint:enable all

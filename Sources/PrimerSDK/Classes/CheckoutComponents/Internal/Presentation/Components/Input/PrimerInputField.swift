@@ -127,18 +127,18 @@ struct PrimerInputField: View {
         } else if isFocused {
             return tokens?.primerColorBrand ?? .blue
         } else {
-            return tokens?.primerColorTextPrimary ?? Color(.systemGray4)
+            return .clear // No border in default state to match card form design
         }
     }
 
     /// Determines the border width based on focus and error.
     private var borderWidth: CGFloat {
-        (isFocused || isError) ? 2 : 1
+        (isFocused || isError) ? 2 : 0 // No border in default state
     }
 
     /// Determines the background color for the input field.
     private var backgroundColor: Color {
-        tokens?.primerColorTextSecondary ?? Color(.systemBackground)
+        tokens?.primerColorGray100 ?? Color(.systemGray6)
     }
 
     // MARK: - Body
@@ -200,13 +200,13 @@ struct PrimerInputField: View {
             }
             .padding(tokens?.primerSpaceMedium ?? 12)
             .frame(height: tokens?.primerSizeXxxlarge ?? 56)
-            // Separate the background styling into its own sub-expression to help the compiler.
+            // Background and border styling to match card form design
             .background(
                 RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
-                    .stroke(borderColor, lineWidth: borderWidth)
-                    .background(
+                    .fill(backgroundColor)
+                    .overlay(
                         RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
-                            .fill(backgroundColor)
+                            .stroke(borderColor, lineWidth: borderWidth)
                     )
             )
             .scaleEffect(isFocused ? 1.02 : 1.0)
@@ -267,190 +267,108 @@ struct PrimerInputField: View {
 @available(iOS 15.0, *)
 extension PrimerInputField {
 
-    /// Pre-configured PrimerInputField for first name input with Android parity validation
+    /// Pre-configured PrimerInputField for first name input
+    /// Note: Validation should be handled externally via ValidationService
     static func firstName(
         value: String,
         onValueChange: @escaping (String) -> Void,
-        onValidationChange: ((Bool) -> Void)? = nil
+        isError: Bool = false,
+        validationError: Any? = nil
     ) -> PrimerInputField {
         return PrimerInputField(
             value: value,
-            onValueChange: { newValue in
-                onValueChange(newValue)
-                // Validate and call validation change if provided
-                let error = validateFirstName(newValue)
-                onValidationChange?(error == nil)
-            },
+            onValueChange: onValueChange,
             labelText: CheckoutComponentsStrings.firstNameFieldName,
             placeholderText: CheckoutComponentsStrings.firstNamePlaceholder,
-            isError: validateFirstName(value) != nil,
-            validationError: validateFirstName(value),
+            isError: isError,
+            validationError: validationError,
             keyboardType: .default
         )
     }
 
-    /// Pre-configured PrimerInputField for last name input with Android parity validation
+    /// Pre-configured PrimerInputField for last name input
+    /// Note: Validation should be handled externally via ValidationService
     static func lastName(
         value: String,
         onValueChange: @escaping (String) -> Void,
-        onValidationChange: ((Bool) -> Void)? = nil
+        isError: Bool = false,
+        validationError: Any? = nil
     ) -> PrimerInputField {
         return PrimerInputField(
             value: value,
-            onValueChange: { newValue in
-                onValueChange(newValue)
-                let error = validateLastName(newValue)
-                onValidationChange?(error == nil)
-            },
+            onValueChange: onValueChange,
             labelText: CheckoutComponentsStrings.lastNameFieldName,
             placeholderText: CheckoutComponentsStrings.lastNamePlaceholder,
-            isError: validateLastName(value) != nil,
-            validationError: validateLastName(value),
+            isError: isError,
+            validationError: validationError,
             keyboardType: .default
         )
     }
 
-    /// Pre-configured PrimerInputField for email input with Android parity validation
+    /// Pre-configured PrimerInputField for email input
+    /// Note: Validation should be handled externally via ValidationService
     static func email(
         value: String,
         onValueChange: @escaping (String) -> Void,
-        onValidationChange: ((Bool) -> Void)? = nil
+        isError: Bool = false,
+        validationError: Any? = nil
     ) -> PrimerInputField {
         return PrimerInputField(
             value: value,
-            onValueChange: { newValue in
-                onValueChange(newValue)
-                let error = validateEmail(newValue)
-                onValidationChange?(error == nil)
-            },
+            onValueChange: onValueChange,
             labelText: CheckoutComponentsStrings.emailFieldName,
             placeholderText: CheckoutComponentsStrings.emailPlaceholder,
             leadingIcon: Image(systemName: "envelope"),
-            isError: validateEmail(value) != nil,
-            validationError: validateEmail(value),
+            isError: isError,
+            validationError: validationError,
             keyboardType: .emailAddress
         )
     }
 
-    /// Pre-configured PrimerInputField for phone number input with Android parity validation
+    /// Pre-configured PrimerInputField for phone number input
+    /// Note: Validation should be handled externally via ValidationService
     static func phoneNumber(
         value: String,
         onValueChange: @escaping (String) -> Void,
-        onValidationChange: ((Bool) -> Void)? = nil
+        isError: Bool = false,
+        validationError: Any? = nil
     ) -> PrimerInputField {
         return PrimerInputField(
             value: value,
-            onValueChange: { newValue in
-                onValueChange(newValue)
-                let error = validatePhoneNumber(newValue)
-                onValidationChange?(error == nil)
-            },
+            onValueChange: onValueChange,
             labelText: CheckoutComponentsStrings.phoneNumberFieldName,
             placeholderText: CheckoutComponentsStrings.phoneNumberPlaceholder,
             leadingIcon: Image(systemName: "phone"),
-            isError: validatePhoneNumber(value) != nil,
-            validationError: validatePhoneNumber(value),
+            isError: isError,
+            validationError: validationError,
             keyboardType: .phonePad
         )
     }
 
-    /// Pre-configured PrimerInputField for address line input with Android parity validation
+    /// Pre-configured PrimerInputField for address line input
+    /// Note: Validation should be handled externally via ValidationService
     static func addressLine(
         value: String,
         onValueChange: @escaping (String) -> Void,
         labelText: String,
         placeholderText: String,
-        inputElementType: ValidationError.InputElementType,
-        isRequired: Bool = true,
-        onValidationChange: ((Bool) -> Void)? = nil
+        isError: Bool = false,
+        validationError: Any? = nil
     ) -> PrimerInputField {
         return PrimerInputField(
             value: value,
-            onValueChange: { newValue in
-                onValueChange(newValue)
-                let error = validateAddressField(newValue, inputType: inputElementType, isRequired: isRequired)
-                onValidationChange?(error == nil)
-            },
+            onValueChange: onValueChange,
             labelText: labelText,
             placeholderText: placeholderText,
-            isError: validateAddressField(value, inputType: inputElementType, isRequired: isRequired) != nil,
-            validationError: validateAddressField(value, inputType: inputElementType, isRequired: isRequired),
+            isError: isError,
+            validationError: validationError,
             keyboardType: .default
         )
     }
 
     // MARK: - Validation Helpers
-
-    private static func validateFirstName(_ value: String) -> ValidationError? {
-        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty {
-            return ErrorMessageResolver.createRequiredFieldError(for: .firstName)
-        }
-        if trimmed.count < 2 {
-            return ErrorMessageResolver.createInvalidFieldError(for: .firstName)
-        }
-        return nil
-    }
-
-    private static func validateLastName(_ value: String) -> ValidationError? {
-        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty {
-            return ErrorMessageResolver.createRequiredFieldError(for: .lastName)
-        }
-        if trimmed.count < 2 {
-            return ErrorMessageResolver.createInvalidFieldError(for: .lastName)
-        }
-        return nil
-    }
-
-    private static func validateEmail(_ value: String) -> ValidationError? {
-        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty {
-            return ErrorMessageResolver.createRequiredFieldError(for: .email)
-        }
-
-        let emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
-        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
-        if !emailPredicate.evaluate(with: trimmed) {
-            return ErrorMessageResolver.createInvalidFieldError(for: .email)
-        }
-        return nil
-    }
-
-    private static func validatePhoneNumber(_ value: String) -> ValidationError? {
-        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty {
-            return ErrorMessageResolver.createRequiredFieldError(for: .phoneNumber)
-        }
-
-        // Basic phone number validation - digits, spaces, dashes, parentheses, plus
-        let phoneRegex = "^[+]?[0-9\\s\\-\\(\\)]+$"
-        let phonePredicate = NSPredicate(format: "SELF MATCHES %@", phoneRegex)
-        if !phonePredicate.evaluate(with: trimmed) || trimmed.count < 8 {
-            return ErrorMessageResolver.createInvalidFieldError(for: .phoneNumber)
-        }
-        return nil
-    }
-
-    private static func validateAddressField(_ value: String, inputType: ValidationError.InputElementType, isRequired: Bool) -> ValidationError? {
-        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        if isRequired && trimmed.isEmpty {
-            return ErrorMessageResolver.createRequiredFieldError(for: inputType)
-        }
-
-        // Optional fields can be empty
-        if !isRequired && trimmed.isEmpty {
-            return nil
-        }
-
-        // Basic length validation for non-empty fields
-        if !trimmed.isEmpty && trimmed.count < 2 {
-            return ErrorMessageResolver.createInvalidFieldError(for: inputType)
-        }
-
-        return nil
-    }
+    // Note: Validation methods removed to follow clean architecture
+    // Validation should be handled by ValidationService and proper validation rules
 }
 
 // MARK: - Preview

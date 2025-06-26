@@ -118,13 +118,12 @@ internal struct CardNumberInputField: View, LogReporter {
                 }
             }
 
-            // Error message
-            if let errorMessage = errorMessage {
-                Text(errorMessage)
-                    .font(.caption)
-                    .foregroundColor(.red)
-                    .padding(.top, 2)
-            }
+            // Error message (always reserve space to prevent height changes)
+            Text(errorMessage ?? " ")
+                .font(.caption)
+                .foregroundColor(.red)
+                .padding(.top, 2)
+                .opacity(errorMessage != nil ? 1.0 : 0.0)
         }
         .onAppear {
             setupValidationService()
@@ -561,26 +560,25 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             let network = CardNetwork(cardNumber: number)
             logger.debug(message: "🔍 [CardNumber] Detected network: \(network.displayName)")
 
-            // Verify the network is valid
-            if network == .unknown && number.count >= 6 {
-                logger.debug(message: "⚠️ [CardNumber] Unknown card network for number: \(number)")
-                isValid = false
-                errorMessage = "Unsupported card type"
-                onValidationChange?(false)
-                return
-            }
-
-            // Only do full validation if we have a potentially complete number
-            if let validation = network.validation, validation.lengths.contains(number.count) {
-                logger.debug(message: "🔍 [CardNumber] Running full validation (expected lengths: \(validation.lengths))")
+            // For known networks, check expected length before full validation
+            if network != .unknown, let validation = network.validation, validation.lengths.contains(number.count) {
+                logger.debug(message: "🔍 [CardNumber] Running full validation for known network (expected lengths: \(validation.lengths))")
                 // Use validation service for the actual check
                 let validationResult = validationService.validateCardNumber(number)
                 logger.debug(message: "🔍 [CardNumber] Validation result: valid=\(validationResult.isValid), error='\(validationResult.errorMessage ?? "none")'")
                 isValid = validationResult.isValid
                 errorMessage = validationResult.isValid ? nil : validationResult.errorMessage
                 onValidationChange?(validationResult.isValid)
+            } else if number.count >= 13 && number.count <= 19 {
+                // For unknown networks or incomplete numbers, use ValidationService directly if length is plausible
+                logger.debug(message: "🔍 [CardNumber] Running validation for unknown network or incomplete number (length: \(number.count))")
+                let validationResult = validationService.validateCardNumber(number)
+                logger.debug(message: "🔍 [CardNumber] Validation result: valid=\(validationResult.isValid), error='\(validationResult.errorMessage ?? "none")'")
+                isValid = validationResult.isValid
+                errorMessage = validationResult.isValid ? nil : validationResult.errorMessage
+                onValidationChange?(validationResult.isValid)
             } else {
-                logger.debug(message: "🔍 [CardNumber] Length \(number.count) not valid for \(network.displayName), expected: \(network.validation?.lengths ?? [])")
+                logger.debug(message: "🔍 [CardNumber] Length \(number.count) not valid for \(network.displayName), expected: \(network.validation?.lengths ?? [13, 14, 15, 16, 17, 18, 19])")
                 // Not a complete number yet
                 isValid = nil
                 errorMessage = nil

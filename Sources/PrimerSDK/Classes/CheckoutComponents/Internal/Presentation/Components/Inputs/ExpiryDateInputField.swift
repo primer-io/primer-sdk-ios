@@ -92,13 +92,12 @@ internal struct ExpiryDateInputField: View, LogReporter {
                     .cornerRadius(8)
             }
 
-            // Error message
-            if let errorMessage = errorMessage {
-                Text(errorMessage)
-                    .font(.caption)
-                    .foregroundColor(.red)
-                    .padding(.top, 2)
-            }
+            // Error message (always reserve space to prevent height changes)
+            Text(errorMessage ?? " ")
+                .font(.caption)
+                .foregroundColor(.red)
+                .padding(.top, 2)
+                .opacity(errorMessage != nil ? 1.0 : 0.0)
         }
         .onAppear {
             setupValidationService()
