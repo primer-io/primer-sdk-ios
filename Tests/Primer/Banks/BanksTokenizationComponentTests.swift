@@ -148,7 +148,7 @@ final class BanksTokenizationComponentTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "Did tokenize")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return Mocks.primerPaymentMethodTokenData
+            return Result.success(Mocks.primerPaymentMethodTokenData)
         }
 
         let expectDidCreatePayment = self.expectation(description: "Did create payment")
@@ -246,7 +246,7 @@ final class BanksTokenizationComponentTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "Did tokenize")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return Mocks.primerPaymentMethodTokenData
+            return Result.success(Mocks.primerPaymentMethodTokenData)
         }
 
         let expectDidTokenizePaymentMethod = self.expectation(description: "Did tokenize delegate method")

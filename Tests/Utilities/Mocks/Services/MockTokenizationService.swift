@@ -6,8 +6,8 @@ final class MockTokenizationService: TokenizationServiceProtocol {
     static var apiClient: (any PrimerSDK.PrimerAPIClientProtocol)?
 
     var paymentMethodTokenData: PrimerSDK.PrimerPaymentMethodTokenData?
-    var onTokenize: ((Request.Body.Tokenization) -> PrimerPaymentMethodTokenData)?
-    var onExchangePaymentMethodToken: ((String, PrimerVaultedPaymentMethodAdditionalData?) -> PrimerPaymentMethodTokenData)?
+    var onTokenize: ((Request.Body.Tokenization) -> Result<PrimerPaymentMethodTokenData, Error>)?
+    var onExchangePaymentMethodToken: ((String, PrimerVaultedPaymentMethodAdditionalData?) -> Result<PrimerPaymentMethodTokenData, Error>)?
 
     // MARK: tokenize
     
@@ -15,14 +15,20 @@ final class MockTokenizationService: TokenizationServiceProtocol {
         guard let onTokenize else {
             return Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
         }
-        return Promise.fulfilled(onTokenize(requestBody))
+        switch onTokenize(requestBody) {
+        case .success(let result): return Promise.fulfilled(result)
+        case .failure(let error): return Promise.rejected(error)
+        }
     }
 
     func tokenize(requestBody: Request.Body.Tokenization) async throws -> PrimerPaymentMethodTokenData {
         guard let onTokenize else {
             throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         }
-        return onTokenize(requestBody)
+        switch onTokenize(requestBody) {
+        case .success(let result): return result
+        case .failure(let error): throw error
+        }
     }
 
     // MARK: exchangePaymentMethodToken
@@ -31,7 +37,10 @@ final class MockTokenizationService: TokenizationServiceProtocol {
         guard let onExchangePaymentMethodToken else {
             return Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
         }
-        return Promise.fulfilled(onExchangePaymentMethodToken(paymentMethodTokenId, vaultedPaymentMethodAdditionalData))
+        switch onExchangePaymentMethodToken(paymentMethodTokenId, vaultedPaymentMethodAdditionalData) {
+        case .success(let result): return Promise.fulfilled(result)
+        case .failure(let error): return Promise.rejected(error)
+        }
     }
 
     func exchangePaymentMethodToken(
@@ -41,6 +50,9 @@ final class MockTokenizationService: TokenizationServiceProtocol {
         guard let onExchangePaymentMethodToken else {
             throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         }
-        return onExchangePaymentMethodToken(paymentMethodTokenId, vaultedPaymentMethodAdditionalData)
+        switch onExchangePaymentMethodToken(paymentMethodTokenId, vaultedPaymentMethodAdditionalData) {
+        case .success(let result): return result
+        case .failure(let error): throw error
+        }
     }
 }
