@@ -44,6 +44,24 @@
 		87FC1ACB2BE5194100C9F474 /* MerchantHeadlessStripeAchFieldsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87FC1ACA2BE5194100C9F474 /* MerchantHeadlessStripeAchFieldsViewModel.swift */; };
 		87FC1ACD2BE51DCA00C9F474 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87FC1ACC2BE51DCA00C9F474 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift */; };
 		949864026D1CDE6F5C62C66E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE259612A00F85709107B872 /* Main.storyboard */; };
+		A12200892E0DCF670053BF11 /* CustomScreenCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A122007B2E0DCF670053BF11 /* CustomScreenCardFormDemo.swift */; };
+		A122008A2E0DCF670053BF11 /* InlineCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A122007F2E0DCF670053BF11 /* InlineCardFormDemo.swift */; };
+		A122008B2E0DCF670053BF11 /* AnimatedCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12200752E0DCF670053BF11 /* AnimatedCardFormDemo.swift */; };
+		A122008C2E0DCF670053BF11 /* GridCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A122007E2E0DCF670053BF11 /* GridCardFormDemo.swift */; };
+		A122008D2E0DCF670053BF11 /* DarkThemedCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A122007C2E0DCF670053BF11 /* DarkThemedCardFormDemo.swift */; };
+		A122008E2E0DCF670053BF11 /* ShowcaseSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12200862E0DCF670053BF11 /* ShowcaseSection.swift */; };
+		A122008F2E0DCF670053BF11 /* ExpandedCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A122007D2E0DCF670053BF11 /* ExpandedCardFormDemo.swift */; };
+		A12200902E0DCF670053BF11 /* CheckoutComponentsShowcaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12200762E0DCF670053BF11 /* CheckoutComponentsShowcaseView.swift */; };
+		A12200912E0DCF670053BF11 /* ShowcaseEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12200852E0DCF670053BF11 /* ShowcaseEnums.swift */; };
+		A12200932E0DCF670053BF11 /* CorporateThemedCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A122007A2E0DCF670053BF11 /* CorporateThemedCardFormDemo.swift */; };
+		A12200942E0DCF670053BF11 /* ModifierChainsCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12200832E0DCF670053BF11 /* ModifierChainsCardFormDemo.swift */; };
+		A12200952E0DCF670053BF11 /* ModernThemedCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12200822E0DCF670053BF11 /* ModernThemedCardFormDemo.swift */; };
+		A12200962E0DCF670053BF11 /* LiveStateCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12200802E0DCF670053BF11 /* LiveStateCardFormDemo.swift */; };
+		A12200972E0DCF670053BF11 /* ValidationCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12200872E0DCF670053BF11 /* ValidationCardFormDemo.swift */; };
+		A12200982E0DCF670053BF11 /* ColorfulThemedCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12200782E0DCF670053BF11 /* ColorfulThemedCardFormDemo.swift */; };
+		A12200992E0DCF670053BF11 /* ShowcaseDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12200842E0DCF670053BF11 /* ShowcaseDemo.swift */; };
+		A122009A2E0DCF670053BF11 /* CompactCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12200792E0DCF670053BF11 /* CompactCardFormDemo.swift */; };
+		A122009B2E0DCF670053BF11 /* CoBadgedCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12200772E0DCF670053BF11 /* CoBadgedCardFormDemo.swift */; };
 		A19EF5632B20E22E00A72F60 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = A19EF5622B20E22E00A72F60 /* .swiftlint.yml */; };
 		A1A1FD8B2DA599550069B0DB /* chocolate_bar_demo.otf in Resources */ = {isa = PBXBuildFile; fileRef = A1A1FD8A2DA599550069B0DB /* chocolate_bar_demo.otf */; };
 		AAE3B30B64B6822A20987FCA /* CreateClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229849A3DBE0858EE90673B9 /* CreateClientToken.swift */; };
@@ -58,7 +76,7 @@
 		E558A0468D555C654F13D508 /* Pods_Debug_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F96CB43EDFEE9D7117F694EB /* Pods_Debug_App.framework */; };
 		EA7FAA4F8476BD3711D628CB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B18D7E7738BF86467B0F1465 /* Images.xcassets */; };
 		F02F496FD20B5291C044F62C /* MerchantResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */; };
-		F03699592AC2E63700E4179D /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		F03699592AC2E63700E4179D /* (null) in Sources */ = {isa = PBXBuildFile; };
 		F046FCBA2DACE84300B2A4E7 /* TestSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F046FCB92DACE83A00B2A4E7 /* TestSettings.swift */; };
 		F046FCBC2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F046FCBB2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift */; };
 		F04DFC692DAE42390006AEDC /* AppLinkConfigProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC682DAE42390006AEDC /* AppLinkConfigProviderTests.swift */; };
@@ -161,6 +179,24 @@
 		942332BD921CBCAFBC77BD6D /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/Main.strings; sourceTree = "<group>"; };
 		98079137F3DE1FE6221DA7EC /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nb; path = nb.lproj/Main.strings; sourceTree = "<group>"; };
 		9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MerchantDropInUIViewController.swift; sourceTree = "<group>"; };
+		A12200752E0DCF670053BF11 /* AnimatedCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedCardFormDemo.swift; sourceTree = "<group>"; };
+		A12200762E0DCF670053BF11 /* CheckoutComponentsShowcaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutComponentsShowcaseView.swift; sourceTree = "<group>"; };
+		A12200772E0DCF670053BF11 /* CoBadgedCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoBadgedCardFormDemo.swift; sourceTree = "<group>"; };
+		A12200782E0DCF670053BF11 /* ColorfulThemedCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorfulThemedCardFormDemo.swift; sourceTree = "<group>"; };
+		A12200792E0DCF670053BF11 /* CompactCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactCardFormDemo.swift; sourceTree = "<group>"; };
+		A122007A2E0DCF670053BF11 /* CorporateThemedCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorporateThemedCardFormDemo.swift; sourceTree = "<group>"; };
+		A122007B2E0DCF670053BF11 /* CustomScreenCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomScreenCardFormDemo.swift; sourceTree = "<group>"; };
+		A122007C2E0DCF670053BF11 /* DarkThemedCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DarkThemedCardFormDemo.swift; sourceTree = "<group>"; };
+		A122007D2E0DCF670053BF11 /* ExpandedCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandedCardFormDemo.swift; sourceTree = "<group>"; };
+		A122007E2E0DCF670053BF11 /* GridCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridCardFormDemo.swift; sourceTree = "<group>"; };
+		A122007F2E0DCF670053BF11 /* InlineCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineCardFormDemo.swift; sourceTree = "<group>"; };
+		A12200802E0DCF670053BF11 /* LiveStateCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveStateCardFormDemo.swift; sourceTree = "<group>"; };
+		A12200822E0DCF670053BF11 /* ModernThemedCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernThemedCardFormDemo.swift; sourceTree = "<group>"; };
+		A12200832E0DCF670053BF11 /* ModifierChainsCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifierChainsCardFormDemo.swift; sourceTree = "<group>"; };
+		A12200842E0DCF670053BF11 /* ShowcaseDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowcaseDemo.swift; sourceTree = "<group>"; };
+		A12200852E0DCF670053BF11 /* ShowcaseEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowcaseEnums.swift; sourceTree = "<group>"; };
+		A12200862E0DCF670053BF11 /* ShowcaseSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowcaseSection.swift; sourceTree = "<group>"; };
+		A12200872E0DCF670053BF11 /* ValidationCardFormDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidationCardFormDemo.swift; sourceTree = "<group>"; };
 		A1591DF82D51349900DCED69 /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		A1591DF92D51349900DCED69 /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/Main.strings; sourceTree = "<group>"; };
 		A1591DFA2D5134AE00DCED69 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -320,6 +356,7 @@
 		0E5CB4D963647832FF985B29 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				A12200882E0DCF670053BF11 /* CheckoutComponentsShowcase */,
 				876140ED2B6BE8860058CA8C /* Merchant Helpers */,
 				EF5FBE3673FBCB40F55F4DC0 /* New UI */,
 				9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */,
@@ -429,6 +466,31 @@
 				87FC1ACA2BE5194100C9F474 /* MerchantHeadlessStripeAchFieldsViewModel.swift */,
 			);
 			path = StripeAchHeadless;
+			sourceTree = "<group>";
+		};
+		A12200882E0DCF670053BF11 /* CheckoutComponentsShowcase */ = {
+			isa = PBXGroup;
+			children = (
+				A12200752E0DCF670053BF11 /* AnimatedCardFormDemo.swift */,
+				A12200762E0DCF670053BF11 /* CheckoutComponentsShowcaseView.swift */,
+				A12200772E0DCF670053BF11 /* CoBadgedCardFormDemo.swift */,
+				A12200782E0DCF670053BF11 /* ColorfulThemedCardFormDemo.swift */,
+				A12200792E0DCF670053BF11 /* CompactCardFormDemo.swift */,
+				A122007A2E0DCF670053BF11 /* CorporateThemedCardFormDemo.swift */,
+				A122007B2E0DCF670053BF11 /* CustomScreenCardFormDemo.swift */,
+				A122007C2E0DCF670053BF11 /* DarkThemedCardFormDemo.swift */,
+				A122007D2E0DCF670053BF11 /* ExpandedCardFormDemo.swift */,
+				A122007E2E0DCF670053BF11 /* GridCardFormDemo.swift */,
+				A122007F2E0DCF670053BF11 /* InlineCardFormDemo.swift */,
+				A12200802E0DCF670053BF11 /* LiveStateCardFormDemo.swift */,
+				A12200822E0DCF670053BF11 /* ModernThemedCardFormDemo.swift */,
+				A12200832E0DCF670053BF11 /* ModifierChainsCardFormDemo.swift */,
+				A12200842E0DCF670053BF11 /* ShowcaseDemo.swift */,
+				A12200852E0DCF670053BF11 /* ShowcaseEnums.swift */,
+				A12200862E0DCF670053BF11 /* ShowcaseSection.swift */,
+				A12200872E0DCF670053BF11 /* ValidationCardFormDemo.swift */,
+			);
+			path = CheckoutComponentsShowcase;
 			sourceTree = "<group>";
 		};
 		B3C27ED9956EBEE65B9D054E /* Frameworks */ = {
@@ -653,9 +715,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Debug App/Pods-Debug App-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Debug App/Pods-Debug App-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -712,7 +778,7 @@
 			files = (
 				F04DFC692DAE42390006AEDC /* AppLinkConfigProviderTests.swift in Sources */,
 				F046FCBC2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift in Sources */,
-				F03699592AC2E63700E4179D /* BuildFile in Sources */,
+				F03699592AC2E63700E4179D /* (null) in Sources */,
 				044DE11F2CC0023200AAE28A /* SecretsManagerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -731,6 +797,24 @@
 				87FC1ACD2BE51DCA00C9F474 /* MerchantHeadlessCheckoutStripeAchViewController+StripeAch.swift in Sources */,
 				DE53DA2D0AD108306C92E198 /* UIViewController+API.swift in Sources */,
 				85EDC3F175D699BFF6BD48EF /* ViewController+Primer.swift in Sources */,
+				A12200892E0DCF670053BF11 /* CustomScreenCardFormDemo.swift in Sources */,
+				A122008A2E0DCF670053BF11 /* InlineCardFormDemo.swift in Sources */,
+				A122008B2E0DCF670053BF11 /* AnimatedCardFormDemo.swift in Sources */,
+				A122008C2E0DCF670053BF11 /* GridCardFormDemo.swift in Sources */,
+				A122008D2E0DCF670053BF11 /* DarkThemedCardFormDemo.swift in Sources */,
+				A122008E2E0DCF670053BF11 /* ShowcaseSection.swift in Sources */,
+				A122008F2E0DCF670053BF11 /* ExpandedCardFormDemo.swift in Sources */,
+				A12200902E0DCF670053BF11 /* CheckoutComponentsShowcaseView.swift in Sources */,
+				A12200912E0DCF670053BF11 /* ShowcaseEnums.swift in Sources */,
+				A12200932E0DCF670053BF11 /* CorporateThemedCardFormDemo.swift in Sources */,
+				A12200942E0DCF670053BF11 /* ModifierChainsCardFormDemo.swift in Sources */,
+				A12200952E0DCF670053BF11 /* ModernThemedCardFormDemo.swift in Sources */,
+				A12200962E0DCF670053BF11 /* LiveStateCardFormDemo.swift in Sources */,
+				A12200972E0DCF670053BF11 /* ValidationCardFormDemo.swift in Sources */,
+				A12200982E0DCF670053BF11 /* ColorfulThemedCardFormDemo.swift in Sources */,
+				A12200992E0DCF670053BF11 /* ShowcaseDemo.swift in Sources */,
+				A122009A2E0DCF670053BF11 /* CompactCardFormDemo.swift in Sources */,
+				A122009B2E0DCF670053BF11 /* CoBadgedCardFormDemo.swift in Sources */,
 				60F6C3AFA11A7EDB0687856A /* ViewController+PrimerUIHelpers.swift in Sources */,
 				044DE11D2CBFF98100AAE28A /* SecretsManager.swift in Sources */,
 				5E24CD5B3084FE3E8A3E85EC /* CheckoutTheme.swift in Sources */,

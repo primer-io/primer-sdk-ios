@@ -1252,6 +1252,7 @@ struct InlineSwiftUICheckoutTestView: View {
     let settings: PrimerSettings
     
     @State private var showingCheckout = false
+    @State private var showingShowcase = false
     @State private var checkoutResult: String = ""
     @State private var lastError: String = ""
     
@@ -1292,6 +1293,20 @@ struct InlineSwiftUICheckoutTestView: View {
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color.blue)
+                        .cornerRadius(8)
+                }
+                .padding(.horizontal)
+                
+                // Showcase button
+                Button(action: {
+                    showingShowcase = true
+                }) {
+                    Text("Show Component Showcase")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.purple)
                         .cornerRadius(8)
                 }
                 .padding(.horizontal)
@@ -1346,6 +1361,9 @@ struct InlineSwiftUICheckoutTestView: View {
         }
         .navigationTitle("SwiftUI Test")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showingShowcase) {
+            CheckoutComponentsShowcaseView(clientToken: clientToken, settings: settings)
+        }
     }
     
     private func presentCheckoutComponents() {

@@ -36,7 +36,8 @@
       "WebFetch(domain:modelcontextprotocol.io)",
       "Bash(git worktree:*)",
       "Bash(cp:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(diff:*)"
     ],
     "deny": []
   }
