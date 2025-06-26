@@ -44,25 +44,24 @@ struct CustomScreenCardFormDemo: View {
                 clientToken: clientToken,
                 settings: settings,
                 scope: { checkoutScope in
-                    if let cardFormScope = checkoutScope.cardForm {
-                        cardFormScope.screen = { scope in
-                            AnyView(
-                                Group {
-                                    switch selectedLayout {
-                                    case "Split Screen":
-                                        splitScreenLayout(scope: scope)
-                                    case "Carousel":
-                                        carouselLayout(scope: scope)
-                                    case "Stepped":
-                                        steppedLayout(scope: scope)
-                                    case "Floating":
-                                        floatingLayout(scope: scope)
-                                    default:
-                                        defaultLayout(scope: scope)
-                                    }
+                    // Use new generic payment method screen API
+                    checkoutScope.setPaymentMethodScreen((any PrimerCardFormScope).self) { (scope: any PrimerCardFormScope) in
+                        AnyView(
+                            Group {
+                                switch selectedLayout {
+                                case "Split Screen":
+                                    splitScreenLayout(scope: scope)
+                                case "Carousel":
+                                    carouselLayout(scope: scope)
+                                case "Stepped":
+                                    steppedLayout(scope: scope)
+                                case "Floating":
+                                    floatingLayout(scope: scope)
+                                default:
+                                    defaultLayout(scope: scope)
                                 }
-                            )
-                        }
+                            }
+                        )
                     }
                 }
             )
@@ -71,8 +70,9 @@ struct CustomScreenCardFormDemo: View {
         }
     }
     
+    @available(iOS 15.0, *)
     @ViewBuilder
-    private func splitScreenLayout(scope: PrimerCardFormScope) -> some View {
+    private func splitScreenLayout(scope: any PrimerCardFormScope) -> some View {
         HStack(spacing: 16) {
             VStack(spacing: 8) {
                 scope.cardNumberInput?(PrimerModifier()
@@ -117,8 +117,9 @@ struct CustomScreenCardFormDemo: View {
         .padding()
     }
     
+    @available(iOS 15.0, *)
     @ViewBuilder
-    private func carouselLayout(scope: PrimerCardFormScope) -> some View {
+    private func carouselLayout(scope: any PrimerCardFormScope) -> some View {
         TabView {
             scope.cardNumberInput?(PrimerModifier()
                 .fillMaxWidth()
@@ -148,7 +149,7 @@ struct CustomScreenCardFormDemo: View {
                     .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
                 )
             }
-            
+
             scope.cardholderNameInput?(PrimerModifier()
                 .fillMaxWidth()
                 .height(60)
@@ -162,8 +163,9 @@ struct CustomScreenCardFormDemo: View {
         .indexViewStyle(.page(backgroundDisplayMode: .always))
     }
     
+    @available(iOS 15.0, *)
     @ViewBuilder
-    private func steppedLayout(scope: PrimerCardFormScope) -> some View {
+    private func steppedLayout(scope: any PrimerCardFormScope) -> some View {
         VStack(spacing: 20) {
             HStack {
                 Circle()
@@ -207,48 +209,59 @@ struct CustomScreenCardFormDemo: View {
         .padding()
     }
     
+    @available(iOS 15.0, *)
     @ViewBuilder
-    private func floatingLayout(scope: PrimerCardFormScope) -> some View {
+    private func floatingLayout(scope: any PrimerCardFormScope) -> some View {
         ZStack {
-            Color.blue.opacity(0.1)
+            Color.gray.opacity(0.1)
+                .ignoresSafeArea()
             
             VStack(spacing: 16) {
                 scope.cardNumberInput?(PrimerModifier()
                     .fillMaxWidth()
                     .height(44)
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, 12)
                     .background(.white)
-                    .cornerRadius(22)
-                    .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+                    .cornerRadius(8)
+                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
                 )
                 
-                HStack(spacing: 16) {
+                HStack(spacing: 12) {
                     scope.expiryDateInput?(PrimerModifier()
                         .fillMaxWidth()
                         .height(44)
-                        .padding(.horizontal, 16)
+                        .padding(.horizontal, 12)
                         .background(.white)
-                        .cornerRadius(22)
-                        .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+                        .cornerRadius(8)
+                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
                     )
                     
                     scope.cvvInput?(PrimerModifier()
                         .fillMaxWidth()
                         .height(44)
-                        .padding(.horizontal, 16)
+                        .padding(.horizontal, 12)
                         .background(.white)
-                        .cornerRadius(22)
-                        .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+                        .cornerRadius(8)
+                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
                     )
                 }
+                
+                scope.cardholderNameInput?(PrimerModifier()
+                    .fillMaxWidth()
+                    .height(44)
+                    .padding(.horizontal, 12)
+                    .background(.white)
+                    .cornerRadius(8)
+                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                )
             }
             .padding()
         }
-        .cornerRadius(16)
     }
     
+    @available(iOS 15.0, *)
     @ViewBuilder
-    private func defaultLayout(scope: PrimerCardFormScope) -> some View {
+    private func defaultLayout(scope: any PrimerCardFormScope) -> some View {
         VStack(spacing: 12) {
             scope.cardNumberInput?(PrimerModifier()
                 .fillMaxWidth()

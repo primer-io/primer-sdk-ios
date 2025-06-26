@@ -227,14 +227,17 @@ internal struct NavigationUsageExample {
     static func demonstrateCheckoutComponentsFlows() {
         let checkoutCoordinator = CheckoutCoordinator()
 
-        // Standard checkout flow
+        // Standard checkout flow (works with any payment method)
         checkoutCoordinator.navigate(to: .loading)
         checkoutCoordinator.navigate(to: .paymentMethodSelection)
-        checkoutCoordinator.navigate(to: .cardForm)
+        checkoutCoordinator.navigate(to: .paymentMethod("PAYMENT_CARD"))  // Example: card payment
         checkoutCoordinator.navigate(to: .selectCountry)
 
-        // Navigate back to card form
+        // Navigate back to payment method
         checkoutCoordinator.goBack()
+
+        // Alternative flow with different payment method
+        checkoutCoordinator.navigate(to: .paymentMethod("APPLE_PAY"))  // Example: Apple Pay
 
         // Complete payment
         let result = CheckoutPaymentResult(paymentId: "pay_123", amount: "$10.00", method: "card")

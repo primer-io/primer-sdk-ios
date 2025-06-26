@@ -25,12 +25,12 @@ public struct ValidationResult {
     public static func invalid(code: String, message: String) -> ValidationResult {
         return ValidationResult(isValid: false, errorCode: code, errorMessage: message)
     }
-    
+
     /// Creates a failed validation result using ValidationError with automatic error message resolution
     public static func invalid(error: ValidationError) -> ValidationResult {
         // Attempt to resolve the error message through ErrorMessageResolver
         let resolvedMessage = ErrorMessageResolver.resolveErrorMessage(for: error) ?? error.message
-        
+
         return ValidationResult(isValid: false, errorCode: error.code, errorMessage: resolvedMessage)
     }
 

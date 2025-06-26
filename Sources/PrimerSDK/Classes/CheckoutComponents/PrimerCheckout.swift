@@ -24,9 +24,11 @@ import SwiftUI
 ///     clientToken: "your_client_token",
 ///     settings: PrimerSettings(),
 ///     scope: { checkoutScope in
-///         // Customize components
-///         checkoutScope.cardForm.cardNumberInput = { _ in
-///             CustomCardNumberField()
+///         // Customize components using type-safe API
+///         if let cardFormScope = checkoutScope.getPaymentMethodScope(PrimerCardFormScope.self) {
+///             cardFormScope.cardNumberInput = { _ in
+///                 CustomCardNumberField()
+///             }
 ///         }
 ///     }
 /// )
@@ -178,14 +180,12 @@ internal struct InternalCheckout: View {
                             ))
                         }
 
-                    case .cardForm:
-                        if let customCardForm = checkoutScope.cardFormScreen {
-                            AnyView(customCardForm(checkoutScope.cardForm))
-                        } else {
-                            AnyView(CardFormScreen(
-                                scope: checkoutScope.cardForm
-                            ))
-                        }
+                    case .paymentMethod(let paymentMethodType):
+                        // Handle all payment method types using truly unified dynamic approach
+                        PaymentMethodScreen(
+                            paymentMethodType: paymentMethodType,
+                            checkoutScope: checkoutScope
+                        )
 
                     // Note: Success case removed - CheckoutComponents dismisses immediately on success
                     // The delegate handles presenting the result screen via PrimerResultViewController
@@ -220,6 +220,81 @@ internal struct InternalCheckout: View {
                     break
                 }
             }
+        }
+    }
+}
+// MARK: - Generic Payment Method Screen
+
+/// Generic payment method screen that dynamically resolves and displays any payment method
+@available(iOS 15.0, *)
+@MainActor
+internal struct PaymentMethodScreen: View {
+    let paymentMethodType: String
+    let checkoutScope: PrimerCheckoutScope
+
+    var body: some View {
+        // Truly generic dynamic scope resolution for ANY payment method
+        Group {
+            // Use non-generic method to get the scope as existential type, then check specific types
+            if let paymentMethodScope = try? PaymentMethodRegistry.shared.createScope(
+                for: paymentMethodType,
+                checkoutScope: checkoutScope,
+                diContainer: (checkoutScope as? DefaultCheckoutScope)?.diContainer ?? DIContainer.shared
+            ) {
+                // Check if this is a card form scope specifically
+                if let cardFormScope = paymentMethodScope as? any PrimerCardFormScope {
+                    // Use the default CardFormScreen for now
+                    // Custom screen support can be added later through a different mechanism
+                    AnyView(CardFormScreen(scope: cardFormScope))
+                } else {
+                    // For other payment method scopes in the future, we'll add similar type checks here
+                    // For now, show placeholder for non-card payment methods
+                    PaymentMethodPlaceholder(paymentMethodType: paymentMethodType)
+                }
+            } else {
+                // This payment method doesn't have a scope implementation yet
+                // Show placeholder that works for any payment method type
+                PaymentMethodPlaceholder(paymentMethodType: paymentMethodType)
+            }
+        }
+    }
+}
+
+/// Placeholder screen for payment methods that don't have implemented scopes yet
+@available(iOS 15.0, *)
+@MainActor
+internal struct PaymentMethodPlaceholder: View {
+    let paymentMethodType: String
+
+    var body: some View {
+        AnyView(
+            VStack(spacing: 16) {
+                Image(systemName: paymentMethodIcon)
+                    .font(.system(size: 48))
+                    .foregroundColor(.gray)
+
+                Text("Payment Method: \(displayName)")
+                    .font(.headline)
+
+                Text("Implementation coming soon")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        )
+    }
+
+    private var displayName: String {
+        PrimerPaymentMethodType(rawValue: paymentMethodType)?.checkoutComponentsDisplayName ?? paymentMethodType
+    }
+
+    private var paymentMethodIcon: String {
+        switch paymentMethodType {
+        case "PAYMENT_CARD": return "creditcard"
+        case "APPLE_PAY": return "applelogo"
+        case "GOOGLE_PAY": return "wallet.pass"
+        case "PAYPAL": return "dollarsign.circle"
+        default: return "creditcard"
         }
     }
 }

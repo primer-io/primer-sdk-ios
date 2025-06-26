@@ -76,7 +76,7 @@
 		E558A0468D555C654F13D508 /* Pods_Debug_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F96CB43EDFEE9D7117F694EB /* Pods_Debug_App.framework */; };
 		EA7FAA4F8476BD3711D628CB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B18D7E7738BF86467B0F1465 /* Images.xcassets */; };
 		F02F496FD20B5291C044F62C /* MerchantResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */; };
-		F03699592AC2E63700E4179D /* (null) in Sources */ = {isa = PBXBuildFile; };
+		F03699592AC2E63700E4179D /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		F046FCBA2DACE84300B2A4E7 /* TestSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F046FCB92DACE83A00B2A4E7 /* TestSettings.swift */; };
 		F046FCBC2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F046FCBB2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift */; };
 		F04DFC692DAE42390006AEDC /* AppLinkConfigProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC682DAE42390006AEDC /* AppLinkConfigProviderTests.swift */; };
@@ -715,13 +715,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Debug App/Pods-Debug App-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Debug App/Pods-Debug App-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -778,7 +774,7 @@
 			files = (
 				F04DFC692DAE42390006AEDC /* AppLinkConfigProviderTests.swift in Sources */,
 				F046FCBC2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift in Sources */,
-				F03699592AC2E63700E4179D /* (null) in Sources */,
+				F03699592AC2E63700E4179D /* BuildFile in Sources */,
 				044DE11F2CC0023200AAE28A /* SecretsManagerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

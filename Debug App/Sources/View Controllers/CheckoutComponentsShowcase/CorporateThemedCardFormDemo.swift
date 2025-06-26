@@ -19,23 +19,34 @@ struct CorporateThemedCardFormDemo: View {
             clientToken: clientToken,
             settings: settings,
             scope: { checkoutScope in
-                if let cardFormScope = checkoutScope.cardForm {
-                    cardFormScope.screen = { scope in
-                        AnyView(
-                            VStack(spacing: 16) {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Payment Details")
-                                        .font(.title3)
-                                        .fontWeight(.semibold)
-                                        .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.7))
-                                    
-                                    Text("Enter your corporate card information")
-                                        .font(.caption)
-                                        .foregroundColor(.gray)
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
+                // Use new generic payment method screen API
+                checkoutScope.setPaymentMethodScreen((any PrimerCardFormScope).self) { (scope: any PrimerCardFormScope) in
+                    AnyView(
+                        VStack(spacing: 16) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Payment Details")
+                                    .font(.title3)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.7))
                                 
-                                scope.cardNumberInput?(PrimerModifier()
+                                Text("Enter your corporate card information")
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            scope.cardNumberInput?(PrimerModifier()
+                                .fillMaxWidth()
+                                .height(50)
+                                .padding(.horizontal, 16)
+                                .background(Color(red: 0.98, green: 0.98, blue: 0.98))
+                                .cornerRadius(8)
+                                .border(Color(red: 0.2, green: 0.4, blue: 0.7), width: 1)
+                                .font(.system(.body, design: .monospaced))
+                            )
+                            
+                            HStack(spacing: 12) {
+                                scope.expiryDateInput?(PrimerModifier()
                                     .fillMaxWidth()
                                     .height(50)
                                     .padding(.horizontal, 16)
@@ -45,42 +56,30 @@ struct CorporateThemedCardFormDemo: View {
                                     .font(.system(.body, design: .monospaced))
                                 )
                                 
-                                HStack(spacing: 12) {
-                                    scope.expiryDateInput?(PrimerModifier()
-                                        .fillMaxWidth()
-                                        .height(50)
-                                        .padding(.horizontal, 16)
-                                        .background(Color(red: 0.98, green: 0.98, blue: 0.98))
-                                        .cornerRadius(8)
-                                        .border(Color(red: 0.2, green: 0.4, blue: 0.7), width: 1)
-                                        .font(.system(.body, design: .monospaced))
-                                    )
-                                    
-                                    scope.cvvInput?(PrimerModifier()
-                                        .fillMaxWidth()
-                                        .height(50)
-                                        .padding(.horizontal, 16)
-                                        .background(Color(red: 0.98, green: 0.98, blue: 0.98))
-                                        .cornerRadius(8)
-                                        .border(Color(red: 0.2, green: 0.4, blue: 0.7), width: 1)
-                                        .font(.system(.body, design: .monospaced))
-                                    )
-                                }
-                                
-                                scope.cardholderNameInput?(PrimerModifier()
+                                scope.cvvInput?(PrimerModifier()
                                     .fillMaxWidth()
                                     .height(50)
                                     .padding(.horizontal, 16)
                                     .background(Color(red: 0.98, green: 0.98, blue: 0.98))
                                     .cornerRadius(8)
                                     .border(Color(red: 0.2, green: 0.4, blue: 0.7), width: 1)
-                                    .font(.system(.body, design: .default))
+                                    .font(.system(.body, design: .monospaced))
                                 )
                             }
-                            .padding()
-                            .background(Color.white)
-                        )
-                    }
+                            
+                            scope.cardholderNameInput?(PrimerModifier()
+                                .fillMaxWidth()
+                                .height(50)
+                                .padding(.horizontal, 16)
+                                .background(Color(red: 0.98, green: 0.98, blue: 0.98))
+                                .cornerRadius(8)
+                                .border(Color(red: 0.2, green: 0.4, blue: 0.7), width: 1)
+                                .font(.system(.body, design: .default))
+                            )
+                        }
+                        .padding()
+                        .background(Color.white)
+                    )
                 }
             }
         )

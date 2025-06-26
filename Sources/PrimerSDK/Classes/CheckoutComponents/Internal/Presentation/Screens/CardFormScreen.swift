@@ -64,9 +64,9 @@ internal struct CardFormScreen: View {
                 }
                 .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
             }
-            
+
             Spacer()
-            
+
             Button(CheckoutComponentsStrings.cancelButton) {
                 scope.onCancel()
             }
@@ -157,7 +157,6 @@ internal struct CardFormScreen: View {
         }
     }
 
-
     private var billingAddressSection: some View {
         BillingAddressView(
             cardFormScope: scope,
@@ -165,7 +164,6 @@ internal struct CardFormScreen: View {
         )
         .padding(.horizontal)
     }
-
 
     private var submitButtonSection: some View {
         Group {

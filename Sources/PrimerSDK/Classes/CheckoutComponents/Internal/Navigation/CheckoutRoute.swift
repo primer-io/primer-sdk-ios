@@ -47,18 +47,16 @@ enum CheckoutRoute: NavigationRoute {
     case splash
     case loading
     case paymentMethodSelection
-    case cardForm
     case selectCountry
     case success(CheckoutPaymentResult)
     case failure(CheckoutPaymentError)
-    case paymentMethod(String) // Payment method type
+    case paymentMethod(String) // Payment method type (unified approach for all payment methods including cards)
 
     var id: String {
         switch self {
         case .splash: return "splash"
         case .loading: return "loading"
         case .paymentMethodSelection: return "payment-method-selection"
-        case .cardForm: return "card-form"
         case .selectCountry: return "select-country"
         case .paymentMethod(let type): return "payment-method-\(type)"
         case .success: return "success"
@@ -81,7 +79,6 @@ enum CheckoutRoute: NavigationRoute {
         case .splash: return "Splash Screen"
         case .loading: return "Loading Screen"
         case .paymentMethodSelection: return "Payment Method Selection"
-        case .cardForm: return "Card Form"
         case .selectCountry: return "Select Country"
         case .paymentMethod(let type): return "Payment Method: \(type)"
         case .success: return "Payment Success"
@@ -97,7 +94,7 @@ enum CheckoutRoute: NavigationRoute {
             return .replace // Replace splash with loading
         case .paymentMethodSelection:
             return .reset  // Always reset to payment methods as root
-        case .cardForm, .selectCountry, .paymentMethod:
+        case .selectCountry, .paymentMethod:
             return .push   // Standard forward navigation
         case .success, .failure:
             return .replace // Replace current screen with result

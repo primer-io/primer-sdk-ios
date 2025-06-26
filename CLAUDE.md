@@ -217,10 +217,13 @@ The CheckoutComponents framework is **production-ready** with comprehensive feat
 - **Card Number Input Field**: Production-ready with proper deletion, cursor management, and formatting
 - **Luhn Algorithm Validation**: Correct implementation that validates test cards (4242424242424242)
 - **Co-badged Card Support**: Multiple network detection and user selection
-- **3DS Authentication**: Working properly in debug/simulator environments
-- **Error Handling**: Comprehensive error display and state management
+- **3DS Authentication**: Complete 3DS flow with pure Swift protocol integration
+- **Error Handling**: Comprehensive error display and state management with Android parity
 - **Navigation System**: Complete state-driven navigation with 6 navigation files
 - **Cross-Scope Integration**: Proper navigation integration between all scopes and screens
+- **Country Selection**: Complete SwiftUI country selector with 250+ countries and search
+- **Billing Address**: Production-ready billing address collection with field reordering
+- **Validation Synchronization**: Real-time validation state communication between components
 
 ## Common Development Tasks
 
@@ -270,6 +273,12 @@ The SDK supports multiple Package.swift configurations:
    - Card input not responding → Verify ValidationService properly resolved from DI container
    - Cursor position issues → Check cursor restoration logic in CardNumberTextField coordinator
    - CheckoutComponents 3DS failures → Ensure app respects `PrimerSettings.current.debugOptions.is3DSSanityCheckEnabled`
+   - CocoaPods file organization → Files in subdirectories may need manual Xcode project inclusion
+   - Missing showcase views → Ensure all showcase files are added to Debug App target in Xcode
+   - Validation state mismatch → Check field-level validation communicates with form scope via `updateValidationState()`
+   - Country picker issues → Verify CountryCode data integration and search functionality
+   - Error message inconsistency → Use ErrorMessageResolver for centralized error formatting
+   - Test card validation during typing → Ensure unknown networks allowed with Luhn validation
 
 ### Testing Approach
 
@@ -289,17 +298,21 @@ The SDK supports multiple Package.swift configurations:
 
 ### CheckoutComponents Key Files
 - `PrimerCheckout.swift`: Main SwiftUI entry point for CheckoutComponents
-- `CheckoutComponentsPrimer.swift`: UIKit integration wrapper with modal presentation
+- `CheckoutComponentsPrimer.swift`: UIKit integration wrapper with modal presentation and 3DS support
 - **Scope protocols**: `PrimerCardFormScope.swift`, `PrimerSelectCountryScope.swift`, etc.
-- **Default implementations**: `DefaultCardFormScope.swift`, `DefaultCheckoutScope.swift`
-- **Validation system**: `ValidationService.swift`, `RulesFactory.swift`, `CardValidationRules.swift`
-- **Input components**: `CardNumberInputField.swift`, `ExpiryDateInputField.swift`, etc.
+- **Default implementations**: `DefaultCardFormScope.swift`, `DefaultCheckoutScope.swift`, `DefaultSelectCountryScope.swift`
+- **Validation system**: `ValidationService.swift`, `RulesFactory.swift`, `CardValidationRules.swift`, `BillingAddressValidationRules.swift`
+- **Input components**: `CardNumberInputField.swift`, `ExpiryDateInputField.swift`, `CountryInputField.swift`, etc.
 - **Navigation system**: `CheckoutNavigator.swift`, `CheckoutCoordinator.swift`, `CheckoutRoute.swift`
+- **Error handling**: `ErrorMessageResolver.swift`, `CheckoutComponentsStrings.swift`
+- **Country infrastructure**: `SelectCountryScreen.swift` with comprehensive country database integration
 
 ### Debug App Configuration
 - `Debug App/Sources/View Controllers/MerchantSessionAndSettingsViewController.swift`: Main configuration screen
+- `Debug App/Sources/View Controllers/CheckoutComponentsShowcase/`: Complete showcase implementation
 - `Debug App/Sources/Model/CreateClientToken.swift`: API request models
 - **UI Features**: Billing address collection switch, payment method selection, test scenario configuration
+- **CheckoutComponents Showcase**: Comprehensive demo with 18 example components across 4 categories
 
 ## Security and Compliance
 
@@ -325,15 +338,6 @@ The SDK supports multiple Package.swift configurations:
 - **CocoaPods 1.10+** or **Swift Package Manager**
 - **Deployment targets**: Support for iOS 13.1+ ensures broad device compatibility
 
-## Development Workflow
-
-1. **Create feature branch** from `master` branch
-2. **Implement changes** following existing architectural patterns
-3. **Run SwiftLint**: `swiftlint --fix --format` to ensure code style compliance
-4. **Run tests**: `bundle exec fastlane test_sdk` for comprehensive validation
-5. **Test in Debug App** with real payment flows and various scenarios
-6. **Update documentation** in CLAUDE.md if architecture changes
-7. **Create pull request** with detailed description and test results
 
 ## Key Architectural Decisions
 
@@ -359,6 +363,47 @@ The SDK supports multiple Package.swift configurations:
 - **Performance optimization**: Efficient DI container and state management
 - **Error handling**: Comprehensive error scenarios with user-friendly messaging
 
+### CheckoutComponents Recent Enhancements (June 26, 2025) ✅
+
+#### Card Validation System Overhaul
+- **Fixed validation disconnect**: Resolved critical issue where card validation errors displayed but payment button remained enabled
+- **Synchronized validation states**: Field-level and form-level validation now communicate in real-time
+- **Test card compatibility**: Fixed validation for cards like "9120 0000 0000 0006" during typing
+- **Unknown network handling**: Improved Luhn validation for cards with unknown networks (13-19 digits)
+
+#### 3DS Authentication Complete Implementation
+- **Pure Swift protocol integration**: Added 3DS delegate methods to CheckoutComponentsPrimer
+- **Proper flow separation**: Tokenization completes, 3DS handled at payment level
+- **Centralized error messaging**: Added 3DS-specific error messages in CheckoutComponentsStrings
+- **Full Drop-in parity**: Complete 3DS functionality while maintaining CheckoutComponents architecture
+
+#### Country Selection and Billing Address Improvements
+- **Complete country database**: Implemented 250+ countries with dial codes and comprehensive search
+- **Diacritic-insensitive search**: Enhanced country filtering with accent-insensitive matching
+- **Billing address field reordering**: Changed to Drop-in layout (Country → Address → Postal → State)
+- **Automatic country selection**: Improved UX with proper scope-based navigation for sheet presentation
+
+#### Android Parity Error Messaging System
+- **Centralized error resolution**: Implemented ErrorMessageResolver for consistent error formatting
+- **BillingAddressValidationRules**: Complete validation rules matching Android error structure
+- **Extended RulesFactory**: Added billing address validation rule creation methods
+- **Localized error strings**: Added missing localized strings for all validation scenarios
+
+#### Country Picker Infrastructure
+- **Real CountryCode data integration**: Replaced placeholder with production country data
+- **Search functionality**: Added comprehensive search with filtering capabilities
+- **Bug fixes**: Resolved string interpolation issues showing literal placeholders
+- **UI improvements**: Enhanced country picker presentation and dismissal
+
+### CheckoutComponents Showcase Implementation ✅
+- **Comprehensive Demo Suite**: 18 demo components showcasing CheckoutComponents flexibility
+- **Four Categories**: Layout Configurations, Styling Variations, Interactive Features, Advanced Customization
+- **Modal Integration**: Seamless SwiftUI modal presentation from main Debug App
+- **File Organization**: Clean separation with 18 dedicated showcase files in organized directory structure
+- **Production Examples**: Real-world styling patterns including corporate, modern, colorful, and dark themes
+- **Interactive Demonstrations**: Live state management, validation flows, and co-badged card support
+- **Advanced Layouts**: Custom screen layouts including split-screen, carousel, stepped, and floating designs
+
 ## Memories and Conventions
 
 - **CC** in messages refers to **CheckoutComponents**
@@ -366,5 +411,47 @@ The SDK supports multiple Package.swift configurations:
 - **API parity**: CheckoutComponents maintains exact parity with Android SDK APIs
 - **Security-first**: All payment processing follows PCI compliance requirements
 - **SwiftUI-native**: CheckoutComponents built with SwiftUI best practices and modern iOS patterns
+- **Showcase Integration**: CheckoutComponents showcase accessible via purple "Show Component Showcase" button in InlineSwiftUICheckoutTestView
+- **File Organization**: Showcase files organized in `/Debug App/Sources/View Controllers/CheckoutComponentsShowcase/` directory
 
-This repository provides a comprehensive, production-ready payment SDK with multiple integration approaches, extensive customization capabilities, and cross-platform API consistency.
+## CheckoutComponents Showcase Structure
+
+The showcase implementation demonstrates CheckoutComponents flexibility through:
+
+### Directory Structure
+```
+Debug App/Sources/View Controllers/CheckoutComponentsShowcase/
+├── CheckoutComponentsShowcaseView.swift          # Main showcase view
+├── ShowcaseEnums.swift                           # Section definitions
+├── ShowcaseSection.swift                         # Reusable section wrapper
+├── ShowcaseDemo.swift                            # Individual demo container
+├── CompactCardFormDemo.swift                     # Layout: Compact form
+├── ExpandedCardFormDemo.swift                    # Layout: Expanded form
+├── InlineCardFormDemo.swift                      # Layout: Inline form
+├── GridCardFormDemo.swift                        # Layout: Grid layout
+├── CorporateThemedCardFormDemo.swift             # Styling: Corporate theme
+├── ModernThemedCardFormDemo.swift                # Styling: Modern theme
+├── ColorfulThemedCardFormDemo.swift              # Styling: Colorful theme
+├── DarkThemedCardFormDemo.swift                  # Styling: Dark theme
+├── LiveStateCardFormDemo.swift                   # Interactive: Live state
+├── ValidationCardFormDemo.swift                  # Interactive: Validation
+├── CoBadgedCardFormDemo.swift                    # Interactive: Co-badged cards
+├── ModifierChainsCardFormDemo.swift              # Advanced: Modifier chains
+├── CustomScreenCardFormDemo.swift                # Advanced: Custom layouts
+└── AnimatedCardFormDemo.swift                    # Advanced: Animations
+```
+
+### Integration Pattern
+```swift
+// In MerchantSessionAndSettingsViewController.swift
+@State private var showingShowcase = false
+
+Button("Show Component Showcase") {
+    showingShowcase = true
+}
+.sheet(isPresented: $showingShowcase) {
+    CheckoutComponentsShowcaseView(clientToken: clientToken, settings: settings)
+}
+```
+
+This repository provides a comprehensive, production-ready payment SDK with multiple integration approaches, extensive customization capabilities, cross-platform API consistency, and a complete showcase demonstrating all CheckoutComponents features.

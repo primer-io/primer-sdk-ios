@@ -50,9 +50,8 @@ struct AnimatedCardFormDemo: View {
                 clientToken: clientToken,
                 settings: settings,
                 scope: { checkoutScope in
-                    if let cardFormScope = checkoutScope.cardForm {
-                        cardFormScope.screen = { scope in
-                            AnyView(
+                    checkoutScope.setPaymentMethodScreen((any PrimerCardFormScope).self) { (scope: any PrimerCardFormScope) in
+                        AnyView(
                                 VStack(spacing: 12) {
                                     scope.cardNumberInput?(getAnimatedModifier(for: selectedAnimation))
                                     
@@ -65,8 +64,7 @@ struct AnimatedCardFormDemo: View {
                                 .rotationEffect(getRotationEffect())
                                 .offset(y: getBounceOffset())
                                 .shadow(color: getGlowColor(), radius: getGlowRadius(), x: 0, y: 0)
-                            )
-                        }
+                        )
                     }
                 }
             )
@@ -74,6 +72,7 @@ struct AnimatedCardFormDemo: View {
         }
     }
     
+    @available(iOS 15.0, *)
     private func getAnimatedModifier(for animation: String) -> PrimerModifier {
         PrimerModifier()
             .fillMaxWidth()

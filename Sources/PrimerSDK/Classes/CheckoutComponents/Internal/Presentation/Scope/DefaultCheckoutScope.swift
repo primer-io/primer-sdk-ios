@@ -16,7 +16,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     internal enum NavigationState {
         case loading
         case paymentMethodSelection
-        case cardForm
+        case paymentMethod(String)  // Dynamic payment method with type identifier
         case failure(PrimerError)
         // Note: Success case removed - CheckoutComponents dismisses immediately on success
     }
@@ -52,22 +52,14 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     public var loadingScreen: (() -> AnyView)?
     public var errorScreen: ((_ message: String) -> AnyView)?
     public var paymentMethodSelectionScreen: ((_ scope: PrimerPaymentMethodSelectionScope) -> AnyView)?
-    public var cardFormScreen: ((_ scope: PrimerCardFormScope) -> AnyView)?
+
+    /// Generic payment method screen registry for type-safe screen customization
+    private var paymentMethodScreens: [String: Any] = [:]
 
     // MARK: - State Management
     // Note: Success result is no longer stored - delegate is called immediately on success
 
     // MARK: - Child Scopes
-
-    private var _cardForm: PrimerCardFormScope?
-    public var cardForm: PrimerCardFormScope {
-        if let existing = _cardForm {
-            return existing
-        }
-        let scope = DefaultCardFormScope(checkoutScope: self)
-        _cardForm = scope
-        return scope
-    }
 
     private var _paymentMethodSelection: PrimerPaymentMethodSelectionScope?
     public var paymentMethodSelection: PrimerPaymentMethodSelectionScope {
@@ -78,6 +70,14 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         _paymentMethodSelection = scope
         return scope
     }
+
+    // MARK: - Dynamic Payment Method Scope
+
+    /// The currently active payment method scope (dynamically created)
+    private var currentPaymentMethodScope: (any PrimerPaymentMethodScope)?
+
+    /// Cache of created payment method scopes by type
+    private var paymentMethodScopeCache: [String: any PrimerPaymentMethodScope] = [:]
 
     // MARK: - Services
 
@@ -106,6 +106,9 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         self.diContainer = diContainer
         self.navigator = navigator
 
+        // Register payment methods with the registry
+        registerPaymentMethods()
+
         Task {
             await setupInteractors()
             await loadPaymentMethods()
@@ -113,6 +116,15 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
 
         // Observe navigation events for back navigation
         observeNavigationEvents()
+    }
+
+    /// Registers all available payment method implementations with the registry
+    @MainActor
+    private func registerPaymentMethods() {
+        // Register card payment method
+        CardPaymentMethod.register()
+
+        logger.debug(message: "Registered payment methods: \\(PaymentMethodRegistry.shared.registeredTypes)")
     }
 
     // MARK: - Setup
@@ -185,11 +197,11 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 logger.info(message: "✅ [CheckoutComponents] Payment methods loaded successfully")
                 updateState(.ready)
 
-                // Check if we have only card payment method
+                // Check if we have only one payment method (any type)
                 if availablePaymentMethods.count == 1,
-                   availablePaymentMethods.first?.type == "PAYMENT_CARD" {
-                    logger.info(message: "🎯 [CheckoutComponents] Single card payment method detected, navigating to card form")
-                    updateNavigationState(.cardForm)
+                   let singlePaymentMethod = availablePaymentMethods.first {
+                    logger.info(message: "🎯 [CheckoutComponents] Single payment method detected: \(singlePaymentMethod.type ?? "unknown"), navigating directly to payment method")
+                    updateNavigationState(.paymentMethod(singlePaymentMethod.type ?? "UNKNOWN"))
                 } else {
                     logger.info(message: "🎯 [CheckoutComponents] Multiple payment methods available, showing selection screen")
                     updateNavigationState(.paymentMethodSelection)
@@ -227,8 +239,8 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 navigator.navigateToLoading()
             case .paymentMethodSelection:
                 navigator.navigateToPaymentSelection()
-            case .cardForm:
-                navigator.navigateToCardForm()
+            case .paymentMethod(let paymentMethodType):
+                navigator.navigateToPaymentMethod(paymentMethodType)
             case .failure(let error):
                 navigator.navigateToError(error.localizedDescription)
             }
@@ -250,8 +262,8 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                     newNavigationState = .loading
                 case .paymentMethodSelection:
                     newNavigationState = .paymentMethodSelection
-                case .cardForm:
-                    newNavigationState = .cardForm
+                case .paymentMethod(let paymentMethodType):
+                    newNavigationState = .paymentMethod(paymentMethodType)
                 case .failure(let checkoutError):
                     let primerError = PrimerError.unknown(
                         userInfo: ["error": checkoutError.message, "code": checkoutError.code],
@@ -282,9 +294,10 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     private func navigationStateEquals(_ lhs: NavigationState, _ rhs: NavigationState) -> Bool {
         switch (lhs, rhs) {
         case (.loading, .loading),
-             (.paymentMethodSelection, .paymentMethodSelection),
-             (.cardForm, .cardForm):
+             (.paymentMethodSelection, .paymentMethodSelection):
             return true
+        case (.paymentMethod(let lhsType), .paymentMethod(let rhsType)):
+            return lhsType == rhsType
         case (.failure(let lhsError), .failure(let rhsError)):
             return lhsError.localizedDescription == rhsError.localizedDescription
         default:
@@ -294,6 +307,141 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
 
     // MARK: - Public Methods
 
+    public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(
+        for paymentMethodType: String
+    ) -> T? {
+        logger.debug(message: "Getting payment method scope for type: \\(paymentMethodType)")
+
+        // Check cache first
+        if let cachedScope = paymentMethodScopeCache[paymentMethodType] as? T {
+            logger.debug(message: "Found cached scope for payment method: \\(paymentMethodType)")
+            return cachedScope
+        }
+
+        // Create new scope using registry
+        do {
+            let scope: T? = try PaymentMethodRegistry.shared.createScope(
+                for: paymentMethodType,
+                checkoutScope: self,
+                diContainer: diContainer
+            )
+
+            if let scope = scope {
+                // Cache the scope for future use
+                paymentMethodScopeCache[paymentMethodType] = scope
+                logger.debug(message: "Created and cached new scope for payment method: \\(paymentMethodType)")
+                return scope
+            } else {
+                logger.warn(message: "No scope registered for payment method: \\(paymentMethodType)")
+                return nil
+            }
+
+        } catch {
+            logger.error(message: "Failed to create scope for payment method \\(paymentMethodType): \\(error)")
+            return nil
+        }
+    }
+
+    public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> T? {
+        let typeName = String(describing: scopeType)
+        logger.debug(message: "Getting payment method scope for type: \\(typeName)")
+
+        // Check cache first using type name
+        if let cachedScope = paymentMethodScopeCache.values.first(where: { type(of: $0) == scopeType }) as? T {
+            logger.debug(message: "Found cached scope for type: \\(typeName)")
+            return cachedScope
+        }
+
+        // Create new scope using type-safe registry method
+        do {
+            let scope: T? = try PaymentMethodRegistry.shared.createScope(
+                scopeType,
+                checkoutScope: self,
+                diContainer: diContainer
+            )
+
+            if let scope = scope {
+                // Cache the scope using its identifier for future use
+                let scopeTypeName = String(describing: type(of: scope))
+                paymentMethodScopeCache[scopeTypeName] = scope
+                logger.debug(message: "Created and cached new scope for type: \\(typeName)")
+                return scope
+            } else {
+                logger.warn(message: "No scope registered for type: \\(typeName)")
+                return nil
+            }
+
+        } catch {
+            logger.error(message: "Failed to create scope for type \\(typeName): \\(error)")
+            return nil
+        }
+    }
+
+    public func getPaymentMethodScope<T: PrimerPaymentMethodScope>(for methodType: PrimerPaymentMethodType) -> T? {
+        logger.debug(message: "Getting payment method scope for enum type: \\(methodType)")
+
+        // Delegate to string-based method
+        return getPaymentMethodScope(for: methodType.rawValue)
+    }
+
+    // MARK: - Generic Payment Method Screen Management
+
+    /// Sets a custom screen for a specific payment method scope type
+    /// - Parameters:
+    ///   - scopeType: The scope type (e.g., PrimerCardFormScope.self)
+    ///   - screenBuilder: The custom screen builder closure
+    public func setPaymentMethodScreen<T: PrimerPaymentMethodScope>(
+        _ scopeType: T.Type,
+        screenBuilder: @escaping (T) -> AnyView
+    ) {
+        let typeName = String(describing: scopeType)
+        logger.debug(message: "Setting custom screen for payment method scope type: \\(typeName)")
+        paymentMethodScreens[typeName] = screenBuilder
+    }
+
+    /// Non-generic overload for PrimerCardFormScope to avoid existential type issues
+    public func setPaymentMethodScreen(
+        _ scopeType: (any PrimerCardFormScope).Type,
+        screenBuilder: @escaping (any PrimerCardFormScope) -> AnyView
+    ) {
+        let typeName = String(describing: scopeType)
+        logger.debug(message: "Setting custom screen for PrimerCardFormScope: \(typeName)")
+        paymentMethodScreens[typeName] = screenBuilder
+    }
+
+    /// Sets a custom screen for a specific payment method type
+    /// - Parameters:
+    ///   - paymentMethodType: The payment method type string
+    ///   - screenBuilder: The custom screen builder closure
+    public func setPaymentMethodScreen<T: PrimerPaymentMethodScope>(
+        for paymentMethodType: String,
+        scopeType: T.Type,
+        screenBuilder: @escaping (T) -> AnyView
+    ) {
+        logger.debug(message: "Setting custom screen for payment method type: \\(paymentMethodType)")
+        paymentMethodScreens[paymentMethodType] = screenBuilder
+    }
+
+    /// Gets a custom screen for a specific payment method scope type
+    /// - Parameter scopeType: The scope type to get the screen for
+    /// - Returns: The custom screen builder closure if set, nil otherwise
+    public func getPaymentMethodScreen<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> ((T) -> AnyView)? {
+        let typeName = String(describing: scopeType)
+        logger.debug(message: "Getting custom screen for payment method scope type: \\(typeName)")
+        return paymentMethodScreens[typeName] as? (T) -> AnyView
+    }
+
+    /// Gets a custom screen for a specific payment method type
+    /// - Parameter paymentMethodType: The payment method type string
+    /// - Returns: The custom screen builder closure if set, nil otherwise
+    public func getPaymentMethodScreen<T: PrimerPaymentMethodScope>(
+        for paymentMethodType: String,
+        scopeType: T.Type
+    ) -> ((T) -> AnyView)? {
+        logger.debug(message: "Getting custom screen for payment method type: \\(paymentMethodType)")
+        return paymentMethodScreens[paymentMethodType] as? (T) -> AnyView
+    }
+
     public func onDismiss() {
         logger.debug(message: "Checkout dismissed")
 
@@ -301,8 +449,10 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         updateState(.dismissed)
 
         // Clean up any resources
-        _cardForm = nil
         _paymentMethodSelection = nil
+        currentPaymentMethodScope = nil
+        paymentMethodScopeCache.removeAll()
+        paymentMethodScreens.removeAll()
 
         // Navigate to dismiss the checkout
         navigator.dismiss()
@@ -313,12 +463,46 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     internal func handlePaymentMethodSelection(_ method: InternalPaymentMethod) {
         logger.debug(message: "Payment method selected: \\(method.type)")
 
-        switch method.type {
-        case "PAYMENT_CARD":
-            updateNavigationState(.cardForm)
-        default:
-            // For now, only card is supported
-            logger.warn(message: "Unsupported payment method: \\(method.type)")
+        // Use dynamic scope creation instead of hardcoded switch statement
+        do {
+            // Try to create a scope for this payment method type using the registry
+            let scope = try PaymentMethodRegistry.shared.createScope(
+                for: method.type,
+                checkoutScope: self,
+                diContainer: diContainer
+            )
+
+            if let scope = scope {
+                logger.debug(message: "Successfully created scope for payment method: \\(method.type)")
+
+                // Store the current payment method scope for navigation
+                currentPaymentMethodScope = scope
+
+                // Start the payment method flow
+                scope.start()
+
+                // Navigate to the payment method using unified approach
+                updateNavigationState(.paymentMethod(method.type))
+
+            } else {
+                logger.warn(message: "No scope registered for payment method: \\(method.type)")
+                // Fallback: show error or stay on payment method selection
+                updateNavigationState(.failure(PrimerError.invalidArchitecture(
+                    description: "Payment method \\(method.type) is not supported",
+                    recoverSuggestion: "Register the payment method implementation",
+                    userInfo: ["paymentMethodType": method.type],
+                    diagnosticsId: UUID().uuidString
+                )))
+            }
+
+        } catch {
+            logger.error(message: "Failed to create scope for payment method \\(method.type): \\(error)")
+            updateNavigationState(.failure(PrimerError.invalidArchitecture(
+                description: "Failed to initialize payment method",
+                recoverSuggestion: "Check payment method implementation",
+                userInfo: ["paymentMethodType": method.type, "error": error.localizedDescription],
+                diagnosticsId: UUID().uuidString
+            )))
         }
     }
 

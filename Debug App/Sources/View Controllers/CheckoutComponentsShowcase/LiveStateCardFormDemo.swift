@@ -39,65 +39,53 @@ struct LiveStateCardFormDemo: View {
                         .font(.caption)
                         .foregroundColor(isValid ? .green : .red)
                 }
-                .padding(8)
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(6)
             }
+            .padding(8)
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(6)
             
             // Card form
             PrimerCheckout(
                 clientToken: clientToken,
                 settings: settings,
                 scope: { checkoutScope in
-                    if let cardFormScope = checkoutScope.cardForm {
-                        cardFormScope.screen = { scope in
-                            AnyView(
-                                VStack(spacing: 12) {
-                                    scope.cardNumberInput?(PrimerModifier()
+                    // Use new generic payment method screen API
+                    checkoutScope.setPaymentMethodScreen((any PrimerCardFormScope).self) { (scope: any PrimerCardFormScope) in
+                        AnyView(
+                            VStack(spacing: 12) {
+                                scope.cardNumberInput?(PrimerModifier()
+                                    .fillMaxWidth()
+                                    .height(44)
+                                    .padding(.horizontal, 12)
+                                    .background(.white)
+                                    .cornerRadius(8)
+                                    .border(isValid ? .green : .gray.opacity(0.3), width: isValid ? 2 : 1)
+                                )
+                                
+                                HStack(spacing: 12) {
+                                    scope.expiryDateInput?(PrimerModifier()
                                         .fillMaxWidth()
                                         .height(44)
                                         .padding(.horizontal, 12)
                                         .background(.white)
                                         .cornerRadius(8)
-                                        .border(isValid ? .green : .gray.opacity(0.3), width: isValid ? 2 : 1)
+                                        .border(.gray.opacity(0.3), width: 1)
                                     )
                                     
-                                    HStack(spacing: 12) {
-                                        scope.expiryDateInput?(PrimerModifier()
-                                            .fillMaxWidth()
-                                            .height(44)
-                                            .padding(.horizontal, 12)
-                                            .background(.white)
-                                            .cornerRadius(8)
-                                            .border(.gray.opacity(0.3), width: 1)
-                                        )
-                                        
-                                        scope.cvvInput?(PrimerModifier()
-                                            .fillMaxWidth()
-                                            .height(44)
-                                            .padding(.horizontal, 12)
-                                            .background(.white)
-                                            .cornerRadius(8)
-                                            .border(.gray.opacity(0.3), width: 1)
-                                        )
-                                    }
-                                }
-                                .onChange(of: cardNumber) { _ in
-                                    updateState()
-                                }
-                            )
-                        }
-                        
-                        // Simulate state monitoring
-                        Task {
-                            for await state in cardFormScope.state {
-                                await MainActor.run {
-                                    currentState = "Ready - Monitoring form state"
-                                    // In a real implementation, you'd access the actual state values
-                                    // For demo purposes, we're simulating the state monitoring
+                                    scope.cvvInput?(PrimerModifier()
+                                        .fillMaxWidth()
+                                        .height(44)
+                                        .padding(.horizontal, 12)
+                                        .background(.white)
+                                        .cornerRadius(8)
+                                        .border(.gray.opacity(0.3), width: 1)
+                                    )
                                 }
                             }
-                        }
+                            .onChange(of: cardNumber) { _ in
+                                updateState()
+                            }
+                        )
                     }
                 }
             )

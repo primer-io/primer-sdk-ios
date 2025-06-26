@@ -74,7 +74,7 @@ internal struct BillingAddressView: View {
 
     /// Currently selected country code
     @State private var selectedCountryCode: String = ""
-    
+
     /// Currently selected country name
     @State private var selectedCountryName: String = ""
 
@@ -284,7 +284,7 @@ internal struct BillingAddressView: View {
                         showCountrySelector = false
                     }
                 )
-                
+
                 SelectCountryScreen(
                     scope: countryScope,
                     onDismiss: {
@@ -422,46 +422,46 @@ internal struct BillingAddressView: View {
 @available(iOS 15.0, *)
 @MainActor
 internal final class BillingAddressCountryScope: PrimerSelectCountryScope, LogReporter {
-    
+
     private let cardFormScope: DefaultCardFormScope
     private let onCountrySelectedCallback: (String, String) -> Void
     private var defaultScope: DefaultSelectCountryScope
-    
+
     init(cardFormScope: DefaultCardFormScope, onCountrySelected: @escaping (String, String) -> Void) {
         self.cardFormScope = cardFormScope
         self.onCountrySelectedCallback = onCountrySelected
         self.defaultScope = DefaultSelectCountryScope(cardFormScope: cardFormScope, checkoutScope: nil)
     }
-    
+
     var state: AsyncStream<PrimerSelectCountryState> {
         defaultScope.state
     }
-    
+
     var screen: ((_ scope: PrimerSelectCountryScope) -> AnyView)? {
         get { defaultScope.screen }
         set { defaultScope.screen = newValue }
     }
-    
+
     var searchBar: ((_ query: String, _ onQueryChange: @escaping (String) -> Void, _ placeholder: String) -> AnyView)? {
         get { defaultScope.searchBar }
         set { defaultScope.searchBar = newValue }
     }
-    
+
     var countryItem: ((_ country: PrimerCountry, _ onSelect: @escaping () -> Void) -> AnyView)? {
         get { defaultScope.countryItem }
         set { defaultScope.countryItem = newValue }
     }
-    
+
     func onCountrySelected(countryCode: String, countryName: String) {
         logger.debug(message: "Billing address country selected: \(countryName) (\(countryCode))")
         onCountrySelectedCallback(countryCode, countryName)
     }
-    
+
     func onCancel() {
         logger.debug(message: "Billing address country selection cancelled")
         // Sheet will be dismissed by onDismiss callback
     }
-    
+
     func onSearch(query: String) {
         defaultScope.onSearch(query: query)
     }

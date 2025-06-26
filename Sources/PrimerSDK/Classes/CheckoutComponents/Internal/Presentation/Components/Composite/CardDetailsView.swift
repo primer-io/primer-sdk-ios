@@ -36,7 +36,7 @@ internal struct CardDetailsView: View {
     @State private var isCardholderNameValid = false
 
     /// Previous validation states to detect changes
-    @State private var previousValidationState: ValidationState? = nil
+    @State private var previousValidationState: ValidationState?
 
     @Environment(\.designTokens) private var tokens
 
@@ -123,7 +123,7 @@ internal struct CardDetailsView: View {
     var isValid: Bool {
         isCardNumberValid && isCVVValid && isExpiryValid && isCardholderNameValid
     }
-    
+
     /// Updates the card form scope with the current validation state
     private func updateValidationState() {
         let currentState = ValidationState(
@@ -132,11 +132,11 @@ internal struct CardDetailsView: View {
             expiry: isExpiryValid,
             cardholderName: isCardholderNameValid
         )
-        
+
         // Only notify if validation state has changed
         if previousValidationState != currentState {
             previousValidationState = currentState
-            
+
             // Notify the scope of the field-level validation state
             cardFormScope.updateValidationState(
                 cardNumber: isCardNumberValid,

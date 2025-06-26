@@ -25,11 +25,21 @@ struct InlineCardFormDemo: View {
                 clientToken: clientToken,
                 settings: settings,
                 scope: { checkoutScope in
-                    if let cardFormScope = checkoutScope.cardForm {
-                        cardFormScope.screen = { scope in
-                            AnyView(
-                                VStack(spacing: 12) {
-                                    scope.cardNumberInput?(PrimerModifier()
+                    // Use new generic payment method screen API
+                    checkoutScope.setPaymentMethodScreen((any PrimerCardFormScope).self) { (scope: any PrimerCardFormScope) in
+                        AnyView(
+                            VStack(spacing: 12) {
+                                scope.cardNumberInput?(PrimerModifier()
+                                    .fillMaxWidth()
+                                    .height(44)
+                                    .padding(.horizontal, 12)
+                                    .background(.white)
+                                    .cornerRadius(8)
+                                    .border(.gray.opacity(0.2), width: 1)
+                                )
+                                
+                                HStack(spacing: 12) {
+                                    scope.expiryDateInput?(PrimerModifier()
                                         .fillMaxWidth()
                                         .height(44)
                                         .padding(.horizontal, 12)
@@ -38,27 +48,7 @@ struct InlineCardFormDemo: View {
                                         .border(.gray.opacity(0.2), width: 1)
                                     )
                                     
-                                    HStack(spacing: 12) {
-                                        scope.expiryDateInput?(PrimerModifier()
-                                            .fillMaxWidth()
-                                            .height(44)
-                                            .padding(.horizontal, 12)
-                                            .background(.white)
-                                            .cornerRadius(8)
-                                            .border(.gray.opacity(0.2), width: 1)
-                                        )
-                                        
-                                        scope.cvvInput?(PrimerModifier()
-                                            .fillMaxWidth()
-                                            .height(44)
-                                            .padding(.horizontal, 12)
-                                            .background(.white)
-                                            .cornerRadius(8)
-                                            .border(.gray.opacity(0.2), width: 1)
-                                        )
-                                    }
-                                    
-                                    scope.cardholderNameInput?(PrimerModifier()
+                                    scope.cvvInput?(PrimerModifier()
                                         .fillMaxWidth()
                                         .height(44)
                                         .padding(.horizontal, 12)
@@ -67,8 +57,17 @@ struct InlineCardFormDemo: View {
                                         .border(.gray.opacity(0.2), width: 1)
                                     )
                                 }
-                            )
-                        }
+                                
+                                scope.cardholderNameInput?(PrimerModifier()
+                                    .fillMaxWidth()
+                                    .height(44)
+                                    .padding(.horizontal, 12)
+                                    .background(.white)
+                                    .cornerRadius(8)
+                                    .border(.gray.opacity(0.2), width: 1)
+                                )
+                            }
+                        )
                     }
                 }
             )

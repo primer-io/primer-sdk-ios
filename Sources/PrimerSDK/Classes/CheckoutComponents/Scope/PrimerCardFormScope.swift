@@ -10,12 +10,27 @@ import UIKit
 
 /// Scope interface for card form interactions, state management, and UI customization.
 /// This protocol matches the Android Composable API exactly with all 15 update methods.
+/// Inherits from PrimerPaymentMethodScope for unified payment method architecture.
 @available(iOS 15.0, *)
 @MainActor
-public protocol PrimerCardFormScope: AnyObject {
+public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == PrimerCardFormState {
 
     /// The current state of the card form as an async stream.
     var state: AsyncStream<PrimerCardFormState> { get }
+
+    // MARK: - Payment Method Lifecycle (PrimerPaymentMethodScope)
+
+    /// Starts the card form flow and initializes the scope.
+    /// Default implementation can be empty for card form since it's initialized on presentation.
+    func start()
+
+    /// Submits the payment method for processing.
+    /// Maps to onSubmit() for backward compatibility.
+    func submit()
+
+    /// Cancels the payment method flow and returns to payment method selection.
+    /// Maps to onCancel() for backward compatibility.
+    func cancel()
 
     // MARK: - Navigation Methods
 
@@ -181,9 +196,9 @@ public protocol PrimerCardFormScope: AnyObject {
 
     /// Select a saved card (Future feature).
     // func selectSavedCard(_ cardId: String)
-    
+
     // MARK: - Validation State Communication
-    
+
     /// Updates the validation state based on field-level validation results.
     /// This method allows the UI components to communicate their validation state
     /// to the scope, ensuring button state synchronization.
@@ -271,5 +286,27 @@ public struct PrimerCardFormState: Equatable {
         self.selectedCardNetwork = selectedCardNetwork
         self.availableCardNetworks = availableCardNetworks
         self.surchargeAmount = surchargeAmount
+    }
+}
+
+// MARK: - Default Implementation for Payment Method Lifecycle
+
+@available(iOS 15.0, *)
+extension PrimerCardFormScope {
+
+    /// Default implementation for start() - card form is ready on presentation
+    public func start() {
+        // Card form doesn't need explicit start as it's initialized when presented
+        // This can be overridden by implementations if needed
+    }
+
+    /// Default implementation maps to existing onSubmit() method
+    public func submit() {
+        onSubmit()
+    }
+
+    /// Default implementation maps to existing onCancel() method
+    public func cancel() {
+        onCancel()
     }
 }

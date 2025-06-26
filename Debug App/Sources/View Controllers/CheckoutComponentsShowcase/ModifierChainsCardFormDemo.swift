@@ -44,21 +44,20 @@ struct ModifierChainsCardFormDemo: View {
                 clientToken: clientToken,
                 settings: settings,
                 scope: { checkoutScope in
-                    if let cardFormScope = checkoutScope.cardForm {
-                        cardFormScope.screen = { scope in
-                            AnyView(
-                                VStack(spacing: 12) {
-                                    scope.cardNumberInput?(getModifierChain(for: selectedStyle))
-                                    
-                                    HStack(spacing: 12) {
-                                        scope.expiryDateInput?(getModifierChain(for: selectedStyle))
-                                        scope.cvvInput?(getModifierChain(for: selectedStyle))
-                                    }
-                                    
-                                    scope.cardholderNameInput?(getModifierChain(for: selectedStyle))
+                    // Use new generic payment method screen API
+                    checkoutScope.setPaymentMethodScreen((any PrimerCardFormScope).self) { (scope: any PrimerCardFormScope) in
+                        AnyView(
+                            VStack(spacing: 12) {
+                                scope.cardNumberInput?(getModifierChain(for: selectedStyle))
+                                
+                                HStack(spacing: 12) {
+                                    scope.expiryDateInput?(getModifierChain(for: selectedStyle))
+                                    scope.cvvInput?(getModifierChain(for: selectedStyle))
                                 }
-                            )
-                        }
+                                
+                                scope.cardholderNameInput?(getModifierChain(for: selectedStyle))
+                            }
+                        )
                     }
                 }
             )
@@ -67,6 +66,7 @@ struct ModifierChainsCardFormDemo: View {
         }
     }
     
+    @available(iOS 15.0, *)
     private func getModifierChain(for style: String) -> PrimerModifier {
         switch style {
         case "Classic":

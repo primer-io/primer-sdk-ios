@@ -37,7 +37,17 @@
       "Bash(git worktree:*)",
       "Bash(cp:*)",
       "Bash(mv:*)",
-      "Bash(diff:*)"
+      "Bash(diff:*)",
+      "Bash(for:*)",
+      "Bash(do)",
+      "Bash(sed:*)",
+      "Bash(done)",
+      "Bash(-exec swift -typecheck {} -I Sources/PrimerSDK -suppress-warnings)",
+      "Bash(cat:*)",
+      "Bash(xxd:*)",
+      "Bash(git checkout:*)",
+      "Bash(swift:*)",
+      "Bash(swift:*)"
     ],
     "deny": []
   }

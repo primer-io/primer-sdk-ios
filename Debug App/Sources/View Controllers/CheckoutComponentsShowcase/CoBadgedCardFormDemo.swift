@@ -13,11 +13,11 @@ import PrimerSDK
 struct CoBadgedCardFormDemo: View {
     let clientToken: String
     let settings: PrimerSettings
-    
+
     @State private var selectedNetwork: String = "None"
     @State private var availableNetworks: [String] = ["Visa", "Mastercard", "American Express"]
     @State private var showNetworkSelection = false
-    
+
     var body: some View {
         VStack(spacing: 16) {
             // Network selection display
@@ -25,19 +25,19 @@ struct CoBadgedCardFormDemo: View {
                 Text("Co-badged Card Networks")
                     .font(.headline)
                     .fontWeight(.semibold)
-                
+
                 HStack {
                     Text("Selected Network:")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     Text(selectedNetwork)
                         .font(.caption)
                         .fontWeight(.medium)
                         .foregroundColor(selectedNetwork == "None" ? .red : .green)
-                    
+
                     Spacer()
-                    
+
                     Button("Simulate Co-badge") {
                         showNetworkSelection.toggle()
                         if showNetworkSelection {
@@ -54,14 +54,14 @@ struct CoBadgedCardFormDemo: View {
                     .cornerRadius(6)
                 }
             }
-            
+
             // Available networks display
             if showNetworkSelection {
                 HStack(spacing: 8) {
                     Text("Available:")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    
+
                     ForEach(availableNetworks, id: \.self) { network in
                         Button(network) {
                             selectedNetwork = network
@@ -76,60 +76,58 @@ struct CoBadgedCardFormDemo: View {
                 }
                 .transition(.slide)
             }
-            
+
             // Card form
             PrimerCheckout(
                 clientToken: clientToken,
                 settings: settings,
                 scope: { checkoutScope in
-                    if let cardFormScope = checkoutScope.cardForm {
-                        cardFormScope.screen = { scope in
-                            AnyView(
-                                VStack(spacing: 12) {
-                                    HStack {
-                                        scope.cardNumberInput?(PrimerModifier()
-                                            .fillMaxWidth()
-                                            .height(44)
-                                            .padding(.horizontal, 12)
-                                            .background(.white)
-                                            .cornerRadius(8)
-                                            .border(showNetworkSelection ? .blue : .gray.opacity(0.3), width: showNetworkSelection ? 2 : 1)
-                                        )
-                                        
-                                        if showNetworkSelection {
-                                            VStack {
-                                                Image(systemName: "creditcard")
-                                                    .foregroundColor(.blue)
-                                                Text(selectedNetwork.prefix(4))
-                                                    .font(.caption)
-                                                    .fontWeight(.medium)
-                                            }
-                                            .padding(.horizontal, 8)
+                    checkoutScope.setPaymentMethodScreen((any PrimerCardFormScope).self) { (scope: any PrimerCardFormScope) in
+                        AnyView(
+                            VStack(spacing: 12) {
+                                HStack {
+                                    scope.cardNumberInput?(PrimerModifier()
+                                        .fillMaxWidth()
+                                        .height(44)
+                                        .padding(.horizontal, 12)
+                                        .background(.white)
+                                        .cornerRadius(8)
+                                        .border(showNetworkSelection ? .blue : .gray.opacity(0.3), width: showNetworkSelection ? 2 : 1)
+                                    )
+
+                                    if showNetworkSelection {
+                                        VStack {
+                                            Image(systemName: "creditcard")
+                                                .foregroundColor(.blue)
+                                            Text(selectedNetwork.prefix(4))
+                                                .font(.caption)
+                                                .fontWeight(.medium)
                                         }
-                                    }
-                                    
-                                    HStack(spacing: 12) {
-                                        scope.expiryDateInput?(PrimerModifier()
-                                            .fillMaxWidth()
-                                            .height(44)
-                                            .padding(.horizontal, 12)
-                                            .background(.white)
-                                            .cornerRadius(8)
-                                            .border(.gray.opacity(0.3), width: 1)
-                                        )
-                                        
-                                        scope.cvvInput?(PrimerModifier()
-                                            .fillMaxWidth()
-                                            .height(44)
-                                            .padding(.horizontal, 12)
-                                            .background(.white)
-                                            .cornerRadius(8)
-                                            .border(.gray.opacity(0.3), width: 1)
-                                        )
+                                        .padding(.horizontal, 8)
                                     }
                                 }
-                            )
-                        }
+
+                                HStack(spacing: 12) {
+                                    scope.expiryDateInput?(PrimerModifier()
+                                        .fillMaxWidth()
+                                        .height(44)
+                                        .padding(.horizontal, 12)
+                                        .background(.white)
+                                        .cornerRadius(8)
+                                        .border(.gray.opacity(0.3), width: 1)
+                                    )
+
+                                    scope.cvvInput?(PrimerModifier()
+                                        .fillMaxWidth()
+                                        .height(44)
+                                        .padding(.horizontal, 12)
+                                        .background(.white)
+                                        .cornerRadius(8)
+                                        .border(.gray.opacity(0.3), width: 1)
+                                    )
+                                }
+                            }
+                        )
                     }
                 }
             )

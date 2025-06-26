@@ -373,7 +373,6 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
         // called from CardDetailsView when each field updates its validation state
     }
 
-
     // Network detection is now handled by HeadlessRepository and RawDataManager
     // Old detectAvailableNetworks and isCartesBancairesBIN methods removed
 
@@ -536,19 +535,19 @@ internal final class DefaultCardFormScope: PrimerCardFormScope, ObservableObject
         internalState.surchargeAmount = formattedSurcharge
         logger.info(message: "💰 [CardForm] Updated surcharge for \(network.displayName): \(formattedSurcharge)")
     }
-    
+
     // MARK: - Field-Level Validation State Communication
-    
+
     /// Updates the form validation state based on field-level validation results.
     /// This method replaces the duplicate validation logic with direct validation states from the UI components.
     public func updateValidationState(cardNumber: Bool, cvv: Bool, expiry: Bool, cardholderName: Bool) {
         logger.debug(message: "🔍 [CardForm] Field validation states - Card: \(cardNumber), CVV: \(cvv), Expiry: \(expiry), Cardholder: \(cardholderName)")
-        
+
         // Update the form validation state based on field-level validation
         internalState.isValid = cardNumber && cvv && expiry && cardholderName
-        
+
         logger.debug(message: "🔍 [CardForm] Form validation updated - Overall: \(internalState.isValid)")
-        
+
         // Clear any previous error when all fields are valid
         if internalState.isValid {
             internalState.error = nil

@@ -51,12 +51,30 @@ struct ValidationCardFormDemo: View {
                 clientToken: clientToken,
                 settings: settings,
                 scope: { checkoutScope in
-                    if let cardFormScope = checkoutScope.cardForm {
-                        cardFormScope.screen = { scope in
-                            AnyView(
-                                VStack(spacing: 12) {
+                    // Use new generic payment method screen API
+                    checkoutScope.setPaymentMethodScreen((any PrimerCardFormScope).self) { (scope: any PrimerCardFormScope) in
+                        AnyView(
+                            VStack(spacing: 12) {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    scope.cardNumberInput?(PrimerModifier()
+                                        .fillMaxWidth()
+                                        .height(44)
+                                        .padding(.horizontal, 12)
+                                        .background(.white)
+                                        .cornerRadius(8)
+                                        .border(showValidationErrors ? .red : .gray.opacity(0.3), width: showValidationErrors ? 2 : 1)
+                                    )
+                                    
+                                    if showValidationErrors && errorMessages.count > 0 {
+                                        Text(errorMessages[0])
+                                            .font(.caption)
+                                            .foregroundColor(.red)
+                                    }
+                                }
+                                
+                                HStack(spacing: 12) {
                                     VStack(alignment: .leading, spacing: 4) {
-                                        scope.cardNumberInput?(PrimerModifier()
+                                        scope.expiryDateInput?(PrimerModifier()
                                             .fillMaxWidth()
                                             .height(44)
                                             .padding(.horizontal, 12)
@@ -65,51 +83,32 @@ struct ValidationCardFormDemo: View {
                                             .border(showValidationErrors ? .red : .gray.opacity(0.3), width: showValidationErrors ? 2 : 1)
                                         )
                                         
-                                        if showValidationErrors && errorMessages.count > 0 {
-                                            Text(errorMessages[0])
+                                        if showValidationErrors && errorMessages.count > 1 {
+                                            Text(errorMessages[1])
                                                 .font(.caption)
                                                 .foregroundColor(.red)
                                         }
                                     }
                                     
-                                    HStack(spacing: 12) {
-                                        VStack(alignment: .leading, spacing: 4) {
-                                            scope.expiryDateInput?(PrimerModifier()
-                                                .fillMaxWidth()
-                                                .height(44)
-                                                .padding(.horizontal, 12)
-                                                .background(.white)
-                                                .cornerRadius(8)
-                                                .border(showValidationErrors ? .red : .gray.opacity(0.3), width: showValidationErrors ? 2 : 1)
-                                            )
-                                            
-                                            if showValidationErrors && errorMessages.count > 1 {
-                                                Text(errorMessages[1])
-                                                    .font(.caption)
-                                                    .foregroundColor(.red)
-                                            }
-                                        }
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        scope.cvvInput?(PrimerModifier()
+                                            .fillMaxWidth()
+                                            .height(44)
+                                            .padding(.horizontal, 12)
+                                            .background(.white)
+                                            .cornerRadius(8)
+                                            .border(showValidationErrors ? .red : .gray.opacity(0.3), width: showValidationErrors ? 2 : 1)
+                                        )
                                         
-                                        VStack(alignment: .leading, spacing: 4) {
-                                            scope.cvvInput?(PrimerModifier()
-                                                .fillMaxWidth()
-                                                .height(44)
-                                                .padding(.horizontal, 12)
-                                                .background(.white)
-                                                .cornerRadius(8)
-                                                .border(showValidationErrors ? .red : .gray.opacity(0.3), width: showValidationErrors ? 2 : 1)
-                                            )
-                                            
-                                            if showValidationErrors && errorMessages.count > 2 {
-                                                Text(errorMessages[2])
-                                                    .font(.caption)
-                                                    .foregroundColor(.red)
-                                            }
+                                        if showValidationErrors && errorMessages.count > 2 {
+                                            Text(errorMessages[2])
+                                                .font(.caption)
+                                                .foregroundColor(.red)
                                         }
                                     }
                                 }
-                            )
-                        }
+                            }
+                        )
                     }
                 }
             )

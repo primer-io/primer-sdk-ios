@@ -19,9 +19,8 @@ struct ExpandedCardFormDemo: View {
             clientToken: clientToken,
             settings: settings,
             scope: { checkoutScope in
-                if let cardFormScope = checkoutScope.cardForm {
-                    cardFormScope.screen = { scope in
-                        AnyView(
+                checkoutScope.setPaymentMethodScreen((any PrimerCardFormScope).self) { (scope: any PrimerCardFormScope) in
+                    AnyView(
                             VStack(spacing: 20) {
                                 // Card number with large input
                                 VStack(alignment: .leading, spacing: 8) {
@@ -91,10 +90,9 @@ struct ExpandedCardFormDemo: View {
                                         .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
                                     )
                                 }
-                            }
-                            .padding()
-                        )
-                    }
+                        }
+                        .padding()
+                    )
                 }
             }
         )

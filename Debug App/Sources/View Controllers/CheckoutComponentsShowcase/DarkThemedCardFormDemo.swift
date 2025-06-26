@@ -19,9 +19,8 @@ struct DarkThemedCardFormDemo: View {
             clientToken: clientToken,
             settings: settings,
             scope: { checkoutScope in
-                if let cardFormScope = checkoutScope.cardForm {
-                    cardFormScope.screen = { scope in
-                        AnyView(
+                checkoutScope.setPaymentMethodScreen((any PrimerCardFormScope).self) { (scope: any PrimerCardFormScope) in
+                    AnyView(
                             VStack(spacing: 16) {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text("Payment Information")
@@ -77,10 +76,9 @@ struct DarkThemedCardFormDemo: View {
                                     .foregroundColor(.white)
                                 )
                             }
-                            .padding()
-                            .background(Color.black)
-                        )
-                    }
+                        .padding()
+                        .background(Color.black)
+                    )
                 }
             }
         )

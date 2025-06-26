@@ -18,7 +18,7 @@ internal struct PaymentMethodConverter {
     static func convertToRoute(_ methodType: String) -> CheckoutRoute {
         switch methodType.lowercased() {
         case "payment_card", "card":
-            return .cardForm
+            return .paymentMethod("PAYMENT_CARD")
         case "apple_pay":
             return .paymentMethod("APPLE_PAY")
         case "paypal":
@@ -37,8 +37,6 @@ internal struct PaymentMethodConverter {
     /// - Returns: The payment method type string, or nil if not a payment method route
     static func convertFromRoute(_ route: CheckoutRoute) -> String? {
         switch route {
-        case .cardForm:
-            return "PAYMENT_CARD"
         case .paymentMethod(let type):
             return type
         default:
@@ -51,7 +49,7 @@ internal struct PaymentMethodConverter {
     /// - Returns: True if the route represents a payment method
     static func isPaymentMethodRoute(_ route: CheckoutRoute) -> Bool {
         switch route {
-        case .cardForm, .paymentMethod:
+        case .paymentMethod:
             return true
         default:
             return false
@@ -160,15 +158,8 @@ internal struct PaymentMethodConverter {
 
     /// Gets the expected next route after payment method selection
     /// - Parameter methodType: The selected payment method type string
-    /// - Returns: The appropriate next route in the flow
+    /// - Returns: The appropriate next route in the flow (now unified for all payment methods)
     static func nextRoute(after methodType: String) -> CheckoutRoute {
-        switch methodType.uppercased() {
-        case "PAYMENT_CARD":
-            return .cardForm
-        case "APPLE_PAY", "GOOGLE_PAY", "PAYPAL", "KLARNA":
-            return .loading // These will handle their own flows
-        default:
-            return .paymentMethod(methodType)
-        }
+        return .paymentMethod(methodType)
     }
 }

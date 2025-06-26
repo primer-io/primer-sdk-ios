@@ -19,25 +19,25 @@ struct GridCardFormDemo: View {
             clientToken: clientToken,
             settings: settings,
             scope: { checkoutScope in
-                if let cardFormScope = checkoutScope.cardForm {
-                    cardFormScope.screen = { scope in
-                        AnyView(
+                checkoutScope.setPaymentMethodScreen((any PrimerCardFormScope).self) { (scope: any PrimerCardFormScope) in
+                    AnyView(
                             LazyVGrid(columns: [
                                 GridItem(.flexible()),
                                 GridItem(.flexible())
                             ], spacing: 16) {
                                 // Card number spans full width
-                                HStack {
-                                    scope.cardNumberInput?(PrimerModifier()
-                                        .fillMaxWidth()
-                                        .height(48)
-                                        .padding(.horizontal, 12)
-                                        .background(.white)
-                                        .cornerRadius(10)
-                                        .border(.purple.opacity(0.3), width: 2)
-                                    )
-                                }
-                                .gridCellColumns(2)
+                                scope.cardNumberInput?(PrimerModifier()
+                                    .fillMaxWidth()
+                                    .height(48)
+                                    .padding(.horizontal, 12)
+                                    .background(.white)
+                                    .cornerRadius(10)
+                                    .border(.purple.opacity(0.3), width: 2)
+                                )
+                                
+                                // Empty cell to complete the row
+                                Color.clear
+                                    .frame(height: 0)
                                 
                                 // Expiry date
                                 scope.expiryDateInput?(PrimerModifier()
@@ -60,21 +60,21 @@ struct GridCardFormDemo: View {
                                 )
                                 
                                 // Cardholder name spans full width
-                                HStack {
-                                    scope.cardholderNameInput?(PrimerModifier()
-                                        .fillMaxWidth()
-                                        .height(48)
-                                        .padding(.horizontal, 12)
-                                        .background(.white)
-                                        .cornerRadius(10)
-                                        .border(.purple.opacity(0.3), width: 2)
-                                    )
-                                }
-                                .gridCellColumns(2)
-                            }
-                            .padding()
-                        )
-                    }
+                                scope.cardholderNameInput?(PrimerModifier()
+                                    .fillMaxWidth()
+                                    .height(48)
+                                    .padding(.horizontal, 12)
+                                    .background(.white)
+                                    .cornerRadius(10)
+                                    .border(.purple.opacity(0.3), width: 2)
+                                )
+                                
+                                // Empty cell to complete the row
+                                Color.clear
+                                    .frame(height: 0)
+                        }
+                        .padding()
+                    )
                 }
             }
         )

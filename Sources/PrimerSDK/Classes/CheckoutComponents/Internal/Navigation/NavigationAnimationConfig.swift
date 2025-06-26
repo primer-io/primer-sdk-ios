@@ -224,13 +224,13 @@ internal extension NavigationAnimationConfiguration {
             return true
         case (.loading, .paymentMethodSelection):
             return true
-        case (.paymentMethodSelection, .cardForm):
+        case (.paymentMethodSelection, .paymentMethod(_)):
             return true
-        case (.cardForm, .selectCountry):
+        case (.paymentMethod(_), .selectCountry):
             return true
-        case (.selectCountry, .cardForm):
+        case (.selectCountry, .paymentMethod(_)):
             return false
-        case (.cardForm, .paymentMethodSelection):
+        case (.paymentMethod(_), .paymentMethodSelection):
             return false
         case (.paymentMethodSelection, .loading):
             return false

@@ -39,31 +39,102 @@ public protocol PrimerCheckoutScope: AnyObject {
 
     // MARK: - Nested Scopes
 
-    /// Scope for card form interactions and customization.
-    var cardForm: PrimerCardFormScope { get }
-
     /// Scope for payment method selection screen.
     var paymentMethodSelection: PrimerPaymentMethodSelectionScope { get }
 
-    // MARK: - Future Payment Method Scopes
+    // MARK: - Dynamic Payment Method Scope Access
 
-    // The following payment method scopes are placeholders for future functionality.
-    // They are commented out to indicate planned support but are not yet implemented.
+    /// Gets a payment method scope using type-safe metatype (recommended approach).
+    /// This is the preferred method for static type-safe access to payment method scopes.
+    /// - Parameter scopeType: The scope type to create (e.g., PrimerCardFormScope.self)
+    /// - Returns: A configured scope instance for the payment method, or nil if not registered
+    ///
+    /// Example usage:
+    /// ```swift
+    /// let cardFormScope = checkoutScope.getPaymentMethodScope(PrimerCardFormScope.self)
+    /// ```
+    func getPaymentMethodScope<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> T?
 
-    /// Apple Pay scope (Future feature).
-    // var applePay: PrimerApplePayScope { get }
+    /// Gets a payment method scope using enum-based type specification.
+    /// This method provides discoverable access to payment method scopes via enum cases.
+    /// - Parameter methodType: The payment method type enum case
+    /// - Returns: A configured scope instance for the payment method, or nil if not registered
+    ///
+    /// Example usage:
+    /// ```swift
+    /// let cardFormScope: PrimerCardFormScope = checkoutScope.getPaymentMethodScope(for: .paymentCard)
+    /// ```
+    func getPaymentMethodScope<T: PrimerPaymentMethodScope>(for methodType: PrimerPaymentMethodType) -> T?
 
-    /// PayPal scope (Future feature).
-    // var payPal: PrimerPayPalScope { get }
+    /// Gets a payment method scope for the specified payment method string identifier.
+    /// This method provides dynamic access for runtime-determined payment methods.
+    /// - Parameter paymentMethodType: The payment method type identifier (e.g., "PAYMENT_CARD", "PAYPAL")
+    /// - Returns: A configured scope instance for the payment method, or nil if not registered
+    ///
+    /// Example usage:
+    /// ```swift
+    /// let cardFormScope: PrimerCardFormScope = checkoutScope.getPaymentMethodScope(for: "PAYMENT_CARD")
+    /// ```
+    func getPaymentMethodScope<T: PrimerPaymentMethodScope>(for paymentMethodType: String) -> T?
 
-    /// Google Pay scope (Future feature).
-    // var googlePay: PrimerGooglePayScope { get }
+    // MARK: - Generic Payment Method Screen Customization
 
-    /// Bank transfer scope (Future feature).
-    // var bankTransfer: PrimerBankTransferScope { get }
+    /// Sets a custom screen for a specific payment method scope type.
+    /// This allows type-safe customization of any payment method screen.
+    /// - Parameters:
+    ///   - scopeType: The scope type (e.g., PrimerCardFormScope.self)
+    ///   - screenBuilder: The custom screen builder closure
+    ///
+    /// Example usage:
+    /// ```swift
+    /// checkoutScope.setPaymentMethodScreen(PrimerCardFormScope.self) { scope in
+    ///     CustomCardFormView(scope: scope)
+    /// }
+    /// ```
+    func setPaymentMethodScreen<T: PrimerPaymentMethodScope>(
+        _ scopeType: T.Type,
+        screenBuilder: @escaping (T) -> AnyView
+    )
 
-    /// Klarna scope (Future feature).
-    // var klarna: PrimerKlarnaScope { get }
+    /// Non-generic overload for PrimerCardFormScope to avoid existential type issues
+    func setPaymentMethodScreen(
+        _ scopeType: (any PrimerCardFormScope).Type,
+        screenBuilder: @escaping (any PrimerCardFormScope) -> AnyView
+    )
+
+    /// Sets a custom screen for a specific payment method type with scope type specification.
+    /// This allows payment method specific customization while maintaining type safety.
+    /// - Parameters:
+    ///   - paymentMethodType: The payment method type string
+    ///   - scopeType: The scope type for type safety
+    ///   - screenBuilder: The custom screen builder closure
+    ///
+    /// Example usage:
+    /// ```swift
+    /// checkoutScope.setPaymentMethodScreen(for: "PAYMENT_CARD", scopeType: PrimerCardFormScope.self) { scope in
+    ///     CustomCardFormView(scope: scope)
+    /// }
+    /// ```
+    func setPaymentMethodScreen<T: PrimerPaymentMethodScope>(
+        for paymentMethodType: String,
+        scopeType: T.Type,
+        screenBuilder: @escaping (T) -> AnyView
+    )
+
+    /// Gets a custom screen for a specific payment method scope type.
+    /// - Parameter scopeType: The scope type to get the screen for
+    /// - Returns: The custom screen builder closure if set, nil otherwise
+    func getPaymentMethodScreen<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> ((T) -> AnyView)?
+
+    /// Gets a custom screen for a specific payment method type.
+    /// - Parameters:
+    ///   - paymentMethodType: The payment method type string
+    ///   - scopeType: The scope type for type safety
+    /// - Returns: The custom screen builder closure if set, nil otherwise
+    func getPaymentMethodScreen<T: PrimerPaymentMethodScope>(
+        for paymentMethodType: String,
+        scopeType: T.Type
+    ) -> ((T) -> AnyView)?
 
     // MARK: - Navigation
 

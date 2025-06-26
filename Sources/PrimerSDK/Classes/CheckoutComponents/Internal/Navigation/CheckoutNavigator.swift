@@ -66,11 +66,6 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
         coordinator.navigate(to: .paymentMethodSelection)
     }
 
-    /// Navigate to card form
-    func navigateToCardForm() {
-        coordinator.navigate(to: .cardForm)
-    }
-
     /// Navigate to Apple Pay flow
     func navigateToApplePay() {
         coordinator.navigate(to: .paymentMethod("APPLE_PAY"))
@@ -79,6 +74,11 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
     /// Navigate to PayPal flow
     func navigateToPayPal() {
         coordinator.navigate(to: .paymentMethod("PAYPAL"))
+    }
+
+    /// Navigate to a generic payment method flow
+    func navigateToPaymentMethod(_ paymentMethodType: String) {
+        coordinator.navigate(to: .paymentMethod(paymentMethodType))
     }
 
     /// Navigate to country selection

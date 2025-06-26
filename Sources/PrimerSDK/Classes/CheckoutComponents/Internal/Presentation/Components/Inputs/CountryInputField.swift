@@ -32,8 +32,8 @@ internal struct CountryInputField: View, LogReporter {
 
     /// External country name for reactive updates
     let selectedCountryName: String?
-    
-    /// External country code for reactive updates  
+
+    /// External country code for reactive updates
     let selectedCountryCode: String?
 
     // MARK: - Private Properties
@@ -115,7 +115,7 @@ internal struct CountryInputField: View, LogReporter {
             logger.error(message: "Failed to resolve ValidationService: \(error)")
         }
     }
-    
+
     /// Updates the field from external state changes
     private func updateFromExternalState() {
         if let selectedName = selectedCountryName, let selectedCode = selectedCountryCode {

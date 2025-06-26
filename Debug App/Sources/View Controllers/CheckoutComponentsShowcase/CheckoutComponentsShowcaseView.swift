@@ -4,7 +4,6 @@
 //
 //  Created by Claude on 26.6.25.
 //
-
 import SwiftUI
 import PrimerSDK
 
@@ -14,8 +13,8 @@ struct CheckoutComponentsShowcaseView: View {
     let clientToken: String
     let settings: PrimerSettings
     
-    @Environment(\.dismiss) private var dismiss
-    @State private var selectedSection: ShowcaseSection = .layouts
+    @SwiftUI.Environment(\.dismiss) private var dismiss
+    @State private var selectedSection: ShowcaseCategory = .layouts
     
     var body: some View {
         NavigationView {
@@ -36,7 +35,7 @@ struct CheckoutComponentsShowcaseView: View {
                 
                 // Section Picker
                 Picker("Section", selection: $selectedSection) {
-                    ForEach(ShowcaseSection.allCases, id: \.self) { section in
+                    ForEach(ShowcaseCategory.allCases, id: \.self) { section in
                         Text(section.rawValue).tag(section)
                     }
                 }

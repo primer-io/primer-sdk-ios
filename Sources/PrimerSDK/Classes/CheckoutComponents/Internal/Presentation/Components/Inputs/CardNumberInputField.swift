@@ -563,7 +563,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 logger.debug(message: "🔍 [CardNumber] Running validation for complete known network card (expected lengths: \(validation.lengths))")
                 let validationResult = validationService.validateCardNumber(number)
                 logger.debug(message: "🔍 [CardNumber] Validation result: valid=\(validationResult.isValid), error='\(validationResult.errorMessage ?? "none")'")
-                
+
                 // Only show positive validation during typing, defer errors to focus loss
                 if validationResult.isValid {
                     isValid = true
@@ -580,7 +580,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
                 logger.debug(message: "🔍 [CardNumber] Running validation for unknown network with sufficient length (length: \(number.count))")
                 let validationResult = validationService.validateCardNumber(number)
                 logger.debug(message: "🔍 [CardNumber] Validation result: valid=\(validationResult.isValid), error='\(validationResult.errorMessage ?? "none")'")
-                
+
                 // Only show positive validation during typing, defer errors to focus loss
                 if validationResult.isValid {
                     isValid = true
@@ -604,10 +604,10 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
         // Full validation when field loses focus - shows all errors
         private func validateCardNumberFully(_ number: String) {
             logger.debug(message: "🔍 [CardNumber] Full validation for: '\(number)' (length: \(number.count))")
-            
+
             // Clear any pending validation timer to avoid conflicts
             validationTimer?.invalidate()
-            
+
             // Always run full validation on focus loss, regardless of length or network
             let validationResult = validationService.validateCardNumber(number)
             logger.debug(message: "🔍 [CardNumber] Full validation result: valid=\(validationResult.isValid), error='\(validationResult.errorMessage ?? "none")'")
