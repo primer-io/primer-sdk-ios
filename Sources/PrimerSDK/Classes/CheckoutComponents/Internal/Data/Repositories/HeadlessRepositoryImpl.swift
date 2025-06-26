@@ -352,10 +352,24 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
 
                                 // Verify data is valid before submitting
                                 if rawDataManager.isDataValid {
-                                    self.logger.debug(message: "Raw data is valid, submitting payment...")
-                                    // This will trigger async payment processing and delegate callbacks
-                                    rawDataManager.submit()
-                                    self.logger.info(message: "Card payment submitted - waiting for completion via delegate...")
+                                    self.logger.debug(message: "Raw data is valid, updating client session before payment submission...")
+                                    
+                                    // CRITICAL: Update client session with payment method selection BEFORE submitting payment
+                                    // This ensures backend has correct surcharge context (matches Drop-in flow)
+                                    self.updateClientSessionBeforePayment(selectedNetwork: selectedNetwork) { [weak self] error in
+                                        guard let self = self else { return }
+                                        
+                                        if let error = error {
+                                            self.logger.error(message: "Client session update failed: \(error)")
+                                            continuation.resume(throwing: error)
+                                            return
+                                        }
+                                        
+                                        self.logger.debug(message: "Client session updated successfully, now submitting payment...")
+                                        // This will trigger async payment processing and delegate callbacks
+                                        rawDataManager.submit()
+                                        self.logger.info(message: "Card payment submitted - waiting for completion via delegate...")
+                                    }
                                 } else {
                                     self.logger.error(message: "Raw data validation failed")
 
@@ -482,6 +496,46 @@ internal final class HeadlessRepositoryImpl: HeadlessRepository, LogReporter {
         clientSessionActionsModule
             .selectPaymentMethodIfNeeded("PAYMENT_CARD", cardNetwork: cardNetwork.rawValue)
             .cauterize()
+    }
+
+    /// Update client session with payment method selection (matches Drop-in's dispatchActions)
+    /// This is CRITICAL for surcharge functionality - backend needs network context for correct calculation
+    private func updateClientSessionBeforePayment(selectedNetwork: CardNetwork?, completion: @escaping (Error?) -> Void) {
+        logger.debug(message: "💰🪲 [HeadlessRepository] Updating client session before payment submission...")
+        
+        // Determine card network (following Drop-in logic exactly)
+        var network = selectedNetwork?.rawValue.uppercased()
+        if network == nil || network == "UNKNOWN" {
+            network = "OTHER"
+        }
+        
+        logger.debug(message: "💰🪲 [HeadlessRepository] Using card network for surcharge: \(network ?? "nil")")
+        
+        // Create parameters matching Drop-in's dispatchActions format
+        let params: [String: Any] = [
+            "paymentMethodType": "PAYMENT_CARD",
+            "binData": [
+                "network": network ?? "OTHER"
+            ]
+        ]
+        
+        logger.debug(message: "💰🪲 [HeadlessRepository] Client session action parameters: \(params)")
+        
+        // Create action (single action for now - billing address would be added here if needed)
+        let actions = [ClientSession.Action.selectPaymentMethodActionWithParameters(params)]
+        
+        // Use ClientSessionActionsModule to dispatch actions (same as Drop-in)
+        let clientSessionActionsModule: ClientSessionActionsProtocol = ClientSessionActionsModule()
+        
+        clientSessionActionsModule.dispatch(actions: actions)
+            .done { [weak self] in
+                self?.logger.debug(message: "💰🪲 [HeadlessRepository] Client session updated successfully - surcharge context set")
+                completion(nil)
+            }
+            .catch { [weak self] error in
+                self?.logger.error(message: "💰🪲 [HeadlessRepository] Client session update failed: \(error)")
+                completion(error)
+            }
     }
 
     /// Helper function for timeout on async operations
