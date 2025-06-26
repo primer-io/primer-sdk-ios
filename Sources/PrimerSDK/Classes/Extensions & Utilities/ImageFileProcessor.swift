@@ -133,93 +133,12 @@ final class ImageFileProcessor {
         var imageFiles: [ImageFile] = []
 
         for paymentMethod in apiConfiguration.paymentMethods ?? [] {
-            var coloredImageFile: ImageFile
-            if let coloredVal = paymentMethod.displayMetadata?.button.iconUrl?.coloredUrlStr {
-                var remoteUrl: URL?
-                var base64Data: Data?
-
-                if let data = Data(base64Encoded: coloredVal) {
-                    base64Data = data
-                } else if let url = URL(string: coloredVal) {
-                    remoteUrl = url
-                }
-
-                coloredImageFile = ImageFile(
-                    fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-colored",
-                    fileExtension: "png",
-                    remoteUrl: remoteUrl,
-                    base64Data: base64Data
-                )
-
-            } else {
-                coloredImageFile = ImageFile(
-                    fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-colored",
-                    fileExtension: "png",
-                    remoteUrl: nil,
-                    base64Data: nil
-                )
-            }
-            imageFiles.append(coloredImageFile)
-
-            var lightImageFile: ImageFile
-            if let lightVal = paymentMethod.displayMetadata?.button.iconUrl?.lightUrlStr {
-                var remoteUrl: URL?
-                var base64Data: Data?
-
-                if let data = Data(base64Encoded: lightVal) {
-                    base64Data = data
-                } else if let url = URL(string: lightVal) {
-                    remoteUrl = url
-                }
-
-                lightImageFile = ImageFile(
-                    fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-light",
-                    fileExtension: "png",
-                    remoteUrl: remoteUrl,
-                    base64Data: base64Data
-                )
-
-            } else {
-                lightImageFile = ImageFile(
-                    fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-light",
-                    fileExtension: "png",
-                    remoteUrl: nil,
-                    base64Data: nil
-                )
-            }
-            imageFiles.append(lightImageFile)
-
-            var darkImageFile: ImageFile
-            if let darkVal = paymentMethod.displayMetadata?.button.iconUrl?.darkUrlStr {
-                var remoteUrl: URL?
-                var base64Data: Data?
-
-                if let data = Data(base64Encoded: darkVal) {
-                    base64Data = data
-                } else if let url = URL(string: darkVal) {
-                    remoteUrl = url
-                }
-
-                darkImageFile = ImageFile(
-                    fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-dark",
-                    fileExtension: "png",
-                    remoteUrl: remoteUrl,
-                    base64Data: base64Data
-                )
-
-            } else {
-                darkImageFile = ImageFile(
-                    fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-dark",
-                    fileExtension: "png",
-                    remoteUrl: nil,
-                    base64Data: nil
-                )
-            }
-            imageFiles.append(darkImageFile)
+            imageFiles.append(makeImageFile(for: paymentMethod, variant: "colored", value: paymentMethod.displayMetadata?.button.iconUrl?.coloredUrlStr))
+            imageFiles.append(makeImageFile(for: paymentMethod, variant: "light", value: paymentMethod.displayMetadata?.button.iconUrl?.lightUrlStr))
+            imageFiles.append(makeImageFile(for: paymentMethod, variant: "dark", value: paymentMethod.displayMetadata?.button.iconUrl?.darkUrlStr))
         }
 
         let imageManager = ImageManager()
-
         let images = try await imageManager.getImages(for: imageFiles)
 
         for (index, paymentMethod) in (apiConfiguration.paymentMethods ?? []).enumerated() {
@@ -245,6 +164,19 @@ final class ImageFileProcessor {
             )
             apiConfiguration.paymentMethods?[index].baseLogoImage = baseImage
         }
+    }
+    
+    private func makeImageFile(
+        for paymentMethod: PrimerPaymentMethod,
+        variant: String,
+        value: String?
+    ) -> ImageFile {
+        ImageFile(
+            fileName: "\(paymentMethod.type.lowercased().replacingOccurrences(of: "_", with: "-"))-logo-\(variant)",
+            fileExtension: "png",
+            remoteUrl: value.flatMap { URL(string: $0) },
+            base64Data: value.flatMap { Data(base64Encoded: $0) }
+        )
     }
 }
 // swiftlint:enable cyclomatic_complexity

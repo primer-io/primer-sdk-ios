@@ -165,9 +165,7 @@ final class ImageManager: LogReporter {
     }
 
     func getImages(for imageFiles: [ImageFile]) async throws -> [ImageFile] {
-        guard !imageFiles.isEmpty else {
-            return []
-        }
+        guard !imageFiles.isEmpty else { return [] }
 
         let timingEventId = UUID().uuidString
         let timingEventStart = Analytics.Event.allImagesLoading(

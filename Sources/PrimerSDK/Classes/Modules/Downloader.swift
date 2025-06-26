@@ -214,15 +214,10 @@ final class Downloader: NSObject, DownloaderModule {
             try await downloadData(from: fileRemoteUrl, to: fileLocalUrl)
             return file
         } catch {
-            if let primerErr = error as? PrimerError {
-                switch primerErr {
-                case .underlyingErrors(let errors, _, _):
-                    if errors.filter({ ($0 as NSError).code == 516 }).first != nil {
-                        return file
-                    }
-                default:
-                    break
-                }
+            if let primerErr = error as? PrimerError,
+               case .underlyingErrors(let errors, _, _) = primerErr,
+               errors.contains(where: { ($0 as NSError).code == 516 }) {
+                return file
             }
 
             throw error
@@ -337,15 +332,7 @@ final class Downloader: NSObject, DownloaderModule {
         let cache = session.configuration.urlCache
 
         if let cachedResponse = cache?.cachedResponse(for: request) {
-            if #available(iOS 16.0, *) {
-                if FileManager.default.fileExists(atPath: localUrl.path()) {
-                    return
-                }
-            } else {
-                if FileManager.default.fileExists(atPath: localUrl.path) {
-                    return
-                }
-            }
+            if fileExists(at: localUrl) { return }
 
             let validStatusCodesRange = 200 ..< 300
 
@@ -413,14 +400,13 @@ final class Downloader: NSObject, DownloaderModule {
 
     private func executeDownloadTask(for request: URLRequest, on session: URLSession) async throws -> (URL, URLResponse) {
         if #available(iOS 15.0, *) {
-            let (tempLocalUrl, response) = try await session.download(for: request)
-            return (tempLocalUrl, response)
+            return try await session.download(for: request)
         } else {
             return try await withCheckedThrowingContinuation { continuation in
                 let task = session.downloadTask(with: request) { tempLocalUrl, response, error in
-                    if let error = error {
+                    if let error {
                         continuation.resume(throwing: error)
-                    } else if let tempLocalUrl = tempLocalUrl, let response = response {
+                    } else if let tempLocalUrl, let response {
                         continuation.resume(returning: (tempLocalUrl, response))
                     } else {
                         let err = InternalError.invalidValue(
@@ -435,6 +421,17 @@ final class Downloader: NSObject, DownloaderModule {
                 }
                 task.resume()
             }
+        }
+    }
+
+        
+    // MARK: - Helper Methods
+    
+    private func fileExists(at url: URL) -> Bool {
+        if #available(iOS 16.0, *) {
+            return FileManager.default.fileExists(atPath: url.path())
+        } else {
+            return FileManager.default.fileExists(atPath: url.path)
         }
     }
 }
