@@ -93,7 +93,7 @@ final class CheckoutWithVaultedPaymentMethodViewModelTests: XCTestCase {
         tokenizationService.onExchangePaymentMethodToken = { tokenId, _ in
             XCTAssertEqual(tokenId, "mock_payment_method_token_data_id")
             expectDidExchangeToken.fulfill()
-            return Promise.fulfilled(self.tokenizationResponseBody)
+            return self.tokenizationResponseBody
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
