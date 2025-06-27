@@ -204,7 +204,8 @@ extension PrimerSwiftUIBridgeViewController {
         settings: PrimerSettings,
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
-        customContent: ((PrimerCheckoutScope) -> AnyView)? = nil
+        customContent: ((PrimerCheckoutScope) -> AnyView)? = nil,
+        onCompletion: (() -> Void)? = nil
     ) -> PrimerSwiftUIBridgeViewController {
 
         let logger = PrimerLogging.shared.logger
@@ -219,14 +220,16 @@ extension PrimerSwiftUIBridgeViewController {
                 settings: settings,
                 diContainer: diContainer,
                 navigator: navigator,
-                customContent: customContent
+                customContent: customContent,
+                onCompletion: onCompletion
             )
         } else {
             checkoutView = PrimerCheckout(
                 clientToken: clientToken,
                 settings: settings,
                 diContainer: diContainer,
-                navigator: navigator
+                navigator: navigator,
+                onCompletion: onCompletion
             )
         }
 

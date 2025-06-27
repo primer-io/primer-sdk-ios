@@ -242,6 +242,12 @@ public extension CheckoutComponentsDelegate {
         delegate?.checkoutComponentsDidDismiss()
     }
 
+    /// Internal method for storing payment result (called by DefaultCheckoutScope)
+    internal func storePaymentResult(_ result: PaymentResult) {
+        logger.info(message: "💾 [CheckoutComponentsPrimer] Storing payment result: \(result.paymentId)")
+        lastPaymentResult = result
+    }
+
     private func presentCheckout(
         with clientToken: String,
         from viewController: UIViewController,
@@ -331,7 +337,22 @@ public extension CheckoutComponentsDelegate {
                     clientToken: clientToken,
                     settings: finalSettings,
                     diContainer: container,
-                    navigator: nav
+                    navigator: nav,
+                    onCompletion: { [weak self] in
+                        // Handle checkout completion (success or dismissal)
+                        self?.logger.info(message: "🏁 [CheckoutComponentsPrimer] Checkout completion callback triggered")
+                        
+                        // Check if we have a payment result from the success flow
+                        if let paymentResult = self?.lastPaymentResult {
+                            self?.logger.info(message: "✅ [CheckoutComponentsPrimer] Payment completed with result: \(paymentResult.paymentId)")
+                            self?.handlePaymentSuccess(paymentResult)
+                        } else {
+                            // No payment result means user dismissed or cancelled
+                            self?.logger.info(message: "🚪 [CheckoutComponentsPrimer] Checkout dismissed without payment")
+                            self?.dismissDirectly()
+                            self?.handleCheckoutDismiss()
+                        }
+                    }
                 )
 
                 // Store reference to bridge controller
@@ -477,7 +498,22 @@ public extension CheckoutComponentsDelegate {
                     settings: finalSettings,
                     diContainer: container,
                     navigator: nav,
-                    customContent: customContentWrapper
+                    customContent: customContentWrapper,
+                    onCompletion: { [weak self] in
+                        // Handle checkout completion (success or dismissal)
+                        self?.logger.info(message: "🏁 [CheckoutComponentsPrimer] Custom content completion callback triggered")
+                        
+                        // Check if we have a payment result from the success flow
+                        if let paymentResult = self?.lastPaymentResult {
+                            self?.logger.info(message: "✅ [CheckoutComponentsPrimer] Payment completed with result: \(paymentResult.paymentId)")
+                            self?.handlePaymentSuccess(paymentResult)
+                        } else {
+                            // No payment result means user dismissed or cancelled
+                            self?.logger.info(message: "🚪 [CheckoutComponentsPrimer] Checkout dismissed without payment")
+                            self?.dismissDirectly()
+                            self?.handleCheckoutDismiss()
+                        }
+                    }
                 )
 
                 // Store reference

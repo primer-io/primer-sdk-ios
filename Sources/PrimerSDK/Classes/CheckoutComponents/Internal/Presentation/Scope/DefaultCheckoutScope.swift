@@ -493,6 +493,9 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     internal func handlePaymentSuccess(_ result: PaymentResult) {
         logger.info(message: "Payment successful: \(result.paymentId)")
 
+        // Store the payment result in CheckoutComponentsPrimer for later retrieval in completion callback
+        CheckoutComponentsPrimer.shared.storePaymentResult(result)
+
         // Update state to success for any listeners
         updateState(.success(result))
 
