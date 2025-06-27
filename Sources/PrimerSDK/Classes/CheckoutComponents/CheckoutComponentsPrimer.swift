@@ -248,6 +248,7 @@ public extension CheckoutComponentsDelegate {
         lastPaymentResult = result
     }
 
+    // swiftlint:disable:next function_body_length
     private func presentCheckout(
         with clientToken: String,
         from viewController: UIViewController,
