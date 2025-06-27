@@ -16,8 +16,8 @@ final class MockTokenizationService: TokenizationServiceProtocol {
             return Promise.rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
         }
         switch onTokenize(requestBody) {
-        case .success(let result): return Promise.fulfilled(result)
-        case .failure(let error): return Promise.rejected(error)
+        case .success(let result): return .fulfilled(result)
+        case .failure(let error): return .rejected(error)
         }
     }
 
