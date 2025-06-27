@@ -13,15 +13,21 @@ import PrimerSDK
 struct CheckoutComponentsExamplesView: View {
     let settings: PrimerSettings
     let apiVersion: PrimerApiVersion
+    let clientSession: ClientSessionRequestBody?
     
     @SwiftUI.Environment(\.dismiss) private var dismiss
     
-    init(settings: PrimerSettings, apiVersion: PrimerApiVersion) {
+    init(settings: PrimerSettings, apiVersion: PrimerApiVersion, clientSession: ClientSessionRequestBody? = nil) {
         self.settings = settings
         self.apiVersion = apiVersion
+        self.clientSession = clientSession
         print("🔍 [CheckoutComponentsExamplesView] Init called")
         print("🔍 [CheckoutComponentsExamplesView] Settings: \(settings)")
         print("🔍 [CheckoutComponentsExamplesView] API Version: \(apiVersion)")
+        print("🔍 [CheckoutComponentsExamplesView] ClientSession: \(clientSession != nil ? "provided" : "nil")")
+        if let session = clientSession {
+            print("🔍 [CheckoutComponentsExamplesView] Surcharge settings passed through: \(session.paymentMethod?.options?.PAYMENT_CARD?.networks != nil)")
+        }
     }
     
     var body: some View {
@@ -35,7 +41,8 @@ struct CheckoutComponentsExamplesView: View {
                         destination: CategoryExamplesView(
                             category: category,
                             settings: settings,
-                            apiVersion: apiVersion
+                            apiVersion: apiVersion,
+                            clientSession: clientSession
                         )
                     ) {
                         CategoryRow(category: category)
@@ -85,6 +92,7 @@ struct CategoryExamplesView: View {
     let category: ExampleCategory
     let settings: PrimerSettings
     let apiVersion: PrimerApiVersion
+    let clientSession: ClientSessionRequestBody?
     
     @State private var presentedExample: ExampleConfig?
     
@@ -107,7 +115,8 @@ struct CategoryExamplesView: View {
             CheckoutExampleView(
                 example: example, 
                 settings: settings,
-                apiVersion: apiVersion
+                apiVersion: apiVersion,
+                clientSession: clientSession
             )
             .onAppear {
                 print("🔍 [CategoryExamplesView] Sheet presenting for: \(example.name)")

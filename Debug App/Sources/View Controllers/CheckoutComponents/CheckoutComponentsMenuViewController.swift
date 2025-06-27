@@ -177,9 +177,24 @@ class CheckoutComponentsMenuViewController: UIViewController {
             print("🔍 [MenuViewController] iOS 15+ available, creating examples view...")
             print("🔍 [MenuViewController] Settings: \(settings)")
             print("🔍 [MenuViewController] API Version: \(apiVersion)")
+            print("🔍 [MenuViewController] ClientSession: \(clientSession != nil ? "provided" : "nil")")
+            if let session = clientSession {
+                print("🔍 [MenuViewController] Surcharge networks configured: \(session.paymentMethod?.options?.PAYMENT_CARD?.networks != nil)")
+                if let networks = session.paymentMethod?.options?.PAYMENT_CARD?.networks {
+                    if let visaSurcharge = networks.VISA?.surcharge.amount {
+                        print("🔍 [MenuViewController] VISA surcharge: \(visaSurcharge)")
+                    }
+                    if let mastercardSurcharge = networks.MASTERCARD?.surcharge.amount {
+                        print("🔍 [MenuViewController] MASTERCARD surcharge: \(mastercardSurcharge)")
+                    }
+                    if let jcbSurcharge = networks.JCB?.surcharge.amount {
+                        print("🔍 [MenuViewController] JCB surcharge: \(jcbSurcharge)")
+                    }
+                }
+            }
             
-            let examplesView = CheckoutComponentsExamplesView(settings: settings, apiVersion: apiVersion)
-            print("🔍 [MenuViewController] CheckoutComponentsExamplesView created")
+            let examplesView = CheckoutComponentsExamplesView(settings: settings, apiVersion: apiVersion, clientSession: clientSession)
+            print("🔍 [MenuViewController] CheckoutComponentsExamplesView created with clientSession")
             
             let hostingController = UIHostingController(rootView: examplesView)
             hostingController.title = "CheckoutComponents Examples"

@@ -14,6 +14,7 @@ struct CheckoutExampleView: View {
     let example: ExampleConfig
     let settings: PrimerSettings
     let apiVersion: PrimerApiVersion
+    let configuredClientSession: ClientSessionRequestBody?
     
     @SwiftUI.Environment(\.dismiss) private var dismiss
     @State private var clientToken: String?
@@ -21,11 +22,16 @@ struct CheckoutExampleView: View {
     @State private var error: String?
     @State private var checkoutCompleted = false
     
-    init(example: ExampleConfig, settings: PrimerSettings, apiVersion: PrimerApiVersion) {
+    init(example: ExampleConfig, settings: PrimerSettings, apiVersion: PrimerApiVersion, clientSession: ClientSessionRequestBody? = nil) {
         self.example = example
         self.settings = settings
         self.apiVersion = apiVersion
+        self.configuredClientSession = clientSession
         print("🔍 [CheckoutExampleView] Init called for example: \(example.name)")
+        print("🔍 [CheckoutExampleView] Configured client session: \(clientSession != nil ? "provided" : "nil")")
+        if let session = clientSession {
+            print("🔍 [CheckoutExampleView] Surcharge configured: \(session.paymentMethod?.options?.PAYMENT_CARD?.networks != nil)")
+        }
     }
     
     var body: some View {
@@ -100,8 +106,36 @@ struct CheckoutExampleView: View {
         error = nil
         
         do {
-            let session = example.createSession()
-            print("🔍 [CheckoutExampleView] Session created, requesting client token...")
+            // For default examples, use the configured client session directly if available
+            // This preserves the exact surcharge configuration from the UI
+            let session: ClientSessionRequestBody
+            
+            if example.customization == nil && configuredClientSession != nil {
+                print("🔍 [CheckoutExampleView] Using configured client session directly for default example")
+                session = configuredClientSession!
+                
+                // Debug the configured session surcharge
+                if let configuredSurcharge = session.paymentMethod?.options?.PAYMENT_CARD?.networks?.VISA?.surcharge.amount {
+                    print("🔍 [CheckoutExampleView] ✅ Configured session VISA surcharge: \(configuredSurcharge)")
+                } else {
+                    print("🔍 [CheckoutExampleView] ❌ Configured session has NO VISA surcharge")
+                }
+            } else {
+                // For customized examples, create a new session with extracted surcharge amount
+                let surchargeAmount = extractSurchargeAmount(from: configuredClientSession)
+                print("🔍 [CheckoutExampleView] Creating new session with extracted surcharge amount: \(surchargeAmount)")
+                
+                session = example.createSession(surchargeAmount: surchargeAmount)
+                
+                // Debug: Verify the created session actually has the surcharge amount
+                if let createdSurcharge = session.paymentMethod?.options?.PAYMENT_CARD?.networks?.VISA?.surcharge.amount {
+                    print("🔍 [CheckoutExampleView] ✅ Created session VISA surcharge: \(createdSurcharge)")
+                } else {
+                    print("🔍 [CheckoutExampleView] ❌ Created session has NO VISA surcharge")
+                }
+            }
+            
+            print("🔍 [CheckoutExampleView] Requesting client token with session...")
             
             // Request client token using the session configuration
             let result: AsyncResult<String, Error> = await withCheckedContinuation { continuation in
@@ -118,21 +152,50 @@ struct CheckoutExampleView: View {
             
             switch result {
             case .success(let token):
-                print("🔍 [CheckoutExampleView] Client token received: \(token.prefix(20))...")
+                print("🔍 [CheckoutExampleView] ✅ Client token received: \(token.prefix(20))...")
                 await MainActor.run {
                     self.clientToken = token
                     self.isLoading = false
-                    print("🔍 [CheckoutExampleView] Updated UI - isLoading: false, clientToken set")
+                    print("🔍 [CheckoutExampleView] ✅ UI updated - ready to show checkout")
                 }
             case .failure(let error):
-                print("🔍 [CheckoutExampleView] Client token failed: \(error)")
+                print("🔍 [CheckoutExampleView] ❌ Client token failed: \(error)")
                 await MainActor.run {
                     self.error = error.localizedDescription
                     self.isLoading = false
-                    print("🔍 [CheckoutExampleView] Updated UI - isLoading: false, error: \(error.localizedDescription)")
+                    print("🔍 [CheckoutExampleView] ❌ UI updated with error: \(error.localizedDescription)")
                 }
             }
         }
+    }
+    
+    /// Extracts surcharge amount from the configured client session
+    private func extractSurchargeAmount(from clientSession: ClientSessionRequestBody?) -> Int {
+        guard let session = clientSession,
+              let paymentCardOptions = session.paymentMethod?.options?.PAYMENT_CARD,
+              let networks = paymentCardOptions.networks else {
+            print("🔍 [CheckoutExampleView] No surcharge configuration found, using default: 50")
+            return 50 // Default fallback
+        }
+        
+        // Try to get surcharge amount from any of the configured networks
+        if let visaSurcharge = networks.VISA?.surcharge.amount {
+            print("🔍 [CheckoutExampleView] Found surcharge from VISA network: \(visaSurcharge)")
+            return visaSurcharge
+        }
+
+        if let mastercardSurcharge = networks.MASTERCARD?.surcharge.amount {
+            print("🔍 [CheckoutExampleView] Found surcharge from MASTERCARD network: \(mastercardSurcharge)")
+            return mastercardSurcharge
+        }
+        
+        if let jcbSurcharge = networks.JCB?.surcharge.amount {
+            print("🔍 [CheckoutExampleView] Found surcharge from JCB network: \(jcbSurcharge)")
+            return jcbSurcharge
+        }
+        
+        print("🔍 [CheckoutExampleView] Networks configured but no surcharge found, using default: 50")
+        return 50 // Default fallback
     }
 }
 
@@ -321,6 +384,10 @@ struct ExampleInfoHeader: View {
             return "Card Only"
         case .cardAndApplePay:
             return "Card + Apple Pay"
+        case .cardOnlyWithSurcharge:
+            return "Card Only + Surcharge"
+        case .cardAndApplePayWithSurcharge:
+            return "Card + Apple Pay + Surcharge"
         case .fullMethods:
             return "All Payment Methods"
         case .custom:

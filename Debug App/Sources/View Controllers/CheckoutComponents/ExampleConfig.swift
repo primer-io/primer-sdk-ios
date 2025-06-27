@@ -22,6 +22,8 @@ struct ExampleConfig: Identifiable {
     enum SessionType {
         case cardOnly
         case cardAndApplePay
+        case cardOnlyWithSurcharge
+        case cardAndApplePayWithSurcharge
         case fullMethods
         case custom(ClientSessionRequestBody.PaymentMethod)
     }
@@ -47,16 +49,20 @@ struct ExampleConfig: Identifiable {
 // MARK: - Session Creation Extension
 
 extension ExampleConfig {
-    func createSession() -> ClientSessionRequestBody {
+    func createSession(surchargeAmount: Int = 50) -> ClientSessionRequestBody {
         switch sessionType {
         case .cardOnly:
-            return MerchantMockDataManager.getClientSession(sessionType: .cardOnly)
+            return MerchantMockDataManager.getClientSession(sessionType: .cardOnly, surchargeAmount: surchargeAmount)
         case .cardAndApplePay:
-            return MerchantMockDataManager.getClientSession(sessionType: .cardAndApplePay)
+            return MerchantMockDataManager.getClientSession(sessionType: .cardAndApplePay, surchargeAmount: surchargeAmount)
+        case .cardOnlyWithSurcharge:
+            return MerchantMockDataManager.getClientSession(sessionType: .cardOnlyWithSurcharge, surchargeAmount: surchargeAmount)
+        case .cardAndApplePayWithSurcharge:
+            return MerchantMockDataManager.getClientSession(sessionType: .cardAndApplePayWithSurcharge, surchargeAmount: surchargeAmount)
         case .fullMethods:
-            return MerchantMockDataManager.getClientSession(sessionType: .generic)
+            return MerchantMockDataManager.getClientSession(sessionType: .generic, surchargeAmount: surchargeAmount)
         case .custom(let paymentMethod):
-            return MerchantMockDataManager.getClientSession(sessionType: .custom(paymentMethod))
+            return MerchantMockDataManager.getClientSession(sessionType: .custom(paymentMethod), surchargeAmount: surchargeAmount)
         }
     }
 }
@@ -86,9 +92,9 @@ let layoutExamples: [ExampleConfig] = [
         customization: .inline
     ),
     ExampleConfig(
-        name: "Grid Layout",
-        description: "Card details in organized grid",
-        sessionType: .cardOnly,
+        name: "Grid Layout with Surcharge",
+        description: "Card details in organized grid with surcharge display",
+        sessionType: .cardOnlyWithSurcharge,
         paymentMethods: ["PAYMENT_CARD"],
         customization: .grid
     )
@@ -150,6 +156,13 @@ let interactiveExamples: [ExampleConfig] = [
         sessionType: .cardOnly,
         paymentMethods: ["PAYMENT_CARD"],
         customization: .coBadged
+    ),
+    ExampleConfig(
+        name: "Surcharge Demo",
+        description: "Network-based surcharge display",
+        sessionType: .cardOnlyWithSurcharge,
+        paymentMethods: ["PAYMENT_CARD"],
+        customization: .validation
     )
 ]
 
@@ -184,9 +197,9 @@ let advancedExamples: [ExampleConfig] = [
 let defaultExamples: [ExampleConfig] = [
     ExampleConfig(
         name: "Default CheckoutComponents",
-        description: "Basic CheckoutComponents without customization - shows all payment methods",
-        sessionType: .fullMethods,
-        paymentMethods: ["PAYMENT_CARD", "APPLE_PAY", "PAYPAL", "GOOGLE_PAY"],
+        description: "Basic CheckoutComponents with surcharge display - shows all features",
+        sessionType: .cardAndApplePayWithSurcharge,
+        paymentMethods: ["PAYMENT_CARD", "APPLE_PAY"],
         customization: nil
     )
 ]

@@ -17,6 +17,8 @@ struct MerchantMockDataManager {
         case cardOnly
         case cardAndApplePay
         case applePay
+        case cardOnlyWithSurcharge
+        case cardAndApplePayWithSurcharge
         case custom(ClientSessionRequestBody.PaymentMethod)
         
         static func == (lhs: SessionType, rhs: SessionType) -> Bool {
@@ -25,7 +27,9 @@ struct MerchantMockDataManager {
                  (.klarnaWithEMD, .klarnaWithEMD),
                  (.cardOnly, .cardOnly),
                  (.cardAndApplePay, .cardAndApplePay),
-                 (.applePay, .applePay):
+                 (.applePay, .applePay),
+                 (.cardOnlyWithSurcharge, .cardOnlyWithSurcharge),
+                 (.cardAndApplePayWithSurcharge, .cardAndApplePayWithSurcharge):
                 return true
             case (.custom(let lhsPaymentMethod), .custom(let rhsPaymentMethod)):
                 // For custom cases, we'll compare by descriptor for simplicity
@@ -48,7 +52,7 @@ struct MerchantMockDataManager {
         return customerId
     }
 
-    static func getClientSession(sessionType: SessionType) -> ClientSessionRequestBody {
+    static func getClientSession(sessionType: SessionType, surchargeAmount: Int = 50) -> ClientSessionRequestBody {
         return ClientSessionRequestBody(
             customerId: customerId,
             orderId: "ios-order-\(String.randomString(length: 8))",
@@ -90,11 +94,11 @@ struct MerchantMockDataManager {
                         discountAmount: nil,
                         taxAmount: nil)
                 ]),
-            paymentMethod: getPaymentMethod(sessionType: sessionType),
+            paymentMethod: getPaymentMethod(sessionType: sessionType, surchargeAmount: surchargeAmount),
             testParams: nil)
     }
 
-    static func getPaymentMethod(sessionType: SessionType) -> ClientSessionRequestBody.PaymentMethod {
+    static func getPaymentMethod(sessionType: SessionType, surchargeAmount: Int = 50) -> ClientSessionRequestBody.PaymentMethod {
         switch sessionType {
         case .generic:
             return genericPaymentMethod
@@ -106,6 +110,10 @@ struct MerchantMockDataManager {
             return cardAndApplePayPaymentMethod
         case .applePay:
             return applePayOnlyPaymentMethod
+        case .cardOnlyWithSurcharge:
+            return cardOnlyWithSurchargePaymentMethod(surchargeAmount: surchargeAmount)
+        case .cardAndApplePayWithSurcharge:
+            return cardAndApplePayWithSurchargePaymentMethod(surchargeAmount: surchargeAmount)
         case .custom(let paymentMethod):
             return paymentMethod
         }
@@ -170,6 +178,31 @@ struct MerchantMockDataManager {
         paymentType: nil
     )
     
+    // MARK: - Surcharge-enabled Payment Method Configurations
+    
+    static func cardOnlyWithSurchargePaymentMethod(surchargeAmount: Int) -> ClientSessionRequestBody.PaymentMethod {
+        return ClientSessionRequestBody.PaymentMethod(
+            vaultOnSuccess: false,
+            options: ClientSessionRequestBody.PaymentMethod.PaymentMethodOptionGroup(
+                PAYMENT_CARD: cardOptionWithSurcharge(surchargeAmount: surchargeAmount)
+            ),
+            descriptor: "Card with surcharge demo",
+            paymentType: nil
+        )
+    }
+    
+    static func cardAndApplePayWithSurchargePaymentMethod(surchargeAmount: Int) -> ClientSessionRequestBody.PaymentMethod {
+        return ClientSessionRequestBody.PaymentMethod(
+            vaultOnSuccess: false,
+            options: ClientSessionRequestBody.PaymentMethod.PaymentMethodOptionGroup(
+                PAYMENT_CARD: cardOptionWithSurcharge(surchargeAmount: surchargeAmount),
+                APPLE_PAY: applePayOption
+            ),
+            descriptor: "Card with surcharge and Apple Pay",
+            paymentType: nil
+        )
+    }
+    
     static var applePayOnlyPaymentMethod = ClientSessionRequestBody.PaymentMethod(
         vaultOnSuccess: false,
         options: ClientSessionRequestBody.PaymentMethod.PaymentMethodOptionGroup(
@@ -188,11 +221,33 @@ struct MerchantMockDataManager {
         networks: nil
     )
     
+    // MARK: - Surcharge-enabled Payment Method Options for CheckoutComponents Examples
+    
+    static func cardOptionWithSurcharge(surchargeAmount: Int) -> ClientSessionRequestBody.PaymentMethod.PaymentMethodOption {
+        return ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(
+            surcharge: nil,
+            instalmentDuration: nil,
+            extraMerchantData: nil,
+            captureVaultedCardCvv: false,
+            merchantName: "Primer Merchant iOS",
+            networks: createSurchargeNetworkGroup(surchargeAmount: surchargeAmount)
+        )
+    }
+    
+    private static func createSurchargeNetworkGroup(surchargeAmount: Int) -> ClientSessionRequestBody.PaymentMethod.NetworkOptionGroup {
+        let surcharge = ClientSessionRequestBody.PaymentMethod.SurchargeOption(amount: surchargeAmount)
+        var networkGroup = ClientSessionRequestBody.PaymentMethod.NetworkOptionGroup()
+        networkGroup.VISA = ClientSessionRequestBody.PaymentMethod.NetworkOption(surcharge: surcharge)
+        networkGroup.MASTERCARD = ClientSessionRequestBody.PaymentMethod.NetworkOption(surcharge: surcharge)
+        networkGroup.JCB = ClientSessionRequestBody.PaymentMethod.NetworkOption(surcharge: surcharge)
+        return networkGroup
+    }
+    
     static var applePayOption = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(
         surcharge: nil,
         instalmentDuration: nil,
         extraMerchantData: nil,
-        captureVaultedCardCvv: false,
+        captureVaultedCardCvv: nil,
         merchantName: nil,
         networks: nil
     )
