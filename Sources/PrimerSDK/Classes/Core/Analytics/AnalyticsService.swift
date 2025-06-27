@@ -104,13 +104,11 @@ extension Analytics {
             }
         }
 
-        internal func record(events: [Analytics.Event]) async throws {
-            try await withCheckedThrowingContinuation { [weak self] continuation in
+        func record(events: [Analytics.Event]) async throws {
+            try await withCheckedThrowingContinuation { continuation in
                 Analytics.queue.async(flags: .barrier) {
-                    guard let self = self else { return }
-
                     let storedEvents: [Analytics.Event] = self.storage.loadEvents()
-                    let storedEventsIds = storedEvents.compactMap { $0.localId }
+                    let storedEventsIds = storedEvents.compactMap(\.localId)
                     var eventsToAppend: [Analytics.Event] = []
 
                     for event in events {
@@ -164,15 +162,14 @@ extension Analytics {
             }
         }
 
-        internal func flush() async throws {
-            let events = storage.loadEvents()
-            try await sync(events: events, isFlush: true)
+        func flush() async throws {
+            try await sync(events: storage.loadEvents(), isFlush: true)
         }
 
         @discardableResult
         private func sync(events: [Analytics.Event], isFlush: Bool = false) -> Promise<Void> {
             let syncType = isFlush ? "flush" : "sync"
-            guard events.count > 0 else {
+            guard !events.isEmpty else {
                 self.logger.warn(message: "📚 Analytics: Attempted to \(syncType) but had no events")
                 return Promise<Void> { $0.fulfill() }
             }
@@ -225,21 +222,18 @@ extension Analytics {
         private func sync(events: [Analytics.Event], isFlush: Bool = false) async throws {
             let syncType = isFlush ? "flush" : "sync"
             guard events.count > 0 else {
-                logger.warn(message: "📚 Analytics: Attempted to \(syncType) but had no events")
-                return
+                return logger.warn(message: "📚 Analytics: Attempted to \(syncType) but had no events")
             }
 
             if !isFlush {
                 guard !isSyncing else {
-                    logger.debug(message: "📚 Analytics: Attempted to sync while already syncing. Skipping ...")
-                    return
+                    return logger.debug(message: "📚 Analytics: Attempted to sync while already syncing. Skipping ...")
                 }
                 isSyncing = true
             }
 
-            try await withCheckedThrowingContinuation { [weak self] continuation in
+            try await withCheckedThrowingContinuation { continuation in
                 Analytics.queue.async(flags: .barrier) {
-                    guard let self = self else { return }
                     let eventsToSend = isFlush ? events : Array(events.prefix(Int(self.batchSize)))
 
                     self.logger.debug(message: "📚 Analytics: \(syncType.capitalized)ing \(eventsToSend.count) events ...")
@@ -423,7 +417,7 @@ extension Analytics {
         private func sendEvents(_ events: [Analytics.Event], to url: URL) async throws {
             return try await withCheckedThrowingContinuation { continuation in
                 sendEvents(events, to: url) { error in
-                    if let error = error {
+                    if let error {
                         continuation.resume(throwing: error)
                     } else {
                         continuation.resume()
