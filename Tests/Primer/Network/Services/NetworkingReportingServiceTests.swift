@@ -9,19 +9,6 @@
 import XCTest
 @testable import PrimerSDK
 
-class MockAnalyticsService: AnalyticsServiceProtocol {
-
-    var events: [Analytics.Event] = []
-
-    var onRecord: (([Analytics.Event]) -> Void)?
-
-    func record(events: [Analytics.Event]) -> Promise<Void> {
-        self.events.append(contentsOf: events)
-        onRecord?(events)
-        return Promise.fulfilled(())
-    }
-}
-
 final class NetworkingReportingServiceTests: XCTestCase {
 
     var analyticsService: MockAnalyticsService!
