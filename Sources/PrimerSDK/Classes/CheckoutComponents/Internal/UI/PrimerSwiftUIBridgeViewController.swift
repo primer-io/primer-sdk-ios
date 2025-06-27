@@ -215,6 +215,7 @@ extension PrimerSwiftUIBridgeViewController {
         let checkoutView: PrimerCheckout
 
         if let customContent = customContent {
+            // Use the custom content initializer
             checkoutView = PrimerCheckout(
                 clientToken: clientToken,
                 settings: settings,
@@ -224,6 +225,7 @@ extension PrimerSwiftUIBridgeViewController {
                 onCompletion: onCompletion
             )
         } else {
+            // Use the standard initializer
             checkoutView = PrimerCheckout(
                 clientToken: clientToken,
                 settings: settings,

@@ -85,13 +85,14 @@ public struct PrimerCheckout: View {
         settings: PrimerSettings = PrimerSettings(),
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
-        @ViewBuilder customContent: @escaping (PrimerCheckoutScope) -> some View
+        @ViewBuilder customContent: @escaping (PrimerCheckoutScope) -> some View,
+        onCompletion: (() -> Void)? = nil
     ) {
         self.clientToken = clientToken
         self.settings = settings
         self.scope = nil
         self.customContent = { scope in AnyView(customContent(scope)) }
-        self.onCompletion = nil
+        self.onCompletion = onCompletion
         self.diContainer = diContainer
         self.navigator = navigator
     }
@@ -101,13 +102,32 @@ public struct PrimerCheckout: View {
         clientToken: String,
         settings: PrimerSettings,
         diContainer: DIContainer,
-        navigator: CheckoutNavigator
+        navigator: CheckoutNavigator,
+        onCompletion: (() -> Void)? = nil
     ) {
         self.clientToken = clientToken
         self.settings = settings
         self.scope = nil
         self.customContent = nil
-        self.onCompletion = nil
+        self.onCompletion = onCompletion
+        self.diContainer = diContainer
+        self.navigator = navigator
+    }
+
+    /// Internal initializer with custom content as AnyView function
+    internal init(
+        clientToken: String,
+        settings: PrimerSettings,
+        diContainer: DIContainer,
+        navigator: CheckoutNavigator,
+        customContent: ((PrimerCheckoutScope) -> AnyView)?,
+        onCompletion: (() -> Void)? = nil
+    ) {
+        self.clientToken = clientToken
+        self.settings = settings
+        self.scope = nil
+        self.customContent = customContent
+        self.onCompletion = onCompletion
         self.diContainer = diContainer
         self.navigator = navigator
     }
