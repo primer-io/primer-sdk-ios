@@ -384,62 +384,40 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         return getPaymentMethodScope(for: methodType.rawValue)
     }
 
-    // MARK: - Generic Payment Method Screen Management
-
-    /// Sets a custom screen for a specific payment method scope type
-    /// - Parameters:
-    ///   - scopeType: The scope type (e.g., PrimerCardFormScope.self)
-    ///   - screenBuilder: The custom screen builder closure
-    public func setPaymentMethodScreen<T: PrimerPaymentMethodScope>(
-        _ scopeType: T.Type,
-        screenBuilder: @escaping (T) -> AnyView
-    ) {
-        let typeName = String(describing: scopeType)
-        logger.debug(message: "Setting custom screen for payment method scope type: \\(typeName)")
-        paymentMethodScreens[typeName] = screenBuilder
-    }
-
-    /// Non-generic overload for PrimerCardFormScope to avoid existential type issues
-    public func setPaymentMethodScreen(
-        _ scopeType: (any PrimerCardFormScope).Type,
-        screenBuilder: @escaping (any PrimerCardFormScope) -> AnyView
-    ) {
-        let typeName = String(describing: scopeType)
-        logger.debug(message: "Setting custom screen for PrimerCardFormScope: \(typeName)")
-        paymentMethodScreens[typeName] = screenBuilder
+    // MARK: - Payment Method Screen Management
+    
+    /// Type mapping from payment method enum to string identifier
+    private func getPaymentMethodIdentifier(_ type: PrimerPaymentMethodType) -> String {
+        return type.rawValue
     }
 
     /// Sets a custom screen for a specific payment method type
     /// - Parameters:
-    ///   - paymentMethodType: The payment method type string
-    ///   - screenBuilder: The custom screen builder closure
-    public func setPaymentMethodScreen<T: PrimerPaymentMethodScope>(
-        for paymentMethodType: String,
-        scopeType: T.Type,
-        screenBuilder: @escaping (T) -> AnyView
+    ///   - paymentMethodType: The payment method type enum (e.g., .paymentCard)
+    ///   - screenBuilder: The custom screen builder closure that receives the appropriate scope
+    public func setPaymentMethodScreen(
+        _ paymentMethodType: PrimerPaymentMethodType,
+        screenBuilder: @escaping (any PrimerPaymentMethodScope) -> AnyView
     ) {
-        logger.debug(message: "Setting custom screen for payment method type: \\(paymentMethodType)")
-        paymentMethodScreens[paymentMethodType] = screenBuilder
-    }
-
-    /// Gets a custom screen for a specific payment method scope type
-    /// - Parameter scopeType: The scope type to get the screen for
-    /// - Returns: The custom screen builder closure if set, nil otherwise
-    public func getPaymentMethodScreen<T: PrimerPaymentMethodScope>(_ scopeType: T.Type) -> ((T) -> AnyView)? {
-        let typeName = String(describing: scopeType)
-        logger.debug(message: "Getting custom screen for payment method scope type: \\(typeName)")
-        return paymentMethodScreens[typeName] as? (T) -> AnyView
+        let identifier = getPaymentMethodIdentifier(paymentMethodType)
+        logger.debug(message: "Setting custom screen for payment method type: \(paymentMethodType) (\(identifier))")
+        paymentMethodScreens[identifier] = screenBuilder
     }
 
     /// Gets a custom screen for a specific payment method type
-    /// - Parameter paymentMethodType: The payment method type string
+    /// - Parameter paymentMethodType: The payment method type enum
     /// - Returns: The custom screen builder closure if set, nil otherwise
-    public func getPaymentMethodScreen<T: PrimerPaymentMethodScope>(
-        for paymentMethodType: String,
-        scopeType: T.Type
-    ) -> ((T) -> AnyView)? {
-        logger.debug(message: "Getting custom screen for payment method type: \\(paymentMethodType)")
-        return paymentMethodScreens[paymentMethodType] as? (T) -> AnyView
+    public func getPaymentMethodScreen(
+        _ paymentMethodType: PrimerPaymentMethodType
+    ) -> ((any PrimerPaymentMethodScope) -> AnyView)? {
+        let identifier = getPaymentMethodIdentifier(paymentMethodType)
+        logger.debug(message: "Getting custom screen for payment method type: \(paymentMethodType) (\(identifier))")
+        return paymentMethodScreens[identifier] as? (any PrimerPaymentMethodScope) -> AnyView
+    }
+    
+    /// Internal method to get custom screen by string identifier (for backwards compatibility)
+    internal func getPaymentMethodScreenByIdentifier(_ identifier: String) -> ((any PrimerPaymentMethodScope) -> AnyView)? {
+        return paymentMethodScreens[identifier] as? (any PrimerPaymentMethodScope) -> AnyView
     }
 
     public func onDismiss() {

@@ -14,284 +14,231 @@ struct CustomScreenCardFormDemo: View {
     let clientToken: String
     let settings: PrimerSettings
     
-    @State private var selectedLayout: String = "Split Screen"
-    private let layoutOptions = ["Split Screen", "Carousel", "Stepped", "Floating"]
-    
     var body: some View {
-        VStack(spacing: 16) {
-            // Layout selector
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Custom Screen Layouts")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                
-                HStack {
-                    Text("Layout:")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    Picker("Layout", selection: $selectedLayout) {
-                        ForEach(layoutOptions, id: \.self) { layout in
-                            Text(layout).tag(layout)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                }
-            }
+        VStack {
+            Text("Custom Screen Demo")
+                .font(.headline)
+                .padding()
             
-            // Custom layouts
-            PrimerCheckout(
-                clientToken: clientToken,
-                settings: settings,
-                scope: { checkoutScope in
-                    // Use new generic payment method screen API
-                    checkoutScope.setPaymentMethodScreen((any PrimerCardFormScope).self) { (scope: any PrimerCardFormScope) in
-                        AnyView(
-                            Group {
-                                switch selectedLayout {
-                                case "Split Screen":
-                                    splitScreenLayout(scope: scope)
-                                case "Carousel":
-                                    carouselLayout(scope: scope)
-                                case "Stepped":
-                                    steppedLayout(scope: scope)
-                                case "Floating":
-                                    floatingLayout(scope: scope)
-                                default:
-                                    defaultLayout(scope: scope)
-                                }
-                            }
-                        )
-                    }
-                }
-            )
-            .frame(height: 180)
-            .animation(.easeInOut(duration: 0.5), value: selectedLayout)
-        }
-    }
-    
-    @available(iOS 15.0, *)
-    @ViewBuilder
-    private func splitScreenLayout(scope: any PrimerCardFormScope) -> some View {
-        HStack(spacing: 16) {
-            VStack(spacing: 8) {
-                scope.cardNumberInput?(PrimerModifier()
-                    .fillMaxWidth()
-                    .height(44)
-                    .padding(.horizontal, 12)
-                    .background(.blue.opacity(0.1))
-                    .cornerRadius(8)
-                    .border(.blue, width: 1)
-                )
-                
-                scope.cardholderNameInput?(PrimerModifier()
-                    .fillMaxWidth()
-                    .height(44)
-                    .padding(.horizontal, 12)
-                    .background(.blue.opacity(0.1))
-                    .cornerRadius(8)
-                    .border(.blue, width: 1)
-                )
-            }
+            Text("Completely custom form layouts")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .padding(.bottom)
             
-            VStack(spacing: 8) {
-                scope.expiryDateInput?(PrimerModifier()
-                    .fillMaxWidth()
-                    .height(44)
-                    .padding(.horizontal, 12)
-                    .background(.green.opacity(0.1))
-                    .cornerRadius(8)
-                    .border(.green, width: 1)
-                )
-                
-                scope.cvvInput?(PrimerModifier()
-                    .fillMaxWidth()
-                    .height(44)
-                    .padding(.horizontal, 12)
-                    .background(.green.opacity(0.1))
-                    .cornerRadius(8)
-                    .border(.green, width: 1)
-                )
+            Button("Show Custom Screen Checkout") {
+                presentCheckout(title: "CustomScreenCardFormDemo")
             }
+            .buttonStyle(.borderedProminent)
+            .frame(maxWidth: .infinity)
         }
+        .frame(height: 200)
         .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
     }
     
-    @available(iOS 15.0, *)
-    @ViewBuilder
-    private func carouselLayout(scope: any PrimerCardFormScope) -> some View {
-        TabView {
-            scope.cardNumberInput?(PrimerModifier()
-                .fillMaxWidth()
-                .height(60)
-                .padding(.horizontal, 20)
-                .background(.white)
-                .cornerRadius(12)
-                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-            )
-            
-            HStack(spacing: 12) {
-                scope.expiryDateInput?(PrimerModifier()
-                    .fillMaxWidth()
-                    .height(60)
-                    .padding(.horizontal, 20)
-                    .background(.white)
-                    .cornerRadius(12)
-                    .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-                )
-                
-                scope.cvvInput?(PrimerModifier()
-                    .fillMaxWidth()
-                    .height(60)
-                    .padding(.horizontal, 20)
-                    .background(.white)
-                    .cornerRadius(12)
-                    .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-                )
-            }
+    private func presentCheckout(title: String) {
+        // Find the current view controller to present from
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first,
+              let rootViewController = findTopViewController(from: window.rootViewController) else {
+            print("❌ [\(title)] Could not find view controller to present from")
+            return
+        }
+        
+        print("🔍 [\(title)] Button tapped - presenting CheckoutComponents")
 
-            scope.cardholderNameInput?(PrimerModifier()
-                .fillMaxWidth()
-                .height(60)
-                .padding(.horizontal, 20)
-                .background(.white)
-                .cornerRadius(12)
-                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-            )
-        }
-        .tabViewStyle(.page)
-        .indexViewStyle(.page(backgroundDisplayMode: .always))
-    }
-    
-    @available(iOS 15.0, *)
-    @ViewBuilder
-    private func steppedLayout(scope: any PrimerCardFormScope) -> some View {
-        VStack(spacing: 20) {
-            HStack {
-                Circle()
-                    .fill(.blue)
-                    .frame(width: 8, height: 8)
-                Text("Step 1: Card Number")
-                    .font(.caption)
-                    .fontWeight(.medium)
-                Spacer()
-            }
-            
-            scope.cardNumberInput?(PrimerModifier()
-                .fillMaxWidth()
-                .height(44)
-                .padding(.horizontal, 12)
-                .background(.white)
-                .cornerRadius(8)
-                .border(.blue, width: 1)
-            )
-            
-            HStack {
-                scope.expiryDateInput?(PrimerModifier()
-                    .fillMaxWidth()
-                    .height(36)
-                    .padding(.horizontal, 8)
-                    .background(.gray.opacity(0.1))
-                    .cornerRadius(6)
-                    .border(.gray.opacity(0.3), width: 1)
-                )
-                
-                scope.cvvInput?(PrimerModifier()
-                    .fillMaxWidth()
-                    .height(36)
-                    .padding(.horizontal, 8)
-                    .background(.gray.opacity(0.1))
-                    .cornerRadius(6)
-                    .border(.gray.opacity(0.3), width: 1)
-                )
-            }
-        }
-        .padding()
-    }
-    
-    @available(iOS 15.0, *)
-    @ViewBuilder
-    private func floatingLayout(scope: any PrimerCardFormScope) -> some View {
-        ZStack {
-            Color.gray.opacity(0.1)
-                .ignoresSafeArea()
-            
-            VStack(spacing: 16) {
-                scope.cardNumberInput?(PrimerModifier()
-                    .fillMaxWidth()
-                    .height(44)
-                    .padding(.horizontal, 12)
-                    .background(.white)
-                    .cornerRadius(8)
-                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-                )
-                
-                HStack(spacing: 12) {
-                    scope.expiryDateInput?(PrimerModifier()
-                        .fillMaxWidth()
-                        .height(44)
-                        .padding(.horizontal, 12)
-                        .background(.white)
-                        .cornerRadius(8)
-                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-                    )
-                    
-                    scope.cvvInput?(PrimerModifier()
-                        .fillMaxWidth()
-                        .height(44)
-                        .padding(.horizontal, 12)
-                        .background(.white)
-                        .cornerRadius(8)
-                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+        // Present using CheckoutComponentsPrimer with custom screen layout content
+        CheckoutComponentsPrimer.presentCheckout(
+            with: clientToken,
+            from: rootViewController,
+            customContent: { checkoutScope in
+                checkoutScope.setPaymentMethodScreen(.paymentCard) { (scope: any PrimerPaymentMethodScope) in
+                    guard let cardScope = scope as? any PrimerCardFormScope else {
+                        return AnyView(Text("Error: Invalid scope type").foregroundColor(.red))
+                    }
+                    return AnyView(
+                        GeometryReader { geometry in
+                            ScrollView {
+                                VStack(spacing: 24) {
+                                    // Custom header with split design
+                                    HStack {
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text("💳")
+                                                .font(.largeTitle)
+                                            Text("Custom")
+                                                .font(.title3)
+                                                .fontWeight(.bold)
+                                            Text("Payment")
+                                                .font(.caption)
+                                                .foregroundColor(.secondary)
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        VStack(alignment: .trailing, spacing: 4) {
+                                            Text("Secure")
+                                                .font(.caption)
+                                                .foregroundColor(.green)
+                                            Text("256-bit")
+                                                .font(.caption2)
+                                                .foregroundColor(.secondary)
+                                        }
+                                    }
+                                    .padding(.horizontal)
+                                    
+                                    // Split-screen layout
+                                    if geometry.size.width > 400 {
+                                        // Wide layout - side by side
+                                        HStack(spacing: 20) {
+                                            // Left column
+                                            VStack(spacing: 16) {
+                                                if let cardNumberInput = cardScope.cardNumberInput {
+                                                    cardNumberInput(PrimerModifier()
+                                                        .fillMaxWidth()
+                                                        .height(50)
+                                                        .padding(.horizontal, 14)
+                                                        .background(.white)
+                                                        .cornerRadius(10)
+                                                        .border(.gray.opacity(0.3), width: 1)
+                                                    )
+                                                }
+                                                
+                                                if let cardholderNameInput = cardScope.cardholderNameInput {
+                                                    cardholderNameInput(PrimerModifier()
+                                                        .fillMaxWidth()
+                                                        .height(50)
+                                                        .padding(.horizontal, 14)
+                                                        .background(.white)
+                                                        .cornerRadius(10)
+                                                        .border(.gray.opacity(0.3), width: 1)
+                                                    )
+                                                }
+                                            }
+                                            
+                                            // Right column
+                                            VStack(spacing: 16) {
+                                                if let expiryDateInput = cardScope.expiryDateInput {
+                                                    expiryDateInput(PrimerModifier()
+                                                        .fillMaxWidth()
+                                                        .height(50)
+                                                        .padding(.horizontal, 14)
+                                                        .background(.white)
+                                                        .cornerRadius(10)
+                                                        .border(.gray.opacity(0.3), width: 1)
+                                                    )
+                                                }
+                                                
+                                                if let cvvInput = cardScope.cvvInput {
+                                                    cvvInput(PrimerModifier()
+                                                        .fillMaxWidth()
+                                                        .height(50)
+                                                        .padding(.horizontal, 14)
+                                                        .background(.white)
+                                                        .cornerRadius(10)
+                                                        .border(.gray.opacity(0.3), width: 1)
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        // Narrow layout - stacked
+                                        VStack(spacing: 16) {
+                                            if let cardNumberInput = cardScope.cardNumberInput {
+                                                cardNumberInput(PrimerModifier()
+                                                    .fillMaxWidth()
+                                                    .height(50)
+                                                    .padding(.horizontal, 14)
+                                                    .background(.white)
+                                                    .cornerRadius(10)
+                                                    .border(.gray.opacity(0.3), width: 1)
+                                                )
+                                            }
+                                            
+                                            HStack(spacing: 12) {
+                                                if let expiryDateInput = cardScope.expiryDateInput {
+                                                    expiryDateInput(PrimerModifier()
+                                                        .fillMaxWidth()
+                                                        .height(50)
+                                                        .padding(.horizontal, 14)
+                                                        .background(.white)
+                                                        .cornerRadius(10)
+                                                        .border(.gray.opacity(0.3), width: 1)
+                                                    )
+                                                }
+                                                
+                                                if let cvvInput = cardScope.cvvInput {
+                                                    cvvInput(PrimerModifier()
+                                                        .fillMaxWidth()
+                                                        .height(50)
+                                                        .padding(.horizontal, 14)
+                                                        .background(.white)
+                                                        .cornerRadius(10)
+                                                        .border(.gray.opacity(0.3), width: 1)
+                                                    )
+                                                }
+                                            }
+                                            
+                                            if let cardholderNameInput = cardScope.cardholderNameInput {
+                                                cardholderNameInput(PrimerModifier()
+                                                    .fillMaxWidth()
+                                                    .height(50)
+                                                    .padding(.horizontal, 14)
+                                                    .background(.white)
+                                                    .cornerRadius(10)
+                                                    .border(.gray.opacity(0.3), width: 1)
+                                                )
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Custom footer
+                                    HStack {
+                                        Image(systemName: "lock.circle.fill")
+                                            .foregroundColor(.green)
+                                        Text("Custom secured checkout")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                        Spacer()
+                                        Text("Adaptive layout")
+                                            .font(.caption2)
+                                            .foregroundColor(.blue)
+                                    }
+                                    .padding(.horizontal)
+                                }
+                                .padding()
+                            }
+                        }
+                        .background(LinearGradient(
+                            gradient: Gradient(colors: [.gray.opacity(0.02), .blue.opacity(0.02)]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ))
                     )
                 }
-                
-                scope.cardholderNameInput?(PrimerModifier()
-                    .fillMaxWidth()
-                    .height(44)
-                    .padding(.horizontal, 12)
-                    .background(.white)
-                    .cornerRadius(8)
-                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-                )
+                return AnyView(EmptyView())
+            },
+            completion: {
+                print("✅ [\(title)] CheckoutComponents presentation completed")
             }
-            .padding()
-        }
+        )
+        
+        print("✅ [\(title)] CheckoutComponents presentation initiated")
     }
-    
-    @available(iOS 15.0, *)
-    @ViewBuilder
-    private func defaultLayout(scope: any PrimerCardFormScope) -> some View {
-        VStack(spacing: 12) {
-            scope.cardNumberInput?(PrimerModifier()
-                .fillMaxWidth()
-                .height(44)
-                .padding(.horizontal, 12)
-                .background(.white)
-                .cornerRadius(8)
-                .border(.gray.opacity(0.3), width: 1)
-            )
-            
-            HStack(spacing: 12) {
-                scope.expiryDateInput?(PrimerModifier()
-                    .fillMaxWidth()
-                    .height(44)
-                    .padding(.horizontal, 12)
-                    .background(.white)
-                    .cornerRadius(8)
-                    .border(.gray.opacity(0.3), width: 1)
-                )
-                
-                scope.cvvInput?(PrimerModifier()
-                    .fillMaxWidth()
-                    .height(44)
-                    .padding(.horizontal, 12)
-                    .background(.white)
-                    .cornerRadius(8)
-                    .border(.gray.opacity(0.3), width: 1)
-                )
-            }
+
+    private func findTopViewController(from rootViewController: UIViewController?) -> UIViewController? {
+        if let presented = rootViewController?.presentedViewController {
+            return findTopViewController(from: presented)
         }
-        .padding()
+        
+        if let navigationController = rootViewController as? UINavigationController {
+            return findTopViewController(from: navigationController.visibleViewController)
+        }
+        
+        if let tabBarController = rootViewController as? UITabBarController {
+            return findTopViewController(from: tabBarController.selectedViewController)
+        }
+        
+        return rootViewController
     }
 }

@@ -25,11 +25,14 @@ struct InlineCardFormDemo: View {
                 clientToken: clientToken,
                 settings: settings,
                 scope: { checkoutScope in
-                    // Use new generic payment method screen API
-                    checkoutScope.setPaymentMethodScreen((any PrimerCardFormScope).self) { (scope: any PrimerCardFormScope) in
-                        AnyView(
+                    // Use concrete type for generic payment method screen API
+                    checkoutScope.setPaymentMethodScreen(.paymentCard) { (scope: any PrimerPaymentMethodScope) in
+                        guard let cardScope = scope as? any PrimerCardFormScope else {
+                            return AnyView(Text("Error: Invalid scope type").foregroundColor(.red))
+                        }
+                        return AnyView(
                             VStack(spacing: 12) {
-                                scope.cardNumberInput?(PrimerModifier()
+                                cardScope.cardNumberInput?(PrimerModifier()
                                     .fillMaxWidth()
                                     .height(44)
                                     .padding(.horizontal, 12)
@@ -39,7 +42,7 @@ struct InlineCardFormDemo: View {
                                 )
                                 
                                 HStack(spacing: 12) {
-                                    scope.expiryDateInput?(PrimerModifier()
+                                    cardScope.expiryDateInput?(PrimerModifier()
                                         .fillMaxWidth()
                                         .height(44)
                                         .padding(.horizontal, 12)
@@ -48,7 +51,7 @@ struct InlineCardFormDemo: View {
                                         .border(.gray.opacity(0.2), width: 1)
                                     )
                                     
-                                    scope.cvvInput?(PrimerModifier()
+                                    cardScope.cvvInput?(PrimerModifier()
                                         .fillMaxWidth()
                                         .height(44)
                                         .padding(.horizontal, 12)
@@ -58,7 +61,7 @@ struct InlineCardFormDemo: View {
                                     )
                                 }
                                 
-                                scope.cardholderNameInput?(PrimerModifier()
+                                cardScope.cardholderNameInput?(PrimerModifier()
                                     .fillMaxWidth()
                                     .height(44)
                                     .padding(.horizontal, 12)

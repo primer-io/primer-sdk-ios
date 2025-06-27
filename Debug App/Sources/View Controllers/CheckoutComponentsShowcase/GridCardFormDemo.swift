@@ -13,71 +13,143 @@ import PrimerSDK
 struct GridCardFormDemo: View {
     let clientToken: String
     let settings: PrimerSettings
-    
+
     var body: some View {
-        PrimerCheckout(
-            clientToken: clientToken,
-            settings: settings,
-            scope: { checkoutScope in
-                checkoutScope.setPaymentMethodScreen((any PrimerCardFormScope).self) { (scope: any PrimerCardFormScope) in
-                    AnyView(
+        VStack {
+            Text("Grid Layout Demo")
+                .font(.headline)
+                .padding()
+
+            Text("Card details in organized grid")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .padding(.bottom)
+
+            Button("Show Grid Layout Checkout") {
+                presentCheckout(title: "GridCardFormDemo")
+            }
+            .buttonStyle(.borderedProminent)
+            .frame(maxWidth: .infinity)
+        }
+        .frame(height: 200)
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
+    }
+
+    private func presentCheckout(title: String) {
+        // Find the current view controller to present from
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first,
+              let rootViewController = findTopViewController(from: window.rootViewController) else {
+            print("❌ [\(title)] Could not find view controller to present from")
+            return
+        }
+
+        print("🔍 [\(title)] Button tapped - presenting CheckoutComponents with grid layout")
+
+        // Present using CheckoutComponentsPrimer with custom grid layout content
+        CheckoutComponentsPrimer.presentCheckout(
+            with: clientToken,
+            from: rootViewController,
+            customContent: { checkoutScope in
+                checkoutScope.setPaymentMethodScreen(.paymentCard) { (scope: any PrimerPaymentMethodScope) in
+                    guard let cardScope = scope as? any PrimerCardFormScope else {
+                        return AnyView(Text("Error: Invalid scope type").foregroundColor(.red))
+                    }
+                    return AnyView(
+                        VStack(spacing: 16) {
+                            // Grid header
+                            Text("Grid Payment Layout")
+                                .font(.title2)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.purple)
+                            
+                            // Grid layout for card form
                             LazyVGrid(columns: [
                                 GridItem(.flexible()),
                                 GridItem(.flexible())
                             ], spacing: 16) {
                                 // Card number spans full width
-                                scope.cardNumberInput?(PrimerModifier()
-                                    .fillMaxWidth()
-                                    .height(48)
-                                    .padding(.horizontal, 12)
-                                    .background(.white)
-                                    .cornerRadius(10)
-                                    .border(.purple.opacity(0.3), width: 2)
-                                )
-                                
-                                // Empty cell to complete the row
-                                Color.clear
-                                    .frame(height: 0)
-                                
+                                HStack {
+                                    if let cardNumberInput = cardScope.cardNumberInput {
+                                        cardNumberInput(PrimerModifier()
+                                            .fillMaxWidth()
+                                            .height(48)
+                                            .padding(.horizontal, 12)
+                                            .background(.white)
+                                            .cornerRadius(10)
+                                            .border(.purple.opacity(0.3), width: 2)
+                                        )
+                                    }
+                                }
+                                                                
                                 // Expiry date
-                                scope.expiryDateInput?(PrimerModifier()
-                                    .fillMaxWidth()
-                                    .height(48)
-                                    .padding(.horizontal, 12)
-                                    .background(.white)
-                                    .cornerRadius(10)
-                                    .border(.purple.opacity(0.3), width: 2)
-                                )
+                                if let expiryDateInput = cardScope.expiryDateInput {
+                                    expiryDateInput(PrimerModifier()
+                                        .fillMaxWidth()
+                                        .height(48)
+                                        .padding(.horizontal, 12)
+                                        .background(.white)
+                                        .cornerRadius(10)
+                                        .border(.purple.opacity(0.3), width: 2)
+                                    )
+                                }
                                 
                                 // CVV
-                                scope.cvvInput?(PrimerModifier()
-                                    .fillMaxWidth()
-                                    .height(48)
-                                    .padding(.horizontal, 12)
-                                    .background(.white)
-                                    .cornerRadius(10)
-                                    .border(.purple.opacity(0.3), width: 2)
-                                )
+                                if let cvvInput = cardScope.cvvInput {
+                                    cvvInput(PrimerModifier()
+                                        .fillMaxWidth()
+                                        .height(48)
+                                        .padding(.horizontal, 12)
+                                        .background(.white)
+                                        .cornerRadius(10)
+                                        .border(.purple.opacity(0.3), width: 2)
+                                    )
+                                }
                                 
                                 // Cardholder name spans full width
-                                scope.cardholderNameInput?(PrimerModifier()
-                                    .fillMaxWidth()
-                                    .height(48)
-                                    .padding(.horizontal, 12)
-                                    .background(.white)
-                                    .cornerRadius(10)
-                                    .border(.purple.opacity(0.3), width: 2)
-                                )
-                                
-                                // Empty cell to complete the row
-                                Color.clear
-                                    .frame(height: 0)
+                                HStack {
+                                    if let cardholderNameInput = cardScope.cardholderNameInput {
+                                        cardholderNameInput(PrimerModifier()
+                                            .fillMaxWidth()
+                                            .height(48)
+                                            .padding(.horizontal, 12)
+                                            .background(.white)
+                                            .cornerRadius(10)
+                                            .border(.purple.opacity(0.3), width: 2)
+                                        )
+                                    }
+                                }
+                                                            }
                         }
                         .padding()
+                        .background(.purple.opacity(0.05))
                     )
                 }
+                return AnyView(EmptyView())
+            },
+            completion: {
+                print("✅ [\(title)] CheckoutComponents presentation completed")
             }
         )
-        .frame(height: 200)
+
+        print("✅ [\(title)] CheckoutComponents presentation initiated")
+    }
+
+    private func findTopViewController(from rootViewController: UIViewController?) -> UIViewController? {
+        if let presented = rootViewController?.presentedViewController {
+            return findTopViewController(from: presented)
+        }
+
+        if let navigationController = rootViewController as? UINavigationController {
+            return findTopViewController(from: navigationController.visibleViewController)
+        }
+
+        if let tabBarController = rootViewController as? UITabBarController {
+            return findTopViewController(from: tabBarController.selectedViewController)
+        }
+
+        return rootViewController
     }
 }

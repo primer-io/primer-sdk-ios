@@ -63,7 +63,7 @@ internal struct BillingAddressConfiguration {
 
 /// A composite SwiftUI view containing billing address fields with dynamic layout
 @available(iOS 15.0, *)
-internal struct BillingAddressView: View {
+internal struct BillingAddressView: View, LogReporter {
     // MARK: - Properties
 
     /// The card form scope for handling updates
@@ -72,11 +72,8 @@ internal struct BillingAddressView: View {
     /// Configuration for which fields to show
     let configuration: BillingAddressConfiguration
 
-    /// Currently selected country code
-    @State private var selectedCountryCode: String = ""
-
-    /// Currently selected country name
-    @State private var selectedCountryName: String = ""
+    /// Currently selected country (atomic state for bug-free updates)
+    @State private var selectedCountry: CountryCode.PhoneNumberCountryCode?
 
     /// Show country selector
     @State private var showCountrySelector = false
@@ -147,10 +144,22 @@ internal struct BillingAddressView: View {
                     label: CheckoutComponentsStrings.countryLabel,
                     placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
                     onCountryChange: { name in
-                        selectedCountryName = name
+                        if let currentCountry = selectedCountry {
+                            selectedCountry = CountryCode.PhoneNumberCountryCode(
+                                name: name,
+                                dialCode: currentCountry.dialCode,
+                                code: currentCountry.code
+                            )
+                        }
                     },
                     onCountryCodeChange: { code in
-                        selectedCountryCode = code
+                        if let currentCountry = selectedCountry {
+                            selectedCountry = CountryCode.PhoneNumberCountryCode(
+                                name: currentCountry.name,
+                                dialCode: currentCountry.dialCode,
+                                code: code
+                            )
+                        }
                         cardFormScope.updateCountryCode(code)
                     },
                     onValidationChange: { _ in
@@ -159,8 +168,7 @@ internal struct BillingAddressView: View {
                     onOpenCountrySelector: {
                         showCountrySelector = true
                     },
-                    selectedCountryName: selectedCountryName.isEmpty ? nil : selectedCountryName,
-                    selectedCountryCode: selectedCountryCode.isEmpty ? nil : selectedCountryCode
+                    selectedCountry: selectedCountry
                 )
             }
 
@@ -278,8 +286,17 @@ internal struct BillingAddressView: View {
                 let countryScope = BillingAddressCountryScope(
                     cardFormScope: defaultCardFormScope,
                     onCountrySelected: { code, name in
-                        selectedCountryCode = code
-                        selectedCountryName = name
+                        // Update country state atomically to fix one-step delay bug
+                        // Find the dial code from the available countries
+                        let dialCode = CountryCode.phoneNumberCountryCodes
+                            .first { $0.code == code }?.dialCode ?? ""
+                        
+                        let newCountry = CountryCode.PhoneNumberCountryCode(
+                            name: name,
+                            dialCode: dialCode,
+                            code: code
+                        )
+                        selectedCountry = newCountry
                         cardFormScope.updateCountryCode(code)
                         showCountrySelector = false
                     }
@@ -300,7 +317,7 @@ internal struct BillingAddressView: View {
     }
 
     private var postalCodePlaceholder: String {
-        switch selectedCountryCode {
+        switch selectedCountry?.code {
         case "US":
             return "12345"
         case "GB":

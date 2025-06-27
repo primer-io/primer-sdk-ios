@@ -14,105 +14,164 @@ struct ModifierChainsCardFormDemo: View {
     let clientToken: String
     let settings: PrimerSettings
     
-    @State private var selectedStyle: String = "Classic"
-    private let styleOptions = ["Classic", "Neon", "Minimal", "Bold"]
-    
     var body: some View {
-        VStack(spacing: 16) {
-            // Style selector
-            VStack(alignment: .leading, spacing: 8) {
-                Text("PrimerModifier Style Chains")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                
-                HStack {
-                    Text("Style:")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    Picker("Style", selection: $selectedStyle) {
-                        ForEach(styleOptions, id: \.self) { style in
-                            Text(style).tag(style)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                }
-            }
+        VStack {
+            Text("Modifier Chains Demo")
+                .font(.headline)
+                .padding()
             
-            // Card form with modifier chains
-            PrimerCheckout(
-                clientToken: clientToken,
-                settings: settings,
-                scope: { checkoutScope in
-                    // Use new generic payment method screen API
-                    checkoutScope.setPaymentMethodScreen((any PrimerCardFormScope).self) { (scope: any PrimerCardFormScope) in
-                        AnyView(
-                            VStack(spacing: 12) {
-                                scope.cardNumberInput?(getModifierChain(for: selectedStyle))
-                                
-                                HStack(spacing: 12) {
-                                    scope.expiryDateInput?(getModifierChain(for: selectedStyle))
-                                    scope.cvvInput?(getModifierChain(for: selectedStyle))
-                                }
-                                
-                                scope.cardholderNameInput?(getModifierChain(for: selectedStyle))
-                            }
-                        )
-                    }
-                }
-            )
-            .frame(height: 140)
-            .animation(.easeInOut(duration: 0.5), value: selectedStyle)
+            Text("Complex styling combinations")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .padding(.bottom)
+            
+            Button("Show Modifier Chains Checkout") {
+                presentCheckout(title: "ModifierChainsCardFormDemo")
+            }
+            .buttonStyle(.borderedProminent)
+            .frame(maxWidth: .infinity)
         }
+        .frame(height: 200)
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
     }
     
-    @available(iOS 15.0, *)
-    private func getModifierChain(for style: String) -> PrimerModifier {
-        switch style {
-        case "Classic":
-            return PrimerModifier()
-                .fillMaxWidth()
-                .height(44)
-                .padding(.horizontal, 12)
-                .background(.white)
-                .cornerRadius(8)
-                .border(.gray.opacity(0.3), width: 1)
-                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-                
-        case "Neon":
-            return PrimerModifier()
-                .fillMaxWidth()
-                .height(48)
-                .padding(.horizontal, 16)
-                .background(.black)
-                .cornerRadius(12)
-                .border(.cyan, width: 2)
-                .shadow(color: .cyan.opacity(0.5), radius: 8, x: 0, y: 0)
-                .foregroundColor(.cyan)
-                
-        case "Minimal":
-            return PrimerModifier()
-                .fillMaxWidth()
-                .height(40)
-                .padding(.horizontal, 8)
-                .background(.clear)
-                .cornerRadius(0)
-                .border(.clear, width: 0)
-                .shadow(color: .clear, radius: 0, x: 0, y: 0)
-                
-        case "Bold":
-            return PrimerModifier()
-                .fillMaxWidth()
-                .height(56)
-                .padding(.horizontal, 20)
-                .background(.purple)
-                .cornerRadius(16)
-                .border(.white, width: 3)
-                .shadow(color: .purple.opacity(0.3), radius: 12, x: 0, y: 4)
-                .foregroundColor(.white)
-                
-        default:
-            return PrimerModifier()
+    private func presentCheckout(title: String) {
+        // Find the current view controller to present from
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first,
+              let rootViewController = findTopViewController(from: window.rootViewController) else {
+            print("❌ [\(title)] Could not find view controller to present from")
+            return
         }
+
+        print("🔍 [\(title)] Button tapped - presenting CheckoutComponents")
+        
+        // Present using CheckoutComponentsPrimer with custom modifier chains content
+        CheckoutComponentsPrimer.presentCheckout(
+            with: clientToken,
+            from: rootViewController,
+            customContent: { checkoutScope in
+                return AnyView(
+                    PrimerCheckout(
+                        clientToken: clientToken,
+                        settings: settings,
+                        scope: { checkoutScope in
+                            checkoutScope.setPaymentMethodScreen(.paymentCard) { (scope: any PrimerPaymentMethodScope) in
+                                guard let cardScope = scope as? any PrimerCardFormScope else {
+                                    return AnyView(Text("Error: Invalid scope type").foregroundColor(.red))
+                                }
+                                return AnyView(
+                                    VStack(spacing: 20) {
+                                        // Modifier chains header
+                                        VStack(spacing: 8) {
+                                            Text("🔗 Modifier Chains")
+                                                .font(.title2)
+                                                .fontWeight(.bold)
+                                                .foregroundColor(.purple)
+                                            
+                                            Text("Complex PrimerModifier styling combinations")
+                                                .font(.caption)
+                                                .foregroundColor(.secondary)
+                                        }
+
+                                        // Advanced modifier chain examples
+                                        VStack(spacing: 16) {
+                                            // Card number with complex modifier chain
+                                            if let cardNumberInput = cardScope.cardNumberInput {
+                                                cardNumberInput(PrimerModifier()
+                                                    .fillMaxWidth()
+                                                    .height(55)
+                                                    .padding(.horizontal, 18)
+                                                    .background(.white)
+                                                    .cornerRadius(14)
+                                                    .border(.purple.opacity(0.6), width: 2)
+                                                    .shadow(color: .purple.opacity(0.2), radius: 6, x: 0, y: 3)
+                                                )
+                                            }
+                                            
+                                            // Expiry and CVV with different chain styles
+                                            HStack(spacing: 14) {
+                                                if let expiryDateInput = cardScope.expiryDateInput {
+                                                    expiryDateInput(PrimerModifier()
+                                                        .fillMaxWidth()
+                                                        .height(55)
+                                                        .padding(.horizontal, 16)
+                                                        .background(.white)
+                                                        .cornerRadius(12)
+                                                        .border(.orange.opacity(0.7), width: 2)
+                                                        .shadow(color: .orange.opacity(0.3), radius: 4, x: 2, y: 2)
+                                                    )
+                                                }
+                                                
+                                                if let cvvInput = cardScope.cvvInput {
+                                                    cvvInput(PrimerModifier()
+                                                        .fillMaxWidth()
+                                                        .height(55)
+                                                        .padding(.horizontal, 16)
+                                                        .background(.white)
+                                                        .cornerRadius(12)
+                                                        .border(.blue.opacity(0.7), width: 2)
+                                                        .shadow(color: .blue.opacity(0.3), radius: 4, x: -2, y: 2)
+                                                    )
+                                                }
+                                            }
+                                            
+                                            // Cardholder name with most complex chain
+                                            if let cardholderNameInput = cardScope.cardholderNameInput {
+                                                cardholderNameInput(PrimerModifier()
+                                                    .fillMaxWidth()
+                                                    .height(55)
+                                                    .padding(.horizontal, 18)
+                                                    .background(.white)
+                                                    .cornerRadius(16)
+                                                    .border(.green.opacity(0.6), width: 2)
+                                                    .shadow(color: .green.opacity(0.2), radius: 8, x: 0, y: 4)
+                                                )
+                                            }
+                                        }
+                                    }
+                                    .padding(20)
+                                    .background(
+                                        LinearGradient(
+                                            gradient: Gradient(colors: [
+                                                .purple.opacity(0.05),
+                                                .orange.opacity(0.05),
+                                                .blue.opacity(0.05),
+                                                .green.opacity(0.05)
+                                            ]),
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
+                                )
+                            }
+                        }
+                    )
+                )
+            },
+            completion: {
+                print("✅ [\(title)] CheckoutComponents presentation completed")
+            }
+        )
+        
+        print("✅ [\(title)] CheckoutComponents presentation initiated")
+    }
+
+    private func findTopViewController(from rootViewController: UIViewController?) -> UIViewController? {
+        if let presented = rootViewController?.presentedViewController {
+            return findTopViewController(from: presented)
+        }
+        
+        if let navigationController = rootViewController as? UINavigationController {
+            return findTopViewController(from: navigationController.visibleViewController)
+        }
+        
+        if let tabBarController = rootViewController as? UITabBarController {
+            return findTopViewController(from: tabBarController.selectedViewController)
+        }
+        
+        return rootViewController
     }
 }

@@ -14,90 +14,210 @@ struct LiveStateCardFormDemo: View {
     let clientToken: String
     let settings: PrimerSettings
     
-    @State private var currentState: String = "Initializing..."
-    @State private var cardNumber: String = ""
-    @State private var isValid: Bool = false
-    
     var body: some View {
-        VStack(spacing: 16) {
-            // State display section
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Live State Monitor")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Current State: \(currentState)")
-                        .font(.caption)
-                        .foregroundColor(.primary)
-                    
-                    Text("Card Number: \(cardNumber.isEmpty ? "Empty" : cardNumber)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    Text("Valid: \(isValid ? "✅" : "❌")")
-                        .font(.caption)
-                        .foregroundColor(isValid ? .green : .red)
-                }
-            }
-            .padding(8)
-            .background(Color.gray.opacity(0.1))
-            .cornerRadius(6)
+        VStack {
+            Text("Live State Demo")
+                .font(.headline)
+                .padding()
             
-            // Card form
-            PrimerCheckout(
-                clientToken: clientToken,
-                settings: settings,
-                scope: { checkoutScope in
-                    // Use new generic payment method screen API
-                    checkoutScope.setPaymentMethodScreen((any PrimerCardFormScope).self) { (scope: any PrimerCardFormScope) in
-                        AnyView(
-                            VStack(spacing: 12) {
-                                scope.cardNumberInput?(PrimerModifier()
-                                    .fillMaxWidth()
-                                    .height(44)
-                                    .padding(.horizontal, 12)
-                                    .background(.white)
-                                    .cornerRadius(8)
-                                    .border(isValid ? .green : .gray.opacity(0.3), width: isValid ? 2 : 1)
-                                )
-                                
-                                HStack(spacing: 12) {
-                                    scope.expiryDateInput?(PrimerModifier()
-                                        .fillMaxWidth()
-                                        .height(44)
-                                        .padding(.horizontal, 12)
-                                        .background(.white)
-                                        .cornerRadius(8)
-                                        .border(.gray.opacity(0.3), width: 1)
-                                    )
-                                    
-                                    scope.cvvInput?(PrimerModifier()
-                                        .fillMaxWidth()
-                                        .height(44)
-                                        .padding(.horizontal, 12)
-                                        .background(.white)
-                                        .cornerRadius(8)
-                                        .border(.gray.opacity(0.3), width: 1)
-                                    )
-                                }
-                            }
-                            .onChange(of: cardNumber) { _ in
-                                updateState()
-                            }
-                        )
-                    }
-                }
-            )
-            .frame(height: 120)
+            Text("Real-time state updates and debugging")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .padding(.bottom)
+            
+            Button("Show Live State Checkout") {
+                presentCheckout(title: "LiveStateCardFormDemo")
+            }
+            .buttonStyle(.borderedProminent)
+            .frame(maxWidth: .infinity)
         }
-        .onAppear {
-            currentState = "Form loaded and ready"
-        }
+        .frame(height: 200)
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
     }
     
-    private func updateState() {
-        isValid = cardNumber.count >= 16
-        currentState = isValid ? "Valid card number detected" : "Waiting for valid input"
+    private func presentCheckout(title: String) {
+        // Find the current view controller to present from
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first,
+              let rootViewController = findTopViewController(from: window.rootViewController) else {
+            print("❌ [\(title)] Could not find view controller to present from")
+            return
+        }
+        
+        print("🔍 [\(title)] Button tapped - presenting CheckoutComponents")
+        
+        // Present using CheckoutComponentsPrimer with custom live state content
+        CheckoutComponentsPrimer.presentCheckout(
+            with: clientToken,
+            from: rootViewController,
+            customContent: { checkoutScope in
+                return AnyView(
+                    PrimerCheckout(
+                        clientToken: clientToken,
+                        settings: settings,
+                        scope: { checkoutScope in
+                            checkoutScope.setPaymentMethodScreen(.paymentCard) { (scope: any PrimerPaymentMethodScope) in
+                                guard let cardScope = scope as? any PrimerCardFormScope else {
+                                    return AnyView(Text("Error: Invalid scope type").foregroundColor(.red))
+                                }
+                                return AnyView(
+                                    VStack(spacing: 20) {
+                                        // Live state header with indicators
+                                        VStack(spacing: 8) {
+                                            HStack {
+                                                Text("Live State Demo")
+                                                    .font(.title2.weight(.semibold))
+                                                Spacer()
+                                                Circle()
+                                                    .fill(.green)
+                                                    .frame(width: 8, height: 8)
+                                                Text("LIVE")
+                                                    .font(.caption.weight(.bold))
+                                                    .foregroundColor(.green)
+                                            }
+                                            Text("Real-time validation and state updates")
+                                                .font(.subheadline)
+                                                .foregroundColor(.secondary)
+                                        }
+                                        
+                                        // Form with live state indicators
+                                        VStack(spacing: 16) {
+                                            // Card number with live state
+                                            if let cardNumberInput = cardScope.cardNumberInput {
+                                                VStack(alignment: .leading, spacing: 6) {
+                                                    HStack {
+                                                        Text("Card Number")
+                                                            .font(.subheadline.weight(.medium))
+                                                        Spacer()
+                                                        Text("🟢 Validating...")
+                                                            .font(.caption)
+                                                            .foregroundColor(.orange)
+                                                    }
+                                                    cardNumberInput(PrimerModifier()
+                                                        .fillMaxWidth()
+                                                        .height(50)
+                                                        .padding(.horizontal, 16)
+                                                        .background(.blue.opacity(0.05))
+                                                        .cornerRadius(10)
+                                                        .border(.blue.opacity(0.3), width: 2)
+                                                    )
+                                                }
+                                                .padding(.horizontal, 4)
+                                            }
+                                            
+                                            // Expiry and CVV with state indicators
+                                            HStack(spacing: 16) {
+                                                if let expiryDateInput = cardScope.expiryDateInput {
+                                                    VStack(alignment: .leading, spacing: 6) {
+                                                        HStack {
+                                                            Text("Expiry")
+                                                                .font(.subheadline.weight(.medium))
+                                                            Spacer()
+                                                            Text("⚙️")
+                                                                .font(.caption)
+                                                        }
+                                                        expiryDateInput(PrimerModifier()
+                                                            .fillMaxWidth()
+                                                            .height(50)
+                                                            .padding(.horizontal, 16)
+                                                            .background(.green.opacity(0.05))
+                                                            .cornerRadius(10)
+                                                            .border(.green.opacity(0.3), width: 2)
+                                                        )
+                                                    }
+                                                    .padding(.horizontal, 4)
+                                                }
+                                                
+                                                if let cvvInput = cardScope.cvvInput {
+                                                    VStack(alignment: .leading, spacing: 6) {
+                                                        HStack {
+                                                            Text("CVV")
+                                                                .font(.subheadline.weight(.medium))
+                                                            Spacer()
+                                                            Text("🔒")
+                                                                .font(.caption)
+                                                        }
+                                                        cvvInput(PrimerModifier()
+                                                            .fillMaxWidth()
+                                                            .height(50)
+                                                            .padding(.horizontal, 16)
+                                                            .background(.purple.opacity(0.05))
+                                                            .cornerRadius(10)
+                                                            .border(.purple.opacity(0.3), width: 2)
+                                                        )
+                                                    }
+                                                    .padding(.horizontal, 4)
+                                                }
+                                            }
+                                            
+                                            // Cardholder name with live feedback
+                                            if let cardholderNameInput = cardScope.cardholderNameInput {
+                                                VStack(alignment: .leading, spacing: 6) {
+                                                    HStack {
+                                                        Text("Name on Card")
+                                                            .font(.subheadline.weight(.medium))
+                                                        Spacer()
+                                                        Text("👤 Input Active")
+                                                            .font(.caption)
+                                                            .foregroundColor(.blue)
+                                                    }
+                                                    cardholderNameInput(PrimerModifier()
+                                                        .fillMaxWidth()
+                                                        .height(50)
+                                                        .padding(.horizontal, 16)
+                                                        .background(.orange.opacity(0.05))
+                                                        .cornerRadius(10)
+                                                        .border(.orange.opacity(0.3), width: 2)
+                                                    )
+                                                }
+                                                .padding(.horizontal, 4)
+                                            }
+                                        }
+                                        
+                                        // Live state footer
+                                        VStack(spacing: 4) {
+                                            Text("• Fields validate in real-time")
+                                            Text("• State changes are immediately visible")
+                                            Text("• Live feedback provides instant validation")
+                                        }
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    }
+                                    .padding(20)
+                                    .background(.white)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(.blue.opacity(0.2), lineWidth: 1)
+                                    )
+                                )
+                            }
+                        }
+                    )
+                )
+            },
+            completion: {
+                print("✅ [\(title)] CheckoutComponents presentation completed")
+            }
+        )
+        
+        print("✅ [\(title)] CheckoutComponents presentation initiated")
+    }
+
+    private func findTopViewController(from rootViewController: UIViewController?) -> UIViewController? {
+        if let presented = rootViewController?.presentedViewController {
+            return findTopViewController(from: presented)
+        }
+        
+        if let navigationController = rootViewController as? UINavigationController {
+            return findTopViewController(from: navigationController.visibleViewController)
+        }
+        
+        if let tabBarController = rootViewController as? UITabBarController {
+            return findTopViewController(from: tabBarController.selectedViewController)
+        }
+        
+        return rootViewController
     }
 }

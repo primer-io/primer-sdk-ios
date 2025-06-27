@@ -30,11 +30,8 @@ internal struct CountryInputField: View, LogReporter {
     /// Callback to open country selector
     let onOpenCountrySelector: (() -> Void)?
 
-    /// External country name for reactive updates
-    let selectedCountryName: String?
-
-    /// External country code for reactive updates
-    let selectedCountryCode: String?
+    /// External country for reactive updates (using proper SDK type)
+    let selectedCountry: CountryCode.PhoneNumberCountryCode?
 
     // MARK: - Private Properties
 
@@ -55,6 +52,9 @@ internal struct CountryInputField: View, LogReporter {
     @State private var errorMessage: String?
 
     @Environment(\.designTokens) private var tokens
+
+    // MARK: - Computed Properties
+    
 
     // MARK: - Body
 
@@ -95,11 +95,9 @@ internal struct CountryInputField: View, LogReporter {
             setupValidationService()
             updateFromExternalState()
         }
-        .onChange(of: selectedCountryName) { _ in
-            updateFromExternalState()
-        }
-        .onChange(of: selectedCountryCode) { _ in
-            updateFromExternalState()
+        .onChange(of: selectedCountry) { newCountry in
+            logger.debug(message: "CountryInputField onChange triggered with: \(newCountry?.name ?? "nil") (\(newCountry?.code ?? "nil"))")
+            updateFromExternalState(with: newCountry)
         }
     }
 
@@ -116,16 +114,28 @@ internal struct CountryInputField: View, LogReporter {
         }
     }
 
-    /// Updates the field from external state changes
+    /// Updates the field from external state changes using the property
     private func updateFromExternalState() {
-        if let selectedName = selectedCountryName, let selectedCode = selectedCountryCode {
-            logger.debug(message: "CountryInputField updating from external state: \(selectedName) (\(selectedCode))")
-            countryName = selectedName
-            countryCode = selectedCode
+        updateFromExternalState(with: selectedCountry)
+    }
+    
+    /// Updates the field from external state changes using the provided country
+    private func updateFromExternalState(with country: CountryCode.PhoneNumberCountryCode?) {
+        // Debug: Show what we received
+        logger.debug(message: "CountryInputField updateFromExternalState called with country: \(country?.name ?? "nil") (\(country?.code ?? "nil"))")
+        
+        // Update directly from the atomic CountryCode.PhoneNumberCountryCode object
+        if let country = country, !country.name.isEmpty, !country.code.isEmpty {
+            logger.debug(message: "CountryInputField updating from external state: \(country.name) (\(country.code))")
+            // Always update to ensure we have the latest state, even if it seems the same
+            countryName = country.name
+            countryCode = country.code
             validateCountry()
+        } else {
+            logger.debug(message: "CountryInputField skipping update - country is nil or empty")
         }
     }
-
+    
     /// Updates the selected country
     func updateCountry(name: String, code: String) {
         countryName = name
