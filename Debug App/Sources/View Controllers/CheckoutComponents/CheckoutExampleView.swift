@@ -21,6 +21,13 @@ struct CheckoutExampleView: View {
     @State private var error: String?
     @State private var checkoutCompleted = false
     
+    init(example: ExampleConfig, settings: PrimerSettings, apiVersion: PrimerApiVersion) {
+        self.example = example
+        self.settings = settings
+        self.apiVersion = apiVersion
+        print("🔍 [CheckoutExampleView] Init called for example: \(example.name)")
+    }
+    
     var body: some View {
         NavigationView {
             contentView
@@ -37,6 +44,8 @@ struct CheckoutExampleView: View {
     
     @ViewBuilder
     private var contentView: some View {
+        let _ = print("🔍 [CheckoutExampleView] contentView - isLoading: \(isLoading), error: \(error ?? "none"), clientToken: \(clientToken?.prefix(10) ?? "none")")
+        
         Group {
             if isLoading {
                 LoadingView()
@@ -86,11 +95,13 @@ struct CheckoutExampleView: View {
     }
     
     private func createSession() async {
+        print("🔍 [CheckoutExampleView] createSession called for: \(example.name)")
         isLoading = true
         error = nil
         
         do {
             let session = example.createSession()
+            print("🔍 [CheckoutExampleView] Session created, requesting client token...")
             
             // Request client token using the session configuration
             let result: AsyncResult<String, Error> = await withCheckedContinuation { continuation in
@@ -107,14 +118,18 @@ struct CheckoutExampleView: View {
             
             switch result {
             case .success(let token):
+                print("🔍 [CheckoutExampleView] Client token received: \(token.prefix(20))...")
                 await MainActor.run {
                     self.clientToken = token
                     self.isLoading = false
+                    print("🔍 [CheckoutExampleView] Updated UI - isLoading: false, clientToken set")
                 }
             case .failure(let error):
+                print("🔍 [CheckoutExampleView] Client token failed: \(error)")
                 await MainActor.run {
                     self.error = error.localizedDescription
                     self.isLoading = false
+                    print("🔍 [CheckoutExampleView] Updated UI - isLoading: false, error: \(error.localizedDescription)")
                 }
             }
         }
@@ -182,22 +197,52 @@ struct CheckoutContentView: View {
             // Example info header
             ExampleInfoHeader(example: example)
             
-            // Pure SwiftUI PrimerCheckout integration
-            PrimerCheckout(
-                clientToken: clientToken,
-                settings: settings
-                // Use default DI container and navigator as specified in the plan
-            )
-            .onReceive(checkoutCompletedPublisher) { _ in
-                onCompletion()
+            // Debug output
+            let _ = print("🔍 [CheckoutContentView] Example: \(example.name), isDefaultExample: \(isDefaultExample)")
+            
+            // Choose integration approach based on example type
+            if isDefaultExample {
+                // Direct SwiftUI integration - now completely automatic!
+                directSwiftUIContent
+            } else {
+                // Bridge integration for customized examples (placeholder for now)
+                Text("Customized examples coming soon")
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+        }
+        .onAppear {
+            print("🔍 [CheckoutContentView] onAppear called, isDefaultExample: \(isDefaultExample)")
         }
     }
     
-    // Placeholder for checkout completion publisher
-    // This would need to be implemented based on actual PrimerCheckout API
-    private var checkoutCompletedPublisher: NotificationCenter.Publisher {
-        NotificationCenter.default.publisher(for: .init("CheckoutCompleted"))
+    private var isDefaultExample: Bool {
+        example.customization == nil
+    }
+    
+    @ViewBuilder
+    private var directSwiftUIContent: some View {
+        // Simple, clean integration - PrimerCheckout handles everything automatically!
+        VStack {
+            Text("Pure SwiftUI PrimerCheckout")
+                .font(.headline)
+                .padding()
+            
+            Text("Client Token: \(clientToken.prefix(20))...")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .padding(.bottom)
+            
+            // This is all the merchant needs to do - PrimerCheckout handles SDK initialization automatically!
+            PrimerCheckout(
+                clientToken: clientToken,
+                settings: settings,
+                onCompletion: onCompletion
+            )
+            .onAppear {
+                print("🎯 [CheckoutContentView] PrimerCheckout appeared - SDK initialization will happen automatically")
+            }
+        }
     }
 }
 

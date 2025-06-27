@@ -23,6 +23,9 @@
                location = "group:CheckoutComponents"
                name = "CheckoutComponents">
                <FileRef
+                  location = "group:PrimerCheckout.swift">
+               </FileRef>
+               <FileRef
                   location = "group:CheckoutComponentsPrimer.swift">
                </FileRef>
                <Group
@@ -336,9 +339,6 @@
                </Group>
                <FileRef
                   location = "group:README.md">
-               </FileRef>
-               <FileRef
-                  location = "group:PrimerCheckout.swift">
                </FileRef>
             </Group>
             <Group

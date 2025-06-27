@@ -290,7 +290,7 @@ internal struct BillingAddressView: View, LogReporter {
                         // Find the dial code from the available countries
                         let dialCode = CountryCode.phoneNumberCountryCodes
                             .first { $0.code == code }?.dialCode ?? ""
-                        
+
                         let newCountry = CountryCode.PhoneNumberCountryCode(
                             name: name,
                             dialCode: dialCode,

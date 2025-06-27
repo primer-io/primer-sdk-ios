@@ -179,9 +179,22 @@ let advancedExamples: [ExampleConfig] = [
     )
 ]
 
+// MARK: - Default Examples
+
+let defaultExamples: [ExampleConfig] = [
+    ExampleConfig(
+        name: "Default CheckoutComponents",
+        description: "Basic CheckoutComponents without customization - shows all payment methods",
+        sessionType: .fullMethods,
+        paymentMethods: ["PAYMENT_CARD", "APPLE_PAY", "PAYPAL", "GOOGLE_PAY"],
+        customization: nil
+    )
+]
+
 // MARK: - All Examples by Category
 
 enum ExampleCategory: String, CaseIterable {
+    case `default` = "Default Example"
     case layouts = "Layout Configurations"
     case styling = "Styling Variations"
     case interactive = "Interactive Features"
@@ -189,6 +202,8 @@ enum ExampleCategory: String, CaseIterable {
     
     var examples: [ExampleConfig] {
         switch self {
+        case .default:
+            return defaultExamples
         case .layouts:
             return layoutExamples
         case .styling:
@@ -202,6 +217,8 @@ enum ExampleCategory: String, CaseIterable {
     
     var description: String {
         switch self {
+        case .default:
+            return "Basic CheckoutComponents without customization"
         case .layouts:
             return "Different ways to arrange CheckoutComponents"
         case .styling:

@@ -17,8 +17,8 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         case loading
         case paymentMethodSelection
         case paymentMethod(String)  // Dynamic payment method with type identifier
+        case success(CheckoutPaymentResult)
         case failure(PrimerError)
-        // Note: Success case removed - CheckoutComponents dismisses immediately on success
     }
 
     // MARK: - Properties
@@ -50,6 +50,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     public var container: ((_ content: @escaping () -> AnyView) -> AnyView)?
     public var splashScreen: (() -> AnyView)?
     public var loadingScreen: (() -> AnyView)?
+    public var successScreen: ((_ result: CheckoutPaymentResult) -> AnyView)?
     public var errorScreen: ((_ message: String) -> AnyView)?
     public var paymentMethodSelectionScreen: ((_ scope: PrimerPaymentMethodSelectionScope) -> AnyView)?
 
@@ -225,7 +226,9 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
 
     private func updateState(_ newState: PrimerCheckoutState) {
         logger.debug(message: "Checkout state updating to: \(newState)")
+        logger.debug(message: "Previous state was: \(internalState)")
         internalState = newState
+        logger.debug(message: "State update completed. Current state: \(internalState)")
     }
 
     private func updateNavigationState(_ newState: NavigationState, syncToNavigator: Bool = true) {
@@ -241,6 +244,9 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                 navigator.navigateToPaymentSelection()
             case .paymentMethod(let paymentMethodType):
                 navigator.navigateToPaymentMethod(paymentMethodType)
+            case .success(let result):
+                // Success handling is now done via the view's switch statement, not the navigator
+                logger.info(message: "Success navigation handled by view layer")
             case .failure(let error):
                 navigator.navigateToError(error.localizedDescription)
             }
@@ -385,7 +391,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     }
 
     // MARK: - Payment Method Screen Management
-    
+
     /// Type mapping from payment method enum to string identifier
     private func getPaymentMethodIdentifier(_ type: PrimerPaymentMethodType) -> String {
         return type.rawValue
@@ -414,7 +420,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         logger.debug(message: "Getting custom screen for payment method type: \(paymentMethodType) (\(identifier))")
         return paymentMethodScreens[identifier] as? (any PrimerPaymentMethodScope) -> AnyView
     }
-    
+
     /// Internal method to get custom screen by string identifier (for backwards compatibility)
     internal func getPaymentMethodScreenByIdentifier(_ identifier: String) -> ((any PrimerPaymentMethodScope) -> AnyView)? {
         return paymentMethodScreens[identifier] as? (any PrimerPaymentMethodScope) -> AnyView
@@ -487,26 +493,36 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     internal func handlePaymentSuccess(_ result: PaymentResult) {
         logger.info(message: "Payment successful: \(result.paymentId)")
 
-        // For CheckoutComponents, notify CheckoutComponentsPrimer to handle success and dismissal
-        // This matches the expected flow: CheckoutComponents dismisses → delegate presents result screen
-        logger.info(message: "Payment successful, notifying CheckoutComponentsPrimer to handle success and dismissal")
-
         // Update state to success for any listeners
         updateState(.success(result))
 
-        // Notify CheckoutComponentsPrimer about success with the actual payment result
-        CheckoutComponentsPrimer.shared.handlePaymentSuccess(result)
+        // Navigate to success screen with payment result
+        let checkoutResult = CheckoutPaymentResult(
+            paymentId: result.paymentId,
+            amount: result.amount?.description ?? "N/A",
+            method: result.paymentMethodType ?? "Card"
+        )
+        updateNavigationState(.success(checkoutResult))
     }
 
     internal func handlePaymentError(_ error: PrimerError) {
         logger.error(message: "Payment error: \\(error)")
 
-        // Notify CheckoutComponentsPrimer about the failure
-        // This will propagate to PrimerUIManager to show the error screen
-        logger.info(message: "Notifying CheckoutComponentsPrimer about payment failure")
-        CheckoutComponentsPrimer.shared.handlePaymentFailure(error)
-
-        updateNavigationState(.failure(error))
+        // Update state and navigate to error screen
         updateState(.failure(error))
+        updateNavigationState(.failure(error))
+    }
+
+    /// Handle auto-dismiss from success or error screens
+    internal func handleAutoDismiss() {
+        logger.info(message: "Auto-dismiss triggered, completing checkout")
+        logger.info(message: "Current state before auto-dismiss: \(internalState)")
+        // This will be handled by the parent view (PrimerCheckout) to dismiss the entire checkout
+        Task { @MainActor in
+            // Notify any parent view that the checkout should be dismissed
+            logger.info(message: "Updating state to dismissed")
+            updateState(.dismissed)
+            logger.info(message: "State updated to dismissed: \(internalState)")
+        }
     }
 }

@@ -16,7 +16,18 @@ struct CheckoutComponentsExamplesView: View {
     
     @SwiftUI.Environment(\.dismiss) private var dismiss
     
+    init(settings: PrimerSettings, apiVersion: PrimerApiVersion) {
+        self.settings = settings
+        self.apiVersion = apiVersion
+        print("🔍 [CheckoutComponentsExamplesView] Init called")
+        print("🔍 [CheckoutComponentsExamplesView] Settings: \(settings)")
+        print("🔍 [CheckoutComponentsExamplesView] API Version: \(apiVersion)")
+    }
+    
     var body: some View {
+        let _ = print("🔍 [CheckoutComponentsExamplesView] body called")
+        let _ = print("🔍 [CheckoutComponentsExamplesView] Categories: \(ExampleCategory.allCases.map { $0.rawValue })")
+        
         NavigationView {
             List {
                 ForEach(ExampleCategory.allCases, id: \.self) { category in
@@ -28,15 +39,6 @@ struct CheckoutComponentsExamplesView: View {
                         )
                     ) {
                         CategoryRow(category: category)
-                    }
-                }
-            }
-            .navigationTitle("CheckoutComponents Examples")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        dismiss()
                     }
                 }
             }
@@ -84,8 +86,7 @@ struct CategoryExamplesView: View {
     let settings: PrimerSettings
     let apiVersion: PrimerApiVersion
     
-    @State private var showingCheckout = false
-    @State private var selectedExample: ExampleConfig?
+    @State private var presentedExample: ExampleConfig?
     
     var body: some View {
         List {
@@ -93,21 +94,24 @@ struct CategoryExamplesView: View {
                 ExampleRow(
                     example: example,
                     onTap: { 
-                        selectedExample = example
-                        showingCheckout = true 
+                        print("🔍 [CategoryExamplesView] Example tapped: \(example.name)")
+                        presentedExample = example
+                        print("🔍 [CategoryExamplesView] presentedExample set to: \(presentedExample?.name ?? "nil")")
                     }
                 )
             }
         }
         .navigationTitle(category.rawValue)
         .navigationBarTitleDisplayMode(.inline)
-        .sheet(isPresented: $showingCheckout) {
-            if let example = selectedExample {
-                CheckoutExampleView(
-                    example: example, 
-                    settings: settings,
-                    apiVersion: apiVersion
-                )
+        .sheet(item: $presentedExample) { example in
+            CheckoutExampleView(
+                example: example, 
+                settings: settings,
+                apiVersion: apiVersion
+            )
+            .onAppear {
+                print("🔍 [CategoryExamplesView] Sheet presenting for: \(example.name)")
+                print("🔍 [CategoryExamplesView] CheckoutExampleView appeared for: \(example.name)")
             }
         }
     }

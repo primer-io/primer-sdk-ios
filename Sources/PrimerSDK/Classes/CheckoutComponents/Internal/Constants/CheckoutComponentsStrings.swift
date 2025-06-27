@@ -510,4 +510,34 @@ internal struct CheckoutComponentsStrings {
         value: "Please try again and complete the authentication process.",
         comment: "3DS complete authentication recovery message"
     )
+
+    // MARK: - Success Screen Details
+
+    static let paymentId = NSLocalizedString(
+        "checkout-components-payment-id",
+        bundle: Bundle.primerResources,
+        value: "Payment ID",
+        comment: "Payment ID label on success screen"
+    )
+
+    static let amount = NSLocalizedString(
+        "checkout-components-amount",
+        bundle: Bundle.primerResources,
+        value: "Amount",
+        comment: "Amount label on success screen"
+    )
+
+    static let paymentMethod = NSLocalizedString(
+        "checkout-components-payment-method",
+        bundle: Bundle.primerResources,
+        value: "Payment Method",
+        comment: "Payment method label on success screen"
+    )
+
+    static let autoDismissMessage = NSLocalizedString(
+        "checkout-components-auto-dismiss",
+        bundle: Bundle.primerResources,
+        value: "This screen will close automatically in 3 seconds",
+        comment: "Auto-dismiss message on success and error screens"
+    )
 }

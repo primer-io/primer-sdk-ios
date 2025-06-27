@@ -48,6 +48,9 @@ public struct PrimerCheckout: View {
 
     /// Optional custom content builder for complete UI replacement
     private let customContent: ((PrimerCheckoutScope) -> AnyView)?
+    
+    /// Optional completion callback for dismissal handling
+    private let onCompletion: (() -> Void)?
 
     /// DI container (internal use only)
     internal let diContainer: DIContainer
@@ -60,15 +63,18 @@ public struct PrimerCheckout: View {
     ///   - clientToken: The client token obtained from your backend.
     ///   - settings: Configuration settings including theme and payment options.
     ///   - scope: Optional closure to customize UI components through the scope interface.
+    ///   - onCompletion: Optional completion callback called when checkout completes or dismisses.
     public init(
         clientToken: String,
         settings: PrimerSettings = PrimerSettings(),
-        scope: ((PrimerCheckoutScope) -> Void)? = nil
+        scope: ((PrimerCheckoutScope) -> Void)? = nil,
+        onCompletion: (() -> Void)? = nil
     ) {
         self.clientToken = clientToken
         self.settings = settings
         self.scope = scope
         self.customContent = nil
+        self.onCompletion = onCompletion
         self.diContainer = DIContainer.shared
         self.navigator = CheckoutNavigator()
     }
@@ -85,6 +91,7 @@ public struct PrimerCheckout: View {
         self.settings = settings
         self.scope = nil
         self.customContent = { scope in AnyView(customContent(scope)) }
+        self.onCompletion = nil
         self.diContainer = diContainer
         self.navigator = navigator
     }
@@ -100,6 +107,7 @@ public struct PrimerCheckout: View {
         self.settings = settings
         self.scope = nil
         self.customContent = nil
+        self.onCompletion = nil
         self.diContainer = diContainer
         self.navigator = navigator
     }
@@ -113,7 +121,8 @@ public struct PrimerCheckout: View {
             diContainer: diContainer,
             navigator: navigator,
             scope: scope,
-            customContent: customContent
+            customContent: customContent,
+            onCompletion: onCompletion
         )
     }
 }
@@ -130,8 +139,12 @@ internal struct InternalCheckout: View {
     let navigator: CheckoutNavigator
     let scope: ((PrimerCheckoutScope) -> Void)?
     let customContent: ((PrimerCheckoutScope) -> AnyView)?
+    let onCompletion: (() -> Void)?
 
-    @StateObject private var checkoutScope: DefaultCheckoutScope
+    @State private var checkoutScope: DefaultCheckoutScope?
+    @State private var sdkInitialized = false
+    @State private var initializationError: PrimerError?
+    @State private var isInitializing = false
 
     init(
         clientToken: String,
@@ -139,7 +152,8 @@ internal struct InternalCheckout: View {
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
         scope: ((PrimerCheckoutScope) -> Void)?,
-        customContent: ((PrimerCheckoutScope) -> AnyView)?
+        customContent: ((PrimerCheckoutScope) -> AnyView)?,
+        onCompletion: (() -> Void)?
     ) {
         self.clientToken = clientToken
         self.settings = settings
@@ -147,78 +161,106 @@ internal struct InternalCheckout: View {
         self.navigator = navigator
         self.scope = scope
         self.customContent = customContent
+        self.onCompletion = onCompletion
 
-        // Create the checkout scope
-        let defaultScope = DefaultCheckoutScope(
-            clientToken: clientToken,
-            settings: settings,
-            diContainer: diContainer,
-            navigator: navigator
-        )
-        self._checkoutScope = StateObject(wrappedValue: defaultScope)
+        // Don't create checkout scope until SDK is initialized
+        self._checkoutScope = State(initialValue: nil)
     }
 
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                // Navigation state driven UI
-                ZStack {
-                    switch checkoutScope.navigationState {
-                    case .loading:
-                        if let customLoading = checkoutScope.loadingScreen {
-                            AnyView(customLoading())
-                        } else {
-                            AnyView(LoadingScreen())
-                        }
-
-                    case .paymentMethodSelection:
-                        if let customPaymentSelection = checkoutScope.paymentMethodSelectionScreen {
-                            AnyView(customPaymentSelection(checkoutScope.paymentMethodSelection))
-                        } else {
-                            AnyView(PaymentMethodSelectionScreen(
-                                scope: checkoutScope.paymentMethodSelection
-                            ))
-                        }
-
-                    case .paymentMethod(let paymentMethodType):
-                        // Handle all payment method types using truly unified dynamic approach
-                        PaymentMethodScreen(
-                            paymentMethodType: paymentMethodType,
-                            checkoutScope: checkoutScope
-                        )
-
-                    // Note: Success case removed - CheckoutComponents dismisses immediately on success
-                    // The delegate handles presenting the result screen via PrimerResultViewController
-
-                    case .failure(let error):
-                        if let customError = checkoutScope.errorScreen {
-                            AnyView(customError(error.localizedDescription))
-                        } else {
-                            AnyView(ErrorScreen(error: error))
-                        }
-                    }
-
-                    // Custom content overlay if provided
-                    if let customContent = customContent {
-                        customContent(checkoutScope)
+        VStack(spacing: 0) {
+            // Show initialization state first
+            if isInitializing {
+                SDKInitializationLoadingView()
+            } else if let error = initializationError {
+                SDKInitializationErrorView(error: error) {
+                    Task {
+                        await initializeSDK()
                     }
                 }
+            } else if sdkInitialized, let checkoutScope = checkoutScope {
+                // Only show the checkout UI when SDK is fully initialized and scope is created
+                CheckoutScopeObserver(scope: checkoutScope, customContent: customContent, scopeCustomization: scope, onCompletion: onCompletion)
+            } else {
+                // This shouldn't happen, but show loading as fallback
+                SDKInitializationLoadingView()
             }
-            .environmentObject(checkoutScope)
-            .environment(\.diContainer, DIContainer.currentSync)
-        }
-        .onAppear {
-            // Apply any scope customizations
-            scope?(checkoutScope)
         }
         .task {
-            // Observe checkout state for dismissal
-            for await state in checkoutScope.state {
-                if case .dismissed = state {
-                    // Trigger dismissal of the checkout
-                    // This will be handled by the hosting controller
-                    break
+            // Initialize SDK first, before anything else
+            await initializeSDK()
+        }
+    }
+
+    // MARK: - SDK Initialization
+
+    /// Initialize the SDK using the same pattern as CheckoutComponentsPrimer
+    private func initializeSDK() async {
+        guard !isInitializing && !sdkInitialized else { return }
+
+        isInitializing = true
+        initializationError = nil
+
+        do {
+            // Follow the exact same pattern as CheckoutComponentsPrimer.swift:267-317
+            // Step 1: Set up SDK integration type and intent
+            PrimerInternal.shared.sdkIntegrationType = .checkoutComponents
+            PrimerInternal.shared.intent = .checkout
+            PrimerInternal.shared.checkoutSessionId = UUID().uuidString
+
+            // Step 2: Register settings in dependency container
+            DependencyContainer.register(settings as PrimerSettingsProtocol)
+
+            // Step 3: Initialize SDK session using configuration module
+            let apiConfigurationModule = PrimerAPIConfigurationModule()
+
+            try await withCheckedThrowingContinuation { continuation in
+                firstly {
+                    apiConfigurationModule.setupSession(
+                        forClientToken: clientToken,
+                        requestDisplayMetadata: true,
+                        requestClientTokenValidation: false,
+                        requestVaultedPaymentMethods: false
+                    )
                 }
+                .done {
+                    continuation.resume()
+                }
+                .catch { error in
+                    continuation.resume(throwing: error)
+                }
+            }
+
+            // Step 4: Configure CheckoutComponents DI container
+            let composableContainer = ComposableContainer()
+            await composableContainer.configure()
+
+            // SDK is now ready - create the checkout scope
+            let defaultScope = DefaultCheckoutScope(
+                clientToken: clientToken,
+                settings: settings,
+                diContainer: diContainer,
+                navigator: navigator
+            )
+
+            checkoutScope = defaultScope
+            sdkInitialized = true
+            isInitializing = false
+
+        } catch {
+            isInitializing = false
+
+            // Convert to PrimerError if needed
+            if let primerError = error as? PrimerError {
+                initializationError = primerError
+            } else {
+                initializationError = PrimerError.underlyingErrors(
+                    errors: [error],
+                    userInfo: .errorUserInfoDictionary(
+                        additionalInfo: ["message": "SDK initialization failed"]
+                    ),
+                    diagnosticsId: UUID().uuidString
+                )
             }
         }
     }
@@ -296,5 +338,140 @@ internal struct PaymentMethodPlaceholder: View {
         case "PAYPAL": return "dollarsign.circle"
         default: return "creditcard"
         }
+    }
+}
+
+// MARK: - Checkout Scope Observer
+
+/// Wrapper view that properly observes the DefaultCheckoutScope as an ObservableObject
+@available(iOS 15.0, *)
+internal struct CheckoutScopeObserver: View, LogReporter {
+    @ObservedObject private var scope: DefaultCheckoutScope
+    private let customContent: ((PrimerCheckoutScope) -> AnyView)?
+    private let scopeCustomization: ((PrimerCheckoutScope) -> Void)?
+    private let onCompletion: (() -> Void)?
+    @Environment(\.dismiss) private var dismiss
+
+    init(scope: DefaultCheckoutScope, customContent: ((PrimerCheckoutScope) -> AnyView)?, scopeCustomization: ((PrimerCheckoutScope) -> Void)?, onCompletion: (() -> Void)?) {
+        self.scope = scope
+        self.customContent = customContent
+        self.scopeCustomization = scopeCustomization
+        self.onCompletion = onCompletion
+    }
+
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 0) {
+                // Navigation state driven UI (now properly observing @Published navigationState)
+                ZStack {
+                    switch scope.navigationState {
+                    case .loading:
+                        if let customLoading = scope.loadingScreen {
+                            AnyView(customLoading())
+                        } else {
+                            AnyView(LoadingScreen())
+                        }
+
+                    case .paymentMethodSelection:
+                        if let customPaymentSelection = scope.paymentMethodSelectionScreen {
+                            AnyView(customPaymentSelection(scope.paymentMethodSelection))
+                        } else {
+                            AnyView(PaymentMethodSelectionScreen(
+                                scope: scope.paymentMethodSelection
+                            ))
+                        }
+
+                    case .paymentMethod(let paymentMethodType):
+                        // Handle all payment method types using truly unified dynamic approach
+                        PaymentMethodScreen(
+                            paymentMethodType: paymentMethodType,
+                            checkoutScope: scope
+                        )
+
+                    case .success(let result):
+                        if let customSuccess = scope.successScreen {
+                            AnyView(customSuccess(result))
+                        } else {
+                            AnyView(SuccessScreen(result: result) {
+                                // Handle auto-dismiss with completion callback
+                                logger.info(message: "Success screen auto-dismiss, calling completion callback")
+                                onCompletion?()
+                            })
+                        }
+
+                    case .failure(let error):
+                        if let customError = scope.errorScreen {
+                            AnyView(customError(error.localizedDescription))
+                        } else {
+                            AnyView(ErrorScreen(error: error) {
+                                // Handle auto-dismiss with completion callback
+                                logger.info(message: "Error screen auto-dismiss, calling completion callback")
+                                onCompletion?()
+                            })
+                        }
+                    }
+
+                    // Custom content overlay if provided
+                    if let customContent = customContent {
+                        customContent(scope)
+                    }
+                }
+            }
+            .environmentObject(scope)
+            .environment(\.diContainer, DIContainer.currentSync)
+        }
+        .onAppear {
+            // Apply any scope customizations (only after SDK is initialized)
+            scopeCustomization?(scope)
+        }
+    }
+}
+
+// MARK: - SDK Initialization UI Components
+
+/// Loading view shown during SDK initialization
+@available(iOS 15.0, *)
+internal struct SDKInitializationLoadingView: View {
+    var body: some View {
+        VStack(spacing: 20) {
+            ProgressView()
+                .scaleEffect(1.5)
+
+            Text("Initializing payment system...")
+                .font(.headline)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+/// Error view shown when SDK initialization fails
+@available(iOS 15.0, *)
+internal struct SDKInitializationErrorView: View {
+    let error: PrimerError
+    let onRetry: () -> Void
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.system(size: 48))
+                .foregroundColor(.orange)
+
+            Text("Payment System Error")
+                .font(.headline)
+
+            Text(error.localizedDescription)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+
+            Button("Retry") {
+                onRetry()
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
     }
 }

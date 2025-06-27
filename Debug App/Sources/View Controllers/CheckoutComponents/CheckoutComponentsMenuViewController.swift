@@ -174,11 +174,27 @@ class CheckoutComponentsMenuViewController: UIViewController {
         
         // Present CheckoutComponentsExamplesView
         if #available(iOS 15.0, *) {
+            print("🔍 [MenuViewController] iOS 15+ available, creating examples view...")
+            print("🔍 [MenuViewController] Settings: \(settings)")
+            print("🔍 [MenuViewController] API Version: \(apiVersion)")
+            
             let examplesView = CheckoutComponentsExamplesView(settings: settings, apiVersion: apiVersion)
+            print("🔍 [MenuViewController] CheckoutComponentsExamplesView created")
+            
             let hostingController = UIHostingController(rootView: examplesView)
             hostingController.title = "CheckoutComponents Examples"
-            navigationController?.pushViewController(hostingController, animated: true)
+            print("🔍 [MenuViewController] UIHostingController created")
+            
+            if let navController = navigationController {
+                print("🔍 [MenuViewController] Navigation controller exists, pushing...")
+                navController.pushViewController(hostingController, animated: true)
+                print("🔍 [MenuViewController] Push completed")
+            } else {
+                print("❌ [MenuViewController] No navigation controller!")
+                showErrorAlert(message: "Navigation controller not available")
+            }
         } else {
+            print("❌ [MenuViewController] iOS version too old")
             showErrorAlert(message: "CheckoutComponents requires iOS 15.0 or later")
         }
     }

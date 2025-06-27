@@ -54,7 +54,6 @@ internal struct CountryInputField: View, LogReporter {
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Computed Properties
-    
 
     // MARK: - Body
 
@@ -118,12 +117,12 @@ internal struct CountryInputField: View, LogReporter {
     private func updateFromExternalState() {
         updateFromExternalState(with: selectedCountry)
     }
-    
+
     /// Updates the field from external state changes using the provided country
     private func updateFromExternalState(with country: CountryCode.PhoneNumberCountryCode?) {
         // Debug: Show what we received
         logger.debug(message: "CountryInputField updateFromExternalState called with country: \(country?.name ?? "nil") (\(country?.code ?? "nil"))")
-        
+
         // Update directly from the atomic CountryCode.PhoneNumberCountryCode object
         if let country = country, !country.name.isEmpty, !country.code.isEmpty {
             logger.debug(message: "CountryInputField updating from external state: \(country.name) (\(country.code))")
@@ -135,7 +134,7 @@ internal struct CountryInputField: View, LogReporter {
             logger.debug(message: "CountryInputField skipping update - country is nil or empty")
         }
     }
-    
+
     /// Updates the selected country
     func updateCountry(name: String, code: String) {
         countryName = name
