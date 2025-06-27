@@ -1340,6 +1340,12 @@ internal class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
                 
                 navigationController.pushViewController(resultVC, animated: true)
                 print("✅ [Debug App] Pushed result screen to navigation stack with real payment data")
+                
+                // Also dismiss any presented CheckoutComponentsMenuViewController
+                if let presentedVC = navigationController.presentedViewController {
+                    presentedVC.dismiss(animated: true)
+                    print("✅ [Debug App] Dismissed CheckoutComponentsMenuViewController after successful payment")
+                }
             }
         }
     }
@@ -1397,6 +1403,12 @@ internal class DebugAppCheckoutComponentsDelegate: CheckoutComponentsDelegate {
                 
                 navigationController.pushViewController(resultVC, animated: true)
                 print("✅ [Debug App] Pushed error result screen to navigation stack with real error data")
+                
+                // Also dismiss any presented CheckoutComponentsMenuViewController
+                if let presentedVC = navigationController.presentedViewController {
+                    presentedVC.dismiss(animated: true)
+                    print("✅ [Debug App] Dismissed CheckoutComponentsMenuViewController after payment error")
+                }
             }
         }
     }

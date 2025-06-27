@@ -115,8 +115,12 @@ class CheckoutComponentsMenuViewController: UIViewController {
         
         switch renderMode {
         case .createClientSession, .testScenario:
-            // Generate client token using provided configuration
-            Networking.requestClientSession(requestBody: clientSession, apiVersion: apiVersion) { [weak self] (clientToken, error) in
+            // Generate client token using card-only configuration for CheckoutComponents
+            // This prevents Apple Pay errors since CheckoutComponents currently only supports card payments
+            var ccSession = clientSession!
+            ccSession.paymentMethod = MerchantMockDataManager.getPaymentMethod(sessionType: .cardOnly)
+            
+            Networking.requestClientSession(requestBody: ccSession, apiVersion: apiVersion) { [weak self] (clientToken, error) in
                 DispatchQueue.main.async {
                     if let error = error {
                         print("Failed to fetch client token: \(error)")
