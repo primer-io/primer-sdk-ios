@@ -115,10 +115,31 @@ class CheckoutComponentsMenuViewController: UIViewController {
         
         switch renderMode {
         case .createClientSession, .testScenario:
-            // Generate client token using card-only configuration for CheckoutComponents
-            // This prevents Apple Pay errors since CheckoutComponents currently only supports card payments
+            // Use existing session configuration (preserves surcharge settings from UI)
+            // but ensure it only includes payment methods that CheckoutComponents supports
             var ccSession = clientSession!
-            ccSession.paymentMethod = MerchantMockDataManager.getPaymentMethod(sessionType: .cardOnly)
+            
+            // Keep existing payment method configuration (including surcharge) but limit to card-only
+            if let existingPaymentMethod = ccSession.paymentMethod {
+                // Create new options with only PAYMENT_CARD to preserve surcharge configuration
+                let cardOnlyOptions = ClientSessionRequestBody.PaymentMethod.PaymentMethodOptionGroup(
+                    PAYMENT_CARD: existingPaymentMethod.options?.PAYMENT_CARD
+                )
+                
+                // Create new payment method with preserved surcharge but card-only options
+                // IMPORTANT: Preserve ALL original payment method settings for CheckoutComponents compatibility
+                let cardOnlyPaymentMethod = ClientSessionRequestBody.PaymentMethod(
+                    vaultOnSuccess: existingPaymentMethod.vaultOnSuccess,
+                    vaultOnAgreement: existingPaymentMethod.vaultOnAgreement,
+                    options: cardOnlyOptions,
+                    descriptor: existingPaymentMethod.descriptor, // Use original descriptor
+                    paymentType: existingPaymentMethod.paymentType
+                )
+                ccSession.paymentMethod = cardOnlyPaymentMethod
+            } else {
+                // Fallback to card-only if no payment method configured
+                ccSession.paymentMethod = MerchantMockDataManager.getPaymentMethod(sessionType: .cardOnly)
+            }
             
             Networking.requestClientSession(requestBody: ccSession, apiVersion: apiVersion) { [weak self] (clientToken, error) in
                 DispatchQueue.main.async {

@@ -1019,6 +1019,9 @@ class MerchantSessionAndSettingsViewController: UIViewController {
         // Configure Primer with settings
         Primer.shared.configure(settings: settings, delegate: nil)
         
+        // IMPORTANT: Configure client session including surcharge settings from UI
+        configureClientSession()
+        
         // Navigate to CheckoutComponents menu screen
         presentCheckoutComponentsMenu(settings: settings)
     }
