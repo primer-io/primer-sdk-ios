@@ -11,9 +11,29 @@ import PrimerSDK
 
 struct MerchantMockDataManager {
 
-    enum SessionType {
+    enum SessionType: Equatable {
         case generic
         case klarnaWithEMD
+        case cardOnly
+        case cardAndApplePay
+        case applePay
+        case custom(ClientSessionRequestBody.PaymentMethod)
+        
+        static func == (lhs: SessionType, rhs: SessionType) -> Bool {
+            switch (lhs, rhs) {
+            case (.generic, .generic),
+                 (.klarnaWithEMD, .klarnaWithEMD),
+                 (.cardOnly, .cardOnly),
+                 (.cardAndApplePay, .cardAndApplePay),
+                 (.applePay, .applePay):
+                return true
+            case (.custom(let lhsPaymentMethod), .custom(let rhsPaymentMethod)):
+                // For custom cases, we'll compare by descriptor for simplicity
+                return lhsPaymentMethod.descriptor == rhsPaymentMethod.descriptor
+            default:
+                return false
+            }
+        }
     }
 
     static let customerIdStorageKey = "io.primer.debug.customer-id"
@@ -70,12 +90,25 @@ struct MerchantMockDataManager {
                         discountAmount: nil,
                         taxAmount: nil)
                 ]),
-            paymentMethod: sessionType == .generic ? genericPaymentMethod : klarnaPaymentMethod,
+            paymentMethod: getPaymentMethod(sessionType: sessionType),
             testParams: nil)
     }
 
     static func getPaymentMethod(sessionType: SessionType) -> ClientSessionRequestBody.PaymentMethod {
-        return sessionType == .generic ? genericPaymentMethod : klarnaPaymentMethod
+        switch sessionType {
+        case .generic:
+            return genericPaymentMethod
+        case .klarnaWithEMD:
+            return klarnaPaymentMethod
+        case .cardOnly:
+            return cardOnlyPaymentMethod
+        case .cardAndApplePay:
+            return cardAndApplePayPaymentMethod
+        case .applePay:
+            return applePayOnlyPaymentMethod
+        case .custom(let paymentMethod):
+            return paymentMethod
+        }
     }
 
     static var genericPaymentMethod = ClientSessionRequestBody.PaymentMethod(
@@ -115,4 +148,52 @@ struct MerchantMockDataManager {
                 accountRegistrationDate: "2020-11-24T15:00",
                 accountLastModified: "2020-11-24T15:00")
         ])
+    
+    // MARK: - New Payment Method Configurations for CheckoutComponents Examples
+    
+    static var cardOnlyPaymentMethod = ClientSessionRequestBody.PaymentMethod(
+        vaultOnSuccess: false,
+        options: ClientSessionRequestBody.PaymentMethod.PaymentMethodOptionGroup(
+            PAYMENT_CARD: cardOption
+        ),
+        descriptor: "Card only session",
+        paymentType: nil
+    )
+    
+    static var cardAndApplePayPaymentMethod = ClientSessionRequestBody.PaymentMethod(
+        vaultOnSuccess: false,
+        options: ClientSessionRequestBody.PaymentMethod.PaymentMethodOptionGroup(
+            PAYMENT_CARD: cardOption,
+            APPLE_PAY: applePayOption
+        ),
+        descriptor: "Card and Apple Pay session",
+        paymentType: nil
+    )
+    
+    static var applePayOnlyPaymentMethod = ClientSessionRequestBody.PaymentMethod(
+        vaultOnSuccess: false,
+        options: ClientSessionRequestBody.PaymentMethod.PaymentMethodOptionGroup(
+            APPLE_PAY: applePayOption
+        ),
+        descriptor: "Apple Pay only session",
+        paymentType: nil
+    )
+    
+    static var cardOption = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(
+        surcharge: nil,
+        instalmentDuration: nil,
+        extraMerchantData: nil,
+        captureVaultedCardCvv: false,
+        merchantName: nil,
+        networks: nil
+    )
+    
+    static var applePayOption = ClientSessionRequestBody.PaymentMethod.PaymentMethodOption(
+        surcharge: nil,
+        instalmentDuration: nil,
+        extraMerchantData: nil,
+        captureVaultedCardCvv: false,
+        merchantName: nil,
+        networks: nil
+    )
 }

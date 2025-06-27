@@ -62,6 +62,10 @@
 		A12200992E0DCF670053BF11 /* ShowcaseDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12200842E0DCF670053BF11 /* ShowcaseDemo.swift */; };
 		A122009A2E0DCF670053BF11 /* CompactCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12200792E0DCF670053BF11 /* CompactCardFormDemo.swift */; };
 		A122009B2E0DCF670053BF11 /* CoBadgedCardFormDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12200772E0DCF670053BF11 /* CoBadgedCardFormDemo.swift */; };
+		A1892C912E0EE7B100CF3C06 /* CheckoutComponentsExamplesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1892C8C2E0EE7B100CF3C06 /* CheckoutComponentsExamplesView.swift */; };
+		A1892C922E0EE7B100CF3C06 /* CheckoutExampleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1892C8D2E0EE7B100CF3C06 /* CheckoutExampleView.swift */; };
+		A1892C932E0EE7B100CF3C06 /* ExampleConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1892C8E2E0EE7B100CF3C06 /* ExampleConfig.swift */; };
+		A1892C942E0EE7B100CF3C06 /* CheckoutComponentsMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1892C902E0EE7B100CF3C06 /* CheckoutComponentsMenuViewController.swift */; };
 		A19EF5632B20E22E00A72F60 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = A19EF5622B20E22E00A72F60 /* .swiftlint.yml */; };
 		A1A1FD8B2DA599550069B0DB /* chocolate_bar_demo.otf in Resources */ = {isa = PBXBuildFile; fileRef = A1A1FD8A2DA599550069B0DB /* chocolate_bar_demo.otf */; };
 		AAE3B30B64B6822A20987FCA /* CreateClientToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 229849A3DBE0858EE90673B9 /* CreateClientToken.swift */; };
@@ -76,7 +80,7 @@
 		E558A0468D555C654F13D508 /* Pods_Debug_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F96CB43EDFEE9D7117F694EB /* Pods_Debug_App.framework */; };
 		EA7FAA4F8476BD3711D628CB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B18D7E7738BF86467B0F1465 /* Images.xcassets */; };
 		F02F496FD20B5291C044F62C /* MerchantResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00E3C8FE62D22147335F2455 /* MerchantResultViewController.swift */; };
-		F03699592AC2E63700E4179D /* BuildFile in Sources */ = {isa = PBXBuildFile; };
+		F03699592AC2E63700E4179D /* (null) in Sources */ = {isa = PBXBuildFile; };
 		F046FCBA2DACE84300B2A4E7 /* TestSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F046FCB92DACE83A00B2A4E7 /* TestSettings.swift */; };
 		F046FCBC2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F046FCBB2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift */; };
 		F04DFC692DAE42390006AEDC /* AppLinkConfigProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04DFC682DAE42390006AEDC /* AppLinkConfigProviderTests.swift */; };
@@ -226,6 +230,10 @@
 		A1591E122D51360F00DCED69 /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		A1591E132D51360F00DCED69 /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/Main.strings; sourceTree = "<group>"; };
 		A1604A656AF654D7422A2A5E /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main.strings; sourceTree = "<group>"; };
+		A1892C8C2E0EE7B100CF3C06 /* CheckoutComponentsExamplesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutComponentsExamplesView.swift; sourceTree = "<group>"; };
+		A1892C8D2E0EE7B100CF3C06 /* CheckoutExampleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutExampleView.swift; sourceTree = "<group>"; };
+		A1892C8E2E0EE7B100CF3C06 /* ExampleConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleConfig.swift; sourceTree = "<group>"; };
+		A1892C902E0EE7B100CF3C06 /* CheckoutComponentsMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutComponentsMenuViewController.swift; sourceTree = "<group>"; };
 		A19EF5622B20E22E00A72F60 /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		A1A1FD8A2DA599550069B0DB /* chocolate_bar_demo.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = chocolate_bar_demo.otf; sourceTree = "<group>"; };
 		A1A701352C739B06002E236F /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -356,7 +364,7 @@
 		0E5CB4D963647832FF985B29 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				A12200882E0DCF670053BF11 /* CheckoutComponentsShowcase */,
+				A1892C8F2E0EE7B100CF3C06 /* CheckoutComponents */,
 				876140ED2B6BE8860058CA8C /* Merchant Helpers */,
 				EF5FBE3673FBCB40F55F4DC0 /* New UI */,
 				9874F439DA3EA5854A454687 /* MerchantDropInUIViewController.swift */,
@@ -491,6 +499,18 @@
 				A12200872E0DCF670053BF11 /* ValidationCardFormDemo.swift */,
 			);
 			path = CheckoutComponentsShowcase;
+			sourceTree = "<group>";
+		};
+		A1892C8F2E0EE7B100CF3C06 /* CheckoutComponents */ = {
+			isa = PBXGroup;
+			children = (
+				A1892C8C2E0EE7B100CF3C06 /* CheckoutComponentsExamplesView.swift */,
+				A1892C8D2E0EE7B100CF3C06 /* CheckoutExampleView.swift */,
+				A1892C8E2E0EE7B100CF3C06 /* ExampleConfig.swift */,
+				A1892C902E0EE7B100CF3C06 /* CheckoutComponentsMenuViewController.swift */,
+				A12200882E0DCF670053BF11 /* CheckoutComponentsShowcase */,
+			);
+			path = CheckoutComponents;
 			sourceTree = "<group>";
 		};
 		B3C27ED9956EBEE65B9D054E /* Frameworks */ = {
@@ -715,9 +735,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Debug App/Pods-Debug App-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Debug App/Pods-Debug App-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -774,7 +798,7 @@
 			files = (
 				F04DFC692DAE42390006AEDC /* AppLinkConfigProviderTests.swift in Sources */,
 				F046FCBC2DACEADA00B2A4E7 /* RNPrimerSettingsTests.swift in Sources */,
-				F03699592AC2E63700E4179D /* BuildFile in Sources */,
+				F03699592AC2E63700E4179D /* (null) in Sources */,
 				044DE11F2CC0023200AAE28A /* SecretsManagerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -831,6 +855,10 @@
 				592E00D98C8835CBCDAA26D9 /* MerchantDropInUIViewController.swift in Sources */,
 				8761410A2B8355920058CA8C /* MerchantHeadlessKlarnaInitializationViewModel.swift in Sources */,
 				04921D0D2BFB79DC004DFB4D /* MerchantHeadlessCheckoutNolPayViewController.swift in Sources */,
+				A1892C912E0EE7B100CF3C06 /* CheckoutComponentsExamplesView.swift in Sources */,
+				A1892C922E0EE7B100CF3C06 /* CheckoutExampleView.swift in Sources */,
+				A1892C932E0EE7B100CF3C06 /* ExampleConfig.swift in Sources */,
+				A1892C942E0EE7B100CF3C06 /* CheckoutComponentsMenuViewController.swift in Sources */,
 				135E5BFD51371FABB5FF35D3 /* MerchantHeadlessCheckoutAvailablePaymentMethodsViewController.swift in Sources */,
 				E11F47542B06C5030091C31F /* BanksListView.swift in Sources */,
 				AD9CF1073EE0676E6640481A /* MerchantHeadlessCheckoutRawDataViewController.swift in Sources */,
