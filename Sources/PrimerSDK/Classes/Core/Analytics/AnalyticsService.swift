@@ -105,10 +105,10 @@ extension Analytics {
         }
 
         func record(events: [Analytics.Event]) async throws {
-            try await withCheckedThrowingContinuation { continuation in
+            return try await withCheckedThrowingContinuation { continuation in
                 Analytics.queue.async(flags: .barrier) {
                     let storedEvents: [Analytics.Event] = self.storage.loadEvents()
-                    let storedEventsIds = storedEvents.compactMap(\.localId)
+                    let storedEventsIds = storedEvents.compactMap { $0.localId }
                     var eventsToAppend: [Analytics.Event] = []
 
                     for event in events {
