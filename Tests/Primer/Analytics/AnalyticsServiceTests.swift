@@ -27,6 +27,9 @@ final class AnalyticsServiceTests: XCTestCase {
     }
 
     override func tearDown() {
+        // Wait for all pending Analytics operations to complete before proceeding to next test
+        Analytics.queue.sync(flags: .barrier) {}
+        
         service = nil
         storage = nil
         apiClient = nil
