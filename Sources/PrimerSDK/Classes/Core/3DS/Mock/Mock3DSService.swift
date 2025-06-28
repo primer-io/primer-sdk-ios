@@ -38,4 +38,18 @@ final class Mock3DSService: ThreeDSServiceProtocol {
             completion(.success(paymentMethodTokenData.token ?? "no-token"))
         }
     }
+
+    func perform3DS(
+        paymentMethodTokenData: PrimerPaymentMethodTokenData,
+        sdkDismissed: (() -> Void)?
+    ) async throws -> String {
+        try await awaitResult { completion in
+            perform3DS(
+                paymentMethodTokenData: paymentMethodTokenData,
+                sdkDismissed: sdkDismissed,
+                completion: completion
+            )
+        }
+    }
+
 }
