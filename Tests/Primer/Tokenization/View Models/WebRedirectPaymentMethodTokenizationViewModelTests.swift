@@ -130,17 +130,21 @@ final class WebRedirectPaymentMethodTokenizationViewModelTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return Promise.fulfilled(.init(analyticsId: "analytics_id",
-                                           id: "id",
-                                           isVaulted: false,
-                                           isAlreadyVaulted: false,
-                                           paymentInstrumentType: .offSession,
-                                           paymentMethodType: Mocks.Static.Strings.webRedirectPaymentMethodType,
-                                           paymentInstrumentData: nil,
-                                           threeDSecureAuthentication: nil,
-                                           token: "token",
-                                           tokenType: .singleUse,
-                                           vaultData: nil))
+            return Result.success(
+                PrimerPaymentMethodTokenData(
+                    analyticsId: "analytics_id",
+                    id: "id",
+                    isVaulted: false,
+                    isAlreadyVaulted: false,
+                    paymentInstrumentType: .offSession,
+                    paymentMethodType: Mocks.Static.Strings.webRedirectPaymentMethodType,
+                    paymentInstrumentData: nil,
+                    threeDSecureAuthentication: nil,
+                    token: "token",
+                    tokenType: .singleUse,
+                    vaultData: nil
+                )
+            )
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")

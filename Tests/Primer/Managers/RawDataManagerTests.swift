@@ -56,7 +56,7 @@ final class RawDataManagerTests: XCTestCase {
         let expectOnTokenize = self.expectation(description: "On tokenization complete")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
-            return Promise.fulfilled(self.tokenizationResponseBody)
+            return Result.success(self.tokenizationResponseBody)
         }
 
         let expectCreatePayment = self.expectation(description: "On create payment")
@@ -104,7 +104,7 @@ final class RawDataManagerTests: XCTestCase {
         let expectOnTokenize = self.expectation(description: "On tokenization complete")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
-            return Promise.fulfilled(self.tokenizationResponseBody)
+            return Result.success(self.tokenizationResponseBody)
         }
 
         let expectCreatePayment = self.expectation(description: "On create payment")

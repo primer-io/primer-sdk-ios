@@ -46,7 +46,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return Promise.fulfilled(KlarnaTestsMocks.tokenizationResponseBody)
+            return Result.success(KlarnaTestsMocks.tokenizationResponseBody)
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
@@ -81,7 +81,9 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return Promise.rejected(PrimerError.unknown(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString))
+            return Result.failure(
+                PrimerError.unknown(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString)
+            )
         }
 
         firstly {
@@ -109,7 +111,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return Promise.fulfilled(KlarnaTestsMocks.tokenizationResponseBody)
+            return Result.success(KlarnaTestsMocks.tokenizationResponseBody)
         }
 
         firstly {
@@ -137,7 +139,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return Promise.rejected(PrimerError.unknown(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString))
+            return Result.failure(PrimerError.unknown(userInfo: .errorUserInfoDictionary(), diagnosticsId: UUID().uuidString))
         }
 
         firstly {
@@ -167,7 +169,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
             let instrument = body.paymentInstrument as! KlarnaAuthorizationPaymentInstrument
             XCTAssertEqual(instrument.klarnaAuthorizationToken, "osa_id")
             expectDidTokenize.fulfill()
-            return .fulfilled(Mocks.primerPaymentMethodTokenData)
+            return Result.success(Mocks.primerPaymentMethodTokenData)
         }
 
         let expectCreatePayment = expectation(description: "Did create payment")
@@ -198,7 +200,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
             let instrument = body.paymentInstrument as! KlarnaAuthorizationPaymentInstrument
             XCTAssertEqual(instrument.klarnaAuthorizationToken, "osa_id")
             expectDidTokenize.fulfill()
-            return .fulfilled(Mocks.primerPaymentMethodTokenData)
+            return Result.success(Mocks.primerPaymentMethodTokenData)
         }
 
         let expectDidCompleteCheckout = expectation(description: "did complete checkout")
@@ -222,7 +224,7 @@ final class KlarnaTokenizationManagerTests: XCTestCase {
             let instrument = body.paymentInstrument as! KlarnaCustomerTokenPaymentInstrument
             XCTAssertEqual(instrument.klarnaCustomerToken, "customer_token_id")
             expectDidTokenize.fulfill()
-            return .fulfilled(Mocks.primerPaymentMethodTokenData)
+            return Result.success(Mocks.primerPaymentMethodTokenData)
         }
 
         let expectDidCompleteCheckout = expectation(description: "did complete checkout")
