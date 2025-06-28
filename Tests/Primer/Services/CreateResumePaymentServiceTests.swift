@@ -1,10 +1,3 @@
-//
-//  File.swift
-//
-//
-//  Created by Niall Quinn on 01/08/24.
-//
-
 @testable import PrimerSDK
 import XCTest
 
@@ -44,6 +37,28 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
 
+    func test_completePayment_shouldSuccess_async() async throws {
+        // Given
+        apiClient.completeResponse = .success(.init())
+        AppState.current.clientToken = MockAppState.mockClientToken
+
+        // When
+        guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+            XCTFail()
+            return
+        }
+
+        do {
+            _ = try await sut.completePayment(
+                clientToken: clientToken,
+                completeUrl: URL(string: "https://example.com")!,
+                body: StripeAchTokenizationViewModel.defaultCompleteBodyWithTimestamp
+            )
+        } catch {
+            XCTFail("Expected success but got error: \(error)")
+        }
+    }
+
     func test_completePayment_shouldFail() throws {
         // Given
         let expectation = XCTestExpectation(description: "Promise fulfilled")
@@ -68,6 +83,29 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
 
+    func test_completePayment_shouldFail_async() async throws {
+        // Given
+        apiClient.completeResponse = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        AppState.current.clientToken = MockAppState.mockClientToken
+
+        // When
+        guard let clientToken = PrimerAPIConfigurationModule.decodedJWTToken else {
+            XCTFail()
+            return
+        }
+
+        do {
+            _ = try await sut.completePayment(
+                clientToken: clientToken,
+                completeUrl: URL(string: "https://example.com")!,
+                body: StripeAchTokenizationViewModel.defaultCompleteBodyWithTimestamp
+            )
+            XCTFail("Expected failure but got success")
+        } catch {
+            // Expected error
+        }
+    }
+
     // ** Create Payment **//
 
     func test_createPayment_shouldFailWhenClientTokenIsNil() throws {
@@ -89,6 +127,21 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
 
+    func test_createPayment_shouldFailWhenClientTokenIsNil_async() async throws {
+        // Given
+        apiClient.createResponse = .success(.successStatus)
+        AppState.current.clientToken = nil
+        let createRequest = Request.Body.Payment.Create(token: "123")
+
+        // When
+        do {
+            _ = try await sut.createPayment(paymentRequest: createRequest)
+            XCTFail("Expected failure but got success")
+        } catch {
+            // Expected error
+        }
+    }
+
     func test_createPayment_shouldFailWhenResponseIsError() throws {
         // Given
         let expectation = XCTestExpectation(description: "Promise fulfilled")
@@ -108,6 +161,21 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
 
+    func test_createPayment_shouldFailWhenResponseIsError_async() async throws {
+        // Given
+        apiClient.createResponse = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let createRequest = Request.Body.Payment.Create(token: "123")
+
+        // When
+        do {
+            _ = try await sut.createPayment(paymentRequest: createRequest)
+            XCTFail("Expected failure but got success")
+        } catch {
+            // Expected error
+        }
+    }
+
     func test_createPayment_shouldFailWhenPaymentIdIsNil() throws {
         // Given
         let expectation = XCTestExpectation(description: "Promise fulfilled")
@@ -125,6 +193,21 @@ final class CreateResumePaymentServiceTests: XCTestCase {
 
         // Then
         wait(for: [expectation], timeout: 5.0)
+    }
+
+    func test_createPayment_shouldFailWhenPaymentIdIsNil_async() async throws {
+        // Given
+        apiClient.createResponse = .success(.noId)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let createRequest = Request.Body.Payment.Create(token: "123")
+
+        // When
+        do {
+            _ = try await sut.createPayment(paymentRequest: createRequest)
+            XCTFail("Expected failure but got success")
+        } catch {
+            // Expected error
+        }
     }
 
     func test_createPayment_shouldSucceedWhenSuccessStatus() throws {
@@ -147,6 +230,17 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
 
+    func test_createPayment_shouldSucceedWhenSuccessStatus_async() async throws {
+        // Given
+        apiClient.createResponse = .success(.successStatus)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let createRequest = Request.Body.Payment.Create(token: "123")
+
+        // When
+        let payment = try await sut.createPayment(paymentRequest: createRequest)
+        XCTAssert(payment.status == .success)
+    }
+
     func test_createPayment_shouldFailWhenFailedStatus() throws {
         // Given
         let expectation = XCTestExpectation(description: "Promise fulfilled")
@@ -164,6 +258,21 @@ final class CreateResumePaymentServiceTests: XCTestCase {
 
         // Then
         wait(for: [expectation], timeout: 5.0)
+    }
+
+    func test_createPayment_shouldFailWhenFailedStatus_async() async throws {
+        // Given
+        apiClient.createResponse = .success(.failedStatus)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let createRequest = Request.Body.Payment.Create(token: "123")
+
+        // When
+        do {
+            _ = try await sut.createPayment(paymentRequest: createRequest)
+            XCTFail("Expected failure but got success")
+        } catch {
+            // Expected error
+        }
     }
 
     func test_createPayment_shouldSuccessWithPendingStatus() throws {
@@ -186,6 +295,17 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
 
+    func test_createPayment_shouldSuccessWithPendingStatus_async() async throws {
+        // Given
+        apiClient.createResponse = .success(.pendingStatus)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let createRequest = Request.Body.Payment.Create(token: "123")
+
+        // When
+        let payment = try await sut.createPayment(paymentRequest: createRequest)
+        XCTAssert(payment.status == .pending)
+    }
+
     func test_createPayment_shouldSucceedWhenPendingStatusWithShowSuccess() throws {
         // Given
         let expectation = XCTestExpectation(description: "Promise fulfilled")
@@ -203,6 +323,17 @@ final class CreateResumePaymentServiceTests: XCTestCase {
             }
 
         wait(for: [expectation], timeout: 5.0)
+    }
+
+    func test_createPayment_shouldSucceedWhenPendingStatusWithShowSuccess_async() async throws {
+        // Given
+        apiClient.createResponse = .success(.pendingStatusWithShowSuccess)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let createRequest = Request.Body.Payment.Create(token: "123")
+
+        // When
+        let payment = try await sut.createPayment(paymentRequest: createRequest)
+        XCTAssert(payment.status == .pending)
     }
 
     func test_createPayment_shouldSucceedWhenCheckoutComplete() throws {
@@ -225,6 +356,17 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
 
+    func test_createPayment_shouldSucceedWhenCheckoutComplete_async() async throws {
+        // Given
+        apiClient.createResponse = .success(.checkoutComplete)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let createRequest = Request.Body.Payment.Create(token: "123")
+
+        // When
+        let payment = try await sut.createPayment(paymentRequest: createRequest)
+        XCTAssert(payment.status == .success)
+    }
+
     func test_createPayment_shouldFailWhenCheckoutFailure() throws {
         // Given
         let expectation = XCTestExpectation(description: "Promise fulfilled")
@@ -242,6 +384,21 @@ final class CreateResumePaymentServiceTests: XCTestCase {
 
         // Then
         wait(for: [expectation], timeout: 5.0)
+    }
+
+    func test_createPayment_shouldFailWhenCheckoutFailure_async() async throws {
+        // Given
+        apiClient.createResponse = .success(.checkoutFailure)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let createRequest = Request.Body.Payment.Create(token: "123")
+
+        // When
+        do {
+            _ = try await sut.createPayment(paymentRequest: createRequest)
+            XCTFail("Expected failure but got success")
+        } catch {
+            // Expected error
+        }
     }
 
     func test_createPayment_shouldSuccessWithFallbackWithSuccessStatus() throws {
@@ -264,6 +421,17 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
 
+    func test_createPayment_shouldSuccessWithFallbackWithSuccessStatus_async() async throws {
+        // Given
+        apiClient.createResponse = .success(.fallbackWithSuccessStatus)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let createRequest = Request.Body.Payment.Create(token: "123")
+
+        // When
+        let payment = try await sut.createPayment(paymentRequest: createRequest)
+        XCTAssert(payment.status == .success)
+    }
+
     func test_createPayment_shouldFailWhenFallbackWithFailedStatus() throws {
         // Given
         let expectation = XCTestExpectation(description: "Promise fulfilled")
@@ -281,6 +449,21 @@ final class CreateResumePaymentServiceTests: XCTestCase {
 
         // Then
         wait(for: [expectation], timeout: 5.0)
+    }
+
+    func test_createPayment_shouldFailWhenFallbackWithFailedStatus_async() async throws {
+        // Given
+        apiClient.createResponse = .success(.fallbackWithFailedStatus)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let createRequest = Request.Body.Payment.Create(token: "123")
+
+        // When
+        do {
+            _ = try await sut.createPayment(paymentRequest: createRequest)
+            XCTFail("Expected failure but got success")
+        } catch {
+            // Expected error
+        }
     }
 
     func test_createPayment_shouldSuccessWithFallbackWithPendingStatus() throws {
@@ -301,6 +484,17 @@ final class CreateResumePaymentServiceTests: XCTestCase {
 
         // Then
         wait(for: [expectation], timeout: 5.0)
+    }
+
+    func test_createPayment_shouldSuccessWithFallbackWithPendingStatus_async() async throws {
+        // Given
+        apiClient.createResponse = .success(.fallbackWithPendingStatus)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let createRequest = Request.Body.Payment.Create(token: "123")
+
+        // When
+        let payment = try await sut.createPayment(paymentRequest: createRequest)
+        XCTAssert(payment.status == .pending)
     }
 
     func test_createPayment_shouldSucceedWhenFallbackWithPendingStatusWithShowSuccess() throws {
@@ -324,6 +518,17 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
 
+    func test_createPayment_shouldSucceedWhenFallbackWithPendingStatusWithShowSuccess_async() async throws {
+        // Given
+        apiClient.createResponse = .success(.fallbackWithPendingStatusWithShowSuccess)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let createRequest = Request.Body.Payment.Create(token: "123")
+
+        // When
+        let payment = try await sut.createPayment(paymentRequest: createRequest)
+        XCTAssert(payment.status == .pending)
+    }
+
     // ** Resume Payment **//
 
     func test_resumePayment_shouldFailWhenClientTokenIsNil() throws {
@@ -345,6 +550,21 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
 
+    func test_resumePayment_shouldFailWhenClientTokenIsNil_async() async throws {
+        // Given
+        apiClient.resumeResponse = .success(.successStatus)
+        AppState.current.clientToken = nil
+        let resumeRequest = Request.Body.Payment.Resume(token: "")
+
+        // When
+        do {
+            _ = try await sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            XCTFail("Expected failure but got success")
+        } catch {
+            // Expected error
+        }
+    }
+
     func test_resumePayment_shouldFailWhenResponseIsError() throws {
         // Given
         let expectation = XCTestExpectation(description: "Promise fulfilled")
@@ -364,6 +584,21 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
 
+    func test_resumePayment_shouldFailWhenResponseIsError_async() async throws {
+        // Given
+        apiClient.resumeResponse = .failure(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let resumeRequest = Request.Body.Payment.Resume(token: "")
+
+        // When
+        do {
+            _ = try await sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            XCTFail("Expected failure but got success")
+        } catch {
+            // Expected error
+        }
+    }
+
     func test_resumePayment_shouldFailWhenNoId() throws {
         // Given
         let expectation = XCTestExpectation(description: "Promise fulfilled")
@@ -381,6 +616,21 @@ final class CreateResumePaymentServiceTests: XCTestCase {
 
         // Then
         wait(for: [expectation], timeout: 5.0)
+    }
+
+    func test_resumePayment_shouldFailWhenNoId_async() async throws {
+        // Given
+        apiClient.resumeResponse = .success(.noId)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let resumeRequest = Request.Body.Payment.Resume(token: "")
+
+        // When
+        do {
+            _ = try await sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            XCTFail("Expected failure but got success")
+        } catch {
+            // Expected error
+        }
     }
 
     func test_resumePayment_shouldSucceedWhenSuccessStatus() throws {
@@ -403,6 +653,17 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
 
+    func test_resumePayment_shouldSucceedWhenSuccessStatus_async() async throws {
+        // Given
+        apiClient.resumeResponse = .success(.successStatus)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let resumeRequest = Request.Body.Payment.Resume(token: "")
+
+        // When
+        let payment = try await sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+        XCTAssert(payment.status == .success)
+    }
+
     func test_resumePayment_shouldFailWhenFailedStatus() throws {
         // Given
         let expectation = XCTestExpectation(description: "Promise fulfilled")
@@ -422,6 +683,21 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
 
+    func test_resumePayment_shouldFailWhenFailedStatus_async() async throws {
+        // Given
+        apiClient.resumeResponse = .success(.failedStatus)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let resumeRequest = Request.Body.Payment.Resume(token: "")
+
+        // When
+        do {
+            _ = try await sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            XCTFail("Expected failure but got success")
+        } catch {
+            // Expected error
+        }
+    }
+
     func test_resumePayment_shouldFailWhenPendingStatus() throws {
         // Given
         let expectation = XCTestExpectation(description: "Promise fulfilled")
@@ -439,6 +715,21 @@ final class CreateResumePaymentServiceTests: XCTestCase {
 
         // Then
         wait(for: [expectation], timeout: 5.0)
+    }
+
+    func test_resumePayment_shouldFailWhenPendingStatus_async() async throws {
+        // Given
+        apiClient.resumeResponse = .success(.pendingStatus)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let resumeRequest = Request.Body.Payment.Resume(token: "")
+
+        // When
+        do {
+            _ = try await sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            XCTFail("Expected failure but got success")
+        } catch {
+            // Expected error
+        }
     }
 
     func test_resumePayment_shouldSucceedWhenPendingStatusWithShowSuccess() throws {
@@ -461,6 +752,17 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
 
+    func test_resumePayment_shouldSucceedWhenPendingStatusWithShowSuccess_async() async throws {
+        // Given
+        apiClient.resumeResponse = .success(.pendingStatusWithShowSuccess)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let resumeRequest = Request.Body.Payment.Resume(token: "")
+
+        // When
+        let payment = try await sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+        XCTAssert(payment.status == .pending)
+    }
+
     func test_resumePayment_shouldSucceedWhenCheckoutComplete() throws {
         // Given
         let expectation = XCTestExpectation(description: "Promise fulfilled")
@@ -481,6 +783,17 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
 
+    func test_resumePayment_shouldSucceedWhenCheckoutComplete_async() async throws {
+        // Given
+        apiClient.resumeResponse = .success(.checkoutComplete)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let resumeRequest = Request.Body.Payment.Resume(token: "")
+
+        // When
+        let payment = try await sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+        XCTAssert(payment.status == .success)
+    }
+
     func test_resumePayment_shouldFailWhenCheckoutFailure() throws {
         // Given
         let expectation = XCTestExpectation(description: "Promise fulfilled")
@@ -498,6 +811,21 @@ final class CreateResumePaymentServiceTests: XCTestCase {
 
         // Then
         wait(for: [expectation], timeout: 5.0)
+    }
+
+    func test_resumePayment_shouldFailWhenCheckoutFailure_async() async throws {
+        // Given
+        apiClient.resumeResponse = .success(.checkoutFailure)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let resumeRequest = Request.Body.Payment.Resume(token: "")
+
+        // When
+        do {
+            _ = try await sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            XCTFail("Expected failure but got success")
+        } catch {
+            // Expected error
+        }
     }
 
     func test_resumePayment_shouldSucceedWhenFallbackWithSuccessStatus() throws {
@@ -520,6 +848,17 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
 
+    func test_resumePayment_shouldSucceedWhenFallbackWithSuccessStatus_async() async throws {
+        // Given
+        apiClient.resumeResponse = .success(.fallbackWithSuccessStatus)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let resumeRequest = Request.Body.Payment.Resume(token: "")
+
+        // When
+        let payment = try await sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+        XCTAssert(payment.status == .success)
+    }
+
     func test_resumePayment_shouldFailWhenFallbackWithFailedStatus() throws {
         // Given
         let expectation = XCTestExpectation(description: "Promise fulfilled")
@@ -537,6 +876,21 @@ final class CreateResumePaymentServiceTests: XCTestCase {
 
         // Then
         wait(for: [expectation], timeout: 5.0)
+    }
+
+    func test_resumePayment_shouldFailWhenFallbackWithFailedStatus_async() async throws {
+        // Given
+        apiClient.resumeResponse = .success(.fallbackWithFailedStatus)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let resumeRequest = Request.Body.Payment.Resume(token: "")
+
+        // When
+        do {
+            _ = try await sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            XCTFail("Expected failure but got success")
+        } catch {
+            // Expected error
+        }
     }
 
     func test_resumePayment_shouldFailWhenFallbackWithPendingStatus() throws {
@@ -558,6 +912,21 @@ final class CreateResumePaymentServiceTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
 
+    func test_resumePayment_shouldFailWhenFallbackWithPendingStatus_async() async throws {
+        // Given
+        apiClient.resumeResponse = .success(.fallbackWithPendingStatus)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let resumeRequest = Request.Body.Payment.Resume(token: "")
+
+        // When
+        do {
+            _ = try await sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+            XCTFail("Expected failure but got success")
+        } catch {
+            // Expected error
+        }
+    }
+
     func test_resumePayment_shouldSucceedWhenFallbackWithPendingStatusWithShowSuccess() throws {
         // Given
         let expectation = XCTestExpectation(description: "Promise fulfilled")
@@ -577,6 +946,17 @@ final class CreateResumePaymentServiceTests: XCTestCase {
 
         // Then
         wait(for: [expectation], timeout: 5.0)
+    }
+
+    func test_resumePayment_shouldSucceedWhenFallbackWithPendingStatusWithShowSuccess_async() async throws {
+        // Given
+        apiClient.resumeResponse = .success(.fallbackWithPendingStatusWithShowSuccess)
+        AppState.current.clientToken = MockAppState.mockClientToken
+        let resumeRequest = Request.Body.Payment.Resume(token: "")
+
+        // When
+        let payment = try await sut.resumePaymentWithPaymentId("", paymentResumeRequest: resumeRequest)
+        XCTAssert(payment.status == .pending)
     }
 }
 
