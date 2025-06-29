@@ -264,17 +264,3 @@ class MockPayPalService: PayPalServiceProtocol {
         }
     }
 }
-
-class MockWebAuthenticationService: WebAuthenticationService {
-    var session: ASWebAuthenticationSession?
-
-    var onConnect: ((URL, String) -> URL)?
-
-    func connect(paymentMethodType: String, url: URL, scheme: String, _ completion: @escaping (Result<URL, any Error>) -> Void) {
-        if let onConnect = onConnect {
-            completion(.success(onConnect(url, scheme)))
-        } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
-        }
-    }
-}
