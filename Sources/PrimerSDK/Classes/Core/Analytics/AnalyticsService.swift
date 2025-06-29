@@ -9,12 +9,17 @@ import Foundation
 
 protocol AnalyticsServiceProtocol {
     func record(events: [Analytics.Event]) -> Promise<Void>
+    func record(events: [Analytics.Event]) async throws
 }
 
 extension AnalyticsServiceProtocol {
     @discardableResult
     internal func record(event: Analytics.Event) -> Promise<Void> {
         self.record(events: [event])
+    }
+
+    func record(event: Analytics.Event) async throws {
+        try await record(events: [event])
     }
 }
 
@@ -99,6 +104,51 @@ extension Analytics {
             }
         }
 
+        func record(events: [Analytics.Event]) async throws {
+            return try await withCheckedThrowingContinuation { continuation in
+                Analytics.queue.async(flags: .barrier) {
+                    let storedEvents: [Analytics.Event] = self.storage.loadEvents()
+                    let storedEventsIds = storedEvents.compactMap { $0.localId }
+                    var eventsToAppend: [Analytics.Event] = []
+
+                    for event in events {
+                        if storedEventsIds.contains(event.localId) { continue }
+                        eventsToAppend.append(event)
+                    }
+
+                    var combinedEvents: [Analytics.Event] = eventsToAppend.sorted(by: { $0.createdAt > $1.createdAt })
+                    combinedEvents.append(contentsOf: storedEvents)
+
+                    self.logger.debug(message: "📚 Analytics: Recording \(events.count) events (new total: \(combinedEvents.count))")
+
+                    do {
+                        try self.storage.save(combinedEvents)
+
+                        if combinedEvents.count >= self.batchSize {
+                            let batchSizeExceeded = combinedEvents.count > self.batchSize
+                            let sizeString = batchSizeExceeded ? "exceeded" : "reached"
+                            let count = combinedEvents.count
+                            let message =
+                                "📚 Analytics: Minimum batch size of \(self.batchSize) \(sizeString) (\(count) events present). Attempting sync ..."
+                            self.logger.debug(message: message)
+                            Task {
+                                do {
+                                    try await self.sync(events: combinedEvents)
+                                } catch {
+                                    // Ignore errors during sync
+                                }
+                                continuation.resume()
+                            }
+                        } else {
+                            continuation.resume()
+                        }
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
+                }
+            }
+        }
+
         @discardableResult
         internal func flush() -> Promise<Void> {
             Promise { seal in
@@ -112,10 +162,14 @@ extension Analytics {
             }
         }
 
+        func flush() async throws {
+            try await sync(events: storage.loadEvents(), isFlush: true)
+        }
+
         @discardableResult
         private func sync(events: [Analytics.Event], isFlush: Bool = false) -> Promise<Void> {
             let syncType = isFlush ? "flush" : "sync"
-            guard events.count > 0 else {
+            guard !events.isEmpty else {
                 self.logger.warn(message: "📚 Analytics: Attempted to \(syncType) but had no events")
                 return Promise<Void> { $0.fulfill() }
             }
@@ -165,6 +219,54 @@ extension Analytics {
             }
         }
 
+        private func sync(events: [Analytics.Event], isFlush: Bool = false) async throws {
+            let syncType = isFlush ? "flush" : "sync"
+            guard events.count > 0 else {
+                return logger.warn(message: "📚 Analytics: Attempted to \(syncType) but had no events")
+            }
+
+            if !isFlush {
+                guard !isSyncing else {
+                    return logger.debug(message: "📚 Analytics: Attempted to sync while already syncing. Skipping ...")
+                }
+                isSyncing = true
+            }
+
+            try await withCheckedThrowingContinuation { continuation in
+                Analytics.queue.async(flags: .barrier) {
+                    let eventsToSend = isFlush ? events : Array(events.prefix(Int(self.batchSize)))
+
+                    self.logger.debug(message: "📚 Analytics: \(syncType.capitalized)ing \(eventsToSend.count) events ...")
+
+                    Task {
+                        do {
+                            async let logEvents: Void = self.sendSdkLogEvents(events: eventsToSend)
+                            async let analyticsEvents: Void = self.sendSdkAnalyticsEvents(events: eventsToSend)
+                            _ = try await (logEvents, analyticsEvents)
+
+                            let remainingEvents = self.storage.loadEvents()
+                            self.logger.debug(message: "📚 Analytics: \(syncType.capitalized) completed. \(remainingEvents.count) events remain")
+                            self.isSyncing = false
+                            if remainingEvents.count >= self.batchSize {
+                                do {
+                                    try await self.sync(events: remainingEvents)
+                                } catch {
+                                    // Ignore errors during sync
+                                }
+                            }
+                            continuation.resume()
+                        } catch {
+                            let errorMessage = error.localizedDescription
+                            let message = "📚 Analytics: Failed to \(syncType) events with error \(errorMessage)"
+                            self.logger.error(message: message)
+                            self.isSyncing = false
+                            continuation.resume(throwing: error)
+                        }
+                    }
+                }
+            }
+        }
+
         func clear() {
             storage.deleteAnalyticsFile()
         }
@@ -184,6 +286,15 @@ extension Analytics {
             return when(fulfilled: promises)
         }
 
+        private func sendSdkLogEvents(events: [Analytics.Event]) async throws {
+            let sdkLogEvents = events.filter { $0.analyticsUrl == nil }
+            let sdkLogEventsBatches = sdkLogEvents.toBatches(of: batchSize)
+
+            for batch in sdkLogEventsBatches {
+                try await sendEvents(batch, to: sdkLogsUrl)
+            }
+        }
+
         private func sendSdkAnalyticsEvents(events: [Analytics.Event]) -> Promise<Void> {
             let events = events.filter({ $0.analyticsUrl != nil })
 
@@ -197,6 +308,23 @@ extension Analytics {
             }
 
             return when(fulfilled: promises)
+        }
+
+        private func sendSdkAnalyticsEvents(events: [Analytics.Event]) async throws {
+            let events = events.filter { $0.analyticsUrl != nil }
+            let urls = Set(events.compactMap { $0.analyticsUrl }).compactMap { URL(string: $0) }
+            let eventSets = urls.map { url in
+                (url: url, events: events.filter { $0.analyticsUrl == url.absoluteString })
+            }
+
+            try await withThrowingTaskGroup(of: Void.self) { group in
+                for item in eventSets {
+                    group.addTask {
+                        try await self.sendSdkAnalyticsEvents(url: item.url, events: item.events)
+                    }
+                }
+                try await group.waitForAll()
+            }
         }
 
         private func sendSdkAnalyticsEvents(url: URL, events: [Analytics.Event]) -> Promise<Void> {
@@ -224,6 +352,13 @@ extension Analytics {
                         seal.fulfill()
                     }
                 }
+            }
+        }
+
+        private func sendSdkAnalyticsEvents(url: URL, events: [Analytics.Event]) async throws {
+            let batches = events.toBatches(of: batchSize)
+            for batch in batches {
+                try await sendEvents(batch, to: url)
             }
         }
 
@@ -279,6 +414,18 @@ extension Analytics {
             }
         }
 
+        private func sendEvents(_ events: [Analytics.Event], to url: URL) async throws {
+            return try await withCheckedThrowingContinuation { continuation in
+                sendEvents(events, to: url) { error in
+                    if let error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        continuation.resume()
+                    }
+                }
+            }
+        }
+
         private func handleFailedEvents(forUrl url: URL) {
             self.eventSendFailureCount += 1
             if eventSendFailureCount >= 3 {
@@ -303,12 +450,24 @@ extension Analytics.Service {
         shared.record(event: event)
     }
 
+    static func record(event: Analytics.Event) async throws {
+        try await shared.record(event: event)
+    }
+
     @discardableResult static func record(events: [Analytics.Event]) -> Promise<Void> {
         shared.record(events: events)
     }
 
+    static func record(events: [Analytics.Event]) async throws {
+        try await shared.record(events: events)
+    }
+
     @discardableResult static func flush() -> Promise<Void> {
         shared.flush()
+    }
+
+    static func flush() async throws {
+        try await shared.flush()
     }
 
     static func clear() {
