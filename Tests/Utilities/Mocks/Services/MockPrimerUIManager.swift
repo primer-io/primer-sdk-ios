@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  MockPrimerUIManager.swift
 //
 //
 //  Created by Jack Newcombe on 22/05/2024.
@@ -8,35 +8,50 @@
 import UIKit
 @testable import PrimerSDK
 
-class MockPrimerUIManager: PrimerUIManaging {
+final class MockPrimerUIManager: PrimerUIManaging {
 
     // MARK: Properties
 
     var primerWindow: UIWindow?
-
-    var primerRootViewController: PrimerSDK.PrimerRootViewController?
+    var primerRootViewController: PrimerRootViewController?
     var apiConfigurationModule: (any PrimerSDK.PrimerAPIConfigurationModuleProtocol)?
 
-    // MARK: prepareRootViewController
+    var onPrepareViewController: (() -> Result<Void, Error>)?
+    var onDismissOrShowResultScreen: ((PrimerResultViewController.ScreenType, [PrimerPaymentMethodManagerCategory], String?) -> Void)?
 
-    var onPrepareViewController: (() -> Promise<Void>)?
+    func prepareRootViewController() -> Promise<Void> {
+        guard let result = onPrepareViewController?() else {
+            return .rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
+        }
 
-    func prepareRootViewController() -> PrimerSDK.Promise<Void> {
-        return onPrepareViewController?() ?? Promise { $0.resolve(.success(()))}
+        switch result {
+        case .success(let success): return .fulfilled(success)
+        case .failure(let failure): return .rejected(failure)
+        }
+    }
+
+    func prepareRootViewController() async throws {
+        guard let result = onPrepareViewController?() else {
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        }
+        switch result {
+        case .success(let success): return success
+        case .failure(let failure): throw failure
+        }
     }
 
     // MARK: dismissOrShowResultScreen
 
-    var onDismissOrShowResultScreen: ((PrimerResultViewController.ScreenType,
-                                       [PrimerPaymentMethodManagerCategory],
-                                       String?) -> Void)?
-
-    func dismissOrShowResultScreen(type: PrimerResultViewController.ScreenType, paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory], withMessage message: String?) {
+    func dismissOrShowResultScreen(
+        type: PrimerResultViewController.ScreenType,
+        paymentMethodManagerCategories: [PrimerPaymentMethodManagerCategory],
+        withMessage message: String?
+    ) {
         onDismissOrShowResultScreen?(type, paymentMethodManagerCategories, message)
     }
 }
 
-class MockPrimerRootViewController: PrimerRootViewController {
+final class MockPrimerRootViewController: PrimerRootViewController {
 
     // MARK: show
 
