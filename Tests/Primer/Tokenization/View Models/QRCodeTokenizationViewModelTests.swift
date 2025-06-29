@@ -47,7 +47,7 @@ final class QRCodeTokenizationViewModelTests: XCTestCase {
         let mockViewController = MockPrimerRootViewController()
         uiManager.onPrepareViewController = {
             self.uiManager.primerRootViewController = mockViewController
-            return Promise.fulfilled(())
+            return .success(())
         }
 
         _ = uiManager.prepareRootViewController()
@@ -92,7 +92,7 @@ final class QRCodeTokenizationViewModelTests: XCTestCase {
         let mockViewController = MockPrimerRootViewController()
         uiManager.onPrepareViewController = {
             self.uiManager.primerRootViewController = mockViewController
-            return Promise.fulfilled(())
+            return .success(())
         }
 
         _ = uiManager.prepareRootViewController()
