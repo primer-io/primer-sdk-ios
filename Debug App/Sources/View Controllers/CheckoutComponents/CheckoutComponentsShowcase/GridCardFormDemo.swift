@@ -86,9 +86,6 @@ struct GridCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(48)
                                                         .padding(.horizontal, 12)
-                                                        .background(.white)
-                                                        .cornerRadius(10)
-                                                        .border(.purple.opacity(0.3), width: 2)
                                                     )
                                                 }
                                             }
@@ -99,9 +96,6 @@ struct GridCardFormDemo: View {
                                                     .fillMaxWidth()
                                                     .height(48)
                                                     .padding(.horizontal, 12)
-                                                    .background(.white)
-                                                    .cornerRadius(10)
-                                                    .border(.purple.opacity(0.3), width: 2)
                                                 )
                                             }
                                             
@@ -111,9 +105,6 @@ struct GridCardFormDemo: View {
                                                     .fillMaxWidth()
                                                     .height(48)
                                                     .padding(.horizontal, 12)
-                                                    .background(.white)
-                                                    .cornerRadius(10)
-                                                    .border(.purple.opacity(0.3), width: 2)
                                                 )
                                             }
                                             
@@ -124,12 +115,26 @@ struct GridCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(48)
                                                         .padding(.horizontal, 12)
-                                                        .background(.white)
-                                                        .cornerRadius(10)
-                                                        .border(.purple.opacity(0.3), width: 2)
                                                     )
                                                 }
                                             }
+                                            
+                                            // Submit button spans full width
+                                            HStack {
+                                                if let submitButton = cardScope.submitButton {
+                                                    submitButton(PrimerModifier()
+                                                        .fillMaxWidth()
+                                                        .height(48)
+                                                        .padding(.horizontal, 12),
+                                                        "Submit"
+                                                    )
+                                                }
+                                            }
+                                        }
+                                        
+                                        // Error view
+                                        if let errorView = cardScope.errorView {
+                                            errorView("Error placeholder")
                                         }
                                     }
                                     .padding()
@@ -182,8 +187,8 @@ struct GridCardFormDemo: View {
     
     /// Creates session body supporting different session types
     private func createSessionBody(surchargeAmount: Int) -> ClientSessionRequestBody {
-        // Support session type variations - default to card only with surcharge for demos
-        return MerchantMockDataManager.getClientSession(sessionType: .cardOnlyWithSurcharge, surchargeAmount: surchargeAmount)
+        // For showcase demos, use card-only session to skip payment method selection
+        return MerchantMockDataManager.getClientSession(sessionType: .cardOnly, surchargeAmount: surchargeAmount)
     }
     
     /// Extracts surcharge amount from the configured client session

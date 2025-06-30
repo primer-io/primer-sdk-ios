@@ -106,9 +106,6 @@ struct LiveStateCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(50)
                                                         .padding(.horizontal, 16)
-                                                        .background(.blue.opacity(0.05))
-                                                        .cornerRadius(10)
-                                                        .border(.blue.opacity(0.4), width: 2)
                                                     )
                                                 }
                                             }
@@ -129,9 +126,6 @@ struct LiveStateCardFormDemo: View {
                                                             .fillMaxWidth()
                                                             .height(50)
                                                             .padding(.horizontal, 16)
-                                                            .background(.green.opacity(0.05))
-                                                            .cornerRadius(10)
-                                                            .border(.green.opacity(0.4), width: 2)
                                                         )
                                                     }
                                                 }
@@ -150,9 +144,6 @@ struct LiveStateCardFormDemo: View {
                                                             .fillMaxWidth()
                                                             .height(50)
                                                             .padding(.horizontal, 16)
-                                                            .background(.purple.opacity(0.05))
-                                                            .cornerRadius(10)
-                                                            .border(.purple.opacity(0.4), width: 2)
                                                         )
                                                     }
                                                 }
@@ -174,12 +165,26 @@ struct LiveStateCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(50)
                                                         .padding(.horizontal, 16)
-                                                        .background(.orange.opacity(0.05))
-                                                        .cornerRadius(10)
-                                                        .border(.orange.opacity(0.4), width: 2)
                                                     )
                                                 }
                                             }
+                                            
+                                            // Submit button with live state
+                                            if let submitButton = cardScope.submitButton {
+                                                submitButton(PrimerModifier()
+                                                    .fillMaxWidth()
+                                                    .height(50)
+                                                    .padding(.horizontal, 16)
+                                                    .background(.blue)
+                                                    .cornerRadius(10),
+                                                    "Pay Now"
+                                                )
+                                            }
+                                        }
+                                        
+                                        // Error view
+                                        if let errorView = cardScope.errorView {
+                                            errorView("Error placeholder")
                                         }
                                         
                                         // Live state indicators
@@ -247,8 +252,8 @@ struct LiveStateCardFormDemo: View {
     
     /// Creates session body supporting different session types
     private func createSessionBody(surchargeAmount: Int) -> ClientSessionRequestBody {
-        // Support session type variations - default to card only with surcharge for demos
-        return MerchantMockDataManager.getClientSession(sessionType: .cardOnlyWithSurcharge, surchargeAmount: surchargeAmount)
+        // For showcase demos, use card-only session to skip payment method selection
+        return MerchantMockDataManager.getClientSession(sessionType: .cardOnly, surchargeAmount: surchargeAmount)
     }
     
     /// Extracts surcharge amount from the configured client session

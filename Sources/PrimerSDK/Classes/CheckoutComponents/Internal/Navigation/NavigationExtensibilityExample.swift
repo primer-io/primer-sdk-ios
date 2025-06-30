@@ -230,14 +230,14 @@ internal struct NavigationUsageExample {
         // Standard checkout flow (works with any payment method)
         checkoutCoordinator.navigate(to: .loading)
         checkoutCoordinator.navigate(to: .paymentMethodSelection)
-        checkoutCoordinator.navigate(to: .paymentMethod("PAYMENT_CARD"))  // Example: card payment
+        checkoutCoordinator.navigate(to: .paymentMethod("PAYMENT_CARD", .fromPaymentSelection))  // Example: card payment
         checkoutCoordinator.navigate(to: .selectCountry)
 
         // Navigate back to payment method
         checkoutCoordinator.goBack()
 
         // Alternative flow with different payment method
-        checkoutCoordinator.navigate(to: .paymentMethod("APPLE_PAY"))  // Example: Apple Pay
+        checkoutCoordinator.navigate(to: .paymentMethod("APPLE_PAY", .fromPaymentSelection))  // Example: Apple Pay
 
         // Complete payment
         let result = CheckoutPaymentResult(paymentId: "pay_123", amount: "$10.00", method: "card")

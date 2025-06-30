@@ -93,11 +93,8 @@ struct ExpandedCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(60)
                                                         .padding(.horizontal, 20)
-                                                        .background(.white)
-                                                        .cornerRadius(12)
-                                                        .border(.blue.opacity(0.2), width: 1)
-                                                        .shadow(color: .black.opacity(0.02), radius: 2, x: 0, y: 1)
                                                     )
+                                                    .shadow(color: .black.opacity(0.02), radius: 2, x: 0, y: 1)
                                                 }
                                             }
                                             
@@ -113,11 +110,8 @@ struct ExpandedCardFormDemo: View {
                                                             .fillMaxWidth()
                                                             .height(60)
                                                             .padding(.horizontal, 20)
-                                                            .background(.white)
-                                                            .cornerRadius(12)
-                                                            .border(.blue.opacity(0.2), width: 1)
-                                                            .shadow(color: .black.opacity(0.02), radius: 2, x: 0, y: 1)
                                                         )
+                                                        .shadow(color: .black.opacity(0.02), radius: 2, x: 0, y: 1)
                                                     }
                                                 }
                                                 
@@ -131,11 +125,8 @@ struct ExpandedCardFormDemo: View {
                                                             .fillMaxWidth()
                                                             .height(60)
                                                             .padding(.horizontal, 20)
-                                                            .background(.white)
-                                                            .cornerRadius(12)
-                                                            .border(.blue.opacity(0.2), width: 1)
-                                                            .shadow(color: .black.opacity(0.02), radius: 2, x: 0, y: 1)
                                                         )
+                                                        .shadow(color: .black.opacity(0.02), radius: 2, x: 0, y: 1)
                                                     }
                                                 }
                                             }
@@ -151,13 +142,26 @@ struct ExpandedCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(60)
                                                         .padding(.horizontal, 20)
-                                                        .background(.white)
-                                                        .cornerRadius(12)
-                                                        .border(.blue.opacity(0.2), width: 1)
-                                                        .shadow(color: .black.opacity(0.02), radius: 2, x: 0, y: 1)
                                                     )
+                                                    .shadow(color: .black.opacity(0.02), radius: 2, x: 0, y: 1)
                                                 }
                                             }
+                                            
+                                            // Expanded submit button
+                                            if let submitButton = cardScope.submitButton {
+                                                submitButton(PrimerModifier()
+                                                    .fillMaxWidth()
+                                                    .height(64)
+                                                    .padding(.horizontal, 20),
+                                                    "Complete Payment"
+                                                )
+                                                .shadow(color: .blue.opacity(0.3), radius: 6, x: 0, y: 3)
+                                            }
+                                        }
+                                        
+                                        // Expanded error view
+                                        if let errorView = cardScope.errorView {
+                                            errorView("Error placeholder")
                                         }
                                     }
                                     .padding(24)
@@ -210,8 +214,8 @@ struct ExpandedCardFormDemo: View {
     
     /// Creates session body supporting different session types
     private func createSessionBody(surchargeAmount: Int) -> ClientSessionRequestBody {
-        // Support session type variations - default to card only with surcharge for demos
-        return MerchantMockDataManager.getClientSession(sessionType: .cardOnlyWithSurcharge, surchargeAmount: surchargeAmount)
+        // For showcase demos, use card-only session to skip payment method selection
+        return MerchantMockDataManager.getClientSession(sessionType: .cardOnly, surchargeAmount: surchargeAmount)
     }
     
     /// Extracts surcharge amount from the configured client session

@@ -25,6 +25,40 @@ protocol NavigationRoute: Hashable, Identifiable {
     var analyticsParameters: [String: Any] { get }
 }
 
+// MARK: - Presentation Context
+@available(iOS 15.0, *)
+public enum PresentationContext {
+    case direct                    // Presented directly (e.g., single payment method)
+    case fromPaymentSelection     // Reached from payment method selection
+
+    /// Whether the back button should be shown
+    var shouldShowBackButton: Bool {
+        switch self {
+        case .direct:
+            return false
+        case .fromPaymentSelection:
+            return true
+        }
+    }
+
+    /// How cancel should behave based on context
+    var cancelBehavior: CancelBehavior {
+        switch self {
+        case .direct:
+            return .dismiss
+        case .fromPaymentSelection:
+            return .navigateToPaymentSelection
+        }
+    }
+}
+
+// MARK: - Cancel Behavior
+@available(iOS 15.0, *)
+enum CancelBehavior {
+    case dismiss                      // Dismiss entirely
+    case navigateToPaymentSelection  // Navigate back to payment method selection
+}
+
 // MARK: - Navigation Behavior
 @available(iOS 15.0, *)
 enum NavigationBehavior {
@@ -50,7 +84,7 @@ enum CheckoutRoute: NavigationRoute {
     case selectCountry
     case success(CheckoutPaymentResult)
     case failure(CheckoutPaymentError)
-    case paymentMethod(String) // Payment method type (unified approach for all payment methods including cards)
+    case paymentMethod(String, PresentationContext) // Payment method type with presentation context
 
     var id: String {
         switch self {
@@ -58,7 +92,7 @@ enum CheckoutRoute: NavigationRoute {
         case .loading: return "loading"
         case .paymentMethodSelection: return "payment-method-selection"
         case .selectCountry: return "select-country"
-        case .paymentMethod(let type): return "payment-method-\(type)"
+        case .paymentMethod(let type, let context): return "payment-method-\(type)-\(context == .direct ? "direct" : "selection")"
         case .success: return "success"
         case .failure: return "failure"
         }
@@ -80,7 +114,7 @@ enum CheckoutRoute: NavigationRoute {
         case .loading: return "Loading Screen"
         case .paymentMethodSelection: return "Payment Method Selection"
         case .selectCountry: return "Select Country"
-        case .paymentMethod(let type): return "Payment Method: \(type)"
+        case .paymentMethod(let type, let context): return "Payment Method: \(type) (\(context == .direct ? "Direct" : "From Selection"))"
         case .success: return "Payment Success"
         case .failure: return "Payment Error"
         }
@@ -105,8 +139,9 @@ enum CheckoutRoute: NavigationRoute {
         var params = ["route_id": id, "route_name": routeName]
 
         switch self {
-        case .paymentMethod(let type):
+        case .paymentMethod(let type, let context):
             params["payment_method_type"] = type
+            params["presentation_context"] = context == .direct ? "direct" : "from_selection"
         case .success(let result):
             params["payment_id"] = result.paymentId
             params["amount"] = result.amount

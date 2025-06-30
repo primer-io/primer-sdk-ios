@@ -90,8 +90,8 @@ internal final class CheckoutCoordinator: NavigationCoordinator, LogReporter {
         }
     }
 
-    func handlePaymentMethodSelection(_ methodType: String) {
-        navigate(to: .paymentMethod(methodType))
+    func handlePaymentMethodSelection(_ methodType: String, context: PresentationContext = .fromPaymentSelection) {
+        navigate(to: .paymentMethod(methodType, context))
     }
 
     func handlePaymentSuccess(_ result: CheckoutPaymentResult) {

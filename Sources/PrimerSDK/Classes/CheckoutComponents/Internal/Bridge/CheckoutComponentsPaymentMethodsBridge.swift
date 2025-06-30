@@ -208,7 +208,7 @@ internal class CheckoutComponentsPaymentMethodsBridge: GetPaymentMethodsInteract
             // Get payment methods that CheckoutComponents can actually handle
             // Note: We need to access this synchronously since we can't make this method async
             // PaymentMethodRegistry.shared.registeredTypes is currently ["PAYMENT_CARD"]
-            let supportedPaymentMethods = ["PAYMENT_CARD"] // Hardcoded for now since only card is implemented
+            let supportedPaymentMethods = ["PAYMENT_CARD", "PAYPAL"] // Hardcoded for now since only card is implemented
 
             logger.debug(message: "🔍 [PaymentMethodsBridge] CheckoutComponents supports: \(supportedPaymentMethods.joined(separator: ", "))")
 

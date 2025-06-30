@@ -18,6 +18,9 @@ public protocol PrimerCardFormScope: PrimerPaymentMethodScope where State == Pri
     /// The current state of the card form as an async stream.
     var state: AsyncStream<PrimerCardFormState> { get }
 
+    /// The presentation context determining navigation behavior.
+    var presentationContext: PresentationContext { get }
+
     // MARK: - Payment Method Lifecycle (PrimerPaymentMethodScope)
 
     /// Starts the card form flow and initializes the scope.

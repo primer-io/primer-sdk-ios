@@ -18,9 +18,36 @@ struct DarkThemedCardFormDemo: View {
     @State private var clientToken: String?
     @State private var isLoading = true
     @State private var error: String?
+    @State private var isDismissed = false
     var body: some View {
         VStack {
-            if isLoading {
+            if isDismissed {
+                // Show dismissed state with option to reset
+                VStack(spacing: 16) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 48))
+                        .foregroundColor(.white)
+                    
+                    Text("Demo Completed")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                    
+                    Text("Dark theme demo has been dismissed")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                    
+                    Button("Reset Demo") {
+                        isDismissed = false
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .frame(height: 300)
+                .padding()
+                .background(.black)
+                .cornerRadius(8)
+            } else if isLoading {
                 VStack(spacing: 12) {
                     ProgressView()
                         .scaleEffect(1.2)
@@ -92,9 +119,6 @@ struct DarkThemedCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(50)
                                                         .padding(.horizontal, 16)
-                                                        .background(.white.opacity(0.1))
-                                                        .cornerRadius(12)
-                                                        .border(.white.opacity(0.3), width: 1.5)
                                                     )
                                                 }
                                             }
@@ -111,9 +135,6 @@ struct DarkThemedCardFormDemo: View {
                                                             .fillMaxWidth()
                                                             .height(50)
                                                             .padding(.horizontal, 16)
-                                                            .background(.white.opacity(0.1))
-                                                            .cornerRadius(12)
-                                                            .border(.white.opacity(0.3), width: 1.5)
                                                         )
                                                     }
                                                 }
@@ -128,9 +149,6 @@ struct DarkThemedCardFormDemo: View {
                                                             .fillMaxWidth()
                                                             .height(50)
                                                             .padding(.horizontal, 16)
-                                                            .background(.white.opacity(0.1))
-                                                            .cornerRadius(12)
-                                                            .border(.white.opacity(0.3), width: 1.5)
                                                         )
                                                     }
                                                 }
@@ -147,12 +165,22 @@ struct DarkThemedCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(50)
                                                         .padding(.horizontal, 16)
-                                                        .background(.white.opacity(0.1))
-                                                        .cornerRadius(12)
-                                                        .border(.white.opacity(0.3), width: 1.5)
                                                     )
                                                 }
                                             }
+                                        }
+                                        
+                                        // Dark theme submit button
+                                        if let submitButton = cardScope.submitButton {
+                                            submitButton(PrimerModifier()
+                                                .fillMaxWidth()
+                                                .height(56)
+                                                .padding(.horizontal, 16)
+                                                .background(.white)
+                                                .cornerRadius(12),
+                                                "Complete Payment"
+                                            )
+                                            .shadow(color: .white.opacity(0.2), radius: 4, x: 0, y: 2)
                                         }
                                         
                                         // Dark theme security notice
@@ -162,6 +190,11 @@ struct DarkThemedCardFormDemo: View {
                                             Text("Secured with 256-bit encryption")
                                                 .font(.caption)
                                                 .foregroundColor(.white.opacity(0.7))
+                                        }
+                                        
+                                        // Dark theme error view
+                                        if let errorView = cardScope.errorView {
+                                            errorView("Error placeholder")
                                         }
                                     }
                                     .padding(24)
@@ -175,6 +208,9 @@ struct DarkThemedCardFormDemo: View {
                                     .cornerRadius(16)
                                 )
                             }
+                        },
+                        onCompletion: {
+                            isDismissed = true
                         }
                     )
                 }
@@ -221,8 +257,8 @@ struct DarkThemedCardFormDemo: View {
     
     /// Creates session body supporting different session types
     private func createSessionBody(surchargeAmount: Int) -> ClientSessionRequestBody {
-        // Support session type variations - default to card only with surcharge for demos
-        return MerchantMockDataManager.getClientSession(sessionType: .cardOnlyWithSurcharge, surchargeAmount: surchargeAmount)
+        // For showcase demos, use card-only session to skip payment method selection
+        return MerchantMockDataManager.getClientSession(sessionType: .cardOnly, surchargeAmount: surchargeAmount)
     }
     
     /// Extracts surcharge amount from the configured client session

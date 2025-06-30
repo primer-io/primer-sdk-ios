@@ -204,6 +204,7 @@ extension PrimerSwiftUIBridgeViewController {
         settings: PrimerSettings,
         diContainer: DIContainer,
         navigator: CheckoutNavigator,
+        presentationContext: PresentationContext = .direct,
         customContent: ((PrimerCheckoutScope) -> AnyView)? = nil,
         onCompletion: (() -> Void)? = nil
     ) -> PrimerSwiftUIBridgeViewController {
@@ -215,22 +216,24 @@ extension PrimerSwiftUIBridgeViewController {
         let checkoutView: PrimerCheckout
 
         if let customContent = customContent {
-            // Use the custom content initializer
+            // Use the custom content initializer with presentation context
             checkoutView = PrimerCheckout(
                 clientToken: clientToken,
                 settings: settings,
                 diContainer: diContainer,
                 navigator: navigator,
                 customContent: customContent,
+                presentationContext: presentationContext,
                 onCompletion: onCompletion
             )
         } else {
-            // Use the standard initializer
+            // Use the standard initializer with presentation context
             checkoutView = PrimerCheckout(
                 clientToken: clientToken,
                 settings: settings,
                 diContainer: diContainer,
                 navigator: navigator,
+                presentationContext: presentationContext,
                 onCompletion: onCompletion
             )
         }
@@ -240,6 +243,36 @@ extension PrimerSwiftUIBridgeViewController {
         bridgeController.title = "Checkout"
 
         logger.info(message: "🌉 [SwiftUIBridge] CheckoutComponents bridge created successfully")
+        return bridgeController
+    }
+
+    /// Factory method to create bridge controller for direct card form presentation
+    static func createForCardForm(
+        clientToken: String,
+        settings: PrimerSettings,
+        diContainer: DIContainer,
+        navigator: CheckoutNavigator,
+        onCompletion: (() -> Void)? = nil
+    ) -> PrimerSwiftUIBridgeViewController {
+
+        let logger = PrimerLogging.shared.logger
+        logger.info(message: "💳 [SwiftUIBridge] Creating bridge for direct card form")
+
+        // Create the SwiftUI checkout view configured for direct card presentation
+        let checkoutView = PrimerCheckout(
+            clientToken: clientToken,
+            settings: settings,
+            diContainer: diContainer,
+            navigator: navigator,
+            presentationContext: .direct, // Key difference: direct presentation
+            onCompletion: onCompletion
+        )
+
+        // Create bridge controller
+        let bridgeController = PrimerSwiftUIBridgeViewController(swiftUIView: checkoutView)
+        bridgeController.title = "Card Payment"
+
+        logger.info(message: "💳 [SwiftUIBridge] Card form bridge created successfully")
         return bridgeController
     }
 }

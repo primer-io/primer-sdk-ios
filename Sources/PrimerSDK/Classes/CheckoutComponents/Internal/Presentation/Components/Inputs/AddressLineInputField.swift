@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import UIKit
 
-/// A SwiftUI component for address line input with validation
+/// A SwiftUI component for address line input with validation and consistent styling
+/// matching the card form field validation timing patterns.
 @available(iOS 15.0, *)
 internal struct AddressLineInputField: View, LogReporter {
     // MARK: - Public Properties
@@ -30,6 +32,9 @@ internal struct AddressLineInputField: View, LogReporter {
     /// Callback when the validation state changes
     let onValidationChange: ((Bool) -> Void)?
 
+    /// PrimerModifier for comprehensive styling customization
+    let modifier: PrimerModifier
+
     // MARK: - Private Properties
 
     /// The validation service resolved from DI environment
@@ -40,42 +45,133 @@ internal struct AddressLineInputField: View, LogReporter {
     @State private var addressLine: String = ""
 
     /// The validation state
-    @State private var isValid: Bool = true
+    @State private var isValid: Bool = false
 
     /// Error message if validation fails
     @State private var errorMessage: String?
 
+    /// Focus state for input field styling
+    @State private var isFocused: Bool = false
+
     @Environment(\.designTokens) private var tokens
+
+    // MARK: - Computed Properties
+
+    /// Dynamic border color based on field state
+    private var borderColor: Color {
+        if let errorMessage = errorMessage, !errorMessage.isEmpty {
+            return tokens?.primerColorBorderOutlinedError ?? .red
+        } else if isFocused {
+            return tokens?.primerColorBorderOutlinedFocus ?? .blue
+        } else {
+            return tokens?.primerColorBorderOutlinedDefault ?? Color(.systemGray4)
+        }
+    }
+
+    // MARK: - Initialization
+
+    /// Creates a new AddressLineInputField with comprehensive customization support
+    internal init(
+        label: String,
+        placeholder: String,
+        isRequired: Bool,
+        inputType: PrimerInputElementType,
+        modifier: PrimerModifier = PrimerModifier(),
+        onAddressChange: ((String) -> Void)? = nil,
+        onValidationChange: ((Bool) -> Void)? = nil
+    ) {
+        self.label = label
+        self.placeholder = placeholder
+        self.isRequired = isRequired
+        self.inputType = inputType
+        self.modifier = modifier
+        self.onAddressChange = onAddressChange
+        self.onValidationChange = onValidationChange
+    }
 
     // MARK: - Body
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: tokens?.primerSpaceSmall ?? 6) {
             // Label
             Text(label)
-                .font(.caption)
+                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium))
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
 
-            // Address input field
-            TextField(placeholder, text: $addressLine)
-                .textFieldStyle(.roundedBorder)
-                .autocapitalization(.words)
-                .padding()
-                .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-                .cornerRadius(8)
-                .onChange(of: addressLine) { newValue in
-                    onAddressChange?(newValue)
-                    validateAddress()
+            // Address input field with ZStack architecture
+            ZStack {
+                // Background and border styling
+                RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
+                    .fill(tokens?.primerColorBackground ?? Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
+                            .stroke(borderColor, lineWidth: 1)
+                            .animation(.easeInOut(duration: 0.2), value: borderColor)
+                    )
+                    .shadow(
+                        color: Color.black.opacity(0.04),
+                        radius: tokens?.primerSpaceXsmall ?? 2,
+                        x: 0,
+                        y: 1
+                    )
+
+                // Input field content
+                HStack {
+                    if let validationService = validationService {
+                        AddressLineTextField(
+                            addressLine: $addressLine,
+                            isValid: $isValid,
+                            errorMessage: $errorMessage,
+                            isFocused: $isFocused,
+                            placeholder: placeholder,
+                            isRequired: isRequired,
+                            inputType: inputType,
+                            validationService: validationService,
+                            onAddressChange: onAddressChange,
+                            onValidationChange: onValidationChange
+                        )
+                        .padding(.leading, tokens?.primerSpaceLarge ?? 16)
+                        .padding(.trailing, errorMessage != nil ? (tokens?.primerSizeXxlarge ?? 60) : (tokens?.primerSpaceLarge ?? 16))
+                        .padding(.vertical, tokens?.primerSpaceMedium ?? 12)
+                    } else {
+                        // Fallback view while loading validation service
+                        TextField(placeholder, text: $addressLine)
+                            .autocapitalization(.words)
+                            .disabled(true)
+                            .padding(.leading, tokens?.primerSpaceLarge ?? 16)
+                            .padding(.trailing, tokens?.primerSpaceLarge ?? 16)
+                            .padding(.vertical, tokens?.primerSpaceMedium ?? 12)
+                    }
+
+                    Spacer()
                 }
 
-            // Error message
-            if let errorMessage = errorMessage {
-                Text(errorMessage)
-                    .font(.caption)
-                    .foregroundColor(.red)
-                    .padding(.top, 2)
+                // Right side overlay (error icon)
+                HStack {
+                    Spacer()
+
+                    if let errorMessage = errorMessage, !errorMessage.isEmpty {
+                        // Error icon when validation fails
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: tokens?.primerSizeMedium ?? 20, height: tokens?.primerSizeMedium ?? 20)
+                            .foregroundColor(tokens?.primerColorIconNegative ?? Color(red: 1.0, green: 0.45, blue: 0.47))
+                            .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
+                    }
+                }
             }
+            .frame(height: tokens?.primerSizeXxxlarge ?? 48)
+
+            // Error message (always reserve space to prevent height changes)
+            Text(errorMessage ?? " ")
+                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 11, weight: .regular))
+                .foregroundColor(tokens?.primerColorTextNegative ?? .red)
+                .padding(.top, tokens?.primerSpaceXsmall ?? 4)
+                .opacity(errorMessage != nil ? 1.0 : 0.0)
+                .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
         }
+        .primerModifier(modifier)
         .onAppear {
             setupValidationService()
         }
@@ -93,25 +189,190 @@ internal struct AddressLineInputField: View, LogReporter {
             logger.error(message: "Failed to resolve ValidationService: \(error)")
         }
     }
+}
 
-    private func validateAddress() {
-        guard let validationService = validationService else { return }
+/// UIViewRepresentable wrapper for address line input with focus-based validation
+@available(iOS 15.0, *)
+private struct AddressLineTextField: UIViewRepresentable, LogReporter {
+    @Binding var addressLine: String
+    @Binding var isValid: Bool
+    @Binding var errorMessage: String?
+    @Binding var isFocused: Bool
+    let placeholder: String
+    let isRequired: Bool
+    let inputType: PrimerInputElementType
+    let validationService: ValidationService
+    let onAddressChange: ((String) -> Void)?
+    let onValidationChange: ((Bool) -> Void)?
 
-        // For optional fields (like address line 2), empty is valid
-        if !isRequired && addressLine.isEmpty {
-            isValid = true
-            errorMessage = nil
-            onValidationChange?(true)
-            return
-        }
+    func makeUIView(context: Context) -> UITextField {
+        let textField = UITextField()
+        textField.delegate = context.coordinator
+        textField.placeholder = placeholder
+        textField.borderStyle = .none
+        textField.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        textField.autocapitalizationType = .words
+        textField.autocorrectionType = .no
+        textField.returnKeyType = .done
 
-        let result = validationService.validate(
-            input: addressLine,
-            with: AddressRule()
+        // Set placeholder color to match design tokens (same as PrimerInputField)
+        // Use Inter font or fallback to system font based on design tokens
+        let placeholderFont: UIFont = {
+            if let interFont = UIFont(name: "InterVariable", size: 16) {
+                return interFont
+            }
+            return UIFont.systemFont(ofSize: 16, weight: .regular)
+        }()
+        
+        textField.attributedPlaceholder = NSAttributedString(
+            string: placeholder,
+            attributes: [
+                .foregroundColor: UIColor.systemGray,
+                .font: placeholderFont
+            ]
         )
 
-        isValid = result.isValid
-        errorMessage = result.errorMessage
-        onValidationChange?(result.isValid)
+        // Add a "Done" button to the keyboard
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: context.coordinator, action: #selector(Coordinator.doneButtonTapped))
+        toolbar.items = [flexSpace, doneButton]
+        textField.inputAccessoryView = toolbar
+
+        return textField
+    }
+
+    func updateUIView(_ textField: UITextField, context: Context) {
+        if textField.text != addressLine {
+            textField.text = addressLine
+        }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(
+            validationService: validationService,
+            addressLine: $addressLine,
+            isValid: $isValid,
+            errorMessage: $errorMessage,
+            isFocused: $isFocused,
+            isRequired: isRequired,
+            inputType: inputType,
+            onAddressChange: onAddressChange,
+            onValidationChange: onValidationChange
+        )
+    }
+
+    class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+        private let validationService: ValidationService
+        @Binding private var addressLine: String
+        @Binding private var isValid: Bool
+        @Binding private var errorMessage: String?
+        @Binding private var isFocused: Bool
+        private let isRequired: Bool
+        private let inputType: PrimerInputElementType
+        private let onAddressChange: ((String) -> Void)?
+        private let onValidationChange: ((Bool) -> Void)?
+
+        init(
+            validationService: ValidationService,
+            addressLine: Binding<String>,
+            isValid: Binding<Bool>,
+            errorMessage: Binding<String?>,
+            isFocused: Binding<Bool>,
+            isRequired: Bool,
+            inputType: PrimerInputElementType,
+            onAddressChange: ((String) -> Void)?,
+            onValidationChange: ((Bool) -> Void)?
+        ) {
+            self.validationService = validationService
+            self._addressLine = addressLine
+            self._isValid = isValid
+            self._errorMessage = errorMessage
+            self._isFocused = isFocused
+            self.isRequired = isRequired
+            self.inputType = inputType
+            self.onAddressChange = onAddressChange
+            self.onValidationChange = onValidationChange
+        }
+
+        @objc func doneButtonTapped() {
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        }
+
+        func textFieldDidBeginEditing(_ textField: UITextField) {
+            DispatchQueue.main.async {
+                self.isFocused = true
+                self.errorMessage = nil
+                // Don't set isValid = false immediately - let validation happen on text change or focus loss
+            }
+        }
+
+        func textFieldDidEndEditing(_ textField: UITextField) {
+            DispatchQueue.main.async {
+                self.isFocused = false
+            }
+            validateAddress()
+        }
+
+        func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+            textField.resignFirstResponder()
+            return true
+        }
+
+        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+            // Get current text
+            let currentText = addressLine
+
+            // Create new text
+            guard let textRange = Range(range, in: currentText) else { return false }
+            let newText = currentText.replacingCharacters(in: textRange, with: string)
+
+            // Update state
+            addressLine = newText
+            onAddressChange?(newText)
+
+            // Simple validation while typing (don't show errors until focus loss)
+            if isRequired {
+                isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            } else {
+                isValid = true // Optional fields are always valid while typing
+            }
+
+            return false
+        }
+
+        private func validateAddress() {
+            let trimmedAddress = addressLine.trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            // Empty field handling - don't show errors for empty fields
+            if trimmedAddress.isEmpty {
+                isValid = isRequired ? false : true // Required fields are invalid when empty, optional fields are valid
+                errorMessage = nil // Never show error message for empty fields
+                onValidationChange?(isValid)
+                return
+            }
+            
+            // Convert PrimerInputElementType to ValidationError.InputElementType
+            let elementType: ValidationError.InputElementType = {
+                switch inputType {
+                case .addressLine1:
+                    return .addressLine1
+                case .addressLine2:
+                    return .addressLine2
+                default:
+                    return .addressLine1
+                }
+            }()
+
+            let result = validationService.validate(
+                input: addressLine,
+                with: AddressRule(inputElementType: elementType, isRequired: isRequired)
+            )
+
+            isValid = result.isValid
+            errorMessage = result.errorMessage
+            onValidationChange?(result.isValid)
+        }
     }
 }

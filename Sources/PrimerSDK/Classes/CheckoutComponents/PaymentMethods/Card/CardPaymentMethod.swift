@@ -38,7 +38,29 @@ internal struct CardPaymentMethod: PaymentMethodProtocol {
 
         // Create the card form scope using the existing initialization pattern
         // The DefaultCardFormScope gets its DIContainer internally from DIContainer.shared
-        return DefaultCardFormScope(checkoutScope: defaultCheckoutScope)
+        // Determine the correct presentation context based on the number of available payment methods
+        let logger = PrimerLogging.shared.logger
+        let availableMethodsCount = defaultCheckoutScope.availablePaymentMethods.count
+        let checkoutContext = defaultCheckoutScope.presentationContext
+        
+        logger.info(message: "🧭 [CardPaymentMethod] Creating card scope with context decision:")
+        logger.info(message: "🧭 [CardPaymentMethod]   - Available payment methods: \(availableMethodsCount)")
+        logger.info(message: "🧭 [CardPaymentMethod]   - Checkout scope context: \(checkoutContext)")
+        
+        let paymentMethodContext: PresentationContext
+        if availableMethodsCount > 1 {
+            // Multiple payment methods means we came from payment selection - show back button
+            paymentMethodContext = .fromPaymentSelection
+            logger.info(message: "🧭 [CardPaymentMethod]   - Decision: MULTIPLE methods → using .fromPaymentSelection (back button will show)")
+        } else {
+            // Single payment method means direct navigation - no back button needed
+            paymentMethodContext = .direct
+            logger.info(message: "🧭 [CardPaymentMethod]   - Decision: SINGLE method → using .direct (no back button)")
+        }
+        
+        logger.info(message: "🧭 [CardPaymentMethod]   - Final card scope context: \(paymentMethodContext)")
+        
+        return DefaultCardFormScope(checkoutScope: defaultCheckoutScope, presentationContext: paymentMethodContext)
     }
 }
 

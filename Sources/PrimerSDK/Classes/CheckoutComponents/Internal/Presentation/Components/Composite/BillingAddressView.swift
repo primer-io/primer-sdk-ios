@@ -90,15 +90,15 @@ internal struct BillingAddressView: View, LogReporter {
     @State private var postalCode: String = ""
 
     /// Validation states using ValidationService
-    @State private var firstNameError: ValidationError?
-    @State private var lastNameError: ValidationError?
-    @State private var emailError: ValidationError?
-    @State private var phoneNumberError: ValidationError?
-    @State private var addressLine1Error: ValidationError?
-    @State private var addressLine2Error: ValidationError?
-    @State private var cityError: ValidationError?
-    @State private var stateError: ValidationError?
-    @State private var postalCodeError: ValidationError?
+    @State private var firstNameError: String?
+    @State private var lastNameError: String?
+    @State private var emailError: String?
+    @State private var phoneNumberError: String?
+    @State private var addressLine1Error: String?
+    @State private var addressLine2Error: String?
+    @State private var cityError: String?
+    @State private var stateError: String?
+    @State private var postalCodeError: String?
 
     @Environment(\.designTokens) private var tokens
     @Environment(\.diContainer) private var diContainer
@@ -143,7 +143,7 @@ internal struct BillingAddressView: View, LogReporter {
                 CountryInputField(
                     label: CheckoutComponentsStrings.countryLabel,
                     placeholder: CheckoutComponentsStrings.selectCountryPlaceholder,
-                    onCountryChange: { name in
+                    selectedCountry: selectedCountry, onCountryChange: { name in
                         if let currentCountry = selectedCountry {
                             selectedCountry = CountryCode.PhoneNumberCountryCode(
                                 name: name,
@@ -167,8 +167,7 @@ internal struct BillingAddressView: View, LogReporter {
                     },
                     onOpenCountrySelector: {
                         showCountrySelector = true
-                    },
-                    selectedCountry: selectedCountry
+                    }
                 )
             }
 
@@ -350,7 +349,7 @@ internal struct BillingAddressView: View, LogReporter {
     // MARK: - Validation Helpers
 
     /// Validates a field using ValidationService from DI container
-    private func validateField(type: PrimerInputElementType, value: String) async -> ValidationError? {
+    private func validateField(type: PrimerInputElementType, value: String) async -> String? {
         do {
             guard let validationService = try await diContainer?.resolve(ValidationService.self) else {
                 // Fallback to basic validation if DI container is not available
@@ -361,7 +360,10 @@ internal struct BillingAddressView: View, LogReporter {
             if result.isValid {
                 return nil
             } else {
-                return ValidationError(code: result.errorCode ?? "invalid", message: result.errorMessage ?? "Invalid input")
+                // Return the resolved error message directly
+                // ValidationResult.invalid(error:) already calls ErrorMessageResolver.resolveErrorMessage()
+                // so result.errorMessage contains the proper localized message like "Invalid Address Line 1"
+                return result.errorMessage
             }
         } catch {
             // If validation service is not available, don't show errors

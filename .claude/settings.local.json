@@ -47,7 +47,8 @@
       "Bash(xxd:*)",
       "Bash(git checkout:*)",
       "Bash(swift:*)",
-      "Bash(swift:*)"
+      "Bash(swift:*)",
+      "Bash(true)"
     ],
     "deny": []
   }

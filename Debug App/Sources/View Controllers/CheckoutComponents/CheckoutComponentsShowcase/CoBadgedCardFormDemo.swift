@@ -143,9 +143,6 @@ struct CoBadgedCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(52)
                                                         .padding(.horizontal, 16)
-                                                        .background(.blue.opacity(0.08))
-                                                        .cornerRadius(12)
-                                                        .border(.blue.opacity(0.4), width: 1.5)
                                                     )
                                                     Text("Network detected automatically")
                                                         .font(.caption)
@@ -164,9 +161,6 @@ struct CoBadgedCardFormDemo: View {
                                                             .fillMaxWidth()
                                                             .height(52)
                                                             .padding(.horizontal, 16)
-                                                            .background(.purple.opacity(0.08))
-                                                            .cornerRadius(12)
-                                                            .border(.purple.opacity(0.4), width: 1.5)
                                                         )
                                                     }
                                                 }
@@ -180,9 +174,6 @@ struct CoBadgedCardFormDemo: View {
                                                             .fillMaxWidth()
                                                             .height(52)
                                                             .padding(.horizontal, 16)
-                                                            .background(.green.opacity(0.08))
-                                                            .cornerRadius(12)
-                                                            .border(.green.opacity(0.4), width: 1.5)
                                                         )
                                                     }
                                                 }
@@ -198,12 +189,24 @@ struct CoBadgedCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(52)
                                                         .padding(.horizontal, 16)
-                                                        .background(.orange.opacity(0.08))
-                                                        .cornerRadius(12)
-                                                        .border(.orange.opacity(0.4), width: 1.5)
                                                     )
                                                 }
                                             }
+                                            
+                                            // Submit button
+                                            if let submitButton = cardScope.submitButton {
+                                                submitButton(PrimerModifier()
+                                                    .fillMaxWidth()
+                                                    .height(52)
+                                                    .padding(.horizontal, 16),
+                                                    "Pay Now"
+                                                )
+                                            }
+                                        }
+                                        
+                                        // Error view
+                                        if let errorView = cardScope.errorView {
+                                            errorView("Error placeholder")
                                         }
                                         
                                         // Co-badged information footer
@@ -282,8 +285,8 @@ struct CoBadgedCardFormDemo: View {
     
     /// Creates session body supporting different session types
     private func createSessionBody(surchargeAmount: Int) -> ClientSessionRequestBody {
-        // Support session type variations - default to card only with surcharge for demos
-        return MerchantMockDataManager.getClientSession(sessionType: .cardOnlyWithSurcharge, surchargeAmount: surchargeAmount)
+        // For showcase demos, use card-only session to skip payment method selection
+        return MerchantMockDataManager.getClientSession(sessionType: .cardOnly, surchargeAmount: surchargeAmount)
     }
     
     /// Extracts surcharge amount from the configured client session

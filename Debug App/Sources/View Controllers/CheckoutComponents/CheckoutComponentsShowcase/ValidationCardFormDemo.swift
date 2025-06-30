@@ -120,9 +120,6 @@ struct ValidationCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(50)
                                                         .padding(.horizontal, 16)
-                                                        .background(.white)
-                                                        .cornerRadius(8)
-                                                        .border(.red.opacity(0.4), width: 2)
                                                     )
                                                     Text("16-digit card number")
                                                         .font(.caption)
@@ -147,9 +144,6 @@ struct ValidationCardFormDemo: View {
                                                             .fillMaxWidth()
                                                             .height(50)
                                                             .padding(.horizontal, 16)
-                                                            .background(.white)
-                                                            .cornerRadius(8)
-                                                            .border(.orange.opacity(0.4), width: 2)
                                                         )
                                                         Text("Future date")
                                                             .font(.caption)
@@ -172,9 +166,6 @@ struct ValidationCardFormDemo: View {
                                                             .fillMaxWidth()
                                                             .height(50)
                                                             .padding(.horizontal, 16)
-                                                            .background(.white)
-                                                            .cornerRadius(8)
-                                                            .border(.purple.opacity(0.4), width: 2)
                                                         )
                                                         Text("Security code")
                                                             .font(.caption)
@@ -199,15 +190,27 @@ struct ValidationCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(50)
                                                         .padding(.horizontal, 16)
-                                                        .background(.white)
-                                                        .cornerRadius(8)
-                                                        .border(.green.opacity(0.4), width: 2)
                                                     )
                                                     Text("As shown on card")
                                                         .font(.caption)
                                                         .foregroundColor(.secondary)
                                                 }
                                             }
+                                            
+                                            // Submit button with validation styling
+                                            if let submitButton = cardScope.submitButton {
+                                                submitButton(PrimerModifier()
+                                                    .fillMaxWidth()
+                                                    .height(50)
+                                                    .padding(.horizontal, 16),
+                                                    "Pay Now"
+                                                )
+                                            }
+                                        }
+                                        
+                                        // Error view
+                                        if let errorView = cardScope.errorView {
+                                            errorView("Error placeholder")
                                         }
                                         
                                         // Validation rules footer
@@ -275,8 +278,8 @@ struct ValidationCardFormDemo: View {
     
     /// Creates session body supporting different session types
     private func createSessionBody(surchargeAmount: Int) -> ClientSessionRequestBody {
-        // Support session type variations - default to card only with surcharge for demos
-        return MerchantMockDataManager.getClientSession(sessionType: .cardOnlyWithSurcharge, surchargeAmount: surchargeAmount)
+        // For showcase demos, use card-only session to skip payment method selection
+        return MerchantMockDataManager.getClientSession(sessionType: .cardOnly, surchargeAmount: surchargeAmount)
     }
     
     /// Extracts surcharge amount from the configured client session

@@ -18,17 +18,20 @@ internal class PhoneNumberRule: ValidationRule {
             .replacingOccurrences(of: "+", with: "")
 
         if cleanedValue.isEmpty {
-            return .invalid(code: "invalid-phone-number", message: "Phone number is required")
+            let error = ErrorMessageResolver.createRequiredFieldError(for: .phoneNumber)
+            return .invalid(error: error)
         }
 
         // Check if all digits after cleaning
         if !cleanedValue.allSatisfy({ $0.isNumber }) {
-            return .invalid(code: "invalid-phone-number-format", message: "Phone number contains invalid characters")
+            let error = ErrorMessageResolver.createInvalidFieldError(for: .phoneNumber)
+            return .invalid(error: error)
         }
 
         // Check length (between 7 and 15 digits for international)
         if cleanedValue.count < 7 || cleanedValue.count > 15 {
-            return .invalid(code: "invalid-phone-number-length", message: "Invalid phone number length")
+            let error = ErrorMessageResolver.createInvalidFieldError(for: .phoneNumber)
+            return .invalid(error: error)
         }
 
         return .valid
@@ -42,13 +45,21 @@ internal class EmailRule: ValidationRule {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmedValue.isEmpty {
-            return .invalid(code: "invalid-email", message: "Email is required")
+            let error = ErrorMessageResolver.createRequiredFieldError(for: .email)
+            return .invalid(error: error)
         }
 
-        // Basic email validation pattern
+        // Basic email validation - contains @ and at least one dot after @
+        if !trimmedValue.contains("@") {
+            let error = ErrorMessageResolver.createInvalidFieldError(for: .email)
+            return .invalid(error: error)
+        }
+
+        // More comprehensive email regex validation
         let emailPattern = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
         if trimmedValue.range(of: emailPattern, options: .regularExpression) == nil {
-            return .invalid(code: "invalid-email-format", message: "Invalid email format")
+            let error = ErrorMessageResolver.createInvalidFieldError(for: .email)
+            return .invalid(error: error)
         }
 
         return .valid
@@ -62,7 +73,8 @@ internal class RetailOutletRule: ValidationRule {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmedValue.isEmpty {
-            return .invalid(code: "invalid-retail-outlet", message: "Retail outlet is required")
+            let error = ErrorMessageResolver.createRequiredFieldError(for: .retailOutlet)
+            return .invalid(error: error)
         }
 
         return .valid

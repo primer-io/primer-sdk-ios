@@ -79,9 +79,6 @@ struct InlineCardFormDemo: View {
                                                     .fillMaxWidth()
                                                     .height(44)
                                                     .padding(.horizontal, 12)
-                                                    .background(.white)
-                                                    .cornerRadius(8)
-                                                    .border(.gray.opacity(0.2), width: 1)
                                                 )
                                             }
                                             
@@ -91,9 +88,6 @@ struct InlineCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(44)
                                                         .padding(.horizontal, 12)
-                                                        .background(.white)
-                                                        .cornerRadius(8)
-                                                        .border(.gray.opacity(0.2), width: 1)
                                                     )
                                                 }
                                                 
@@ -102,9 +96,6 @@ struct InlineCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(44)
                                                         .padding(.horizontal, 12)
-                                                        .background(.white)
-                                                        .cornerRadius(8)
-                                                        .border(.gray.opacity(0.2), width: 1)
                                                     )
                                                 }
                                             }
@@ -114,11 +105,27 @@ struct InlineCardFormDemo: View {
                                                     .fillMaxWidth()
                                                     .height(44)
                                                     .padding(.horizontal, 12)
-                                                    .background(.white)
-                                                    .cornerRadius(8)
-                                                    .border(.gray.opacity(0.2), width: 1)
                                                 )
                                             }
+                                            
+                                            // Submit button
+                                            if let submitButton = cardScope.submitButton {
+                                                VStack(spacing: 0) {
+                                                    submitButton(PrimerModifier()
+                                                        .fillMaxWidth()
+                                                        .height(44)
+                                                        .padding(.horizontal, 12),
+                                                        "Submit"
+                                                    )
+                                                }
+                                                .background(.blue)
+                                                .cornerRadius(8)
+                                            }
+                                        }
+                                        
+                                        // Error view
+                                        if let errorView = cardScope.errorView {
+                                            errorView("Error placeholder")
                                         }
                                         
                                         HStack {
@@ -178,8 +185,8 @@ struct InlineCardFormDemo: View {
     
     /// Creates session body supporting different session types
     private func createSessionBody(surchargeAmount: Int) -> ClientSessionRequestBody {
-        // Support session type variations - default to card only with surcharge for demos
-        return MerchantMockDataManager.getClientSession(sessionType: .cardOnlyWithSurcharge, surchargeAmount: surchargeAmount)
+        // For showcase demos, use card-only session to skip payment method selection
+        return MerchantMockDataManager.getClientSession(sessionType: .cardOnly, surchargeAmount: surchargeAmount)
     }
     
     /// Extracts surcharge amount from the configured client session

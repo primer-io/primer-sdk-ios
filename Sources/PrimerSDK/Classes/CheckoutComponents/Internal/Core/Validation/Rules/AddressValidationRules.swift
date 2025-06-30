@@ -7,97 +7,124 @@
 
 import Foundation
 
-/// Validation rule for name fields (first name, last name).
+/// Validation rule for name fields (first name, last name) with proper localization
 internal class NameRule: ValidationRule {
+    private let inputElementType: ValidationError.InputElementType
+
+    init(inputElementType: ValidationError.InputElementType = .firstName) {
+        self.inputElementType = inputElementType
+    }
 
     func validate(_ value: String) -> ValidationResult {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmedValue.isEmpty {
-            return .invalid(code: "invalid-name", message: "Name is required")
+            let error = ErrorMessageResolver.createRequiredFieldError(for: inputElementType)
+            return .invalid(error: error)
         }
 
         if trimmedValue.count < 2 {
-            return .invalid(code: "invalid-name-length", message: "Name is too short")
+            let error = ErrorMessageResolver.createInvalidFieldError(for: inputElementType)
+            return .invalid(error: error)
         }
 
         // Allow letters, spaces, hyphens, apostrophes
         let allowedCharacters = CharacterSet.letters.union(.whitespaces).union(CharacterSet(charactersIn: "-'"))
         if !trimmedValue.unicodeScalars.allSatisfy({ allowedCharacters.contains($0) }) {
-            return .invalid(code: "invalid-name-format", message: "Name contains invalid characters")
+            let error = ErrorMessageResolver.createInvalidFieldError(for: inputElementType)
+            return .invalid(error: error)
         }
 
         return .valid
     }
 }
 
-/// Validation rule for address lines.
+/// Validation rule for address lines with proper localization
 internal class AddressRule: ValidationRule {
+    private let inputElementType: ValidationError.InputElementType
+    private let isRequired: Bool
+
+    init(inputElementType: ValidationError.InputElementType = .addressLine1, isRequired: Bool = true) {
+        self.inputElementType = inputElementType
+        self.isRequired = isRequired
+    }
 
     func validate(_ value: String) -> ValidationResult {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        // Address line 2 is optional, so empty is valid
+        // For optional fields (like address line 2), empty is valid
         if trimmedValue.isEmpty {
-            return .valid
+            if isRequired {
+                let error = ErrorMessageResolver.createRequiredFieldError(for: inputElementType)
+                return .invalid(error: error)
+            } else {
+                return .valid
+            }
         }
 
         if trimmedValue.count < 3 {
-            return .invalid(code: "invalid-address-length", message: "Address is too short")
+            let error = ErrorMessageResolver.createInvalidFieldError(for: inputElementType)
+            return .invalid(error: error)
         }
 
         if trimmedValue.count > 100 {
-            return .invalid(code: "invalid-address-length", message: "Address is too long")
+            let error = ErrorMessageResolver.createInvalidFieldError(for: inputElementType)
+            return .invalid(error: error)
         }
 
         return .valid
     }
 }
 
-/// Validation rule for city names.
+/// Validation rule for city names with proper localization
 internal class CityRule: ValidationRule {
 
     func validate(_ value: String) -> ValidationResult {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmedValue.isEmpty {
-            return .invalid(code: "invalid-city", message: "City is required")
+            let error = ErrorMessageResolver.createRequiredFieldError(for: .city)
+            return .invalid(error: error)
         }
 
         if trimmedValue.count < 2 {
-            return .invalid(code: "invalid-city-length", message: "City name is too short")
+            let error = ErrorMessageResolver.createInvalidFieldError(for: .city)
+            return .invalid(error: error)
         }
 
         // Allow letters, spaces, hyphens, periods
         let allowedCharacters = CharacterSet.letters.union(.whitespaces).union(CharacterSet(charactersIn: "-."))
         if !trimmedValue.unicodeScalars.allSatisfy({ allowedCharacters.contains($0) }) {
-            return .invalid(code: "invalid-city-format", message: "City contains invalid characters")
+            let error = ErrorMessageResolver.createInvalidFieldError(for: .city)
+            return .invalid(error: error)
         }
 
         return .valid
     }
 }
 
-/// Validation rule for state/province.
+/// Validation rule for state/province with proper localization
 internal class StateRule: ValidationRule {
 
     func validate(_ value: String) -> ValidationResult {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmedValue.isEmpty {
-            return .invalid(code: "invalid-state", message: "State is required")
+            let error = ErrorMessageResolver.createRequiredFieldError(for: .state)
+            return .invalid(error: error)
         }
 
         // State can be abbreviation (2 chars) or full name
         if trimmedValue.count < 2 {
-            return .invalid(code: "invalid-state-length", message: "State is too short")
+            let error = ErrorMessageResolver.createInvalidFieldError(for: .state)
+            return .invalid(error: error)
         }
 
         return .valid
     }
 }
 
-/// Validation rule for postal codes.
+/// Validation rule for postal codes with proper localization
 internal class PostalCodeRule: ValidationRule {
 
     private let countryCode: String?
@@ -110,7 +137,8 @@ internal class PostalCodeRule: ValidationRule {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmedValue.isEmpty {
-            return .invalid(code: "invalid-postal-code", message: "Postal code is required")
+            let error = ErrorMessageResolver.createRequiredFieldError(for: .postalCode)
+            return .invalid(error: error)
         }
 
         // Country-specific validation
@@ -119,26 +147,30 @@ internal class PostalCodeRule: ValidationRule {
             // US ZIP code: 5 digits or 5+4 format
             let usPattern = "^\\d{5}(-\\d{4})?$"
             if trimmedValue.range(of: usPattern, options: .regularExpression) == nil {
-                return .invalid(code: "invalid-postal-code-format", message: "Invalid ZIP code format")
+                let error = ErrorMessageResolver.createInvalidFieldError(for: .postalCode)
+                return .invalid(error: error)
             }
 
         case "GB":
             // UK postcode format
             if trimmedValue.count < 5 || trimmedValue.count > 8 {
-                return .invalid(code: "invalid-postal-code-format", message: "Invalid postcode format")
+                let error = ErrorMessageResolver.createInvalidFieldError(for: .postalCode)
+                return .invalid(error: error)
             }
 
         case "CA":
             // Canadian postal code
             let caPattern = "^[A-Za-z]\\d[A-Za-z] ?\\d[A-Za-z]\\d$"
             if trimmedValue.range(of: caPattern, options: .regularExpression) == nil {
-                return .invalid(code: "invalid-postal-code-format", message: "Invalid postal code format")
+                let error = ErrorMessageResolver.createInvalidFieldError(for: .postalCode)
+                return .invalid(error: error)
             }
 
         default:
             // Generic validation - allow alphanumeric and spaces
             if trimmedValue.count < 3 || trimmedValue.count > 10 {
-                return .invalid(code: "invalid-postal-code-length", message: "Invalid postal code length")
+                let error = ErrorMessageResolver.createInvalidFieldError(for: .postalCode)
+                return .invalid(error: error)
             }
         }
 
@@ -146,19 +178,21 @@ internal class PostalCodeRule: ValidationRule {
     }
 }
 
-/// Validation rule for country codes.
+/// Validation rule for country codes with proper localization
 internal class CountryCodeRule: ValidationRule {
 
     func validate(_ value: String) -> ValidationResult {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmedValue.isEmpty {
-            return .invalid(code: "invalid-country-code", message: "Country is required")
+            let error = ErrorMessageResolver.createRequiredFieldError(for: .countryCode)
+            return .invalid(error: error)
         }
 
         // Should be 2-letter ISO code
         if trimmedValue.count != 2 {
-            return .invalid(code: "invalid-country-code-format", message: "Invalid country code")
+            let error = ErrorMessageResolver.createInvalidFieldError(for: .countryCode)
+            return .invalid(error: error)
         }
 
         return .valid

@@ -19,6 +19,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
         case paymentMethod(String)  // Dynamic payment method with type identifier
         case success(CheckoutPaymentResult)
         case failure(PrimerError)
+        case dismissed
     }
 
     // MARK: - Properties
@@ -99,13 +100,17 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     private let settings: PrimerSettings
     internal var availablePaymentMethods: [InternalPaymentMethod] = []
 
+    /// The presentation context for navigation behavior
+    internal let presentationContext: PresentationContext
+
     // MARK: - Initialization
 
-    init(clientToken: String, settings: PrimerSettings, diContainer: DIContainer, navigator: CheckoutNavigator) {
+    init(clientToken: String, settings: PrimerSettings, diContainer: DIContainer, navigator: CheckoutNavigator, presentationContext: PresentationContext = .fromPaymentSelection) {
         self.clientToken = clientToken
         self.settings = settings
         self.diContainer = diContainer
         self.navigator = navigator
+        self.presentationContext = presentationContext
 
         // Register payment methods with the registry
         registerPaymentMethods()
@@ -243,12 +248,15 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
             case .paymentMethodSelection:
                 navigator.navigateToPaymentSelection()
             case .paymentMethod(let paymentMethodType):
-                navigator.navigateToPaymentMethod(paymentMethodType)
+                navigator.navigateToPaymentMethod(paymentMethodType, context: presentationContext)
             case .success(let result):
                 // Success handling is now done via the view's switch statement, not the navigator
                 logger.info(message: "Success navigation handled by view layer")
             case .failure(let error):
                 navigator.navigateToError(error.localizedDescription)
+            case .dismissed:
+                // Dismissal is handled by the view layer through onCompletion callback
+                logger.info(message: "Dismissal navigation handled by view layer")
             }
         }
     }
@@ -268,7 +276,7 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
                     newNavigationState = .loading
                 case .paymentMethodSelection:
                     newNavigationState = .paymentMethodSelection
-                case .paymentMethod(let paymentMethodType):
+                case .paymentMethod(let paymentMethodType, _):
                     newNavigationState = .paymentMethod(paymentMethodType)
                 case .failure(let checkoutError):
                     let primerError = PrimerError.unknown(
@@ -429,8 +437,9 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     public func onDismiss() {
         logger.debug(message: "Checkout dismissed")
 
-        // Update state to dismissed
+        // Update both state and navigation state to dismissed
         updateState(.dismissed)
+        updateNavigationState(.dismissed)
 
         // Clean up any resources
         _paymentMethodSelection = nil
@@ -445,7 +454,9 @@ internal final class DefaultCheckoutScope: PrimerCheckoutScope, ObservableObject
     // MARK: - Internal Methods
 
     internal func handlePaymentMethodSelection(_ method: InternalPaymentMethod) {
-        logger.debug(message: "Payment method selected: \\(method.type)")
+        logger.info(message: "🧭 [CheckoutScope] Payment method selected: \(method.type)")
+        logger.info(message: "🧭 [CheckoutScope]   - Available methods count: \(availablePaymentMethods.count)")
+        logger.info(message: "🧭 [CheckoutScope]   - Checkout context: \(presentationContext)")
 
         // Use dynamic scope creation instead of hardcoded switch statement
         do {

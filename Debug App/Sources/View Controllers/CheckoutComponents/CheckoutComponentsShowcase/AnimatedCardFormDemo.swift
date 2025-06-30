@@ -114,8 +114,8 @@ struct AnimatedCardFormDemo: View {
     
     /// Creates session body supporting different session types
     private func createSessionBody(surchargeAmount: Int) -> ClientSessionRequestBody {
-        // Support session type variations - default to card only with surcharge for demos
-        return MerchantMockDataManager.getClientSession(sessionType: .cardOnlyWithSurcharge, surchargeAmount: surchargeAmount)
+        // For showcase demos, use card-only session to skip payment method selection
+        return MerchantMockDataManager.getClientSession(sessionType: .cardOnly, surchargeAmount: surchargeAmount)
     }
     
     /// Extracts surcharge amount from the configured client session
@@ -178,11 +178,8 @@ struct AnimatedFormView: View {
                         .fillMaxWidth()
                         .height(52)
                         .padding(.horizontal, 16)
-                        .background(.white)
-                        .cornerRadius(12)
-                        .border(.purple.opacity(0.6), width: 2)
-                        .shadow(color: .purple.opacity(0.2), radius: 4, x: 0, y: 2)
                     )
+                    .shadow(color: .purple.opacity(0.2), radius: 4, x: 0, y: 2)
                     .offset(x: isVisible ? 0 : -slideOffset)
                     .opacity(isVisible ? 1.0 : 0.0)
                     .animation(.spring(response: 0.7, dampingFraction: 0.7, blendDuration: 0).delay(0.3), value: isVisible)
@@ -195,11 +192,8 @@ struct AnimatedFormView: View {
                             .fillMaxWidth()
                             .height(52)
                             .padding(.horizontal, 16)
-                            .background(.white)
-                            .cornerRadius(12)
-                            .border(.orange.opacity(0.6), width: 2)
-                            .shadow(color: .orange.opacity(0.2), radius: 4, x: 0, y: 2)
                         )
+                        .shadow(color: .orange.opacity(0.2), radius: 4, x: 0, y: 2)
                         .offset(x: isVisible ? 0 : -slideOffset)
                         .opacity(isVisible ? 1.0 : 0.0)
                         .animation(.spring(response: 0.7, dampingFraction: 0.7, blendDuration: 0).delay(0.5), value: isVisible)
@@ -210,11 +204,8 @@ struct AnimatedFormView: View {
                             .fillMaxWidth()
                             .height(52)
                             .padding(.horizontal, 16)
-                            .background(.white)
-                            .cornerRadius(12)
-                            .border(.blue.opacity(0.6), width: 2)
-                            .shadow(color: .blue.opacity(0.2), radius: 4, x: 0, y: 2)
                         )
+                        .shadow(color: .blue.opacity(0.2), radius: 4, x: 0, y: 2)
                         .offset(x: isVisible ? 0 : slideOffset)
                         .opacity(isVisible ? 1.0 : 0.0)
                         .animation(.spring(response: 0.7, dampingFraction: 0.7, blendDuration: 0).delay(0.6), value: isVisible)
@@ -227,15 +218,31 @@ struct AnimatedFormView: View {
                         .fillMaxWidth()
                         .height(52)
                         .padding(.horizontal, 16)
-                        .background(.white)
-                        .cornerRadius(12)
-                        .border(.green.opacity(0.6), width: 2)
-                        .shadow(color: .green.opacity(0.2), radius: 4, x: 0, y: 2)
                     )
+                    .shadow(color: .green.opacity(0.2), radius: 4, x: 0, y: 2)
                     .offset(y: isVisible ? 0 : slideOffset)
                     .opacity(isVisible ? 1.0 : 0.0)
                     .animation(.spring(response: 0.8, dampingFraction: 0.6, blendDuration: 0).delay(0.8), value: isVisible)
                 }
+                
+                // Submit button with animated entrance
+                if let submitButton = scope.submitButton {
+                    submitButton(PrimerModifier()
+                        .fillMaxWidth()
+                        .height(56)
+                        .padding(.horizontal, 18),
+                        "✨ Animated Payment"
+                    )
+                    .shadow(color: .purple.opacity(0.3), radius: 6, x: 0, y: 3)
+                    .scaleEffect(isVisible ? 1.0 : 0.9)
+                    .opacity(isVisible ? 1.0 : 0.0)
+                    .animation(.spring(response: 0.6, dampingFraction: 0.8, blendDuration: 0).delay(1.0), value: isVisible)
+                }
+            }
+            
+            // Error view with animated entrance
+            if let errorView = scope.errorView {
+                errorView("Error placeholder")
             }
         }
         .padding(20)

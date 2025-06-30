@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import UIKit
 
-/// A SwiftUI component for email input with validation
+/// A SwiftUI component for email input with validation and consistent styling
+/// matching the card form field validation timing patterns.
 @available(iOS 15.0, *)
 internal struct EmailInputField: View, LogReporter {
     // MARK: - Public Properties
@@ -24,6 +26,9 @@ internal struct EmailInputField: View, LogReporter {
     /// Callback when the validation state changes
     let onValidationChange: ((Bool) -> Void)?
 
+    /// PrimerModifier for comprehensive styling customization
+    let modifier: PrimerModifier
+
     // MARK: - Private Properties
 
     /// The validation service resolved from DI environment
@@ -39,39 +44,125 @@ internal struct EmailInputField: View, LogReporter {
     /// Error message if validation fails
     @State private var errorMessage: String?
 
+    /// Focus state for input field styling
+    @State private var isFocused: Bool = false
+
     @Environment(\.designTokens) private var tokens
+
+    // MARK: - Computed Properties
+
+    /// Dynamic border color based on field state
+    private var borderColor: Color {
+        if let errorMessage = errorMessage, !errorMessage.isEmpty {
+            return tokens?.primerColorBorderOutlinedError ?? .red
+        } else if isFocused {
+            return tokens?.primerColorBorderOutlinedFocus ?? .blue
+        } else {
+            return tokens?.primerColorBorderOutlinedDefault ?? Color(.systemGray4)
+        }
+    }
+
+    // MARK: - Initialization
+
+    /// Creates a new EmailInputField with comprehensive customization support
+    internal init(
+        label: String,
+        placeholder: String,
+        modifier: PrimerModifier = PrimerModifier(),
+        onEmailChange: ((String) -> Void)? = nil,
+        onValidationChange: ((Bool) -> Void)? = nil
+    ) {
+        self.label = label
+        self.placeholder = placeholder
+        self.modifier = modifier
+        self.onEmailChange = onEmailChange
+        self.onValidationChange = onValidationChange
+    }
 
     // MARK: - Body
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: tokens?.primerSpaceSmall ?? 6) {
             // Label
             Text(label)
-                .font(.caption)
+                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium))
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
 
-            // Email input field
-            TextField(placeholder, text: $email)
-                .keyboardType(.emailAddress)
-                .autocapitalization(.none)
-                .disableAutocorrection(true)
-                .textContentType(.emailAddress)
-                .padding()
-                .background(Color(.systemGray6))
-                .cornerRadius(8)
-                .onChange(of: email) { newValue in
-                    onEmailChange?(newValue)
-                    validateEmail()
+            // Email input field with ZStack architecture
+            ZStack {
+                // Background and border styling
+                RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
+                    .fill(tokens?.primerColorBackground ?? Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
+                            .stroke(borderColor, lineWidth: 1)
+                            .animation(.easeInOut(duration: 0.2), value: borderColor)
+                    )
+                    .shadow(
+                        color: Color.black.opacity(0.04),
+                        radius: tokens?.primerSpaceXsmall ?? 2,
+                        x: 0,
+                        y: 1
+                    )
+
+                // Input field content
+                HStack {
+                    if let validationService = validationService {
+                        EmailTextField(
+                            email: $email,
+                            isValid: $isValid,
+                            errorMessage: $errorMessage,
+                            isFocused: $isFocused,
+                            placeholder: placeholder,
+                            validationService: validationService,
+                            onEmailChange: onEmailChange,
+                            onValidationChange: onValidationChange
+                        )
+                        .padding(.leading, tokens?.primerSpaceLarge ?? 16)
+                        .padding(.trailing, errorMessage != nil ? (tokens?.primerSizeXxlarge ?? 60) : (tokens?.primerSpaceLarge ?? 16))
+                        .padding(.vertical, tokens?.primerSpaceMedium ?? 12)
+                    } else {
+                        // Fallback view while loading validation service
+                        TextField(placeholder, text: $email)
+                            .keyboardType(.emailAddress)
+                            .autocapitalization(.none)
+                            .disableAutocorrection(true)
+                            .textContentType(.emailAddress)
+                            .disabled(true)
+                            .padding(.leading, tokens?.primerSpaceLarge ?? 16)
+                            .padding(.trailing, tokens?.primerSpaceLarge ?? 16)
+                            .padding(.vertical, tokens?.primerSpaceMedium ?? 12)
+                    }
+
+                    Spacer()
                 }
 
-            // Error message
-            if let errorMessage = errorMessage {
-                Text(errorMessage)
-                    .font(.caption)
-                    .foregroundColor(.red)
-                    .padding(.top, 2)
+                // Right side overlay (error icon)
+                HStack {
+                    Spacer()
+
+                    if let errorMessage = errorMessage, !errorMessage.isEmpty {
+                        // Error icon when validation fails
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: tokens?.primerSizeMedium ?? 20, height: tokens?.primerSizeMedium ?? 20)
+                            .foregroundColor(tokens?.primerColorIconNegative ?? Color(red: 1.0, green: 0.45, blue: 0.47))
+                            .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
+                    }
+                }
             }
+            .frame(height: tokens?.primerSizeXxxlarge ?? 48)
+
+            // Error message (always reserve space to prevent height changes)
+            Text(errorMessage ?? " ")
+                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 11, weight: .regular))
+                .foregroundColor(tokens?.primerColorTextNegative ?? .red)
+                .padding(.top, tokens?.primerSpaceXsmall ?? 4)
+                .opacity(errorMessage != nil ? 1.0 : 0.0)
+                .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
         }
+        .primerModifier(modifier)
         .onAppear {
             setupValidationService()
         }
@@ -89,17 +180,149 @@ internal struct EmailInputField: View, LogReporter {
             logger.error(message: "Failed to resolve ValidationService: \(error)")
         }
     }
+}
 
-    private func validateEmail() {
-        guard let validationService = validationService else { return }
+/// UIViewRepresentable wrapper for email input with focus-based validation
+@available(iOS 15.0, *)
+private struct EmailTextField: UIViewRepresentable, LogReporter {
+    @Binding var email: String
+    @Binding var isValid: Bool
+    @Binding var errorMessage: String?
+    @Binding var isFocused: Bool
+    let placeholder: String
+    let validationService: ValidationService
+    let onEmailChange: ((String) -> Void)?
+    let onValidationChange: ((Bool) -> Void)?
 
-        let result = validationService.validate(
-            input: email,
-            with: EmailRule()
+    func makeUIView(context: Context) -> UITextField {
+        let textField = UITextField()
+        textField.delegate = context.coordinator
+        textField.placeholder = placeholder
+        textField.borderStyle = .none
+        textField.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        textField.keyboardType = .emailAddress
+        textField.autocapitalizationType = .none
+        textField.autocorrectionType = .no
+        textField.textContentType = .emailAddress
+        textField.returnKeyType = .done
+
+        // Add a "Done" button to the keyboard
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: context.coordinator, action: #selector(Coordinator.doneButtonTapped))
+        toolbar.items = [flexSpace, doneButton]
+        textField.inputAccessoryView = toolbar
+
+        return textField
+    }
+
+    func updateUIView(_ textField: UITextField, context: Context) {
+        if textField.text != email {
+            textField.text = email
+        }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(
+            validationService: validationService,
+            email: $email,
+            isValid: $isValid,
+            errorMessage: $errorMessage,
+            isFocused: $isFocused,
+            onEmailChange: onEmailChange,
+            onValidationChange: onValidationChange
         )
+    }
 
-        isValid = result.isValid
-        errorMessage = result.errorMessage
-        onValidationChange?(result.isValid)
+    class Coordinator: NSObject, UITextFieldDelegate, LogReporter {
+        private let validationService: ValidationService
+        @Binding private var email: String
+        @Binding private var isValid: Bool
+        @Binding private var errorMessage: String?
+        @Binding private var isFocused: Bool
+        private let onEmailChange: ((String) -> Void)?
+        private let onValidationChange: ((Bool) -> Void)?
+
+        init(
+            validationService: ValidationService,
+            email: Binding<String>,
+            isValid: Binding<Bool>,
+            errorMessage: Binding<String?>,
+            isFocused: Binding<Bool>,
+            onEmailChange: ((String) -> Void)?,
+            onValidationChange: ((Bool) -> Void)?
+        ) {
+            self.validationService = validationService
+            self._email = email
+            self._isValid = isValid
+            self._errorMessage = errorMessage
+            self._isFocused = isFocused
+            self.onEmailChange = onEmailChange
+            self.onValidationChange = onValidationChange
+        }
+
+        @objc func doneButtonTapped() {
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        }
+
+        func textFieldDidBeginEditing(_ textField: UITextField) {
+            DispatchQueue.main.async {
+                self.isFocused = true
+                self.errorMessage = nil
+                // Don't set isValid = false immediately - let validation happen on text change or focus loss
+            }
+        }
+
+        func textFieldDidEndEditing(_ textField: UITextField) {
+            DispatchQueue.main.async {
+                self.isFocused = false
+            }
+            validateEmail()
+        }
+
+        func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+            textField.resignFirstResponder()
+            return true
+        }
+
+        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+            // Get current text
+            let currentText = email
+
+            // Create new text
+            guard let textRange = Range(range, in: currentText) else { return false }
+            let newText = currentText.replacingCharacters(in: textRange, with: string)
+
+            // Update state
+            email = newText
+            onEmailChange?(newText)
+
+            // Simple validation while typing (don't show errors until focus loss)
+            isValid = !newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && newText.contains("@")
+
+            return false
+        }
+
+        private func validateEmail() {
+            let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            // Empty field handling - don't show errors for empty fields
+            if trimmedEmail.isEmpty {
+                isValid = false // Email is required
+                errorMessage = nil // Never show error message for empty fields
+                onValidationChange?(false)
+                return
+            }
+            
+            let result = validationService.validate(
+                input: email,
+                with: EmailRule()
+            )
+
+            isValid = result.isValid
+            errorMessage = result.errorMessage
+            onValidationChange?(result.isValid)
+        }
     }
 }

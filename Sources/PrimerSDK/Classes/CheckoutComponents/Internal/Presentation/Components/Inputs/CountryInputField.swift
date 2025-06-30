@@ -33,6 +33,9 @@ internal struct CountryInputField: View, LogReporter {
     /// External country for reactive updates (using proper SDK type)
     let selectedCountry: CountryCode.PhoneNumberCountryCode?
 
+    /// PrimerModifier for comprehensive styling customization
+    let modifier: PrimerModifier
+
     // MARK: - Private Properties
 
     /// The validation service resolved from DI environment
@@ -51,45 +54,121 @@ internal struct CountryInputField: View, LogReporter {
     /// Error message if validation fails
     @State private var errorMessage: String?
 
+    /// Focus state for input field styling
+    @State private var isFocused: Bool = false
+
     @Environment(\.designTokens) private var tokens
 
     // MARK: - Computed Properties
 
+    /// Dynamic border color based on field state
+    private var borderColor: Color {
+        if let errorMessage = errorMessage, !errorMessage.isEmpty {
+            return tokens?.primerColorBorderOutlinedError ?? .red
+        } else if isFocused {
+            return tokens?.primerColorBorderOutlinedFocus ?? .blue
+        } else {
+            return tokens?.primerColorBorderOutlinedDefault ?? Color(.systemGray4)
+        }
+    }
+
+    // MARK: - Initialization
+
+    /// Creates a new CountryInputField with comprehensive customization support
+    internal init(
+        label: String,
+        placeholder: String,
+        selectedCountry: CountryCode.PhoneNumberCountryCode? = nil,
+        modifier: PrimerModifier = PrimerModifier(),
+        onCountryChange: ((String) -> Void)? = nil,
+        onCountryCodeChange: ((String) -> Void)? = nil,
+        onValidationChange: ((Bool) -> Void)? = nil,
+        onOpenCountrySelector: (() -> Void)? = nil
+    ) {
+        self.label = label
+        self.placeholder = placeholder
+        self.selectedCountry = selectedCountry
+        self.modifier = modifier
+        self.onCountryChange = onCountryChange
+        self.onCountryCodeChange = onCountryCodeChange
+        self.onValidationChange = onValidationChange
+        self.onOpenCountrySelector = onOpenCountrySelector
+    }
+
     // MARK: - Body
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: tokens?.primerSpaceSmall ?? 6) {
             // Label
             Text(label)
-                .font(.caption)
+                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium))
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
 
-            // Country field with selector button
-            Button(action: {
-                onOpenCountrySelector?()
-            }) {
-                HStack {
-                    Text(countryName.isEmpty ? placeholder : countryName)
-                        .foregroundColor(countryName.isEmpty ? (tokens?.primerColorTextSecondary ?? .secondary) : (tokens?.primerColorTextPrimary ?? .primary))
-                        .frame(maxWidth: .infinity, alignment: .leading)
+            // Country field with selector button using ZStack architecture
+            ZStack {
+                // Background and border styling
+                RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
+                    .fill(tokens?.primerColorBackground ?? Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
+                            .stroke(borderColor, lineWidth: 1)
+                            .animation(.easeInOut(duration: 0.2), value: borderColor)
+                    )
+                    .shadow(
+                        color: Color.black.opacity(0.04),
+                        radius: tokens?.primerSpaceXsmall ?? 2,
+                        x: 0,
+                        y: 1
+                    )
 
-                    Image(systemName: "chevron.down")
-                        .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                // Country selector button content
+                Button(action: {
+                    onOpenCountrySelector?()
+                }) {
+                    HStack {
+                        Text(countryName.isEmpty ? placeholder : countryName)
+                            .foregroundColor(countryName.isEmpty ? (tokens?.primerColorTextSecondary ?? .secondary) : (tokens?.primerColorTextPrimary ?? .primary))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+
+                        Spacer()
+                    }
+                    .padding(.leading, tokens?.primerSpaceLarge ?? 16)
+                    .padding(.trailing, tokens?.primerSizeXxlarge ?? 60)
+                    .padding(.vertical, tokens?.primerSpaceMedium ?? 12)
                 }
-                .padding()
-                .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-                .cornerRadius(8)
-            }
-            .buttonStyle(PlainButtonStyle())
+                .buttonStyle(PlainButtonStyle())
 
-            // Error message
-            if let errorMessage = errorMessage {
-                Text(errorMessage)
-                    .font(.caption)
-                    .foregroundColor(.red)
-                    .padding(.top, 2)
+                // Right side overlay (error icon or chevron)
+                HStack {
+                    Spacer()
+
+                    if let errorMessage = errorMessage, !errorMessage.isEmpty {
+                        // Error icon when validation fails
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: tokens?.primerSizeMedium ?? 20, height: tokens?.primerSizeMedium ?? 20)
+                            .foregroundColor(tokens?.primerColorIconNegative ?? Color(red: 1.0, green: 0.45, blue: 0.47))
+                            .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
+                    } else {
+                        // Chevron down icon when no error
+                        Image(systemName: "chevron.down")
+                            .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                            .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
+                    }
+                }
             }
+            .frame(height: tokens?.primerSizeXxxlarge ?? 48)
+
+            // Error message (always reserve space to prevent height changes)
+            Text(errorMessage ?? " ")
+                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 11, weight: .regular))
+                .foregroundColor(tokens?.primerColorTextNegative ?? .red)
+                .padding(.top, tokens?.primerSpaceXsmall ?? 4)
+                .opacity(errorMessage != nil ? 1.0 : 0.0)
+                .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
         }
+        .primerModifier(modifier)
         .onAppear {
             setupValidationService()
             updateFromExternalState()

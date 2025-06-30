@@ -107,9 +107,6 @@ struct CustomScreenCardFormDemo: View {
                                                                     .fillMaxWidth()
                                                                     .height(50)
                                                                     .padding(.horizontal, 14)
-                                                                    .background(.white)
-                                                                    .cornerRadius(10)
-                                                                    .border(.gray.opacity(0.3), width: 1)
                                                                 )
                                                             }
                                                             
@@ -118,9 +115,6 @@ struct CustomScreenCardFormDemo: View {
                                                                     .fillMaxWidth()
                                                                     .height(50)
                                                                     .padding(.horizontal, 14)
-                                                                    .background(.white)
-                                                                    .cornerRadius(10)
-                                                                    .border(.gray.opacity(0.3), width: 1)
                                                                 )
                                                             }
                                                         }
@@ -132,9 +126,6 @@ struct CustomScreenCardFormDemo: View {
                                                                     .fillMaxWidth()
                                                                     .height(50)
                                                                     .padding(.horizontal, 14)
-                                                                    .background(.white)
-                                                                    .cornerRadius(10)
-                                                                    .border(.gray.opacity(0.3), width: 1)
                                                                 )
                                                             }
                                                             
@@ -143,9 +134,6 @@ struct CustomScreenCardFormDemo: View {
                                                                     .fillMaxWidth()
                                                                     .height(50)
                                                                     .padding(.horizontal, 14)
-                                                                    .background(.white)
-                                                                    .cornerRadius(10)
-                                                                    .border(.gray.opacity(0.3), width: 1)
                                                                 )
                                                             }
                                                         }
@@ -154,13 +142,18 @@ struct CustomScreenCardFormDemo: View {
                                                     // Narrow layout - stacked
                                                     VStack(spacing: 16) {
                                                         if let cardNumberInput = cardScope.cardNumberInput {
-                                                            cardNumberInput(PrimerModifier()
-                                                                .fillMaxWidth()
-                                                                .height(50)
-                                                                .padding(.horizontal, 14)
-                                                                .background(.white)
-                                                                .cornerRadius(10)
-                                                                .border(.gray.opacity(0.3), width: 1)
+                                                            VStack(spacing: 0) {
+                                                                cardNumberInput(PrimerModifier()
+                                                                    .fillMaxWidth()
+                                                                    .height(50)
+                                                                    .padding(.horizontal, 14)
+                                                                )
+                                                            }
+                                                            .background(.white)
+                                                            .cornerRadius(10)
+                                                            .overlay(
+                                                                RoundedRectangle(cornerRadius: 10)
+                                                                    .stroke(.gray.opacity(0.3), lineWidth: 1)
                                                             )
                                                         }
                                                         
@@ -170,9 +163,6 @@ struct CustomScreenCardFormDemo: View {
                                                                     .fillMaxWidth()
                                                                     .height(50)
                                                                     .padding(.horizontal, 14)
-                                                                    .background(.white)
-                                                                    .cornerRadius(10)
-                                                                    .border(.gray.opacity(0.3), width: 1)
                                                                 )
                                                             }
                                                             
@@ -181,24 +171,41 @@ struct CustomScreenCardFormDemo: View {
                                                                     .fillMaxWidth()
                                                                     .height(50)
                                                                     .padding(.horizontal, 14)
-                                                                    .background(.white)
-                                                                    .cornerRadius(10)
-                                                                    .border(.gray.opacity(0.3), width: 1)
                                                                 )
                                                             }
                                                         }
                                                         
                                                         if let cardholderNameInput = cardScope.cardholderNameInput {
-                                                            cardholderNameInput(PrimerModifier()
-                                                                .fillMaxWidth()
-                                                                .height(50)
-                                                                .padding(.horizontal, 14)
-                                                                .background(.white)
-                                                                .cornerRadius(10)
-                                                                .border(.gray.opacity(0.3), width: 1)
+                                                            VStack(spacing: 0) {
+                                                                cardholderNameInput(PrimerModifier()
+                                                                    .fillMaxWidth()
+                                                                    .height(50)
+                                                                    .padding(.horizontal, 14)
+                                                                )
+                                                            }
+                                                            .background(.white)
+                                                            .cornerRadius(10)
+                                                            .overlay(
+                                                                RoundedRectangle(cornerRadius: 10)
+                                                                    .stroke(.gray.opacity(0.3), lineWidth: 1)
                                                             )
                                                         }
                                                     }
+                                                }
+                                                
+                                                // Submit button (adaptive for both layouts)
+                                                if let submitButton = cardScope.submitButton {
+                                                    submitButton(PrimerModifier()
+                                                        .fillMaxWidth()
+                                                        .height(54)
+                                                        .padding(.horizontal, 16),
+                                                        "Complete Payment"
+                                                    )
+                                                }
+                                                
+                                                // Error view
+                                                if let errorView = cardScope.errorView {
+                                                    errorView("Error placeholder")
                                                 }
                                                 
                                                 // Custom footer with layout info
@@ -272,8 +279,8 @@ struct CustomScreenCardFormDemo: View {
     
     /// Creates session body supporting different session types
     private func createSessionBody(surchargeAmount: Int) -> ClientSessionRequestBody {
-        // Support session type variations - default to card only with surcharge for demos
-        return MerchantMockDataManager.getClientSession(sessionType: .cardOnlyWithSurcharge, surchargeAmount: surchargeAmount)
+        // For showcase demos, use card-only session to skip payment method selection
+        return MerchantMockDataManager.getClientSession(sessionType: .cardOnly, surchargeAmount: surchargeAmount)
     }
     
     /// Extracts surcharge amount from the configured client session

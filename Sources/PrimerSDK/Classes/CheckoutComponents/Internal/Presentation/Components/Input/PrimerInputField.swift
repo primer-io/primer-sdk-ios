@@ -120,107 +120,125 @@ struct PrimerInputField: View {
         if isError {
             return tokens?.primerColorBorderOutlinedError ?? .red
         } else if isFocused {
-            return tokens?.primerColorBrand ?? .blue
+            return tokens?.primerColorBorderOutlinedFocus ?? .blue
         } else {
-            return .clear // No border in default state to match card form design
+            return tokens?.primerColorBorderOutlinedDefault ?? Color(.systemGray4)
         }
-    }
-
-    /// Determines the border width based on focus and error.
-    private var borderWidth: CGFloat {
-        (isFocused || isError) ? 2 : 0 // No border in default state
     }
 
     /// Determines the background color for the input field.
     private var backgroundColor: Color {
-        tokens?.primerColorGray100 ?? Color(.systemGray6)
+        tokens?.primerColorBackground ?? Color.white
     }
 
     // MARK: - Body
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: tokens?.primerSpaceSmall ?? 6) {
             // Label (if provided)
             if let labelText = labelText {
                 Text(labelText)
-                    .font(labelFont)
-                    .foregroundColor(labelColor)
+                    .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 12, weight: .medium))
+                    .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
             }
 
-            // Input field container
-            HStack(spacing: 8) {
-                // Leading icon (if provided)
-                if let leadingIcon = leadingIcon {
-                    leadingIcon
-                        .foregroundColor(leadingIconColor)
-                }
-
-                // TextField container with placeholder support
-                ZStack(alignment: .leading) {
-                    // Show placeholder when field is empty and not focused
-                    if value.isEmpty && !isFocused {
-                        Text(placeholderText ?? "")
-                            .foregroundColor(tokens?.primerColorTextSecondary ?? .gray)
-                    }
-
-                    // The actual text field with basic configuration
-                    TextField("", text: Binding(
-                        get: { value },
-                        set: { onValueChange($0) }
-                    ))
-                    .keyboardType(keyboardType)
-                    .autocapitalization(keyboardType == .emailAddress ? .none : .words)
-                    .autocorrectionDisabled(keyboardType == .emailAddress)
-                    .disabled(!enabled || readOnly)
-                    .accessibilityLabel(labelText ?? placeholderText ?? "Text input")
-                    .accessibilityHint(isError ? resolveErrorMessage() ?? "Error" : supportingText ?? "")
-                    // Update focus state when editing begins and ends
-                    .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidBeginEditingNotification)) { obj in
-                        if (obj.object as? UITextField) != nil {
-                            isFocused = true
-                        }
-                    }
-                    .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidEndEditingNotification)) { obj in
-                        if (obj.object as? UITextField) != nil {
-                            isFocused = false
-                        }
-                    }
-                }
-
-                // Trailing icon (if provided)
-                if let trailingIcon = trailingIcon {
-                    trailingIcon
-                        .foregroundColor(trailingIconColor)
-                }
-            }
-            .padding(tokens?.primerSpaceMedium ?? 12)
-            .frame(height: tokens?.primerSizeXxxlarge ?? 56)
-            // Background and border styling to match card form design
-            .background(
+            // Input field with ZStack architecture
+            ZStack {
+                // Background and border styling
                 RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
                     .fill(backgroundColor)
                     .overlay(
                         RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
-                            .stroke(borderColor, lineWidth: borderWidth)
+                            .stroke(borderColor, lineWidth: 1)
+                            .animation(.easeInOut(duration: 0.2), value: borderColor)
                     )
-            )
-            .scaleEffect(isFocused ? 1.02 : 1.0)
-            .animation(.easeInOut(duration: 0.2), value: isFocused)
-            .animation(.easeInOut(duration: 0.3), value: isError)
+                    .shadow(
+                        color: Color.black.opacity(0.04),
+                        radius: tokens?.primerSpaceXsmall ?? 2,
+                        x: 0,
+                        y: 1
+                    )
+
+                // Input field content
+                HStack {
+                    HStack(spacing: 8) {
+                        // Leading icon (if provided)
+                        if let leadingIcon = leadingIcon {
+                            leadingIcon
+                                .foregroundColor(leadingIconColor)
+                        }
+
+                        // TextField container with placeholder support
+                        ZStack(alignment: .leading) {
+                            // Show placeholder when field is empty and not focused
+                            if value.isEmpty && !isFocused {
+                                Text(placeholderText ?? "")
+                                    .foregroundColor(tokens?.primerColorTextSecondary ?? .gray)
+                            }
+
+                            // The actual text field with basic configuration
+                            TextField("", text: Binding(
+                                get: { value },
+                                set: { onValueChange($0) }
+                            ))
+                            .onTapGesture {
+                                isFocused = true
+                            }
+                            .onSubmit {
+                                isFocused = false
+                            }
+                            .keyboardType(keyboardType)
+                            .autocapitalization(keyboardType == .emailAddress ? .none : .words)
+                            .autocorrectionDisabled(keyboardType == .emailAddress)
+                            .disabled(!enabled || readOnly)
+                            .accessibilityLabel(labelText ?? placeholderText ?? "Text input")
+                            .accessibilityHint(isError ? resolveErrorMessage() ?? "Error" : supportingText ?? "")
+                        }
+                    }
+                    .padding(.leading, tokens?.primerSpaceLarge ?? 16)
+                    .padding(.trailing, (isError || trailingIcon != nil) ? (tokens?.primerSizeXxlarge ?? 60) : (tokens?.primerSpaceLarge ?? 16))
+                    .padding(.vertical, tokens?.primerSpaceMedium ?? 12)
+
+                    Spacer()
+                }
+
+                // Right side overlay (error icon or trailing icon)
+                HStack {
+                    Spacer()
+
+                    if isError {
+                        // Error icon when validation fails (takes precedence over trailing icon)
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: tokens?.primerSizeMedium ?? 20, height: tokens?.primerSizeMedium ?? 20)
+                            .foregroundColor(tokens?.primerColorIconNegative ?? Color(red: 1.0, green: 0.45, blue: 0.47))
+                            .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
+                    } else if let trailingIcon = trailingIcon {
+                        // Trailing icon when no error
+                        trailingIcon
+                            .foregroundColor(trailingIconColor)
+                            .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
+                    }
+                }
+            }
+            .frame(height: tokens?.primerSizeXxxlarge ?? 48)
 
             // Error text or supporting text below the input field
             if isError, let errorMessage = resolveErrorMessage() {
                 Text(errorMessage)
-                    .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .caption)
-                    .foregroundColor(tokens?.primerColorBorderOutlinedError ?? .red)
+                    .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 11, weight: .regular))
+                    .foregroundColor(tokens?.primerColorTextNegative ?? .red)
+                    .padding(.top, tokens?.primerSpaceXsmall ?? 4)
                     .transition(.asymmetric(
                         insertion: .move(edge: .leading).combined(with: .opacity),
                         removal: .opacity
                     ))
             } else if let supportingText = supportingText {
                 Text(supportingText)
-                    .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .caption)
+                    .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .system(size: 11, weight: .regular))
                     .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
+                    .padding(.top, tokens?.primerSpaceXsmall ?? 4)
                     .transition(.opacity)
             }
         }
@@ -259,7 +277,7 @@ extension PrimerInputField {
         return PrimerInputField(
             value: value,
             onValueChange: onValueChange,
-            labelText: CheckoutComponentsStrings.firstNameFieldName,
+            labelText: CheckoutComponentsStrings.firstNameLabel,
             placeholderText: CheckoutComponentsStrings.firstNamePlaceholder,
             isError: isError,
             validationError: validationError,
@@ -278,7 +296,7 @@ extension PrimerInputField {
         return PrimerInputField(
             value: value,
             onValueChange: onValueChange,
-            labelText: CheckoutComponentsStrings.lastNameFieldName,
+            labelText: CheckoutComponentsStrings.lastNameLabel,
             placeholderText: CheckoutComponentsStrings.lastNamePlaceholder,
             isError: isError,
             validationError: validationError,
@@ -297,7 +315,7 @@ extension PrimerInputField {
         return PrimerInputField(
             value: value,
             onValueChange: onValueChange,
-            labelText: CheckoutComponentsStrings.emailFieldName,
+            labelText: CheckoutComponentsStrings.emailLabel,
             placeholderText: CheckoutComponentsStrings.emailPlaceholder,
             leadingIcon: Image(systemName: "envelope"),
             isError: isError,
@@ -317,7 +335,7 @@ extension PrimerInputField {
         return PrimerInputField(
             value: value,
             onValueChange: onValueChange,
-            labelText: CheckoutComponentsStrings.phoneNumberFieldName,
+            labelText: CheckoutComponentsStrings.phoneNumberLabel,
             placeholderText: CheckoutComponentsStrings.phoneNumberPlaceholder,
             leadingIcon: Image(systemName: "phone"),
             isError: isError,

@@ -18,9 +18,33 @@ struct ModernThemedCardFormDemo: View {
     @State private var clientToken: String?
     @State private var isLoading = true
     @State private var error: String?
+    @State private var isDismissed = false
     var body: some View {
         VStack {
-            if isLoading {
+            if isDismissed {
+                // Show dismissed state with option to reset
+                VStack(spacing: 16) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 48))
+                        .foregroundColor(.black)
+                    
+                    Text("Demo Completed")
+                        .font(.title2)
+                        .fontWeight(.medium)
+                    
+                    Text("Modern theme demo has been dismissed")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                    
+                    Button("Reset Demo") {
+                        isDismissed = false
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .frame(height: 300)
+                .padding()
+            } else if isLoading {
                 VStack(spacing: 12) {
                     ProgressView()
                         .scaleEffect(1.2)
@@ -82,10 +106,8 @@ struct ModernThemedCardFormDemo: View {
                                                     .fillMaxWidth()
                                                     .height(56)
                                                     .padding(.horizontal, 20)
-                                                    .background(.white)
-                                                    .cornerRadius(16)
-                                                    .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
                                                 )
+                                                .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
                                             }
                                             
                                             // Expiry and CVV row
@@ -95,10 +117,8 @@ struct ModernThemedCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(56)
                                                         .padding(.horizontal, 20)
-                                                        .background(.white)
-                                                        .cornerRadius(16)
-                                                        .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
                                                     )
+                                                    .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
                                                 }
                                                 
                                                 if let cvvInput = cardScope.cvvInput {
@@ -106,10 +126,8 @@ struct ModernThemedCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(56)
                                                         .padding(.horizontal, 20)
-                                                        .background(.white)
-                                                        .cornerRadius(16)
-                                                        .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
                                                     )
+                                                    .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
                                                 }
                                             }
                                             
@@ -119,17 +137,36 @@ struct ModernThemedCardFormDemo: View {
                                                     .fillMaxWidth()
                                                     .height(56)
                                                     .padding(.horizontal, 20)
-                                                    .background(.white)
-                                                    .cornerRadius(16)
-                                                    .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
                                                 )
+                                                .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
                                             }
+                                            
+                                            // Modern submit button
+                                            if let submitButton = cardScope.submitButton {
+                                                submitButton(PrimerModifier()
+                                                    .fillMaxWidth()
+                                                    .height(60)
+                                                    .padding(.horizontal, 20)
+                                                    .background(.black)
+                                                    .cornerRadius(20),
+                                                    "Continue"
+                                                )
+                                                .shadow(color: .black.opacity(0.1), radius: 12, x: 0, y: 6)
+                                            }
+                                        }
+                                        
+                                        // Modern error view
+                                        if let errorView = cardScope.errorView {
+                                            errorView("Error placeholder")
                                         }
                                     }
                                     .padding(24)
                                     .background(.gray.opacity(0.02))
                                 )
                             }
+                        },
+                        onCompletion: {
+                            isDismissed = true
                         }
                     )
                 }
@@ -176,8 +213,8 @@ struct ModernThemedCardFormDemo: View {
     
     /// Creates session body supporting different session types
     private func createSessionBody(surchargeAmount: Int) -> ClientSessionRequestBody {
-        // Support session type variations - default to card only with surcharge for demos
-        return MerchantMockDataManager.getClientSession(sessionType: .cardOnlyWithSurcharge, surchargeAmount: surchargeAmount)
+        // For showcase demos, use card-only session to skip payment method selection
+        return MerchantMockDataManager.getClientSession(sessionType: .cardOnly, surchargeAmount: surchargeAmount)
     }
     
     /// Extracts surcharge amount from the configured client session

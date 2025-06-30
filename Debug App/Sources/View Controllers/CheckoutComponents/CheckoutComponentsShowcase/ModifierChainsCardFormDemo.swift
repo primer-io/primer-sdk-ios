@@ -88,11 +88,8 @@ struct ModifierChainsCardFormDemo: View {
                                                     .fillMaxWidth()
                                                     .height(55)
                                                     .padding(.horizontal, 18)
-                                                    .background(.white)
-                                                    .cornerRadius(14)
-                                                    .border(.purple.opacity(0.6), width: 2)
-                                                    .shadow(color: .purple.opacity(0.2), radius: 6, x: 0, y: 3)
                                                 )
+                                                .shadow(color: .purple.opacity(0.2), radius: 6, x: 0, y: 3)
                                             }
                                             
                                             // Expiry and CVV with different chain styles
@@ -102,11 +99,8 @@ struct ModifierChainsCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(55)
                                                         .padding(.horizontal, 16)
-                                                        .background(.white)
-                                                        .cornerRadius(12)
-                                                        .border(.orange.opacity(0.7), width: 2)
-                                                        .shadow(color: .orange.opacity(0.3), radius: 4, x: 2, y: 2)
                                                     )
+                                                    .shadow(color: .orange.opacity(0.3), radius: 4, x: 2, y: 2)
                                                 }
                                                 
                                                 if let cvvInput = cardScope.cvvInput {
@@ -114,11 +108,8 @@ struct ModifierChainsCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(55)
                                                         .padding(.horizontal, 16)
-                                                        .background(.white)
-                                                        .cornerRadius(12)
-                                                        .border(.blue.opacity(0.7), width: 2)
-                                                        .shadow(color: .blue.opacity(0.3), radius: 4, x: -2, y: 2)
                                                     )
+                                                    .shadow(color: .blue.opacity(0.3), radius: 4, x: -2, y: 2)
                                                 }
                                             }
                                             
@@ -128,12 +119,27 @@ struct ModifierChainsCardFormDemo: View {
                                                     .fillMaxWidth()
                                                     .height(55)
                                                     .padding(.horizontal, 18)
-                                                    .background(.white)
-                                                    .cornerRadius(16)
-                                                    .border(.green.opacity(0.6), width: 2)
-                                                    .shadow(color: .green.opacity(0.2), radius: 8, x: 0, y: 4)
                                                 )
+                                                .shadow(color: .green.opacity(0.2), radius: 8, x: 0, y: 4)
                                             }
+                                            
+                                            // Submit button with complex modifier chains
+                                            if let submitButton = cardScope.submitButton {
+                                                submitButton(PrimerModifier()
+                                                    .fillMaxWidth()
+                                                    .height(60)
+                                                    .padding(.horizontal, 20),
+                                                    "💎 Pay with Style"
+                                                )
+                                                .shadow(color: .purple.opacity(0.4), radius: 12, x: 0, y: 6)
+                                                .shadow(color: .orange.opacity(0.3), radius: 8, x: 4, y: 4)
+                                                .shadow(color: .blue.opacity(0.2), radius: 4, x: -2, y: -2)
+                                            }
+                                        }
+                                        
+                                        // Error view with modifier chains
+                                        if let errorView = cardScope.errorView {
+                                            errorView("Error message placeholder")
                                         }
                                         
                                         // Chain examples info
@@ -212,8 +218,8 @@ struct ModifierChainsCardFormDemo: View {
     
     /// Creates session body supporting different session types
     private func createSessionBody(surchargeAmount: Int) -> ClientSessionRequestBody {
-        // Support session type variations - default to card only with surcharge for demos
-        return MerchantMockDataManager.getClientSession(sessionType: .cardOnlyWithSurcharge, surchargeAmount: surchargeAmount)
+        // For showcase demos, use card-only session to skip payment method selection
+        return MerchantMockDataManager.getClientSession(sessionType: .cardOnly, surchargeAmount: surchargeAmount)
     }
     
     /// Extracts surcharge amount from the configured client session

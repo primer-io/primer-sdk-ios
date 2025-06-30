@@ -27,6 +27,9 @@ internal struct OTPCodeInputField: View, LogReporter {
     /// Callback when the validation state changes
     let onValidationChange: ((Bool) -> Void)?
 
+    /// PrimerModifier for comprehensive styling customization
+    let modifier: PrimerModifier
+
     // MARK: - Private Properties
 
     /// The validation service resolved from DI environment
@@ -44,22 +47,56 @@ internal struct OTPCodeInputField: View, LogReporter {
 
     @Environment(\.designTokens) private var tokens
 
+    // MARK: - Computed Properties
+
+    /// Dynamic border color based on field state
+    private var borderColor: Color {
+        if let errorMessage = errorMessage, !errorMessage.isEmpty {
+            return tokens?.primerColorBorderOutlinedError ?? .red
+        } else {
+            return tokens?.primerColorBorderOutlinedDefault ?? Color(.systemGray4)
+        }
+    }
+
+    // MARK: - Initialization
+
+    /// Creates a new OTPCodeInputField with comprehensive customization support
+    internal init(
+        label: String,
+        placeholder: String,
+        expectedLength: Int,
+        modifier: PrimerModifier = PrimerModifier(),
+        onOTPCodeChange: ((String) -> Void)? = nil,
+        onValidationChange: ((Bool) -> Void)? = nil
+    ) {
+        self.label = label
+        self.placeholder = placeholder
+        self.expectedLength = expectedLength
+        self.modifier = modifier
+        self.onOTPCodeChange = onOTPCodeChange
+        self.onValidationChange = onValidationChange
+    }
+
     // MARK: - Body
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: tokens?.primerSpaceXsmall ?? 4) {
             // Label
             Text(label)
-                .font(.caption)
+                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .caption)
                 .foregroundColor(tokens?.primerColorTextSecondary ?? .secondary)
 
             // OTP input field
             TextField(placeholder, text: $otpCode)
                 .keyboardType(.numberPad)
                 .textContentType(.oneTimeCode)
-                .padding()
-                .background(tokens?.primerColorGray100 ?? Color(.systemGray6))
-                .cornerRadius(8)
+                .padding(tokens?.primerSpaceMedium ?? 12)
+                .background(tokens?.primerColorBackground ?? Color.white)
+                .overlay(
+                    RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
+                        .stroke(borderColor, lineWidth: 1)
+                )
+                .cornerRadius(tokens?.primerRadiusMedium ?? 8)
                 .onChange(of: otpCode) { newValue in
                     // Limit to expected length
                     if newValue.count > expectedLength {
@@ -70,14 +107,15 @@ internal struct OTPCodeInputField: View, LogReporter {
                     }
                 }
 
-            // Error message
-            if let errorMessage = errorMessage {
-                Text(errorMessage)
-                    .font(.caption)
-                    .foregroundColor(.red)
-                    .padding(.top, 2)
-            }
+            // Error message (always reserve space to prevent height changes)
+            Text(errorMessage ?? " ")
+                .font(tokens != nil ? PrimerFont.bodySmall(tokens: tokens!) : .caption)
+                .foregroundColor(tokens?.primerColorTextNegative ?? .red)
+                .padding(.top, tokens?.primerSpaceXsmall ?? 2)
+                .opacity(errorMessage != nil ? 1.0 : 0.0)
+                .animation(.easeInOut(duration: 0.2), value: errorMessage != nil)
         }
+        .primerModifier(modifier)
         .onAppear {
             setupValidationService()
         }

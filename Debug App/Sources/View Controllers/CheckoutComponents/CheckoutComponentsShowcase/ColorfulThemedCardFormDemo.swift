@@ -18,9 +18,33 @@ struct ColorfulThemedCardFormDemo: View {
     @State private var clientToken: String?
     @State private var isLoading = true
     @State private var error: String?
+    @State private var isDismissed = false
     var body: some View {
         VStack {
-            if isLoading {
+            if isDismissed {
+                // Show dismissed state with option to reset
+                VStack(spacing: 16) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 48))
+                        .foregroundColor(.green)
+                    
+                    Text("Demo Completed")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                    
+                    Text("Colorful theme demo has been dismissed")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                    
+                    Button("Reset Demo") {
+                        isDismissed = false
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .frame(height: 300)
+                .padding()
+            } else if isLoading {
                 VStack(spacing: 12) {
                     ProgressView()
                         .scaleEffect(1.2)
@@ -94,11 +118,8 @@ struct ColorfulThemedCardFormDemo: View {
                                                     .fillMaxWidth()
                                                     .height(52)
                                                     .padding(.horizontal, 16)
-                                                    .background(.white)
-                                                    .cornerRadius(12)
-                                                    .border(Color.purple.opacity(0.6), width: 2)
-                                                    .shadow(color: Color.pink.opacity(0.3), radius: 4, x: 0, y: 2)
                                                 )
+                                                .shadow(color: Color.pink.opacity(0.3), radius: 4, x: 0, y: 2)
                                             }
                                             
                                             // Expiry and CVV row with different colors
@@ -108,11 +129,8 @@ struct ColorfulThemedCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(52)
                                                         .padding(.horizontal, 16)
-                                                        .background(.white)
-                                                        .cornerRadius(12)
-                                                        .border(Color.orange.opacity(0.6), width: 2)
-                                                        .shadow(color: Color.orange.opacity(0.3), radius: 4, x: 0, y: 2)
                                                     )
+                                                    .shadow(color: Color.orange.opacity(0.3), radius: 4, x: 0, y: 2)
                                                 }
                                                 
                                                 if let cvvInput = cardScope.cvvInput {
@@ -120,11 +138,8 @@ struct ColorfulThemedCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(52)
                                                         .padding(.horizontal, 16)
-                                                        .background(.white)
-                                                        .cornerRadius(12)
-                                                        .border(Color.green.opacity(0.6), width: 2)
-                                                        .shadow(color: Color.green.opacity(0.3), radius: 4, x: 0, y: 2)
                                                     )
+                                                    .shadow(color: Color.green.opacity(0.3), radius: 4, x: 0, y: 2)
                                                 }
                                             }
                                             
@@ -134,12 +149,25 @@ struct ColorfulThemedCardFormDemo: View {
                                                     .fillMaxWidth()
                                                     .height(52)
                                                     .padding(.horizontal, 16)
-                                                    .background(.white)
-                                                    .cornerRadius(12)
-                                                    .border(Color.blue.opacity(0.6), width: 2)
-                                                    .shadow(color: Color.blue.opacity(0.3), radius: 4, x: 0, y: 2)
                                                 )
+                                                .shadow(color: Color.blue.opacity(0.3), radius: 4, x: 0, y: 2)
                                             }
+                                        }
+                                        
+                                        // Submit button with colorful theme
+                                        if let submitButton = cardScope.submitButton {
+                                            submitButton(PrimerModifier()
+                                                .fillMaxWidth()
+                                                .height(56)
+                                                .padding(.horizontal, 20),
+                                                "🌈 Pay Now"
+                                            )
+                                            .shadow(color: Color.pink.opacity(0.4), radius: 8, x: 0, y: 4)
+                                        }
+                                        
+                                        // Error view with colorful styling
+                                        if let errorView = cardScope.errorView {
+                                            errorView("Error message placeholder")
                                         }
                                     }
                                     .padding(20)
@@ -157,6 +185,9 @@ struct ColorfulThemedCardFormDemo: View {
                                     }
                                 )
                             }
+                        },
+                        onCompletion: {
+                            isDismissed = true
                         }
                     )
                 }

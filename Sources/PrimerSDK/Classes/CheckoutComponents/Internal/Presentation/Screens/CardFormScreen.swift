@@ -54,15 +54,18 @@ internal struct CardFormScreen: View {
 
     private var customHeader: some View {
         HStack {
-            Button(action: {
-                scope.onBack()
-            }) {
-                HStack(spacing: 4) {
-                    Image(systemName: "chevron.left")
-                        .font(.body.weight(.medium))
-                    Text("Back")
+            // Back button - only show if context allows it
+            if scope.presentationContext.shouldShowBackButton {
+                Button(action: {
+                    scope.onBack()
+                }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.left")
+                            .font(.body.weight(.medium))
+                        Text("Back")
+                    }
+                    .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
                 }
-                .foregroundColor(tokens?.primerColorTextPrimary ?? .primary)
             }
 
             Spacer()
@@ -116,12 +119,89 @@ internal struct CardFormScreen: View {
 
     @ViewBuilder
     private var cardInputSection: some View {
-        if let customCardNumberInput = scope.cardNumberInput {
-            customCardNumberInput(PrimerModifier())
-        } else {
-            CardDetailsView(cardFormScope: scope)
-                .padding(.horizontal)
+        // Use individual field builders from scope for flexible customization
+        VStack(spacing: 16) {
+            // Card Number - use custom implementation if available, otherwise default
+            if let cardNumberBuilder = scope.cardNumberInput {
+                cardNumberBuilder(PrimerModifier())
+            } else {
+                // Fallback to direct field instantiation
+                CardNumberInputField(
+                    label: "Card Number",
+                    placeholder: "1234 1234 1234 1234",
+                    selectedNetwork: selectedCardNetwork != .unknown ? selectedCardNetwork : nil,
+                    onCardNumberChange: { number in
+                        scope.updateCardNumber(number)
+                    },
+                    onCardNetworkChange: { _ in
+                        // Network changes handled by HeadlessRepository stream
+                    },
+                    onValidationChange: { _ in
+                        // Validation handled by scope
+                    },
+                    onNetworksDetected: { networks in
+                        if let defaultScope = scope as? DefaultCardFormScope {
+                            defaultScope.handleDetectedNetworks(networks)
+                        }
+                    }
+                )
+            }
+
+            // Expiry Date and CVV row
+            HStack(spacing: 16) {
+                // Expiry Date
+                if let expiryDateBuilder = scope.expiryDateInput {
+                    expiryDateBuilder(PrimerModifier())
+                        .frame(maxWidth: .infinity)
+                } else {
+                    ExpiryDateInputField(
+                        label: "Expiry Date",
+                        placeholder: "MM/YY",
+                        onExpiryDateChange: { _ in },
+                        onValidationChange: { _ in },
+                        onMonthChange: { month in
+                            scope.updateExpiryMonth(month)
+                        },
+                        onYearChange: { year in
+                            scope.updateExpiryYear(year)
+                        }
+                    )
+                    .frame(maxWidth: .infinity)
+                }
+
+                // CVV
+                if let cvvBuilder = scope.cvvInput {
+                    cvvBuilder(PrimerModifier())
+                        .frame(maxWidth: .infinity)
+                } else {
+                    CVVInputField(
+                        label: "CVV",
+                        placeholder: "123",
+                        cardNetwork: .unknown,
+                        onCvvChange: { cvv in
+                            scope.updateCvv(cvv)
+                        },
+                        onValidationChange: { _ in }
+                    )
+                    .frame(maxWidth: .infinity)
+                }
+            }
+
+            // Cardholder Name
+            if let cardholderNameBuilder = scope.cardholderNameInput {
+                cardholderNameBuilder(PrimerModifier())
+            } else {
+                CardholderNameInputField(
+                    label: "Cardholder Name",
+                    placeholder: "John Doe",
+                    onCardholderNameChange: { name in
+                        scope.updateCardholderName(name)
+                    },
+                    onValidationChange: { _ in }
+                )
+            }
         }
+        .padding(.horizontal)
     }
 
     @ViewBuilder

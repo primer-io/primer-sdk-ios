@@ -18,9 +18,33 @@ struct CompactCardFormDemo: View {
     @State private var clientToken: String?
     @State private var isLoading = true
     @State private var error: String?
+    @State private var isDismissed = false
     var body: some View {
         VStack {
-            if isLoading {
+            if isDismissed {
+                // Show dismissed state with option to reset
+                VStack(spacing: 16) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 48))
+                        .foregroundColor(.blue)
+                    
+                    Text("Demo Completed")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                    
+                    Text("Compact layout demo has been dismissed")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                    
+                    Button("Reset Demo") {
+                        isDismissed = false
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .frame(height: 300)
+                .padding()
+            } else if isLoading {
                 VStack(spacing: 12) {
                     ProgressView()
                         .scaleEffect(1.2)
@@ -81,10 +105,8 @@ struct CompactCardFormDemo: View {
                                                     .fillMaxWidth()
                                                     .height(40)
                                                     .padding(.horizontal, 12)
-                                                    .background(.white)
-                                                    .cornerRadius(6)
-                                                    .border(.gray.opacity(0.3), width: 1)
                                                 )
+                                                .shadow(color: .gray.opacity(0.1), radius: 2, x: 0, y: 1)
                                             }
                                             
                                             // Compact row: Expiry, CVV, and first part of name
@@ -94,10 +116,8 @@ struct CompactCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(40)
                                                         .padding(.horizontal, 10)
-                                                        .background(.white)
-                                                        .cornerRadius(6)
-                                                        .border(.gray.opacity(0.3), width: 1)
                                                     )
+                                                    .shadow(color: .gray.opacity(0.1), radius: 2, x: 0, y: 1)
                                                 }
                                                 
                                                 if let cvvInput = cardScope.cvvInput {
@@ -105,10 +125,8 @@ struct CompactCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(40)
                                                         .padding(.horizontal, 10)
-                                                        .background(.white)
-                                                        .cornerRadius(6)
-                                                        .border(.gray.opacity(0.3), width: 1)
                                                     )
+                                                    .shadow(color: .gray.opacity(0.1), radius: 2, x: 0, y: 1)
                                                 }
                                                 
                                                 if let cardholderNameInput = cardScope.cardholderNameInput {
@@ -116,18 +134,37 @@ struct CompactCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(40)
                                                         .padding(.horizontal, 10)
-                                                        .background(.white)
-                                                        .cornerRadius(6)
-                                                        .border(.gray.opacity(0.3), width: 1)
                                                     )
+                                                    .shadow(color: .gray.opacity(0.1), radius: 2, x: 0, y: 1)
                                                 }
                                             }
+                                            
+                                            // Compact submit button
+                                            if let submitButton = cardScope.submitButton {
+                                                submitButton(PrimerModifier()
+                                                    .fillMaxWidth()
+                                                    .height(40)
+                                                    .padding(.horizontal, 12)
+                                                    .background(.blue)
+                                                    .cornerRadius(6)
+                                                    .shadow(color: .gray.opacity(0.2), radius: 2, x: 0, y: 1),
+                                                    "Pay"
+                                                )
+                                            }
+                                        }
+                                        
+                                        // Compact error view
+                                        if let errorView = cardScope.errorView {
+                                            errorView("Error placeholder")
                                         }
                                     }
                                     .padding(16)
                                     .background(.gray.opacity(0.05))
                                 )
                             }
+                        },
+                        onCompletion: {
+                            isDismissed = true
                         }
                     )
                 }
@@ -174,8 +211,8 @@ struct CompactCardFormDemo: View {
     
     /// Creates session body supporting different session types
     private func createSessionBody(surchargeAmount: Int) -> ClientSessionRequestBody {
-        // Support session type variations - default to card only with surcharge for demos
-        return MerchantMockDataManager.getClientSession(sessionType: .cardOnlyWithSurcharge, surchargeAmount: surchargeAmount)
+        // For showcase demos, use card-only session to skip payment method selection
+        return MerchantMockDataManager.getClientSession(sessionType: .cardOnly, surchargeAmount: surchargeAmount)
     }
     
     /// Extracts surcharge amount from the configured client session

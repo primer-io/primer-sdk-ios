@@ -67,8 +67,8 @@ internal final class CheckoutNavigator: ObservableObject, LogReporter {
     }
 
     /// Navigate to a generic payment method flow
-    func navigateToPaymentMethod(_ paymentMethodType: String) {
-        coordinator.navigate(to: .paymentMethod(paymentMethodType))
+    func navigateToPaymentMethod(_ paymentMethodType: String, context: PresentationContext = .fromPaymentSelection) {
+        coordinator.navigate(to: .paymentMethod(paymentMethodType, context))
     }
 
     /// Navigate to country selection

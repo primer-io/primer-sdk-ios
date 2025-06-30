@@ -18,9 +18,34 @@ struct CorporateThemedCardFormDemo: View {
     @State private var clientToken: String?
     @State private var isLoading = true
     @State private var error: String?
+    @State private var isDismissed = false
     var body: some View {
         VStack {
-            if isLoading {
+            if isDismissed {
+                // Show dismissed state with option to reset
+                VStack(spacing: 16) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 48))
+                        .foregroundColor(.blue)
+                    
+                    Text("Demo Completed")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.blue)
+                    
+                    Text("Corporate theme demo has been dismissed")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                    
+                    Button("Reset Demo") {
+                        isDismissed = false
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .frame(height: 300)
+                .padding()
+            } else if isLoading {
                 VStack(spacing: 12) {
                     ProgressView()
                         .scaleEffect(1.2)
@@ -87,11 +112,8 @@ struct CorporateThemedCardFormDemo: View {
                                                     .fillMaxWidth()
                                                     .height(50)
                                                     .padding(.horizontal, 16)
-                                                    .background(.white)
-                                                    .cornerRadius(8)
-                                                    .border(.blue.opacity(0.4), width: 1)
-                                                    .shadow(color: .gray.opacity(0.1), radius: 2, x: 0, y: 1)
                                                 )
+                                                .shadow(color: .gray.opacity(0.1), radius: 2, x: 0, y: 1)
                                             }
                                             
                                             // Expiry and CVV row
@@ -101,11 +123,8 @@ struct CorporateThemedCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(50)
                                                         .padding(.horizontal, 16)
-                                                        .background(.white)
-                                                        .cornerRadius(8)
-                                                        .border(.gray.opacity(0.4), width: 1)
-                                                        .shadow(color: .gray.opacity(0.1), radius: 2, x: 0, y: 1)
                                                     )
+                                                    .shadow(color: .gray.opacity(0.1), radius: 2, x: 0, y: 1)
                                                 }
                                                 
                                                 if let cvvInput = cardScope.cvvInput {
@@ -113,11 +132,8 @@ struct CorporateThemedCardFormDemo: View {
                                                         .fillMaxWidth()
                                                         .height(50)
                                                         .padding(.horizontal, 16)
-                                                        .background(.white)
-                                                        .cornerRadius(8)
-                                                        .border(.gray.opacity(0.4), width: 1)
-                                                        .shadow(color: .gray.opacity(0.1), radius: 2, x: 0, y: 1)
                                                     )
+                                                    .shadow(color: .gray.opacity(0.1), radius: 2, x: 0, y: 1)
                                                 }
                                             }
                                             
@@ -127,12 +143,22 @@ struct CorporateThemedCardFormDemo: View {
                                                     .fillMaxWidth()
                                                     .height(50)
                                                     .padding(.horizontal, 16)
-                                                    .background(.white)
-                                                    .cornerRadius(8)
-                                                    .border(.blue.opacity(0.4), width: 1)
-                                                    .shadow(color: .gray.opacity(0.1), radius: 2, x: 0, y: 1)
                                                 )
+                                                .shadow(color: .gray.opacity(0.1), radius: 2, x: 0, y: 1)
                                             }
+                                        }
+                                        
+                                        // Corporate submit button
+                                        if let submitButton = cardScope.submitButton {
+                                            submitButton(PrimerModifier()
+                                                .fillMaxWidth()
+                                                .height(54)
+                                                .padding(.horizontal, 16)
+                                                .background(.blue)
+                                                .cornerRadius(8),
+                                                "Submit Payment"
+                                            )
+                                            .shadow(color: .gray.opacity(0.2), radius: 3, x: 0, y: 2)
                                         }
                                         
                                         // Corporate security notice
@@ -142,6 +168,11 @@ struct CorporateThemedCardFormDemo: View {
                                             Text("Enterprise-grade security")
                                                 .font(.caption)
                                                 .foregroundColor(.gray)
+                                        }
+                                        
+                                        // Corporate error view
+                                        if let errorView = cardScope.errorView {
+                                            errorView("Error placeholder")
                                         }
                                     }
                                     .padding(20)
@@ -153,6 +184,9 @@ struct CorporateThemedCardFormDemo: View {
                                     )
                                 )
                             }
+                        },
+                        onCompletion: {
+                            isDismissed = true
                         }
                     )
                 }
@@ -199,8 +233,8 @@ struct CorporateThemedCardFormDemo: View {
     
     /// Creates session body supporting different session types
     private func createSessionBody(surchargeAmount: Int) -> ClientSessionRequestBody {
-        // Support session type variations - default to card only with surcharge for demos
-        return MerchantMockDataManager.getClientSession(sessionType: .cardOnlyWithSurcharge, surchargeAmount: surchargeAmount)
+        // For showcase demos, use card-only session to skip payment method selection
+        return MerchantMockDataManager.getClientSession(sessionType: .cardOnly, surchargeAmount: surchargeAmount)
     }
     
     /// Extracts surcharge amount from the configured client session
@@ -223,133 +257,5 @@ struct CorporateThemedCardFormDemo: View {
         }
         
         return 50 // Default fallback
-    }
-    
-    private func presentCheckout(title: String, clientToken: String) {
-        // Find the current view controller to present from
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first,
-              let rootViewController = findTopViewController(from: window.rootViewController) else {
-            print("❌ [\(title)] Could not find view controller to present from")
-            return
-        }
-        
-        print("🔍 [\(title)] Button tapped - presenting CheckoutComponents")
-        
-        // Present using CheckoutComponentsPrimer with custom corporate-themed content
-        CheckoutComponentsPrimer.presentCheckout(
-            with: clientToken,
-            from: rootViewController,
-            customContent: { checkoutScope in
-                return AnyView(
-                    PrimerCheckout(
-                        clientToken: clientToken,
-                        settings: settings,
-                        scope: { checkoutScope in
-                            checkoutScope.setPaymentMethodScreen(.paymentCard) { (scope: any PrimerPaymentMethodScope) in
-                                guard let cardScope = scope as? any PrimerCardFormScope else {
-                                    return AnyView(Text("Error: Invalid scope type").foregroundColor(.red))
-                                }
-                                return AnyView(
-                                    VStack(spacing: 16) {
-                                        // Corporate header
-                                        VStack(alignment: .leading, spacing: 8) {
-                                            Text("Payment Details")
-                                                .font(.title3)
-                                                .fontWeight(.semibold)
-                                                .foregroundColor(Color(red: 0.2, green: 0.4, blue: 0.7))
-                                            
-                                            Text("Enter your corporate card information")
-                                                .font(.caption)
-                                                .foregroundColor(.gray)
-                                        }
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        
-                                        // Corporate styled card form
-                                        VStack(spacing: 12) {
-                                            // Card number with corporate styling
-                                            if let cardNumberInput = cardScope.cardNumberInput {
-                                                cardNumberInput(PrimerModifier()
-                                                    .fillMaxWidth()
-                                                    .height(50)
-                                                    .padding(.horizontal, 16)
-                                                    .background(Color(red: 0.98, green: 0.98, blue: 0.98))
-                                                    .cornerRadius(8)
-                                                    .border(Color(red: 0.2, green: 0.4, blue: 0.7), width: 1)
-                                                    .font(.system(.body, design: .monospaced))
-                                                )
-                                            }
-                                            
-                                            // Expiry and CVV row
-                                            HStack(spacing: 12) {
-                                                if let expiryDateInput = cardScope.expiryDateInput {
-                                                    expiryDateInput(PrimerModifier()
-                                                        .fillMaxWidth()
-                                                        .height(50)
-                                                        .padding(.horizontal, 16)
-                                                        .background(Color(red: 0.98, green: 0.98, blue: 0.98))
-                                                        .cornerRadius(8)
-                                                        .border(Color(red: 0.2, green: 0.4, blue: 0.7), width: 1)
-                                                        .font(.system(.body, design: .monospaced))
-                                                    )
-                                                }
-                                                
-                                                if let cvvInput = cardScope.cvvInput {
-                                                    cvvInput(PrimerModifier()
-                                                        .fillMaxWidth()
-                                                        .height(50)
-                                                        .padding(.horizontal, 16)
-                                                        .background(Color(red: 0.98, green: 0.98, blue: 0.98))
-                                                        .cornerRadius(8)
-                                                        .border(Color(red: 0.2, green: 0.4, blue: 0.7), width: 1)
-                                                        .font(.system(.body, design: .monospaced))
-                                                    )
-                                                }
-                                            }
-                                            
-                                            // Cardholder name
-                                            if let cardholderNameInput = cardScope.cardholderNameInput {
-                                                cardholderNameInput(PrimerModifier()
-                                                    .fillMaxWidth()
-                                                    .height(50)
-                                                    .padding(.horizontal, 16)
-                                                    .background(Color(red: 0.98, green: 0.98, blue: 0.98))
-                                                    .cornerRadius(8)
-                                                    .border(Color(red: 0.2, green: 0.4, blue: 0.7), width: 1)
-                                                    .font(.system(.body, design: .monospaced))
-                                                )
-                                            }
-                                        }
-                                    }
-                                    .padding(20)
-                                    .background(Color(red: 0.95, green: 0.96, blue: 0.98))
-                                )
-                            }
-                        }
-                    )
-                )
-            },
-            completion: {
-                print("✅ [\(title)] CheckoutComponents presentation completed")
-            }
-        )
-        
-        print("✅ [\(title)] CheckoutComponents presentation initiated")
-    }
-
-    private func findTopViewController(from rootViewController: UIViewController?) -> UIViewController? {
-        if let presented = rootViewController?.presentedViewController {
-            return findTopViewController(from: presented)
-        }
-        
-        if let navigationController = rootViewController as? UINavigationController {
-            return findTopViewController(from: navigationController.visibleViewController)
-        }
-        
-        if let tabBarController = rootViewController as? UITabBarController {
-            return findTopViewController(from: tabBarController.selectedViewController)
-        }
-        
-        return rootViewController
     }
 }

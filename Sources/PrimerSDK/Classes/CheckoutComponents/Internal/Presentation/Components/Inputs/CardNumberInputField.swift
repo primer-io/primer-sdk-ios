@@ -32,6 +32,9 @@ internal struct CardNumberInputField: View, LogReporter {
     /// Callback when available networks are detected for co-badged cards
     let onNetworksDetected: (([CardNetwork]) -> Void)?
 
+    /// The currently selected network (takes precedence over auto-detected network)
+    let selectedNetwork: CardNetwork?
+
     /// PrimerModifier for comprehensive styling customization
     let modifier: PrimerModifier
 
@@ -57,7 +60,7 @@ internal struct CardNumberInputField: View, LogReporter {
     @State private var surchargeAmount: String?
 
     /// Focus state for input field styling
-    @FocusState private var isFocused: Bool
+    @State private var isFocused: Bool = false
 
     @Environment(\.designTokens) private var tokens
 
@@ -67,6 +70,7 @@ internal struct CardNumberInputField: View, LogReporter {
     internal init(
         label: String,
         placeholder: String,
+        selectedNetwork: CardNetwork? = nil,
         modifier: PrimerModifier = PrimerModifier(),
         onCardNumberChange: ((String) -> Void)? = nil,
         onCardNetworkChange: ((CardNetwork) -> Void)? = nil,
@@ -75,6 +79,7 @@ internal struct CardNumberInputField: View, LogReporter {
     ) {
         self.label = label
         self.placeholder = placeholder
+        self.selectedNetwork = selectedNetwork
         self.modifier = modifier
         self.onCardNumberChange = onCardNumberChange
         self.onCardNetworkChange = onCardNetworkChange
@@ -84,15 +89,25 @@ internal struct CardNumberInputField: View, LogReporter {
 
     // MARK: - Computed Properties
 
+    /// The network to display - prioritizes selected network over auto-detected network
+    private var displayNetwork: CardNetwork {
+        return selectedNetwork ?? cardNetwork
+    }
+
     /// Dynamic border color based on field state
     private var borderColor: Color {
+        let color: Color
         if let errorMessage = errorMessage, !errorMessage.isEmpty {
-            return tokens?.primerColorBorderOutlinedError ?? .red
+            color = tokens?.primerColorBorderOutlinedError ?? .red
+            logger.debug(message: "🎨 [CardNumber] Border color: ERROR - \(color)")
         } else if isFocused {
-            return tokens?.primerColorBorderOutlinedFocus ?? .blue
+            color = tokens?.primerColorBorderOutlinedFocus ?? .blue
+            logger.debug(message: "🎨 [CardNumber] Border color: FOCUSED - \(color) (tokens available: \(tokens != nil))")
         } else {
-            return tokens?.primerColorBorderOutlinedDefault ?? Color(.systemGray4)
+            color = tokens?.primerColorBorderOutlinedDefault ?? Color(.systemGray4)
+            logger.debug(message: "🎨 [CardNumber] Border color: DEFAULT - \(color)")
         }
+        return color
     }
 
     // MARK: - Body
@@ -112,7 +127,7 @@ internal struct CardNumberInputField: View, LogReporter {
                     .overlay(
                         RoundedRectangle(cornerRadius: tokens?.primerRadiusMedium ?? 8)
                             .stroke(borderColor, lineWidth: 1)
-                            .animation(.easeInOut(duration: 0.2), value: borderColor)
+                            .animation(.easeInOut(duration: 0.2), value: isFocused)
                     )
                     .shadow(
                         color: Color.black.opacity(0.04),
@@ -141,7 +156,7 @@ internal struct CardNumberInputField: View, LogReporter {
                             onNetworksDetected: onNetworksDetected
                         )
                         .padding(.leading, tokens?.primerSpaceLarge ?? 16)
-                        .padding(.trailing, cardNetwork != .unknown ? (tokens?.primerSizeXxlarge ?? 60) : (tokens?.primerSpaceLarge ?? 16))
+                        .padding(.trailing, displayNetwork != .unknown ? (tokens?.primerSizeXxlarge ?? 60) : (tokens?.primerSpaceLarge ?? 16))
                         .padding(.vertical, tokens?.primerSpaceMedium ?? 12)
                     } else {
                         // Fallback view while loading validation service
@@ -167,11 +182,11 @@ internal struct CardNumberInputField: View, LogReporter {
                             .frame(width: tokens?.primerSizeMedium ?? 20, height: tokens?.primerSizeMedium ?? 20)
                             .foregroundColor(tokens?.primerColorIconNegative ?? Color(red: 1.0, green: 0.45, blue: 0.47))
                             .padding(.trailing, tokens?.primerSpaceMedium ?? 12)
-                    } else if cardNetwork != .unknown {
+                    } else if displayNetwork != .unknown {
                         // Card network icon and surcharge when no error
                         VStack(spacing: 2) {
                             // Card network icon
-                            if let icon = cardNetwork.icon {
+                            if let icon = displayNetwork.icon {
                                 Image(uiImage: icon)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
@@ -206,6 +221,11 @@ internal struct CardNumberInputField: View, LogReporter {
         .primerModifier(modifier)
         .onAppear {
             setupValidationService()
+        }
+        .onChange(of: isFocused) { focused in
+            logger.debug(message: "🎨 [CardNumber] Focus state changed to: \(focused)")
+            // Force border color re-evaluation by accessing the computed property
+            _ = borderColor
         }
     }
 
@@ -243,7 +263,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
     @Binding var isValid: Bool?
     @Binding var cardNetwork: CardNetwork
     @Binding var errorMessage: String?
-    @FocusState.Binding var isFocused: Bool
+    @Binding var isFocused: Bool
     let placeholder: String
     let validationService: ValidationService
     let onCardNumberChange: ((String) -> Void)?
@@ -255,10 +275,26 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
         let textField = UITextField()
         textField.delegate = context.coordinator
         textField.keyboardType = .numberPad
-        textField.placeholder = placeholder
         textField.borderStyle = .none
         textField.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         textField.backgroundColor = .clear
+
+        // Set placeholder color to match design tokens (same as PrimerInputField)
+        // Use Inter font or fallback to system font based on design tokens
+        let placeholderFont: UIFont = {
+            if let interFont = UIFont(name: "InterVariable", size: 16) {
+                return interFont
+            }
+            return UIFont.systemFont(ofSize: 16, weight: .regular)
+        }()
+        
+        textField.attributedPlaceholder = NSAttributedString(
+            string: placeholder,
+            attributes: [
+                .foregroundColor: UIColor.systemGray,
+                .font: placeholderFont
+            ]
+        )
 
         // Add a "Done" button to the keyboard
         let toolbar = UIToolbar()
@@ -313,7 +349,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
         @Binding private var cardNetwork: CardNetwork
         @Binding private var isValid: Bool?
         @Binding private var errorMessage: String?
-        @FocusState.Binding private var isFocused: Bool
+        @Binding private var isFocused: Bool
         private let onCardNumberChange: ((String) -> Void)?
         private let onCardNetworkChange: ((CardNetwork) -> Void)?
         private let onValidationChange: ((Bool) -> Void)?
@@ -331,7 +367,7 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             cardNetwork: Binding<CardNetwork>,
             isValid: Binding<Bool?>,
             errorMessage: Binding<String?>,
-            isFocused: FocusState<Bool>.Binding,
+            isFocused: Binding<Bool>,
             onCardNumberChange: ((String) -> Void)?,
             onCardNetworkChange: ((CardNetwork) -> Void)?,
             onValidationChange: ((Bool) -> Void)?,
@@ -354,14 +390,22 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
         }
 
         func textFieldDidBeginEditing(_ textField: UITextField) {
-            isFocused = true
-            errorMessage = nil
+            logger.debug(message: "🎨 [CardNumber] Text field began editing - setting isFocused = true")
+            DispatchQueue.main.async {
+                self.isFocused = true
+                self.errorMessage = nil
+                self.logger.debug(message: "🎨 [CardNumber] Focus state updated on main thread: true")
+            }
         }
 
         func textFieldDidEndEditing(_ textField: UITextField) {
-            isFocused = false
-            // Use full validation when field loses focus
-            validateCardNumberFully(cardNumber)
+            logger.debug(message: "🎨 [CardNumber] Text field ended editing - setting isFocused = false")
+            DispatchQueue.main.async {
+                self.isFocused = false
+                self.logger.debug(message: "🎨 [CardNumber] Focus state updated on main thread: false")
+                // Use full validation when field loses focus
+                self.validateCardNumberFully(self.cardNumber)
+            }
         }
 
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
@@ -695,7 +739,16 @@ private struct CardNumberTextField: UIViewRepresentable, LogReporter {
             // Clear any pending validation timer to avoid conflicts
             validationTimer?.invalidate()
 
-            // Always run full validation on focus loss, regardless of length or network
+            // Empty field handling - don't show errors for empty fields
+            let trimmedNumber = number.trimmingCharacters(in: .whitespacesAndNewlines)
+            if trimmedNumber.isEmpty {
+                isValid = false // Card number is required
+                errorMessage = nil // Never show error message for empty fields
+                onValidationChange?(false)
+                return
+            }
+
+            // Always run full validation on focus loss for non-empty fields
             let validationResult = validationService.validateCardNumber(number)
             logger.debug(message: "🔍 [CardNumber] Full validation result: valid=\(validationResult.isValid), error='\(validationResult.errorMessage ?? "none")'")
 

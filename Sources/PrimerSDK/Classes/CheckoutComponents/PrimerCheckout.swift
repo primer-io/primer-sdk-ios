@@ -58,6 +58,9 @@ public struct PrimerCheckout: View {
     /// Navigator (internal use only)
     internal let navigator: CheckoutNavigator
 
+    /// Presentation context determining navigation behavior (internal use only)
+    internal let presentationContext: PresentationContext
+
     /// Creates a new PrimerCheckout view.
     /// - Parameters:
     ///   - clientToken: The client token obtained from your backend.
@@ -77,6 +80,7 @@ public struct PrimerCheckout: View {
         self.onCompletion = onCompletion
         self.diContainer = DIContainer.shared
         self.navigator = CheckoutNavigator()
+        self.presentationContext = .fromPaymentSelection // Default context
     }
 
     /// Internal initializer with custom content
@@ -95,6 +99,7 @@ public struct PrimerCheckout: View {
         self.onCompletion = onCompletion
         self.diContainer = diContainer
         self.navigator = navigator
+        self.presentationContext = .fromPaymentSelection // Default context
     }
 
     /// Internal initializer with DI container and navigator
@@ -112,6 +117,7 @@ public struct PrimerCheckout: View {
         self.onCompletion = onCompletion
         self.diContainer = diContainer
         self.navigator = navigator
+        self.presentationContext = .fromPaymentSelection // Default context
     }
 
     /// Internal initializer with custom content as AnyView function
@@ -130,6 +136,46 @@ public struct PrimerCheckout: View {
         self.onCompletion = onCompletion
         self.diContainer = diContainer
         self.navigator = navigator
+        self.presentationContext = .fromPaymentSelection // Default context
+    }
+
+    /// Internal initializer with presentation context
+    internal init(
+        clientToken: String,
+        settings: PrimerSettings,
+        diContainer: DIContainer,
+        navigator: CheckoutNavigator,
+        presentationContext: PresentationContext,
+        onCompletion: (() -> Void)? = nil
+    ) {
+        self.clientToken = clientToken
+        self.settings = settings
+        self.scope = nil
+        self.customContent = nil
+        self.onCompletion = onCompletion
+        self.diContainer = diContainer
+        self.navigator = navigator
+        self.presentationContext = presentationContext
+    }
+
+    /// Internal initializer with custom content and presentation context
+    internal init(
+        clientToken: String,
+        settings: PrimerSettings,
+        diContainer: DIContainer,
+        navigator: CheckoutNavigator,
+        customContent: ((PrimerCheckoutScope) -> AnyView)?,
+        presentationContext: PresentationContext,
+        onCompletion: (() -> Void)? = nil
+    ) {
+        self.clientToken = clientToken
+        self.settings = settings
+        self.scope = nil
+        self.customContent = customContent
+        self.onCompletion = onCompletion
+        self.diContainer = diContainer
+        self.navigator = navigator
+        self.presentationContext = presentationContext
     }
 
     public var body: some View {
@@ -142,6 +188,7 @@ public struct PrimerCheckout: View {
             navigator: navigator,
             scope: scope,
             customContent: customContent,
+            presentationContext: presentationContext,
             onCompletion: onCompletion
         )
     }
@@ -159,6 +206,7 @@ internal struct InternalCheckout: View {
     let navigator: CheckoutNavigator
     let scope: ((PrimerCheckoutScope) -> Void)?
     let customContent: ((PrimerCheckoutScope) -> AnyView)?
+    let presentationContext: PresentationContext
     let onCompletion: (() -> Void)?
 
     @State private var checkoutScope: DefaultCheckoutScope?
@@ -173,6 +221,7 @@ internal struct InternalCheckout: View {
         navigator: CheckoutNavigator,
         scope: ((PrimerCheckoutScope) -> Void)?,
         customContent: ((PrimerCheckoutScope) -> AnyView)?,
+        presentationContext: PresentationContext,
         onCompletion: (() -> Void)?
     ) {
         self.clientToken = clientToken
@@ -181,6 +230,7 @@ internal struct InternalCheckout: View {
         self.navigator = navigator
         self.scope = scope
         self.customContent = customContent
+        self.presentationContext = presentationContext
         self.onCompletion = onCompletion
 
         // Don't create checkout scope until SDK is initialized
@@ -260,12 +310,19 @@ internal struct InternalCheckout: View {
                 clientToken: clientToken,
                 settings: settings,
                 diContainer: diContainer,
-                navigator: navigator
+                navigator: navigator,
+                presentationContext: presentationContext
             )
 
             checkoutScope = defaultScope
             sdkInitialized = true
             isInitializing = false
+
+            // Handle direct card form presentation
+            if presentationContext == .direct {
+                // Navigate directly to card form for direct presentation
+                defaultScope.checkoutNavigator.navigateToPaymentMethod("PAYMENT_CARD", context: .direct)
+            }
 
         } catch {
             isInitializing = false
@@ -374,6 +431,11 @@ internal struct CheckoutScopeObserver: View, LogReporter {
     private let scopeCustomization: ((PrimerCheckoutScope) -> Void)?
     private let onCompletion: (() -> Void)?
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
+
+    // Design tokens state
+    @State private var designTokens: DesignTokens?
+    @State private var designTokensManager: DesignTokensManager?
 
     init(scope: DefaultCheckoutScope, customContent: ((PrimerCheckoutScope) -> AnyView)?, scopeCustomization: ((PrimerCheckoutScope) -> Void)?, onCompletion: (() -> Void)?) {
         self.scope = scope
@@ -432,6 +494,20 @@ internal struct CheckoutScopeObserver: View, LogReporter {
                                 onCompletion?()
                             })
                         }
+                    
+                    case .dismissed:
+                        // Handle dismissal - call completion callback to properly dismiss SwiftUI sheets
+                        AnyView(VStack {
+                            Text("Dismissing...")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .onAppear {
+                            logger.info(message: "Checkout dismissed, calling completion callback")
+                            DispatchQueue.main.async {
+                                onCompletion?()
+                            }
+                        })
                     }
 
                     // Custom content overlay if provided
@@ -442,10 +518,72 @@ internal struct CheckoutScopeObserver: View, LogReporter {
             }
             .environmentObject(scope)
             .environment(\.diContainer, DIContainer.currentSync)
+            .environment(\.designTokens, designTokens)
         }
         .onAppear {
             // Apply any scope customizations (only after SDK is initialized)
             scopeCustomization?(scope)
+
+            // Set up design tokens
+            Task {
+                await setupDesignTokens()
+            }
+        }
+        .onChange(of: colorScheme) { newColorScheme in
+            // Reload design tokens when color scheme changes
+            Task {
+                await loadDesignTokens(for: newColorScheme)
+            }
+        }
+    }
+
+    // MARK: - Design Token Management
+
+    private func setupDesignTokens() async {
+        logger.info(message: "🎨 [DesignTokens] Setting up design tokens...")
+        do {
+            guard let container = await DIContainer.current else {
+                logger.warn(message: "🎨 [DesignTokens] DI Container not available for design tokens")
+                return
+            }
+
+            designTokensManager = try await container.resolve(DesignTokensManager.self)
+            logger.info(message: "🎨 [DesignTokens] DesignTokensManager resolved successfully")
+            await loadDesignTokens(for: colorScheme)
+        } catch {
+            logger.error(message: "🎨 [DesignTokens] Failed to setup design tokens: \(error)")
+        }
+    }
+
+    private func loadDesignTokens(for colorScheme: ColorScheme) async {
+        guard let manager = designTokensManager else {
+            logger.warn(message: "🎨 [DesignTokens] DesignTokensManager not available")
+            return
+        }
+
+        logger.info(message: "🎨 [DesignTokens] Loading design tokens for color scheme: \(colorScheme == .dark ? "dark" : "light")")
+        do {
+            try await manager.fetchTokens(for: colorScheme)
+            await MainActor.run {
+                designTokens = manager.tokens
+                logger.info(message: "🎨 [DesignTokens] Design tokens loaded successfully")
+
+                // Log the specific focus border color for debugging
+                if let focusColor = designTokens?.primerColorBorderOutlinedFocus {
+                    logger.info(message: "🎨 [DesignTokens] Focus border color: \(focusColor)")
+                } else {
+                    logger.warn(message: "🎨 [DesignTokens] Focus border color not found in design tokens!")
+                }
+
+                // Log the brand color for comparison
+                if let brandColor = designTokens?.primerColorBrand {
+                    logger.info(message: "🎨 [DesignTokens] Brand color: \(brandColor)")
+                } else {
+                    logger.warn(message: "🎨 [DesignTokens] Brand color not found in design tokens!")
+                }
+            }
+        } catch {
+            logger.error(message: "🎨 [DesignTokens] Failed to load design tokens: \(error)")
         }
     }
 }
