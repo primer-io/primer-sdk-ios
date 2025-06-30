@@ -391,7 +391,7 @@ final class AnalyticsServiceTests: XCTestCase {
         await fulfillment(of: [deletionExpectation], timeout: 10.0)
 
         // Step 5: Verify all events have been deleted
-        XCTAssertEqual(storage.events.count, 0, "Expected all events to be deleted after failure.")
+        XCTAssertTrue(storage.events.isEmpty, "Expected all events to be deleted after failure.")
     }
 
     func testSendFailurePurgeAllEvents() {
@@ -509,7 +509,7 @@ final class AnalyticsServiceTests: XCTestCase {
         }
 
         for event in events {
-            if let delay = delay {
+            if let delay {
                 try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
             }
             try await service.record(event: event)

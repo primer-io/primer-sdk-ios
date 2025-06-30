@@ -106,8 +106,8 @@ extension Analytics {
 
         func record(events: [Analytics.Event]) async throws {
             return try await withCheckedThrowingContinuation { continuation in
-                Analytics.queue.async(flags: .barrier) {
-                    let storedEvents: [Analytics.Event] = self.storage.loadEvents()
+                Analytics.queue.async(flags: .barrier) { [self] in
+                    let storedEvents: [Analytics.Event] = storage.loadEvents()
                     let storedEventsIds = storedEvents.compactMap { $0.localId }
                     var eventsToAppend: [Analytics.Event] = []
 
@@ -119,21 +119,21 @@ extension Analytics {
                     var combinedEvents: [Analytics.Event] = eventsToAppend.sorted(by: { $0.createdAt > $1.createdAt })
                     combinedEvents.append(contentsOf: storedEvents)
 
-                    self.logger.debug(message: "📚 Analytics: Recording \(events.count) events (new total: \(combinedEvents.count))")
+                    logger.debug(message: "📚 Analytics: Recording \(events.count) events (new total: \(combinedEvents.count))")
 
                     do {
-                        try self.storage.save(combinedEvents)
+                        try storage.save(combinedEvents)
 
-                        if combinedEvents.count >= self.batchSize {
-                            let batchSizeExceeded = combinedEvents.count > self.batchSize
+                        if combinedEvents.count >= batchSize {
+                            let batchSizeExceeded = combinedEvents.count > batchSize
                             let sizeString = batchSizeExceeded ? "exceeded" : "reached"
                             let count = combinedEvents.count
                             let message =
-                                "📚 Analytics: Minimum batch size of \(self.batchSize) \(sizeString) (\(count) events present). Attempting sync ..."
-                            self.logger.debug(message: message)
+                                "📚 Analytics: Minimum batch size of \(batchSize) \(sizeString) (\(count) events present). Attempting sync ..."
+                            logger.debug(message: message)
                             Task {
                                 do {
-                                    try await self.sync(events: combinedEvents)
+                                    try await sync(events: combinedEvents)
                                 } catch {
                                     // Ignore errors during sync
                                 }
@@ -221,7 +221,7 @@ extension Analytics {
 
         private func sync(events: [Analytics.Event], isFlush: Bool = false) async throws {
             let syncType = isFlush ? "flush" : "sync"
-            guard events.count > 0 else {
+            guard !events.isEmpty else {
                 return logger.warn(message: "📚 Analytics: Attempted to \(syncType) but had no events")
             }
 
@@ -312,7 +312,7 @@ extension Analytics {
 
         private func sendSdkAnalyticsEvents(events: [Analytics.Event]) async throws {
             let events = events.filter { $0.analyticsUrl != nil }
-            let urls = Set(events.compactMap { $0.analyticsUrl }).compactMap { URL(string: $0) }
+            let urls = Set(events.compactMap(\.analyticsUrl).compactMap(URL.init))
             let eventSets = urls.map { url in
                 (url: url, events: events.filter { $0.analyticsUrl == url.absoluteString })
             }
@@ -415,12 +415,12 @@ extension Analytics {
         }
 
         private func sendEvents(_ events: [Analytics.Event], to url: URL) async throws {
-            return try await withCheckedThrowingContinuation { continuation in
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                 sendEvents(events, to: url) { error in
                     if let error {
                         continuation.resume(throwing: error)
                     } else {
-                        continuation.resume()
+                        continuation.resume(returning: ())
                     }
                 }
             }
