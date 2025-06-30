@@ -17,8 +17,8 @@ struct PrimerKlarnaCategoriesView: View {
     var onBackPressed: () -> Void
     var onInitializePressed: (KlarnaPaymentCategory?) -> Void
     var onContinuePressed: () -> Void
-    let klarnaLogoImage = UIImage(named: "klarna-logo-colored", in: Bundle.primerResources, compatibleWith: nil) ?? UIImage()
-    let leftArrowImage = UIImage(named: "arrow-left", in: Bundle.primerResources, compatibleWith: nil) ?? UIImage()
+    let klarnaLogoImage = UIImage.klarnaColored ?? UIImage()
+    let leftArrowImage = UIImage.leftArrow ?? UIImage()
 
     var body: some View {
 

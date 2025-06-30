@@ -34,10 +34,5 @@ public enum ImageName: String {
         klarna,
         mobile
 
-    public var image: UIImage? {
-        guard let image = UIImage(named: rawValue, in: Bundle.primerResources, compatibleWith: nil) else {
-            return nil
-        }
-        return image
-    }
+    public var image: UIImage? { UIImage(primerResource: rawValue) }
 }

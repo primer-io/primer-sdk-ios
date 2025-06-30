@@ -9,6 +9,7 @@
 
 import UIKit
 
+// MARK: MISSING_TESTS
 final class ImageFile: File {
 
     static func getPaymentMethodType(fromFileName fileName: String) -> String? {
@@ -72,39 +73,27 @@ final class ImageFile: File {
             if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType,
                                                                                  themeMode: .dark,
                                                                                  assetType: .logo),
-               let image = UIImage(named: paymentMethodLogoFileName,
-                                   in: Bundle.primerResources,
-                                   compatibleWith: nil) {
+               let image = UIImage(primerResource: paymentMethodLogoFileName) {
                 return image
-            } else if let image = UIImage(named: self.fileName,
-                                          in: Bundle.primerResources,
-                                          compatibleWith: nil) {
+            } else if let image = UIImage(primerResource: fileName) {
                 return image
             }
         } else if self.fileName.contains("light") == true {
             if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType,
                                                                                  themeMode: .light,
                                                                                  assetType: .logo),
-               let image = UIImage(named: paymentMethodLogoFileName,
-                                   in: Bundle.primerResources,
-                                   compatibleWith: nil) {
+               let image = UIImage(primerResource: paymentMethodLogoFileName) {
                 return image
-            } else if let image = UIImage(named: self.fileName,
-                                          in: Bundle.primerResources,
-                                          compatibleWith: nil) {
+            } else if let image = UIImage(primerResource: fileName) {
                 return image
             }
         } else if self.fileName.contains("colored") == true {
             if let paymentMethodLogoFileName = ImageFile.getBundledImageFileName(forPaymentMethodType: paymentMethodType,
                                                                                  themeMode: .colored,
                                                                                  assetType: .logo),
-               let image = UIImage(named: paymentMethodLogoFileName,
-                                   in: Bundle.primerResources,
-                                   compatibleWith: nil) {
+               let image = UIImage(primerResource: paymentMethodLogoFileName) {
                 return image
-            } else if let image = UIImage(named: self.fileName,
-                                          in: Bundle.primerResources,
-                                          compatibleWith: nil) {
+            } else if let image = UIImage(primerResource: fileName) {
                 return image
             }
         }
@@ -117,6 +106,7 @@ final class ImageFile: File {
     }
 }
 
+// MARK: MISSING_TESTS
 final class ImageManager: LogReporter {
 
     func getImages(for imageFiles: [ImageFile]) -> Promise<[ImageFile]> {
@@ -174,6 +164,48 @@ final class ImageManager: LogReporter {
         }
     }
 
+    func getImages(for imageFiles: [ImageFile]) async throws -> [ImageFile] {
+        guard !imageFiles.isEmpty else { return [] }
+
+        let timingEventId = UUID().uuidString
+        let timingEventStart = Analytics.Event.allImagesLoading(
+            momentType: .start,
+            id: timingEventId
+        )
+
+        // MARK: REVIEW_CHECK - Same logic as PromiseKit's ensure
+
+        defer {
+            let timingEventEnd = Analytics.Event.allImagesLoading(
+                momentType: .end,
+                id: timingEventId
+            )
+            Analytics.Service.record(events: [timingEventStart, timingEventEnd])
+        }
+
+        var imageFiles: [ImageFile] = []
+        var errors: [Error] = []
+
+        for imageFile in imageFiles {
+            do {
+                let file = try await getImage(file: imageFile)
+                imageFiles.append(file)
+            } catch {
+                errors.append(error)
+            }
+        }
+
+        if !errors.isEmpty, errors.count == imageFiles.count {
+            let err = InternalError.underlyingErrors(errors: errors,
+                                                     userInfo: .errorUserInfoDictionary(),
+                                                     diagnosticsId: UUID().uuidString)
+            ErrorHandler.handle(error: err)
+            throw err
+        } else {
+            return imageFiles
+        }
+    }
+
     func getImage(file: ImageFile) -> Promise<ImageFile> {
         return Promise { seal in
             let downloader = Downloader()
@@ -225,6 +257,53 @@ final class ImageManager: LogReporter {
 
                     seal.reject(err)
                 }
+            }
+        }
+    }
+
+    func getImage(file: ImageFile) async throws -> ImageFile {
+        let download = Downloader()
+        let timingEventId = UUID().uuidString
+        let timingEventStart = Analytics.Event.allImagesLoading(
+            momentType: .start,
+            id: timingEventId
+        )
+
+        defer {
+            let timingEventEnd = Analytics.Event.timer(
+                momentType: .end,
+                id: timingEventId
+            )
+            Analytics.Service.record(events: [timingEventStart, timingEventEnd])
+        }
+
+        // First try to download the image with the relevant caching policy.
+        // Therefore, if the image is cached, it will be returned.
+        // If the image download fails, check for a bundled image with the filename,
+        // if it exists continue.
+        do {
+            let file = try await download.download(file: file)
+
+            if let imageFile = file as? ImageFile, imageFile.cachedImage != nil {
+                return imageFile
+            } else {
+                let err = InternalError.failedToDecode(message: "image", userInfo: .errorUserInfoDictionary(),
+                                                       diagnosticsId: UUID().uuidString)
+                ErrorHandler.handle(error: err)
+                throw err
+            }
+        } catch {
+            if file.bundledImage != nil {
+                logger.warn(message: "FAILED TO DOWNLOAD LOGO BUT FOUND LOGO LOCALLY")
+                logger.warn(message: "Payment method [\(file.fileName)] logo URL: \(file.remoteUrl?.absoluteString ?? "null")")
+
+                return file
+
+            } else {
+                logger.warn(message: "FAILED TO DOWNLOAD LOGO")
+                logger.warn(message: "Payment method [\(file.fileName)] logo URL: \(file.remoteUrl?.absoluteString ?? "null")")
+
+                throw error
             }
         }
     }

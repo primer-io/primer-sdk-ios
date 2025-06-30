@@ -56,7 +56,7 @@ final class RawDataManagerTests: XCTestCase {
         let expectOnTokenize = self.expectation(description: "On tokenization complete")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
-            return Promise.fulfilled(self.tokenizationResponseBody)
+            return Result.success(self.tokenizationResponseBody)
         }
 
         let expectCreatePayment = self.expectation(description: "On create payment")
@@ -104,7 +104,7 @@ final class RawDataManagerTests: XCTestCase {
         let expectOnTokenize = self.expectation(description: "On tokenization complete")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
-            return Promise.fulfilled(self.tokenizationResponseBody)
+            return Result.success(self.tokenizationResponseBody)
         }
 
         let expectCreatePayment = self.expectation(description: "On create payment")
@@ -346,18 +346,5 @@ final class RawDataManagerTests: XCTestCase {
               customerId: "customer_id",
               orderId: "order_id",
               status: .success)
-    }
-}
-
-private class MockXenditAPIClient: PrimerAPIClientXenditProtocol {
-
-    var onListRetailOutlets: ((DecodedJWTToken, String) -> RetailOutletsList)?
-
-    func listRetailOutlets(clientToken: DecodedJWTToken, paymentMethodId: String, completion: @escaping PrimerSDK.APICompletion<PrimerSDK.RetailOutletsList>) {
-        if let onListRetailOutlets = onListRetailOutlets {
-            completion(.success(onListRetailOutlets(clientToken, paymentMethodId)))
-        } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
-        }
     }
 }

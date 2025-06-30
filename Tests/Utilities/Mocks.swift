@@ -85,6 +85,8 @@ class Mocks {
         currencyCode: "EUR",
         customerId: "mock_customer_id",
         status: .success)
+    
+    static let tokenizationRequestBody = Request.Body.Tokenization(paymentInstrument: MockTokenizationRequestBodyPaymentInstrument())
 
     static func createMockAPIConfiguration(
         clientSession: ClientSession.APIResponse?,
@@ -448,3 +450,5 @@ class MockPrimerAPIConfigurationModule: PrimerAPIConfigurationModuleProtocol {
         }
     }
 }
+
+final class MockTokenizationRequestBodyPaymentInstrument: TokenizationRequestBodyPaymentInstrument {}

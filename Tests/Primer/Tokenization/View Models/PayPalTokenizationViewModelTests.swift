@@ -143,7 +143,7 @@ final class PayPalTokenizationViewModelTests: XCTestCase {
         let expectOnTokenize = self.expectation(description: "TokenizationService: onTokenize is called")
         tokenizationService.onTokenize = { _ in
             expectOnTokenize.fulfill()
-            return Promise.fulfilled(self.tokenizationResponseBody)
+            return Result.success(self.tokenizationResponseBody)
         }
 
         let expectDidCreatePayment = self.expectation(description: "didCreatePayment called")
@@ -259,20 +259,6 @@ class MockPayPalService: PayPalServiceProtocol {
     func fetchPayPalExternalPayerInfo(orderId: String, completion: @escaping (Result<Response.Body.PayPal.PayerInfo, any Error>) -> Void) {
         if let onFetchPayPalExternalPayerInfo {
             completion(.success(onFetchPayPalExternalPayerInfo(orderId)))
-        } else {
-            completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
-        }
-    }
-}
-
-class MockWebAuthenticationService: WebAuthenticationService {
-    var session: ASWebAuthenticationSession?
-
-    var onConnect: ((URL, String) -> URL)?
-
-    func connect(paymentMethodType: String, url: URL, scheme: String, _ completion: @escaping (Result<URL, any Error>) -> Void) {
-        if let onConnect = onConnect {
-            completion(.success(onConnect(url, scheme)))
         } else {
             completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }

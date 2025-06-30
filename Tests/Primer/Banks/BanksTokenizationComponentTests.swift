@@ -8,21 +8,6 @@
 import XCTest
 @testable import PrimerSDK
 
-class MockBanksAPIClient: PrimerAPIClientBanksProtocol {
-
-    var result: BanksListSessionResponse?
-
-    var error: Error?
-
-    func listAdyenBanks(clientToken: PrimerSDK.DecodedJWTToken, request: Request.Body.Adyen.BanksList, completion: @escaping PrimerSDK.APICompletion<BanksListSessionResponse>) {
-        if let error = error {
-            completion(.failure(error))
-        } else if let result = result {
-            completion(.success(result))
-        }
-    }
-}
-
 final class BanksTokenizationComponentTests: XCTestCase {
 
     var apiClient: MockBanksAPIClient!
@@ -163,7 +148,7 @@ final class BanksTokenizationComponentTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "Did tokenize")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return Promise.value(Mocks.primerPaymentMethodTokenData)
+            return Result.success(Mocks.primerPaymentMethodTokenData)
         }
 
         let expectDidCreatePayment = self.expectation(description: "Did create payment")
@@ -261,7 +246,7 @@ final class BanksTokenizationComponentTests: XCTestCase {
         let expectDidTokenize = self.expectation(description: "Did tokenize")
         tokenizationService.onTokenize = { _ in
             expectDidTokenize.fulfill()
-            return Promise.value(Mocks.primerPaymentMethodTokenData)
+            return Result.success(Mocks.primerPaymentMethodTokenData)
         }
 
         let expectDidTokenizePaymentMethod = self.expectation(description: "Did tokenize delegate method")

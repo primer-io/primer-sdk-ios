@@ -1529,7 +1529,7 @@
                      location = "group:WebAuthenticationService.swift">
                   </FileRef>
                   <FileRef
-                     location = "group:NetworkService.swift">
+                     location = "group:NetworkServiceProtocol.swift">
                   </FileRef>
                   <FileRef
                      location = "group:PrimerAPIClientProtocol.swift">
@@ -2872,13 +2872,16 @@
                location = "group:Services"
                name = "Services">
                <FileRef
+                  location = "group:MockPrimerAPIClientVault.swift">
+               </FileRef>
+               <FileRef
                   location = "group:MockCreateResumePaymentService.swift">
                </FileRef>
                <FileRef
                   location = "group:MockAPIClient.swift">
                </FileRef>
                <FileRef
-                  location = "group:NetworkService.swift">
+                  location = "group:MockNetworkService.swift">
                </FileRef>
                <FileRef
                   location = "group:MockBINDataAPIClient.swift">
@@ -2887,7 +2890,7 @@
                   location = "group:MockPrimerUIManager.swift">
                </FileRef>
                <FileRef
-                  location = "group:TokenizationService.swift">
+                  location = "group:MockTokenizationService.swift">
                </FileRef>
             </Group>
             <Group

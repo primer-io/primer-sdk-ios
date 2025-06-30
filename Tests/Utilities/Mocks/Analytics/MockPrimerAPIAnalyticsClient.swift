@@ -1,11 +1,3 @@
-//
-//  MockPrimerAPIAnalyticsClient.swift
-//  Debug App
-//
-//  Created by Jack Newcombe on 13/02/2024.
-//  Copyright © 2024 Primer API Ltd. All rights reserved.
-//
-
 import XCTest
 @testable import PrimerSDK
 
@@ -28,5 +20,19 @@ class MockPrimerAPIAnalyticsClient: PrimerAPIClientAnalyticsProtocol {
             completion(.failure(PrimerError.unknown(userInfo: nil, diagnosticsId: "")))
         }
         self.onSendAnalyticsEvent?(body)
+    }
+
+    func sendAnalyticsEvents(clientToken: PrimerSDK.DecodedJWTToken?, url: URL, body: [PrimerSDK.Analytics.Event]?) async throws -> Analytics.Service.Response {
+        guard let body = body else {
+            XCTFail();
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        }
+        batches.append(body)
+        self.onSendAnalyticsEvent?(body)
+        if shouldSucceed {
+            return .init(id: nil, result: nil)
+        } else {
+            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
+        }
     }
 }
