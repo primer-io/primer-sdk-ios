@@ -75,7 +75,7 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
             paymentRequestBody: paymentRequest
         )
 
-        try self.validateResponse(paymentResponse: paymentResponse, callType: .create)
+        try validateResponse(paymentResponse: paymentResponse, callType: .create)
         return paymentResponse
     }
 
@@ -171,7 +171,7 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
                 paymentResumeRequest: paymentResumeRequest
             )
 
-            try self.validateResponse(paymentResponse: paymentResponse, callType: .resume)
+            try validateResponse(paymentResponse: paymentResponse, callType: .resume)
             return paymentResponse
         } catch {
             let error = PrimerError.failedToResumePayment(
@@ -220,7 +220,7 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         completeUrl: URL,
         body: Request.Body.Payment.Complete
     ) async throws {
-        try await self.apiClient.completePayment(
+        let _ = try await apiClient.completePayment(
             clientToken: clientToken,
             url: completeUrl,
             paymentRequest: body

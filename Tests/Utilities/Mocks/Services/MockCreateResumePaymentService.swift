@@ -1,7 +1,7 @@
 import Foundation
 @testable import PrimerSDK
 
-class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
+final class MockCreateResumePaymentService: CreateResumePaymentServiceProtocol {
     
 
     var onResumePayment: ((String, Request.Body.Payment.Resume) -> Response.Body.Payment?)?
