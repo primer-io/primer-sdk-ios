@@ -12,8 +12,9 @@ import SafariServices
 protocol WebAuthenticationService {
     var session: ASWebAuthenticationSession? { get }
     func connect(paymentMethodType: String, url: URL, scheme: String, _ completion: @escaping (Result<URL, Error>) -> Void)
+    func connect(paymentMethodType: String, url: URL, scheme: String) async throws -> URL
 }
-
+// MARK: MISSING_TESTS
 final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService {
 
     var session: ASWebAuthenticationSession?
@@ -40,6 +41,35 @@ final class DefaultWebAuthenticationService: NSObject, WebAuthenticationService 
 
         webAuthSession.presentationContextProvider = self
         webAuthSession.start()
+    }
+
+    func connect(
+        paymentMethodType: String,
+        url: URL,
+        scheme: String
+    ) async throws -> URL {
+        try await withCheckedThrowingContinuation { continuation in
+            let webAuthSession = ASWebAuthenticationSession(
+                url: url,
+                callbackURLScheme: scheme,
+                completionHandler: { url, error in
+                    if let url {
+                        continuation.resume(returning: url)
+                    } else if let error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        let additionalInfo = ["message": "Failed to create web authentication session"]
+                        continuation.resume(throwing: PrimerError.unknown(userInfo: .errorUserInfoDictionary(additionalInfo: additionalInfo),
+                                                                          diagnosticsId: UUID().uuidString))
+                    }
+                }
+            )
+
+            self.session = webAuthSession
+
+            webAuthSession.presentationContextProvider = self
+            webAuthSession.start()
+        }
     }
 }
 
