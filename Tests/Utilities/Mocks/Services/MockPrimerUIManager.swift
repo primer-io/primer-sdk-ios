@@ -20,23 +20,18 @@ final class MockPrimerUIManager: PrimerUIManaging {
     var onDismissOrShowResultScreen: ((PrimerResultViewController.ScreenType, [PrimerPaymentMethodManagerCategory], String?) -> Void)?
 
     func prepareRootViewController() -> Promise<Void> {
-        guard let result = onPrepareViewController?() else {
-            return .rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
-        }
-
-        switch result {
-        case .success(let success): return .fulfilled(success)
-        case .failure(let failure): return .rejected(failure)
+        switch onPrepareViewController?() {
+        case .success(let success): .fulfilled(success)
+        case .failure(let failure): .rejected(failure)
+        case nil: .rejected(PrimerError.unknown(userInfo: nil, diagnosticsId: ""))
         }
     }
 
     func prepareRootViewController() async throws {
-        guard let result = onPrepareViewController?() else {
-            throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
-        }
-        switch result {
+        switch onPrepareViewController?() {
         case .success(let success): return success
         case .failure(let failure): throw failure
+        case nil: throw PrimerError.unknown(userInfo: nil, diagnosticsId: "")
         }
     }
 
