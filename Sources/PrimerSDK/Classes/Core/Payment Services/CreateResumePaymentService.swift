@@ -220,7 +220,7 @@ final class CreateResumePaymentService: CreateResumePaymentServiceProtocol {
         completeUrl: URL,
         body: Request.Body.Payment.Complete
     ) async throws {
-        let _ = try await apiClient.completePayment(
+        _ = try await apiClient.completePayment(
             clientToken: clientToken,
             url: completeUrl,
             paymentRequest: body
